@@ -210,13 +210,6 @@ export type State = {
 	};
 };
 
-export type MailPoetEmailData = {
-	id: number;
-	subject: string;
-	preheader: string;
-	preview_url: string;
-};
-
 export type EmailTemplate = {
 	id: string;
 	slug: string;

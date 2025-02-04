@@ -59,5 +59,6 @@ addFilter(
 addFilter(
   'mailpoet_email_editor_setting_sidebar_extension_component',
   'mailpoet',
-  () => EmailSidebarExtension,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  (RichTextWithButton) => EmailSidebarExtension.bind(null, RichTextWithButton),
 );

@@ -1,8 +1,4 @@
-import {
-  ExternalLink,
-  __experimentalText as Text, // eslint-disable-line
-  TextareaControl,
-} from '@wordpress/components';
+import { ExternalLink } from '@wordpress/components';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
@@ -13,7 +9,7 @@ import classnames from 'classnames';
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
 
-export function EmailSidebarExtension() {
+export function EmailSidebarExtensionBody({ RichTextWithButton }) {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
     'mailpoet_email',
@@ -47,7 +43,7 @@ export function EmailSidebarExtension() {
 
   const subjectHelp = createInterpolateElement(
     __(
-      'Use shortcodes to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
+      'Use personalization tags to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
       'mailpoet',
     ),
     {
@@ -57,6 +53,7 @@ export function EmailSidebarExtension() {
           href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {}}
         />
       ),
       emojiLink: (
@@ -65,87 +62,87 @@ export function EmailSidebarExtension() {
           href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {}}
         />
       ),
     },
   );
 
-  const subjectLabel = (
-    <>
-      <span>{__('Subject', 'mailpoet')}</span>
-      <ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
-        {__('Shortcode guide', 'mailpoet')}
-      </ExternalLink>
-    </>
-  );
-
   const previewTextLength = mailpoetEmailData?.preheader?.length ?? 0;
 
-  const preheaderLabel = (
-    <>
-      <span>{__('Preview text', 'mailpoet')}</span>
-      <span
-        className={classnames('mailpoet-settings-panel__preview-text-length', {
-          'mailpoet-settings-panel__preview-text-length-warning':
-            previewTextLength > previewTextRecommendedLength,
-          'mailpoet-settings-panel__preview-text-length-error':
-            previewTextLength > previewTextMaxLength,
-        })}
-      >
-        {previewTextLength}/{previewTextMaxLength}
-      </span>
-    </>
+  const preheaderHelp = createInterpolateElement(
+    __(
+      '<link>This text</link> will appear in the inbox, underneath the subject line.',
+      'mailpoet',
+    ),
+    {
+      link: (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+        <a
+          href={new URL(
+            'article/418-preview-text',
+            'https://kb.mailpoet.com/',
+          ).toString()}
+          key="preview-text-kb"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => {}}
+        />
+      ),
+    },
   );
 
   return (
     <>
-      <TextareaControl
-        className="mailpoet-settings-panel__subject"
-        label={subjectLabel}
+      <RichTextWithButton
+        attributeName="subject"
+        attributeValue={mailpoetEmailData?.subject || 'subject'}
+        updateProperty={updateEmailMailPoetProperty}
+        label={__('Subject', 'mailpoet')}
+        labelSuffix={
+          <ExternalLink
+            href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
+            onClick={() => {}}
+          >
+            {__('Guide', 'mailpoet')}
+          </ExternalLink>
+        }
+        help={subjectHelp}
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
-        value={mailpoetEmailData?.subject ?? ''}
-        onChange={(value) => updateEmailMailPoetProperty('subject', value)}
-        data-automation-id="email_subject"
       />
-      <div className="mailpoet-settings-panel__help">
-        <Text>{subjectHelp}</Text>
-      </div>
 
-      <TextareaControl
-        className="mailpoet-settings-panel__preview-text"
-        label={preheaderLabel}
+      <br />
+
+      <RichTextWithButton
+        attributeName="preheader"
+        attributeValue={mailpoetEmailData?.preheader || 'preheader'}
+        updateProperty={updateEmailMailPoetProperty}
+        label={__('Preview text', 'mailpoet')}
+        labelSuffix={
+          <span
+            className={classnames(
+              'mailpoet-settings-panel__preview-text-length',
+              {
+                'mailpoet-settings-panel__preview-text-length-warning':
+                  previewTextLength > previewTextRecommendedLength,
+                'mailpoet-settings-panel__preview-text-length-error':
+                  previewTextLength > previewTextMaxLength,
+              },
+            )}
+          >
+            {previewTextLength}/{previewTextMaxLength}
+          </span>
+        }
+        help={preheaderHelp}
         placeholder={__(
           "Add a preview text to capture subscribers' attention and increase open rates.",
           'mailpoet',
         )}
-        value={mailpoetEmailData?.preheader ?? ''}
-        onChange={(value) => updateEmailMailPoetProperty('preheader', value)}
-        data-automation-id="email_preview_text"
       />
-      <div className="mailpoet-settings-panel__help">
-        <Text>
-          {createInterpolateElement(
-            __(
-              '<link>This text</link> will appear in the inbox, underneath the subject line.',
-              'mailpoet',
-            ),
-            {
-              link: (
-                // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
-                <a
-                  href={new URL(
-                    'article/418-preview-text',
-                    'https://kb.mailpoet.com/',
-                  ).toString()}
-                  key="preview-text-kb"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              ),
-            },
-          )}
-        </Text>
-      </div>
     </>
   );
+}
+
+export function EmailSidebarExtension(RichTextWithButton: JSX.Element) {
+  return <EmailSidebarExtensionBody RichTextWithButton={RichTextWithButton} />;
 }
