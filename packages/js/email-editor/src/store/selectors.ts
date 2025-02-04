@@ -96,13 +96,8 @@ export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
 		return true;
 	}
 
-	const { content, mailpoet_data: mailpoetData, title } = post;
-	return (
-		! content.raw &&
-		! mailpoetData.subject &&
-		! mailpoetData.preheader &&
-		! title.raw
-	);
+	const { content, title } = post;
+	return ! content.raw && ! title.raw;
 } );
 
 export const hasEmptyContent = createRegistrySelector(

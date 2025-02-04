@@ -261,7 +261,6 @@ export type MailPoetEmailPostContentExtended = {
 
 export type EmailEditorPostType = Omit< Post, 'type' > & {
 	type: string;
-	mailpoet_data?: MailPoetEmailPostContentExtended;
 };
 
 export type EmailContentValidationAction = {

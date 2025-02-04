@@ -5,6 +5,7 @@ import { useMemo } from '@wordpress/element';
 import { parse } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { useSelect } from '@wordpress/data';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -163,6 +164,11 @@ export function usePreviewTemplates(
 
 	const allEmailPosts = useMemo( () => {
 		return emailPosts?.map( ( post: EmailEditorPostType ) => {
+			const preferredTitle = applyFilters(
+				'mailpoet_email_editor_preferred_template_title',
+				'',
+				post
+			);
 			const { postTemplateContent } = generateTemplateContent(
 				post,
 				allTemplates
@@ -180,9 +186,8 @@ export function usePreviewTemplates(
 			const template = {
 				...post,
 				title: {
-					raw: post?.mailpoet_data?.subject || post.title.raw,
-					rendered:
-						post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
+					raw: post.title.raw,
+					rendered: preferredTitle || post.title.rendered,
 				},
 			};
 			return {

@@ -75,5 +75,3 @@ We may add, update and delete any of them.
 | `mailpoet_email_editor_send_preview_email`    | `Array` $postData                         | `boolean` Result of processing. Was email sent successfully? | Allows override of the send preview mail function. Folks may choose to use custom implementation                                                                    |
 | `mailpoet_email_editor_post_sent_status_args` | `Array` `sent` post status args           | `Array` register_post_status args                            | Allows update of the argument for the sent post status                                                                                                              |
 
-## TODO
-- We use `mailpoet_data` in some section of the codebase. This will be updated.

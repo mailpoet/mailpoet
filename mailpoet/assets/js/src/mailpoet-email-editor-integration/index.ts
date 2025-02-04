@@ -62,3 +62,14 @@ addFilter(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   (RichTextWithButton) => EmailSidebarExtension.bind(null, RichTextWithButton),
 );
+
+// use mailpoet data subject if available
+addFilter(
+  'mailpoet_email_editor_preferred_template_title',
+  'mailpoet',
+  (...args) => {
+    const [, post] = args;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
+  },
+);
