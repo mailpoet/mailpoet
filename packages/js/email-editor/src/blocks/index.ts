@@ -42,6 +42,7 @@ export function initBlocks() {
 	registerCoreBlocks();
 }
 
+// In unified editor we don't need to call registerCoreBlocks
 export function initBlocksUnified() {
 	deactivateStackOnMobile();
 	hideExpandOnClick();
@@ -54,5 +55,7 @@ export function initBlocksUnified() {
 	enhanceColumnBlock();
 	enhanceColumnsBlock();
 	enhancePostContentBlock();
+	extendRichTextFormats();
+	activatePersonalizationTagsReplacing();
 	alterSupportConfiguration();
 }
