@@ -92,12 +92,9 @@ class Email_Editor {
 		$this->register_email_post_sent_status();
 		$this->register_personalization_tags();
 		$this->extend_email_post_api();
-		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
-		if ( $is_editor_page ) {
-			$this->settings_controller->init();
-		}
 		add_action( 'enqueue_block_editor_assets', array( $this, 'initialize_admin' ) );
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
+		add_filter( 'single_template', array( $this, 'load_email_preview_template' ) );
 	}
 
 	/**
@@ -110,7 +107,6 @@ class Email_Editor {
 			$this->extend_email_post_api();
 		}
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
-		add_filter( 'single_template', array( $this, 'load_email_preview_template' ) );
 	}
 
 	/**
