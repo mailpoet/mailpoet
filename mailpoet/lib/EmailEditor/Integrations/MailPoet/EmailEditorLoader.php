@@ -104,8 +104,22 @@ class EmailEditorLoader {
     );
 
     $this->wp->wpEnqueueStyle(
-      'email_editor_unified',
+      'email_editor_unified_0',
       Env::$assetsUrl . '/dist/js/email-editor-unified/email_editor.css',
+      [],
+      $assetsParams['version']
+    );
+
+    $this->wp->wpEnqueueStyle(
+      'email_editor_unified_2',
+      Env::$assetsUrl . '/dist/js/email-editor/email_editor.css',
+      [],
+      $assetsParams['version']
+    );
+
+    $this->wp->wpEnqueueStyle(
+      'email_editor_unified_3',
+      Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.css',
       [],
       $assetsParams['version']
     );
