@@ -1,10 +1,10 @@
 /**
  * External dependencies
  */
+import type { ReactNode } from 'react';
 import { BaseControl, Button } from '@wordpress/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { useCallback, useRef, useState } from '@wordpress/element';
-import { useEntityProp } from '@wordpress/core-data';
 import { create, insert, toHTMLString } from '@wordpress/rich-text';
 import { RichText } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
@@ -17,9 +17,22 @@ import {
 	getCursorPosition,
 	replacePersonalizationTagsWithHTMLComments,
 } from './rich-text-utils';
-import { storeName, editorCurrentPostType } from '../../store';
+import { storeName } from '../../store';
 import { PersonalizationTagsPopover } from './personalization-tags-popover';
 import { recordEvent, recordEventOnce } from '../../events';
+
+type Props = {
+	label: string;
+	labelSuffix?: ReactNode;
+	help?: ReactNode;
+	placeholder: string;
+	attributeName: string;
+	attributeValue?: string;
+	updateProperty: (
+		theAttributeName: string,
+		theUpdatedValue: string
+	) => void;
+};
 
 export function RichTextWithButton( {
 	label,
@@ -27,15 +40,9 @@ export function RichTextWithButton( {
 	help,
 	placeholder,
 	attributeName,
-} ) {
-	const [ mailpoetEmailData ] = useEntityProp(
-		'postType',
-		editorCurrentPostType,
-		'mailpoet_data'
-	);
-
-	const { updateEmailMailPoetProperty } = useDispatch( storeName );
-
+	attributeValue,
+	updateProperty = () => {},
+}: Props ) {
 	const [ selectionRange, setSelectionRange ] = useState( null );
 	const [ isModalOpened, setIsModalOpened ] = useState( false );
 	const list = useSelect(
@@ -61,11 +68,11 @@ export function RichTextWithButton( {
 			const updatedValue = toHTMLString( { value: richTextValue } );
 
 			// Update the corresponding property
-			updateEmailMailPoetProperty( attributeName, updatedValue );
+			updateProperty( attributeName, updatedValue );
 
 			setSelectionRange( null );
 		},
-		[ attributeName, updateEmailMailPoetProperty ]
+		[ attributeName, updateProperty ]
 	);
 
 	const finalLabel = (
@@ -90,7 +97,7 @@ export function RichTextWithButton( {
 		</>
 	);
 
-	if ( ! mailpoetEmailData ) {
+	if ( ! attributeValue ) {
 		return null;
 	}
 
@@ -107,7 +114,7 @@ export function RichTextWithButton( {
 				onInsert={ ( value ) => {
 					handleInsertPersonalizationTag(
 						value,
-						mailpoetEmailData[ attributeName ] ?? '',
+						attributeValue ?? '',
 						selectionRange
 					);
 					setIsModalOpened( false );
@@ -125,17 +132,13 @@ export function RichTextWithButton( {
 			<PersonalizationTagsPopover
 				contentRef={ richTextRef }
 				onUpdate={ ( originalTag, updatedTag ) => {
-					const currentValue =
-						mailpoetEmailData[ attributeName ] ?? '';
+					const currentValue = attributeValue ?? '';
 					// When we update the tag, we need to add brackets to the tag, because the popover removes them
 					const updatedContent = currentValue.replace(
 						`<!--[${ originalTag }]-->`,
 						`<!--[${ updatedTag }]-->`
 					);
-					updateEmailMailPoetProperty(
-						attributeName,
-						updatedContent
-					);
+					updateProperty( attributeName, updatedContent );
 				} }
 			/>
 			<RichText
@@ -144,26 +147,17 @@ export function RichTextWithButton( {
 				placeholder={ placeholder }
 				onFocus={ () => {
 					setSelectionRange(
-						getCursorPosition(
-							richTextRef,
-							mailpoetEmailData[ attributeName ] ?? ''
-						)
+						getCursorPosition( richTextRef, attributeValue ?? '' )
 					);
 				} }
 				onKeyUp={ () => {
 					setSelectionRange(
-						getCursorPosition(
-							richTextRef,
-							mailpoetEmailData[ attributeName ] ?? ''
-						)
+						getCursorPosition( richTextRef, attributeValue ?? '' )
 					);
 				} }
 				onClick={ () => {
 					setSelectionRange(
-						getCursorPosition(
-							richTextRef,
-							mailpoetEmailData[ attributeName ] ?? ''
-						)
+						getCursorPosition( richTextRef, attributeValue ?? '' )
 					);
 				} }
 				onChange={ ( value ) => {
@@ -171,7 +165,7 @@ export function RichTextWithButton( {
 						value ?? '',
 						list
 					);
-					updateEmailMailPoetProperty( attributeName, value );
+					updateProperty( attributeName, value );
 					recordEventOnce(
 						'rich_text_with_button_input_field_updated',
 						{
@@ -179,7 +173,7 @@ export function RichTextWithButton( {
 						}
 					);
 				} }
-				value={ mailpoetEmailData[ attributeName ] ?? '' }
+				value={ attributeValue ?? '' }
 				data-automation-id={ `email_${ attributeName }` }
 			/>
 		</BaseControl>
