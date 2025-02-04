@@ -16,7 +16,7 @@ import { createStore } from './store';
 import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { SendPreview } from './unified-editor/preview';
-import { DocumentSettings } from './unified-editor/document-setting';
+import { DocumentSettings, TemplatePanel } from './unified-editor/document-setting';
 import { PublishSave } from './unified-editor/publish-save';
 import { useEmailCss } from './hooks';
 
@@ -26,7 +26,7 @@ import './unified-editor/styles.scss';
 window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
 
 const EmailEditor = () => {
-	const { setRenderingMode, updateEditorSettings } =
+	const { setRenderingMode, updateEditorSettings, removeEditorPanel } =
 		useDispatch( editorStore );
 	// const { __experimentalReceiveCurrentGlobalStylesId } = useDispatch( coreStore );
 	const { globalStylesId, editorSettings, editedPostId } = useSelect( ( select ) => {
@@ -41,8 +41,8 @@ const EmailEditor = () => {
 
 	// Enforce template-locked mode on start
 	useEffect( () => {
-		console.log( 'Email Editor set template-locked mode' );
 		void setRenderingMode( 'template-locked' );
+		void removeEditorPanel('post-status'); // Hide default post status panel
 		// void __experimentalReceiveCurrentGlobalStylesId( window.MailPoetEmailEditor.user_theme_post_id );
 	}, [ globalStylesId ] );
 
@@ -64,6 +64,7 @@ const EmailEditor = () => {
 			<StylesSidebar />
 			<SendPreview />
 			<DocumentSettings />
+			<TemplatePanel />
 			<PublishSave />
 		</>
 	);
