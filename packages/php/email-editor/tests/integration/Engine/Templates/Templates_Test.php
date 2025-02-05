@@ -53,8 +53,9 @@ class Templates_Test extends \MailPoetTest {
 		$trigger_check = false;
 		add_action(
 			'mailpoet_email_editor_register_templates',
-			function () use ( &$trigger_check ) {
+			function ( $registry ) use ( &$trigger_check ) {
 				$trigger_check = true;
+				return $registry;
 			}
 		);
 		$this->templates->initialize( array( 'mailpoet_email' ) );

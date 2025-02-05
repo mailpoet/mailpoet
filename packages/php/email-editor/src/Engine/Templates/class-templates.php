@@ -33,6 +33,21 @@ class Templates {
 	 * @var string $template_directory
 	 */
 	private string $template_directory = __DIR__ . DIRECTORY_SEPARATOR;
+	/**
+	 * The templates registry.
+	 *
+	 * @var Templates_Registry $templates_registry
+	 */
+	private Templates_Registry $templates_registry;
+
+	/**
+	 * Constructor of the class.
+	 *
+	 * @param Templates_Registry $templates_registry The templates registry.
+	 */
+	public function __construct( Templates_Registry $templates_registry ) {
+		$this->templates_registry = $templates_registry;
+	}
 
 	/**
 	 * Initializes the class.
@@ -42,7 +57,8 @@ class Templates {
 	public function initialize( array $post_types ): void {
 		$this->post_types = $post_types;
 		add_filter( 'theme_templates', array( $this, 'add_theme_templates' ), 10, 4 ); // Workaround needed when saving post – template association.
-		$this->register_templates();
+		add_filter( 'mailpoet_email_editor_register_templates', array( $this, 'register_templates' ) );
+		$this->templates_registry->initialize();
 		$this->register_post_types_to_api();
 	}
 
@@ -60,36 +76,26 @@ class Templates {
 
 	/**
 	 * Register the templates via register_block_template
+	 *
+	 * @param Templates_Registry $templates_registry The templates registry.
 	 */
-	private function register_templates(): void {
-		// The function was added in WordPress 6.7. We can remove this check after we drop support for WordPress 6.6.
-		if ( ! function_exists( 'register_block_template' ) ) {
-			return;
-		}
+	public function register_templates( Templates_Registry $templates_registry ): Templates_Registry {
 		// Register basic blank template.
-		$general_email     = array(
-			'title'       => __( 'General Email', 'mailpoet' ),
-			'description' => __( 'A general template for emails.', 'mailpoet' ),
-			'slug'        => 'email-general',
+		$general_email_slug = 'email-general';
+		$template_filename  = $general_email_slug . '.html';
+
+		$general_email = new Template(
+			$this->template_prefix,
+			$general_email_slug,
+			__( 'General Email', 'mailpoet' ),
+			__( 'A general template for emails.', 'mailpoet' ),
+			(string) file_get_contents( $this->template_directory . $template_filename ),
+			$this->post_types
 		);
-		$template_filename = $general_email['slug'] . '.html';
 
-		$template_name = $this->template_prefix . '//' . $general_email['slug'];
+		$templates_registry->register( $general_email );
 
-		if ( ! \WP_Block_Templates_Registry::get_instance()->is_registered( $template_name ) ) {
-			// skip registration if the template was already registered.
-			register_block_template(
-				$template_name,
-				array(
-					'title'       => $general_email['title'],
-					'description' => $general_email['description'],
-					'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
-					'post_types'  => $this->post_types,
-				)
-			);
-		}
-
-		do_action( 'mailpoet_email_editor_register_templates' );
+		return $templates_registry;
 	}
 
 	/**
