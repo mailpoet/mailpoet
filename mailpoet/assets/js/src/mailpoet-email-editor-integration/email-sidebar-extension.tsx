@@ -93,7 +93,7 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
     <>
       <RichTextWithButton
         attributeName="subject"
-        attributeValue={mailpoetEmailData?.subject || 'subject'}
+        attributeValue={mailpoetEmailData?.subject || ' '}
         updateProperty={updateEmailMailPoetProperty}
         label={__('Subject', 'mailpoet')}
         labelSuffix={

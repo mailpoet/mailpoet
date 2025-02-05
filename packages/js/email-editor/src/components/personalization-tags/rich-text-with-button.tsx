@@ -103,7 +103,7 @@ export function RichTextWithButton( {
 
 	return (
 		<BaseControl
-			id={ `mailpoet-settings-panel__${ attributeName }` }
+			id=""
 			label={ finalLabel }
 			className={ `mailpoet-settings-panel__${ attributeName }-text` }
 			help={ help }
