@@ -129,9 +129,11 @@ class Templates {
 	 * @return array
 	 */
 	public function get_post_types( $response_object ): array {
-		if ( isset( $response_object['plugin'] ) && $response_object['plugin'] === $this->template_prefix ) {
-			return $this->post_types;
+		$template = $this->templates_registry->get_by_slug( $response_object['slug'] ?? '' );
+		if ( $template ) {
+			return $template->get_post_types();
 		}
+
 		return $response_object['post_types'] ?? array();
 	}
 
