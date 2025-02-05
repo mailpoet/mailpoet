@@ -362,6 +362,13 @@ class Initializer {
       $this->automationEngine->initialize();
       $this->blockTypesController->initialize();
       $this->emailEditor->initialize();
+
+      $this->settings->set('3rd_party_libs.enabled', '1' );
+
+      $this->wpFunctions->addFilter('mailpoet_skip_welcome_wizard', function() {
+        return true;
+      });
+
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
       return $this->handleRunningMigration($e);

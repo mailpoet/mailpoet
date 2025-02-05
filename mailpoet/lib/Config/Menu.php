@@ -31,7 +31,7 @@ use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Menu {
-  const MAIN_PAGE_SLUG = self::HOMEPAGE_PAGE_SLUG;
+  const MAIN_PAGE_SLUG = self::EMAILS_PAGE_SLUG;
   const NO_PARENT_PAGE_SLUG = 'mailpoet-no-parent';
 
   const EMAILS_PAGE_SLUG = 'mailpoet-newsletters';

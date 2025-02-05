@@ -1,6 +1,6 @@
 services:
   dashboard:
-    container_name: mp-dashboard
+    container_name: a8cmail-dashboard
     image: nginx:1.21-alpine
     ports:
       - 8888:80
@@ -8,7 +8,7 @@ services:
       - ./dev/dashboard:/usr/share/nginx/html:ro
 
   db:
-    container_name: mp-db
+    container_name: a8cmail-db
     image: mysql:5.7
     volumes:
       - my-datavolume:/var/lib/mysql
@@ -22,7 +22,7 @@ services:
       MYSQL_PASSWORD: wordpress
 
   wordpress:
-    container_name: mp-wp
+    container_name: a8cmail-wp
     build:
       context: .
       dockerfile: dev/php82/Dockerfile
@@ -61,7 +61,7 @@ services:
       - './templates:/var/www/templates'
 
   test_wordpress:
-    container_name: mp-test-wp
+    container_name: a8cmail-test-wp
     build:
       context: .
       dockerfile: dev/php81/Dockerfile
@@ -86,7 +86,7 @@ services:
       - './packages:/var/www/html/wp-content/plugins/packages'
 
   smtp:
-    container_name: mp-mailhog
+    container_name: a8cmail-mailhog
     image: mailhog/mailhog:v1.0.0
     user: ${UID:-1000}:${GID:-1000}
     environment:
@@ -98,7 +98,7 @@ services:
       - '8082:8025'
 
   adminer:
-    container_name: mp-adminer
+    container_name: a8cmail-adminer
     image: adminer:latest
     depends_on:
       - db
