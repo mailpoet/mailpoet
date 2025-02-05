@@ -2,12 +2,14 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Analytics\Analytics;
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -19,6 +21,8 @@ class EmailEditorLoader {
   private User_Theme $userTheme;
   private CdnAssetUrl $cdnAssetUrl;
   private NewslettersRepository $newslettersRepository;
+  private Analytics $analytics;
+  private SettingsController $mailpoetSettings;
 
   public function __construct(
     WPFunctions $wp,
@@ -26,7 +30,9 @@ class EmailEditorLoader {
     Theme_Controller $themeController,
     User_Theme $userTheme,
     CdnAssetUrl $cdnAssetUrl,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    Analytics $analytics,
+    SettingsController $mailpoetSettings
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
@@ -34,12 +40,13 @@ class EmailEditorLoader {
     $this->userTheme = $userTheme;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->newslettersRepository = $newslettersRepository;
+    $this->analytics = $analytics;
+    $this->mailpoetSettings = $mailpoetSettings;
   }
 
   public function initialize(): void {
     $this->wp->addAction('mailpoet_email_editor_admin_initialized', [$this, 'initializeAdmin']);
     $this->wp->addFilter('block_editor_settings_all', [$this, 'blockEditorSettings'], 10, 2);
-    $this->wp->addFilter('rest_request_after_callbacks', [$this, 'modifyThemeResponse'], 10, 3);
   }
 
   public function initializeAdmin(): void {
@@ -73,6 +80,15 @@ class EmailEditorLoader {
     $this->wp->wpEnqueueScript(
       'wp-rich-text',
       Env::$assetsUrl . '/dist/js/email-editor/rich-text.js',
+      $assetsParams['dependencies'],
+      $assetsParams['version'],
+      true
+    );
+
+    $assetsParams = require Env::$assetsPath . '/dist/js/email_editor_integration/email_editor_integration.asset.php';
+    $this->wp->wpEnqueueScript(
+      'mailpoet_email_editor_integration',
+      Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.js',
       $assetsParams['dependencies'],
       $assetsParams['version'],
       true
@@ -123,6 +139,8 @@ class EmailEditorLoader {
       [],
       $assetsParams['version']
     );
+
+    add_filter('admin_footer', [$this, 'loadAnalyticsModule'], 24);
   }
 
   public function blockEditorSettings($settings, $editorContext) {
@@ -133,17 +151,24 @@ class EmailEditorLoader {
     return $controllerSettings;
   }
 
-  public function modifyThemeResponse($response, $handler, $request) {
-//    ///wp/v2/global-styles/themes/twentytwentyfive
-//    if (strpos($request->get_route(), '/wp/v2/global-styles/themes/') === 0) {
-//      $response->data = $this->themeController->get_base_theme()->get_raw_data();
-//      return $response;
-//    }
-//    ///wp/v2/global-styles/id
-//    if (strpos($request->get_route(), '/wp/v2/global-styles/') === 0) {
-//      $response->data = $this->userTheme->get_theme()->get_raw_data();
-//      return $response;
-//    }
-    return $response;
+  public function loadAnalyticsModule() {  // phpcs:ignore -- MissingReturnStatement not required
+    $publicId = $this->analytics->getPublicId();
+    $isPublicIdNew = $this->analytics->isPublicIdNew();
+    // this is required here because of `analytics-event.js` and order of script load and use in `mailpoet-email-editor-integration/index.ts`
+    $libs3rdPartyEnabled = $this->mailpoetSettings->get('3rd_party_libs.enabled') === '1';
+
+    // we need to set this values because they are used in the analytics.html file
+    ?>
+    <script type="text/javascript"> <?php // phpcs:ignore ?>
+        window.mailpoet_analytics_enabled = true;
+        window.mailpoet_analytics_public_id = '<?php echo esc_js($publicId); ?>';
+        window.mailpoet_analytics_new_public_id = <?php echo wp_json_encode($isPublicIdNew); ?>;
+        window.mailpoet_3rd_party_libs_enabled = <?php echo wp_json_encode($libs3rdPartyEnabled); ?>;
+        window.mailpoet_version = '<?php echo esc_js(MAILPOET_VERSION); ?>';
+        window.mailpoet_premium_version = '<?php echo esc_js((defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : ''); ?>';
+    </script>
+    <?php
+
+    include_once Env::$viewsPath . '/analytics.html';
   }
 }

@@ -18,6 +18,7 @@ import { SendPreview } from './unified-editor/preview';
 import { DocumentSettings, TemplatePanel } from './unified-editor/document-setting';
 import { PublishSave } from './unified-editor/publish-save';
 import { useEmailCss } from './hooks';
+import { initEventCollector } from './events';
 
 import './unified-editor/styles.scss';
 
@@ -73,3 +74,4 @@ registerPlugin( 'email-editor-plugin', { render: EmailEditor } );
 initBlocksUnified();
 initializeLayout();
 createStore();
+initEventCollector();
