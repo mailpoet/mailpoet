@@ -279,7 +279,7 @@ class Email_Editor {
 	 * @param string $template post template.
 	 * @return string
 	 */
-	public function load_email_preview_template( string $template ): string {
+	public function load_email_preview_template( $template ): string {
 		$post = $this->get_current_post();
 
 		if ( ! $post instanceof \WP_Post ) {
