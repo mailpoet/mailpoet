@@ -28,7 +28,7 @@ class Newsletter {
   public function getContent(): string {
     // translators: This is a text used in a footer on an email <!--[mailpoet/site-title]--> will be replaced with the site title.
     $footerText = __('You received this email because you are subscribed to the <!--[mailpoet/site-title]-->', 'mailpoet');
-    return '<!-- wp:group {"backgroundColor":"white","layout":{"type":"constrained"},"lock":{"move":false,"remove":false}} -->
+    return '<!-- wp:group {"backgroundColor":"white","layout":{"type":"constrained"},"lock":{"move":false,"remove":true}} -->
       <div class="wp-block-group has-white-background-color has-background">
         <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
         <div
@@ -51,7 +51,7 @@ class Newsletter {
           <!-- /wp:image -->
         </div>
         <!-- /wp:group -->
-        <!-- wp:post-content {"lock":{"move":false,"remove":false},"layout":{"type":"default"}} /-->
+        <!-- wp:post-content {"lock":{"move":false,"remove":true},"layout":{"type":"default"}} /-->
         <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20","top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
         <div
           class="wp-block-group"
