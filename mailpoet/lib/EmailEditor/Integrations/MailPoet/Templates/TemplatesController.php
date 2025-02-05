@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Templates;
 
+use MailPoet\EmailEditor\Engine\Templates\Template;
+use MailPoet\EmailEditor\Engine\Templates\Templates_Registry;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\Library\Newsletter;
 use MailPoet\Util\CdnAssetUrl;
@@ -21,26 +23,22 @@ class TemplatesController {
   }
 
   public function initialize() {
-    $this->wp->addAction('mailpoet_email_editor_register_templates', [$this, 'registerTemplates'], 10, 0);
+    $this->wp->addFilter('mailpoet_email_editor_register_templates', [$this, 'registerTemplates'], 10, 1);
   }
 
-  public function registerTemplates() {
+  public function registerTemplates(Templates_Registry $templatesRegistry): Templates_Registry {
     $newsletter = new Newsletter($this->cdnAssetUrl);
-    $templateName = $this->templatePrefix . '//' . $newsletter->getSlug();
 
-    if (\WP_Block_Templates_Registry::get_instance()->is_registered($templateName)) {
-      // skip registration if the template was already registered.
-      return;
-    }
-
-    register_block_template(
-      $templateName,
-      [
-        'title' => $newsletter->getTitle(),
-        'description' => $newsletter->getDescription(),
-        'content' => $newsletter->getContent(),
-        'post_types' => [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
-      ]
+    $template = new Template(
+      $this->templatePrefix,
+      $newsletter->getSlug(),
+      $newsletter->getTitle(),
+      $newsletter->getDescription(),
+      $newsletter->getContent(),
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
     );
+    $templatesRegistry->register($template);
+
+    return $templatesRegistry;
   }
 }
