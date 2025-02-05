@@ -53,7 +53,6 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
           href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => {}}
         />
       ),
       emojiLink: (
@@ -62,7 +61,6 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
           href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => {}}
         />
       ),
     },
@@ -86,7 +84,6 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
           key="preview-text-kb"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => {}}
         />
       ),
     },
@@ -100,10 +97,7 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
         updateProperty={updateEmailMailPoetProperty}
         label={__('Subject', 'mailpoet')}
         labelSuffix={
-          <ExternalLink
-            href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
-            onClick={() => {}}
-          >
+          <ExternalLink href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list">
             {__('Guide', 'mailpoet')}
           </ExternalLink>
         }

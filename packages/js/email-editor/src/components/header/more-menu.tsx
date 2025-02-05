@@ -35,8 +35,7 @@ export function MoreMenu(): JSX.Element {
 		editorCurrentPostType,
 		'status'
 	);
-	const { saveEditedEmail, updateEmailMailPoetProperty } =
-		useDispatch( storeName );
+	const { saveEditedEmail } = useDispatch( storeName );
 	const goToListings = () => {
 		window.location.href = urls.listings;
 	};
@@ -132,10 +131,6 @@ export function MoreMenu(): JSX.Element {
 								<MenuItem
 									onClick={ async () => {
 										await setStatus( 'draft' );
-										await updateEmailMailPoetProperty(
-											'deleted_at',
-											''
-										);
 										await saveEditedEmail();
 										recordEvent(
 											'header_more_menu_restore_from_trash_button_clicked'
