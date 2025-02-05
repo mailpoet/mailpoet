@@ -73,7 +73,7 @@ We may add, update and delete any of them.
 | `mailpoet_email_content_renderer_styles`      | `string` $contentStyles, `WP_Post` $post  | `string` $contentStyles                                      | Applied to the inline content styles prior to use by the CSS Inliner.                                                                                               |
 | `mailpoet_is_email_editor_page`               | `boolean` $isEditorPage                   | `boolean`                                                    | Check current page is the email editor page                                                                                                                         |
 | `mailpoet_email_editor_send_preview_email`    | `Array` $postData                         | `boolean` Result of processing. Was email sent successfully? | Allows override of the send preview mail function. Folks may choose to use custom implementation                                                                    |
-| `mailpoet_email_editor_post_send_status_args` | `Array` `sent` post status args           | `Array` register_post_status args                            | Allows update of the argument for the sent post status                                                                                                              |
+| `mailpoet_email_editor_post_sent_status_args` | `Array` `sent` post status args           | `Array` register_post_status args                            | Allows update of the argument for the sent post status                                                                                                              |
 
 ## TODO
 - We use `mailpoet_data` in some section of the codebase. This will be updated.
