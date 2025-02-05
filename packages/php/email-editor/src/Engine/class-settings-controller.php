@@ -80,9 +80,10 @@ class Settings_Controller {
 
 		$settings['__experimentalFeatures'] = $theme_settings;
 		// Controls which alignment options are available for blocks.
-		$settings['supportsLayout']              = true; // Allow using default layouts.
-		$settings['supportsTemplateMode']        = true; // Allow template mode.
-		$settings['__unstableIsBlockBasedTheme'] = true; // For default setting this to true disables wide and full alignments.
+		$settings['supportsLayout']              = true;  // Allow using default layouts.
+		$settings['supportsTemplateMode']        = true;  // Allow template mode.
+		$settings['__unstableIsBlockBasedTheme'] = true;  // For default setting this to true disables wide and full alignments.
+		$settings['codeEditingEnabled']          = false; // We heavily transform the code in renderer so it makes no sense to allow editing it.
 		return $settings;
 	}
 
