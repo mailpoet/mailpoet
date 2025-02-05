@@ -143,6 +143,7 @@ export function* activate() {
   return {
     type: 'ACTIVATE',
     automation: data?.data ?? automation,
+    saved: !!data?.data,
   } as const;
 }
 

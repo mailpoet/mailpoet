@@ -41,11 +41,15 @@ export function reducer(state: State, action): State {
         savedState: 'saved',
       };
     case 'ACTIVATE':
-      return {
-        ...state,
-        automationData: action.automation,
-        savedState: 'saved',
-      };
+      return action.saved
+        ? {
+            ...state,
+            automationData: action.automation,
+            savedState: 'saved',
+          }
+        : {
+            ...state,
+          };
     case 'DEACTIVATE':
       return {
         ...state,
