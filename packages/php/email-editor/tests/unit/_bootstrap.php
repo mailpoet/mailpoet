@@ -11,6 +11,19 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $console = new \Codeception\Lib\Console\Output( array() );
 
+if ( ! function_exists( 'register_block_template' ) ) {
+	/**
+	 * Mock register_block_template function.
+	 *
+	 * @param string $name Template name.
+	 * @param array  $attr Template attributes.
+	 * @return string
+	 */
+	function register_block_template( $name, $attr ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		return $name;
+	}
+}
+
 if ( ! function_exists( 'esc_attr' ) ) {
 	/**
 	 * Mock esc_attr function.
