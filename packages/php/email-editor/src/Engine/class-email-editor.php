@@ -91,10 +91,14 @@ class Email_Editor {
 		$this->register_block_templates();
 		$this->register_email_post_sent_status();
 		$this->register_personalization_tags();
-		$this->extend_email_post_api();
 		add_action( 'enqueue_block_editor_assets', array( $this, 'initialize_admin' ) );
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'single_template', array( $this, 'load_email_preview_template' ) );
+		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
+		if ( $is_editor_page ) {
+			// The renderer doesn't support block styles, let's remove them from the editor.
+			remove_action( 'enqueue_block_editor_assets', 'enqueue_editor_block_styles_assets' );
+		}
 	}
 
 	/**
