@@ -63,6 +63,7 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 				}
 			} }
 			disabled={ isDisabled }
+			data-automation-id="email_editor_send_button"
 		>
 			{ label }
 		</Button>

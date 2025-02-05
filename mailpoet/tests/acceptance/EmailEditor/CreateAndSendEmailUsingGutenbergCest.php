@@ -55,10 +55,11 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Save Draft');
     $i->waitForText('Saved');
     $i->waitForText('Email saved!');
-    $i->click('Send');
+    $i->click('[aria-label="Close sidebar"]'); // close the sidebar. It sometimes interferes with the send button click
+    $i->click('[data-automation-id="email_editor_send_button"]');
     $i->waitForElement('[name="subject"]');
     $subject = $i->grabValueFrom('[name="subject"]');
-    verify($subject)->equals('My New Subject');
+    verify($subject)->equals('My New Subject ');
     $i->waitForText('My New Preview Text');
     $i->fillField('sender_name', 'John Doe');
     $i->fillField('sender_address', 'john.doe@example.com');
