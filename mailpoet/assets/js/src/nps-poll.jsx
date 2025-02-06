@@ -41,24 +41,36 @@ export const initializeSatismeterSurvey = (writeId = null) => {
     } else {
       writeKey = oldUsersPollId;
     }
+    const traits = {
+      name: window.mailpoet_current_wp_user.user_nicename,
+      email: window.mailpoet_current_wp_user.user_email,
+      mailpoetVersion: window.mailpoet_version,
+      mailpoetPremiumIsActive: window.mailpoet_premium_active,
+      createdAt: trackingData.installedAtIso,
+      newslettersSent: trackingData.newslettersSent,
+      welcomeEmails: trackingData.welcomeEmails,
+      postnotificationEmails: trackingData.postnotificationEmails,
+      woocommerceEmails: trackingData.woocommerceEmails,
+      subscribers: trackingData.subscribers,
+      lists: trackingData.lists,
+      sendingMethod: trackingData.sendingMethod,
+      woocommerceIsInstalled: trackingData.woocommerceIsInstalled,
+      woocommerceVersion: trackingData.woocommerceVersion,
+      WordPressVersion: trackingData.WordPressVersion,
+      blockTheme: trackingData.blockTheme,
+      themeVersion: trackingData.themeVersion,
+      theme: trackingData.theme,
+    };
+    if (trackingData.gutenbergVersion) {
+      traits.gutenbergVersion = trackingData.gutenbergVersion;
+    }
+    if (trackingData.wooCommerceVersion) {
+      traits.wooCommerceVersion = trackingData.wooCommerceVersion;
+    }
     satismeter({
       writeKey,
       userId: window.mailpoet_current_wp_user.ID + window.mailpoet_site_url,
-      traits: {
-        name: window.mailpoet_current_wp_user.user_nicename,
-        email: window.mailpoet_current_wp_user.user_email,
-        mailpoetVersion: window.mailpoet_version,
-        mailpoetPremiumIsActive: window.mailpoet_premium_active,
-        createdAt: trackingData.installedAtIso,
-        newslettersSent: trackingData.newslettersSent,
-        welcomeEmails: trackingData.welcomeEmails,
-        postnotificationEmails: trackingData.postnotificationEmails,
-        woocommerceEmails: trackingData.woocommerceEmails,
-        subscribers: trackingData.subscribers,
-        lists: trackingData.lists,
-        sendingMethod: trackingData.sendingMethod,
-        woocommerceIsInstalled: trackingData.woocommerceIsInstalled,
-      },
+      traits,
       events: {
         submit: (response) => {
           if (response.rating >= 9 && response.completed) {

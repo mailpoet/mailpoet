@@ -417,11 +417,15 @@ class Reporter {
   }
 
   public function getTrackingData() {
+    global $wp_version, $woocommerce; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $newsletters = $this->newslettersRepository->getAnalytics();
     $segments = $this->segmentsRepository->getCountsPerType();
     $mta = $this->settings->get('mta', []);
     $installedAt = new Carbon($this->settings->get('installed_at'));
-    return [
+    $theme = $this->wp->wpGetTheme();
+    $result = [
+      'WordPressVersion' => $wp_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'pluginGutenberg' => $this->wp->isPluginActive('gutenberg/gutenberg.php'),
       'installedAtIso' => $installedAt->format(Carbon::ISO8601),
       'newslettersSent' => $newsletters['sent_newsletters_count'],
       'welcomeEmails' => $newsletters['welcome_newsletters_count'],
@@ -429,9 +433,19 @@ class Reporter {
       'woocommerceEmails' => $newsletters['automatic_emails_count'],
       'subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
-      'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
+      'sendingMethod' => $mta['method'] ?? null,
       'woocommerceIsInstalled' => $this->woocommerceHelper->isWooCommerceActive(),
+      'blockTheme' => $this->wp->wpIsBlockTheme(),
+      'theme' => $theme->Name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'themeVersion' => $theme->Version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     ];
+    if (defined('GUTENBERG_VERSION')) {
+      $result['gutenbergVersion'] = GUTENBERG_VERSION;
+    }
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
+      $result['wooCommerceVersion'] = $woocommerce->version;
+    }
+    return $result;
   }
 
   private function isFilterTypeActive(string $filterType, string $action): bool {
