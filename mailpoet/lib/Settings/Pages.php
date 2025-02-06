@@ -27,6 +27,7 @@ class Pages {
       'can_export' => false,
       'publicly_queryable' => true,
       'exclude_from_search' => true,
+      'capability_type' => 'page',
     ]);
   }
 
