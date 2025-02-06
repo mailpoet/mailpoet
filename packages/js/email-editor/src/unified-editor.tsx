@@ -11,7 +11,7 @@ import { useDispatch, useSelect, select } from '@wordpress/data';
  */
 import { initBlocksUnified } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
-import { createStore, storeName } from './store';
+import { createStore } from './store';
 import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { SendPreview } from './unified-editor/preview';
@@ -32,22 +32,23 @@ const EmailEditor = () => {
 	// @ts-expect-error Missing types for setRenderingMode and removeEditorPanel
 	const { setRenderingMode, updateEditorSettings, removeEditorPanel } =
 		useDispatch( editorStore );
-	const { editedPostId, emailContentIsEmpty } = useSelect( ( sel ) => {
+	const { editedPostId, emailTemplateSlug } = useSelect( ( sel ) => {
 		return {
 			editedPostId: sel( editorStore ).getCurrentPost().id,
-			emailContentIsEmpty: sel( storeName ).hasEmptyContent(),
-			emailHasEdits: sel( storeName ).hasEdits(),
+			emailTemplateSlug:
+				// @ts-expect-error getEditedPostAttribute accepts one argument TS thinks it accepts zero
+				select( editorStore ).getEditedPostAttribute( 'template' ),
 		};
 	} );
 	const [ styles ] = useEmailCss();
 
 	// Enforce template-locked mode on start
 	useEffect( () => {
-		if ( ! emailContentIsEmpty ) {
+		if ( emailTemplateSlug ) {
 			void setRenderingMode( 'template-locked' );
 		}
 		void removeEditorPanel( 'post-status' ); // Hide default post status panel
-	}, [ emailContentIsEmpty, removeEditorPanel, setRenderingMode ] );
+	}, [ emailTemplateSlug, removeEditorPanel, setRenderingMode ] );
 
 	// Push email styles to editor settings.
 	// Set styles directly to settings overwriting the automatically loaded theme styles
