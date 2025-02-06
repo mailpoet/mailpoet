@@ -269,3 +269,15 @@ export type EmailEditorPostType = Omit< Post, 'type' > & {
 	type: string;
 	mailpoet_data?: MailPoetEmailPostContentExtended;
 };
+
+export type EmailContentValidationAction = {
+	label: string;
+	onClick: () => void;
+};
+
+export type EmailContentValidationRule = {
+	id: string;
+	test: ( emailContent: string ) => boolean;
+	message: string;
+	actions: EmailContentValidationAction[];
+};

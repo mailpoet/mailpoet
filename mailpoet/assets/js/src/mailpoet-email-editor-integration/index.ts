@@ -6,9 +6,16 @@ import { addFilter, addAction } from '@wordpress/hooks';
 import { MailPoet } from 'mailpoet';
 import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
+import { ValidateEmailContent } from './validate-email-content';
 
 addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
   withSatismeterSurvey(editor),
+);
+
+addFilter(
+  'mailpoet_email_editor_content_validation_rules',
+  'mailpoet',
+  (validationRules: []) => [...validationRules, ...ValidateEmailContent()],
 );
 
 const EVENTS_TO_TRACK = [
