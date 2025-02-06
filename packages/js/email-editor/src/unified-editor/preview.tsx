@@ -1,10 +1,11 @@
 /**
  * External dependencies
  */
-import { PluginPreviewMenuItem } from '@wordpress/editor';
-import { useDispatch  } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { external } from '@wordpress/icons';
+// @ts-expect-error Missing types for PluginPreviewMenuItem
+import { PluginPreviewMenuItem } from '@wordpress/editor'; // eslint-disable-line @woocommerce/dependency-group
 
 /**
  * Internal dependencies
@@ -17,12 +18,15 @@ export function SendPreview() {
 
 	return (
 		<>
-		<PluginPreviewMenuItem icon={external} onClick={() => {
-			togglePreviewModal(true);
-		}}>
-			{ __( 'Send preview' ) }
-		</PluginPreviewMenuItem>
+			<PluginPreviewMenuItem
+				icon={ external }
+				onClick={ () => {
+					togglePreviewModal( true );
+				} }
+			>
+				{ __( 'Send preview', 'mailpoet' ) }
+			</PluginPreviewMenuItem>
 			<SendPreviewEmail />
-			</>
+		</>
 	);
 }

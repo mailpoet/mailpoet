@@ -1,18 +1,14 @@
 /**
  * External dependencies
  */
-import {
-	Panel,
-	PanelBody,
-	PanelRow,
-} from '@wordpress/components';
+import { Panel, PanelBody, PanelRow } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { Icon, megaphone } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { PostStatusPanel } from "./post-status-panel";
+import { PostStatusPanel } from './post-status-panel';
 
 export function EmailTypeInfo() {
 	return (

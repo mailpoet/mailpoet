@@ -11,8 +11,6 @@ import { recordEvent } from '../../events';
 import { DetailsPanelContent } from './details-panel-content';
 
 export function DetailsPanel() {
-
-
 	return (
 		<PanelBody
 			title={ __( 'Details', 'mailpoet' ) }

@@ -4,18 +4,21 @@
 import { registerPlugin } from '@wordpress/plugins';
 import { store as editorStore } from '@wordpress/editor';
 import { useEffect } from '@wordpress/element';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch, useSelect, select } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { initBlocksUnified } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
-import {createStore, storeName} from './store';
+import { createStore, storeName } from './store';
 import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { SendPreview } from './unified-editor/preview';
-import { DocumentSettings, TemplatePanel } from './unified-editor/document-setting';
+import {
+	DocumentSettings,
+	TemplatePanel,
+} from './unified-editor/document-setting';
 import { PublishSave } from './unified-editor/publish-save';
 import { useEmailCss } from './hooks';
 import { initEventCollector } from './events';
@@ -26,25 +29,25 @@ import './unified-editor/styles.scss';
 window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
 
 const EmailEditor = () => {
+	// @ts-expect-error Missing types for setRenderingMode and removeEditorPanel
 	const { setRenderingMode, updateEditorSettings, removeEditorPanel } =
 		useDispatch( editorStore );
-	const { editorSettings, editedPostId, emailContentIsEmpty } = useSelect( ( select ) => {
+	const { editedPostId, emailContentIsEmpty } = useSelect( ( sel ) => {
 		return {
-			editorSettings: select( editorStore ).getEditorSettings(),
-			editedPostId: select( editorStore ).getCurrentPost().id,
-			emailContentIsEmpty: select( storeName ).hasEmptyContent(),
-			emailHasEdits: select( storeName ).hasEdits(),
+			editedPostId: sel( editorStore ).getCurrentPost().id,
+			emailContentIsEmpty: sel( storeName ).hasEmptyContent(),
+			emailHasEdits: sel( storeName ).hasEdits(),
 		};
 	} );
 	const [ styles ] = useEmailCss();
 
 	// Enforce template-locked mode on start
 	useEffect( () => {
-		if (!emailContentIsEmpty) {
+		if ( ! emailContentIsEmpty ) {
 			void setRenderingMode( 'template-locked' );
 		}
-		void removeEditorPanel('post-status'); // Hide default post status panel
-	}, [ emailContentIsEmpty ] );
+		void removeEditorPanel( 'post-status' ); // Hide default post status panel
+	}, [ emailContentIsEmpty, removeEditorPanel, setRenderingMode ] );
 
 	// Push email styles to editor settings.
 	// Set styles directly to settings overwriting the automatically loaded theme styles
@@ -52,11 +55,12 @@ const EmailEditor = () => {
 		if ( ! styles ) {
 			return;
 		}
+		const editorSettings = select( editorStore ).getEditorSettings();
 		updateEditorSettings( {
 			...editorSettings,
 			styles,
 		} );
-	}, [ styles, editedPostId ] );
+	}, [ styles, editedPostId, updateEditorSettings ] );
 
 	return (
 		<>

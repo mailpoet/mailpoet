@@ -37,7 +37,7 @@ export function useEmailCss() {
 	);
 
 	const [ styles ] = useGlobalStylesOutputWithConfig( mergedConfig );
-	const finalStyles = [ ...baseStyles, ...(styles ? styles : []) ] ;
+	const finalStyles = [ ...baseStyles, ...( styles ? styles : [] ) ];
 	if ( ! fastDeepEqual( stylesRef.current, finalStyles ) ) {
 		stylesRef.current = finalStyles;
 	}

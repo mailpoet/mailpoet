@@ -35,74 +35,69 @@ export function PostStatusPanel() {
 
 	return (
 		<>
-
-					{ template && (
-						<PanelRow>
-							<Flex justify={ 'start' }>
-								<FlexItem className="editor-post-panel__row-label">
-									{ __( 'Template', 'mailpoet' ) }
-								</FlexItem>
-								<FlexItem>
-									<DropdownMenu
-										icon={ null }
-										text={ template?.title }
-										toggleProps={ { variant: 'tertiary' } }
-										label={ __(
-											'Template actions',
-											'mailpoet'
-										) }
-										onToggle={ ( isOpen ) =>
-											recordEvent(
-												'sidebar_template_actions_clicked',
-												{
-													currentTemplate:
-													template?.title,
-													isOpen,
-												}
-											)
+			{ template && (
+				<PanelRow>
+					<Flex justify={ 'start' }>
+						<FlexItem className="editor-post-panel__row-label">
+							{ __( 'Template', 'mailpoet' ) }
+						</FlexItem>
+						<FlexItem>
+							<DropdownMenu
+								icon={ null }
+								text={ template?.title }
+								toggleProps={ { variant: 'tertiary' } }
+								label={ __( 'Template actions', 'mailpoet' ) }
+								onToggle={ ( isOpen ) =>
+									recordEvent(
+										'sidebar_template_actions_clicked',
+										{
+											currentTemplate: template?.title,
+											isOpen,
 										}
-									>
-										{ ( { onClose } ) => (
-											<>
-												<MenuItem
-													onClick={ () => {
-														recordEvent(
-															'sidebar_template_actions_edit_template_clicked'
-														);
-														setEditTemplateModalOpen(
-															true
-														);
-														onClose();
-													} }
-												>
-													{ __(
-														'Edit template',
-														'mailpoet'
-													) }
-												</MenuItem>
-												<MenuItem
-													onClick={ () => {
-														recordEvent(
-															'sidebar_template_actions_swap_template_clicked'
-														);
-														setSelectTemplateModalOpen(
-															true
-														);
-														onClose();
-													} }
-												>
-													{ __(
-														'Swap template',
-														'mailpoet'
-													) }
-												</MenuItem>
-											</>
-										) }
-									</DropdownMenu>
-								</FlexItem>
-							</Flex>
-						</PanelRow>
-					) }
+									)
+								}
+							>
+								{ ( { onClose } ) => (
+									<>
+										<MenuItem
+											onClick={ () => {
+												recordEvent(
+													'sidebar_template_actions_edit_template_clicked'
+												);
+												setEditTemplateModalOpen(
+													true
+												);
+												onClose();
+											} }
+										>
+											{ __(
+												'Edit template',
+												'mailpoet'
+											) }
+										</MenuItem>
+										<MenuItem
+											onClick={ () => {
+												recordEvent(
+													'sidebar_template_actions_swap_template_clicked'
+												);
+												setSelectTemplateModalOpen(
+													true
+												);
+												onClose();
+											} }
+										>
+											{ __(
+												'Swap template',
+												'mailpoet'
+											) }
+										</MenuItem>
+									</>
+								) }
+							</DropdownMenu>
+						</FlexItem>
+					</Flex>
+				</PanelRow>
+			) }
 			{ isEditTemplateModalOpen && (
 				<EditTemplateModal
 					close={ () => {
