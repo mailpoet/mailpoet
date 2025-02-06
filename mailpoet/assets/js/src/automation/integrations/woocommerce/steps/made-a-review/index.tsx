@@ -4,27 +4,27 @@ import { Icon } from './icon';
 import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 
 const keywords = [
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('review', 'mailpoet'),
-  // translators: verb, used as a search keyword for "Customer makes a review" trigger
+  // translators: verb, used as a search keyword for "Customer posts a review" trigger
   __('buy', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('comment', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('ecommerce', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('woocommerce', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('product', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer makes a review" trigger
+  // translators: noun, used as a search keyword for "Customer posts a review" trigger
   __('order', 'mailpoet'),
 ];
 export const step: StepType = {
   key: 'woocommerce:made-a-review',
   group: 'triggers',
-  title: () => __('Customer makes a review', 'mailpoet'),
+  title: () => __('Customer posts a review', 'mailpoet'),
   description: () =>
-    __('Start the automation when a customer makes a review.', 'mailpoet'),
+    __('Start the automation when a customer posts a review.', 'mailpoet'),
 
   subtitle: () => __('Trigger', 'mailpoet'),
   keywords,
