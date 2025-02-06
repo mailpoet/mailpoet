@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\API\API;
 use MailPoet\Automation\Engine\Control\StepHandler;
+use MailPoet\Automation\Engine\Control\TimeBasedTriggerHandler;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint;
@@ -37,6 +38,9 @@ class Engine {
   /** @var TriggerHandler */
   private $triggerHandler;
 
+  /** @var TimeBasedTriggerHandler */
+  private $timeBasedTriggerHandler;
+
   /** @var WordPress */
   private $wordPress;
 
@@ -50,6 +54,7 @@ class Engine {
     Registry $registry,
     StepHandler $stepHandler,
     TriggerHandler $triggerHandler,
+    TimeBasedTriggerHandler $timeBasedTriggerHandler,
     WordPress $wordPress,
     AutomationStorage $automationStorage
   ) {
@@ -59,6 +64,7 @@ class Engine {
     $this->registry = $registry;
     $this->stepHandler = $stepHandler;
     $this->triggerHandler = $triggerHandler;
+    $this->timeBasedTriggerHandler = $timeBasedTriggerHandler;
     $this->wordPress = $wordPress;
     $this->automationStorage = $automationStorage;
   }
@@ -69,6 +75,7 @@ class Engine {
     $this->api->initialize();
     $this->stepHandler->initialize();
     $this->triggerHandler->initialize();
+    $this->timeBasedTriggerHandler->initialize();
 
     $this->coreIntegration->register($this->registry);
     $this->wordPressIntegration->register($this->registry);

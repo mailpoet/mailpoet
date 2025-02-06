@@ -17,6 +17,11 @@ class ActionScheduler {
     return is_int($result) ? $result : 0;
   }
 
+  public function scheduleRecurring(int $timestamp, int $interval, string $hook, array $args = []): int {
+    $result = as_schedule_recurring_action($timestamp, $interval, $hook, $args, self::GROUP_ID);
+    return is_int($result) ? $result : 0;
+  }
+
   public function hasScheduledAction(string $hook, array $args = []): bool {
     return as_has_scheduled_action($hook, $args, self::GROUP_ID);
   }
