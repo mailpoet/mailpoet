@@ -3,6 +3,7 @@
  */
 import { useCallback } from '@wordpress/element';
 import { useSelect, subscribe } from '@wordpress/data';
+import { store as coreDataStore } from '@wordpress/core-data';
 import { applyFilters } from '@wordpress/hooks';
 
 /**
@@ -72,7 +73,7 @@ export const useContentValidation = (): ContentValidationData => {
 			return;
 		}
 		validateContent();
-	}, emailEditorStore );
+	}, coreDataStore );
 
 	return {
 		isInvalid: hasValidationNotice(),
