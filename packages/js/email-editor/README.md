@@ -80,3 +80,27 @@ If your WordPress installation does not use the Gutenberg plugin or does not inc
 | Orange.fr      | iOS/Android           | Latest               | ?                | -/0.07              | No                    |                                                                                                                                                                                                          |
 | Thunderbird    | Windows, macOS, Linux | Latest               | Gecko            | -/0.61              | Yes                   | It uses bundled rendering engine so it should be enough to test on one platform                                                                                                                          |
 | Windows Mail   | Windows               | 10, 11               | Word             | -/-                 | Yes                   | Default Client in Windows. Market share should be over 6% in desktop clients                                                                                                                             |
+
+## Actions and Filters
+
+These actions and filters are currently **Work-in-progress**.
+We may add, update and delete any of them.
+
+**Please use with caution**.
+
+### Actions
+
+| Name                           | Argument           | Description         |
+|--------------------------------|--------------------|---------------------|
+| `mailpoet_email_editor_events` | `EventData.detail` | Email editor events |
+
+### Filters
+
+| Name                                             | Argument                  | Return                               | Description                                                                                                         |
+|--------------------------------------------------|---------------------------|--------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `mailpoet_email_editor_events_tracking_enabled`  | `boolean` (false-default) | `boolean`                            | Used to enable the email editor events tracking and collection                                                      |
+| `mailpoet_email_editor_wrap_editor_component`    | `JSX.Element` Editor      | `JSX.Element` Editor                 | The main editor component. Custom component can wrap the editor and provide additional functionality                |
+| `mailpoet_email_editor_send_button_label`        | `string` 'Send'           | `string`  'Send' (default)           | Email editor send button label. The `Send` text can be updated using this filter                                    |
+| `mailpoet_email_editor_send_action_callback`     | `function` sendAction     | `function` sendAction                | Action to perform when the Send button is clicked                                                                   |
+| `mailpoet_email_editor_content_validation_rules` | `array` rules             | `EmailContentValidationRule[]` rules | Email editor content validation rules. The validation is done on `send btton` click and revalidated on `save draft` |
+
