@@ -4,6 +4,8 @@ This folder contains the code for the MailPoet Email Editor JS Package.
 We aim to extract the package as an independent library, so it can be used in other projects.
 As we are still in an exploration phase, we keep it together with the MailPoet codebase.
 
+You can try the email editor in [the WordPress Playground](https://playground.wordpress.net/?mode=seamless#%7B%22preferredVersions%22:%7B%22php%22:%228.2%22,%22wp%22:%22latest%22%7D,%22phpExtensionBundles%22:%5B%22kitchen-sink%22%5D,%22features%22:%7B%7D,%22landingPage%22:%22/wp-admin/admin.php?page=mailpoet-newsletters%22,%22steps%22:%5B%7B%22step%22:%22login%22,%22username%22:%22admin%22,%22password%22:%22password%22%7D,%7B%22step%22:%22installPlugin%22,%22pluginData%22:%7B%22resource%22:%22url%22,%22url%22:%22https://account.mailpoet.com/playground/plugin-proxy/branch:trunk%22%7D%7D,%7B%22step%22:%22mkdir%22,%22path%22:%22wordpress/wp-content/mu-plugins%22%7D,%7B%22step%22:%22writeFile%22,%22path%22:%22wordpress/wp-content/mu-plugins/addFilter-2.php%22,%22data%22:%22%3C?php%20%5Cnuse%20MailPoet%5C%5CDI%5C%5CContainerWrapper;%5Cnuse%20MailPoet%5C%5CFeatures%5C%5CFeatureFlagsRepository;%5Cnuse%20MailPoet%5C%5CFeatures%5C%5CFeaturesController;%5Cnadd_filter('mailpoet_skip_welcome_wizard',%20'__return_true');%22%7D%5D%7D).
+
 You can locate the PHP package here `packages/php/email-editor`
 
 ## Workflow Commands
