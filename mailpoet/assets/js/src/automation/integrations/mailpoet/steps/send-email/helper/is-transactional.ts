@@ -3,6 +3,7 @@ import { Step } from '../../../../../editor/components/automation/types';
 import { storeName } from '../../../../../editor/store';
 
 const transactionalTriggers = [
+  'mailpoet:custom-trigger',
   'woocommerce:order-status-changed',
   'woocommerce:order-created',
   'woocommerce:order-completed',
