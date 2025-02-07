@@ -106,11 +106,12 @@ export function PreviewDropdown() {
 											<Icon icon={ external } />
 										</>
 									}
-									onPreview={ () =>
+									onPreview={ () => {
 										recordEvent(
 											'header_preview_dropdown_preview_in_new_tab_selected'
-										)
-									}
+										);
+										onClose();
+									} }
 								/>
 							</div>
 						</MenuGroup>
