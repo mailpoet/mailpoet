@@ -15,7 +15,7 @@ const contentLink = `<a data-link-href='[mailpoet/subscription-unsubscribe-url]'
   'mailpoet',
 )}</a>`;
 
-export function ValidateEmailContent() {
+export function useValidationRules() {
   const { contentBlockId, hasFooter } = useSelect((select) => {
     const allBlocks = select(blockEditorStore).getBlocks();
     const noBodyBlocks = allBlocks.filter(
