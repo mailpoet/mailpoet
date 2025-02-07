@@ -62,6 +62,7 @@ class SendEmailAction implements Action {
   private const OPTIN_RETRIES = 'optin_retries';
 
   private const TRANSACTIONAL_TRIGGERS = [
+    'mailpoet:custom-trigger',
     'woocommerce:order-status-changed',
     'woocommerce:order-created',
     'woocommerce:order-completed',
