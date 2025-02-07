@@ -26,16 +26,6 @@
 }
 
 /*
- * Set the max-width for the editor content to 660px.
- * @todo Temporary hack. This should be set at block level in a template or from layout configuration in email theme.
- */
-.editor-styles-wrapper > .is-root-container {
-	width: 660px;
-	margin: 0 auto;
-	max-width: 100%;
-}
-
-/*
  * Email Editor specific styles for vertical gap between blocks in column and group.
  * This is needed because we disable layout for core/group, core/column and core/columns blocks, and .is-layout-flex is not applied.
  */

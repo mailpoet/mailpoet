@@ -71,11 +71,13 @@ class Settings_Controller {
 		$settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
 		// Assets for iframe editor (component styles, scripts, etc.).
 		$settings['__unstableResolvedAssets'] = $this->iframe_assets;
+		$layout_settings                      = $this->get_layout();
 		$editor_content_styles                = file_get_contents( __DIR__ . '/content-editor.css' );
 		$shares_content_styles                = file_get_contents( __DIR__ . '/content-shared.css' );
 		$settings['styles']                   = array(
 			array( 'css' => $editor_content_styles ),
 			array( 'css' => $shares_content_styles ),
+			array( 'css' => "\n.is-root-container{display:flow-root; width:" . esc_attr( $layout_settings['contentSize'] ) . "; margin: 0 auto;box-sizing: border-box;max-width: 100%;}\n" ),
 		);
 
 		$settings['__experimentalFeatures'] = $theme_settings;

@@ -130,15 +130,8 @@ export function VisualEditor( {
 
 	const shouldIframe =
 		! disableIframe || [ 'Tablet', 'Mobile' ].includes( deviceType );
-	const containerWidth =
-		deviceType === 'Desktop' ? ( layout.contentSize as string ) : '100%';
 
-	const iframeStyles = [
-		...( ( styles as string[] ) ?? [] ),
-		{
-			css: `.is-root-container{display:flow-root; width:${ containerWidth }; margin: 0 auto;box-sizing: border-box;}`,
-		},
-	];
+	const iframeStyles = [ ...( ( styles as string[] ) ?? [] ) ];
 
 	return (
 		<div
