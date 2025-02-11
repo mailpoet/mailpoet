@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9957467448f215809ac9dc8fbcab2b00",
+    "content-hash": "51893b0f5ed38d130932b86b48e55b94",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -73,15 +73,19 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/php/email-editor",
-                "reference": "311798cfd57b26bb5df1fc7f97b5732e45603419"
+                "reference": "7bb0a4d32045c61deaca453030ed2b345ee56148"
             },
             "require": {
-                "php": ">=7.4"
+                "php": ">=7.4",
+                "soundasleep/html2text": "^2.1"
             },
             "type": "library",
             "autoload": {
                 "classmap": [
                     "src/"
+                ],
+                "files": [
+                    "src/exceptions.php"
                 ]
             },
             "autoload-dev": {
@@ -101,6 +105,9 @@
                 ],
                 "code-style-fix": [
                     "../../../mailpoet/tasks/code_sniffer/vendor/bin/phpcbf -p"
+                ],
+                "phpstan": [
+                    "php ./tasks/run-phpstan.php"
                 ]
             },
             "description": "Email editor based on WordPress Gutenberg package.",
