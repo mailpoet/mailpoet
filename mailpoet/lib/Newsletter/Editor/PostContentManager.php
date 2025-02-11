@@ -39,7 +39,13 @@ class PostContentManager {
       if ($this->wp->hasExcerpt($post)) {
         return self::stripShortCodes($this->wp->getTheExcerpt($post));
       }
-      return $this->generateExcerpt($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return self::stripShortCodes(
+        $this->wp->applyFilters(
+          'get_the_excerpt',
+          $this->generateExcerpt($post->post_content), // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          $post
+        )
+      );
     }
     return self::stripShortCodes($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
