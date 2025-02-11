@@ -15,7 +15,7 @@ class CleanupExtension extends Extension {
   const DB_USERNAME = 'root';
   const DB_PASSWORD = 'wordpress';
   const DB_NAME = 'wordpress';
-  const MAILHOG_DATA_PATH = '/mailhog-data';
+  const MAILPIT_DATA_PATH = '/mailpit-data';
 
   public static $events = [
     Events::SUITE_BEFORE => 'backupDatabase',
@@ -82,7 +82,7 @@ class CleanupExtension extends Extension {
     while ($this->rootConnection->next_result()) {
       // flush all multi_query results
     }
-    exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
+    exec('rm -rf ' . self::MAILPIT_DATA_PATH . '/*', $output);
 
     // cleanup EntityManager for data factories that are using it
     ContainerWrapper::getInstance()->get(EntityManager::class)->clear();

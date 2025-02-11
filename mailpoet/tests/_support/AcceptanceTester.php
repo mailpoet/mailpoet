@@ -47,7 +47,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   const WP_DOMAIN = 'test.local';
   const WP_URL = 'http://' . self::WP_DOMAIN;
-  const MAIL_URL = 'http://mailhog:8025';
+  const MAIL_URL = 'http://mailpit:8025';
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
   const LISTING_LOADING_SELECTOR = '.mailpoet-listing-loading';
   const WOO_COMMERCE_PLUGIN = 'woocommerce';
@@ -55,7 +55,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WOO_COMMERCE_MEMBERSHIPS_PLUGIN = 'woocommerce-memberships';
   const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
   const AUTOMATE_WOO_PLUGIN = 'automatewoo';
-  const MAILHOG_DATA_PATH = '/mailhog-data';
+  const MAILPIT_DATA_PATH = '/mailpit-data';
   const ADMIN_EMAIL = 'test@test.com';
   const EMAIL_EDITOR_MINIMAL_WP_VERSION = '6.7';
 
@@ -111,13 +111,13 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
-   * Navigate to Mailhog page and wait for angular to load
+   * Navigate to Mailpit page and wait for angular to load
    */
   public function amOnMailboxAppPage() {
     $i = $this;
     $i->amOnUrl(self::MAIL_URL);
-    // ensure that angular is loaded by checking angular specific class
-    $i->waitForElement('.messages.ng-scope');
+    // ensure that Mailpit has finished loading by looking for message listing element.
+    $i->waitForElement('#message-page');
   }
 
   /**
@@ -132,7 +132,7 @@ class AcceptanceTester extends \Codeception\Actor {
    * Clear the Mailbox so it's empty
    */
   public function emptyMailbox() {
-    exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
+    exec('rm -rf ' . self::MAILPIT_DATA_PATH . '/*', $output);
   }
 
   public function clickItemRowActionByItemName($itemName, $link) {

@@ -25,7 +25,7 @@ class Settings {
 
   public function withDefaultSettings() {
     $this->withCronTriggerMethod('Linux Cron');
-    $this->withSendingMethodSmtpMailhog();
+    $this->withSendingMethodSmtpMailpit();
     $this->withSender('admin', 'wp@example.com');
     $this->withSkippedTutorials();
     $this->withCookieRevenueTracking();
@@ -181,15 +181,15 @@ class Settings {
   }
 
   public function withMisconfiguredSendingMethodSmtp() {
-    $this->withSendingMethodSmtpMailhog();
+    $this->withSendingMethodSmtpMailpit();
     $this->settings->set('mta.host', 'unknown_server');
   }
 
-  public function withSendingMethodSmtpMailhog() {
+  public function withSendingMethodSmtpMailpit() {
     $this->settings->set('mta_group', 'smtp');
     $this->settings->set('mta.method', Mailer::METHOD_SMTP);
     $this->settings->set('mta.port', 1025);
-    $this->settings->set('mta.host', 'mailhog');
+    $this->settings->set('mta.host', 'mailpit');
     $this->settings->set('mta.authentication', 0);
     $this->settings->set('mta.login', '');
     $this->settings->set('mta.password', '');

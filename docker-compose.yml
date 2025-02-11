@@ -86,14 +86,13 @@ services:
       - './packages:/var/www/html/wp-content/plugins/packages'
 
   smtp:
-    container_name: mp-mailhog
-    image: mailhog/mailhog:v1.0.0
+    container_name: mp-mailpit
+    image: axllent/mailpit:v1.22
     user: ${UID:-1000}:${GID:-1000}
     environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /output
+      MP_DATABASE: '/data/mailpit.db'
     volumes:
-      - './dev/data/mailhog:/output'
+      - './dev/data/mailpit:/data'
     ports:
       - '8082:8025'
 

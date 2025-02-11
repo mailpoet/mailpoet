@@ -838,8 +838,8 @@ jobs:
           path: tests/_output
           destination: codeception
       - store_artifacts:
-          path: /mailhog-data
-          destination: mailhog-data
+          path: /mailpit-data
+          destination: mailpit-data
   build_release_zip:
     executor: wpcli_php_mysql_latest
     resource_class: large

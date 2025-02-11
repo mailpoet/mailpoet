@@ -18,7 +18,7 @@ chown www-data:www-data wp-content/plugins
 chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
-chmod -R 777 /mailhog-data
+chmod -R 777 /data
 
 # deleting configs in case are set in previous run
 wp config delete MULTISITE > /dev/null 2>&1

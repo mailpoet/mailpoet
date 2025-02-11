@@ -7,7 +7,7 @@ services:
       - chrome
     volumes:
       - wp-core:/wp-core
-      - mailhog-data:/mailhog-data
+      - mailpit-data:/data
       - ../../mailpoet:/project
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
@@ -37,7 +37,7 @@ services:
       - wordpress
     volumes:
       - wp-core:/wp-core
-      - mailhog-data:/mailhog-data
+      - mailpit-data:/data
       - ../../mailpoet:/project
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
@@ -61,18 +61,17 @@ services:
       PHP_IDE_CONFIG: 'serverName=MailPoetTest'
 
   smtp:
-    image: mailhog/mailhog:v1.0.0
-    container_name: mailhog_${CIRCLE_NODE_INDEX:-default}
-    hostname: mailhog
+    image: axllent/mailpit:v1.22
+    container_name: mailpit_${CIRCLE_NODE_INDEX:-default}
+    hostname: mailpit
     ports:
       - 1025:1025
       - 8025:8025
     user: ${UID:-1000}:${GID:-1000}
     environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /mailhog-data
+      MP_DATABASE: /data/mailpoet.db
     volumes:
-      - mailhog-data:/mailhog-data
+      - mailpit-data:/data
 
   wordpress:
     image: wordpress:${WORDPRESS_IMAGE_VERSION:-6.7.1-php8.3}
@@ -139,7 +138,7 @@ services:
       - 5900:5900
 volumes:
   wp-core:
-  mailhog-data:
+  mailpit-data:
 
 networks:
   default:

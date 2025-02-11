@@ -27,7 +27,7 @@ services:
     container_name: performance_wordpress
     depends_on:
       mysql: { condition: service_healthy }
-      mailhog: { condition: service_started }
+      mailpit: { condition: service_started }
     user: 33:33
     volumes:
       - performance-wordpress-data:/var/www/html
@@ -61,19 +61,18 @@ services:
       timeout: 600s
       retries: 200
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-    container_name: performance_mailhog
-    hostname: mailhog
+  mailpit:
+    image: axllent/mailpit:v1.22
+    container_name: performance_mailpit
+    hostname: mailpit
     ports:
       - 9501:8025
     user: ${UID:-1000}:${GID:-1000}
     environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /mailhog-data
+      MP_DATABASE: '/data/mailpit.db'
     volumes:
-      - performance-mailhog-data:/mailhog-data
+      - 'performance-mailpit-data:/data'
 
 volumes:
   performance-wordpress-data:
-  performance-mailhog-data:
+  performance-mailpit-data:
