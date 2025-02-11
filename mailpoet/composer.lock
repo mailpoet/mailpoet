@@ -73,7 +73,7 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/php/email-editor",
-                "reference": "7bb0a4d32045c61deaca453030ed2b345ee56148"
+                "reference": "53577c5aa3a97e82c58284d48c3aa339cb2a15d4"
             },
             "require": {
                 "php": ">=7.4",
@@ -83,9 +83,6 @@
             "autoload": {
                 "classmap": [
                     "src/"
-                ],
-                "files": [
-                    "src/exceptions.php"
                 ]
             },
             "autoload-dev": {
