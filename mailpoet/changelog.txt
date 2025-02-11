@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.7.0 - 2025-02-11 =
+* Improved: Rename Review Trigger in Automations;
+* Changed: minimum required WooCommerce is 9.5;
+* Fixed: Automation UI shows wrong saved status after failed activation;
+* Fixed: Email preview does not work with sent emails;
+* Fixed: email content patterns are mixed with page starter patterns.
+
 = 5.6.4 - 2025-02-04 =
 * Improved: randomness in generated WooCommerce coupons;
 * Improved: prevent abandoned cart from getting stuck.
