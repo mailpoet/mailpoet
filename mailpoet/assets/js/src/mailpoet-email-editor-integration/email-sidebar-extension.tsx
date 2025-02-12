@@ -93,7 +93,7 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
     <>
       <RichTextWithButton
         attributeName="subject"
-        attributeValue={mailpoetEmailData?.subject || ' '}
+        attributeValue={mailpoetEmailData?.subject}
         updateProperty={updateEmailMailPoetProperty}
         label={__('Subject', 'mailpoet')}
         labelSuffix={
@@ -109,7 +109,7 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
 
       <RichTextWithButton
         attributeName="preheader"
-        attributeValue={mailpoetEmailData?.preheader || 'preheader'}
+        attributeValue={mailpoetEmailData?.preheader}
         updateProperty={updateEmailMailPoetProperty}
         label={__('Preview text', 'mailpoet')}
         labelSuffix={

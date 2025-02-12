@@ -18,7 +18,7 @@ type Replacement = {
 function getChildElement( rootElement: HTMLElement ): HTMLElement | null {
 	let currentElement: HTMLElement | null = rootElement;
 
-	while ( currentElement && currentElement.children.length > 0 ) {
+	while ( currentElement && currentElement?.children?.length > 0 ) {
 		// Traverse into the first child element
 		currentElement = currentElement.children[ 0 ] as HTMLElement;
 	}

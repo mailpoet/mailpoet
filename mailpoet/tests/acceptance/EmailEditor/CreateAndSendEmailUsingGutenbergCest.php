@@ -59,7 +59,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('[data-automation-id="email_editor_send_button"]');
     $i->waitForElement('[name="subject"]');
     $subject = $i->grabValueFrom('[name="subject"]');
-    verify($subject)->equals('My New Subject '); // we need extra space here because the subject input-textarea contains some space as default
+    verify($subject)->equals('My New Subject');
     $i->waitForText('My New Preview Text');
     $i->fillField('sender_name', 'John Doe');
     $i->fillField('sender_address', 'john.doe@example.com');

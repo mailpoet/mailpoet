@@ -97,13 +97,13 @@ export function RichTextWithButton( {
 		</>
 	);
 
-	if ( ! attributeValue ) {
+	if ( ! attributeName ) {
 		return null;
 	}
 
 	return (
 		<BaseControl
-			id=""
+			id="" // See https://github.com/mailpoet/mailpoet/pull/6089#discussion_r1952126850 to understand why the ID is empty
 			label={ finalLabel }
 			className={ `mailpoet-settings-panel__${ attributeName }-text` }
 			help={ help }
