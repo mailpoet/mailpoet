@@ -64,12 +64,14 @@ export function useValidationRules() {
             label: __('Insert link', 'mailpoet'),
             onClick: () => {
               if (!hasFooter) {
+                // update the email content
                 void dispatch(blockEditorStore).insertBlock(
                   linksParagraphBlock,
                   undefined,
                   contentBlockId,
                 );
               } else {
+                // update the template
                 void dispatch(coreDataStore).editEntityRecord(
                   'postType',
                   'wp_template',

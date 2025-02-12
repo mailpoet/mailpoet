@@ -14,7 +14,7 @@ import { RichTextWithButton } from '../personalization-tags/rich-text-with-butto
 const SidebarExtensionComponent = applyFilters(
 	'mailpoet_email_editor_setting_sidebar_extension_component',
 	RichTextWithButton
-) as JSX.Element;
+) as () => JSX.Element;
 
 export function DetailsPanel() {
 	return (
@@ -25,13 +25,7 @@ export function DetailsPanel() {
 				recordEvent( 'details_panel_body_toggle', { opened: data } )
 			}
 		>
-			<>
-				{
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					<SidebarExtensionComponent />
-				}
-			</>
+			<>{ <SidebarExtensionComponent /> }</>
 		</PanelBody>
 	);
 }

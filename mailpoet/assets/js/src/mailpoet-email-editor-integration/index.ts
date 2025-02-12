@@ -13,10 +13,12 @@ addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
   withSatismeterSurvey(editor),
 );
 
+// validate email editor content using the defined validation rules
+// content is first validated when the "Send" button is clicked and revalidated on "Save Draft"
 addFilter(
   'mailpoet_email_editor_content_validation_rules',
   'mailpoet',
-  (validationRules: []) => [...validationRules, ...useValidationRules()],
+  () => useValidationRules(), // returns a memorized set of rules (array of rules)
 );
 
 const EVENTS_TO_TRACK = [
