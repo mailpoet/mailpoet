@@ -162,7 +162,7 @@
     "js-yaml": "^4.1.0",
     "jsdom": "^24.1.0",
     "json-loader": "^0.5.7",
-    "mocha": "^10.4.0",
+    "mocha": "^10.8.2",
     "phplint": "^2.0.5",
     "postcss-cli": "^11.0.0",
     "postcss-scss": "^4.0.9",
