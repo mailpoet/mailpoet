@@ -2,30 +2,32 @@
  * External dependencies
  */
 import { useSelect } from '@wordpress/data';
-import {
-	ErrorBoundary,
-	PostLockedModal,
-	EditorProvider,
-} from '@wordpress/editor';
+import { PostLockedModal } from '@wordpress/editor';
 import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';
+import { PluginArea } from '@wordpress/plugins';
+import {
+	CommandMenu,
+	// @ts-expect-error Package is loaded vie export plugin
+} from '@wordpress/commands';
 
 /**
  * Internal dependencies
  */
 import { storeName } from '../../store';
-import { Layout } from './layout';
 import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
-import { unlockPatternsRelatedSelectorsFromCoreStore } from '../../private-apis';
+import {
+	Editor,
+	unlockPatternsRelatedSelectorsFromCoreStore,
+} from '../../private-apis';
+import { useEmailCss } from '../../hooks';
 
 export function InnerEditor( {
 	postId: initialPostId,
 	postType: initialPostType,
 	settings,
-	initialEdits,
-	...props
 } ) {
 	const {
 		currentPost,
@@ -60,6 +62,8 @@ export function InnerEditor( {
 		},
 		[ currentPost.postType, currentPost.postId ]
 	);
+
+	const [ styles ] = useEmailCss();
 
 	/*
 	 * We need to fetch patterns ourselves. Automatic fetching of patterns is currently a private functionality
@@ -108,21 +112,17 @@ export function InnerEditor( {
 
 	return (
 		<SlotFillProvider>
-			<EditorProvider
+			<CommandMenu />
+			<Editor
+				postId={ currentPost.postId }
+				postType={ currentPost.postType }
 				settings={ editorSettings }
-				post={ post }
-				initialEdits={ initialEdits }
-				useSubRegistry={ false }
-				// @ts-expect-error __unstableTemplate is not in the EditorProvider props in the installed version of packages
-				__unstableTemplate={ template }
-				{ ...props }
+				templateId={ template && template.id }
+				styles={ styles }
 			>
-				{ /* @ts-expect-error ErrorBoundary type is incorrect there is no onError */ }
-				<ErrorBoundary>
-					<Layout />
-					<PostLockedModal />
-				</ErrorBoundary>
-			</EditorProvider>
+				<PostLockedModal />
+				<PluginArea />
+			</Editor>
 		</SlotFillProvider>
 	);
 }

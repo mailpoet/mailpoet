@@ -9,16 +9,12 @@ import '@wordpress/format-library'; // Enables text formatting capabilities
 /**
  * Internal dependencies
  */
-import { initBlocks } from './blocks';
-import { initializeLayout } from './layouts/flex-email';
+import { initEmailModifications } from './unified-editor';
+import { storeName, editorCurrentPostType } from './store';
 import { InnerEditor } from './components/block-editor';
-import { createStore, storeName, editorCurrentPostType } from './store';
-import { initHooks } from './editor-hooks';
-import { KeyboardShortcuts } from './components/keybord-shortcuts';
-import { initEventCollector } from './events';
 import './index.scss';
 
-function Editor() {
+function EmailEditor() {
 	const { postId, settings } = useSelect(
 		( select ) => ( {
 			postId: select( storeName ).getEmailPostId(),
@@ -29,9 +25,7 @@ function Editor() {
 
 	return (
 		<StrictMode>
-			<KeyboardShortcuts />
 			<InnerEditor
-				initialEdits={ [] }
 				postId={ postId }
 				postType={ editorCurrentPostType }
 				settings={ settings }
@@ -42,19 +36,20 @@ function Editor() {
 
 const WrappedEditor = applyFilters(
 	'mailpoet_email_editor_wrap_editor_component',
-	Editor
-) as typeof Editor;
+	EmailEditor
+) as typeof EmailEditor;
 
 export function initialize( elementId: string ) {
 	const container = document.getElementById( elementId );
 	if ( ! container ) {
 		return;
 	}
-	initEventCollector();
-	createStore();
-	initializeLayout();
-	initBlocks();
-	initHooks();
+	initEmailModifications();
+	// initEventCollector();
+	// createStore();
+	// initializeLayout();
+	// initBlocks();
+	// initHooks();
 	const root = createRoot( container );
 	root.render( <WrappedEditor /> );
 }

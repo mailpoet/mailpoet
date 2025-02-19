@@ -9,7 +9,7 @@ import { useDispatch, useSelect, select } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { initBlocksUnified } from './blocks';
+import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { createStore } from './store';
 import { TemplateSelection } from './components/template-select';
@@ -20,19 +20,14 @@ import {
 	TemplatePanel,
 } from './unified-editor/document-setting';
 import { PublishSave } from './unified-editor/publish-save';
-import { useEmailCss } from './hooks';
 import { initEventCollector } from './events';
 
 import './unified-editor/styles.scss';
 
-// @ts-expect-error Hotfix for the Powered by MailPoet block @todo load the variable properly
-window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
-
 const EmailEditor = () => {
 	// @ts-expect-error Missing types for setRenderingMode and removeEditorPanel
-	const { setRenderingMode, updateEditorSettings, removeEditorPanel } =
-		useDispatch( editorStore );
-	const { editedPostId, emailTemplateSlug } = useSelect( ( sel ) => {
+	const { setRenderingMode, removeEditorPanel } = useDispatch( editorStore );
+	const { emailTemplateSlug } = useSelect( ( sel ) => {
 		return {
 			editedPostId: sel( editorStore ).getCurrentPost().id,
 			emailTemplateSlug:
@@ -40,7 +35,6 @@ const EmailEditor = () => {
 				select( editorStore ).getEditedPostAttribute( 'template' ),
 		};
 	} );
-	const [ styles ] = useEmailCss();
 
 	// Enforce template-locked mode on start
 	useEffect( () => {
@@ -49,19 +43,6 @@ const EmailEditor = () => {
 		}
 		void removeEditorPanel( 'post-status' ); // Hide default post status panel
 	}, [ emailTemplateSlug, removeEditorPanel, setRenderingMode ] );
-
-	// Push email styles to editor settings.
-	// Set styles directly to settings overwriting the automatically loaded theme styles
-	useEffect( () => {
-		if ( ! styles ) {
-			return;
-		}
-		const editorSettings = select( editorStore ).getEditorSettings();
-		updateEditorSettings( {
-			...editorSettings,
-			styles,
-		} );
-	}, [ styles, editedPostId, updateEditorSettings ] );
 
 	return (
 		<>
@@ -75,8 +56,10 @@ const EmailEditor = () => {
 	);
 };
 
-registerPlugin( 'email-editor-plugin', { render: EmailEditor } );
-initBlocksUnified();
-initializeLayout();
-createStore();
-initEventCollector();
+export function initEmailModifications() {
+	registerPlugin( 'email-editor-plugin', { render: EmailEditor } );
+	initBlocks();
+	initializeLayout();
+	createStore();
+	initEventCollector();
+}

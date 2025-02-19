@@ -4,6 +4,9 @@
 import { __dangerousOptInToUnstableAPIsOnlyForCoreModules } from '@wordpress/private-apis';
 import { privateApis as componentsPrivateApis } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
+// @ts-expect-error No types for privateApis.
+import { privateApis as editorPrivateApis } from '@wordpress/editor'; // eslint-disable-line @woocommerce/dependency-group
+// eslint-disable-next-line @woocommerce/dependency-group
 import {
 	// @ts-expect-error No types for privateApis.
 	privateApis as blockEditorPrivateApis,
@@ -61,6 +64,8 @@ const { ColorPanel: StylesColorPanel } = unlock( blockEditorPrivateApis );
  */
 const { useGlobalStylesOutputWithConfig } = unlock( blockEditorPrivateApis );
 
+const { Editor, FullscreenMode } = unlock( editorPrivateApis );
+
 export {
 	BlockCanvas,
 	Tabs,
@@ -68,4 +73,6 @@ export {
 	unlockPatternsRelatedSelectorsFromCoreStore,
 	unlockGetEnabledClientIdsTree,
 	useGlobalStylesOutputWithConfig,
+	Editor,
+	FullscreenMode,
 };

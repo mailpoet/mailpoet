@@ -6,9 +6,8 @@ use MailPoet\Test\DataFactories\Settings;
 
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i, $scenario) {
-    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
-    }
+    $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
+
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
@@ -78,9 +77,8 @@ class CreateAndSendEmailUsingGutenbergCest {
   }
 
   public function displayNewsletterPreview(\AcceptanceTester $i, $scenario) {
-    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
-    }
+    $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
+
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');

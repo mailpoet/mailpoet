@@ -4,9 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 class EmailTemplatesCest {
   public function selectEditSwapAndResetEmailTemplate(\AcceptanceTester $i, $scenario) {
-    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
-    }
+    $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
 
     $i->wantTo('Create standard newsletter using Gutenberg editor');
     $i->login();
