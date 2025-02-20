@@ -5,11 +5,16 @@ namespace unit\WooCommerce;
 use Codeception\Stub;
 use Helper\WordPress;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 
 class CouponPreProcessorTest extends \MailPoetUnitTest {
 
@@ -174,6 +179,68 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $this->expectException(NewsletterProcessingException::class);
     $this->expectExceptionMessage($exceptionMessage);
     $processor->processCoupons($newsletter, $blocks, false);
+  }
+
+  public function testItRestrictsCouponToSubscriber(): void {
+    $subscriberEmail = 'test@example.com';
+    $wcCoupon = $this->createCouponMock();
+
+    $subscriber = $this->make(SubscriberEntity::class, [
+      'getEmail' => $subscriberEmail,
+    ]);
+
+    $taskSubscriber = $this->make(ScheduledTaskSubscriberEntity::class, [
+      'getSubscriber' => $subscriber,
+    ]);
+
+    $task = $this->make(ScheduledTaskEntity::class, [
+      'getSubscribers' => new ArrayCollection([$taskSubscriber]),
+    ]);
+
+    $queue = $this->make(SendingQueueEntity::class, [
+      'getTask' => $task,
+    ]);
+
+    $wcHelper = $this->make(Helper::class, [
+      'createWcCoupon' => $wcCoupon,
+      'isWooCommerceActive' => true,
+    ]);
+
+    $processor = new CouponPreProcessor(
+      $wcHelper,
+      $this->make(NewslettersRepository::class)
+    );
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $blocks = [
+      [
+        'type' => 'any',
+        'blocks' => [
+          [
+            'type' => Coupon::TYPE,
+            'discountType' => 'percent',
+            'amount' => '100',
+            'restrictToSubscriber' => true,
+          ],
+        ],
+      ],
+    ];
+    $newsletter->setBody(['blocks' => $blocks, 'content' => []]);
+
+    $wcCoupon->expects($this->exactly(2))
+      ->method('set_email_restrictions')
+      ->withConsecutive(
+        [[$subscriberEmail]],
+        [['other@example.com', $subscriberEmail]]
+      );
+
+    // Test with restrictToSubscriber enabled
+    $processor->processCoupons($newsletter, $blocks, false, $queue);
+
+    // Test with additional emailRestrictions
+    $blocks[0]['blocks'][0]['emailRestrictions'] = 'other@example.com';
+    $processor->processCoupons($newsletter, $blocks, false, $queue);
   }
 
   private function assertWCCouponReceivesCorrectValues($mockedWCCoupon, $expectedCouponId, $expiryDay) {
