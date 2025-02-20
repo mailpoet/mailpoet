@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\NewsletterProcessingException;
@@ -30,12 +31,12 @@ class CouponPreProcessor {
   /**
    * @throws NewsletterProcessingException
    */
-  public function processCoupons(NewsletterEntity $newsletter, array $blocks, bool $preview = false): array {
+  public function processCoupons(NewsletterEntity $newsletter, array $blocks, bool $preview = false, ?SendingQueueEntity $sendingQueue = null): array {
     if ($preview) {
       return $blocks;
     }
 
-    $generated = $this->ensureCouponForBlocks($blocks, $newsletter);
+    $generated = $this->ensureCouponForBlocks($blocks, $newsletter, $sendingQueue);
     $body = $newsletter->getBody();
 
     if ($generated && $body && $this->shouldPersist($newsletter)) {
@@ -54,11 +55,10 @@ class CouponPreProcessor {
     return $blocks;
   }
 
-  private function ensureCouponForBlocks(array &$blocks, NewsletterEntity $newsletter): bool {
-
+  private function ensureCouponForBlocks(array &$blocks, NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue): bool {
     foreach ($blocks as &$innerBlock) {
       if (isset($innerBlock['blocks']) && !empty($innerBlock['blocks'])) {
-        $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
+        $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter, $sendingQueue);
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
         if (!$this->wcHelper->isWooCommerceActive()) {
@@ -66,7 +66,7 @@ class CouponPreProcessor {
         }
         if ($this->shouldGenerateCoupon($innerBlock)) {
           try {
-            $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
+            $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter, $sendingQueue);
             $this->generated = true;
           } catch (\Exception $e) {
             throw NewsletterProcessingException::create()->withMessage($e->getMessage())->withCode($e->getCode());
@@ -81,10 +81,11 @@ class CouponPreProcessor {
   /**
    * @param array $couponBlock
    * @param NewsletterEntity $newsletter
+   * @param SendingQueueEntity|null $sendingQueue
    * @return int
    * @throws \WC_Data_Exception|\Exception
    */
-  private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter) {
+  private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue) {
     $coupon = $this->wcHelper->createWcCoupon($couponBlock['couponId'] ?? '');
     if ($this->shouldGenerateCoupon($couponBlock)) {
       $code = isset($couponBlock['code']) && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->generateRandomCode();
@@ -128,7 +129,24 @@ class CouponPreProcessor {
     $coupon->set_product_categories($this->getItemIds($couponBlock['productCategoryIds'] ?? []));
     $coupon->set_excluded_product_categories($this->getItemIds($couponBlock['excludedProductCategoryIds'] ?? []));
 
-    $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions'] ?? ''));
+    $emailRestrictions = [];
+    if (!empty($couponBlock['emailRestrictions'])) {
+      $emailRestrictions = explode(',', $couponBlock['emailRestrictions']);
+    }
+
+    if (!empty($couponBlock['restrictToSubscriber']) && $sendingQueue && $sendingQueue->getTask()) {
+      $subscribers = $sendingQueue->getTask()->getSubscribers();
+      if (is_iterable($subscribers) && count($subscribers) === 1) { // Only apply to single-subscriber sending queues
+        foreach ($subscribers as $taskSubscriber) {
+          $subscriber = $taskSubscriber->getSubscriber();
+          if ($subscriber && $subscriber->getEmail()) {
+            $emailRestrictions[] = $subscriber->getEmail();
+          }
+        }
+      }
+    }
+
+    $coupon->set_email_restrictions(array_unique(array_filter($emailRestrictions)));
 
     // usage limit
     $coupon->set_usage_limit($couponBlock['usageLimit'] ?? 0);

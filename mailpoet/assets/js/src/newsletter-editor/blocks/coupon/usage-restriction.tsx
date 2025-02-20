@@ -31,6 +31,7 @@ type State = {
   productCategoryIds: Post[];
   excludedProductCategoryIds: Post[];
   emailRestrictions: string;
+  restrictToSubscriber: boolean;
 };
 
 class UsageRestriction extends Component<Props, State> {
@@ -62,6 +63,8 @@ class UsageRestriction extends Component<Props, State> {
         'excludedProductCategoryIds',
       ).toJSON() as Post[],
       emailRestrictions: this.getValueCallback('emailRestrictions') as string,
+      restrictToSubscriber:
+        (this.getValueCallback('restrictToSubscriber') as boolean) || false,
     };
   }
 
@@ -262,6 +265,25 @@ class UsageRestriction extends Component<Props, State> {
               )}
             />
           </PanelRow>
+          {this.getValueCallback('showRestrictToSubscriber') && (
+            <PanelRow>
+              <ToggleControl
+                checked={this.state.restrictToSubscriber}
+                label={__('Restrict to subscriber email', 'mailpoet')}
+                onChange={(restrictToSubscriber) => {
+                  this.setValueCallback(
+                    'restrictToSubscriber',
+                    restrictToSubscriber,
+                  );
+                  this.setState({ restrictToSubscriber });
+                }}
+                help={__(
+                  'Restrict coupon usage to the subscriber receiving this email.',
+                  'mailpoet',
+                )}
+              />
+            </PanelRow>
+          )}
         </PanelBody>
       </Panel>
     );

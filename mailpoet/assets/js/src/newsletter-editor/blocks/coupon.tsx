@@ -19,6 +19,7 @@ Module.CouponBlockModel = base.BlockModel.extend({
     return this._getDefaults(
       {
         isStandardEmail: App.getNewsletter().isStandardEmail(),
+        isAutomationEmail: App.getNewsletter().isAutomationEmail(),
         productIds: [], // selected product ids,
         excludedProductIds: [],
         productCategoryIds: [], // selected categories id
@@ -33,6 +34,10 @@ Module.CouponBlockModel = base.BlockModel.extend({
         minimumAmount: '',
         maximumAmount: '',
         emailRestrictions: '',
+        restrictToSubscriber: false,
+        showRestrictToSubscriber:
+          App.getNewsletter().isAutomationEmail() ||
+          App.getNewsletter().isWelcomeEmail(),
         styles: {
           block: {
             backgroundColor: '#ffffff',

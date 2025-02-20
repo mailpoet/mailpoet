@@ -53,7 +53,7 @@ class Preprocessor {
       return $content;
     }
     $contentBlocks = $content['blocks'];
-    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
+    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview, $sendingQueue);
     $content['blocks'] = $this->processContainer($newsletter, $contentBlocks, $preview, $sendingQueue);
     return $content;
   }

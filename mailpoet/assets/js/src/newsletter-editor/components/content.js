@@ -35,6 +35,9 @@ Module.NewsletterModel = SuperModel.extend({
   isStandardEmail: function isStandardEmail() {
     return this.get('type') === NewsletterType.Standard;
   },
+  isWelcomeEmail: function isWelcomeEmail() {
+    return this.get('type') === NewsletterType.Welcome;
+  },
 });
 
 // Content block view and model handlers for different content types
