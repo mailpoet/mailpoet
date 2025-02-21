@@ -815,6 +815,47 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./vendor/bin/qit run:security mailpoet --zip=mailpoet.zip --wait');
   }
 
+  public function qaQitMalware() {
+    return $this->_exec('./vendor/bin/qit run:malware mailpoet --zip=mailpoet.zip --wait');
+  }
+
+  public function qaQitPhpCompatibility() {
+    return $this->_exec('./vendor/bin/qit run:phpcompatibility mailpoet --zip=mailpoet.zip --wait');
+  }
+
+  public function qaQitActivation($opts = ['wp' => 'stable', 'wc' => 'stable']) {
+    $command = './vendor/bin/qit run:activation mailpoet --zip=mailpoet.zip --wait';
+    if ($opts['wp']) {
+      $command .= ' --wordpress_version=' . $opts['wp'];
+    }
+    if ($opts['wc']) {
+      $command .= ' --woocommerce_version=' . $opts['wc'];
+    }
+    return $this->_exec($command);
+  }
+
+  public function qaQitWooApi($opts = ['wp' => 'stable', 'wc' => 'stable']) {
+    $command = './vendor/bin/qit run:woo-api mailpoet --zip=mailpoet.zip --wait';
+    if ($opts['wp']) {
+      $command .= ' --wordpress_version=' . $opts['wp'];
+    }
+    if ($opts['wc']) {
+      $command .= ' --woocommerce_version=' . $opts['wc'];
+    }
+    return $this->_exec($command);
+  }
+
+  public function qaQitWooE2e($opts = ['wp' => 'stable', 'wc' => 'stable']) {
+    $command = './vendor/bin/qit run:woo-e2e mailpoet --zip=mailpoet.zip --wait';
+    if ($opts['wp']) {
+      $command .= ' --wordpress_version=' . $opts['wp'];
+    }
+    if ($opts['wc']) {
+      $command .= ' --woocommerce_version=' . $opts['wc'];
+    }
+    return $this->_exec($command);
+  }
+
   public function svnCheckout() {
     $svnDir = ".mp_svn";
 
