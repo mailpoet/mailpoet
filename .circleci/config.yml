@@ -1351,6 +1351,13 @@ workflows:
             - build_premium
 
   nightly_qit:
+    triggers:
+      - schedule:
+          cron: '0 2 * * 3' # Every Wednesday at 2am UTC
+          filters:
+            branches:
+              only:
+                - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
