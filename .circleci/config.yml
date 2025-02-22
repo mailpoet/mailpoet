@@ -888,6 +888,146 @@ jobs:
       - store_artifacts:
           path: tests/_output
 
+  qit_malware_scan:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT Malware Scan'
+          command: ./do qa:qit-malware | tee tests/_output/qit-malware
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            grep "Result Url" tests/_output/qit-malware | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
+
+  qit_php_compatibility:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT PHP Compatibility Check'
+          command: ./do qa:qit-php-compatibility | tee tests/_output/qit-php-compatibility
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            grep "Result Url" tests/_output/qit-php-compatibility | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
+
+  qit_activation_tests:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT Activation Tests'
+          command: |
+            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+            if [ -z "$LATEST_WC_BETA" ]; then
+              echo "No WooCommerce Beta version found. Using stable."
+              ./do qa:qit-activation | tee tests/_output/qit-activation
+            else
+              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
+              ./do qa:qit-activation --wc=$LATEST_WC_BETA | tee tests/_output/qit-activation
+            fi
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            grep "Result Url" tests/_output/qit-activation | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
+
+  qit_woo_api_tests:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT Woo API Tests'
+          command: |
+            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+            if [ -z "$LATEST_WC_BETA" ]; then
+              echo "No WooCommerce Beta version found. Using stable."
+              ./do qa:qit-woo-api | tee tests/_output/qit-woo-api
+            else
+              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
+              ./do qa:qit-woo-api --wc=$LATEST_WC_BETA | tee tests/_output/qit-woo-api
+            fi
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            grep "Result Url" tests/_output/qit-woo-api | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
+
+  qit_woo_e2e_tests:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT Woo E2E Tests'
+          no_output_timeout: 1h # Woo E2E tests usually takes ~45m
+          command: |
+            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+            if [ -z "$LATEST_WC_BETA" ]; then
+              echo "No WooCommerce Beta version found. Using stable."
+              ./do qa:qit-woo-e2e | tee tests/_output/qit-woo-e2e
+            else
+              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
+              ./do qa:qit-woo-e2e --wc=$LATEST_WC_BETA | tee tests/_output/qit-woo-e2e
+            fi
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            grep "Result Url" tests/_output/qit-woo-e2e | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
+
 workflows:
   build_and_test:
     jobs:
@@ -1209,3 +1349,36 @@ workflows:
           mysql_image: mysql:5.5
           requires:
             - build_premium
+
+  nightly_qit:
+    jobs:
+      - build:
+          <<: *slack-fail-post-step
+      - build_release_zip:
+          <<: *slack-fail-post-step
+          requires:
+            - build
+      - qit_security_scan:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
+      - qit_activation_tests:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
+      - qit_malware_scan:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
+      - qit_php_compatibility:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
+      - qit_woo_api_tests:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
+      - qit_woo_e2e_tests:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
