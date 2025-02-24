@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.8.0 - 2025-02-24 =
+* Added: allow generating coupon code in automations for a subscriber the email is sent to;
+* Changed: default MailPoet pages capability changed from post to page (one of improvements is hidden previous/next post links);
+* Fixed: Prevent removing the content block from the Newsletter template in the new editor.
+
 = 5.7.1 - 2025-02-17 =
 * Improved: Apply get_the_excerpt filter to MailPoets post excerpts;
 * Fixed: conflict with Rank Math plugin breaking "Scheduled Actions" page.
