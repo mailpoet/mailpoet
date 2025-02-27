@@ -120,10 +120,10 @@ class WP {
     }
 
     // get first name & last name
-    $firstName = html_entity_decode($wpUser->first_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $lastName = html_entity_decode($wpUser->last_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $firstName = html_entity_decode($wpUser->first_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $lastName = html_entity_decode($wpUser->last_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $firstName = html_entity_decode($wpUser->display_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $firstName = html_entity_decode($wpUser->display_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
     $status = $signupConfirmationEnabled ? SubscriberEntity::STATUS_UNCONFIRMED : SubscriberEntity::STATUS_SUBSCRIBED;

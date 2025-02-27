@@ -474,7 +474,7 @@ class Pages {
 
     // get label or display default label
     $text = isset($params['text'])
-      ? htmlspecialchars($params['text'])
+      ? htmlspecialchars($params['text'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401)
       : __('Manage your subscription', 'mailpoet');
 
     return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($subscriber) . '">' . $text . '</a>';

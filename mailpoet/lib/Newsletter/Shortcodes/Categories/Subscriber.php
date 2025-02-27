@@ -42,9 +42,9 @@ class Subscriber implements CategoryInterface {
       '';
     switch ($shortcodeDetails['action']) {
       case 'firstname':
-        return (!empty($subscriber->getFirstName())) ? htmlspecialchars($subscriber->getFirstName()) : $defaultValue;
+        return (!empty($subscriber->getFirstName())) ? htmlspecialchars($subscriber->getFirstName(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
       case 'lastname':
-        return !empty($subscriber->getLastName()) ? htmlspecialchars($subscriber->getLastName()) : $defaultValue;
+        return !empty($subscriber->getLastName()) ? htmlspecialchars($subscriber->getLastName(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
       case 'email':
         return $subscriber->getEmail();
       case 'displayname':
@@ -65,7 +65,7 @@ class Subscriber implements CategoryInterface {
             'customField' => $customField[1],
           ]);
           return ($customField instanceof SubscriberCustomFieldEntity && !empty($customField->getValue()))
-            ? htmlspecialchars($customField->getValue())
+            ? htmlspecialchars($customField->getValue(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401)
             : $defaultValue;
         }
         return null;

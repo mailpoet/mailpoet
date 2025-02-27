@@ -245,7 +245,7 @@ class PageRenderer {
       'decimalSeparator' => $this->wooCommerceHelper->wcGetPriceDecimalSeperator(),
       'thousandSeparator' => $this->wooCommerceHelper->wcGetPriceThousandSeparator(),
       'code' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-      'symbol' => html_entity_decode($this->wooCommerceHelper->getWoocommerceCurrencySymbol()),
+      'symbol' => html_entity_decode($this->wooCommerceHelper->getWoocommerceCurrencySymbol(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
       'symbolPosition' => $this->wp->getOption('woocommerce_currency_pos'),
       'priceFormat' => $this->wooCommerceHelper->getWoocommercePriceFormat(),
 

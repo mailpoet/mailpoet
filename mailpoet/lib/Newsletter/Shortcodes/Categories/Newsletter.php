@@ -47,7 +47,7 @@ class Newsletter implements CategoryInterface {
           // Removing HTML tags from the title because
           $title = $this->wp->wpStripAllTags($latestPost['post_title']);
           // Decoding special characters such as &amp; to &, etc.
-          return htmlspecialchars_decode($title);
+          return htmlspecialchars_decode($title, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
         }
         return null;
 

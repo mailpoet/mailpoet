@@ -28,7 +28,7 @@ class Site implements CategoryInterface {
     switch ($shortcodeDetails['action']) {
       case 'title':
         // Decoding special characters such as &amp; to &, etc.
-        return htmlspecialchars_decode($this->wp->getBloginfo('name'));
+        return htmlspecialchars_decode($this->wp->getBloginfo('name'), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 
       case 'homepage_url':
         return $this->wp->getBloginfo('url');

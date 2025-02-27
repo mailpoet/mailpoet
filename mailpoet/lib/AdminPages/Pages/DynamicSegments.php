@@ -184,7 +184,7 @@ class DynamicSegments {
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION
     );
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
-    $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
+    $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
     $data['signup_forms'] = array_map(function(FormEntity $form) {
       return [
         'id' => $form->getId(),

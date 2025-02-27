@@ -15,7 +15,7 @@ class Site {
   }
 
   public function getTitle(array $context, array $args = []): string {
-    return htmlspecialchars_decode($this->wp->getBloginfo('name'));
+    return htmlspecialchars_decode($this->wp->getBloginfo('name'), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
   }
 
   public function getHomepageURL(array $context, array $args = []): string {

@@ -124,7 +124,7 @@ class Renderer {
         [
           $language,
           $metaRobots,
-          htmlspecialchars($subject),
+          htmlspecialchars($subject, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
           $renderedStyles,
           $customFontsLinks,
           EHelper::escapeHtmlText($newsletter->getPreheader()),
