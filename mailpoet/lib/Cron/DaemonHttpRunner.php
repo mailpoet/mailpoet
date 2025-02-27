@@ -27,7 +27,7 @@ class DaemonHttpRunner {
   private $wordpressTrigger;
 
   public function __construct(
-    ?Daemon $daemon = null,
+    ?Daemon $daemon,
     CronHelper $cronHelper,
     SettingsController $settings,
     WordPress $wordpressTrigger

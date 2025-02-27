@@ -67,8 +67,8 @@ class StatisticsUnsubscribeEntity {
   private $method = self::METHOD_UNKNOWN;
 
   public function __construct(
-    ?NewsletterEntity $newsletter = null,
-    ?SendingQueueEntity $queue = null,
+    ?NewsletterEntity $newsletter,
+    ?SendingQueueEntity $queue,
     SubscriberEntity $subscriber
   ) {
     $this->newsletter = $newsletter;
