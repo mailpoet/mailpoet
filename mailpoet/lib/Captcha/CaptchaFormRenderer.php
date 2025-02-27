@@ -8,6 +8,7 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaFormRenderer {
   /** @var UrlHelper */
@@ -31,6 +32,8 @@ class CaptchaFormRenderer {
   /** @var Styles */
   private $styles;
 
+  private $wp;
+
   public function __construct(
     UrlHelper $urlHelper,
     CaptchaSession $captchaSession,
@@ -38,7 +41,8 @@ class CaptchaFormRenderer {
     CaptchaUrlFactory $urlFactory,
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
-    Styles $styles
+    Styles $styles,
+    WPFunctions $wp
   ) {
     $this->urlHelper = $urlHelper;
     $this->captchaSession = $captchaSession;
@@ -47,6 +51,7 @@ class CaptchaFormRenderer {
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
+    $this->wp = $wp;
   }
 
   public function render(array $data) {
@@ -91,13 +96,13 @@ class CaptchaFormRenderer {
       return $this->renderFormMessages($formModel, true);
     }
 
-    $redirectUrl = htmlspecialchars($this->urlHelper->getCurrentUrl(), ENT_QUOTES);
-    $hiddenFields = '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
-    $hiddenFields .= '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($sessionId) . '" />';
+    $redirectUrl = $this->urlHelper->getCurrentUrl();
+    $hiddenFields = '<input type="hidden" name="data[form_id]" value="' . $this->wp->escAttr($formId) . '" />';
+    $hiddenFields .= '<input type="hidden" name="data[captcha_session_id]" value="' . $this->wp->escAttr($sessionId) . '" />';
     $hiddenFields .= '<input type="hidden" name="api_version" value="v1" />';
     $hiddenFields .= '<input type="hidden" name="endpoint" value="subscribers" />';
     $hiddenFields .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
-    $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $redirectUrl . '" />';
+    $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $this->wp->escAttr($redirectUrl) . '" />';
 
     $actionUrl = admin_url('admin-post.php?action=mailpoet_subscription_form');
 
@@ -119,14 +124,14 @@ class CaptchaFormRenderer {
 
     unset($data['captcha_session_id']);
     // The 'name' attr is required in this format for the refresh button to work
-    $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($sessionId) . '" />';
+    $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . $this->wp->escAttr($sessionId) . '" />';
 
     $actionUrl = $data['referrer_form_url'];
     unset($data['referrer_form_url']);
 
     unset($data['referrer_form']);
     foreach ($data as $key => $value) {
-      $hiddenFields .= '<input type="hidden" name="' . $key . '" value="' . htmlspecialchars($value) . '" />';
+      $hiddenFields .= '<input type="hidden" name="' . $key . '" value="' . $this->wp->escAttr($value) . '" />';
     }
 
     $submitLabel = $data[$submitLabelKey] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
@@ -177,7 +182,7 @@ class CaptchaFormRenderer {
       $classes = 'mailpoet_captcha_form';
     }
 
-    $formHtml = '<form method="POST" action="' . $actionUrl . '" class="' . $classes . '" id="mailpoet_captcha_form" novalidate>';
+    $formHtml = '<form method="POST" action="' . $this->wp->escAttr($actionUrl) . '" class="' . $this->wp->escAttr($classes) . '" id="mailpoet_captcha_form" novalidate>';
     $formHtml .= $hiddenFields;
 
     $width = 220;
@@ -189,12 +194,12 @@ class CaptchaFormRenderer {
 
     $formHtml .= '<div class="mailpoet_form_hide_on_success">';
     $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<img class="mailpoet_captcha" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . esc_attr__('CAPTCHA', 'mailpoet') . '" />';
+    $formHtml .= '<img class="mailpoet_captcha" src="' . $this->wp->escAttr($captchaUrl) . '" width="' . $this->wp->escAttr($width) . '" height="' . $this->wp->escAttr($height) . '" title="' . esc_attr__('CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $reloadIcon . '" alt="" /></button>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $playIcon . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($reloadIcon) . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($playIcon) . '" alt="" /></button>';
     $formHtml .= '<audio class="mailpoet_captcha_player">';
-    $formHtml .= '<source src="' . $mp3CaptchaUrl . '" type="audio/mpeg">';
+    $formHtml .= '<source src="' . $this->wp->escAttr($mp3CaptchaUrl) . '" type="audio/mpeg">';
     $formHtml .= '</audio>';
 
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);
@@ -222,8 +227,8 @@ class CaptchaFormRenderer {
     $errorMessage = __('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet');
 
     $formHtml = '<div class="mailpoet_message" role="alert" aria-live="assertive">';
-    $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $settings['success_message'] . '</p>';
-    $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . $errorMessage . '</p>';
+    $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $this->wp->escHtml($settings['success_message']) . '</p>';
+    $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . $this->wp->escHtml($errorMessage) . '</p>';
     $formHtml .= '</div>';
 
     return $formHtml;
