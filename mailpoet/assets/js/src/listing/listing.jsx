@@ -34,7 +34,10 @@ class ListingComponent extends Component {
 
     if (autoRefresh) {
       jQuery(document).on('heartbeat-tick.mailpoet', () => {
-        this.getItems();
+        // Skip auto-refresh if any items are selected for bulk editing
+        if (this.state.selected_ids.length === 0) {
+          this.getItems();
+        }
       });
     }
 
