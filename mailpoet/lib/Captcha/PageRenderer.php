@@ -28,6 +28,7 @@ class PageRenderer {
     $this->wp->removeAction('wp_head', 'noindex', 1);
     $this->wp->addAction('wp_head', [$this, 'setMetaRobots'], 1);
     $this->wp->addFilter('the_title', [$this, 'setPageTitle']);
+    $this->wp->addFilter('single_post_title', [$this, 'setPageTitle']);
     $this->wp->addFilter('the_content', [$this, 'setPageContent']);
   }
 
