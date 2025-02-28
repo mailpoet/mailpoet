@@ -432,7 +432,7 @@ class API {
       'home_url' => $this->wp->homeUrl(),
       'key_type' => $keyType,
     ];
-    $this->loggerFactory->getLogger($topic)->error('key-validation.failed', $logData);
+    $this->loggerFactory->getLogger($topic)->info('key-validation.failed', $logData);
   }
 
   private function logInvalidDataFormat(string $method, ?string $response = null): void {
