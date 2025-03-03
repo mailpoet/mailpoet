@@ -168,6 +168,11 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
+        'is_woocommerce_email_improvements_enabled',
+        [$this, 'isWoocommerceEmailImprovementsEnabled'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
         'get_woocommerce_version',
         [$this, 'getWooCommerceVersion'],
         ['is_safe' => ['all']]
@@ -310,6 +315,10 @@ class Functions extends AbstractExtension {
 
   public function isWoocommerceActive() {
     return $this->getWooCommerceHelper()->isWooCommerceActive();
+  }
+
+  public function isWoocommerceEmailImprovementsEnabled() {
+    return $this->getWooCommerceHelper()->isWooCommerceEmailImprovementsEnabled();
   }
 
   public function getWooCommerceVersion() {
