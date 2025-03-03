@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.8.1 - 2025-03-03 =
+* Changed: minimum required WooCommerce is 9.6.
+
 = 5.8.0 - 2025-02-24 =
 * Added: allow generating coupon code in automations for a subscriber the email is sent to;
 * Changed: default MailPoet pages capability changed from post to page (one of improvements is hidden previous/next post links);
