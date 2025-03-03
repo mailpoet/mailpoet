@@ -302,6 +302,22 @@
     'newsletter/templates/blocks/woocommerceContent/customer_note.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_woocommerce_new_account_content_improved',
+    'newsletter/templates/blocks/woocommerceContentImproved/new_account.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_processing_order_content_improved',
+    'newsletter/templates/blocks/woocommerceContentImproved/processing_order.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_completed_order_content_improved',
+    'newsletter/templates/blocks/woocommerceContentImproved/completed_order.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_customer_note_content_improved',
+    'newsletter/templates/blocks/woocommerceContentImproved/customer_note.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_woocommerce_content_widget',
     'newsletter/templates/blocks/woocommerceContent/widget.hbs'
   ) %>
@@ -644,6 +660,19 @@
       ),
       woocommerceContentInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_woocommerce_content_widget').html()
+      ),
+
+      woocommerceNewAccountImproved: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_new_account_content_improved').html()
+      ),
+      woocommerceProcessingOrderImproved: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_processing_order_content_improved').html()
+      ),
+      woocommerceCompletedOrderImproved: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_completed_order_content_improved').html()
+      ),
+      woocommerceCustomerNoteImproved: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_customer_note_content_improved').html()
       ),
 
       woocommerceHeadingBlock: Handlebars.compile(

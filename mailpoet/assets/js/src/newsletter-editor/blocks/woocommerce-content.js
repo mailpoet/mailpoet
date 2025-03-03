@@ -46,6 +46,18 @@ const BlockView = BaseBlock.BlockView.extend({
     });
   },
   getTemplate() {
+    if (window.mailpoet_woocommerce_email_improvements_enabled) {
+      if (this.model.get('selected') === 'new_account') {
+        return window.templates.woocommerceNewAccountImproved;
+      }
+      if (this.model.get('selected') === 'processing_order') {
+        return window.templates.woocommerceProcessingOrderImproved;
+      }
+      if (this.model.get('selected') === 'completed_order') {
+        return window.templates.woocommerceCompletedOrderImproved;
+      }
+      return window.templates.woocommerceCustomerNoteImproved;
+    }
     if (this.model.get('selected') === 'new_account') {
       return window.templates.woocommerceNewAccount;
     }
