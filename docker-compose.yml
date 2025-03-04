@@ -60,31 +60,6 @@ services:
       - './packages:/var/www/html/wp-content/plugins/packages'
       - './templates:/var/www/templates'
 
-  test_wordpress:
-    container_name: mp-test-wp
-    build:
-      context: .
-      dockerfile: dev/php81/Dockerfile
-      args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
-    ports:
-      - '8003:80'
-    depends_on:
-      - db
-      - smtp
-    user: ${UID:-1000}:${GID:-1000}
-    environment:
-      WORDPRESS_DB_NAME: test_wordpress
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      PHP_IDE_CONFIG: 'serverName=Mailpoet'
-    volumes:
-      - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
-      - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
-      - './packages:/var/www/html/wp-content/plugins/packages'
-
   smtp:
     container_name: mp-mailhog
     image: mailhog/mailhog:v1.0.0
