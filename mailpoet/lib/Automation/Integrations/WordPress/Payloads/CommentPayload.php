@@ -9,6 +9,9 @@ class CommentPayload implements Payload {
   /** @var int */
   private $commentId;
 
+  /** @var \WP_Comment|null */
+  private $comment;
+
   /** @var WordPress */
   protected $wp;
 
@@ -25,7 +28,10 @@ class CommentPayload implements Payload {
   }
 
   public function getComment(): ?\WP_Comment {
-    $comment = $this->wp->getComment($this->commentId);
-    return $comment instanceof \WP_Comment ? $comment : null;
+    if ($this->comment === null) {
+      $comment = $this->wp->getComment($this->commentId);
+      $this->comment = $comment instanceof \WP_Comment ? $comment : null;
+    }
+    return $this->comment;
   }
 }
