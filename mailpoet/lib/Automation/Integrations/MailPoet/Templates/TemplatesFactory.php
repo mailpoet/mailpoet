@@ -15,6 +15,7 @@ class TemplatesFactory {
   private $woocommerce;
 
   /** @var EmailFactory */
+  /** @phpstan-ignore-next-line Property is reserved for future use */
   private $emailFactory;
 
   public function __construct(
