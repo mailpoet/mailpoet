@@ -123,6 +123,15 @@ class WordPress {
   }
 
   /**
+   * @param int|\WP_Post $post
+   * @param bool $leavename
+   * @return string|false
+   */
+  public function getPermalink($post, bool $leavename = false) {
+    return get_permalink($post, $leavename);
+  }
+
+  /**
    * @return string[]
    */
   public function getCommentStatuses(): array {
