@@ -209,4 +209,8 @@ class WordPress {
   public function humanTimeDiff(int $from, int $to = 0): string {
     return human_time_diff($from, $to);
   }
+
+  public function sanitizeFileName(string $filename): string {
+    return sanitize_file_name($filename);
+  }
 }
