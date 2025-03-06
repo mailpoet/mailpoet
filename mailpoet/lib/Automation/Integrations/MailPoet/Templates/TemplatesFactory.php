@@ -14,12 +14,17 @@ class TemplatesFactory {
   /** @var WooCommerce */
   private $woocommerce;
 
+  /** @var EmailFactory */
+  private $emailFactory;
+
   public function __construct(
     AutomationBuilder $builder,
-    WooCommerce $woocommerce
+    WooCommerce $woocommerce,
+    EmailFactory $emailFactory
   ) {
     $this->builder = $builder;
     $this->woocommerce = $woocommerce;
+    $this->emailFactory = $emailFactory;
   }
 
   public function createTemplates(): array {
