@@ -23,7 +23,7 @@ class Mailer {
     $this->mailer = $this->configureMailer();
   }
 
-  public function configureMailer(NewsletterEntity $newsletter = null) {
+  public function configureMailer(?NewsletterEntity $newsletter = null) {
     $sender['address'] = ($newsletter && !empty($newsletter->getSenderAddress())) ?
       $newsletter->getSenderAddress() :
       null;

@@ -68,7 +68,7 @@ class WordPress {
   }
 
   /** @return WP_Post[]|int[] */
-  public function getPosts(array $args = null): array {
+  public function getPosts(?array $args = null): array {
     return get_posts($args);
   }
 

@@ -699,7 +699,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     return $container;
   }
 
-  public static function getPremiumService($id, ContainerInterface $container = null) {
+  public static function getPremiumService($id, ?ContainerInterface $container = null) {
     if ($container === null) {
       return null;
     }

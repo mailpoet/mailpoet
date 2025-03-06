@@ -31,7 +31,7 @@ class ScheduledTaskSubscriber {
     return $taskSubscriber;
   }
 
-  public function createFailed(ScheduledTaskEntity $task, SubscriberEntity $subscriberEntity, string $error = null): ScheduledTaskSubscriberEntity {
+  public function createFailed(ScheduledTaskEntity $task, SubscriberEntity $subscriberEntity, ?string $error = null): ScheduledTaskSubscriberEntity {
     $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriberEntity, 1, 1, $error);
     $this->entityManager->persist($taskSubscriber);
     $this->entityManager->flush();

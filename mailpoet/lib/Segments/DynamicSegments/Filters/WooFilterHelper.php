@@ -73,7 +73,7 @@ class WooFilterHelper {
    * @param array|null $allowedStatuses
    * @return string - The alias of the joined order stats table
    */
-  public function applyOrderStatusFilter(QueryBuilder $queryBuilder, array $allowedStatuses = null): string {
+  public function applyOrderStatusFilter(QueryBuilder $queryBuilder, ?array $allowedStatuses = null): string {
     if (is_null($allowedStatuses)) {
       $allowedStatuses = $this->defaultIncludedStatuses();
     }

@@ -6,7 +6,7 @@ use WP_REST_Response;
 
 class Response extends WP_REST_Response {
   public function __construct(
-    array $data = null,
+    ?array $data = null,
     int $status = 200
   ) {
     parent::__construct(['data' => $data], $status);

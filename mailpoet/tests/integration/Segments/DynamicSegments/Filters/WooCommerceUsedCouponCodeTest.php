@@ -313,7 +313,7 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
-  private function createOrder(int $customerId, array $couponCodes = [], Carbon $createdAt = null): int {
+  private function createOrder(int $customerId, array $couponCodes = [], ?Carbon $createdAt = null): int {
     if (is_null($createdAt)) {
       $createdAt = Carbon::now()->millisecond(0)->subDay();
     }

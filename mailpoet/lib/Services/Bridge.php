@@ -52,7 +52,7 @@ class Bridge {
   private $settings;
 
   public function __construct(
-    SettingsController $settingsController = null
+    ?SettingsController $settingsController = null
   ) {
     if ($settingsController === null) {
       $settingsController = SettingsController::getInstance();

@@ -510,7 +510,7 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return \WC_Order|\WP_Error
    */
-  private function createCompletedWooCommerceOrder($subscriberId, $email, $customerId = null, $products = [], Carbon $completedAt = null): \WC_Order {
+  private function createCompletedWooCommerceOrder($subscriberId, $email, $customerId = null, $products = [], ?Carbon $completedAt = null): \WC_Order {
     $random = $this->getRandomString();
     $countries = ['FR', 'GB', 'US', 'IE', 'IT'];
     $address = [

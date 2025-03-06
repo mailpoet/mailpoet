@@ -14,7 +14,7 @@ class TwigEnvironment extends Environment {
    * We need to produce the same class regardless of PHP_VERSION. Therefore, we
    * overwrite this method.
    **/
-  public function getTemplateClass(string $name, int $index = null): string {
+  public function getTemplateClass(string $name, ?int $index = null): string {
     return $this->templateClassPrefix . \hash('sha256', $name) . (null === $index ? '' : '___' . $index);
   }
 }

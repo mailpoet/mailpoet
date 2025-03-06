@@ -40,9 +40,9 @@ class Link implements CategoryInterface {
 
   public function process(
     array $shortcodeDetails,
-    NewsletterEntity $newsletter = null,
-    SubscriberEntity $subscriber = null,
-    SendingQueueEntity $queue = null,
+    ?NewsletterEntity $newsletter = null,
+    ?SubscriberEntity $subscriber = null,
+    ?SendingQueueEntity $queue = null,
     string $content = '',
     bool $wpUserPreview = false
   ): ?string {
@@ -119,9 +119,9 @@ class Link implements CategoryInterface {
 
   public function processShortcodeAction(
     $shortcodeAction,
-    NewsletterEntity $newsletter = null,
-    SubscriberEntity $subscriber = null,
-    SendingQueueEntity $queue = null,
+    ?NewsletterEntity $newsletter = null,
+    ?SubscriberEntity $subscriber = null,
+    ?SendingQueueEntity $queue = null,
     $wpUserPreview = false
   ): ?string {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();

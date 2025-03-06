@@ -218,7 +218,7 @@ class AutomationRunStorage {
     }
   }
 
-  public function getAutomationStepStatisticForTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
+  public function getAutomationStepStatisticForTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, ?int $versionId = null): array {
     global $wpdb;
     $andWhere = $versionId ? 'AND version_id = %d' : '';
     $result = $wpdb->get_results(

@@ -104,7 +104,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     return (int)$productId;
   }
 
-  private function getSegmentFilterData(string $operator, array $productIds = null): DynamicSegmentFilterData {
+  private function getSegmentFilterData(string $operator, ?array $productIds = null): DynamicSegmentFilterData {
     $filterData = [
       'operator' => $operator,
       'product_ids' => $productIds ?: $this->products,

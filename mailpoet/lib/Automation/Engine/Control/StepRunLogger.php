@@ -42,7 +42,7 @@ class StepRunLogger {
     string $stepId,
     string $stepType,
     int $runNumber,
-    bool $isWpDebug = null
+    ?bool $isWpDebug = null
   ) {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->hooks = $hooks;

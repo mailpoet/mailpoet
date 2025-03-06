@@ -15,7 +15,7 @@ class PostTransformer {
 
   public function __construct(
     $args,
-    PostTransformerContentsExtractor $extractor = null
+    ?PostTransformerContentsExtractor $extractor = null
   ) {
     $this->args = $args;
     $this->withLayout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;

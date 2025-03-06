@@ -1383,7 +1383,7 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
-  public function releaseRerunCircleWorkflow(string $project = null) {
+  public function releaseRerunCircleWorkflow(?string $project = null) {
     $circleciController = $this->createCircleCiController();
     $result = $circleciController->rerunLatestWorkflow($project);
     // Sometimes can be useful to know which Circle project workflow was restarted

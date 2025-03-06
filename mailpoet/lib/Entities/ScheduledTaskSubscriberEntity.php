@@ -61,7 +61,7 @@ class ScheduledTaskSubscriberEntity {
     SubscriberEntity $subscriber,
     int $processed = 0,
     int $failed = 0,
-    string $error = null
+    ?string $error = null
   ) {
     $this->task = $task;
     $this->subscriber = $subscriber;

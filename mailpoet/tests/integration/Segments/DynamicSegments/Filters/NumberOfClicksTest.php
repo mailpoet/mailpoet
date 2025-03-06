@@ -89,7 +89,7 @@ class NumberOfClicksTest extends \MailPoetTest {
     ]);
   }
 
-  private function createClicks(SubscriberEntity $subscriber, int $count, DateTimeInterface $date = null): void {
+  private function createClicks(SubscriberEntity $subscriber, int $count, ?DateTimeInterface $date = null): void {
     if ($date === null) {
       $date = CarbonImmutable::now();
     }

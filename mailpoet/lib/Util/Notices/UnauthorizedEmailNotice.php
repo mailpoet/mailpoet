@@ -20,7 +20,7 @@ class UnauthorizedEmailNotice {
 
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settings = null
+    ?SettingsController $settings = null
   ) {
     $this->settings = $settings;
     $this->wp = $wp;

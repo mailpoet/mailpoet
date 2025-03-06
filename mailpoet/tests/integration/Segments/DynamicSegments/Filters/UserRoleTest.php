@@ -82,7 +82,7 @@ class UserRoleTest extends \MailPoetTest {
    * @param string|null $operator
    * @return DynamicSegmentFilterData
    */
-  private function getSegmentFilterData($role, string $operator = null): DynamicSegmentFilterData {
+  private function getSegmentFilterData($role, ?string $operator = null): DynamicSegmentFilterData {
     $filterData = [
       'wordpressRole' => $role,
     ];

@@ -11,8 +11,8 @@ class CustomerPayload implements Payload {
   private ?WC_Order $order;
 
   public function __construct(
-    WC_Customer $customer = null,
-    WC_Order $order = null
+    ?WC_Customer $customer = null,
+    ?WC_Order $order = null
   ) {
     $this->customer = $customer;
     $this->order = $order;

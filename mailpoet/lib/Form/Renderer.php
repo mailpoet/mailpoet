@@ -41,14 +41,14 @@ class Renderer {
     return $html;
   }
 
-  public function renderHTML(FormEntity $form = null): string {
+  public function renderHTML(?FormEntity $form = null): string {
     if (($form instanceof FormEntity) && !empty($form->getBody()) && is_array($form->getSettings())) {
       return $this->renderBlocks($form->getBody(), $form->getSettings() ?? [], $form->getId());
     }
     return '';
   }
 
-  public function getCustomStyles(FormEntity $form = null): string {
+  public function getCustomStyles(?FormEntity $form = null): string {
     if (($form instanceof FormEntity) && (strlen(trim($form->getStyles() ?? '')) > 0)) {
       return strip_tags($form->getStyles() ?? '');
     } else {

@@ -278,7 +278,7 @@ class IntegrationTester extends \Codeception\Actor {
     return $order;
   }
 
-  public function createWooProductReview(int $customerId, string $customerEmail, int $productId, int $rating, Carbon $date = null): int {
+  public function createWooProductReview(int $customerId, string $customerEmail, int $productId, int $rating, ?Carbon $date = null): int {
     if ($date === null) {
       $date = Carbon::now()->subDay();
     }

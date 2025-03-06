@@ -423,7 +423,7 @@ class SendEmailAction implements Action {
     $this->newslettersRepository->flush();
   }
 
-  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, string $optionValue = null): void {
+  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, ?string $optionValue = null): void {
     $options = $newsletter->getOptions()->toArray();
     foreach ($options as $key => $option) {
       if ($option->getName() === $optionName) {

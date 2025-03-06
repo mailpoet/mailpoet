@@ -35,8 +35,8 @@ class ScheduledTask {
     string $type,
     ?string $status,
     ?\DateTimeInterface $scheduledAt = null,
-    \DateTimeInterface $deletedAt = null,
-    \DateTimeInterface $updatedAt = null
+    ?\DateTimeInterface $deletedAt = null,
+    ?\DateTimeInterface $updatedAt = null
   ) {
     $task = new ScheduledTaskEntity();
     $task->setType($type);

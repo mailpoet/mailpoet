@@ -41,7 +41,7 @@ abstract class Repository {
    * @param int|null $offset
    * @return T[]
    */
-  public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
+  public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null) {
     return $this->doctrineRepository->findBy($criteria, $orderBy, $limit, $offset);
   }
 
@@ -62,7 +62,7 @@ abstract class Repository {
    * @param array|null $orderBy
    * @return T|null
    */
-  public function findOneBy(array $criteria, array $orderBy = null) {
+  public function findOneBy(array $criteria, ?array $orderBy = null) {
     return $this->doctrineRepository->findOneBy($criteria, $orderBy);
   }
 
@@ -114,7 +114,7 @@ abstract class Repository {
   /**
    * @param callable(T): bool|null $filter
    */
-  public function refreshAll(callable $filter = null): void {
+  public function refreshAll(?callable $filter = null): void {
     $entities = $this->getAllFromIdentityMap();
     foreach ($entities as $entity) {
       if ($filter && !$filter($entity)) {
@@ -142,7 +142,7 @@ abstract class Repository {
   /**
    * @param callable(T): bool|null $filter
    */
-  public function detachAll(callable $filter = null): void {
+  public function detachAll(?callable $filter = null): void {
     $entities = $this->getAllFromIdentityMap();
     foreach ($entities as $entity) {
       if ($filter && !$filter($entity)) {

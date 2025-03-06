@@ -35,8 +35,8 @@ class Unsubscribes {
   public function track(
     int $subscriberId,
     string $source,
-    int $queueId = null,
-    string $meta = null,
+    ?int $queueId = null,
+    ?string $meta = null,
     string $method = StatisticsUnsubscribeEntity::METHOD_UNKNOWN
   ) {
     $queue = null;

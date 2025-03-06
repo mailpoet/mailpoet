@@ -294,7 +294,7 @@ class WordPressTest extends \MailPoetTest {
     verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
-  private function addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {
+  private function addMTAConfigAndLog($sent, $status = null, ?int $retryAt = null) {
     $mtaConfig = [
       'frequency' => [
         'emails' => 1,

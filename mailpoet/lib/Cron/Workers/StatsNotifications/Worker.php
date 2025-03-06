@@ -138,7 +138,7 @@ class Worker {
     ];
   }
 
-  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, NewsletterLinkEntity $link = null) {
+  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();

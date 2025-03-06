@@ -31,9 +31,9 @@ class ListingDefinition {
   private $selection;
 
   public function __construct(
-    string $group = null,
+    ?string $group = null,
     array $filters = [],
-    string $search = null,
+    ?string $search = null,
     array $parameters = [],
     string $sortBy = 'created_at',
     string $sortOrder = 'desc',

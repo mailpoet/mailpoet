@@ -60,15 +60,15 @@ class Shortcodes {
     $this->wp = $wp;
   }
 
-  public function setNewsletter(NewsletterEntity $newsletter = null): void {
+  public function setNewsletter(?NewsletterEntity $newsletter = null): void {
     $this->newsletter = $newsletter;
   }
 
-  public function setSubscriber(SubscriberEntity $subscriber = null): void {
+  public function setSubscriber(?SubscriberEntity $subscriber = null): void {
     $this->subscriber = $subscriber;
   }
 
-  public function setQueue(SendingQueueEntity $queue = null): void {
+  public function setQueue(?SendingQueueEntity $queue = null): void {
     $this->queue = $queue;
   }
 

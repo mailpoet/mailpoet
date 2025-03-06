@@ -166,7 +166,7 @@ class JiraController {
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-search-get
    */
-  public function search($jql, array $fields = null) {
+  public function search($jql, ?array $fields = null) {
     $params = ['jql' => $jql];
     if ($fields) {
       $params['fields'] = join(',', $fields);

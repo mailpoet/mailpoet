@@ -22,7 +22,7 @@ class RequiredCustomFieldValidator {
    *
    * @throws Exception
    */
-  public function validate(array $data, FormEntity $form = null) {
+  public function validate(array $data, ?FormEntity $form = null) {
     $allCustomFields = $this->getCustomFields($form);
     foreach ($allCustomFields as $customFieldId => $customFieldName) {
       if ($this->isCustomFieldMissing($customFieldId, $data)) {
@@ -47,7 +47,7 @@ class RequiredCustomFieldValidator {
     return false;
   }
 
-  private function getCustomFields(FormEntity $form = null): array {
+  private function getCustomFields(?FormEntity $form = null): array {
     $result = [];
 
     if ($form) {

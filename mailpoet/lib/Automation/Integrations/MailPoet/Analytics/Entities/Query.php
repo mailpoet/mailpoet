@@ -41,7 +41,7 @@ class Query {
     string $orderDirection = 'asc',
     int $page = 1,
     array $filter = [],
-    string $search = null
+    ?string $search = null
   ) {
     $this->primaryAfter = $primaryAfter;
     $this->primaryBefore = $primaryBefore;

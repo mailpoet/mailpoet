@@ -127,7 +127,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       ],
     ];
     $newsletter = $this->saveController->save($newsletterData);
-    $scheduleOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+    $scheduleOption = $newsletter->getOptions()->filter(function (?NewsletterOptionEntity $newsletterOption = null) {
       if ($newsletterOption === null) return false; // PHPStan
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'schedule';
@@ -140,7 +140,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletterData['options']['intervalType'] = PostNotificationScheduler::INTERVAL_IMMEDIATELY;
     $savedNewsletter = $this->saveController->save($newsletterData);
 
-    $scheduleOption = $savedNewsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+    $scheduleOption = $savedNewsletter->getOptions()->filter(function (?NewsletterOptionEntity $newsletterOption = null) {
       if ($newsletterOption === null) return false; // PHPStan
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'schedule';
@@ -184,7 +184,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    $scheduleOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+    $scheduleOption = $newsletter->getOptions()->filter(function (?NewsletterOptionEntity $newsletterOption = null) {
       if ($newsletterOption === null) return false; // PHPStan
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'schedule';

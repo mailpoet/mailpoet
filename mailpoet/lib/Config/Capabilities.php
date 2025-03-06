@@ -16,7 +16,7 @@ class Capabilities {
 
   public function __construct(
     $renderer = null,
-    WPFunctions $wp = null
+    ?WPFunctions $wp = null
   ) {
     if ($renderer !== null) {
       $this->renderer = $renderer;

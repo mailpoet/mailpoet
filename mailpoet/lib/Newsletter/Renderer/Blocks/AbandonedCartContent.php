@@ -22,7 +22,7 @@ class AbandonedCartContent {
     NewsletterEntity $newsletter,
     array $args,
     bool $preview = false,
-    SendingQueueEntity $sendingQueue = null
+    ?SendingQueueEntity $sendingQueue = null
   ): array {
     if (
       !in_array(
@@ -38,12 +38,12 @@ class AbandonedCartContent {
       // Do not display the block if not an automatic email
       return [];
     }
-    $groupOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+    $groupOption = $newsletter->getOptions()->filter(function (?NewsletterOptionEntity $newsletterOption = null) {
       if (!$newsletterOption) return false;
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'group';
     })->first();
-    $eventOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+    $eventOption = $newsletter->getOptions()->filter(function (?NewsletterOptionEntity $newsletterOption = null) {
       if (!$newsletterOption) return false;
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'event';

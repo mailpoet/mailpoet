@@ -98,7 +98,7 @@ class Registry {
   }
 
   /** @return array<string, AutomationTemplate> */
-  public function getTemplates(string $category = null): array {
+  public function getTemplates(?string $category = null): array {
     return $category
       ? array_filter(
         $this->templates,
@@ -254,7 +254,7 @@ class Registry {
     $this->wordPress->addAction(Hooks::AUTOMATION_BEFORE_SAVE, $callback, $priority);
   }
 
-  public function onBeforeAutomationStepSave(callable $callback, string $key = null, int $priority = 10): void {
+  public function onBeforeAutomationStepSave(callable $callback, ?string $key = null, int $priority = 10): void {
     $keyPart = $key ? "/key=$key" : '';
     $this->wordPress->addAction(Hooks::AUTOMATION_STEP_BEFORE_SAVE . $keyPart, $callback, $priority, 2);
   }

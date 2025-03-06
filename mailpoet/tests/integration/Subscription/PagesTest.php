@@ -295,8 +295,8 @@ class PagesTest extends \MailPoetTest {
   }
 
   private function getPages(
-    NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
-    Unsubscribes $unsubscribesMock = null
+    ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
+    ?Unsubscribes $unsubscribesMock = null
   ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(

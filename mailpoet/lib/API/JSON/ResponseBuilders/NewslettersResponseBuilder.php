@@ -158,7 +158,7 @@ class NewslettersResponseBuilder {
    * @param SendingQueueEntity|null $latestQueue
    * @return array<string, mixed>
    */
-  private function buildListingItem(NewsletterEntity $newsletter, NewsletterStatistics $statistics = null, SendingQueueEntity $latestQueue = null): array {
+  private function buildListingItem(NewsletterEntity $newsletter, ?NewsletterStatistics $statistics = null, ?SendingQueueEntity $latestQueue = null): array {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
     }, $this->logRepository->getRawMessagesForNewsletter($newsletter, LoggerFactory::TOPIC_COUPONS));

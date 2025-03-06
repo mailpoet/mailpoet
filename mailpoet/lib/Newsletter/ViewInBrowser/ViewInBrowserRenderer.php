@@ -49,8 +49,8 @@ class ViewInBrowserRenderer {
   public function render(
     bool $isPreview,
     NewsletterEntity $newsletter,
-    SubscriberEntity $subscriber = null,
-    SendingQueueEntity $queue = null
+    ?SubscriberEntity $subscriber = null,
+    ?SendingQueueEntity $queue = null
   ) {
     $wpUserPreview = $isPreview;
     $isTrackingEnabled = $this->trackingConfig->isEmailTrackingEnabled();

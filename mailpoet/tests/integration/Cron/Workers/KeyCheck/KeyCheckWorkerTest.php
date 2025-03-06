@@ -106,7 +106,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     verify($nextRunDate->diffInSeconds($dateTime))->lessThanOrEqual(21600 + $secondsToMidnight);
   }
 
-  private function createRunningTask(Carbon $scheduledAt = null) {
+  private function createRunningTask(?Carbon $scheduledAt = null) {
     if (!$scheduledAt) {
       $scheduledAt = Carbon::now()->millisecond(0);
     }

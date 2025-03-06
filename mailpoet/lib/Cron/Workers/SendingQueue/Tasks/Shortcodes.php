@@ -16,7 +16,7 @@ class Shortcodes {
    * @param SubscriberEntity|null $subscriber
    * @param SendingQueueEntity|null $queue
    */
-  public static function process($content, $contentSource = null, NewsletterEntity $newsletter = null, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+  public static function process($content, $contentSource = null, ?NewsletterEntity $newsletter = null, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) {
     /** @var NewsletterShortcodes $shortcodes */
     $shortcodes = ContainerWrapper::getInstance()->get(NewsletterShortcodes::class);
 

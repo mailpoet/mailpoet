@@ -481,7 +481,7 @@ class ShortcodesTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _createNewsletter(NewsletterEntity $parent = null, $type = NewsletterEntity::TYPE_NOTIFICATION): NewsletterEntity {
+  public function _createNewsletter(?NewsletterEntity $parent = null, $type = NewsletterEntity::TYPE_NOTIFICATION): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('some subject');
     $newsletter->setType($type);

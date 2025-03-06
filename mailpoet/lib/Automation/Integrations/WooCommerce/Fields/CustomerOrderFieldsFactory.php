@@ -332,7 +332,7 @@ class CustomerOrderFieldsFactory {
     return $date ? new DateTimeImmutable($date, new DateTimeZone('GMT')) : null;
   }
 
-  private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy, int $inTheLastSeconds = null): array {
+  private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy, ?int $inTheLastSeconds = null): array {
     global $wpdb;
 
     $statuses = array_map(function (string $status) {

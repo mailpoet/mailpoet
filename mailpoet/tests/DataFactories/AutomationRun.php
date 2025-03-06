@@ -78,7 +78,7 @@ class AutomationRun {
     return $this;
   }
 
-  public function withNextStep(string $nextStep = null): self {
+  public function withNextStep(?string $nextStep = null): self {
     $this->nextStep = $nextStep;
     return $this;
   }

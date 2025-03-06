@@ -743,7 +743,7 @@ class WooCommerceTest extends \MailPoetTest {
     return $guest;
   }
 
-  private function insertRegisteredCustomerWithOrder(?int $number = null, array $data = null): WPTestUser {
+  private function insertRegisteredCustomerWithOrder(?int $number = null, ?array $data = null): WPTestUser {
     $number = !is_null($number) ? (int)$number : mt_rand();
     $data = is_array($data) ? $data : [];
     $user = $this->insertRegisteredCustomer($number, $data['first_name'] ?? null, $data['last_name'] ?? null);

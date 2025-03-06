@@ -191,7 +191,7 @@ class EmailAction implements Filter {
     return $queryBuilder;
   }
 
-  private function createNotStatsJoinCondition(string $parameterSuffix, array $linkIds = null): string {
+  private function createNotStatsJoinCondition(string $parameterSuffix, ?array $linkIds = null): string {
     $clause = "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = :newsletter" . $parameterSuffix;
     if ($linkIds) {
       $clause .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';

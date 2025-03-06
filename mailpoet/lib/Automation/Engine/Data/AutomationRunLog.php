@@ -60,7 +60,7 @@ class AutomationRunLog {
     int $automationRunId,
     string $stepId,
     string $stepType,
-    int $id = null
+    ?int $id = null
   ) {
     $this->automationRunId = $automationRunId;
     $this->stepId = $stepId;

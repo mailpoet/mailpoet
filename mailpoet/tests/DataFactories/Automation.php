@@ -87,7 +87,7 @@ class Automation {
     return $this->withStep($step);
   }
 
-  public function withIfElseStep(Step $elseStep = null): self {
+  public function withIfElseStep(?Step $elseStep = null): self {
     $subscribedFilter = new Filter(
       'f1',
       'enum',

@@ -28,9 +28,9 @@ class Subscriber implements CategoryInterface {
 
   public function process(
     array $shortcodeDetails,
-    NewsletterEntity $newsletter = null,
-    SubscriberEntity $subscriber = null,
-    SendingQueueEntity $queue = null,
+    ?NewsletterEntity $newsletter = null,
+    ?SubscriberEntity $subscriber = null,
+    ?SendingQueueEntity $queue = null,
     string $content = '',
     bool $wpUserPreview = false
   ): ?string {

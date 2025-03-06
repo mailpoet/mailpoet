@@ -244,7 +244,7 @@ class AnalyticsCest {
     return $subscriber;
   }
 
-  private function createRunForSubscriber(SubscriberEntity $subscriber, string $nextStep = null, string $status = AutomationRun::STATUS_COMPLETE) {
+  private function createRunForSubscriber(SubscriberEntity $subscriber, ?string $nextStep = null, string $status = AutomationRun::STATUS_COMPLETE) {
     $run = (new DataFactories\AutomationRun())
       ->withAutomation($this->automation)
       ->withStatus($nextStep ? $status : AutomationRun::STATUS_COMPLETE)

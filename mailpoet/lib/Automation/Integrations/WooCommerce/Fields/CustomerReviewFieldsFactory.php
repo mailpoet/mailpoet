@@ -53,7 +53,7 @@ class CustomerReviewFieldsFactory {
    * Calculate the customer's review count excluding multiple reviews on the same product.
    * Inspired by AutomateWoo implementation.
    */
-  private function getUniqueProductReviewCount(WC_Customer $customer, int $inTheLastSeconds = null): int {
+  private function getUniqueProductReviewCount(WC_Customer $customer, ?int $inTheLastSeconds = null): int {
     global $wpdb;
 
     $inTheLastFilter = isset($inTheLastSeconds) ? 'AND c.comment_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)' : '';

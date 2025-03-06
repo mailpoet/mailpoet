@@ -313,7 +313,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   /**
    * @return PostTransformer
    */
-  private function getTransformer(array $args, array $content, array $title, array $image = null, bool $isProduct = false) {
+  private function getTransformer(array $args, array $content, array $title, ?array $image = null, bool $isProduct = false) {
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [

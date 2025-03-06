@@ -148,7 +148,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     return $task;
   }
 
-  private function createQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter = null): SendingQueueEntity {
+  private function createQueue(ScheduledTaskEntity $task, ?NewsletterEntity $newsletter = null): SendingQueueEntity {
     if (!$newsletter) {
       $newsletter = new NewsletterEntity();
       $newsletter->setType('type');

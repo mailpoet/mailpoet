@@ -32,7 +32,7 @@ class AutomationRunLogStorage {
     }
   }
 
-  public function getAutomationRunStatisticsForAutomationInTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
+  public function getAutomationRunStatisticsForAutomationInTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, ?int $versionId = null): array {
     global $wpdb;
     $andWhere = $versionId ? 'AND run.version_id = %d' : '';
     $results = $wpdb->get_results(

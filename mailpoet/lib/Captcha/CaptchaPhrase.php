@@ -10,7 +10,7 @@ class CaptchaPhrase {
 
   public function __construct(
     CaptchaSession $session,
-    PhraseBuilder $phraseBuilder = null
+    ?PhraseBuilder $phraseBuilder = null
   ) {
     $this->session = $session;
     $this->phraseBuilder = $phraseBuilder ?? new PhraseBuilder();

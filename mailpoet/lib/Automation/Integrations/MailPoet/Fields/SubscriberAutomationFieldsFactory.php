@@ -66,7 +66,7 @@ class SubscriberAutomationFieldsFactory {
     ];
   }
 
-  private function getAutomationIds(SubscriberPayload $payload, array $status = null, array $params = []): array {
+  private function getAutomationIds(SubscriberPayload $payload, ?array $status = null, array $params = []): array {
     $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
     $subject = new Subject(SubscriberSubject::KEY, ['subscriber_id' => $payload->getId()]);
     return $this->automationStorage->getAutomationIdsBySubject($subject, $status, $inTheLastSeconds);

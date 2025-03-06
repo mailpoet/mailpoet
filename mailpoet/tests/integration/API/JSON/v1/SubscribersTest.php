@@ -314,7 +314,7 @@ class SubscribersTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
-    verify($this->subscriber2->getSubscriberSegments()->filter(function (SubscriberSegmentEntity $subscriberSegment = null) {
+    verify($this->subscriber2->getSubscriberSegments()->filter(function (?SubscriberSegmentEntity $subscriberSegment = null) {
       if (!$subscriberSegment) return false;
       return $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED;
     })->count())->equals(0);

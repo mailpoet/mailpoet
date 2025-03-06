@@ -107,17 +107,17 @@ class EndpointTest extends Test {
     $this->assertSame($request->getParams(), ['required' => 'required']);
   }
 
-  private function registerTestingGetRoute(string $path, callable $requestCallback = null): void {
+  private function registerTestingGetRoute(string $path, ?callable $requestCallback = null): void {
     $api = $this->createApi($requestCallback);
     $api->registerGetRoute("mailpoet-api-testing-route/$path", Endpoint::class);
   }
 
-  private function registerTestingPostRoute(string $path, callable $requestCallback = null): void {
+  private function registerTestingPostRoute(string $path, ?callable $requestCallback = null): void {
     $api = $this->createApi($requestCallback);
     $api->registerPostRoute("mailpoet-api-testing-route/$path", Endpoint::class);
   }
 
-  private function createApi(callable $requestCallback = null): API {
+  private function createApi(?callable $requestCallback = null): API {
     // ensure REST server is initialized for endpoint registration
     rest_get_server();
 

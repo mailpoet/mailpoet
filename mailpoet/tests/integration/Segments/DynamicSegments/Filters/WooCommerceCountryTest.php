@@ -60,7 +60,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
    * @param string|null $operator
    * @return DynamicSegmentFilterData
    */
-  private function getSegmentFilterData($country, string $operator = null): DynamicSegmentFilterData {
+  private function getSegmentFilterData($country, ?string $operator = null): DynamicSegmentFilterData {
     $filterData = [
       'country_code' => $country,
     ];

@@ -64,7 +64,7 @@ class Links {
     return $this->newsletterLinks->save($links, $newsletter->getId(), $queue->getId());
   }
 
-  public function getUnsubscribeUrl($queueId, SubscriberEntity $subscriber = null) {
+  public function getUnsubscribeUrl($queueId, ?SubscriberEntity $subscriber = null) {
     if ($this->trackingConfig->isEmailTrackingEnabled() && $subscriber) {
       $linkHash = $this->newsletterLinkRepository->findOneBy(
         [

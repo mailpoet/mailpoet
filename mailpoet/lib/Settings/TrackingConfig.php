@@ -19,22 +19,22 @@ class TrackingConfig {
     $this->settings = $settings;
   }
 
-  public function isEmailTrackingEnabled(string $level = null): bool {
+  public function isEmailTrackingEnabled(?string $level = null): bool {
     $level = $level ?? $this->settings->get('tracking.level', self::LEVEL_FULL);
     return in_array($level, [self::LEVEL_PARTIAL, self::LEVEL_FULL], true);
   }
 
-  public function isCookieTrackingEnabled(string $level = null): bool {
+  public function isCookieTrackingEnabled(?string $level = null): bool {
     $level = $level ?? $this->settings->get('tracking.level', self::LEVEL_FULL);
     return $level === self::LEVEL_FULL;
   }
 
-  public function areOpensMerged(string $opens = null): bool {
+  public function areOpensMerged(?string $opens = null): bool {
     $opens = $opens ?? $this->settings->get('tracking.opens', self::OPENS_MERGED);
     return $opens !== self::OPENS_SEPARATED;
   }
 
-  public function areOpensSeparated(string $opens = null): bool {
+  public function areOpensSeparated(?string $opens = null): bool {
     return !$this->areOpensMerged($opens);
   }
 

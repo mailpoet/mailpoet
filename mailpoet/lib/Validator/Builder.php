@@ -34,13 +34,13 @@ class Builder {
     return new NullSchema();
   }
 
-  public static function array(Schema $items = null): ArraySchema {
+  public static function array(?Schema $items = null): ArraySchema {
     $array = new ArraySchema();
     return $items ? $array->items($items) : $array;
   }
 
   /** @param array<string, Schema>|null $properties */
-  public static function object(array $properties = null): ObjectSchema {
+  public static function object(?array $properties = null): ObjectSchema {
     $object = new ObjectSchema();
     return $properties === null ? $object : $object->properties($properties);
   }

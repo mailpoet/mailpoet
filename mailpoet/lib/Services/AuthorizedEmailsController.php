@@ -161,7 +161,7 @@ class AuthorizedEmailsController {
     return null;
   }
 
-  public function onNewsletterSenderAddressUpdate(NewsletterEntity $newsletter, string $oldSenderAddress = null) {
+  public function onNewsletterSenderAddressUpdate(NewsletterEntity $newsletter, ?string $oldSenderAddress = null) {
     if ($newsletter->getSenderAddress() === $oldSenderAddress) {
       return;
     }
@@ -243,7 +243,7 @@ class AuthorizedEmailsController {
   /**
    * @param array|null $error
    */
-  private function updateMailerLog(array $error = null) {
+  private function updateMailerLog(?array $error = null) {
     if ($error) {
       return;
     }

@@ -39,7 +39,7 @@ class AutomationStatisticsStorage {
     return $statistics;
   }
 
-  public function getAutomationStats(int $automationId, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null): AutomationStatistics {
+  public function getAutomationStats(int $automationId, ?int $versionId = null, ?\DateTimeImmutable $after = null, ?\DateTimeImmutable $before = null): AutomationStatistics {
     $data = $this->getStatistics([$automationId], $versionId, $after, $before);
     return new AutomationStatistics(
       $automationId,
@@ -53,7 +53,7 @@ class AutomationStatisticsStorage {
    * @param int[] $automationIds
    * @return array<int, array{id: int, total: int, running: int}>
    */
-  private function getStatistics(array $automationIds, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null): array {
+  private function getStatistics(array $automationIds, ?int $versionId = null, ?\DateTimeImmutable $after = null, ?\DateTimeImmutable $before = null): array {
     global $wpdb;
     $totalSubquery = $this->getStatsQuery($automationIds, $versionId, $after, $before);
     $runningSubquery = $this->getStatsQuery($automationIds, $versionId, $after, $before, AutomationRun::STATUS_RUNNING);
@@ -71,7 +71,7 @@ class AutomationStatisticsStorage {
     return array_combine(array_column($results, 'id'), $results) ?: [];
   }
 
-  private function getStatsQuery(array $automationIds, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null, string $status = null): string {
+  private function getStatsQuery(array $automationIds, ?int $versionId = null, ?\DateTimeImmutable $after = null, ?\DateTimeImmutable $before = null, ?string $status = null): string {
     global $wpdb;
 
     $versionCondition = $versionId ? 'AND version_id = %d' : '';

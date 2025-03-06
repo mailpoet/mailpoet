@@ -19,7 +19,7 @@ class AutomationMapper {
     $this->statisticsStorage = $statisticsStorage;
   }
 
-  public function buildAutomation(Automation $automation, AutomationStatistics $statistics = null): array {
+  public function buildAutomation(Automation $automation, ?AutomationStatistics $statistics = null): array {
 
     return [
       'id' => $automation->getId(),

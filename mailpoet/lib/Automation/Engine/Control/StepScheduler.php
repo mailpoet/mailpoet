@@ -23,13 +23,13 @@ class StepScheduler {
     $this->automationRunStorage = $automationRunStorage;
   }
 
-  public function scheduleProgress(StepRunArgs $args, int $timestamp = null): int {
+  public function scheduleProgress(StepRunArgs $args, ?int $timestamp = null): int {
     $runId = $args->getAutomationRun()->getId();
     $data = $this->getActionData($runId, $args->getStep()->getId(), $args->getRunNumber() + 1);
     return $this->scheduleStepAction($data, $timestamp);
   }
 
-  public function scheduleNextStep(StepRunArgs $args, int $timestamp = null): int {
+  public function scheduleNextStep(StepRunArgs $args, ?int $timestamp = null): int {
     $step = $args->getStep();
     $nextSteps = $step->getNextSteps();
 
@@ -46,7 +46,7 @@ class StepScheduler {
     return $this->scheduleNextStepByIndex($args, 0, $timestamp);
   }
 
-  public function scheduleNextStepByIndex(StepRunArgs $args, int $nextStepIndex, int $timestamp = null): int {
+  public function scheduleNextStepByIndex(StepRunArgs $args, int $nextStepIndex, ?int $timestamp = null): int {
     $step = $args->getStep();
     $nextStep = $step->getNextSteps()[$nextStepIndex] ?? null;
     if (!$nextStep) {
@@ -95,7 +95,7 @@ class StepScheduler {
     return $this->hasScheduledNextStep($args) || $this->hasScheduledProgress($args);
   }
 
-  private function scheduleStepAction(array $data, int $timestamp = null): int {
+  private function scheduleStepAction(array $data, ?int $timestamp = null): int {
     return $timestamp === null
       ? $this->actionScheduler->enqueue(Hooks::AUTOMATION_STEP, $data)
       : $this->actionScheduler->schedule($timestamp, Hooks::AUTOMATION_STEP, $data);

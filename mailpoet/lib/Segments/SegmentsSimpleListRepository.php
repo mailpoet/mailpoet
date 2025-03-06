@@ -65,7 +65,7 @@ class SegmentsSimpleListRepository {
    */
   private function getList(
     array $segmentTypes = [],
-    string $subscriberGlobalStatus = null
+    ?string $subscriberGlobalStatus = null
   ): array {
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
 

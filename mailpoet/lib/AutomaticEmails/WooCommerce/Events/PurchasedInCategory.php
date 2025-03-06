@@ -34,7 +34,7 @@ class PurchasedInCategory {
   private $subscribersRepository;
 
   public function __construct(
-    WCHelper $woocommerceHelper = null
+    ?WCHelper $woocommerceHelper = null
   ) {
     if ($woocommerceHelper === null) {
       $woocommerceHelper = ContainerWrapper::getInstance()->get(WCHelper::class);

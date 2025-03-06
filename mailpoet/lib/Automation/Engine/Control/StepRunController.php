@@ -25,15 +25,15 @@ class StepRunController {
     $this->stepRunLogger = $stepRunLogger;
   }
 
-  public function scheduleProgress(int $timestamp = null): int {
+  public function scheduleProgress(?int $timestamp = null): int {
     return $this->stepScheduler->scheduleProgress($this->stepRunArgs, $timestamp);
   }
 
-  public function scheduleNextStep(int $timestamp = null): int {
+  public function scheduleNextStep(?int $timestamp = null): int {
     return $this->stepScheduler->scheduleNextStep($this->stepRunArgs, $timestamp);
   }
 
-  public function scheduleNextStepByIndex(int $nextStepIndex, int $timestamp = null): int {
+  public function scheduleNextStepByIndex(int $nextStepIndex, ?int $timestamp = null): int {
     return $this->stepScheduler->scheduleNextStepByIndex($this->stepRunArgs, $nextStepIndex, $timestamp);
   }
 

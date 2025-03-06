@@ -20,16 +20,16 @@ abstract class Exception extends PhpException implements RestException {
   protected $errors = [];
 
   final public function __construct(
-    string $message = null,
-    string $errorCode = null,
-    Throwable $previous = null
+    ?string $message = null,
+    ?string $errorCode = null,
+    ?Throwable $previous = null
   ) {
     parent::__construct($message ?? __('Unknown error.', 'mailpoet'), 0, $previous);
     $this->errorCode = $errorCode ?? 'mailpoet_automation_unknown_error';
   }
 
   /** @return static */
-  public static function create(Throwable $previous = null) {
+  public static function create(?Throwable $previous = null) {
     return new static(null, null, $previous);
   }
 

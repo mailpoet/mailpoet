@@ -145,7 +145,7 @@ class HooksWooCommerce {
     }
   }
 
-  public function onRegister($errors, string $userLogin, string $userEmail = null) {
+  public function onRegister($errors, string $userLogin, ?string $userEmail = null) {
     try {
       if (empty($errors->errors)) {
         $this->subscriberRegistration->onRegister($errors, $userLogin, $userEmail);

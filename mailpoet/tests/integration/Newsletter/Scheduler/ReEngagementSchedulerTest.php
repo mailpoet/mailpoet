@@ -193,7 +193,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  private function createSubscriber($email, $lastEngagement, SegmentEntity $segment = null) {
+  private function createSubscriber($email, $lastEngagement, ?SegmentEntity $segment = null) {
     $factory = new Subscriber();
     if ($segment) {
       $factory = $factory->withSegments([$segment]);

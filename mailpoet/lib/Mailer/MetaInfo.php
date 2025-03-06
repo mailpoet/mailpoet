@@ -18,7 +18,7 @@ class MetaInfo {
     return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
   }
 
-  public function getWordPressTransactionalMetaInfo(SubscriberEntity $subscriber = null) {
+  public function getWordPressTransactionalMetaInfo(?SubscriberEntity $subscriber = null) {
     return $this->makeMetaInfo(
       'transactional',
       $subscriber ? $subscriber->getStatus() : 'unknown',

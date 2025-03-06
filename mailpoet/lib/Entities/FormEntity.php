@@ -174,7 +174,7 @@ class FormEntity {
     ];
   }
 
-  public function getBlocksByTypes(array $types, array $blocks = null): array {
+  public function getBlocksByTypes(array $types, ?array $blocks = null): array {
     $found = [];
     if ($blocks === null) {
       $blocks = $this->getBody() ?? [];

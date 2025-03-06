@@ -169,7 +169,7 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
     Automation $automation,
     string $status,
     array $subjects,
-    DateTimeInterface $createdAt = null
+    ?DateTimeInterface $createdAt = null
   ): AutomationRun {
     $runStorage = $this->diContainer->get(AutomationRunStorage::class);
     $run = $this->tester->createAutomationRun($automation, $subjects);

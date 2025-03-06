@@ -260,7 +260,7 @@ class NewsletterListingRepository extends ListingRepository {
     $queryBuilder->addOrderBy("n.$sortBy", $sortOrder);
   }
 
-  private function applyType(QueryBuilder $queryBuilder, string $type, string $group = null) {
+  private function applyType(QueryBuilder $queryBuilder, string $type, ?string $group = null) {
     if (!in_array($type, self::$supportedTypes)) {
       return;
     }

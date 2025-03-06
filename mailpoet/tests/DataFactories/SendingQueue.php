@@ -19,7 +19,7 @@ class SendingQueue {
     $this->entityManager = $diContainer->get(EntityManager::class);
   }
 
-  public function create(ScheduledTaskEntity $task, ?NewsletterEntity $newsletter = null, \DateTimeInterface $deletedAt = null): SendingQueueEntity {
+  public function create(ScheduledTaskEntity $task, ?NewsletterEntity $newsletter = null, ?\DateTimeInterface $deletedAt = null): SendingQueueEntity {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
     $task->setSendingQueue($queue);

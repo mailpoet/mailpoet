@@ -126,7 +126,7 @@ class AutomationStorage {
     ) : [];
   }
 
-  public function getAutomation(int $automationId, int $versionId = null): ?Automation {
+  public function getAutomation(int $automationId, ?int $versionId = null): ?Automation {
     global $wpdb;
 
     if ($versionId) {
@@ -153,7 +153,7 @@ class AutomationStorage {
   }
 
   /** @return Automation[] */
-  public function getAutomations(array $status = null): array {
+  public function getAutomations(?array $status = null): array {
     global $wpdb;
 
     $statusFilter = $status ? 'AND a.status IN (' . implode(',', array_fill(0, count($status), '%s')) . ')' : '';
@@ -184,7 +184,7 @@ class AutomationStorage {
   }
 
   /** @return int[] */
-  public function getAutomationIdsBySubject(Subject $subject, array $runStatus = null, int $inTheLastSeconds = null): array {
+  public function getAutomationIdsBySubject(Subject $subject, ?array $runStatus = null, ?int $inTheLastSeconds = null): array {
     global $wpdb;
 
     $statusFilter = $runStatus ? 'AND r.status IN (' . implode(',', array_fill(0, count($runStatus), '%s')) . ')' : '';

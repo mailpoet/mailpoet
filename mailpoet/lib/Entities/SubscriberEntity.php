@@ -504,7 +504,7 @@ class SubscriberEntity {
 
   /** * @return Collection<int, SegmentEntity> */
   public function getSegments() {
-    return $this->subscriberSegments->map(function (SubscriberSegmentEntity $subscriberSegment = null) {
+    return $this->subscriberSegments->map(function (?SubscriberSegmentEntity $subscriberSegment = null) {
       if (!$subscriberSegment) return null;
       return $subscriberSegment->getSegment();
     })->filter(function (?SegmentEntity $segment = null) {
@@ -635,7 +635,7 @@ class SubscriberEntity {
   /** @ORM\PreFlush */
   public function cleanupSubscriberSegments(): void {
     // Delete old orphan SubscriberSegments to avoid errors on update
-    $this->subscriberSegments->map(function (SubscriberSegmentEntity $subscriberSegment = null) {
+    $this->subscriberSegments->map(function (?SubscriberSegmentEntity $subscriberSegment = null) {
       if (!$subscriberSegment) return null;
       if ($subscriberSegment->getSegment() === null) {
         $this->subscriberSegments->removeElement($subscriberSegment);

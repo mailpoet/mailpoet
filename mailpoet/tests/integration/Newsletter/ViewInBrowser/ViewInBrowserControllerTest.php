@@ -138,7 +138,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   public function testUsesEmptySubscriberWhenNotLoggedIn() {
 
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) {
         $this->assertNotNull($subscriber); // PHPStan
         verify($subscriber)->notNull();
         verify($subscriber->getId())->equals(0);
@@ -155,7 +155,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $subscriberId = $this->subscriber->getId();
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) use ($subscriberId) {
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) use ($subscriberId) {
         $this->assertNotNull($subscriber); // PHPStan
         verify($subscriber)->notNull();
         verify($subscriber->getId())->equals($subscriberId);
@@ -176,7 +176,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItGetsQueueByQueueId() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
         verify($queue)->notNull();
         verify($queue->getId())->equals($this->sendingQueue->getId());
@@ -192,7 +192,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItGetsQueueByNewsletter() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
         verify($queue)->notNull();
         verify($queue->getId())->equals($this->sendingQueue->getId());

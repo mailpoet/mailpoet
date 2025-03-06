@@ -37,7 +37,7 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
   /**
    * @dataProvider dataForTestItCalculatesTotalsCorrectly
    */
-  public function testItCalculatesTotalsCorrectlyForSingleAutomation(int $automationIndex, int $expectedTotal, int $expectedInProgress, int $expectedExited, int $versionId = null) {
+  public function testItCalculatesTotalsCorrectlyForSingleAutomation(int $automationIndex, int $expectedTotal, int $expectedInProgress, int $expectedExited, ?int $versionId = null) {
     $automation = $this->automationStorage->getAutomation($this->automations[$automationIndex], $versionId);
     $this->assertInstanceOf(Automation::class, $automation);
     $i = 0;

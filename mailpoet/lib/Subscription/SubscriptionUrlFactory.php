@@ -35,29 +35,29 @@ class SubscriptionUrlFactory {
     $this->linkTokens = $linkTokens;
   }
 
-  public function getConfirmationUrl(SubscriberEntity $subscriber = null) {
+  public function getConfirmationUrl(?SubscriberEntity $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  public function getConfirmUnsubscribeUrl(SubscriberEntity $subscriber = null, int $queueId = null) {
+  public function getConfirmUnsubscribeUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirm_unsubscribe'));
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber, $data);
   }
 
-  public function getManageUrl(SubscriberEntity $subscriber = null) {
+  public function getManageUrl(?SubscriberEntity $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.manage'));
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  public function getUnsubscribeUrl(SubscriberEntity $subscriber = null, int $queueId = null) {
+  public function getUnsubscribeUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber, $data);
   }
 
-  public function getReEngagementUrl(SubscriberEntity $subscriber = null) {
+  public function getReEngagementUrl(?SubscriberEntity $subscriber = null) {
     $reEngagementSetting = $this->settings->get('reEngagement');
     $postId = $reEngagementSetting['page'] ?? null;
 
@@ -68,7 +68,7 @@ class SubscriptionUrlFactory {
   public function getSubscriptionUrl(
     $post = null,
     $action = null,
-    SubscriberEntity $subscriber = null,
+    ?SubscriberEntity $subscriber = null,
     $data = null
   ) {
     if ($post === null || $action === null) return;

@@ -30,7 +30,7 @@ class Migrator {
     $this->store = $store;
   }
 
-  public function run(Logger $logger = null): void {
+  public function run(?Logger $logger = null): void {
     $this->store->ensureMigrationsTable();
     $migrations = $this->getStatus();
 

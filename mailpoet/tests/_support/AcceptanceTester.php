@@ -168,7 +168,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->click($xpath);
   }
 
-  public function clickWooTableActionInsideMoreButton(string $itemName, string $moreButtonAction, string $confirmAction = null) {
+  public function clickWooTableActionInsideMoreButton(string $itemName, string $moreButtonAction, ?string $confirmAction = null) {
     $i = $this;
     $i->clickWooTableMoreButtonByItemName($itemName);
     $i->waitForText($itemName);

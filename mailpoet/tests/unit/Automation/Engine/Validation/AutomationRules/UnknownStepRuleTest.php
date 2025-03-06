@@ -80,7 +80,7 @@ class UnknownStepRuleTest extends AutomationRuleTest {
     (new AutomationWalker())->walk($automation, [$this->getRule($existingAutomation, [new RootStep()])]);
   }
 
-  private function getRule(Automation $existingAutomation = null, array $steps = []): UnknownStepRule {
+  private function getRule(?Automation $existingAutomation = null, array $steps = []): UnknownStepRule {
     $stepMap = [];
     foreach ($steps as $step) {
       $stepMap[$step->getKey()] = $step;

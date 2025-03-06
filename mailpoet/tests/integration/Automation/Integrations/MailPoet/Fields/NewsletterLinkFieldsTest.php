@@ -50,7 +50,7 @@ class NewsletterLinkFieldsTest extends \MailPoetTest {
     $this->assertEquals($expectedId, $field->getValue($payload));
   }
 
-  private function getPayload(int $id = 1, string $url = 'https://example.com', \DateTimeImmutable $created = null): NewsletterLinkPayload {
+  private function getPayload(int $id = 1, string $url = 'https://example.com', ?\DateTimeImmutable $created = null): NewsletterLinkPayload {
     $newsletter = new NewsletterEntity();
     $queue = new SendingQueueEntity();
     $newsletterLink = new NewsletterLinkEntity($newsletter, $queue, $url, 'hash');

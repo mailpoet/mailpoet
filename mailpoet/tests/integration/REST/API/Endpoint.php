@@ -12,7 +12,7 @@ class Endpoint extends APIEndpoint {
   private $requestCallback;
 
   public function __construct(
-    callable $requestCallback = null
+    ?callable $requestCallback = null
   ) {
     $this->requestCallback = $requestCallback;
   }

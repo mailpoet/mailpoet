@@ -25,7 +25,7 @@ class QueryWithCompare extends Query {
     string $orderDirection = 'asc',
     int $page = 0,
     array $filter = [],
-    string $search = null
+    ?string $search = null
   ) {
     parent::__construct($primaryAfter, $primaryBefore, $limit, $orderBy, $orderDirection, $page, $filter, $search);
     $this->secondaryAfter = $secondaryAfter;

@@ -107,7 +107,7 @@ class Help {
     return $actionSchedulerData;
   }
 
-  private function getLatestActionSchedulerActionDate(string $hook, string $status = null): ?string {
+  private function getLatestActionSchedulerActionDate(string $hook, ?string $status = null): ?string {
     $query = [
       'per_page' => 1,
       'order' => 'DESC',

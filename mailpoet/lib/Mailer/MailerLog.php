@@ -33,7 +33,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return MailerLogData
    */
-  public static function getMailerLog(array $mailerLog = null): array {
+  public static function getMailerLog(?array $mailerLog = null): array {
     if ($mailerLog) return $mailerLog;
     $settings = SettingsController::getInstance();
     $mailerLog = $settings->get(self::SETTING_NAME);
@@ -90,7 +90,7 @@ class MailerLog {
    * @return null
    * @throws \Exception
    */
-  public static function enforceExecutionRequirements(array $mailerLog = null) {
+  public static function enforceExecutionRequirements(?array $mailerLog = null) {
     $mailerLog = self::getMailerLog($mailerLog);
     if ($mailerLog['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
       $mailerLog = self::pauseSending($mailerLog);
@@ -162,9 +162,9 @@ class MailerLog {
   public static function processError(
     string $operation,
     string $errorMessage,
-    string $errorCode = null,
+    ?string $errorCode = null,
     bool $pauseSending = false,
-    int $throttledBatchSize = null
+    ?int $throttledBatchSize = null
   ) {
     $mailerLog = self::getMailerLog();
     if (!isset($throttledBatchSize) || $throttledBatchSize === 1) {
@@ -232,7 +232,7 @@ class MailerLog {
     array $mailerLog,
     string $operation,
     string $errorMessage,
-    string $errorCode = null
+    ?string $errorCode = null
   ): array {
     $mailerLog['error'] = [
       'operation' => $operation,
@@ -248,7 +248,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return MailerLogError|null
    */
-  public static function getError(array $mailerLog = null): ?array {
+  public static function getError(?array $mailerLog = null): ?array {
     $mailerLog = self::getMailerLog($mailerLog);
     return isset($mailerLog['error']) ? $mailerLog['error'] : null;
   }
@@ -300,7 +300,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return bool
    */
-  public static function isSendingLimitReached(array $mailerLog = null): bool {
+  public static function isSendingLimitReached(?array $mailerLog = null): bool {
     $settings = SettingsController::getInstance();
     $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
     // do not enforce sending limit for MailPoet's sending method
@@ -322,7 +322,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return int
    */
-  public static function sentSince(int $sinceSeconds = null, array $mailerLog = null): int {
+  public static function sentSince(?int $sinceSeconds = null, ?array $mailerLog = null): int {
 
     if ($sinceSeconds === null) {
       $settings = SettingsController::getInstance();
@@ -353,7 +353,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return MailerLogData
    */
-  private static function removeOutdatedSentInformationFromMailerlog(array $mailerLog = null): array {
+  private static function removeOutdatedSentInformationFromMailerlog(?array $mailerLog = null): array {
 
     $settings = SettingsController::getInstance();
     $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
@@ -375,7 +375,7 @@ class MailerLog {
    * @param int|null $timestamp
    * @return string
    */
-  private static function sentEntriesDate(int $timestamp = null): string {
+  private static function sentEntriesDate(?int $timestamp = null): string {
 
     return date('Y-m-d H:i:s', $timestamp ?? time());
   }
@@ -384,7 +384,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return bool
    */
-  public static function isSendingPaused(array $mailerLog = null): bool {
+  public static function isSendingPaused(?array $mailerLog = null): bool {
     $mailerLog = self::getMailerLog($mailerLog);
     return $mailerLog['status'] === self::STATUS_PAUSED;
   }
@@ -393,7 +393,7 @@ class MailerLog {
    * @param MailerLogData|null $mailerLog
    * @return bool
    */
-  public static function isSendingWaitingForRetry(array $mailerLog = null): bool {
+  public static function isSendingWaitingForRetry(?array $mailerLog = null): bool {
     $mailerLog = self::getMailerLog($mailerLog);
     $retryAt = $mailerLog['retry_at'] ?? null;
     return $retryAt && (time() <= $retryAt);

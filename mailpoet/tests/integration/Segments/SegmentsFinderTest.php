@@ -94,7 +94,7 @@ class SegmentsFinderTest extends MailPoetTest {
       ->create();
   }
 
-  private function createSegment(string $type, string $name = null): SegmentEntity {
+  private function createSegment(string $type, ?string $name = null): SegmentEntity {
     $name = $name ?? "Segment $type";
     $segmentFactory = new SegmentFactory();
     return $segmentFactory

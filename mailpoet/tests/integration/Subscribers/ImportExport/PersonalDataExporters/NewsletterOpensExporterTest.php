@@ -79,7 +79,7 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
     $this->assertSame($result['data'][0]['data'][2], ['name' => 'User-agent', 'value' => 'Unknown']);
   }
 
-  protected function prepareDataToBeExported(string $userEmail, string $userAgentName = null) {
+  protected function prepareDataToBeExported(string $userEmail, ?string $userAgentName = null) {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($userEmail);
     $this->entityManager->persist($subscriber);

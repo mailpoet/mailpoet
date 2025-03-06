@@ -45,7 +45,7 @@ class StatisticsNewsletterEntity {
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
     SubscriberEntity $subscriber,
-    \DateTimeInterface $sentAt = null
+    ?\DateTimeInterface $sentAt = null
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;

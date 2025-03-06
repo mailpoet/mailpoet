@@ -120,7 +120,7 @@ class BuysAProductTriggerTest extends \MailPoetTest {
    * @return \WC_Order
    * @throws \WC_Data_Exception
    */
-  private function createOrder(array $productIds, string $billingEmail = null): \WC_Order {
+  private function createOrder(array $productIds, ?string $billingEmail = null): \WC_Order {
 
     $order = new \WC_Order();
     $order->set_billing_email($billingEmail ?? uniqid() . '@example.com');

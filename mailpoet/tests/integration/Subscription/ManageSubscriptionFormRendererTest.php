@@ -63,7 +63,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function getSubscriber(SegmentEntity $segment = null): SubscriberEntity {
+  private function getSubscriber(?SegmentEntity $segment = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setFirstName('Fname');
