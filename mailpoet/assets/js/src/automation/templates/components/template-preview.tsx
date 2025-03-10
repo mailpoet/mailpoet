@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 import { Spinner } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -77,8 +78,11 @@ export function TemplatePreview({ template }: Props): JSX.Element {
       initializeIntegrations();
 
       try {
+        const path = addQueryArgs(`/automation-templates/${template.slug}`, {
+          preview: true,
+        });
         const data = await apiFetch<{ data: { automation: unknown } }>({
-          path: `/automation-templates/${template.slug}`,
+          path,
           method: 'GET',
           signal: controller.signal,
         });
