@@ -494,8 +494,8 @@ importers:
         specifier: ^4.0.9
         version: 4.0.9(postcss@8.4.49)
       prismjs:
-        specifier: ^1.29.0
-        version: 1.29.0
+        specifier: ^1.30.0
+        version: 1.30.0
       sass:
         specifier: ^1.77.5
         version: 1.77.5
@@ -10823,7 +10823,7 @@ packages:
       indexof: 0.0.1
       parseqs: 0.0.6
       parseuri: 0.0.6
-      ws: 8.18.0
+      ws: 8.18.1
       xmlhttprequest-ssl: 2.1.1
       yeast: 0.1.2
     transitivePeerDependencies:
@@ -16358,8 +16358,8 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /prismjs@1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
+  /prismjs@1.30.0:
+    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
     dev: true
 
@@ -16510,7 +16510,7 @@ packages:
       debug: 4.3.4
       devtools-protocol: 0.0.1147663
       typescript: 5.0.2
-      ws: 8.18.0
+      ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -19821,6 +19821,20 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dev: true
+
+  /ws@8.18.1:
+    resolution: {integrity: sha512-RKW2aJZMXeMxVpnZ6bck+RswznaxmzdULiBr6KY7XkTnW8uvt0iT9H5DkHUChXrc+uurzwa0rVI16n/Xzjdz1w==}
+    engines: {node: '>=10.0.0'}
+    requiresBuild: true
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   /xdg-basedir@4.0.0:
     resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}
@@ -19876,7 +19890,7 @@ packages:
       y-protocols: 1.0.6(yjs@13.6.12)
       yjs: 13.6.12
     optionalDependencies:
-      ws: 8.18.0
+      ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
       - supports-color
