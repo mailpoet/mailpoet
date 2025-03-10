@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
@@ -42,6 +43,7 @@ class EmailFactory {
     // Create a new newsletter entity
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $newsletter->setSubject($data['subject'] ?? '');
     $newsletter->setPreheader($data['preheader'] ?? '');
     $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
@@ -89,9 +91,8 @@ class EmailFactory {
     $templatePath = $this->getTemplatePath($templateName);
 
     if (!file_exists($templatePath)) {
-      return null;
+      throw new NotFoundException('Template not found: ' . $templateName);
     }
-
     return $this->fetchEmailTemplate($templatePath);
   }
 
