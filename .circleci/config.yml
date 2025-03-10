@@ -949,14 +949,8 @@ jobs:
       - run:
           name: 'QIT Activation Tests'
           command: |
-            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-            if [ -z "$LATEST_WC_BETA" ]; then
-              echo "No WooCommerce Beta version found. Using stable."
-              ./do qa:qit-activation | tee tests/_output/qit-activation
-            else
-              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              ./do qa:qit-activation --wc=$LATEST_WC_BETA | tee tests/_output/qit-activation
-            fi
+            echo "Using WooCommerce RC Version"
+            ./do qa:qit-activation --wc=rc | tee tests/_output/qit-activation
       - run:
           name: 'Retrieve test results'
           command: |
@@ -980,14 +974,8 @@ jobs:
       - run:
           name: 'QIT Woo API Tests'
           command: |
-            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-            if [ -z "$LATEST_WC_BETA" ]; then
-              echo "No WooCommerce Beta version found. Using stable."
-              ./do qa:qit-woo-api | tee tests/_output/qit-woo-api
-            else
-              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              ./do qa:qit-woo-api --wc=$LATEST_WC_BETA | tee tests/_output/qit-woo-api
-            fi
+            echo "Using WooCommerce RC Version"
+            ./do qa:qit-woo-api --wc=rc | tee tests/_output/qit-woo-api
       - run:
           name: 'Retrieve test results'
           command: |
@@ -1012,14 +1000,8 @@ jobs:
           name: 'QIT Woo E2E Tests'
           no_output_timeout: 1h # Woo E2E tests usually takes ~45m
           command: |
-            LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-            if [ -z "$LATEST_WC_BETA" ]; then
-              echo "No WooCommerce Beta version found. Using stable."
-              ./do qa:qit-woo-e2e | tee tests/_output/qit-woo-e2e
-            else
-              echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              ./do qa:qit-woo-e2e --wc=$LATEST_WC_BETA | tee tests/_output/qit-woo-e2e
-            fi
+            echo "Using WooCommerce RC Version"
+            ./do qa:qit-woo-e2e --wc=rc | tee tests/_output/qit-woo-e2e
       - run:
           name: 'Retrieve test results'
           command: |
