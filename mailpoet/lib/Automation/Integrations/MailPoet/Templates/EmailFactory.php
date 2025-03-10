@@ -16,8 +16,8 @@ class EmailFactory {
   /** @var SettingsController */
   private $settings;
 
-  /** @var string */
-  private $templatesDirectory;
+  /** @var string|null */
+  protected $templatesDirectory;
 
   /** @var WordPress */
   private $wp;
@@ -30,7 +30,6 @@ class EmailFactory {
     $this->newslettersRepository = $newslettersRepository;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->templatesDirectory = Env::$libPath . '/Automation/Integrations/MailPoet/Templates/EmailTemplates';
   }
 
   /**
@@ -104,7 +103,7 @@ class EmailFactory {
    */
   protected function getTemplatePath(string $templateName): string {
     $sanitizedTemplateName = $this->wp->sanitizeFileName($templateName);
-    return $this->templatesDirectory . '/' . $sanitizedTemplateName . '.json';
+    return $this->getTemplatesDirectory() . '/' . $sanitizedTemplateName . '.json';
   }
 
   /**
@@ -130,10 +129,10 @@ class EmailFactory {
   /**
    * Set the templates directory
    *
-   * @param string $directory The directory where templates are stored
+   * @param string|null $directory The directory where templates are stored
    * @return self
    */
-  public function setTemplatesDirectory(string $directory): self {
+  public function setTemplatesDirectory(?string $directory): self {
     $this->templatesDirectory = $directory;
     return $this;
   }
@@ -144,6 +143,7 @@ class EmailFactory {
    * @return string The directory where templates are stored
    */
   public function getTemplatesDirectory(): string {
-    return $this->templatesDirectory;
+    return $this->templatesDirectory
+      ?: Env::$libPath . '/Automation/Integrations/MailPoet/Templates/EmailTemplates';
   }
 }

@@ -113,13 +113,19 @@ class EmailFactoryTest extends MailPoetTest {
     $this->assertEquals($templateContent, $newsletter->getBody());
   }
 
-  public function testItHandlesTemplateLoading(): void {
+  public function testItHandlesTemplateLoadingForWrongPath(): void {
     $unsafePath = Env::$file; // Main plugin file
-    $this->assertNull($this->emailFactory->loadTemplate($unsafePath));
+    $this->expectException(\MailPoet\Automation\Engine\Exceptions\NotFoundException::class);
+    $this->emailFactory->loadTemplate($unsafePath);
+  }
 
+  public function testItHandlesTemplateLoadingForNonExistentTemplate(): void {
     $nonExistentPath = 'non-existent-template';
-    $this->assertNull($this->emailFactory->loadTemplate($nonExistentPath));
+    $this->expectException(\MailPoet\Automation\Engine\Exceptions\NotFoundException::class);
+    $this->emailFactory->loadTemplate($nonExistentPath);
+  }
 
+  public function testItHandlesTemplateLoadingForValidTemplate(): void {
     $templateName = 'valid-template';
     $templateContent = ['html' => '<p>Valid template content</p>'];
     $templateFile = $this->tempDir . '/' . $templateName . '.json';
@@ -135,7 +141,7 @@ class EmailFactoryTest extends MailPoetTest {
     $this->emailFactory->setTemplatesDirectory($customDir);
     $this->assertEquals($customDir, $this->emailFactory->getTemplatesDirectory());
 
-    $this->emailFactory->setTemplatesDirectory(Env::$libPath . '/Automation/Integrations/MailPoet/Templates/EmailTemplates');
+    $this->emailFactory->setTemplatesDirectory(null);
     $this->assertEquals(Env::$libPath . '/Automation/Integrations/MailPoet/Templates/EmailTemplates', $this->emailFactory->getTemplatesDirectory());
   }
 }
