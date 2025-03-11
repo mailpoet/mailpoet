@@ -2,11 +2,16 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Settings\SettingsController;
 
 class EmailFactory {
@@ -22,14 +27,24 @@ class EmailFactory {
   /** @var WordPress */
   private $wp;
 
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SettingsController $settings,
-    WordPress $wp
+    WordPress $wp,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
+    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
+    $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
   }
 
   /**
@@ -64,6 +79,99 @@ class EmailFactory {
 
     // Return the newsletter ID
     return $newsletter->getId();
+  }
+
+  /**
+   * Sets automation and step ID for all email steps in an automation
+   *
+   * @param Automation $automation The automation object
+   * @return void
+   */
+  public function setAutomationIdForEmails(Automation $automation): void {
+    // Skip if automation ID is not set
+    try {
+      $automationId = $automation->getId();
+    } catch (\Exception $e) {
+      return;
+    }
+
+    $steps = $automation->getSteps();
+    $emailSteps = array_filter($steps, function($step) {
+      return $step->getKey() === 'mailpoet:send-email';
+    });
+
+    foreach ($emailSteps as $step) {
+      $args = $step->getArgs();
+      $emailId = $args['email_id'] ?? null;
+
+      if ($emailId) {
+        $newsletter = $this->newslettersRepository->findOneById($emailId);
+        if (!$newsletter) {
+          continue;
+        }
+
+        $existingAutomationId = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AUTOMATION_ID);
+        $existingStepId = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AUTOMATION_STEP_ID);
+
+        if ($existingAutomationId === (string)$automationId && $existingStepId === $step->getId()) {
+          continue;
+        }
+
+        $this->storeNewsletterOption(
+          $newsletter,
+          NewsletterOptionFieldEntity::NAME_AUTOMATION_ID,
+          (string)$automationId
+        );
+
+        $this->storeNewsletterOption(
+          $newsletter,
+          NewsletterOptionFieldEntity::NAME_AUTOMATION_STEP_ID,
+          $step->getId()
+        );
+
+        $this->newslettersRepository->flush();
+      }
+    }
+  }
+
+  /**
+   * Stores a newsletter option
+   *
+   * @param NewsletterEntity $newsletter The newsletter entity
+   * @param string $optionName The name of the option
+   * @param string|null $optionValue The value of the option
+   * @return void
+   */
+  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, ?string $optionValue = null): void {
+    if (!$optionValue || !$this->newsletterOptionsRepository || !$this->newsletterOptionFieldsRepository) {
+      return;
+    }
+
+    $existingOption = $newsletter->getOption($optionName);
+    if ($existingOption && $existingOption->getValue() === $optionValue) {
+      return; // Skip if option already exists with the same value
+    }
+
+    $field = $this->newsletterOptionFieldsRepository->findOneBy([
+      'name' => $optionName,
+      'newsletterType' => $newsletter->getType(),
+    ]);
+
+    if (!$field) {
+      return;
+    }
+
+    // If option exists but with different value, update it
+    if ($existingOption) {
+      $existingOption->setValue($optionValue);
+      return;
+    }
+
+    // Otherwise create a new option
+    $option = new NewsletterOptionEntity($newsletter, $field);
+    $option->setValue($optionValue);
+    $this->newsletterOptionsRepository->persist($option);
+    $newsletter->getOptions()->add($option);
   }
 
   /**

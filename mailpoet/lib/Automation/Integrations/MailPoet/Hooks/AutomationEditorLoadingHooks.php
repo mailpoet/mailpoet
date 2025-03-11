@@ -7,6 +7,8 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 
@@ -45,6 +47,12 @@ class AutomationEditorLoadingHooks {
       return;
     }
     $this->disconnectEmptyEmailsFromSendEmailStep($automation);
+    $this->setAutomationIdForEmails($automation);
+  }
+
+  private function setAutomationIdForEmails(Automation $automation): void {
+    $emailFactory = ContainerWrapper::getInstance()->get(EmailFactory::class);
+    $emailFactory->setAutomationIdForEmails($automation);
   }
 
   private function disconnectEmptyEmailsFromSendEmailStep(Automation $automation): void {
