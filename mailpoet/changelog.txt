@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.9.0 - 2025-03-11 =
+* Improved: Woo email customizer updated to support new email features introduced in Woo.
+
 = 5.8.1 - 2025-03-03 =
 * Changed: minimum required WooCommerce is 9.6.
 
