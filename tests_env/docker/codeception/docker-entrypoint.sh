@@ -36,6 +36,12 @@ wp config set WP_AUTO_UPDATE_CORE false --raw
 mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
 mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
 
+
+if [[ $WORDPRESS_VERSION != "" ]]; then
+  echo "Downloading WordPress version: $WORDPRESS_VERSION"
+  wp core download --version=$WORDPRESS_VERSION --force
+fi
+
 # install WordPress
 WP_CORE_INSTALL_PARAMS="--url=$HTTP_HOST --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
 if [[ -z "$MULTISITE" || "$MULTISITE" -eq "0" ]]; then
@@ -47,11 +53,6 @@ else
   wp site create --slug=$WP_TEST_MULTISITE_SLUG
 fi
 
-if [[ $WORDPRESS_VERSION != "" ]]; then
-  echo "Installing WordPress version: $WORDPRESS_VERSION"
-  wp core update --version=$WORDPRESS_VERSION
-  wp core update-db
-fi
 echo "WORDPRESS VERSION:"
 wp core version
 
