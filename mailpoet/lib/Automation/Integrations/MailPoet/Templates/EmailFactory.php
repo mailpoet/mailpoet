@@ -13,6 +13,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Security;
 
 class EmailFactory {
   /** @var NewslettersRepository */
@@ -62,6 +63,7 @@ class EmailFactory {
     $newsletter->setPreheader($data['preheader'] ?? '');
     $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
     $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
+    $newsletter->setHash(Security::generateHash());
 
     // Set content if provided
     if (isset($data['content'])) {
