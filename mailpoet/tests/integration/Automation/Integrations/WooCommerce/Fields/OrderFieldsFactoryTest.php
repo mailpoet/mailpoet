@@ -243,6 +243,40 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('processing', $statusField->getValue($payload));
   }
 
+  public function testCreatedViaField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $createdViaField = $fields['woocommerce:order:created-via'];
+    $this->assertSame('Created via', $createdViaField->getName());
+    $this->assertSame('enum', $createdViaField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'checkout', 'name' => 'Checkout'],
+        ['id' => 'admin', 'name' => 'Admin'],
+        ['id' => 'rest-api', 'name' => 'REST API'],
+        ['id' => 'webhook', 'name' => 'Webhook'],
+        ['id' => 'subscription', 'name' => 'Subscription'],
+        ['id' => 'pos', 'name' => 'POS'],
+        ['id' => 'checkout-draft', 'name' => 'Checkout Draft'],
+      ],
+    ], $createdViaField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_created_via('checkout');
+    $payload = new OrderPayload($order);
+    $this->assertSame('checkout', $createdViaField->getValue($payload));
+
+    $order->set_created_via('admin');
+    $payload = new OrderPayload($order);
+    $this->assertSame('admin', $createdViaField->getValue($payload));
+
+    $order->set_created_via('rest-api');
+    $payload = new OrderPayload($order);
+    $this->assertSame('rest-api', $createdViaField->getValue($payload));
+  }
+
   public function testTotalField(): void {
     $fields = $this->getFieldsMap();
 
