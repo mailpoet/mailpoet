@@ -7,6 +7,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Shortcodes\Categories\Customer;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
@@ -54,6 +55,9 @@ class Shortcodes {
   /** @var Site */
   private $siteCategory;
 
+  /** @var Customer */
+  private $customerCategory;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
@@ -65,7 +69,8 @@ class Shortcodes {
     Link $linkCategory,
     Newsletter $newsletterCategory,
     SubscriberCategory $subscriberCategory,
-    Site $siteCategory
+    Site $siteCategory,
+    Customer $customerCategory
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
@@ -78,6 +83,7 @@ class Shortcodes {
     $this->newsletterCategory = $newsletterCategory;
     $this->subscriberCategory = $subscriberCategory;
     $this->siteCategory = $siteCategory;
+    $this->customerCategory = $customerCategory;
   }
 
   public function init() {
@@ -261,6 +267,7 @@ class Shortcodes {
       $this->newsletterCategory,
       $this->subscriberCategory,
       $this->siteCategory,
+      $this->customerCategory,
       $this->wp
     );
 

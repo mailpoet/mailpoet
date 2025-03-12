@@ -129,6 +129,28 @@ class ShortcodesHelper {
           'shortcode' => '[site:homepage_url]',
         ],
       ],
+      __('WooCommerce Customer', 'mailpoet') => [
+        [
+          'text' => __('First Name', 'mailpoet'),
+          'shortcode' => '[customer:first_name | default:customer]',
+        ],
+        [
+          'text' => __('Last Name', 'mailpoet'),
+          'shortcode' => '[customer:last_name | default:customer]',
+        ],
+        [
+          'text' => __('Email', 'mailpoet'),
+          'shortcode' => '[customer:email]',
+        ],
+        [
+          'text' => __('Username', 'mailpoet'),
+          'shortcode' => '[customer:username | default:customer]',
+        ],
+        [
+          'text' => __('Display Name', 'mailpoet'),
+          'shortcode' => '[customer:display_name | default:customer]',
+        ],
+      ],
     ];
     $customFields = $this->getCustomFields();
     if (count($customFields) > 0) {
