@@ -67,6 +67,14 @@ class GithubClient {
     file_put_contents($downloadDir . '/' . $zip . '-info', $assetDownloadInfo);
   }
 
+  public function downloadRawFile(string $rawUrl, $zip, $downloadDir): void {
+    if (!is_dir($downloadDir)) {
+      mkdir($downloadDir, 0777, true);
+    }
+    $response = $this->get($rawUrl, ['headers' => ['Accept' => 'application/vnd.github.v3.raw']]);
+    file_put_contents($downloadDir . $zip, $response->getBody()->getContents());
+  }
+
   private function getRelease($tag = null) {
     $path = 'releases/' . ($tag && $tag !== 'latest' ? "tags/$tag" : 'latest');
     $response = $this->get($path);
