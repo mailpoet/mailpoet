@@ -200,6 +200,9 @@
           supportLink: 'https://www.mailpoet.com/support/premium/',
         <% else %>
           supportLink: 'https://wordpress.org/support/plugin/mailpoet/',
+          labels: {
+            getSupport: "<%= __('Get help in the forum', 'mailpoet' )|escape('js') %>"
+          }
         <% endif %>
       },
     }).then(() => {
