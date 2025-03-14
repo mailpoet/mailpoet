@@ -103,7 +103,7 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     if [ ! -f "$WOOCOMMERCE_MEMBERSHIPS_ZIP" ]; then
       echo "WooCommerce Memberships plugin zip not found. Downloading WooCommerce Memberships plugin latest zip"
       cd /project
-      ./do download:woo-commerce-memberships-zip latest
+      ./do download:woo-commerce-memberships-zip
       cd /wp-core/wp-content/plugins
     fi
     echo "Unzip Woocommerce Memberships plugin from $WOOCOMMERCE_MEMBERSHIPS_ZIP"

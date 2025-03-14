@@ -199,7 +199,7 @@ jobs:
           command: |
             ./do download:woo-commerce-zip 9.7.1
             ./do download:woo-commerce-subscriptions-zip 7.2.1
-            ./do download:woo-commerce-memberships-zip 1.26.5
+            ./do download:woo-commerce-memberships-zip
             ./do download:automate-woo-zip 6.1.7
       - run:
           name: Dump tests ENV variables for acceptance tests
@@ -378,9 +378,6 @@ jobs:
       woo_subscriptions_version:
         type: string
         default: ''
-      woo_memberships_version:
-        type: string
-        default: ''
       automate_woo_version:
         type: string
         default: ''
@@ -480,14 +477,6 @@ jobs:
                 command: |
                   cd ../tests_env/docker
                   docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
-      - when:
-          condition: << parameters.woo_memberships_version >>
-          steps:
-            - run:
-                name: Download WooCommerce Memberships
-                command: |
-                  cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -695,9 +684,6 @@ jobs:
       woo_subscriptions_version:
         type: string
         default: ''
-      woo_memberships_version:
-        type: string
-        default: ''
       automate_woo_version:
         type: string
         default: ''
@@ -776,14 +762,6 @@ jobs:
                 command: |
                   cd ../tests_env/docker
                   docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
-      - when:
-          condition: << parameters.woo_memberships_version >>
-          steps:
-            - run:
-                name: Download WooCommerce Memberships
-                command: |
-                  cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -1206,7 +1184,6 @@ workflows:
           name: acceptance_oldest
           woo_core_version: 9.6.2
           woo_subscriptions_version: 7.1.0
-          woo_memberships_version: 1.25.2
           automate_woo_version: 6.0.33
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.5
@@ -1247,7 +1224,6 @@ workflows:
           name: integration_oldest
           woo_core_version: 9.6.2
           woo_subscriptions_version: 7.1.0
-          woo_memberships_version: 1.25.2
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
@@ -1310,7 +1286,6 @@ workflows:
           name: acceptance_with_premium_oldest
           woo_core_version: 9.6.2
           woo_subscriptions_version: 7.1.0
-          woo_memberships_version: 1.25.2
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
@@ -1322,7 +1297,6 @@ workflows:
           name: integration_with_premium_oldest
           woo_core_version: 9.6.2
           woo_subscriptions_version: 7.1.0
-          woo_memberships_version: 1.25.2
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
