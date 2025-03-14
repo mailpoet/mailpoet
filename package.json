@@ -26,6 +26,8 @@
       "spectrum-colorpicker@1.8.1": "patches/spectrum-colorpicker@1.8.1.patch"
     },
     "overrides": {
+      "@babel/runtime": ">=7.26.10",
+      "@babel/helpers": ">=7.26.10",
       "@types/react": "18.3.3",
       "@types/react-dom": "18.3.0",
       "body-parser": ">=1.20.3",
