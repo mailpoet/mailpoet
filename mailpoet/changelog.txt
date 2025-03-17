@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.10.0 - 2025-03-17 =
+* Improved: minor changes and fixes.
+
 = 5.9.0 - 2025-03-11 =
 * Improved: Woo email customizer updated to support new email features introduced in Woo.
 
