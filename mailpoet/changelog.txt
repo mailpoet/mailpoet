@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.10.0 - 2025-03-18 =
+* Added: "created via" field to order-based automations.
+
 = 5.9.0 - 2025-03-11 =
 * Improved: Woo email customizer updated to support new email features introduced in Woo.
 

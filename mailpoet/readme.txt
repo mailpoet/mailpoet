@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.6
 Tested up to: 6.7
-Stable tag: 5.9.0
+Stable tag: 5.10.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -222,7 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.9.0 - 2025-03-11 =
-* Improved: Woo email customizer updated to support new email features introduced in Woo.
+= 5.10.0 - 2025-03-18 =
+* Added: "created via" field to order-based automations.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
