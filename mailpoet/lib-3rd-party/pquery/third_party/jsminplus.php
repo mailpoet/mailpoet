@@ -1657,6 +1657,10 @@ class JSNode
 
 	public function __construct($t, $type=0)
 	{
+		// Store arguments first to avoid any potential issues with func_get_args() in PHP 7.0+
+		$args = func_get_args();
+		$numargs = count($args);
+
 		if ($token = $t->currentToken())
 		{
 			$this->type = $type ? $type : $token->type;
@@ -1671,9 +1675,8 @@ class JSNode
 			$this->lineno = $t->lineno;
 		}
 
-		if (($numargs = func_num_args()) > 2)
+		if ($numargs > 2)
 		{
-			$args = func_get_args();
 			for ($i = 2; $i < $numargs; $i++)
 				$this->addNode($args[$i]);
 		}

@@ -387,7 +387,7 @@ class HtmlSelector {
 			array('%tok%', '%pos%'),
 			array($this->parser->getTokenString(), (int) $this->parser->getPos()),
 			$error
-		));
+		), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 
 		trigger_error(esc_html($error));
 	}

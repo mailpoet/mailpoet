@@ -346,7 +346,7 @@ class TokenizerBase {
 	 * @param string $error
 	 */
 	function addError($error) {
-		$this->errors[] = htmlentities($error.' at '.($this->line_pos[0] + 1).', '.($this->pos - $this->line_pos[1] + 1).'!');
+		$this->errors[] = htmlentities($error.' at '.($this->line_pos[0] + 1).', '.($this->pos - $this->line_pos[1] + 1).'!', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 	}
 
 	/**
