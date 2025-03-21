@@ -55,7 +55,7 @@ COMPOSER_MIRROR_PATH_REPOS=1 ./tools/vendor/composer.phar install --no-dev --pre
 echo '[BUILD] Fetching prefixed production libraries'
 ./tools/vendor/composer.phar install --no-dev --prefer-dist --working-dir=./prefixer/
 
-# Remove Doctrinne Annotations (no need since generated metadata are packed)
+# Remove Doctrine Annotations (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations
 
@@ -141,6 +141,11 @@ cp $plugin_name-cron.php $plugin_name
 cp $plugin_name.php $plugin_name
 cp mailpoet_initializer.php $plugin_name
 cp readme.txt $plugin_name
+
+# Copy .gitleaksignore if it exists
+if [ -f ".gitleaksignore" ]; then
+    cp .gitleaksignore $plugin_name
+fi
 
 # Prefix all PHP files with "<?php if (!defined('ABSPATH')) exit; ?>"
 echo '[BUILD] Adding ABSPATH ensuring prefix to all PHP files (to avoid path disclosure)'
