@@ -77,28 +77,28 @@ class Customer implements CategoryInterface {
     // Process different customer fields
     switch ($shortcodeDetails['action']) {
       case 'first_name':
-        return !empty($customer->get_first_name()) ? 
+        return !empty($customer->get_first_name()) ?
           htmlspecialchars($customer->get_first_name(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : 
           $defaultValue;
-      
+
       case 'last_name':
-        return !empty($customer->get_last_name()) ? 
+        return !empty($customer->get_last_name()) ?
           htmlspecialchars($customer->get_last_name(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : 
           $defaultValue;
-      
+
       case 'email':
-        return !empty($customer->get_email()) ? 
+        return !empty($customer->get_email()) ?
           $customer->get_email() : 
           $defaultValue;
-          
+
       case 'username':
         $wpUser = $this->wp->getUserdata($wpUserId);
         return $wpUser ? $wpUser->user_login : $defaultValue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-        
+
       case 'display_name':
         $wpUser = $this->wp->getUserdata($wpUserId);
         return $wpUser ? $wpUser->display_name : $defaultValue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-        
+
       default:
         return $shortcodeDetails['shortcode'];
     }
