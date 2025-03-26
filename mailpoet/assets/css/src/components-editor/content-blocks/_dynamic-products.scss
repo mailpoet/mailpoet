@@ -1,0 +1,59 @@
+.mailpoet_dynamic_products_block {
+  padding: 0;
+}
+
+.mailpoet_dynamic_products_block_overlay {
+  background: rgba(#fff, 0);
+  height: 100%;
+  position: absolute;
+  transition: background 0.15s ease-out;
+  width: 100%;
+  z-index: 19;
+
+  .mailpoet_dynamic_products_block:hover & {
+    background: rgba(#fff, 0.9);
+    cursor: pointer;
+
+    .mailpoet_overlay_message {
+      display: block;
+    }
+  }
+
+  .mailpoet_overlay_message {
+    color: black;
+    display: none;
+    font-size: 20px;
+    margin: 80px;
+    text-align: center;
+  }
+}
+
+.mailpoet_dynamic_products_block_posts {
+  overflow: hidden;
+  pointer-events: none;
+
+  > .mailpoet_block {
+    width: 100%;
+  }
+
+  .mailpoet_container_block {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+}
+
+.mailpoet_dynamic_products_display_options {
+  @include animation-slide-open-downwards();
+}
+
+.mailpoet_dynamic_products_show_amount {
+  width: 38px;
+}
+
+.mailpoet_dynamic_products_content_type {
+  width: 180px;
+}
+
+.mailpoet_dynamic_products_display_options.mailpoet_closed {
+  display: none;
+}
