@@ -55,22 +55,10 @@ class Customer implements CategoryInterface {
     // Try to get WooCommerce customer
     $customer = null;
     try {
-      // Check if wc_get_customer_id_from_user_id function exists
-      if (function_exists('wc_get_customer_id_from_user_id')) {
-        $customerId = wc_get_customer_id_from_user_id($wpUserId);
-        if ($customerId) {
-          $customer = new \WC_Customer($customerId);
-        }
-      } else {
-        // Fallback to direct customer object creation
-        $customer = new \WC_Customer($wpUserId);
-      }
+      // Fallback to direct customer object creation
+      $customer = new \WC_Customer($wpUserId);
     } catch (\Exception $e) {
       // Customer not found or error, return default value
-      return $defaultValue;
-    }
-
-    if (!$customer) {
       return $defaultValue;
     }
 

@@ -24,6 +24,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
         'Links',
         'Site',
         'WooCommerce Customer',
+        'WooCommerce Product',
       ]
     );
   }
