@@ -166,7 +166,7 @@ App.on('before:start', function beforeAppStart(BeforeStartApp) {
   BeforeStartApp.registerWidget({
     name: 'footer',
     widgetView: Module.FooterWidgetView,
-    priority: 101,
+    priority: 102,
   });
 });
 

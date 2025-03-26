@@ -315,7 +315,7 @@ App.on('before:start', function beforeStartApp(BeforeStartApp, options) {
   BeforeStartApp.registerWidget({
     name: 'abandonedCartContent',
     widgetView: Module.AbandonedCartContentBlockWidgetView,
-    priority: 99,
+    priority: 100,
   });
 });
 
