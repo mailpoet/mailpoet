@@ -150,6 +150,16 @@ testHelpers.loadTemplate(
   { id: 'newsletter_editor_template_automated_latest_content_layout_settings' },
 );
 
+testHelpers.loadTemplate('blocks/dynamicProducts/block.hbs', window, {
+  id: 'newsletter_editor_template_dynamic_products_block',
+});
+testHelpers.loadTemplate('blocks/dynamicProducts/widget.hbs', window, {
+  id: 'newsletter_editor_template_dynamic_products_widget',
+});
+testHelpers.loadTemplate('blocks/dynamicProducts/settings.hbs', window, {
+  id: 'newsletter_editor_template_dynamic_products_settings',
+});
+
 testHelpers.loadTemplate('blocks/button/block.hbs', window, {
   id: 'newsletter_editor_template_button_block',
 });
@@ -509,6 +519,16 @@ global.templates = {
     jQuery(
       '#newsletter_editor_template_automated_latest_content_layout_settings',
     ).html(),
+  ),
+
+  dynamicProductsBlock: Handlebars.compile(
+    jQuery('#newsletter_editor_template_dynamic_products_block').html(),
+  ),
+  dynamicProductsInsertion: Handlebars.compile(
+    jQuery('#newsletter_editor_template_dynamic_products_widget').html(),
+  ),
+  dynamicProductsBlockSettings: Handlebars.compile(
+    jQuery('#newsletter_editor_template_dynamic_products_settings').html(),
   ),
 
   postsBlock: Handlebars.compile(
