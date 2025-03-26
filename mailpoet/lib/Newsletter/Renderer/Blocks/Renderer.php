@@ -40,6 +40,9 @@ class Renderer {
   /** @var Coupon */
   private $coupon;
 
+  /** @var DynamicProductsBlock */
+  private $dynamicProducts;
+
   public function __construct(
     AutomatedLatestContentBlock $ALC,
     Button $button,
@@ -51,7 +54,8 @@ class Renderer {
     Spacer $spacer,
     Text $text,
     Placeholder $placeholder,
-    Coupon $coupon
+    Coupon $coupon,
+    DynamicProductsBlock $dynamicProducts
   ) {
     $this->ALC = $ALC;
     $this->button = $button;
@@ -64,6 +68,7 @@ class Renderer {
     $this->text = $text;
     $this->placeholder = $placeholder;
     $this->coupon = $coupon;
+    $this->dynamicProducts = $dynamicProducts;
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
@@ -105,6 +110,9 @@ class Renderer {
     if ($block['type'] === 'automatedLatestContent') {
       return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
     }
+    if ($block['type'] === 'dynamicProducts') {
+      return $this->processDynamicProducts($block, $columnBaseWidth);
+    }
     $block = StylesHelper::applyTextAlignment($block);
     switch ($block['type']) {
       case 'button':
@@ -137,5 +145,10 @@ class Renderer {
     ];
     $transformedPosts = StylesHelper::applyTextAlignment($transformedPosts);
     return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
+  }
+
+  public function processDynamicProducts($args, $columnBaseWidth) {
+    $renderedProducts = $this->dynamicProducts->render($args, $columnBaseWidth);
+    return $renderedProducts;
   }
 }
