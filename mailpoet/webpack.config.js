@@ -286,6 +286,7 @@ const testConfig = {
       'blocks/container.spec.js',
       'blocks/coupon.spec.js',
       'blocks/divider.spec.js',
+      'blocks/dynamic-products.spec.js',
       'blocks/footer.spec.js',
       'blocks/header.spec.js',
       'blocks/image.spec.js',
