@@ -30,6 +30,18 @@
     'newsletter/templates/blocks/automatedLatestContentLayout/settings.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_dynamic_products_block',
+    'newsletter/templates/blocks/dynamicProducts/block.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_dynamic_products_widget',
+    'newsletter/templates/blocks/dynamicProducts/widget.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_dynamic_products_settings',
+    'newsletter/templates/blocks/dynamicProducts/settings.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_button_block',
     'newsletter/templates/blocks/button/block.hbs'
   ) %>
@@ -696,6 +708,16 @@
       ),
       couponBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_coupon_settings').html()
+      ),
+
+      dynamicProductsBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_dynamic_products_block').html()
+      ),
+      dynamicProductsInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_dynamic_products_widget').html()
+      ),
+      dynamicProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_dynamic_products_settings').html()
       ),
     };
 
