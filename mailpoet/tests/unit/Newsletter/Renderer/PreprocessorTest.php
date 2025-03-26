@@ -6,6 +6,7 @@ use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
+use MailPoet\Newsletter\Renderer\Blocks\DynamicProductsBlock;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -14,6 +15,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
   public function testProcessWooCommerceHeadingBlock() {
     $acc = Stub::make(AbandonedCartContent::class);
     $alc = Stub::make(AutomatedLatestContentBlock::class);
+    $dynamicProducts = Stub::make(DynamicProductsBlock::class);
     $couponPreProcessor = Stub::make(CouponPreProcessor::class);
     $transactionalEmails = Stub::make(TransactionalEmails::class, [
       'getWCEmailSettings' => [
@@ -26,7 +28,8 @@ class PreprocessorTest extends \MailPoetUnitTest {
       $acc,
       $alc,
       $wooPreprocessor,
-      $couponPreProcessor
+      $couponPreProcessor,
+      $dynamicProducts
     );
     verify($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
@@ -53,13 +56,15 @@ class PreprocessorTest extends \MailPoetUnitTest {
   public function testProcessWooCommerceContentBlock() {
     $acc = Stub::make(AbandonedCartContent::class);
     $alc = Stub::make(AutomatedLatestContentBlock::class);
+    $dynamicProducts = Stub::make(DynamicProductsBlock::class);
     $couponPreProcessor = Stub::make(CouponPreProcessor::class);
     $wooPreprocessor = new TransactionalEmails\ContentPreprocessor(Stub::make(TransactionalEmails::class));
     $preprocessor = new Preprocessor(
       $acc,
       $alc,
       $wooPreprocessor,
-      $couponPreProcessor
+      $couponPreProcessor,
+      $dynamicProducts
     );
     verify($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
