@@ -150,6 +150,10 @@ class IntegrationTester extends \Codeception\Actor {
       $product->set_name($data['name']);
     }
 
+    if (isset($data['date_created'])) {
+      $product->set_date_created($data['date_created']);
+    }
+
     if (isset($data['category_ids'])) {
       $product->set_category_ids($data['category_ids']);
     }

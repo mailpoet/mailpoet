@@ -818,4 +818,97 @@ class RendererTest extends \MailPoetTest {
 
     return $id;
   }
+
+  public function testItRendersDynamicProductsBlock() {
+    // Skip test if WooCommerce is not active
+    $woocommerceHelper = $this->diContainer->get(\MailPoet\WooCommerce\Helper::class);
+    if (!$woocommerceHelper->isWooCommerceActive()) {
+      $this->markTestSkipped('WooCommerce is not active');
+    }
+
+    // Create test products
+    $wp = $this->diContainer->get(\MailPoet\WP\Functions::class);
+    $productIds = [];
+    $productIds[] = $wp->wpInsertPost([
+      'post_title' => 'Test Product 1',
+      'post_status' => 'publish',
+      'post_type' => 'product',
+    ]);
+    $productIds[] = $wp->wpInsertPost([
+      'post_title' => 'Test Product 2',
+      'post_status' => 'publish',
+      'post_type' => 'product',
+    ]);
+
+    // Create a newsletter with a dynamic products block
+    $newsletter = new \MailPoet\Entities\NewsletterEntity();
+    $newsletter->setSubject('Dynamic Products Test');
+    $newsletter->setType('standard');
+    $newsletter->setStatus('active');
+
+    $dynamicProductsBlock = [
+      'type' => 'dynamicProducts',
+      'amount' => '2',
+      'contentType' => 'product',
+      'terms' => [],
+      'inclusionType' => 'include',
+      'sortBy' => 'newest',
+      'displayType' => 'excerpt',
+      'titleFormat' => 'h2',
+      'titleAlignment' => 'left',
+      'titleIsLink' => false,
+      'imageFullWidth' => true,
+      'titlePosition' => 'abovePost',
+      'featuredImagePosition' => 'left',
+    ];
+
+    $newsletter->setBody([
+      'content' => [
+        'type' => 'container',
+        'orientation' => 'vertical',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => 'transparent',
+          ],
+        ],
+        'blocks' => [
+          [
+            'type' => 'container',
+            'orientation' => 'horizontal',
+            'styles' => [
+              'block' => [
+                'backgroundColor' => 'transparent',
+              ],
+            ],
+            'blocks' => [
+              [
+                'type' => 'container',
+                'orientation' => 'vertical',
+                'styles' => [
+                  'block' => [
+                    'backgroundColor' => 'transparent',
+                  ],
+                ],
+                'blocks' => [
+                  $dynamicProductsBlock,
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ]);
+
+    // Render the newsletter
+    $template = $this->renderer->render($newsletter);
+
+    // Clean up test products
+    foreach ($productIds as $productId) {
+      $wp->wpDeletePost($productId, true);
+    }
+
+    // Verify the products are rendered
+    verify(isset($template['html']))->true();
+    verify($template['html'])->stringContainsString('Test Product');
+  }
 }
