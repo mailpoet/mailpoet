@@ -1310,6 +1310,61 @@
             },
           },
         },
+        dynamicProducts: {
+          amount: '2',
+          withLayout: true,
+          contentType: 'product',
+          inclusionType: 'include', // 'include'|'exclude'
+          displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
+          titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
+          titleAlignment: 'left', // 'left'|'center'|'right'
+          titleIsLink: false, // false|true
+          imageFullWidth: false, // true|false
+          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
+          showAuthor: 'no', // 'no'|'aboveText'|'belowText'
+          authorPrecededBy: '<%= __('Author:') | escape('js') %>',
+          showCategories: 'no', // 'no'|'aboveText'|'belowText'
+          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
+          readMoreType: 'button', // 'link'|'button'
+          readMoreText: '<%= __('Read more') | escape('js') %>',
+          readMoreButton: {
+            text: '<%= __('Read more') | escape('js') %>',
+            url: '[postLink]',
+            context: 'dynamicProducts.readMoreButton',
+            styles: {
+              block: {
+                backgroundColor: '#2ea1cd',
+                borderColor: '#0074a2',
+                borderWidth: '1px',
+                borderRadius: '5px',
+                borderStyle: 'solid',
+                width: '180px',
+                lineHeight: '40px',
+                fontColor: '#ffffff',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
+                fontWeight: 'normal',
+                textAlign: 'center',
+              }
+            }
+          },
+          sortBy: 'newest', // 'newest'|'oldest',
+          showDivider: true, // true|false
+          divider: {
+            context: 'dynamicProducts.divider',
+            styles: {
+              block: {
+                backgroundColor: 'transparent',
+                padding: '13px',
+                borderStyle: 'solid',
+                borderWidth: '3px',
+                borderColor: '#aaaaaa',
+              },
+            },
+          },
+          backgroundColor: '#ffffff',
+          backgroundColorAlternate: '#eeeeee',
+        },
         footer: {
           text: '<p><a href="[link:subscription_unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[link:subscription_manage_url]"><%= __('Manage subscription') %></a><br /><%= __('Add your postal address here!') %></p>',
           styles: {
