@@ -151,6 +151,36 @@ class ShortcodesHelper {
           'shortcode' => '[customer:display_name | default:customer]',
         ],
       ],
+      __('WooCommerce Product', 'mailpoet') => [
+        [
+          'text' => __('Product Name', 'mailpoet'),
+          'shortcode' => '[product:name | default:product]',
+        ],
+        [
+          'text' => __('Product Description', 'mailpoet'),
+          'shortcode' => '[product:description | default:product]',
+        ],
+        [
+          'text' => __('Product Short Description', 'mailpoet'),
+          'shortcode' => '[product:short_description | default:product]',
+        ],
+        [
+          'text' => __('Product Price', 'mailpoet'),
+          'shortcode' => '[product:price]',
+        ],
+        [
+          'text' => __('Product Regular Price', 'mailpoet'),
+          'shortcode' => '[product:regular_price]',
+        ],
+        [
+          'text' => __('Product Sale Price', 'mailpoet'),
+          'shortcode' => '[product:sale_price]',
+        ],
+        [
+          'text' => __('Product SKU', 'mailpoet'),
+          'shortcode' => '[product:sku | default:sku]',
+        ],
+      ],
     ];
     $customFields = $this->getCustomFields();
     if (count($customFields) > 0) {

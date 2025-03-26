@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Customer;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
+use MailPoet\Newsletter\Shortcodes\Categories\Product as ProductCategory;
 use MailPoet\Newsletter\Shortcodes\Categories\Site;
 use MailPoet\Newsletter\Shortcodes\Categories\Subscriber as SubscriberCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
@@ -58,6 +59,9 @@ class Shortcodes {
   /** @var Customer */
   private $customerCategory;
 
+  /** @var ProductCategory */
+  private $productCategory;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
@@ -70,7 +74,8 @@ class Shortcodes {
     Newsletter $newsletterCategory,
     SubscriberCategory $subscriberCategory,
     Site $siteCategory,
-    Customer $customerCategory
+    Customer $customerCategory,
+    ProductCategory $productCategory
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
@@ -84,6 +89,7 @@ class Shortcodes {
     $this->subscriberCategory = $subscriberCategory;
     $this->siteCategory = $siteCategory;
     $this->customerCategory = $customerCategory;
+    $this->productCategory = $productCategory;
   }
 
   public function init() {
@@ -268,6 +274,7 @@ class Shortcodes {
       $this->subscriberCategory,
       $this->siteCategory,
       $this->customerCategory,
+      $this->productCategory,
       $this->wp
     );
 
