@@ -167,6 +167,10 @@ class IntegrationTester extends \Codeception\Actor {
       $product->set_regular_price($data['price']);
     }
 
+    if (isset($data['status'])) {
+      $product->set_status($data['status']);
+    }
+
     if (isset($data['attributes'])) {
       $product->set_attributes($data['attributes']);
     }
