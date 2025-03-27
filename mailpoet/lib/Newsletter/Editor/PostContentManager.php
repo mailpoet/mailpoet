@@ -29,12 +29,21 @@ class PostContentManager {
     if ($displayType === 'titleOnly') {
       return '';
     }
-    if ($this->woocommerceHelper->isWooCommerceActive() && $this->wp->getPostType($post) === 'product') {
-      $product = $this->woocommerceHelper->wcGetProduct($post->ID);
-      if ($product) {
-        return $this->getContentForProduct($product, $displayType);
+
+
+
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
+      if ($this->isWcProduct($post)) {
+        return $this->getContentForProduct($post, $displayType);
+      }
+      if ($this->wp->getPostType($post) === 'product') {
+        $product = $this->woocommerceHelper->wcGetProduct($post->ID);
+        if ($product) {
+          return $this->getContentForProduct($product, $displayType);
+        }
       }
     }
+
     if ($displayType === 'excerpt') {
       if ($this->wp->hasExcerpt($post)) {
         return self::stripShortCodes($this->wp->getTheExcerpt($post));
@@ -159,5 +168,9 @@ class PostContentManager {
     );
 
     return $content;
+  }
+
+  private function isWcProduct($post) {
+    return class_exists('\WC_Product') && $post instanceof \WC_Product;
   }
 }

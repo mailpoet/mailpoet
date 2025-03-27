@@ -83,6 +83,10 @@ class Helper {
     return wc_get_product($theProduct);
   }
 
+  public function wcGetProducts(array $args) {
+    return wc_get_products($args);
+  }
+
   public function wcGetPageId(string $page): ?int {
     if ($this->isWooCommerceActive()) {
       return (int)wc_get_page_id($page);

@@ -3,8 +3,8 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Newsletter\BlockPostQuery;
+use MailPoet\Newsletter\DynamicProducts;
 
 class DynamicProductsBlock {
   /**
@@ -14,14 +14,14 @@ class DynamicProductsBlock {
    */
   public $renderedPostsInNewsletter;
 
-  /** @var AutomatedLatestContent  */
-  private $ALC;
+  /** @var DynamicProducts  */
+  private $dynamicProducts;
 
   public function __construct(
-    AutomatedLatestContent $ALC
+    DynamicProducts $dynamicProducts
   ) {
     $this->renderedPostsInNewsletter = [];
-    $this->ALC = $ALC;
+    $this->dynamicProducts = $dynamicProducts;
   }
 
   public function render(NewsletterEntity $newsletter, $args) {
@@ -36,12 +36,12 @@ class DynamicProductsBlock {
       'newerThanTimestamp' => $newerThanTimestamp,
       'dynamic' => true,
     ]);
-    $aLCPosts = $this->ALC->getPosts($query);
-    foreach ($aLCPosts as $post) {
-      $postsToExclude[] = $post->ID;
+    $products = $this->dynamicProducts->getPosts($query);
+    foreach ($products as $product) {
+      $postsToExclude[] = $product->get_id();
     }
     $this->setRenderedPosts((int)$newsletterId, $postsToExclude);
-    return $this->ALC->transformPosts($args, $aLCPosts);
+    return $this->dynamicProducts->transformPosts($args, $products);
   }
 
   private function getRenderedPosts(int $newsletterId) {

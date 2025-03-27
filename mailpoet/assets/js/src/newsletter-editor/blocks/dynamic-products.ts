@@ -33,7 +33,7 @@ Module.DynamicProductsSupervisor = SuperModel.extend({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     const blocks = _.map(models, (model) => model.toJSON());
 
-    void CommunicationComponent.getBulkTransformedPosts({
+    void CommunicationComponent.getBulkTransformedProducts({
       blocks,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     }).then(_.partial(this.refreshBlocks, models));
@@ -306,12 +306,12 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
           transport(options, success, failure) {
             let taxonomies;
             let termsPromise;
-            const promise = CommunicationComponent.getTaxonomies(
+            const promise = CommunicationComponent.getProductTaxonomies(
               that.model.get('contentType'),
             ).then((tax) => {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              termsPromise = CommunicationComponent.getTerms({
+              termsPromise = CommunicationComponent.getProductTerms({
                 search: options.data.term,
                 page: options.data.page,
                 taxonomies: _.keys(taxonomies),
