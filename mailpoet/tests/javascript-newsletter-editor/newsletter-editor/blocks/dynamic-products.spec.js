@@ -26,15 +26,15 @@ describe('Dynamic Products Supervisor', function () {
       .returns([new Backbone.SuperModel()]);
 
     mock = sinon
-      .mock({ getBulkTransformedPosts: function () {} })
-      .expects('getBulkTransformedPosts')
+      .mock({ getBulkTransformedProducts: function () {} })
+      .expects('getBulkTransformedProducts')
       .once()
       .returns(jQuery.Deferred());
 
     module = DynamicProductsInjector({
       'newsletter-editor/components/communication': {
         CommunicationComponent: {
-          getBulkTransformedPosts: mock,
+          getBulkTransformedProducts: mock,
         },
       },
     }).DynamicProductsBlock;
