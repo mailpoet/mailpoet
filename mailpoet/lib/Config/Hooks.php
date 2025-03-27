@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
+use MailPoet\Subscription\AdminUserSubscription;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
@@ -97,6 +98,9 @@ class Hooks {
   /** @var WooHelper */
   private $wooHelper;
 
+  /** @var AdminUserSubscription */
+  private $adminUserSubscription;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -107,17 +111,18 @@ class Hooks {
     PostNotificationScheduler $postNotificationScheduler,
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
-    HooksWooCommerce $hooksWooCommerce,
-    CaptchaHooks $captchaHooks,
-    ReCaptchaHooks $reCaptchaHooks,
-    SubscriberHandler $subscriberHandler,
-    SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment,
+    SubscriberHandler $subscriberHandler,
+    HooksWooCommerce $hooksWooCommerce,
+    SubscriberChangesNotifier $subscriberChangesNotifier,
     DotcomLicenseProvisioner $dotcomLicenseProvisioner,
     AutomateWooHooks $automateWooHooks,
+    CaptchaHooks $captchaHooks,
+    ReCaptchaHooks $reCaptchaHooks,
     WooSystemInfoController $wooSystemInfoController,
     CronTrigger $cronTrigger,
-    WooHelper $wooHelper
+    WooHelper $wooHelper,
+    AdminUserSubscription $adminUserSubscription
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -139,6 +144,7 @@ class Hooks {
     $this->wooSystemInfoController = $wooSystemInfoController;
     $this->cronTrigger = $cronTrigger;
     $this->wooHelper = $wooHelper;
+    $this->adminUserSubscription = $adminUserSubscription;
   }
 
   public function init() {
@@ -159,6 +165,7 @@ class Hooks {
     $this->setupChangeNotifications();
     $this->setupLicenseProvisioning();
     $this->setupCaptchaOnRegisterForm();
+    $this->adminUserSubscription->setupHooks();
     $this->deactivateMailPoetCronBeforePluginUpgrade();
   }
 

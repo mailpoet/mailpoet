@@ -568,6 +568,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Throttling::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\SubscriptionUrlFactory::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscription\AdminUserSubscription::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\ApiDataSanitizer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
