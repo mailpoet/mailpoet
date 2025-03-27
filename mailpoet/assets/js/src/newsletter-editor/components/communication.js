@@ -16,6 +16,19 @@ Module._query = function (args) {
 };
 Module._cachedQuery = _.memoize(Module._query, JSON.stringify);
 
+Module._dynamicProductsQuery = function (args) {
+  return MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'dynamicProducts',
+    action: args.action,
+    data: args.options || {},
+  });
+};
+Module._cachedDynamicProductsQuery = _.memoize(
+  Module._dynamicProductsQuery,
+  JSON.stringify,
+);
+
 Module.getNewsletter = function (options) {
   return Module._query({
     action: 'get',
@@ -43,8 +56,28 @@ Module.getTaxonomies = function (postType) {
   });
 };
 
+Module.getProductTaxonomies = function (postType) {
+  return Module._cachedDynamicProductsQuery({
+    action: 'getTaxonomies',
+    options: {
+      postType: postType,
+    },
+  }).then(function (response) {
+    return response.data;
+  });
+};
+
 Module.getTerms = function (options) {
   return Module._cachedQuery({
+    action: 'getTerms',
+    options: options,
+  }).then(function (response) {
+    return response.data;
+  });
+};
+
+Module.getProductTerms = function (options) {
+  return Module._cachedDynamicProductsQuery({
     action: 'getTerms',
     options: options,
   }).then(function (response) {
@@ -73,6 +106,15 @@ Module.getTransformedPosts = function (options) {
 Module.getBulkTransformedPosts = function (options) {
   return Module._query({
     action: 'getBulkTransformedPosts',
+    options: options,
+  }).then(function (response) {
+    return response.data;
+  });
+};
+
+Module.getBulkTransformedProducts = function (options) {
+  return Module._dynamicProductsQuery({
+    action: 'getBulkTransformedProducts',
     options: options,
   }).then(function (response) {
     return response.data;

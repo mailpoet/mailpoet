@@ -2,18 +2,58 @@
 
 namespace MailPoet\Util;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 if (!class_exists('\WP_REST_Posts_Controller')) {
   require_once ABSPATH . '/wp-includes/rest-api/endpoints/class-wp-rest-controller.php';
   require_once ABSPATH . '/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php';
 }
 
 class APIPermissionHelper extends \WP_REST_Posts_Controller {
-  public function __construct() {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    ?WPFunctions $wp = null
+  ) {
     // constructor is needed to override parent constructor
+    $this->wp = $wp ?: new WPFunctions();
   }
 
-  public function checkReadPermission(\WP_Post $post): bool {
-    return parent::check_read_permission($post);
+  /**
+   * Checks if current user has permission to read a post or product
+   *
+   * @param \WP_Post|\WC_Product $post Post or product to check
+   * @return bool Whether the current user can read the post or product
+   */
+  public function checkReadPermission($post): bool {
+    // Handle WooCommerce products
+    if (class_exists('\WC_Product') && $post instanceof \WC_Product) {
+      $status = $post->get_status();
+      // Published products are readable by anyone
+      if ($status === 'publish') {
+        return true;
+      }
+
+      // Private products are readable by editors and admins
+      if ($status === 'private' && $this->wp->currentUserCan('edit_private_posts')) {
+        return true;
+      }
+
+      // Draft, pending, etc. are only readable by admins
+      if (in_array($status, ['draft', 'pending']) && $this->wp->currentUserCan('read_private_posts') && $this->wp->currentUserCan('edit_others_posts')) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // Handle regular WordPress posts
+    if ($post instanceof \WP_Post) {
+      return parent::check_read_permission($post);
+    }
+
+    return false;
   }
 
   /**

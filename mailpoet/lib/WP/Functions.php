@@ -152,6 +152,10 @@ class Functions {
     return current_user_can($capability);
   }
 
+  public function userCan($user, $capability) {
+    return user_can($user, $capability);
+  }
+
   public function dateI18n($dateformatstring, $timestampWithOffset = false, $gmt = false) {
     return date_i18n($dateformatstring, $timestampWithOffset, $gmt);
   }

@@ -29,7 +29,16 @@ class PostTransformerContentsExtractor {
     $metaManager = new MetaInformationManager();
 
     $content = $contentManager->getContent($post, $this->args['displayType']);
-    $content = $metaManager->appendMetaInformation($content, $post, $this->args);
+    if ($this->isWcProduct($post)) {
+      // For WC_Product objects, we need to get the corresponding post
+      $postId = $post->get_id();
+      $wpPost = $this->wp->getPost($postId);
+      if ($wpPost) {
+        $content = $metaManager->appendMetaInformation($content, $wpPost, $this->args);
+      }
+    } else {
+      $content = $metaManager->appendMetaInformation($content, $post, $this->args);
+    }
     $content = $contentManager->filterContent($content, $displayType, $withPostClass);
 
     $structureTransformer = new StructureTransformer();
@@ -71,8 +80,13 @@ class PostTransformerContentsExtractor {
   }
 
   public function getFeaturedImage($post) {
-    $postId = $post->ID;
-    $postTitle = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($this->isWcProduct($post)) {
+      $postId = $post->get_id();
+      $postTitle = $this->sanitizeTitle($post->get_name());
+    } else {
+      $postId = $post->ID;
+      $postTitle = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
     $imageFullWidth = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
 
     if (!has_post_thumbnail($postId)) {
@@ -114,15 +128,17 @@ class PostTransformerContentsExtractor {
       return false;
     }
 
+    $postId = $this->isWcProduct($post) ? $post->get_id() : $post->ID;
+
     if ($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
-      $button['url'] = $this->wp->getPermalink($post->ID);
+      $button['url'] = $this->wp->getPermalink($postId);
       return $button;
     }
 
     $readMoreText = sprintf(
       '<p><a href="%s">%s</a></p>',
-      $this->wp->getPermalink($post->ID),
+      $this->wp->getPermalink($postId),
       $this->args['readMoreText']
     );
 
@@ -133,10 +149,16 @@ class PostTransformerContentsExtractor {
   }
 
   public function getTitle($post) {
-    $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($this->isWcProduct($post)) {
+      $title = $post->get_name();
+      $postId = $post->get_id();
+    } else {
+      $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $postId = $post->ID;
+    }
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
-      $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
+      $title = '<a href="' . $this->wp->getPermalink($postId) . '">' . $title . '</a>';
     }
 
     if (in_array($this->args['titleFormat'], ['h1', 'h2', 'h3'])) {
@@ -149,7 +171,7 @@ class PostTransformerContentsExtractor {
 
     $alignment = (in_array($this->args['titleAlignment'], ['left', 'right', 'center'])) ? $this->args['titleAlignment'] : 'left';
 
-    $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
+    $title = '<' . $tag . ' data-post-id="' . $postId . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
 
     // The allowed HTML is based on all the possible ways we might construct a $title above
     $commonAttributes = [
@@ -182,7 +204,11 @@ class PostTransformerContentsExtractor {
     $price = null;
     $product = null;
     if ($this->woocommerceHelper->isWooCommerceActive()) {
-      $product = $this->woocommerceHelper->wcGetProduct($post->ID);
+      if ($this->isWcProduct($post)) {
+        $product = $post;
+      } else {
+        $product = $this->woocommerceHelper->wcGetProduct($post->ID);
+      }
     }
     if ($product) {
       $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
@@ -212,7 +238,15 @@ class PostTransformerContentsExtractor {
   }
 
   public function isProduct($post) {
-    return $post->post_type === 'product'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $this->isWcProduct($post) || $this->isPostTypeProduct($post);
+  }
+
+  public function isWcProduct($post) {
+    return class_exists('\WC_Product') && $post instanceof \WC_Product;
+  }
+
+  public function isPostTypeProduct($post) {
+    return isset($post->post_type) && $post->post_type === 'product'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   /**

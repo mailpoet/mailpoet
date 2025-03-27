@@ -33,14 +33,25 @@ class TitleListTransformer {
   }
 
   private function getPostTitle($post) {
-    $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($this->isWcProduct($post)) {
+      $title = $post->get_name();
+      $postId = $post->get_id();
+    } else {
+      $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $postId = $post->ID;
+    }
+
     $alignment = $this->args['titleAlignment'];
     $alignment = (in_array($alignment, ['left', 'right', 'center'])) ? $alignment : 'left';
 
     if ($this->args['titleIsLink']) {
-      $title = '<a data-post-id="' . $post->ID . '" href="' . WPFunctions::get()->getPermalink($post->ID) . '">' . $title . '</a>';
+      $title = '<a data-post-id="' . $postId . '" href="' . WPFunctions::get()->getPermalink($postId) . '">' . $title . '</a>';
     }
 
     return '<li style="text-align: ' . $alignment . ';">' . $title . '</li>';
+  }
+
+  private function isWcProduct($post) {
+    return class_exists('\WC_Product') && $post instanceof \WC_Product;
   }
 }

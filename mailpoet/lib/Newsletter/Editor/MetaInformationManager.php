@@ -6,6 +6,16 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class MetaInformationManager {
   public function appendMetaInformation($content, $post, $args) {
+    if ($this->isWcProduct($post)) {
+      $postId = $post->get_id();
+      $postAuthor = null; // Don't display author for WC products
+      $postType = 'product';
+    } else {
+      $postId = $post->ID;
+      $postAuthor = $post->post_author; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $postType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+
     // Append author and categories above and below contents
     foreach (['above', 'below'] as $position) {
       $positionField = $position . 'Text';
@@ -13,15 +23,15 @@ class MetaInformationManager {
 
       if (isset($args['showAuthor']) && $args['showAuthor'] === $positionField) {
         $text[] = self::getPostAuthor(
-          $post->post_author, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          $postAuthor,
           $args['authorPrecededBy']
         );
       }
 
       if (isset($args['showCategories']) && $args['showCategories'] === $positionField) {
         $text[] = self::getPostCategories(
-          $post->ID,
-          $post->post_type, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          $postId,
+          $postType,
           $args['categoriesPrecededBy']
         );
       }
@@ -68,5 +78,9 @@ class MetaInformationManager {
     }
 
     return $authorName;
+  }
+
+  private function isWcProduct($post) {
+    return class_exists('\WC_Product') && $post instanceof \WC_Product;
   }
 }
