@@ -8,6 +8,7 @@ use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Services\Validator;
 use MailPoet\Settings\SettingsController;
@@ -166,6 +167,17 @@ class WP {
 
     // Apply filter to allow modifying subscriber data before save
     $data = $this->wp->applyFilters('mailpoet_subscriber_data_before_save', $data);
+    
+    // Ensure data is an array
+    if (!is_array($data)) {
+      // If the filter returned a non-array, log it and use the original data
+      $logger = LoggerFactory::getInstance()->getLogger();
+      $logger->error(
+        'Filter mailpoet_subscriber_data_before_save returned non-array data.',
+        ['data_type' => gettype($data)]
+      );
+      return;
+    }
 
     try {
       $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);

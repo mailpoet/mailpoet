@@ -6,22 +6,28 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\AdminUserSubscription;
 use MailPoet\WP\Functions as WPFunctions;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AdminUserSubscriptionTest extends \MailPoetTest {
   /** @var AdminUserSubscription */
   private $adminUserSubscription;
 
-  /** @var WPFunctions */
+  /** @var WPFunctions&MockObject */
   private $wpMock;
 
-  /** @var SettingsController */
+  /** @var SettingsController&MockObject */
   private $settingsMock;
 
   public function _before() {
     parent::_before();
 
-    $this->wpMock = $this->createMock(WPFunctions::class);
-    $this->settingsMock = $this->createMock(SettingsController::class);
+    $this->wpMock = $this->getMockBuilder(WPFunctions::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    
+    $this->settingsMock = $this->getMockBuilder(SettingsController::class)
+      ->disableOriginalConstructor()
+      ->getMock();
 
     $this->adminUserSubscription = new AdminUserSubscription(
       $this->wpMock,
@@ -30,7 +36,8 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
   }
 
   public function testItRegistersHooksOnSetupHooks() {
-    $this->wpMock->expects($this->exactly(2))
+    $this->wpMock
+      ->expects($this->exactly(2))
       ->method('addAction')
       ->withConsecutive(
         ['user_new_form', [$this->adminUserSubscription, 'displaySubscriberStatusField']],
@@ -52,7 +59,8 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_SUBSCRIBED;
 
     // Expect the filter to be added
-    $this->wpMock->expects($this->exactly(1))
+    $this->wpMock
+      ->expects($this->exactly(1))
       ->method('addFilter')
       ->with('mailpoet_subscriber_data_before_save', $this->anything());
 
@@ -64,7 +72,8 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_UNCONFIRMED;
 
     // Expect two filters to be added
-    $this->wpMock->expects($this->exactly(2))
+    $this->wpMock
+      ->expects($this->exactly(2))
       ->method('addFilter')
       ->withConsecutive(
         ['mailpoet_subscriber_data_before_save', $this->anything()],
@@ -79,7 +88,8 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     unset($_POST['mailpoet_subscriber_status']);
 
     // Expect no filters to be added
-    $this->wpMock->expects($this->never())
+    $this->wpMock
+      ->expects($this->never())
       ->method('addFilter');
 
     $this->adminUserSubscription->processNewUserStatus(1);
@@ -90,7 +100,8 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     $_POST['mailpoet_subscriber_status'] = 'invalid_status';
 
     // Expect no filters to be added
-    $this->wpMock->expects($this->never())
+    $this->wpMock
+      ->expects($this->never())
       ->method('addFilter');
 
     $this->adminUserSubscription->processNewUserStatus(1);
