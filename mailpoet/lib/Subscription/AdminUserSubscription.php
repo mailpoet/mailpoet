@@ -30,7 +30,7 @@ class AdminUserSubscription {
     // The WordPress user_new_form action is fired with 'add-new-user' as the parameter
     $this->wp->addAction('user_new_form', [$this, 'displaySubscriberStatusField']);
     
-
+    // Handle users created through the WordPress admin interface
     // user_register hook with lower priority than the default WP sync
     // to ensure we process it after the subscriber is created
     $this->wp->addAction('user_register', [$this, 'processNewUserStatus'], 20, 1);

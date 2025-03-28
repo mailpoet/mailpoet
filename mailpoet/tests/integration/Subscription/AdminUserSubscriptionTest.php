@@ -30,11 +30,10 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
   }
 
   public function testItRegistersHooksOnSetupHooks() {
-    $this->wpMock->expects($this->exactly(3))
+    $this->wpMock->expects($this->exactly(2))
       ->method('addAction')
       ->withConsecutive(
         ['user_new_form', [$this->adminUserSubscription, 'displaySubscriberStatusField']],
-        ['edit_user_created_user', [$this->adminUserSubscription, 'processNewUserStatus'], 10, 1],
         ['user_register', [$this->adminUserSubscription, 'processNewUserStatus'], 20, 1]
       );
 
