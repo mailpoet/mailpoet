@@ -95,4 +95,4 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
 
     $this->adminUserSubscription->processNewUserStatus(1);
   }
-} 
+}
