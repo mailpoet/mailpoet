@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 /wordpress
 packages/php/*/vendor
 tests_env/vendor
+doc/active_ticket.md
