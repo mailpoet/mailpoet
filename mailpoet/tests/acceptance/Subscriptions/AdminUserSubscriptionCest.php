@@ -187,6 +187,55 @@ class AdminUserSubscriptionCest {
   }
   
   /**
+   * Test admin user creation with notification email
+   */
+  public function testAdminUserCreationWithNotificationEmail(\AcceptanceTester $i) {
+    $i->wantTo('Create WordPress user with unconfirmed status and verify notification email is sent');
+    
+    // Configure settings - enable confirmation
+    $this->settings->withConfirmationEmailEnabled();
+    
+    // Clear mailbox before test
+    $i->emptyMailbox();
+    
+    // Login to WordPress admin
+    $i->login();
+    
+    // Create user with unconfirmed status and send notification enabled
+    $emailUnconfirmed = $this->testEmailPrefix . 'notification_test@example.com';
+    $username = 'notification_test_user';
+    
+    $i->amOnAdminPage('user-new.php');
+    $i->waitForText('Add New User');
+    $i->fillField('#user_login', $username);
+    $i->fillField('#email', $emailUnconfirmed);
+    $i->fillField('#pass1', 'V3ryStr0ngP@ssw0rd!23456');
+    
+    // Select unconfirmed subscriber status
+    $i->selectOption('#mailpoet_subscriber_status', 'Unconfirmed (will receive a confirmation email)');
+    
+    // Ensure notification checkbox is checked
+    $i->checkOption('#send_user_notification');
+    
+    // Submit the form to create user
+    $i->click('#createusersub');
+    $i->waitForText('New user created', 20);
+    
+    // Verify user was created as an unconfirmed subscriber
+    $i->amOnMailPoetPage('Subscribers');
+    $i->searchFor($emailUnconfirmed);
+    $i->waitForText($emailUnconfirmed);
+    $i->waitForText('Unconfirmed');
+    
+    // Check for the MailPoet confirmation email
+    $i->checkEmailWasReceived('Confirm your subscription');
+    
+    
+    // Verify email contains username
+    $i->see($username);
+  }
+  
+  /**
    * Helper method to create a user with a specific status
    */
   private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status, $firstName = null, $lastName = null) {
