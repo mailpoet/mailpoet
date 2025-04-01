@@ -7,11 +7,10 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Shortcodes\Categories\Customer;
+use MailPoet\Newsletter\Shortcodes\Categories\Automation;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
-use MailPoet\Newsletter\Shortcodes\Categories\Product as ProductCategory;
 use MailPoet\Newsletter\Shortcodes\Categories\Site;
 use MailPoet\Newsletter\Shortcodes\Categories\Subscriber as SubscriberCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
@@ -56,11 +55,8 @@ class Shortcodes {
   /** @var Site */
   private $siteCategory;
 
-  /** @var Customer */
-  private $customerCategory;
-
-  /** @var ProductCategory */
-  private $productCategory;
+  /** @var Automation */
+  private $automationCategory;
 
   public function __construct(
     Pages $subscriptionPages,
@@ -74,8 +70,7 @@ class Shortcodes {
     Newsletter $newsletterCategory,
     SubscriberCategory $subscriberCategory,
     Site $siteCategory,
-    Customer $customerCategory,
-    ProductCategory $productCategory
+    Automation $automationCategory
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
@@ -88,8 +83,7 @@ class Shortcodes {
     $this->newsletterCategory = $newsletterCategory;
     $this->subscriberCategory = $subscriberCategory;
     $this->siteCategory = $siteCategory;
-    $this->customerCategory = $customerCategory;
-    $this->productCategory = $productCategory;
+    $this->automationCategory = $automationCategory;
   }
 
   public function init() {
@@ -273,13 +267,11 @@ class Shortcodes {
       $this->newsletterCategory,
       $this->subscriberCategory,
       $this->siteCategory,
-      $this->customerCategory,
-      $this->productCategory,
+      $this->automationCategory,
       $this->wp
     );
 
     $shortcodeProcessor->setNewsletter($newsletter);
-
     $shortcodeProcessor->setSubscriber($subscriber);
     $shortcodeProcessor->setQueue($queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'

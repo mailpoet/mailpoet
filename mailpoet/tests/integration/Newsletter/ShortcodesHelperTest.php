@@ -23,8 +23,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
         'Date',
         'Links',
         'Site',
-        'WooCommerce Customer',
-        'WooCommerce Product',
+        'Automation',
       ]
     );
   }

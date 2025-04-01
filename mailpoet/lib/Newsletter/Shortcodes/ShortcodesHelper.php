@@ -129,57 +129,12 @@ class ShortcodesHelper {
           'shortcode' => '[site:homepage_url]',
         ],
       ],
-      __('WooCommerce Customer', 'mailpoet') => [
+      __('Automation', 'mailpoet') => [
         [
-          'text' => __('First Name', 'mailpoet'),
-          'shortcode' => '[customer:first_name | default:customer]',
+          'text' => __('FIXME', 'mailpoet'),
+          'shortcode' => '[automation:order_id]',
         ],
-        [
-          'text' => __('Last Name', 'mailpoet'),
-          'shortcode' => '[customer:last_name | default:customer]',
-        ],
-        [
-          'text' => __('Email', 'mailpoet'),
-          'shortcode' => '[customer:email]',
-        ],
-        [
-          'text' => __('Username', 'mailpoet'),
-          'shortcode' => '[customer:username | default:customer]',
-        ],
-        [
-          'text' => __('Display Name', 'mailpoet'),
-          'shortcode' => '[customer:display_name | default:customer]',
-        ],
-      ],
-      __('WooCommerce Product', 'mailpoet') => [
-        [
-          'text' => __('Product Name', 'mailpoet'),
-          'shortcode' => '[product:name | default:product]',
-        ],
-        [
-          'text' => __('Product Description', 'mailpoet'),
-          'shortcode' => '[product:description | default:product]',
-        ],
-        [
-          'text' => __('Product Short Description', 'mailpoet'),
-          'shortcode' => '[product:short_description | default:product]',
-        ],
-        [
-          'text' => __('Product Price', 'mailpoet'),
-          'shortcode' => '[product:price]',
-        ],
-        [
-          'text' => __('Product Regular Price', 'mailpoet'),
-          'shortcode' => '[product:regular_price]',
-        ],
-        [
-          'text' => __('Product Sale Price', 'mailpoet'),
-          'shortcode' => '[product:sale_price]',
-        ],
-        [
-          'text' => __('Product SKU', 'mailpoet'),
-          'shortcode' => '[product:sku | default:sku]',
-        ],
+        // TODO: add getAutomationFields.
       ],
     ];
     $customFields = $this->getCustomFields();

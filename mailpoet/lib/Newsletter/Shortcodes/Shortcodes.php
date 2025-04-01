@@ -5,12 +5,11 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Shortcodes\Categories\Automation;
 use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
-use MailPoet\Newsletter\Shortcodes\Categories\Customer;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
-use MailPoet\Newsletter\Shortcodes\Categories\Product;
 use MailPoet\Newsletter\Shortcodes\Categories\Site;
 use MailPoet\Newsletter\Shortcodes\Categories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
@@ -43,11 +42,8 @@ class Shortcodes {
   /** @var Site */
   private $siteCategory;
 
-  /** @var Customer */
-  private $customerCategory;
-
-  /** @var Product */
-  private $productCategory;
+  /** @var Automation */
+  private $automationCategory;
 
   /** @var WPFunctions */
   private $wp;
@@ -58,8 +54,7 @@ class Shortcodes {
     Newsletter $newsletterCategory,
     Subscriber $subscriberCategory,
     Site $siteCategory,
-    Customer $customerCategory,
-    Product $productCategory,
+    Automation $automationCategory,
     WPFunctions $wp
   ) {
     $this->dateCategory = $dateCategory;
@@ -67,8 +62,7 @@ class Shortcodes {
     $this->newsletterCategory = $newsletterCategory;
     $this->subscriberCategory = $subscriberCategory;
     $this->siteCategory = $siteCategory;
-    $this->customerCategory = $customerCategory;
-    $this->productCategory = $productCategory;
+    $this->automationCategory = $automationCategory;
     $this->wp = $wp;
   }
 
@@ -230,10 +224,8 @@ class Shortcodes {
       return $this->subscriberCategory;
     } elseif ($category === 'site') {
       return $this->siteCategory;
-    } elseif ($category === 'customer') {
-      return $this->customerCategory;
-    } elseif ($category === 'product') {
-      return $this->productCategory;
+    } elseif ($category === 'automation') {
+      return $this->automationCategory;
     }
     return null;
   }
