@@ -98,6 +98,9 @@ class WP {
       return;
     }
     $this->handleCreatingOrUpdatingSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
+
+    // In WP::synchronizeUser, after the subscriber is created
+    $this->wp->doAction('mailpoet_user_registered', $wpUserId, $subscriber);
   }
 
   private function deleteSubscriber(SubscriberEntity $subscriber): void {
@@ -208,12 +211,6 @@ class WP {
       && $subscribeOnRegisterEnabled
       && $currentFilter !== 'profile_update'
       && !$addingNewUserToDisabledWPSegment;
-
-    // Allow other code to determine if confirmation email should be sent
-    $shouldSendConfirmationEmail = $this->wp->applyFilters('mailpoet_should_send_confirmation_email', false);
-    if ($shouldSendConfirmationEmail) {
-      $sendConfirmationEmail = true;
-    }
 
     if ($sendConfirmationEmail && ($subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED)) {
       /** @var ConfirmationEmailMailer $confirmationEmailMailer */

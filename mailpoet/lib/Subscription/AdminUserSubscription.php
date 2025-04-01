@@ -3,7 +3,10 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AdminUserSubscription {
@@ -12,14 +15,28 @@ class AdminUserSubscription {
 
   /** @var SettingsController */
   private $settings;
+  
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+  
+  /** @var ConfirmationEmailMailer */
+  private $confirmationEmailMailer;
+  
+  /** @var LoggerFactory */
+  private $loggerFactory;
 
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settings
+    SettingsController $settings,
+    SubscribersRepository $subscribersRepository,
+    ConfirmationEmailMailer $confirmationEmailMailer,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
-    // Constructor no longer initializes hooks
+    $this->subscribersRepository = $subscribersRepository;
+    $this->confirmationEmailMailer = $confirmationEmailMailer;
+    $this->loggerFactory = $loggerFactory;
   }
 
   /**
@@ -27,13 +44,13 @@ class AdminUserSubscription {
    */
   public function setupHooks(): void {
     // Set up hooks for the Add New User form
-    // The WordPress user_new_form action is fired with 'add-new-user' as the parameter
     $this->wp->addAction('user_new_form', [$this, 'displaySubscriberStatusField']);
-
-    // Handle users created through the WordPress admin interface
-    // user_register hook with lower priority than the default WP sync
-    // to ensure we process it after the subscriber is created
-    $this->wp->addAction('user_register', [$this, 'processNewUserStatus'], 20, 1);
+    
+    // Use the lower priority filter instead of an action - this is simpler and more reliable
+    $this->wp->addFilter('mailpoet_subscriber_data_before_save', [$this, 'modifySubscriberData'], 10, 1);
+    
+    // Add action to send confirmation email after user registration is complete
+    $this->wp->addAction('user_register', [$this, 'maybeSendConfirmationEmail'], 30, 1);
   }
 
   /**
@@ -57,14 +74,20 @@ class AdminUserSubscription {
   }
 
   /**
-   * Process the selected status for the new user
+   * Modify subscriber data before save during user creation
    *
-   * @param int $userId The ID of the new user
+   * @param array $data The subscriber data
+   * @return array Modified subscriber data
    */
-  public function processNewUserStatus(int $userId): void {
+  public function modifySubscriberData($data): array {
+    // Only process during user creation in admin
+    if (!$this->isAdminUserCreation()) {
+      return $data;
+    }
+    
     // Check if our field was submitted
     if (!isset($_POST['mailpoet_subscriber_status'])) {
-      return;
+      return $data;
     }
 
     $status = sanitize_text_field($_POST['mailpoet_subscriber_status']);
@@ -77,22 +100,72 @@ class AdminUserSubscription {
     ];
 
     if (!in_array($status, $validStatuses)) {
+      return $data;
+    }
+
+    // Update the subscriber data
+    $data['status'] = $status;
+    $data['source'] = 'administrator';
+
+    return $data;
+  }
+
+  /**
+   * Send confirmation email if needed after user registration
+   *
+   * @param int $userId The WordPress user ID
+   */
+  public function maybeSendConfirmationEmail(int $userId): void {
+    // Only process during user creation in admin
+    if (!$this->isAdminUserCreation()) {
       return;
     }
-
-    // Add filter to modify subscriber data before save
-    $this->wp->addFilter('mailpoet_subscriber_data_before_save', function($data) use ($status) {
-      $data['status'] = $status;
-      $data['source'] = 'administrator';
-
-      return $data;
-    });
-
-    // If status is unconfirmed, ensure confirmation email is sent
-    if ($status === SubscriberEntity::STATUS_UNCONFIRMED) {
-      $this->wp->addFilter('mailpoet_should_send_confirmation_email', function() {
-        return true;
-      });
+    
+    // Check if our field was submitted and is set to unconfirmed
+    if (
+        !isset($_POST['mailpoet_subscriber_status']) || 
+        $_POST['mailpoet_subscriber_status'] !== SubscriberEntity::STATUS_UNCONFIRMED
+    ) {
+      return;
     }
+    
+    // Find the subscriber
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $userId]);
+    
+    if (!$subscriber || $subscriber->getStatus() !== SubscriberEntity::STATUS_UNCONFIRMED) {
+      return;
+    }
+    
+    // Send confirmation email
+    try {
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+    } catch (\Exception $e) {
+      // Log the error
+      $logger = $this->loggerFactory->getLogger();
+      $logger->error(
+        'Failed to send confirmation email for admin-created user',
+        ['user_id' => $userId, 'error' => $e->getMessage()]
+      );
+    }
+  }
+  
+  /**
+   * Check if we're in the context of admin user creation
+   *
+   * @return bool
+   */
+  private function isAdminUserCreation(): bool {
+    // Check if we're in admin
+    if (!$this->wp->isAdmin()) {
+      return false;
+    }
+    
+    // Check for the WordPress new user admin page
+    global $pagenow;
+    if ($pagenow !== 'user-new.php') {
+      return false;
+    }
+    
+    return true;
   }
 }

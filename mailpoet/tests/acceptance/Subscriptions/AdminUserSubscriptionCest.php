@@ -215,7 +215,7 @@ class AdminUserSubscriptionCest {
     $i->selectOption('#mailpoet_subscriber_status', 'Unconfirmed (will receive a confirmation email)');
     
     // Ensure notification checkbox is checked
-    $i->checkOption('#send_user_notification');
+    $i->uncheckOption('#send_user_notification');
     
     // Submit the form to create user
     $i->click('#createusersub');
