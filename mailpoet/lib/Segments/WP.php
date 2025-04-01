@@ -147,14 +147,6 @@ class WP {
       $data['id'] = $subscriber->getId();
       unset($data['status']); // don't override status for existing users
       unset($data['source']); // don't override source for existing users
-      
-      // Preserve existing subscriber's first_name and last_name if they're not empty
-      if (!empty($subscriber->getFirstName())) {
-        unset($data['first_name']);
-      }
-      if (!empty($subscriber->getLastName())) {
-        unset($data['last_name']);
-      }
     }
 
     $addingNewUserToDisabledWPSegment = $wpSegment->getDeletedAt() !== null && $currentFilter === 'user_register';

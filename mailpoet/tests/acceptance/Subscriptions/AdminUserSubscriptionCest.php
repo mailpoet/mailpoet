@@ -127,7 +127,7 @@ class AdminUserSubscriptionCest {
   public function testAdminUserCreationWithExistingSubscriber(\AcceptanceTester $i) {
     $i->wantTo('Create a WordPress user with email that already exists as a MailPoet subscriber');
     
-    // Create a subscriber first with a very distinct name to verify it's preserved
+    // Create a subscriber first with a very distinct name to verify it's overridden by WP user data
     $subscriberEmail = $this->testEmailPrefix . 'unique_subscription_test@example.com';
     
     // Create the subscriber directly using the Subscriber factory
@@ -164,40 +164,32 @@ class AdminUserSubscriptionCest {
     // Go back to subscribers list
     $i->amOnMailPoetPage('Subscribers');
     
-    // Create WP user with same email but change status to subscribed
-    // Use a different name for the WP user to verify it doesn't override
+    // Create WP user with same email but different name to verify WP data takes precedence
+    $wpFirstName = 'WP_First_Name_' . uniqid();
+    $wpLastName = 'WP_Last_Name_' . uniqid();
     $i->comment('Creating WordPress user with same email but different name');
-    $this->createUserWithStatus($i, 'wp_user_name', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createUserWithStatus($i, 'wp_user_name', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED, $wpFirstName, $wpLastName);
     
-    // Verify the subscriber status was updated to subscribed
+    // Verify the subscriber data was updated to match WordPress user data
     $i->amOnMailPoetPage('Subscribers');
     $i->searchFor($subscriberEmail);
     $i->waitForText($subscriberEmail);
     $i->waitForText('Subscribed');
     
-    // Also verify the first/last name were not changed
+    // Verify the first/last name were updated to match WordPress user data
     $i->clickItemRowActionByItemName($subscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
     $i->waitForElementVisible(['css' => 'input[name="first_name"]']);
     
-    // Check that the unique values we set are still there
-    $firstNameValue = $i->grabValueFrom(['css' => 'input[name="first_name"]']);
-    $lastNameValue = $i->grabValueFrom(['css' => 'input[name="last_name"]']);
-    
-    $i->comment('Current first name value: "' . $firstNameValue . '"');
-    $i->comment('Expected first name value: "' . $uniqueFirstName . '"');
-    $i->comment('Current last name value: "' . $lastNameValue . '"');
-    $i->comment('Expected last name value: "' . $uniqueLastName . '"');
-    
-    // Assert the values match what we expect
-    $i->seeInField(['css' => 'input[name="first_name"]'], $uniqueFirstName);
-    $i->seeInField(['css' => 'input[name="last_name"]'], $uniqueLastName);
+    // Check that the values match WordPress user data
+    $i->seeInField(['css' => 'input[name="first_name"]'], $wpFirstName);
+    $i->seeInField(['css' => 'input[name="last_name"]'], $wpLastName);
   }
   
   /**
    * Helper method to create a user with a specific status
    */
-  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status) {
+  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status, $firstName = null, $lastName = null) {
     $i->amOnAdminPage('user-new.php');
     $i->waitForText('Add New User');
     $i->fillField('#user_login', $username);
@@ -215,6 +207,14 @@ class AdminUserSubscriptionCest {
     
     if (isset($statusOptionsMap[$status])) {
       $i->selectOption('#mailpoet_subscriber_status', $statusOptionsMap[$status]);
+    }
+    
+    if ($firstName) {
+      $i->fillField('#first_name', $firstName);
+    }
+    
+    if ($lastName) {
+      $i->fillField('#last_name', $lastName);
     }
     
     $i->click('#createusersub');
