@@ -12,6 +12,7 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
@@ -100,6 +101,8 @@ class SendEmailAction implements Action {
 
   private NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository;
 
+  private WordPress $wp;
+
   public function __construct(
     AutomationController $automationController,
     SettingsController $settings,
@@ -109,7 +112,8 @@ class SendEmailAction implements Action {
     SegmentsRepository $segmentsRepository,
     AutomationEmailScheduler $automationEmailScheduler,
     NewsletterOptionsRepository $newsletterOptionsRepository,
-    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository
+    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
+    WordPress $wp
   ) {
     $this->automationController = $automationController;
     $this->settings = $settings;
@@ -120,6 +124,7 @@ class SendEmailAction implements Action {
     $this->automationEmailScheduler = $automationEmailScheduler;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
+    $this->wp = $wp;
   }
 
   public function getKey(): string {
@@ -369,7 +374,8 @@ class SendEmailAction implements Action {
       }
     }
 
-    return $meta;
+    // Allow premium features to modify meta data
+    return (array)$this->wp->applyFilters('mailpoet_automation_send_email_action_meta', $meta, $args);
   }
 
   private function getSubscriber(StepRunArgs $args): SubscriberEntity {
