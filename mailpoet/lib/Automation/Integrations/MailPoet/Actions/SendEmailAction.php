@@ -15,6 +15,7 @@ use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
+use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -24,6 +25,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Newsletter\Renderer\Blocks\DynamicProductsBlock;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -346,6 +348,25 @@ class SendEmailAction implements Action {
     if ($this->automationHasAbandonedCartTrigger($args->getAutomation())) {
       $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
       $meta[AbandonedCart::TASK_META_NAME] = $payload->getProductIds();
+    }
+
+    if ($this->automationHasWooCommerceTrigger($args->getAutomation())) {
+      try {
+        // Handle Order payload - get product IDs and cross-sell IDs
+        $orderPayload = $args->getSinglePayloadByClass(OrderPayload::class);
+        $orderProductIds = $orderPayload->getProductIds();
+        $crossSellIds = $orderPayload->getCrossSellIds();
+
+        if (!empty($orderProductIds)) {
+          $meta[DynamicProductsBlock::ORDER_PRODUCTS_META_NAME] = array_unique($orderProductIds);
+        }
+
+        if (!empty($crossSellIds)) {
+          $meta[DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME] = array_unique($crossSellIds);
+        }
+      } catch (NotFoundException $e) {
+        // No OrderPayload found, continue
+      }
     }
 
     return $meta;

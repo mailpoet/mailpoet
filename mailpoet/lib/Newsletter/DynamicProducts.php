@@ -71,6 +71,7 @@ class DynamicProducts {
         'posts_to_exclude' => $query->postsToExclude,
         'newsletter_id' => $query->newsletterId,
         'newer_than_timestamp' => $query->newerThanTimestamp,
+        'include_product_ids' => $query->includeProductIds,
       ]
     );
 
@@ -91,6 +92,11 @@ class DynamicProducts {
       'order' => $parameters['order'] ?? 'DESC',
       'exclude' => $query->postsToExclude, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
     ];
+
+    // If we have specific product IDs to include, use them
+    if (!empty($parameters['post__in'])) {
+      $wcArgs['include'] = $parameters['post__in'];
+    }
 
     // WooCommerce Product Query does not support 'any' status,
     // so we need to handle it manually

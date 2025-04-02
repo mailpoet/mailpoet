@@ -87,7 +87,7 @@ class Preprocessor {
       case 'automatedLatestContentLayout':
         return $this->automatedLatestContent->render($newsletter, $block);
       case 'dynamicProducts':
-        return $this->dynamicProductsBlock->render($newsletter, $block);
+        return $this->dynamicProductsBlock->render($newsletter, $block, $preview, $sendingQueue);
       case 'woocommerceHeading':
         return $this->wooCommerceContentPreprocessor->preprocessHeader();
       case 'woocommerceContent':
