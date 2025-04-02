@@ -79,6 +79,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
         },
         sortBy: 'newest', // 'newest'|'oldest',
         showDivider: true, // true|false
+        showCrossSells: false, // true|false
         divider: {},
         _container: new (App.getBlockTypeModel('container'))(),
         _displayOptionsHidden: true, // true|false
@@ -118,7 +119,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
     base.BlockView.prototype.initialize.apply(this, args);
 
     this.on(
-      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:fullPostFeaturedImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition',
+      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:fullPostFeaturedImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:showCrossSells change:titlePosition',
       this._handleChanges,
       this,
     );
@@ -233,6 +234,10 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_dynamic_products_show_divider': _.partial(
         this.changeBoolField,
         'showDivider',
+      ),
+      'change .mailpoet_dynamic_products_show_cross_sells': _.partial(
+        this.changeBoolField,
+        'showCrossSells',
       ),
       'input .mailpoet_dynamic_products_show_amount': _.partial(
         this.changeField,

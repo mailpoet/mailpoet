@@ -49,7 +49,7 @@ class DynamicProductsBlock {
       }
 
       // Check for OrderSubject cross-sells
-      if (empty($productIds) && !empty($meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME])) {
+      if ((empty($productIds) || !empty($args['showCrossSells'])) && !empty($meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME])) {
         $productIds = $meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME];
       }
 
