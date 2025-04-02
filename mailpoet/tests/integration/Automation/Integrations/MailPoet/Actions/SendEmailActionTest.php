@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
 use Codeception\Stub\Expected;
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
 use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Control\AutomationController;
@@ -17,18 +18,25 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Integration\ValidationException;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\AbandonedCartSubject;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\Blocks\DynamicProductsBlock;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
@@ -39,6 +47,7 @@ use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use Throwable;
 
 class SendEmailActionTest extends \MailPoetTest {
@@ -64,6 +73,18 @@ class SendEmailActionTest extends \MailPoetTest {
   /** @var Automation */
   private $automation;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
+
+  /** @var WCHelper */
+  private $wcHelper;
+
+  /** @var array */
+  private $productIds = [];
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -74,8 +95,23 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->action = $this->diContainer->get(SendEmailAction::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $this->wcHelper = $this->diContainer->get(WCHelper::class);
 
     $this->automation = new Automation('test-automation', [], new \WP_User());
+
+    // Create test products
+    $this->productIds = [];
+    $this->productIds[] = $this->tester->createWooCommerceProduct([
+      'name' => 'PRODUCT 1',
+      'price' => '10.00',
+    ])->get_id();
+
+    $this->productIds[] = $this->tester->createWooCommerceProduct([
+      'name' => 'PRODUCT 2',
+      'price' => '10.00',
+    ])->get_id();
   }
 
   public function _after() {
@@ -601,6 +637,132 @@ class SendEmailActionTest extends \MailPoetTest {
       'is_not_transactional_because_of_trigger' => $isNotTransactionalBecauseOfTrigger,
       'is_not_transactional_because_of_position' => $isNotTransactionalBecauseOfPosition,
     ];
+  }
+
+  public function testItHandlesOrderSubject() {
+    // Create an order with products
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($this->wcHelper->wcGetProduct($this->productIds[0]), 1);
+    $order->add_product($this->wcHelper->wcGetProduct($this->productIds[1]), 1);
+    $order->save();
+
+    // Create subscriber
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    // Create newsletter
+    $newsletter = (new Newsletter())->withAutomationType()->create();
+
+    // Create automation and run
+    $steps = [
+      new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]),
+      new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-created', [], [new NextStep('action')]),
+      new Step('action', Step::TYPE_ACTION, 'mailpoet:send-email', ['email_id' => $newsletter->getId()], []),
+    ];
+    $automation = (new AutomationFactory())->withSteps($steps)->create();
+    $orderSubject = $this->diContainer->get(OrderSubject::class);
+
+    // Create subjects with both order and subscriber
+    $subjects = [
+      new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]),
+      new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()]),
+    ];
+
+    $run = new AutomationRun(
+      1,
+      $automation->getVersionId(),
+      'trigger',
+      $subjects,
+      1
+    );
+    $this->automationRunStorage->createAutomationRun($run);
+
+    // Execute action
+    $step = $automation->getSteps()['action'];
+    $args = new StepRunArgs($automation, $run, $step, [
+      new SubjectEntry($this->subscriberSubject, $subjects[0]),
+      new SubjectEntry($orderSubject, $subjects[1]),
+    ], 1);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
+    $this->action->run($args, $controller);
+
+    // Verify queue was created with correct metadata
+    $tasks = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
+    verify($tasks)->arrayCount(1);
+
+    // Get the queue from the task
+    $queue = $this->sendingQueuesRepository->findOneBy(['task' => $tasks[0]]);
+
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $meta = $queue->getMeta();
+    $this->assertNotNull($meta);
+    $this->assertArrayHasKey(DynamicProductsBlock::ORDER_PRODUCTS_META_NAME, $meta);
+    $this->assertEquals($meta[DynamicProductsBlock::ORDER_PRODUCTS_META_NAME], [$this->productIds[0], $this->productIds[1]]);
+  }
+
+  public function testItHandlesAbandonedCartSubject() {
+    $cart = [
+      'user_id' => 1,
+      'last_activity_at' => (new \DateTime('now'))->sub(new \DateInterval('PT1H'))->format(\DateTime::W3C),
+      'product_ids' => [$this->productIds[0], $this->productIds[1]],
+    ];
+
+    // Create subscriber
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    // Create newsletter
+    $newsletter = (new Newsletter())->withAutomationType()->create();
+
+    // Create automation and run
+    $steps = [
+      new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]),
+      new Step('trigger', Step::TYPE_TRIGGER, AbandonedCartTrigger::KEY, [], [new NextStep('action')]),
+      new Step('action', Step::TYPE_ACTION, 'mailpoet:send-email', ['email_id' => $newsletter->getId()], []),
+    ];
+    $automation = (new AutomationFactory())->withSteps($steps)->create();
+    $abandonedCartSubject = $this->diContainer->get(AbandonedCartSubject::class);
+
+    // Create subjects with both cart and subscriber
+    $subjectData = [
+      new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]),
+      new Subject(AbandonedCartSubject::KEY, $cart),
+    ];
+
+    $run = new AutomationRun(
+      1,
+      $automation->getVersionId(),
+      'trigger',
+      $subjectData,
+      1
+    );
+    $this->automationRunStorage->createAutomationRun($run);
+
+    // Execute action
+    $step = $automation->getSteps()['action'];
+    $args = new StepRunArgs($automation, $run, $step, [
+      new SubjectEntry($this->subscriberSubject, $subjectData[0]),
+      new SubjectEntry($abandonedCartSubject, $subjectData[1]),
+    ], 1);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
+    $this->action->run($args, $controller);
+
+    // Verify queue was created with correct metadata
+    $tasks = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
+    verify($tasks)->arrayCount(1);
+
+    // Get the queue from the task
+    $queue = $this->sendingQueuesRepository->findOneBy(['task' => $tasks[0]]);
+
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $meta = $queue->getMeta();
+    $this->assertNotNull($meta);
+    $this->assertArrayHasKey(AbandonedCart::TASK_META_NAME, $meta);
+    $this->assertEquals($meta[AbandonedCart::TASK_META_NAME], [$this->productIds[0], $this->productIds[1]]);
   }
 
   private function getSubjectData(SubscriberEntity $subscriber, SegmentEntity $segment): array {
