@@ -178,6 +178,81 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringNotContainsString('PRODUCT 1');
   }
 
+  public function testItRendersOrderProducts() {
+    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
+    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
+    $sendingQueue->setMeta([
+      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0], $this->productIds[1]],
+    ]);
+
+    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+  }
+
+  public function testItRendersOrderCrossSellProducts() {
+    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
+    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
+    $sendingQueue->setMeta([
+      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[2], $this->productIds[3]],
+    ]);
+
+    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('PRODUCT 3');
+    verify($encodedResult)->stringContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
+  }
+
+  public function testItRendersOrderCrossSellProductsWhenShowCrossSellsIsTrue() {
+    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
+    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
+    $sendingQueue->setMeta([
+      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0]],
+      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[1]],
+    ]);
+
+    $block = array_merge($this->dpBlock, ['showCrossSells' => true]);
+    $result = $this->block->render($automation, $block, false, $sendingQueue);
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+  }
+
+  public function testItRendersOrderProductsWhenShowCrossSellsIsFalse() {
+    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
+    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
+    $sendingQueue->setMeta([
+      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0]],
+      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[1]],
+    ]);
+
+    $block = array_merge($this->dpBlock, ['showCrossSells' => false]);
+    $result = $this->block->render($automation, $block, false, $sendingQueue);
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
+  }
+
+  public function testItRendersAbandonedCartProducts() {
+    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
+    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
+    $sendingQueue->setMeta([
+      \MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart::TASK_META_NAME => [$this->productIds[0], $this->productIds[1]],
+    ]);
+
+    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+  }
+
   private function createNewsletter($subject, $type, $parent = null) {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject($subject);
