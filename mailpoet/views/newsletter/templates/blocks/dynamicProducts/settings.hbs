@@ -323,6 +323,22 @@
         </div>
 
     </div>
+
+    <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('For WooCommerce orders, show:') %></div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+        <input type="radio" name="mailpoet_dynamic_products_show_cross_sells"class="mailpoet_dynamic_products_show_cross_sells" value="false" {{#unless model.showCrossSells}}CHECKED{{/unless}}/>
+                <%= __('Order products') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_dynamic_products_show_cross_sells"class="mailpoet_dynamic_products_show_cross_sells" value="true" {{#if model.showCrossSells}}CHECKED{{/if}}/>
+                <%= __('Cross-sell products') %>
+            </label>
+        </div>
+    </div>
 </div>
 
 <div class="mailpoet_form_field">
