@@ -43,6 +43,9 @@ class BlockPostQuery {
    */
   public $dynamic = true;
 
+  /** @var int[] product IDs to include */
+  public $includeProductIds = [];
+
   /**
    * @param array{
    *    args?: array{
@@ -60,6 +63,7 @@ class BlockPostQuery {
    *    newsletterId?: int|false|null,
    *    newerThanTimestamp?: bool|DateTimeInterface|null,
    *    dynamic?: bool,
+   *    includeProductIds?: int[],
    * } $query
    * @return void
    */
@@ -71,6 +75,7 @@ class BlockPostQuery {
     $this->newsletterId = $query['newsletterId'] ?? false;
     $this->newerThanTimestamp = $query['newerThanTimestamp'] ?? false;
     $this->dynamic = $query['dynamic'] ?? true;
+    $this->includeProductIds = $query['includeProductIds'] ?? [];
   }
 
   public function getPostType(): string {
@@ -154,6 +159,12 @@ class BlockPostQuery {
     }
     if (!empty($this->postsToExclude)) {
       $parameters['post__not_in'] = $this->postsToExclude;
+    }
+
+    // If specific product IDs are provided, override post__in
+    if (!empty($this->includeProductIds)) {
+      $parameters['post__in'] = $this->includeProductIds;
+      // Keep the posts_per_page limit to ensure we don't return too many products
     }
 
     // WP posts with the type attachment have always post_status `inherit`
