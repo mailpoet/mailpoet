@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\BlockPostQuery;
 use MailPoet\Newsletter\DynamicProducts;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicProductsBlock {
   // For Order subject - products from the order
@@ -25,11 +26,16 @@ class DynamicProductsBlock {
   /** @var DynamicProducts  */
   private $dynamicProducts;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
-    DynamicProducts $dynamicProducts
+    DynamicProducts $dynamicProducts,
+    WPFunctions $wp
   ) {
     $this->renderedPostsInNewsletter = [];
     $this->dynamicProducts = $dynamicProducts;
+    $this->wp = $wp;
   }
 
   public function render(NewsletterEntity $newsletter, $args, $preview = false, ?SendingQueueEntity $sendingQueue = null) {
@@ -57,6 +63,12 @@ class DynamicProductsBlock {
       if (empty($productIds) && !empty($meta[AbandonedCart::TASK_META_NAME])) {
         $productIds = $meta[AbandonedCart::TASK_META_NAME];
       }
+
+      // Check for Premium dynamic products
+      $productIds = (array)$this->wp->applyFilters('mailpoet_dynamic_products_meta', $productIds, $sendingQueue);
+      $productIds = array_map(function($id) {
+        return is_numeric($id) ? (int)$id : 0;
+      }, $productIds);
     }
 
     // Define query parameters
