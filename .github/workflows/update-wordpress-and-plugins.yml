@@ -8,6 +8,8 @@ on:
 jobs:
   check-versions:
     runs-on: ubuntu-latest
+    env:
+      MAX_PHP_VERSION: '8.3' # Maximum PHP version to use for WordPress Docker images
 
     steps:
       - name: Checkout repository
@@ -16,11 +18,11 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3' # Specify the PHP version you want to use
+          php-version: ${{ env.MAX_PHP_VERSION }}
 
       # Updating used WordPress
       - name: Check WordPress Docker Versions
-        run: php .github/workflows/scripts/check_wordpress_versions.php
+        run: php .github/workflows/scripts/check_wordpress_versions.php ${{ env.MAX_PHP_VERSION }}
 
       - name: Check for WordPress changes
         id: check_wp_changes

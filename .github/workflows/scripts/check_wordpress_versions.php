@@ -16,8 +16,14 @@ function getWordpressVersions(int $page = 1, int $pageSize = 100): array {
  * We prefer the latest patch versions of WordPress with specified PHP versions.
  * For example: 6.5.4-php8.3
  */
-function filterVersions(array $versions): array {
-  return array_filter($versions, fn($version) => preg_match('/^\d+\.\d+\.\d+-php\d+\.\d+$/', $version));
+function filterVersions(array $versions, string $maxPhpVersion): array {
+  return array_filter($versions, function($version) use ($maxPhpVersion) {
+    if (!preg_match('/^\d+\.\d+\.\d+-php(\d+\.\d+)$/', $version, $matches)) {
+      return false;
+    }
+    $phpVersion = $matches[1];
+    return version_compare($phpVersion, $maxPhpVersion, '<=');
+  });
 }
 
 /**
@@ -88,6 +94,15 @@ $maxPages = 8;
 $latestVersion = null;
 $previousVersion = null;
 
+// Get max PHP version from command line argument
+if (!isset($argv[1])) {
+  echo "Error: Maximum PHP version argument is required\n";
+  echo "Example: php check_wordpress_versions.php 8.3\n";
+  exit(1);
+}
+$maxPhpVersion = $argv[1];
+echo "Using maximum PHP version: $maxPhpVersion\n";
+
 echo "Fetching WordPress versions...\n";
 
 // We fetch the versions until we find the latest and previous versions. But there is a limit of 4 pages.
@@ -95,7 +110,7 @@ while (($latestVersion === null || $previousVersion === null) && $page <= $maxPa
   echo "Fetching page $page...\n";
   $versions = getWordpressVersions($page);
   $allVersions = array_merge($allVersions, $versions);
-  $allVersions = filterVersions($allVersions);
+  $allVersions = filterVersions($allVersions, $maxPhpVersion);
   sortVersions($allVersions);
   [$latestVersion, $previousVersion] = getLatestAndPreviousVersions($allVersions);
   $page++;
