@@ -3,7 +3,9 @@
 namespace MailPoet\Services\Bridge;
 
 use MailPoet\Entities\LogEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,8 +26,18 @@ class BridgeApiTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
+    // This is to ensure that the logger is recreated with the new logging level
+    LoggerFactory::getInstance()->clearLoggerInstances();
+    (SettingsController::getInstance())->set('logging', 'everything');
     $this->api = new API('test-api-key', $this->wpMock);
     $this->logRepository = $this->diContainer->get(LogRepository::class);
+  }
+
+  public function _after() {
+    parent::_after();
+    // Clear the logger instances for next tests
+    LoggerFactory::getInstance()->clearLoggerInstances();
+    (SettingsController::getInstance())->set('logging', 'errors');
   }
 
   public function testItDoesntLogsWhenPremiumKeyCheckPass() {
@@ -56,7 +68,8 @@ class BridgeApiTest extends \MailPoetTest {
     verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    verify($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::INFO);
+    verify($errorLog->getMessage())->stringContainsString('premium.INFO:');
     verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
     verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
     verify($errorLog->getMessage())->stringContainsString('"key_type":"premium"');
@@ -90,7 +103,8 @@ class BridgeApiTest extends \MailPoetTest {
     verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    verify($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::INFO);
+    verify($errorLog->getMessage())->stringContainsString('mss.INFO:');
     verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
     verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
     verify($errorLog->getMessage())->stringContainsString('"key_type":"mss"');

@@ -97,6 +97,10 @@ class LoggerFactory {
     return self::$instance;
   }
 
+  public function clearLoggerInstances() {
+    $this->loggerInstances = [];
+  }
+
   private function getDefaultLogLevel() {
     $logLevel = $this->settings->get('logging', 'errors');
     switch ($logLevel) {
