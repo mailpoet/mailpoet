@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 class JiraController {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';
-  const RELEASENOTE_FIELD_ID = 'customfield_10504';
   const PULL_REQUESTS_ID = 'customfield_10000';
 
   const WONT_DO_RESOLUTION_ID = '10001';
@@ -99,9 +98,8 @@ class JiraController {
 
   public function getIssuesDataForVersion($version) {
     $changelogId = self::CHANGELOG_FIELD_ID;
-    $releaseNoteId = self::RELEASENOTE_FIELD_ID;
     $pullRequestsId = self::PULL_REQUESTS_ID;
-    $issuesData = $this->search("fixVersion={$version['id']}", ['key', $changelogId, $releaseNoteId, 'status', 'resolution', $pullRequestsId]);
+    $issuesData = $this->search("fixVersion={$version['id']}", ['key', $changelogId, 'status', 'resolution', $pullRequestsId]);
     // Sort issues by importance of change (Added -> Updated -> Improved -> Changed -> Fixed -> Others)
     usort($issuesData['issues'], function($a, $b) use ($changelogId) {
       $order = array_flip(['added', 'updat', 'impro', 'chang', 'fixed']);

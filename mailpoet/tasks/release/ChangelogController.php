@@ -35,8 +35,7 @@ class ChangelogController {
     if (!$changelog) {
       $changelog = self::FALLBACK_RECORD;
     }
-    $notes = $this->renderList($issues, JiraController::RELEASENOTE_FIELD_ID);
-    return [$heading, $changelog, $notes];
+    return [$heading, $changelog];
   }
 
   private function renderHeading(array $version) {

@@ -1200,15 +1200,13 @@ class RoboFile extends \Robo\Tasks {
 
   public function releaseChangelogGet($version = null) {
     $outputs = $this->getChangelogController()->get($version);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n");
-    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}");
   }
 
   public function releaseChangelogWrite($version = null) {
     $this->say("Updating changelog");
     $outputs = $this->getChangelogController()->update($version);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}\n\n");
-    $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
+    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}");
   }
 
   public function releaseVerifyDownloadedZip($version) {
