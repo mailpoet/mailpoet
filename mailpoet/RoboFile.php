@@ -1002,10 +1002,10 @@ class RoboFile extends \Robo\Tasks {
         $this->releasePrepareGit();
       })
       ->addCode(function () use ($version) {
-        return $this->releaseVersionWrite($version);
+        $this->releaseVersionWrite($version);
       })
       ->addCode(function () use ($version) {
-        return $this->releaseChangelogWrite($version);
+        $this->releaseChangelogWrite($version);
       })
       ->addCode(function () use ($version) {
         $this->releaseCreatePullRequest($version);
@@ -1106,19 +1106,19 @@ class RoboFile extends \Robo\Tasks {
     $version = $this->releaseVersionGetPrepared($version);
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
-        return $this->releaseCheckPullRequest($version);
+        $this->releaseCheckPullRequest($version);
       })
       ->addCode(function () use ($version) {
-        return $this->translationsCheckLanguagePacks($version);
+        $this->translationsCheckLanguagePacks($version);
       })
       ->addCode(function () {
-        return $this->releaseDownloadZip();
+        $this->releaseDownloadZip();
       })
       ->addCode(function () use ($version) {
-        return $this->releaseVerifyDownloadedZip($version);
+        $this->releaseVerifyDownloadedZip($version);
       })
       ->addCode(function () {
-        return $this->translationsGetPotFileFromBuild();
+        $this->translationsGetPotFileFromBuild();
       })
       ->addCode(function () {
         return $this->translationsPush();
@@ -1130,16 +1130,16 @@ class RoboFile extends \Robo\Tasks {
         return $this->svnPublish($version);
       })
       ->addCode(function () use ($version) {
-        return $this->releasePublishGithub($version);
+        $this->releasePublishGithub($version);
       })
       ->addCode(function () use ($version) {
-        return $this->releasePublishSlack($version);
+        $this->releasePublishSlack($version);
       })
       ->addCode(function () {
-        return $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
+        $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
       })
       ->addCode(function () {
-        return $this->releaseDeleteDownloadedZip();
+        $this->releaseDeleteDownloadedZip();
       })
       ->run();
   }
