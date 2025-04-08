@@ -9,7 +9,6 @@ use MailPoetVendor\Carbon\Carbon;
 class GitHubController {
   const PROJECT_MAILPOET = 'MAILPOET';
   const PROJECT_PREMIUM = 'PREMIUM';
-  const PROJECT_SHOP = 'SHOP';
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
@@ -40,93 +39,6 @@ class GitHubController {
       ],
       'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject($project)}/",
     ]);
-  }
-
-  public function calculatePRcounts($months): array {
-    $since = (new Carbon())->subMonths($months)->startOfMonth();
-    $startOfThisMonth = (new Carbon())->startOfMonth();
-    $page = 1;
-    $counts = [];
-    do {
-      $response = $this->httpClient->get('pulls', [
-        'query' => [
-          'per_page' => '100',
-          'state' => 'all',
-          'page' => $page,
-        ],
-      ]);
-      $response = json_decode($response->getBody()->getContents(), true);
-      // if there are no more pull requests finish
-      if (empty($response)) break;
-      foreach ($response as $item) {
-        $created = new Carbon($item['created_at']);
-        // continue until we reach the desired number of months
-        if ($since->isAfter($created)) break 2;
-        // ignore all pull requests in this month so that we can calculate average per month
-        if ($startOfThisMonth->isBefore($created)) continue;
-        // itnore all release PRs
-        if (str_starts_with($item['title'], 'Release ')) continue;
-        $author = $item['user']['login'];
-        $counts[$author] = ($counts[$author] ?? 0) + 1;
-      }
-      $page += 1;
-    } while (true);
-
-    return $this->mergeAlex($counts);
-  }
-
-  /**
-   * @return array{login: string, count: int}
-   */
-  public function calculateReviewers(): array {
-    // load pull requests
-    $response = $this->httpClient->get('pulls', [
-      'query' => [
-        'per_page' => '100', // 100 is maximum, if we want more we need to implement paging
-        'state' => 'all',
-      ],
-    ]);
-    $response = json_decode($response->getBody()->getContents(), true);
-    $logins = [];
-    foreach ($response as $item) {
-      $author = $item['user']['login'];
-      // calculate reviewers - here we only get reviewers if the review has not yet started
-      $reviewers = $item['requested_reviewers'];
-      foreach ($reviewers as $reviewer) {
-        if ($reviewer['login'] === self::QA_GITHUB_LOGIN) continue;
-        if ($reviewer['login'] === $author) continue;
-        $logins[$reviewer['login']] = ($logins[$reviewer['login']] ?? 0) + 1;
-      }
-
-      $single = [];
-      $pullRequestNumber = $item['number'];
-      // load all performed reviews (approved, request changes, add a comment)
-      $reviews = $this->httpClient->get("pulls/$pullRequestNumber/reviews");
-      $reviews = json_decode($reviews->getBody()->getContents(), true);
-      foreach ($reviews as $review) {
-        $log = $review['user']['login'];
-        if ($log === self::QA_GITHUB_LOGIN) continue;
-        if ($log === $author) continue;
-        // each person only once for each pull request. We don't want to count them more times if they added more comments
-        $single[$log] = $log;
-      }
-      foreach ($single as $log) {
-        $logins[$log] = ($logins[$log] ?? 0) + 1;
-      }
-    }
-
-    return $this->mergeAlex($logins);
-  }
-
-  private function mergeAlex($logins) {
-    if (!isset($logins['alex-mailpoet'])) {
-      $logins['alex-mailpoet'] = 0;
-    }
-    if (isset($logins['wxa'])) {
-      $logins['alex-mailpoet'] += $logins['wxa'];
-      unset($logins['wxa']);
-    }
-    return $logins;
   }
 
   public function createReleasePullRequest($version) {
@@ -357,8 +269,6 @@ class GitHubController {
     $url = 'mailpoet-premium';
     if ($project === self::PROJECT_MAILPOET) {
       $url = 'mailpoet';
-    } elseif ($project === self::PROJECT_SHOP) {
-      $url = 'shop';
     }
     return urlencode($url);
   }

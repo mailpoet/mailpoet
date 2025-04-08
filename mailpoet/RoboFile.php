@@ -3,7 +3,6 @@
 // phpcs:disable PSR1.Classes.ClassDeclaration
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
-use Robo\Symfony\ConsoleIO;
 
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
@@ -1154,79 +1153,6 @@ class RoboFile extends \Robo\Tasks {
       exit(1);
     }
     $this->say("Pull request for branch: '{$branch}' was successfully merged");
-  }
-
-  /**
-   * This command displays how many pull request each person did recently
-   */
-  public function displayReviewers(ConsoleIO $io) {
-    $io->progressStart(2);
-    $freePluginGithubController = $this->createGitHubController();
-    $logins = $freePluginGithubController->calculateReviewers();
-
-    $io->progressAdvance();
-    $shopGithubController = $this->createGitHubController(\MailPoetTasks\Release\GitHubController::PROJECT_SHOP);
-    $loginsShop = $shopGithubController->calculateReviewers();
-    $io->progressFinish();
-
-    $printReviewers = function ($logins, $header) use ($io) {
-      $io->title($header);
-      $outputList = [];
-      foreach ($logins as $login => $num) {
-        $outputList[] = [$login => $num];
-      }
-      $io->definitionList(...$outputList);
-    };
-
-    arsort($logins);
-    $printReviewers($logins, 'Free plugin');
-
-    arsort($loginsShop);
-    $printReviewers($loginsShop, 'Shop');
-
-    foreach ($loginsShop as $loginShop => $num) {
-      if (!isset($logins[$loginShop])) {
-        $logins[$loginShop] = 0;
-      }
-      $logins[$loginShop] += $num;
-    }
-    arsort($logins);
-    $printReviewers($logins, 'Full');
-  }
-
-  public function displayCreatedPullRequests(ConsoleIO $io, int $months = 6) {
-    $projects = [
-      \MailPoetTasks\Release\GitHubController::PROJECT_SHOP,
-      \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET,
-      \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
-    ];
-    $io->progressStart(count($projects));
-    $counts = [];
-    foreach ($projects as $project) {
-      $githubController = $this->createGitHubController($project);
-      $countsProject = $githubController->calculatePRcounts($months);
-
-      foreach ($countsProject as $login => $num) {
-        if (!isset($counts[$login])) {
-          $counts[$login] = 0;
-        }
-        $counts[$login] += $num;
-      }
-      $io->progressAdvance();
-    }
-    $io->progressFinish();
-
-    arsort($counts);
-    $io->title('Pull Request counts');
-    $outputList = [];
-    foreach ($counts as $login => $num) {
-      $outputList[] = [
-        $login,
-        $num,
-        round($num / $months, 2),
-      ];
-    }
-    $io->table(['Login', 'Count', 'Per month'], $outputList);
   }
 
   public function releaseCheckPullRequest($version) {
