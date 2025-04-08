@@ -82,28 +82,6 @@ class JiraController {
     return reset($version['values']);
   }
 
-  public function getLastReleasedVersion(?string $project = null) {
-    $project = $project ?: $this->project;
-    $response = $this->httpClient->get("project/$project/version", [
-      'query' => [
-        'maxResults' => 10,
-        'orderBy' => '-releaseDate',
-        'status' => 'released',
-      ],
-    ]);
-    $version = json_decode($response->getBody()->getContents(), true);
-    if (empty($version) || empty($version['values'])) {
-      throw new \Exception('No released versions found');
-    }
-    $version['values'] = array_filter($version['values'], function ($item) {
-      return VersionHelper::validateVersion($item['name']);
-    });
-    if (empty($version['values'])) {
-      throw new \Exception('No released versions matching MP3 version format found');
-    }
-    return reset($version['values']);
-  }
-
   public function getPreparedReleaseVersion(?string $project = null): array {
     $project = $project ?: $this->project;
     $response = $this->httpClient->get("project/$project/version", [

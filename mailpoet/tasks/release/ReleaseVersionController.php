@@ -41,7 +41,7 @@ class ReleaseVersionController {
   }
 
   public function determineNextVersion() {
-    $lastVersion = $this->jira->getLastReleasedVersion();
+    $lastVersion = $this->github->getLastReleasedVersion();
 
     $partToIncrement = VersionHelper::MINOR;
 
@@ -54,11 +54,9 @@ class ReleaseVersionController {
       if (!$isPremiumReleased) {
         $partToIncrement = VersionHelper::PATCH;
       }
-    } elseif ($this->project === JiraController::PROJECT_PREMIUM) {
-      $lastVersion = $this->jira->getLastReleasedVersion(JiraController::PROJECT_MAILPOET);
     }
 
-    $nextVersion = VersionHelper::incrementVersion($lastVersion['name'], $partToIncrement);
+    $nextVersion = VersionHelper::incrementVersion($lastVersion, $partToIncrement);
     return $nextVersion;
   }
 

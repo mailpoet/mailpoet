@@ -26,6 +26,9 @@ class GitHubController {
   /** @var Client */
   private $httpClient;
 
+  /** @var Client */
+  private $freePluginHttpClient;
+
   public function __construct(
     $username,
     $token,
@@ -38,6 +41,13 @@ class GitHubController {
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject($project)}/",
+    ]);
+    $this->freePluginHttpClient = new Client([
+      'auth' => [$username, $token],
+      'headers' => [
+        'Accept' => 'application/vnd.github.v3+json',
+      ],
+      'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject(self::PROJECT_MAILPOET)}/",
     ]);
   }
 
@@ -272,4 +282,33 @@ class GitHubController {
     }
     return urlencode($url);
   }
+
+  /**
+   * Gets the latest released version from GitHub
+   * @return string|null The latest version number or null if no releases exist
+   */
+  public function getLastReleasedVersion(): ?string {
+    $response = $this->freePluginHttpClient->get('releases', [
+      'query' => [
+        'per_page' => 1,
+      ],
+    ]);
+    $releases = json_decode($response->getBody()->getContents(), true);
+
+    if (empty($releases)) {
+      throw new \Exception('No released versions found');
+    }
+
+    $validReleases = array_filter($releases, function ($release) {
+      return VersionHelper::validateVersion($release['tag_name']);
+    });
+    if (empty($validReleases)) {
+      throw new \Exception('No released versions matching MailPoet version format found');
+    }
+
+    // Get the first release (most recent) and return its tag name
+    $latestRelease = reset($releases);
+    return $latestRelease['tag_name'];
+  }
+
 }
