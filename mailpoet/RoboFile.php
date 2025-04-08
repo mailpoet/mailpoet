@@ -1198,15 +1198,15 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function releaseChangelogGet($version = null) {
-    $outputs = $this->getChangelogController()->get($version);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}");
+  public function releaseChangelogGet($version) {
+    $changelog = $this->getChangelogController()->get($version);
+    $this->say("Changelog \n{$changelog}");
   }
 
-  public function releaseChangelogWrite($version = null) {
+  public function releaseChangelogWrite($version) {
     $this->say("Updating changelog");
-    $outputs = $this->getChangelogController()->update($version);
-    $this->say("Changelog \n{$outputs[0]} \n{$outputs[1]}");
+    $changelog = $this->getChangelogController()->update($version);
+    $this->say("Changelog \n{$changelog}");
   }
 
   public function releaseVerifyDownloadedZip($version) {

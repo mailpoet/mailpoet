@@ -6,6 +6,7 @@ class ChangelogController {
 
   const FALLBACK_RECORD = "* Improved: minor changes and fixes.";
   const HEADING_GLUE = ' - ';
+  const NEW_CHANGELOG_TEMPLATE = '= x.x.x - YYYY-MM-DD =';
 
   /** @var string */
   private $readmeFile;
@@ -21,53 +22,44 @@ class ChangelogController {
     $this->readmeFile = $readmeFile;
   }
 
-  public function update($versionName = null) {
-    $changelogData = $this->get($versionName);
+  public function update(string $version) {
+    if (!$version) {
+      throw new \Exception('Version is required');
+    }
+    $changelogData = $this->get($version);
     $this->updateReadme($changelogData[0], $changelogData[1]);
     return $changelogData;
   }
 
-  public function get($versionName = null) {
-    $version = $this->jira->getVersion($versionName);
-    $issues = $this->jira->getIssuesDataForVersion($version);
-    $heading = $this->renderHeading($version);
-    $changelog = $this->renderList($issues, JiraController::CHANGELOG_FIELD_ID);
-    if (!$changelog) {
-      $changelog = self::FALLBACK_RECORD;
+  public function get(string $version) {
+    if (!$version) {
+      throw new \Exception('Version is required');
     }
-    return [$heading, $changelog];
+    $changelog = $this->getChangelogFromReadme();
+    if (!$this->containsNewChangelog($changelog)) {
+      $changelog = self::NEW_CHANGELOG_TEMPLATE . "\n" . self::FALLBACK_RECORD;
+    }
+    $changelog = $this->updateHeading($changelog, $version);
+    return $changelog;
   }
 
-  private function renderHeading(array $version) {
-    $date = empty($version['releaseDate']) ? date('Y-m-d') : $version['releaseDate'];
-    return "= {$version['name']}" . self::HEADING_GLUE . "$date =";
+  private function getChangelogFromReadme() {
+    $readme = file_get_contents($this->readmeFile);
+    $pattern = '/== Changelog ==\n\n(.*?)(?:\n\n= [0-9]+\.[0-9]+\.[0-9]+ - |\n\[See the changelog)/s';
+    if (preg_match($pattern, $readme, $matches)) {
+      return trim($matches[1]);
+    }
+    return '';
   }
 
-  private function renderList(array $issues, $field) {
-    $messages = [];
-    foreach ($issues as $issue) {
-      if (
-        !isset($issue['fields'][$field])
-        || ($issue['fields']['resolution']['id'] === JiraController::WONT_DO_RESOLUTION_ID)
-      ) {
-        continue;
-      }
-      $messages[] = "* " . $this->sanitizePunctuation($issue['fields'][$field], ';');
-    }
-    if (empty($messages)) {
-      return null;
-    }
-    $list = implode("\n", $messages);
-    return empty($list) ? $list : $this->sanitizePunctuation($list, '.');
+  private function containsNewChangelog(string $changelog) {
+    return strpos($changelog, self::NEW_CHANGELOG_TEMPLATE) !== false;
   }
 
-  private function sanitizePunctuation($message, $fallback) {
-    $validPunctuation = ['?', '.', '!'];
-    $message = rtrim($message, ';, ');
-    if (!in_array(substr($message, -1), $validPunctuation)) {
-      $message .= $fallback;
-    }
-    return $message;
+  private function updateHeading(string $changelog, string $version) {
+    $date = date('Y-m-d');
+    $heading = "= $version" . self::HEADING_GLUE . "$date =";
+    return str_replace(self::NEW_CHANGELOG_TEMPLATE, $heading, $changelog);
   }
 
   private function updateReadme($heading, $changesList) {

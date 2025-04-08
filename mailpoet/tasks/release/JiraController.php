@@ -6,11 +6,6 @@ use GuzzleHttp\Client;
 
 class JiraController {
 
-  const CHANGELOG_FIELD_ID = 'customfield_10500';
-  const PULL_REQUESTS_ID = 'customfield_10000';
-
-  const WONT_DO_RESOLUTION_ID = '10001';
-
   const PROJECT_MAILPOET = 'MAILPOET';
   const PROJECT_PREMIUM = 'PREMIUM';
 
@@ -67,51 +62,6 @@ class JiraController {
     throw new \Exception('Unknown project version');
   }
 
-  public function getLastVersion() {
-    $response = $this->httpClient->get("project/$this->project/version", [
-      'query' => [
-        'maxResults' => 1,
-        'orderBy' => '-releaseDate',
-      ],
-    ]);
-    $version = json_decode($response->getBody()->getContents(), true);
-    if (empty($version) || empty($version['values'])) {
-      throw new \Exception('No version found');
-    }
-    return reset($version['values']);
-  }
-
-  /**
-   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-version-post
-   */
-  public function createVersion($versionName) {
-    $data = [
-      'name' => $versionName,
-      'archived' => false,
-      'released' => false,
-      'project' => $this->project,
-      'startDate' => (new \DateTime())->format('Y-m-d'),
-    ];
-    $response = $this->httpClient->post('version', ['json' => $data]);
-    return json_decode($response->getBody()->getContents(), true);
-  }
-
-  public function getIssuesDataForVersion($version) {
-    $changelogId = self::CHANGELOG_FIELD_ID;
-    $pullRequestsId = self::PULL_REQUESTS_ID;
-    $issuesData = $this->search("fixVersion={$version['id']}", ['key', $changelogId, 'status', 'resolution', $pullRequestsId]);
-    // Sort issues by importance of change (Added -> Updated -> Improved -> Changed -> Fixed -> Others)
-    usort($issuesData['issues'], function($a, $b) use ($changelogId) {
-      $order = array_flip(['added', 'updat', 'impro', 'chang', 'fixed']);
-      $aPrefix = !is_null($a['fields'][$changelogId]) ? strtolower(substr($a['fields'][$changelogId], 0, 5)) : '';
-      $bPrefix = !is_null($b['fields'][$changelogId]) ? strtolower(substr($b['fields'][$changelogId], 0, 5)) : '';
-      $aRank = isset($order[$aPrefix]) ? $order[$aPrefix] : count($order);
-      $bRank = isset($order[$bPrefix]) ? $order[$bPrefix] : count($order);
-      return $aRank - $bRank;
-    });
-    return $issuesData['issues'];
-  }
-
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-search-get
    */
@@ -122,12 +72,5 @@ class JiraController {
     }
     $response = $this->httpClient->get('search', ['query' => $params]);
     return json_decode($response->getBody()->getContents(), true);
-  }
-
-  /**
-   * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-put
-   */
-  public function updateIssue($key, $data) {
-    $this->httpClient->put("issue/$key", ['json' => $data]);
   }
 }
