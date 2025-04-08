@@ -38,9 +38,9 @@ There is a `./do` command that helps with the development process. See [README](
 
 - Do not commit to trunk.
 - Open a short-living feature branch.
-- Use good commit messages as explained here https://chris.beams.io/posts/git-commit. Include Jira ticket in the commit message.
+- Use good commit messages as explained here https://chris.beams.io/posts/git-commit. Include Linear issue ID in the commit message.
 - Use the `./do qa` command to check your code style before pushing.
-- Create a pull request when finished. Include Jira ticket in the title of the pull request.
+- Create a pull request when finished.
 - Wait for review from another developer.
 
 ## Feature flags
