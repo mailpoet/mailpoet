@@ -11,14 +11,7 @@ class ChangelogController {
   /** @var string */
   private $readmeFile;
 
-  /** @var JiraController */
-  private $jira;
-
-  public function __construct(
-    JiraController $jira,
-    $readmeFile
-  ) {
-    $this->jira = $jira;
+  public function __construct($readmeFile) {
     $this->readmeFile = $readmeFile;
   }
 

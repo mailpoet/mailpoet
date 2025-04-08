@@ -1434,25 +1434,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   protected function getChangelogController() {
-    return new \MailPoetTasks\Release\ChangelogController(
-      $this->createJiraController(),
-      __DIR__ . '/readme.txt'
-    );
+    return new \MailPoetTasks\Release\ChangelogController(__DIR__ . '/readme.txt');
   }
 
   protected function getReleaseVersionController() {
     return new \MailPoetTasks\Release\ReleaseVersionController(
       $this->createGitHubController(),
       \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET
-    );
-  }
-
-  protected function createJiraController() {
-    $help = 'Use your JIRA username and a token from https://id.atlassian.com/manage/api-tokens.';
-    return new \MailPoetTasks\Release\JiraController(
-      $this->getEnv('WP_JIRA_TOKEN', $help),
-      $this->getEnv('WP_JIRA_USER', $help),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
     );
   }
 
