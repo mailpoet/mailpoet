@@ -19,9 +19,10 @@ class ChangelogController {
     if (!$version) {
       throw new \Exception('Version is required');
     }
-    $changelogData = $this->get($version);
-    $this->updateReadme($changelogData[0], $changelogData[1]);
-    return $changelogData;
+    $changelog = $this->get($version);
+    $this->updateChangelogTxt($changelog);
+    $this->updateReadmeTxt($changelog, $version);
+    return $changelog;
   }
 
   public function get(string $version) {
@@ -55,35 +56,33 @@ class ChangelogController {
     return str_replace(self::NEW_CHANGELOG_TEMPLATE, $heading, $changelog);
   }
 
-  private function updateReadme($heading, $changesList) {
-    if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'changelog.txt')) {
-      // for the free plugin, in the premium, we don't use the changelog file
-      $this->addChangelogEntryToFile($heading, $changesList, dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'changelog.txt');
-      $this->removePreviousChangelogFromReadmeFile();
+  private function updateChangelogTxt($changelog) {
+    $changelogTxtFile = dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'changelog.txt';
+    if (!file_exists($changelogTxtFile)) {
+      return;
     }
-    $this->addChangelogEntryToFile($heading, $changesList, $this->readmeFile);
+
+    $fileContents = file_get_contents($changelogTxtFile);
+    $header = "== Changelog ==\n\n";
+    $fileContents = str_replace($header, $header . $changelog . "\n\n", $fileContents);
+    file_put_contents($changelogTxtFile, $fileContents);
   }
 
-  private function addChangelogEntryToFile($heading, $changesList, $fileName) {
-    $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
-    $headersDelimiter = "\n";
+  private function updateReadmeTxt($changelog, $version) {
+    $fileContents = file_get_contents($this->readmeFile);
 
-    $fileContents = file_get_contents($fileName);
-    $changelog = "$heading$headersDelimiter$changesList";
+    if (!$this->containsNewChangelog($fileContents)) {
+      // In the free plugin, remove the previous changelog before adding a new one.
+      // Premium plugin doesn't contain link to full changelog.
+      $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
+      $fileContents = preg_replace($pattern, "== Changelog ==\n\n[See the changelog for all versions.]", $fileContents);
 
-    if (strpos($fileContents, $headingPrefix) !== false) {
-      $start = preg_quote($headingPrefix);
-      $fileContents = preg_replace("/$start.*?(?:\r*\n){2}([=\[])/us", "$changelog\n\n$1", $fileContents);
-    } else {
+      // Add the new changelog in both plugins.
       $fileContents = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", $fileContents);
-    }
-    file_put_contents($fileName, $fileContents);
-  }
 
-  private function removePreviousChangelogFromReadmeFile() {
-    $readme = file_get_contents($this->readmeFile);
-    $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
-    $readme = preg_replace($pattern, "== Changelog ==\n\n[See the changelog for all versions.]", $readme);
-    file_put_contents($this->readmeFile, $readme);
+    }
+    $fileContents = $this->updateHeading($fileContents, $version);
+
+    file_put_contents($this->readmeFile, $fileContents);
   }
 }
