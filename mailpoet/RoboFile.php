@@ -1134,9 +1134,6 @@ class RoboFile extends \Robo\Tasks {
         return $this->releasePublishGithub($version);
       })
       ->addCode(function () use ($version) {
-        return $this->releasePublishJira($version);
-      })
-      ->addCode(function () use ($version) {
         return $this->releasePublishSlack($version);
       })
       ->addCode(function () {
@@ -1347,13 +1344,6 @@ class RoboFile extends \Robo\Tasks {
     $githubController = $this->createGitHubController();
     $githubController->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
     $this->say("Release '$version[name]' was published to GitHub.");
-  }
-
-  public function releasePublishJira($version = null) {
-    $version = $this->releaseVersionGetPrepared($version);
-    $jiraController = $this->createJiraController();
-    $jiraVersion = $jiraController->releaseVersion($version);
-    $this->say("JIRA version '$jiraVersion[name]' was released.");
   }
 
   public function releasePublishSlack($version = null) {
