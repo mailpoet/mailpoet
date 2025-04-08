@@ -1103,7 +1103,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublish($version = null) {
-    $version = $this->releaseVersionGetPrepared($version);
+    $version = $this->releaseVersionGetNext($version);
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
         $this->releaseCheckPullRequest($version);
@@ -1164,15 +1164,6 @@ class RoboFile extends \Robo\Tasks {
     if (!$version) {
       $version = $this->getReleaseVersionController()
         ->determineNextVersion();
-    }
-    $this->validateVersion($version);
-    return $version;
-  }
-
-  public function releaseVersionGetPrepared($version = null) {
-    if (!$version) {
-      $version = $this->getReleaseVersionController()
-        ->getPreparedVersion();
     }
     $this->validateVersion($version);
     return $version;

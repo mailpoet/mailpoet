@@ -42,9 +42,4 @@ class ReleaseVersionController {
     $nextVersion = VersionHelper::incrementVersion($lastVersion, $partToIncrement);
     return $nextVersion;
   }
-
-  public function getPreparedVersion(): string {
-    $version = $this->jira->getPreparedReleaseVersion();
-    return $version['name'];
-  }
 }
