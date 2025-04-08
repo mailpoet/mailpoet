@@ -222,7 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.10.0 - 2025-03-18 =
-* Added: "created via" field to order-based automations.
+= x.x.x - YYYY-MM-DD =
+* Improved: plugin release process
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
