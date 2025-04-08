@@ -4,21 +4,13 @@ namespace MailPoetTasks\Release;
 
 class ReleaseVersionController {
 
-  /** @var JiraController */
-  private $jira;
-
   /** @var GitHubController */
   private $github;
 
   /** @var string */
   private $project;
 
-  public function __construct(
-    JiraController $jira,
-    GitHubController $github,
-    $project
-  ) {
-    $this->jira = $jira;
+  public function __construct(GitHubController $github, $project) {
     $this->github = $github;
     $this->project = $project;
   }
@@ -32,9 +24,9 @@ class ReleaseVersionController {
 
     $partToIncrement = VersionHelper::MINOR;
 
-    if ($this->project === JiraController::PROJECT_MAILPOET) {
+    if ($this->project === GitHubController::PROJECT_MAILPOET) {
       $isPremiumReleased = $this->github->projectBranchExists(
-        JiraController::PROJECT_PREMIUM,
+        GitHubController::PROJECT_PREMIUM,
         GitHubController::RELEASE_SOURCE_BRANCH
       );
 

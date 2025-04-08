@@ -1444,9 +1444,8 @@ class RoboFile extends \Robo\Tasks {
 
   protected function getReleaseVersionController() {
     return new \MailPoetTasks\Release\ReleaseVersionController(
-      $this->createJiraController(),
       $this->createGitHubController(),
-      \MailPoetTasks\Release\JiraController::PROJECT_MAILPOET
+      \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET
     );
   }
 
