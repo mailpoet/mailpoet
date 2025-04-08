@@ -4,7 +4,6 @@ namespace MailPoetTasks\Release;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use MailPoetVendor\Carbon\Carbon;
 
 class GitHubController {
   const PROJECT_MAILPOET = 'MAILPOET';
@@ -310,5 +309,4 @@ class GitHubController {
     $latestRelease = reset($releases);
     return $latestRelease['tag_name'];
   }
-
 }

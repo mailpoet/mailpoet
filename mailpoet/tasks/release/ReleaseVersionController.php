@@ -10,7 +10,10 @@ class ReleaseVersionController {
   /** @var string */
   private $project;
 
-  public function __construct(GitHubController $github, $project) {
+  public function __construct(
+    GitHubController $github,
+    $project
+  ) {
     $this->github = $github;
     $this->project = $project;
   }

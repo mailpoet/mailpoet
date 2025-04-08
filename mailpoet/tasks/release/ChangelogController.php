@@ -11,7 +11,9 @@ class ChangelogController {
   /** @var string */
   private $readmeFile;
 
-  public function __construct($readmeFile) {
+  public function __construct(
+    $readmeFile
+  ) {
     $this->readmeFile = $readmeFile;
   }
 
