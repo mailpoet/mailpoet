@@ -23,8 +23,12 @@ class ReleaseVersionController {
     $this->project = $project;
   }
 
+  public function getLatestVersion() {
+    return $this->github->getLastReleasedVersion();
+  }
+
   public function determineNextVersion() {
-    $lastVersion = $this->github->getLastReleasedVersion();
+    $lastVersion = $this->getLatestVersion();
 
     $partToIncrement = VersionHelper::MINOR;
 

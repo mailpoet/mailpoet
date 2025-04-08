@@ -1160,6 +1160,15 @@ class RoboFile extends \Robo\Tasks {
       ->checkReleasePullRequestPassed($version);
   }
 
+  public function releaseVersionGetLatest($version = null) {
+    if (!$version) {
+      $version = $this->getReleaseVersionController()
+        ->getLatestVersion();
+    }
+    $this->validateVersion($version);
+    return $version;
+  }
+
   public function releaseVersionGetNext($version = null) {
     if (!$version) {
       $version = $this->getReleaseVersionController()
@@ -1239,23 +1248,21 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishGithub($version = null) {
-    $jiraController = $this->createJiraController();
-    $version = $jiraController->getVersion($version);
-    $changelog = $this->getChangelogController()->get($version['name']);
+    $version = $this->releaseVersionGetNext($version);
+    $changelog = $this->getChangelogController()->get($version);
 
     $githubController = $this->createGitHubController();
-    $githubController->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
-    $this->say("Release '$version[name]' was published to GitHub.");
+    $githubController->publishRelease($version, $changelog[1], self::ZIP_BUILD_PATH);
+    $this->say("Release '$version' was published to GitHub.");
   }
 
   public function releasePublishSlack($version = null) {
-    $jiraController = $this->createJiraController();
-    $version = $jiraController->getVersion($version);
-    $changelog = $this->getChangelogController()->get($version['name']);
+    $version = $this->releaseVersionGetLatest($version);
+    $changelog = $this->getChangelogController()->get($version);
 
     $slackNotifier = $this->createSlackNotifier();
-    $slackNotifier->notify($version['name'], $changelog[1], $version['id']);
-    $this->say("Release '$version[name]' info was published on Slack.");
+    $slackNotifier->notify($version, $changelog[1]);
+    $this->say("Release '$version' info was published on Slack.");
   }
 
   public function releaseRerunCircleWorkflow(?string $project = null) {
