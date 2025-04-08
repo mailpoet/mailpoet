@@ -995,7 +995,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePrepare($version = null) {
-    $version = $this->releaseVersionAssign($version, ['return' => true]);
+    $version = $this->releaseVersionGetNext($version);
 
     return $this->collectionBuilder()
       ->addCode(function () {
@@ -1176,21 +1176,6 @@ class RoboFile extends \Robo\Tasks {
     }
     $this->validateVersion($version);
     return $version;
-  }
-
-  public function releaseVersionAssign($version = null, $opts = []) {
-    $version = $this->releaseVersionGetNext($version);
-    try {
-      [$version, $output] = $this->getReleaseVersionController()
-        ->assignVersionToCompletedTickets($version);
-    } catch (\Exception $e) {
-      $this->yell($e->getMessage(), 40, 'red');
-      exit(1);
-    }
-    $this->say($output);
-    if (!empty($opts['return'])) {
-      return $version;
-    }
   }
 
   public function releaseVersionWrite($version) {
