@@ -999,9 +999,6 @@ class RoboFile extends \Robo\Tasks {
     $version = $this->releaseVersionAssign($version, ['return' => true]);
 
     return $this->collectionBuilder()
-      ->addCode(function () use ($version) {
-        return $this->releaseCheckIssues($version);
-      })
       ->addCode(function () {
         $this->releasePrepareGit();
       })
@@ -1021,20 +1018,6 @@ class RoboFile extends \Robo\Tasks {
         $this->translationsPrepareLanguagePacks($version);
       })
       ->run();
-  }
-
-  public function releaseCheckIssues($version = null) {
-    $jira = $this->createJiraController();
-    $version = $jira->getVersion($this->releaseVersionGetNext($version));
-    $issues = $jira->getIssuesDataForVersion($version);
-    $pullRequestsId = \MailPoetTasks\Release\JiraController::PULL_REQUESTS_ID;
-    foreach ($issues as $issue) {
-      if (strpos($issue['fields'][$pullRequestsId], 'state=OPEN') !== false) {
-        $key = $issue['key'];
-        $this->yell("Some pull request associated to task {$key} is not merged yet!", 40, 'red');
-        exit(1);
-      }
-    }
   }
 
   public function releasePrepareGit() {
