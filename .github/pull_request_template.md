@@ -24,7 +24,7 @@ _N/A_
 
 ## Tasks
 
-- [ ] I have added a [changelog entry](https://wp.me/pcNwfB-4Ov/#how-to-write-a-changelog)
+- [ ] I have added a changelog entry (pcNwfB-4Ov-p2#how-to-write-a-changelog)
 - [ ] I followed [best practices](https://codex.wordpress.org/I18n_for_WordPress_Developers) for translations
 - [ ] I added sufficient test coverage
 - [ ] I embraced TypeScript by either creating new files in TypeScript or converting existing JavaScript files when making changes
