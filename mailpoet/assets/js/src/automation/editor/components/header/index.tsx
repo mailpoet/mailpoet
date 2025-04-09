@@ -55,7 +55,7 @@ export function ActivateButton({ label }): JSX.Element {
       <Tooltip
         delay={0}
         text={__(
-          'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
+          'Editing an active automation is currently unavailable.',
           'mailpoet',
         )}
       >
@@ -106,7 +106,7 @@ export function UpdateButton(): JSX.Element {
     <Tooltip
       delay={0}
       text={__(
-        'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
+        'Editing an active automation is currently unavailable.',
         'mailpoet',
       )}
     >

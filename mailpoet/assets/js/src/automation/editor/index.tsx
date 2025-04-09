@@ -59,10 +59,7 @@ function updatingActiveAutomationNotPossible() {
   const { createNotice } = dispatch(noticesStore);
   void createNotice(
     'success',
-    __(
-      'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
-      'mailpoet',
-    ),
+    __('Editing an active automation is currently unavailable.', 'mailpoet'),
     {
       type: 'snackbar',
     },
