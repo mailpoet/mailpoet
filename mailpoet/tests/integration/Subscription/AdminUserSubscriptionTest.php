@@ -20,13 +20,13 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
 
   /** @var SettingsController&MockObject */
   private $settingsMock;
-  
+
   /** @var SubscribersRepository&MockObject */
   private $subscribersRepositoryMock;
-  
+
   /** @var ConfirmationEmailMailer&MockObject */
   private $confirmationEmailMailerMock;
-  
+
   /** @var LoggerFactory&MockObject */
   private $loggerFactoryMock;
 
@@ -36,19 +36,19 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     $this->wpMock = $this->getMockBuilder(WPFunctions::class)
       ->disableOriginalConstructor()
       ->getMock();
-    
+
     $this->settingsMock = $this->getMockBuilder(SettingsController::class)
       ->disableOriginalConstructor()
       ->getMock();
-      
+
     $this->subscribersRepositoryMock = $this->getMockBuilder(SubscribersRepository::class)
       ->disableOriginalConstructor()
       ->getMock();
-      
+
     $this->confirmationEmailMailerMock = $this->getMockBuilder(ConfirmationEmailMailer::class)
       ->disableOriginalConstructor()
       ->getMock();
-      
+
     $this->loggerFactoryMock = $this->getMockBuilder(LoggerFactory::class)
       ->disableOriginalConstructor()
       ->getMock();
@@ -70,7 +70,7 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
         ['user_new_form', [$this->adminUserSubscription, 'displaySubscriberStatusField']],
         ['user_register', [$this->adminUserSubscription, 'maybeSendConfirmationEmail'], 30, 1]
       );
-    
+
     $this->wpMock
       ->expects($this->exactly(1))
       ->method('addFilter')
@@ -82,7 +82,7 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
 
   public function testItDisplaysNothingForWrongContext() {
     $this->expectOutputString('');
-    
+
     $this->adminUserSubscription->displaySubscriberStatusField('wrong-context');
   }
 
@@ -90,12 +90,12 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Setup the POST data
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_SUBSCRIBED;
 
@@ -116,12 +116,12 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Setup the POST data
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_UNCONFIRMED;
 
@@ -142,12 +142,12 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Clear the POST data
     unset($_POST['mailpoet_subscriber_status']);
 
@@ -162,12 +162,12 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Set invalid status
     $_POST['mailpoet_subscriber_status'] = 'invalid_status';
 
@@ -177,63 +177,63 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
     $result = $this->adminUserSubscription->modifySubscriberData($data);
     $this->assertEquals($data, $result);
   }
-  
+
   public function testMaybeSendConfirmationEmail() {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Setup the POST data
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_UNCONFIRMED;
-    
+
     $userId = 123;
     $subscriber = $this->createMock(SubscriberEntity::class);
-    
+
     $subscriber
       ->expects($this->once())
       ->method('getStatus')
       ->willReturn(SubscriberEntity::STATUS_UNCONFIRMED);
-    
+
     $this->subscribersRepositoryMock
       ->expects($this->once())
       ->method('findOneBy')
       ->with(['wpUserId' => $userId])
       ->willReturn($subscriber);
-    
+
     $this->confirmationEmailMailerMock
       ->expects($this->once())
       ->method('sendConfirmationEmailOnce')
       ->with($subscriber);
-    
+
     $this->adminUserSubscription->maybeSendConfirmationEmail($userId);
   }
-  
+
   public function testMaybeSendConfirmationEmailDoesNothingForNonUnconfirmedStatus() {
     // Set up admin page context
     global $pagenow;
     $pagenow = 'user-new.php';
-    
+
     $this->wpMock
       ->expects($this->once())
       ->method('isAdmin')
       ->willReturn(true);
-    
+
     // Set different status
     $_POST['mailpoet_subscriber_status'] = SubscriberEntity::STATUS_SUBSCRIBED;
-    
+
     $this->subscribersRepositoryMock
       ->expects($this->never())
       ->method('findOneBy');
-    
+
     $this->confirmationEmailMailerMock
       ->expects($this->never())
       ->method('sendConfirmationEmailOnce');
-    
+
     $this->adminUserSubscription->maybeSendConfirmationEmail(123);
   }
 }

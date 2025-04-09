@@ -30,7 +30,7 @@ use MailPoet\Entities\SubscriberEntity;
         </option>
         <?php endif; ?>
 
-        <option value="<?php echo esc_attr(SubscriberEntity::STATUS_UNSUBSCRIBED); ?>" 
+        <option value="<?php echo esc_attr(SubscriberEntity::STATUS_UNSUBSCRIBED); ?>"
                   <?php echo !$confirmationEnabled ? 'selected="selected"' : ''; ?>>
           <?php echo esc_html__('Unsubscribed', 'mailpoet'); ?>
         </option>
@@ -39,4 +39,4 @@ use MailPoet\Entities\SubscriberEntity;
   </tr>
 </table>
 <?php
-// phpcs:enable Generic.Files.InlineHTML.Found 
+// phpcs:enable Generic.Files.InlineHTML.Found

@@ -15,13 +15,13 @@ class AdminUserSubscription {
 
   /** @var SettingsController */
   private $settings;
-  
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
-  
+
   /** @var ConfirmationEmailMailer */
   private $confirmationEmailMailer;
-  
+
   /** @var LoggerFactory */
   private $loggerFactory;
 
@@ -45,10 +45,10 @@ class AdminUserSubscription {
   public function setupHooks(): void {
     // Set up hooks for the Add New User form
     $this->wp->addAction('user_new_form', [$this, 'displaySubscriberStatusField']);
-    
+
     // Use the lower priority filter instead of an action - this is simpler and more reliable
     $this->wp->addFilter('mailpoet_subscriber_data_before_save', [$this, 'modifySubscriberData'], 10, 1);
-    
+
     // Add action to send confirmation email after user registration is complete
     $this->wp->addAction('user_register', [$this, 'maybeSendConfirmationEmail'], 30, 1);
   }
@@ -84,7 +84,7 @@ class AdminUserSubscription {
     if (!$this->isAdminUserCreation()) {
       return $data;
     }
-    
+
     // Check if our field was submitted
     if (!isset($_POST['mailpoet_subscriber_status'])) {
       return $data;
@@ -120,22 +120,22 @@ class AdminUserSubscription {
     if (!$this->isAdminUserCreation()) {
       return;
     }
-    
+
     // Check if our field was submitted and is set to unconfirmed
     if (
-        !isset($_POST['mailpoet_subscriber_status']) || 
+        !isset($_POST['mailpoet_subscriber_status']) ||
         $_POST['mailpoet_subscriber_status'] !== SubscriberEntity::STATUS_UNCONFIRMED
     ) {
       return;
     }
-    
+
     // Find the subscriber
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $userId]);
-    
+
     if (!$subscriber || $subscriber->getStatus() !== SubscriberEntity::STATUS_UNCONFIRMED) {
       return;
     }
-    
+
     // Send confirmation email
     try {
       $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
@@ -148,7 +148,7 @@ class AdminUserSubscription {
       );
     }
   }
-  
+
   /**
    * Check if we're in the context of admin user creation
    *
@@ -159,13 +159,13 @@ class AdminUserSubscription {
     if (!$this->wp->isAdmin()) {
       return false;
     }
-    
+
     // Check for the WordPress new user admin page
     global $pagenow;
     if ($pagenow !== 'user-new.php') {
       return false;
     }
-    
+
     return true;
   }
 }

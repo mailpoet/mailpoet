@@ -170,7 +170,7 @@ class WP {
 
     // Apply filter to allow modifying subscriber data before save
     $data = $this->wp->applyFilters('mailpoet_subscriber_data_before_save', $data);
-    
+
     // Ensure data is an array
     if (!is_array($data)) {
       // If the filter returned a non-array, log it and use the original data
@@ -243,12 +243,12 @@ class WP {
 
     $subscriber->setWpUserId($data['wp_user_id']);
     $subscriber->setEmail($data['email']);
-    
+
     // Only set first_name if it's present in the data array
     if (isset($data['first_name'])) {
       $subscriber->setFirstName($data['first_name']);
     }
-    
+
     // Only set last_name if it's present in the data array
     if (isset($data['last_name'])) {
       $subscriber->setLastName($data['last_name']);
