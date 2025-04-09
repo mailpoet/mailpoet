@@ -223,6 +223,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
-* Improved: plugin release process
+* Added: ability to set subscriber status when creating new users in WordPress admin;
+* Improved: plugin release process.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

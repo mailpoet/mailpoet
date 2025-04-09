@@ -1,6 +1,4 @@
 == Changelog ==
-= 5.11.0 - 2025-04-01 =
-* Added: ability to set subscriber status when creating new users in WordPress admin.
 
 = 5.10.0 - 2025-03-18 =
 * Added: "created via" field to order-based automations.
