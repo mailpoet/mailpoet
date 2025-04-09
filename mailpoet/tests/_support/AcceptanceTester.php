@@ -505,7 +505,9 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function getWordPressVersion(): string {
     $i = $this;
-    return $i->cliToString(['core', 'version']);
+    $version = $i->cliToString(['core', 'version']);
+    // Clean version from beta and RC strings
+    return preg_replace('/[- ]?(beta|RC|alpha)[0-9]*/i', '', $version);
   }
 
   public function orderProductWithoutRegistration(array $product, $userEmail, $doSubscribe = true) {
