@@ -522,6 +522,12 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function orderProduct(array $product, $userEmail, $doRegister = true, $doSubscribe = true) {
     $i = $this;
+    // Reset WooCommerce session cookies to avoid conflicts with previous tests
+    $wcSessionCookies = $i->grabCookiesWithPattern('/^wp_woocommerce_session_[a-z0-9]+$/') ?: [];
+    foreach ($wcSessionCookies as $cookie) {
+      $i->resetCookie($cookie->getName());
+    }
+
     $i->amOnPage('checkout/?add-to-cart=' . $product['id']);
     $i->fillCustomerInfo($userEmail);
 
