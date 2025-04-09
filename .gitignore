@@ -11,6 +11,3 @@ tsconfig.tsbuildinfo
 /wordpress
 packages/php/*/vendor
 tests_env/vendor
-doc/active_ticket.md
-run-tests.sh
-fix_bom.php
