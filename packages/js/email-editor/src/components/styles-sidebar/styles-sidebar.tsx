@@ -34,7 +34,6 @@ export function RawStylesSidebar( props: Props ): JSX.Element {
 			closeLabel={ __( 'Close styles sidebar', 'mailpoet' ) }
 			icon={ styles }
 			scope={ storeName }
-			smallScreenTitle={ __( 'No title', 'mailpoet' ) }
 			{ ...props }
 		>
 			<NavigatorProvider initialPath="/">
