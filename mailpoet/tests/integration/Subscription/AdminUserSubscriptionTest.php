@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Subscription;
 
+use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
@@ -30,6 +31,9 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
   /** @var LoggerFactory&MockObject */
   private $loggerFactoryMock;
 
+  /** @var TemplateRenderer&MockObject */
+  private $templateRendererMock;
+
   public function _before() {
     parent::_before();
 
@@ -53,12 +57,17 @@ class AdminUserSubscriptionTest extends \MailPoetTest {
       ->disableOriginalConstructor()
       ->getMock();
 
+    $this->templateRendererMock = $this->getMockBuilder(TemplateRenderer::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
     $this->adminUserSubscription = new AdminUserSubscription(
       $this->wpMock,
       $this->settingsMock,
       $this->subscribersRepositoryMock,
       $this->confirmationEmailMailerMock,
-      $this->loggerFactoryMock
+      $this->loggerFactoryMock,
+      $this->templateRendererMock
     );
   }
 

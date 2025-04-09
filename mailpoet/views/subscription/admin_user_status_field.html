@@ -1,0 +1,29 @@
+<% block content %>
+<table class="form-table">
+  <tr>
+    <th scope="row">
+      <label for="mailpoet_subscriber_status">
+        <%= __('MailPoet Subscriber Status', 'mailpoet') %>
+      </label>
+    </th>
+    <td>
+      <select name="mailpoet_subscriber_status" id="mailpoet_subscriber_status">
+        <option value="<%= statuses.subscribed %>">
+          <%= __('Subscribed', 'mailpoet') %>
+        </option>
+
+        <% if confirmationEnabled %>
+        <option value="<%= statuses.unconfirmed %>" selected="selected">
+          <%= __('Unconfirmed (will receive a confirmation email)', 'mailpoet') %>
+        </option>
+        <% endif %>
+
+        <option value="<%= statuses.unsubscribed %>"
+          <% if not confirmationEnabled %>selected="selected"<% endif %>>
+          <%= __('Unsubscribed', 'mailpoet') %>
+        </option>
+      </select>
+    </td>
+  </tr>
+</table>
+<% endblock %>

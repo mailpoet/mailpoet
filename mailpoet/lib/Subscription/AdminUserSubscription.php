@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
@@ -25,18 +26,23 @@ class AdminUserSubscription {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var TemplateRenderer */
+  private $templateRenderer;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     ConfirmationEmailMailer $confirmationEmailMailer,
-    LoggerFactory $loggerFactory
+    LoggerFactory $loggerFactory,
+    TemplateRenderer $templateRenderer
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->subscribersRepository = $subscribersRepository;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->loggerFactory = $loggerFactory;
+    $this->templateRenderer = $templateRenderer;
   }
 
   /**
@@ -64,13 +70,31 @@ class AdminUserSubscription {
       return;
     }
 
-    $confirmationEnabled = (bool)$this->settings->get('signup_confirmation.enabled', false);
-    $defaultStatus = $confirmationEnabled ?
-      SubscriberEntity::STATUS_UNCONFIRMED :
-      SubscriberEntity::STATUS_UNSUBSCRIBED;
+    $templateData = [
+      'confirmationEnabled' => (bool)$this->settings->get('signup_confirmation.enabled', false),
+      'statuses' => [
+        'subscribed' => SubscriberEntity::STATUS_SUBSCRIBED,
+        'unconfirmed' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'unsubscribed' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      ],
+    ];
 
-    // Include the template file
-    include __DIR__ . '/../../views/subscription/admin_user_status_field.php';
+    $renderedTemplate = $this->templateRenderer->render(
+      'subscription/admin_user_status_field.html',
+      $templateData
+    );
+
+    $allowedHtml = [
+      'table' => ['class' => true],
+      'tr' => [],
+      'th' => ['scope' => true],
+      'td' => [],
+      'label' => ['for' => true],
+      'select' => ['name' => true, 'id' => true],
+      'option' => ['value' => true, 'selected' => true],
+    ];
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    echo $this->wp->wpKses($renderedTemplate, $allowedHtml);
   }
 
   /**
