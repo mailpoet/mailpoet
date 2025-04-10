@@ -225,5 +225,6 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 = x.x.x - YYYY-MM-DD =
 * Added: ability to set subscriber status when creating new users in WordPress admin;
 * Improved: plugin release process.
+* Fixed: possible invalid styles in HTML list elements
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
