@@ -110,9 +110,19 @@ class StylesHelper {
       $block['styles']['block']['textAlign'] = 'left';
       return $block;
     }
-    return (preg_match('/text-align.*?[center|justify|right]/i', (string)$block)) ?
-      $block :
-      $block . 'text-align:left;';
+
+    // Check if text-align is already set to center, right, or justify
+    if (preg_match('/text-align\s*:\s*(center|justify|right)/i', (string)$block)) {
+      return $block;
+    }
+
+    // Ensure semicolon at the end before appending
+    $block = rtrim((string)$block);
+    if (strlen($block) > 0 && substr($block, -1) !== ';') {
+      $block .= ';';
+    }
+
+    return $block . 'text-align:left;';
   }
 
   /**

@@ -86,4 +86,18 @@ class StylesHelperTest extends \MailPoetUnitTest {
     verify($styles)->stringContainsString('line-height:18.7px;');
     verify($styles)->stringContainsString('mso-line-height-alt:20px;');
   }
+
+  public function testItAppendsTextAlignmentWithSemicolon(): void {
+    $blockWithoutSemicolon = "color: #000000";
+    verify(StylesHelper::applyTextAlignment($blockWithoutSemicolon))
+      ->equals("color: #000000;text-align:left;");
+
+    $blockWithSemicolon = "color: #000000; ";
+    verify(StylesHelper::applyTextAlignment($blockWithSemicolon))
+      ->equals("color: #000000;text-align:left;");
+
+    $blockWithExtraSpaces = "color: #000000; font-size: 16px;  ";
+    verify(StylesHelper::applyTextAlignment($blockWithExtraSpaces))
+      ->equals("color: #000000; font-size: 16px;text-align:left;");
+  }
 }
