@@ -13,10 +13,14 @@ class AdminUserSubscriptionCest {
   /** @var string */
   private $testEmailPrefix;
 
+  /** @var string */
+  private $successMessage;
+
   public function _before() {
     $this->settings = new Settings();
     // Unique email prefix to avoid collisions between test runs
     $this->testEmailPrefix = 'admin_user_test_' . uniqid() . '_';
+    $this->successMessage = getenv('MULTISITE') ? 'User has been added to your site.' : 'New user created';
   }
 
   /**
@@ -233,6 +237,6 @@ class AdminUserSubscriptionCest {
     }
 
     $i->click('#createusersub');
-    $i->waitForText('New user created', 20); // Increase timeout to 20 seconds for user creation
+    $i->waitForText($this->successMessage, 20);
   }
 }
