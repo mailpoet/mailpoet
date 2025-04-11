@@ -33,7 +33,7 @@ class AdminUserSubscriptionCest {
 
     // Test Unconfirmed status (should be default when confirmation is enabled)
     $emailUnconfirmed = $this->testEmailPrefix . 'unconfirmed@example.com';
-    $this->createUserWithStatus($i, 'unconfirmed_user', $emailUnconfirmed, SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->createUserWithStatus($i, 'unconfirmeduser', $emailUnconfirmed, SubscriberEntity::STATUS_UNCONFIRMED);
 
     // Verify user was created as an unconfirmed subscriber
     $i->amOnMailPoetPage('Subscribers');
@@ -46,7 +46,7 @@ class AdminUserSubscriptionCest {
 
     // Test Subscribed status
     $emailSubscribed = $this->testEmailPrefix . 'subscribed@example.com';
-    $this->createUserWithStatus($i, 'subscribed_user', $emailSubscribed, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createUserWithStatus($i, 'subscribeduser', $emailSubscribed, SubscriberEntity::STATUS_SUBSCRIBED);
 
     // Verify user was created as a subscribed subscriber
     $i->amOnMailPoetPage('Subscribers');
@@ -56,7 +56,7 @@ class AdminUserSubscriptionCest {
 
     // Test Unsubscribed status
     $emailUnsubscribed = $this->testEmailPrefix . 'unsubscribed@example.com';
-    $this->createUserWithStatus($i, 'unsubscribed_user', $emailUnsubscribed, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->createUserWithStatus($i, 'unsubscribeduser', $emailUnsubscribed, SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     // Verify user was created as an unsubscribed subscriber
     $i->amOnMailPoetPage('Subscribers');
@@ -106,7 +106,7 @@ class AdminUserSubscriptionCest {
 
     // Test Subscribed status
     $emailSubscribed = $this->testEmailPrefix . 'sub_noconfirm@example.com';
-    $this->createUserWithStatus($i, 'sub_noconfirm_user', $emailSubscribed, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createUserWithStatus($i, 'subnoconfirmuser', $emailSubscribed, SubscriberEntity::STATUS_SUBSCRIBED);
 
     // Verify user was created as a subscribed subscriber
     $i->amOnMailPoetPage('Subscribers');
@@ -168,7 +168,7 @@ class AdminUserSubscriptionCest {
     $wpFirstName = 'WP_First_Name_' . uniqid();
     $wpLastName = 'WP_Last_Name_' . uniqid();
     $i->comment('Creating WordPress user with same email but different name');
-    $this->createUserWithStatus($i, 'wp_user_name', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED, $wpFirstName, $wpLastName);
+    $this->createUserWithStatus($i, 'wpusername', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED, $wpFirstName, $wpLastName);
 
     // Verify the subscriber data was updated to match WordPress user data
     $i->amOnMailPoetPage('Subscribers');
