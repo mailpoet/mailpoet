@@ -212,9 +212,6 @@ class AdminUserSubscriptionCest {
     $i->waitForText('Add New User');
     $i->fillField('#user_login', $username);
     $i->fillField('#email', $email);
-    $i->fillField('#pass1', 'V3ryStr0ngP@ssw0rd!23456');
-    // Setting "send user notification" to unchecked to avoid extra emails
-    $i->uncheckOption('#send_user_notification');
 
     // Select the requested subscriber status
     $statusOptionsMap = [
