@@ -236,6 +236,11 @@ class AdminUserSubscriptionCest {
       $i->fillField('#last_name', $lastName);
     }
 
+    // Skip sending confirmation email to create WP user in Multisite
+    if (getenv('MULTISITE')) {
+      $i->checkOption('#noconfirmation');
+    }
+
     $i->click('#createusersub');
     $i->waitForText($this->successMessage, 20);
   }
