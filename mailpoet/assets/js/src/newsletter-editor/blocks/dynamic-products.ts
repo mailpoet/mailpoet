@@ -75,7 +75,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
         },
         sortBy: 'newest', // 'newest'|'oldest',
         showDivider: true, // true|false
-        showCrossSells: false, // true|false
+        dynamicProductsType: 'selected', // 'cross-sell'|'order'|'selected'|'cart'
         divider: {},
         _container: new (App.getBlockTypeModel('container'))(),
         _displayOptionsHidden: true, // true|false
@@ -95,7 +95,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
     base.BlockView.prototype.initialize.apply(this, args);
 
     this.on(
-      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:sortBy change:showDivider change:showCrossSells change:titlePosition',
+      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:sortBy change:showDivider change:dynamicProductsType change:titlePosition',
       this._handleChanges,
       this,
     );
@@ -198,6 +198,8 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_dynamic_products_read_more_type': 'changeReadMoreType',
       'change .mailpoet_dynamic_products_display_type': 'changeDisplayType',
       'change .mailpoet_dynamic_products_title_format': 'changeTitleFormat',
+      'change .mailpoet_dynamic_products_dynamic_products_type':
+        'changeDynamicProductsType',
       'change .mailpoet_dynamic_products_title_as_links': _.partial(
         this.changeBoolField,
         'titleIsLink',
@@ -205,10 +207,6 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_dynamic_products_show_divider': _.partial(
         this.changeBoolField,
         'showDivider',
-      ),
-      'change .mailpoet_dynamic_products_show_cross_sells': _.partial(
-        this.changeBoolField,
-        'showCrossSells',
       ),
       'input .mailpoet_dynamic_products_show_amount': _.partial(
         this.changeField,
@@ -424,6 +422,19 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
   changeFeaturedImagePosition(event: Event) {
     this.changeField('featuredImagePosition', event);
     this.changeField('_featuredImagePosition', event);
+  },
+  changeDynamicProductsType(event: Event) {
+    const value = jQuery(event.target).val();
+    if (value === 'selected') {
+      this.$('.mailpoet_dynamic_products_selected_products').removeClass(
+        'mailpoet_hidden',
+      );
+    } else {
+      this.$('.mailpoet_dynamic_products_selected_products').addClass(
+        'mailpoet_hidden',
+      );
+    }
+    this.changeField('dynamicProductsType', event);
   },
 });
 

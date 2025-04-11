@@ -10,25 +10,55 @@
     </div>
 </div>
 
+
 <div class="mailpoet_form_field">
-    <div class="mailpoet_form_field_select_option">
-        <select class="mailpoet_select mailpoet_dynamic_products_categories_and_tags" multiple="multiple">
-          {{#each model.terms}}
-            <option value="{{ id }}" selected="selected">{{ text }}</option>
-          {{/each}}
-        </select>
-    </div>
-    <div class="mailpoet_form_field_radio_option">
+    <div class="mailpoet_form_field_radio_option mailpoet_form_field_block">
         <label>
-            <input type="radio" name="mailpoet_dynamic_products_include_or_exclude" class="mailpoet_dynamic_products_include_or_exclude" value="include" {{#ifCond model.inclusionType '==' 'include'}}CHECKED{{/ifCond}}/>
-            <%= __('Include') %>
+            <input type="radio" name="mailpoet_dynamic_products_dynamic_products_type" class="mailpoet_dynamic_products_dynamic_products_type" value="order" {{#ifCond model.dynamicProductsType '==' 'order'}}CHECKED{{/ifCond}}/>
+            <%= __('Order products') %>
         </label>
     </div>
-    <div class="mailpoet_form_field_radio_option">
+    <div class="mailpoet_form_field_radio_option mailpoet_form_field_block">
         <label>
-            <input type="radio" name="mailpoet_dynamic_products_include_or_exclude" class="mailpoet_dynamic_products_include_or_exclude" value="exclude" {{#ifCond model.inclusionType '==' 'exclude'}}CHECKED{{/ifCond}} />
-            <%= __('Exclude') %>
+            <input type="radio" name="mailpoet_dynamic_products_dynamic_products_type" class="mailpoet_dynamic_products_dynamic_products_type" value="cross-sell" {{#ifCond model.dynamicProductsType '==' 'cross-sell'}}CHECKED{{/ifCond}}/>
+            <%= __('Cross-sell products') %>
         </label>
+    </div>
+    <div class="mailpoet_form_field_radio_option mailpoet_form_field_block">
+        <label>
+            <input type="radio" name="mailpoet_dynamic_products_dynamic_products_type" class="mailpoet_dynamic_products_dynamic_products_type" value="cart" {{#ifCond model.dynamicProductsType '==' 'cart'}}CHECKED{{/ifCond}}/>
+            <%= __('Abandoned cart products') %>
+        </label>
+    </div>
+    <div class="mailpoet_form_field_radio_option mailpoet_form_field_block">
+        <label>
+            <input type="radio" name="mailpoet_dynamic_products_dynamic_products_type" class="mailpoet_dynamic_products_dynamic_products_type" value="selected" {{#ifCond model.dynamicProductsType '==' 'selected'}}CHECKED{{/ifCond}}/>
+            <%= __('Selected products') %>
+        </label>
+    </div>
+</div>
+
+<div class="mailpoet_dynamic_products_selected_products {{#ifCond model.dynamicProductsType '!=' 'selected'}}mailpoet_hidden{{/ifCond}}">
+    <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_select_option">
+            <select class="mailpoet_select mailpoet_dynamic_products_categories_and_tags" multiple="multiple">
+            {{#each model.terms}}
+                <option value="{{ id }}" selected="selected">{{ text }}</option>
+            {{/each}}
+            </select>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_dynamic_products_include_or_exclude" class="mailpoet_dynamic_products_include_or_exclude" value="include" {{#ifCond model.inclusionType '==' 'include'}}CHECKED{{/ifCond}}/>
+                <%= __('Include') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_dynamic_products_include_or_exclude" class="mailpoet_dynamic_products_include_or_exclude" value="exclude" {{#ifCond model.inclusionType '==' 'exclude'}}CHECKED{{/ifCond}} />
+                <%= __('Exclude') %>
+            </label>
+        </div>
     </div>
 </div>
 
@@ -268,25 +298,6 @@
             <div>
                 <a href="javascript:;" class="mailpoet_dynamic_products_select_divider"><%= __('Select divider') %></a>
             </div>
-        </div>
-    </div>
-
-
-    <hr class="mailpoet_separator" />
-
-    <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title"><%= __('For WooCommerce orders, show:') %></div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-        <input type="radio" name="mailpoet_dynamic_products_show_cross_sells" class="mailpoet_dynamic_products_show_cross_sells" value="false" {{#unless model.showCrossSells}}CHECKED{{/unless}}/>
-                <%= __('Order products') %>
-            </label>
-        </div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-                <input type="radio" name="mailpoet_dynamic_products_show_cross_sells" class="mailpoet_dynamic_products_show_cross_sells" value="true" {{#if model.showCrossSells}}CHECKED{{/if}}/>
-                <%= __('Cross-sell products') %>
-            </label>
         </div>
     </div>
 </div>
