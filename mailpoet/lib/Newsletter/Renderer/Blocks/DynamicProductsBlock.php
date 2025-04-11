@@ -49,19 +49,27 @@ class DynamicProductsBlock {
     if (!$preview && $sendingQueue) {
       $meta = $sendingQueue->getMeta();
 
-      // Check for OrderSubject products
-      if (!empty($meta[self::ORDER_PRODUCTS_META_NAME])) {
-        $productIds = $meta[self::ORDER_PRODUCTS_META_NAME];
-      }
-
-      // Check for OrderSubject cross-sells
-      if ((empty($productIds) || !empty($args['showCrossSells'])) && !empty($meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME])) {
-        $productIds = $meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME];
-      }
-
-      // Check for AbandonedCartSubject products
-      if (empty($productIds) && !empty($meta[AbandonedCart::TASK_META_NAME])) {
-        $productIds = $meta[AbandonedCart::TASK_META_NAME];
+      if (!empty($args['dynamicProductsType'])) {
+        switch ($args['dynamicProductsType']) {
+          case 'order':
+            // Check for OrderSubject products
+            if (!empty($meta[self::ORDER_PRODUCTS_META_NAME])) {
+              $productIds = $meta[self::ORDER_PRODUCTS_META_NAME];
+            }
+            break;
+          case 'cross-sell':
+            // Check for OrderSubject cross-sells
+            if (!empty($meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME])) {
+              $productIds = $meta[self::ORDER_CROSS_SELL_PRODUCTS_META_NAME];
+            }
+            break;
+          case 'cart':
+            // Check for AbandonedCartSubject products
+            if (!empty($meta[AbandonedCart::TASK_META_NAME])) {
+              $productIds = $meta[AbandonedCart::TASK_META_NAME];
+            }
+            break;
+        }
       }
 
       // Check for Premium dynamic products
@@ -84,6 +92,14 @@ class DynamicProductsBlock {
     // If we have specific product IDs, add them to the query
     if (!empty($productIds)) {
       $queryArgs['includeProductIds'] = $productIds;
+    } else {
+      // Don't show any products if we don't have specific product IDs
+      // and the user didn't choose "selected" in the dynamic products type dropdown
+      if ($sendingQueue) {
+        if (!empty($args['dynamicProductsType']) || $args['dynamicProductsType'] !== 'selected') {
+          $queryArgs['includeProductIds'] = [0];
+        }
+      }
     }
 
     $query = new BlockPostQuery($queryArgs);
