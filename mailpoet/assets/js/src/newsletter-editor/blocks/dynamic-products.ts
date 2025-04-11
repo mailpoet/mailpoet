@@ -55,26 +55,22 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
       {
         type: 'dynamicProducts',
         withLayout: true,
-        amount: '2',
-        contentType: 'product', // 'post'|'page'|'mailpoet_page'
+        amount: '10',
+        contentType: 'product',
         terms: [], // List of category and tag objects
         inclusionType: 'include', // 'include'|'exclude'
         displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
-        titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
+        titleFormat: 'h1', // 'h1'|'h2'|'h3'
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
         titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
-        featuredImagePosition: 'centered', // 'centered'|'left'|'right'|'alternate'|'none'
-        fullPostFeaturedImagePosition: 'none', // 'centered'|'left'|'right'|'alternate'|'none'
-        showAuthor: 'no', // 'no'|'aboveText'|'belowText'
-        authorPrecededBy: 'Author:',
-        showCategories: 'no', // 'no'|'aboveText'|'belowText'
-        categoriesPrecededBy: 'Categories:',
-        readMoreType: 'button', // 'link'|'button'
-        readMoreText: 'Read more', // 'link'|'button'
+        featuredImagePosition: 'left', // 'centered'|'right'|'left'|'alternate'|'none'
+        pricePosition: 'below', // 'hidden'|'above'|'below'
+        readMoreType: 'link', // 'link'|'button'
+        readMoreText: 'Buy now', // 'link'|'button'
         readMoreButton: {
-          text: 'Read more',
+          text: 'Buy now',
           url: '[postLink]',
         },
         sortBy: 'newest', // 'newest'|'oldest',
@@ -96,30 +92,10 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
     };
   },
   initialize(...args) {
-    const block = args[0];
-    // when added as new block, set default for full post featured image position to 'left'
-    if (_.isEmpty(block)) {
-      this.set('fullPostFeaturedImagePosition', 'left');
-    }
-
-    // For products with display type 'full' prefill 'fullPostFeaturedImagePosition' from existing
-    // 'featuredImagePosition'. Products always supported images, even for 'full' display type.
-    const isProductWithDisplayTypeFull =
-      block && block.displayType === 'full' && block.contentType === 'product';
-    if (
-      isProductWithDisplayTypeFull &&
-      !this.get('fullPostFeaturedImagePosition')
-    ) {
-      this.set(
-        'fullPostFeaturedImagePosition',
-        this.get('featuredImagePosition'),
-      );
-    }
-
     base.BlockView.prototype.initialize.apply(this, args);
 
     this.on(
-      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:fullPostFeaturedImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:showCrossSells change:titlePosition',
+      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:sortBy change:showDivider change:showCrossSells change:titlePosition',
       this._handleChanges,
       this,
     );
@@ -127,12 +103,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
     this.listenTo(this.get('divider'), 'change', this._handleChanges);
     this.on('add remove update reset', this._handleChanges);
     this.on('refreshPosts', this.updatePosts, this);
-
-    const field =
-      this.get('displayType') === 'full'
-        ? 'fullPostFeaturedImagePosition'
-        : 'featuredImagePosition';
-    this.set('_featuredImagePosition', this.get(field));
+    this.set('_featuredImagePosition', this.get('featuredImagePosition'));
   },
   updatePosts(posts) {
     this.get('_container.blocks').reset(posts, { parse: true });
@@ -259,24 +230,12 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
         this.changeBoolField,
         'imageFullWidth',
       ),
+      'change .mailpoet_dynamic_products_price_position': _.partial(
+        this.changeField,
+        'pricePosition',
+      ),
       'change .mailpoet_dynamic_products_featured_image_position':
         'changeFeaturedImagePosition',
-      'change .mailpoet_dynamic_products_show_author': _.partial(
-        this.changeField,
-        'showAuthor',
-      ),
-      'input .mailpoet_dynamic_products_author_preceded_by': _.partial(
-        this.changeField,
-        'authorPrecededBy',
-      ),
-      'change .mailpoet_dynamic_products_show_categories': _.partial(
-        this.changeField,
-        'showCategories',
-      ),
-      'input .mailpoet_dynamic_products_categories': _.partial(
-        this.changeField,
-        'categoriesPrecededBy',
-      ),
       'input .mailpoet_dynamic_products_read_more_text': _.partial(
         this.changeField,
         'readMoreText',
@@ -434,12 +393,10 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
       );
     }
     this.changeField('displayType', event);
-
-    const field =
-      this.model.get('displayType') === 'full'
-        ? 'fullPostFeaturedImagePosition'
-        : 'featuredImagePosition';
-    this.model.set('_featuredImagePosition', this.model.get(field));
+    this.model.set(
+      '_featuredImagePosition',
+      this.model.get('featuredImagePosition'),
+    );
     this.render();
   },
   changeTitleFormat(event: Event) {
@@ -465,11 +422,7 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
     this.changeField('titleFormat', event);
   },
   changeFeaturedImagePosition(event: Event) {
-    const field =
-      this.model.get('displayType') === 'full'
-        ? 'fullPostFeaturedImagePosition'
-        : 'featuredImagePosition';
-    this.changeField(field, event);
+    this.changeField('featuredImagePosition', event);
     this.changeField('_featuredImagePosition', event);
   },
 });
