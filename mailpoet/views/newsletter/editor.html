@@ -1311,24 +1311,23 @@
           },
         },
         dynamicProducts: {
-          amount: '2',
+          amount: '10',
           withLayout: true,
           contentType: 'product',
+          terms: [], // List of category and tag objects
           inclusionType: 'include', // 'include'|'exclude'
           displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
-          titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
+          titleFormat: 'h1', // 'h1'|'h2'|'h3'
           titleAlignment: 'left', // 'left'|'center'|'right'
           titleIsLink: false, // false|true
           imageFullWidth: false, // true|false
-          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
-          showAuthor: 'no', // 'no'|'aboveText'|'belowText'
-          authorPrecededBy: '<%= __('Author:') | escape('js') %>',
-          showCategories: 'no', // 'no'|'aboveText'|'belowText'
-          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
-          readMoreType: 'button', // 'link'|'button'
-          readMoreText: '<%= __('Read more') | escape('js') %>',
+          titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
+          featuredImagePosition: 'left', // 'centered'|'right'|'left'|'alternate'|'none'
+          pricePosition: 'below', // 'hidden'|'above'|'below'
+          readMoreType: 'link', // 'link'|'button'
+          readMoreText: 'Buy now',
           readMoreButton: {
-            text: '<%= __('Read more') | escape('js') %>',
+            text: 'Buy now',
             url: '[postLink]',
             context: 'dynamicProducts.readMoreButton',
             styles: {
@@ -1350,7 +1349,7 @@
           },
           sortBy: 'newest', // 'newest'|'oldest',
           showDivider: true, // true|false
-          showCrossSells: false, // true|false
+          dynamicProductsType: 'selected', // 'cross-sell'|'order'|'selected'|'cart'
           divider: {
             context: 'dynamicProducts.divider',
             styles: {
