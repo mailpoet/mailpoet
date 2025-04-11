@@ -41,7 +41,7 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
         featuredImagePosition: 'alternate', // 'centered'|'right'|'left'|'alternate'|'none'
         pricePosition: 'below', // 'hidden'|'above'|'below'
         readMoreType: 'none', // 'link'|'button'|'none'
-        readMoreText: '', // 'link'|'button'
+        readMoreText: '',
         readMoreButton: {},
         sortBy: 'newest', // 'newest'|'oldest',
         showDivider: true, // true|false

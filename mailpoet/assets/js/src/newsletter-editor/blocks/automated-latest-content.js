@@ -76,7 +76,7 @@ Module.AutomatedLatestContentBlockModel = base.BlockModel.extend({
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
         categoriesPrecededBy: 'Categories:',
         readMoreType: 'button', // 'link'|'button'
-        readMoreText: 'Read more', // 'link'|'button'
+        readMoreText: 'Read more',
         readMoreButton: {
           text: 'Read more',
           url: '[postLink]',

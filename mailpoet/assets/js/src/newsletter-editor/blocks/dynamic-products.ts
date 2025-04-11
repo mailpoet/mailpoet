@@ -68,7 +68,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
         featuredImagePosition: 'left', // 'centered'|'right'|'left'|'alternate'|'none'
         pricePosition: 'below', // 'hidden'|'above'|'below'
         readMoreType: 'link', // 'link'|'button'
-        readMoreText: 'Buy now', // 'link'|'button'
+        readMoreText: 'Buy now',
         readMoreButton: {
           text: 'Buy now',
           url: '[postLink]',
