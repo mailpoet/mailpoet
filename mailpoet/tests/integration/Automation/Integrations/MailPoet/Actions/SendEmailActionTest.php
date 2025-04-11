@@ -50,6 +50,9 @@ use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use Throwable;
 
+/**
+ * @group woo
+ */
 class SendEmailActionTest extends \MailPoetTest {
 
   /** @var ScheduledTasksRepository */
