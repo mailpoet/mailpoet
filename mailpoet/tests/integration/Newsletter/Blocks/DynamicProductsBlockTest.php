@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -30,44 +31,43 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     'terms' => [],
     'inclusionType' => 'include',
     'displayType' => 'excerpt',
-    'titleFormat' => 'h2',
+    'titleFormat' => 'h1',
     'titleAlignment' => 'left',
     'titleIsLink' => false,
-    'imageFullWidth' => true,
+    'imageFullWidth' => false,
     'titlePosition' => 'abovePost',
     'featuredImagePosition' => 'left',
-    'showAuthor' => 'no',
-    'authorPrecededBy' => 'Author:',
-    'showCategories' => 'no',
-    'categoriesPrecededBy' => 'Categories:',
-    'readMoreType' => 'button',
-    'readMoreText' => 'Read more',
+    'pricePosition' => 'below',
+    'readMoreType' => 'link',
+    'readMoreText' => 'Buy now',
     'readMoreButton' => [
       'type' => 'button',
-      'text' => 'Read more',
+      'text' => 'Buy now',
       'url' => '[postLink]',
+      'context' => 'dynamicProducts.readMoreButton',
       'styles' => [
         'block' => [
-          'backgroundColor' => '#e2973f',
-          'borderColor' => '#e2973f',
-          'borderWidth' => '0px',
+          'backgroundColor' => '#2ea1cd',
+          'borderColor' => '#0074a2',
+          'borderWidth' => '1px',
           'borderRadius' => '5px',
           'borderStyle' => 'solid',
-          'width' => '110px',
+          'width' => '180px',
           'lineHeight' => '40px',
           'fontColor' => '#ffffff',
-          'fontFamily' => 'Arial',
-          'fontSize' => '14px',
-          'fontWeight' => 'bold',
-          'textAlign' => 'left',
+          'fontFamily' => 'Verdana',
+          'fontSize' => '18px',
+          'fontWeight' => 'normal',
+          'textAlign' => 'center',
         ],
       ],
-      'context' => 'dynamicProducts.readMoreButton',
     ],
     'sortBy' => 'newest',
-    'showDivider' => false,
+    'showDivider' => true,
+    'dynamicProductsType' => 'selected',
     'divider' => [
       'type' => 'divider',
+      'context' => 'dynamicProducts.divider',
       'styles' => [
         'block' => [
           'backgroundColor' => 'transparent',
@@ -77,7 +77,6 @@ class DynamicProductsBlockTest extends \MailPoetTest {
           'borderColor' => '#aaaaaa',
         ],
       ],
-      'context' => 'dynamicProducts.divider',
     ],
     'backgroundColor' => '#ffffff',
     'backgroundColorAlternate' => '#eeeeee',
@@ -101,37 +100,49 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $this->productIds = [];
     $this->productIds[] = $this->tester->createWooCommerceProduct([
       'name' => 'PRODUCT 1',
-      'date_created' => date('Y-m-d H:i:s', strtotime('-3 days')),
+      'date_created' => date('Y-m-d H:i:s', strtotime('-1 days')),
       'price' => '10.00',
     ])->get_id();
-    
+
     $this->productIds[] = $this->tester->createWooCommerceProduct([
       'name' => 'PRODUCT 2',
       'date_created' => date('Y-m-d H:i:s', strtotime('-2 days')),
-      'price' => '10.00',
+      'price' => '20.00',
     ])->get_id();
-    
+
     $this->productIds[] = $this->tester->createWooCommerceProduct([
       'name' => 'PRODUCT 3',
-      'date_created' => date('Y-m-d H:i:s', strtotime('-1 day')),
-      'price' => '10.00',
+      'date_created' => date('Y-m-d H:i:s', strtotime('-3 day')),
+      'price' => '30.00',
     ])->get_id();
-    
+
     $this->productIds[] = $this->tester->createWooCommerceProduct([
       'name' => 'PRODUCT 4',
-      'date_created' => date('Y-m-d H:i:s'),
-      'price' => '10.00',
+      'date_created' => date('Y-m-d H:i:s', strtotime('-4 days')),
+      'price' => '40.00',
+    ])->get_id();
+
+    $this->productIds[] = $this->tester->createWooCommerceProduct([
+      'name' => 'PRODUCT 5',
+      'date_created' => date('Y-m-d H:i:s', strtotime('-5 days')),
+      'price' => '50.00',
+    ])->get_id();
+
+    $this->productIds[] = $this->tester->createWooCommerceProduct([
+      'name' => 'PRODUCT 6',
+      'date_created' => date('Y-m-d H:i:s', strtotime('-6 days')),
+      'price' => '60.00',
     ])->get_id();
   }
 
   public function _after() {
     parent::_after();
-    
+
     // Clean up any remaining products manually created outside the tester
     foreach ($this->productIds as $productId) {
       $this->wp->wpDeletePost($productId);
     }
-    
+
     $this->productIds = [];
   }
 
@@ -139,43 +150,53 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
   }
 
   public function testItRendersProductOnlyOncePerEmail() {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
+    verify($encodedResult)->stringContainsString('PRODUCT 3');
+    verify($encodedResult)->stringContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
   }
 
   public function testItCanRenderSameProductsForDifferentAutomations() {
     $automation1 = $this->createNewsletter('Automation 1', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation1, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
     $automation2 = $this->createNewsletter('Automation 2', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation2, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 1');
+    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
   }
 
   public function testItRendersOrderProducts() {
@@ -183,74 +204,59 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
     $sendingQueue->setMeta([
       DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0], $this->productIds[1]],
+      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[2], $this->productIds[3]],
+      AbandonedCart::TASK_META_NAME => [$this->productIds[4], $this->productIds[5]],
     ]);
 
-    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'order']);
+    $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('PRODUCT 1');
     verify($encodedResult)->stringContainsString('PRODUCT 2');
     verify($encodedResult)->stringNotContainsString('PRODUCT 3');
     verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
   }
 
   public function testItRendersOrderCrossSellProducts() {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
     $sendingQueue->setMeta([
+      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0], $this->productIds[1]],
       DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[2], $this->productIds[3]],
+      AbandonedCart::TASK_META_NAME => [$this->productIds[4], $this->productIds[5]],
     ]);
 
-    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'cross-sell']);
+    $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
+    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
     verify($encodedResult)->stringContainsString('PRODUCT 3');
     verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-  }
-
-  public function testItRendersOrderCrossSellProductsWhenShowCrossSellsIsTrue() {
-    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
-    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
-    $sendingQueue->setMeta([
-      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0]],
-      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[1]],
-    ]);
-
-    $block = array_merge($this->dpBlock, ['showCrossSells' => true]);
-    $result = $this->block->render($automation, $block, false, $sendingQueue);
-    $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-  }
-
-  public function testItRendersOrderProductsWhenShowCrossSellsIsFalse() {
-    $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
-    $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
-    $sendingQueue->setMeta([
-      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0]],
-      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[1]],
-    ]);
-
-    $block = array_merge($this->dpBlock, ['showCrossSells' => false]);
-    $result = $this->block->render($automation, $block, false, $sendingQueue);
-    $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
   }
 
   public function testItRendersAbandonedCartProducts() {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $sendingQueue = new \MailPoet\Entities\SendingQueueEntity();
     $sendingQueue->setMeta([
-      \MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart::TASK_META_NAME => [$this->productIds[0], $this->productIds[1]],
+      DynamicProductsBlock::ORDER_PRODUCTS_META_NAME => [$this->productIds[0], $this->productIds[1]],
+      DynamicProductsBlock::ORDER_CROSS_SELL_PRODUCTS_META_NAME => [$this->productIds[2], $this->productIds[3]],
+      AbandonedCart::TASK_META_NAME => [$this->productIds[4], $this->productIds[5]],
     ]);
 
-    $result = $this->block->render($automation, $this->dpBlock, false, $sendingQueue);
+    $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'cart']);
+    $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
+    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
     verify($encodedResult)->stringNotContainsString('PRODUCT 3');
     verify($encodedResult)->stringNotContainsString('PRODUCT 4');
+    verify($encodedResult)->stringContainsString('PRODUCT 5');
+    verify($encodedResult)->stringContainsString('PRODUCT 6');
   }
 
   private function createNewsletter($subject, $type, $parent = null) {
