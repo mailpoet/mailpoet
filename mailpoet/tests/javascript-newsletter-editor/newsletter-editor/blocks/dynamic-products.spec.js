@@ -139,22 +139,14 @@ describe('Dynamic Products', function () {
       expect(model.get('titlePosition')).to.match(/^(abovePost|aboveExcerpt)$/);
     });
 
-    it('has an option to display author', function () {
-      expect(model.get('showAuthor')).to.match(/^(no|aboveText|belowText)$/);
+    it('has price position', function () {
+      expect(model.get('pricePosition')).to.match(/^(hidden|above|below)$/);
     });
 
-    it('has text preceding author', function () {
-      expect(model.get('authorPrecededBy')).to.be.a('string');
-    });
-
-    it('has an option to display categories', function () {
-      expect(model.get('showCategories')).to.match(
-        /^(no|aboveText|belowText)$/,
+    it('has dynamic products type', function () {
+      expect(model.get('dynamicProductsType')).to.match(
+        /^(cross-sell|order|selected|cart)$/,
       );
-    });
-
-    it('has text preceding categories', function () {
-      expect(model.get('categoriesPrecededBy')).to.be.a('string');
     });
 
     it('has a link or a button type for read more', function () {
@@ -195,10 +187,8 @@ describe('Dynamic Products', function () {
             imageFullWidth: false,
             featuredImagePosition: 'aboveTitle',
             titlePosition: 'aboveExcerpt',
-            showAuthor: 'belowText',
-            authorPrecededBy: 'Custom config author preceded by',
-            showCategories: 'belowText',
-            categoriesPrecededBy: 'Custom config categories preceded by',
+            pricePosition: 'below',
+            dynamicProductsType: 'selected',
             readMoreType: 'button',
             readMoreText: 'Custom Config read more text',
             readMoreButton: {
@@ -242,14 +232,8 @@ describe('Dynamic Products', function () {
       expect(model.get('imageFullWidth')).to.equal(false);
       expect(model.get('featuredImagePosition')).to.equal('aboveTitle');
       expect(model.get('titlePosition')).to.equal('aboveExcerpt');
-      expect(model.get('showAuthor')).to.equal('belowText');
-      expect(model.get('authorPrecededBy')).to.equal(
-        'Custom config author preceded by',
-      );
-      expect(model.get('showCategories')).to.equal('belowText');
-      expect(model.get('categoriesPrecededBy')).to.equal(
-        'Custom config categories preceded by',
-      );
+      expect(model.get('pricePosition')).to.equal('below');
+      expect(model.get('dynamicProductsType')).to.equal('selected');
       expect(model.get('readMoreType')).to.equal('button');
       expect(model.get('readMoreText')).to.equal(
         'Custom Config read more text',
@@ -306,24 +290,18 @@ describe('Dynamic Products', function () {
       model.set('contentType', 'product');
       model.set('terms', []);
       model.set('inclusionType', 'exclude');
-      model.set('displayType', 'full');
       model.set('titleFormat', 'h3');
       model.set('titleAlignment', 'right');
       model.set('titleIsLink', true);
       model.set('imageFullWidth', true);
       model.set('featuredImagePosition', 'aboveTitle');
       model.set('titlePosition', 'aboveExcerpt');
-      model.set('showAuthor', 'belowText');
-      model.set('authorPrecededBy', 'Custom config author preceded by');
-      model.set('showCategories', 'belowText');
-      model.set('categoriesPrecededBy', 'Custom config categories preceded by');
-      model.set('sortBy', 'oldest');
+      model.set('pricePosition', 'below');
+      model.set('dynamicProductsType', 'selected');
       model.set('showDivider', false);
-      expect(stub.callCount).to.equal(16);
-      expect(stub.getCall(15).args[0]).to.equal(
-        'blockDefaults.dynamicProducts',
-      );
-      expect(stub.getCall(15).args[1]).to.deep.equal(model.toJSON());
+      expect(stub.callCount).to.equal(10);
+      expect(stub.getCall(9).args[0]).to.equal('blockDefaults.dynamicProducts');
+      expect(stub.getCall(9).args[1]).to.deep.equal(model.toJSON());
     });
   });
 
@@ -473,6 +451,15 @@ describe('Dynamic Products', function () {
         expect(model.get('amount')).to.equal(newValue);
       });
 
+      it('changes the model if dynamic products type changes', function () {
+        var newValue = 'cross-sell';
+        view
+          .$('.mailpoet_dynamic_products_dynamic_products_type')
+          .val(newValue)
+          .trigger('change');
+        expect(model.get('dynamicProductsType')).to.equal(newValue);
+      });
+
       it('changes the model if inclusion type changes', function () {
         var newValue = 'exclude';
         view
@@ -527,6 +514,15 @@ describe('Dynamic Products', function () {
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
+      it('changes the model if price position changes', function () {
+        var newValue = 'above';
+        view
+          .$('.mailpoet_dynamic_products_price_position')
+          .val(newValue)
+          .trigger('change');
+        expect(model.get('pricePosition')).to.equal(newValue);
+      });
+
       it('changes the model if featured image position changes for excerpt display type', function () {
         var newValue = 'right';
         model.set('displayType', 'excerpt');
@@ -538,17 +534,6 @@ describe('Dynamic Products', function () {
         expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
 
-      it('changes the model if featured image position changes for full post display type', function () {
-        var newValue = 'alternate';
-        model.set('displayType', 'full');
-        view
-          .$('.mailpoet_dynamic_products_featured_image_position')
-          .val(newValue)
-          .trigger('change');
-        expect(model.get('fullPostFeaturedImagePosition')).to.equal(newValue);
-        expect(model.get('_featuredImagePosition')).to.equal(newValue);
-      });
-
       it('changes the model if featured image position changes', function () {
         var newValue = 'aboveExcerpt';
         view
@@ -556,42 +541,6 @@ describe('Dynamic Products', function () {
           .val(newValue)
           .trigger('change');
         expect(model.get('titlePosition')).to.equal(newValue);
-      });
-
-      it('changes the model if show author changes', function () {
-        var newValue = 'belowText';
-        view
-          .$('.mailpoet_dynamic_products_show_author')
-          .val(newValue)
-          .trigger('change');
-        expect(model.get('showAuthor')).to.equal(newValue);
-      });
-
-      it('changes the model if author preceded by changes', function () {
-        var newValue = 'New author preceded by test';
-        view
-          .$('.mailpoet_dynamic_products_author_preceded_by')
-          .val(newValue)
-          .trigger('input');
-        expect(model.get('authorPrecededBy')).to.equal(newValue);
-      });
-
-      it('changes the model if show categories changes', function () {
-        var newValue = 'belowText';
-        view
-          .$('.mailpoet_dynamic_products_show_categories')
-          .val(newValue)
-          .trigger('change');
-        expect(model.get('showCategories')).to.equal(newValue);
-      });
-
-      it('changes the model if categories preceded by changes', function () {
-        var newValue = 'New categories preceded by test';
-        view
-          .$('.mailpoet_dynamic_products_categories')
-          .val(newValue)
-          .trigger('input');
-        expect(model.get('categoriesPrecededBy')).to.equal(newValue);
       });
 
       it('changes the model if read more button type changes', function () {
@@ -610,15 +559,6 @@ describe('Dynamic Products', function () {
           .val(newValue)
           .trigger('input');
         expect(model.get('readMoreText')).to.equal(newValue);
-      });
-
-      it('changes the model if sort by changes', function () {
-        var newValue = 'oldest';
-        view
-          .$('.mailpoet_dynamic_products_sort_by')
-          .val(newValue)
-          .trigger('change');
-        expect(model.get('sortBy')).to.equal(newValue);
       });
 
       it('changes the model if show divider changes', function () {
@@ -667,12 +607,6 @@ describe('Dynamic Products', function () {
           });
 
           describe('"title is link" option', function () {
-            it('is hidden', function () {
-              expect(
-                view.$('.mailpoet_dynamic_products_title_as_link'),
-              ).to.have.$class('mailpoet_hidden');
-            });
-
             it('is set to "yes"', function () {
               expect(model.get('titleIsLink')).to.equal(true);
             });
