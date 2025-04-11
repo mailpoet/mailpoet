@@ -156,7 +156,13 @@ class AdminUserSubscriptionCest {
     $wpFirstName = 'WP_First_Name_' . uniqid();
     $wpLastName = 'WP_Last_Name_' . uniqid();
     $i->comment('Creating WordPress user with same email but different name');
-    $this->createUserWithStatus($i, 'wpusername', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED, $wpFirstName, $wpLastName);
+    $this->createUserWithStatus($i, 'wpusername', $subscriberEmail, SubscriberEntity::STATUS_SUBSCRIBED);
+    $i->click('Edit user');
+
+    $i->fillField('#first_name', $wpFirstName);
+    $i->fillField('#last_name', $wpLastName);
+    $i->click('#submit');
+    $i->waitForText('User updated', 20);
 
     // Verify the subscriber data was updated to match WordPress user data
     $i->amOnMailPoetPage('Subscribers');
@@ -211,7 +217,7 @@ class AdminUserSubscriptionCest {
   /**
    * Helper method to create a user with a specific status
    */
-  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status = null, $firstName = null, $lastName = null) {
+  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status = null) {
     $i->amOnAdminPage('user-new.php');
     $i->waitForText('Add New User');
     $i->fillField('#user_login', $username);
@@ -226,14 +232,6 @@ class AdminUserSubscriptionCest {
 
     if (isset($statusOptionsMap[$status])) {
       $i->selectOption('#mailpoet_subscriber_status', $statusOptionsMap[$status]);
-    }
-
-    if ($firstName) {
-      $i->fillField('#first_name', $firstName);
-    }
-
-    if ($lastName) {
-      $i->fillField('#last_name', $lastName);
     }
 
     // Skip sending confirmation email to create WP user in Multisite
