@@ -80,23 +80,7 @@ class AdminUserSubscriptionCest {
     // Test default (unsubscribed) status when confirmation is disabled
     $emailUnsubscribed = $this->testEmailPrefix . 'default_unsub@example.com';
 
-    // Generate a strong password for WordPress user creation
-    $strongPassword = 'V3ryStr0ngP@ssw0rd!' . uniqid();
-
-    $i->amOnAdminPage('user-new.php');
-    $i->waitForText('Add New User');
-    $i->fillField('#user_login', 'default_unsub_user');
-    $i->fillField('#email', $emailUnsubscribed);
-    $i->fillField('#pass1', $strongPassword);
-    // Setting "send user notification" to unchecked to avoid extra emails
-    $i->uncheckOption('#send_user_notification');
-
-    // Wait for the page to be fully loaded before submission
-    $i->wait(1);
-
-    // Submit the form to create user
-    $i->click('#createusersub');
-    $i->waitForText('New user created', 20);
+    $this->createUserWithStatus($i, 'defaultunsubuser', $emailUnsubscribed);
 
     // Verify user was created as an unsubscribed subscriber (default when confirmation disabled)
     $i->amOnMailPoetPage('Subscribers');
@@ -203,23 +187,8 @@ class AdminUserSubscriptionCest {
 
     // Create user with unconfirmed status and send notification enabled
     $emailUnconfirmed = $this->testEmailPrefix . 'notification_test@example.com';
-    $username = 'notification_test_user';
-
-    $i->amOnAdminPage('user-new.php');
-    $i->waitForText('Add New User');
-    $i->fillField('#user_login', $username);
-    $i->fillField('#email', $emailUnconfirmed);
-    $i->fillField('#pass1', 'V3ryStr0ngP@ssw0rd!23456');
-
-    // Select unconfirmed subscriber status
-    $i->selectOption('#mailpoet_subscriber_status', 'Unconfirmed (will receive a confirmation email)');
-
-    // Ensure notification checkbox is checked
-    $i->uncheckOption('#send_user_notification');
-
-    // Submit the form to create user
-    $i->click('#createusersub');
-    $i->waitForText('New user created', 20);
+    $username = 'notificationtestuser';
+    $this->createUserWithStatus($i, $username, $emailUnconfirmed, SubscriberEntity::STATUS_UNCONFIRMED);
 
     // Verify user was created as an unconfirmed subscriber
     $i->amOnMailPoetPage('Subscribers');
@@ -238,7 +207,7 @@ class AdminUserSubscriptionCest {
   /**
    * Helper method to create a user with a specific status
    */
-  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status, $firstName = null, $lastName = null) {
+  private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status = null, $firstName = null, $lastName = null) {
     $i->amOnAdminPage('user-new.php');
     $i->waitForText('Add New User');
     $i->fillField('#user_login', $username);
