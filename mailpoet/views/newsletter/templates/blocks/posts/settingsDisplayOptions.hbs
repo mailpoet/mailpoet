@@ -181,7 +181,7 @@
                 <%= __('Below text') %><br />
             </label>
         </div>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+        <div class="mailpoet_form_field_title"><%= __('Preceded by:') %></div>
         <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
             <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_posts_author_preceded_by" value="{{ model.authorPrecededBy }}" />
         </div>
@@ -207,7 +207,7 @@
                 <%= __('Below text') %>
             </label>
         </div>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+        <div class="mailpoet_form_field_title"><%= __('Preceded by:') %></div>
         <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
             <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_posts_categories" value="{{ model.categoriesPrecededBy }}" />
         </div>
@@ -216,7 +216,7 @@
     <hr class="mailpoet_separator" />
 
     <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('"Read more" text') %></div>
+        <div class="mailpoet_form_field_title"><%= __('"Read more" text') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
                 <input type="radio" name="mailpoet_posts_read_more_type" class="mailpoet_posts_read_more_type" value="link" {{#ifCond model.readMoreType '==' 'link'}}CHECKED{{/ifCond}}/>
@@ -244,7 +244,7 @@
 
 <div class="mailpoet_posts_non_title_list_options {{#ifCond model.displayType '==' 'titleOnly'}}{{#ifCond model.titleFormat '==' 'ul'}}mailpoet_hidden{{/ifCond}}{{/ifCond}}">
     <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Show divider between posts') %></div>
+        <div class="mailpoet_form_field_title"><%= __('Show divider between posts') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
                 <input type="radio" name="mailpoet_posts_show_divider" class="mailpoet_posts_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>
@@ -257,7 +257,7 @@
                 <%= __('No') %>
             </label>
         </div>
-        <div class="mailpoet_form_field_input_option">
+        <div>
             <a href="javascript:;" class="mailpoet_posts_select_divider"><%= __('Select divider') %></a>
         </div>
     </div>

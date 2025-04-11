@@ -195,7 +195,7 @@
                     <%= __('Below text') %><br />
                 </label>
             </div>
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+            <div class="mailpoet_form_field_title"><%= __('Preceded by:') %></div>
             <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
                 <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_automated_latest_content_author_preceded_by" value="{{ model.authorPrecededBy }}" />
             </div>
@@ -221,7 +221,7 @@
                     <%= __('Below text') %>
                 </label>
             </div>
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+            <div class="mailpoet_form_field_title"><%= __('Preceded by:') %></div>
             <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
                 <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_automated_latest_content_categories" value="{{ model.categoriesPrecededBy }}" />
             </div>
@@ -230,7 +230,7 @@
         <hr class="mailpoet_separator" />
 
         <div class="mailpoet_form_field">
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('"Read more" text') %></div>
+            <div class="mailpoet_form_field_title"><%= __('"Read more" text') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
                     <input type="radio" name="mailpoet_automated_latest_content_read_more_type" class="mailpoet_automated_latest_content_read_more_type" value="link" {{#ifCond model.readMoreType '==' 'link'}}CHECKED{{/ifCond}}/>
@@ -257,7 +257,7 @@
     </div>
 
     <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Sort by') %></div>
+        <div class="mailpoet_form_field_title"><%= __('Sort by') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
                 <input type="radio" name="mailpoet_automated_latest_content_sort_by" class="mailpoet_automated_latest_content_sort_by" value="newest" {{#ifCond model.sortBy '==' 'newest'}}CHECKED{{/ifCond}}/>
@@ -274,7 +274,7 @@
 
     <div class="mailpoet_automated_latest_content_non_title_list_options {{#ifCond model.displayType '==' 'titleOnly'}}{{#ifCond model.titleFormat '==' 'ul'}}mailpoet_hidden{{/ifCond}}{{/ifCond}}">
         <div class="mailpoet_form_field">
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Show divider between posts') %></div>
+            <div class="mailpoet_form_field_title"><%= __('Show divider between posts') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
             <input type="radio" name="mailpoet_automated_latest_content_show_divider"class="mailpoet_automated_latest_content_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>

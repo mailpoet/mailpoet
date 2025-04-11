@@ -179,7 +179,7 @@
     <hr class="mailpoet_separator" />
 
     <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Show divider between products') %></div>
+        <div class="mailpoet_form_field_title"><%= __('Show divider between products') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
                 <input type="radio" name="mailpoet_products_show_divider" class="mailpoet_products_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>
@@ -192,7 +192,7 @@
                 <%= __('No') %>
             </label>
         </div>
-        <div class="mailpoet_form_field_input_option">
+        <div>
             <a href="javascript:;" class="mailpoet_products_select_divider"><%= __('Select divider') %></a>
         </div>
     </div>
