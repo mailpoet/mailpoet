@@ -5,32 +5,6 @@
   box-sizing: border-box;
 }
 
-.mailpoet-segment-subscriber-count {
-  align-items: center;
-  display: flex;
-  font-size: 13px;
-  gap: 16px;
-  padding-top: 8px;
-
-  .mailpoet-segment-help-icon {
-    display: flex;
-  }
-
-  .mailpoet-segment-subscriber-count-message {
-    align-items: center;
-    display: flex;
-    font-size: 14px;
-  }
-
-  .mailpoet-segment-subscriber-cache {
-    color: $color-text-light;
-  }
-
-  .components-button.is-link {
-    text-decoration: none;
-  }
-}
-
 .mailpoet-confirm-dialog {
   max-width: 600px;
 }

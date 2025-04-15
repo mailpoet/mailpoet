@@ -64,6 +64,32 @@ p.sender_email_address_warning:first-child {
   margin-bottom: $grid-gap;
 }
 
+.mailpoet-segment-subscriber-count {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 16px;
+  padding-top: 8px;
+
+  .mailpoet-segment-help-icon {
+    display: flex;
+  }
+
+  .mailpoet-segment-subscriber-count-message {
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+  }
+
+  .mailpoet-segment-subscriber-cache {
+    color: $color-text-light;
+  }
+
+  .components-button.is-link {
+    text-decoration: none;
+  }
+}
+
 .mailpoet-subscribers-in-plan {
   font-size: 18px;
   margin-bottom: 20px;

@@ -4,6 +4,8 @@ import { MailPoet } from 'mailpoet';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
 import { PageHeader } from 'common/page-header';
+import { SubscribersInPlan } from 'common/subscribers-in-plan';
+import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
 
 export function SubscribersHeading() {
   const location = useLocation();
@@ -41,6 +43,18 @@ export function SubscribersHeading() {
         </a>
       </TopBarWithBoundary>
       <PageHeader heading={__('Subscribers', 'mailpoet')} />
+
+      <div className="mailpoet-segment-subscriber-count">
+        <SubscribersInPlan
+          subscribersInPlan={MailPoet.subscribersCount}
+          subscribersInPlanLimit={MailPoet.subscribersLimit}
+          design="new"
+        />
+        <SubscribersCacheMessage
+          cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
+          design="new"
+        />
+      </div>
     </>
   );
 }

@@ -8,8 +8,6 @@ import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Selection } from 'form/fields/selection.jsx';
 import { MssAccessNotices } from 'notices/mss-access-notices';
-import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
-import { SubscribersInPlan } from 'common/subscribers-in-plan';
 import { ListingsEngagementScore } from './listings-engagement-score';
 import { SubscribersHeading } from './heading';
 
@@ -589,16 +587,7 @@ function SubscriberList() {
     <div>
       <SubscribersHeading />
 
-      <SubscribersInPlan
-        subscribersInPlan={MailPoet.subscribersCount}
-        subscribersInPlanLimit={MailPoet.subscribersLimit}
-      />
-
       <MssAccessNotices />
-
-      <SubscribersCacheMessage
-        cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
-      />
 
       <Listing
         limit={window.mailpoet_listing_per_page}

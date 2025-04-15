@@ -24,14 +24,17 @@ function ListHeading(): JSX.Element {
 
       <PageHeader heading={__('Lists', 'mailpoet')} />
 
-      <SubscribersInPlan
-        subscribersInPlan={MailPoet.subscribersCount}
-        subscribersInPlanLimit={MailPoet.subscribersLimit}
-      />
-
-      <SubscribersCacheMessage
-        cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
-      />
+      <div className="mailpoet-segment-subscriber-count">
+        <SubscribersInPlan
+          subscribersInPlan={MailPoet.subscribersCount}
+          subscribersInPlanLimit={MailPoet.subscribersLimit}
+          design="new"
+        />
+        <SubscribersCacheMessage
+          cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
+          design="new"
+        />
+      </div>
 
       <MssAccessNotices />
     </>
