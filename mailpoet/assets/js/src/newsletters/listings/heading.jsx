@@ -17,7 +17,7 @@ export function ListingHeading() {
           data-automation-id="new_email"
         >
           {plusIcon}
-          <span>{__('New email', 'mailpoet')}</span>
+          <span>{__('Add New Email', 'mailpoet')}</span>
         </Link>
       </TopBarWithBoundary>
       <PageHeader heading={__('Emails', 'mailpoet')} />

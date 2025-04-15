@@ -33,7 +33,7 @@ export function AutomationListingHeader(): JSX.Element {
         variant="primary"
         className="mailpoet-add-new-button"
       >
-        {__('New automation', 'mailpoet')}
+        {__('Add New Automation', 'mailpoet')}
       </Button>
     </PageHeader>
   );
