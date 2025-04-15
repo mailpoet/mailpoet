@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
-import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { PageHeader } from 'common/page-header';
 
 export const onAddNewForm = () => {
@@ -14,24 +13,21 @@ export const onAddNewForm = () => {
 function FormsHeading() {
   const [loading, setLoading] = useState(false);
   return (
-    <>
-      <TopBarWithBoundary />
-      <PageHeader heading={__('Forms', 'mailpoet')}>
-        <button
-          onClick={() => {
-            setLoading(true);
-            onAddNewForm();
-          }}
-          data-automation-id="create_new_form"
-          className={`page-title-action ${
-            loading ? 'mailpoet-button-with-spinner' : ''
-          }`}
-          type="button"
-        >
-          {__('Add New Form', 'mailpoet')}
-        </button>
-      </PageHeader>
-    </>
+    <PageHeader heading={__('Forms', 'mailpoet')}>
+      <button
+        onClick={() => {
+          setLoading(true);
+          onAddNewForm();
+        }}
+        data-automation-id="create_new_form"
+        className={`page-title-action ${
+          loading ? 'mailpoet-button-with-spinner' : ''
+        }`}
+        type="button"
+      >
+        {__('Add New Form', 'mailpoet')}
+      </button>
+    </PageHeader>
   );
 }
 

@@ -10,12 +10,10 @@ import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from '../common/tabs/routed-tabs';
 import { registerTranslations, Tab } from '../common';
-import { TopBar } from '../common/top-bar/top-bar';
 
 function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <TopBar />
       <GlobalNotices />
       <Notices />
       <MssAccessNotices />

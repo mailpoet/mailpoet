@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Button, SearchControl } from '@wordpress/components';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
-import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import {
   templates,
   templateCategories,
@@ -54,7 +53,6 @@ export function SegmentTemplates(): JSX.Element {
   return (
     <div className="mailpoet-main-container">
       <HideScreenOptions />
-      <TopBarWithBoundary />
       <PageHeader
         className="mailpoet-templates-header"
         heading={__('Start with a pre-built segment', 'mailpoet')}

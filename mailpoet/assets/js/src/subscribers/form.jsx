@@ -7,7 +7,6 @@ import { Form } from 'form/form.jsx';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
-import { TopBarWithBoundary } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
 
 const fields = [
@@ -242,7 +241,6 @@ function SubscriberForm() {
   const backUrl = location.state?.backUrl || '/';
   return (
     <div className="mailpoet-main-container">
-      <TopBarWithBoundary />
       <Background color="#fff" />
       <HideScreenOptions />
 

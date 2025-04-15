@@ -6,7 +6,6 @@ import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
 import { useParams } from 'react-router-dom';
 import { BackButton, PageHeader } from '../../common/page-header';
-import { TopBarWithBoundary } from '../../common/top-bar/top-bar';
 
 const fields = [
   {
@@ -49,7 +48,6 @@ function SegmentForm() {
 
   return (
     <div className="mailpoet-main-container">
-      <TopBarWithBoundary />
       <Background color="#fff" />
       <HideScreenOptions />
 

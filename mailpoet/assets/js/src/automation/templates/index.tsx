@@ -3,7 +3,6 @@ import { __ } from '@wordpress/i18n';
 import { registerTranslations } from 'common';
 import { automationTemplateCategories, automationTemplates } from './config';
 import { initializeApi } from '../api';
-import { TopBarWithBoundary } from '../../common/top-bar/top-bar';
 import { FromScratchButton } from './components/from-scratch';
 import { BackButton, PageHeader } from '../../common/page-header';
 import { MailPoet } from '../../mailpoet';
@@ -50,7 +49,6 @@ function Templates(): JSX.Element {
 
   return (
     <div className="mailpoet-main-container">
-      <TopBarWithBoundary />
       <PageHeader
         heading={__('Start with a template', 'mailpoet')}
         headingPrefix={

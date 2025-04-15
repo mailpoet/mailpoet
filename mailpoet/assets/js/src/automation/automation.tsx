@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';
@@ -72,7 +71,6 @@ function Automations(): JSX.Element {
 
   return (
     <>
-      <TopBarWithBoundary />
       <GlobalNotices />
       <Notices />
       <MssAccessNotices />

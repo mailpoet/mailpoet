@@ -5,14 +5,14 @@ import * as ROUTES from '../routes';
 import { PageHeader } from '../../common/page-header';
 import { SubscribersCacheMessage } from '../../common/subscribers-cache-message';
 import { SubscribersInPlan } from '../../common/subscribers-in-plan';
-import { TopBarWithBoundary } from '../../common/top-bar/top-bar';
+import { HideScreenOptions } from '../../common/hide-screen-options/hide-screen-options';
 import { MailPoet } from '../../mailpoet';
 import { MssAccessNotices } from '../../notices/mss-access-notices';
 
 export function DynamicSegmentList(): JSX.Element {
   return (
     <>
-      <TopBarWithBoundary hideScreenOptions />
+      <HideScreenOptions />
       <Notices />
 
       <PageHeader heading={__('Segments', 'mailpoet')}>
