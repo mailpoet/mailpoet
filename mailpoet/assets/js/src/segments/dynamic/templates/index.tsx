@@ -70,14 +70,14 @@ export function SegmentTemplates(): JSX.Element {
           label={__('Search segment templates', 'mailpoet')}
           onChange={() => null}
         />
-        <Button
-          variant="secondary"
+        <a
           href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
           data-automation-id="new-custom-segment"
           onClick={() => void trackNewCustomSegment()}
+          className="page-title-action"
         >
-          {__('Create custom segment', 'mailpoet')}
-        </Button>
+          {__('Or, Create Custom Segment', 'mailpoet')}
+        </a>
       </PageHeader>
 
       {errors.length > 0 && (

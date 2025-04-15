@@ -1,10 +1,9 @@
 import { TableCard } from '@woocommerce/components';
-import { Button, TabPanel } from '@wordpress/components';
+import { TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
 import { AutomationItem, storeName } from './store';
 import { Automation, AutomationStatus } from './automation';
@@ -27,14 +26,9 @@ const tableHeaders = [
 export function AutomationListingHeader(): JSX.Element {
   return (
     <PageHeader heading={__('Automations', 'mailpoet')}>
-      <Button
-        href={MailPoet.urls.automationTemplates}
-        icon={plusIcon}
-        variant="primary"
-        className="mailpoet-add-new-button"
-      >
+      <a href={MailPoet.urls.automationTemplates} className="page-title-action">
         {__('Add New Automation', 'mailpoet')}
-      </Button>
+      </a>
     </PageHeader>
   );
 }

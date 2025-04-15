@@ -114,15 +114,16 @@ export function Selection(): JSX.Element {
               />
             }
           >
-            <Button
+            <button
               data-automation-id="create_blank_form"
-              variant="secondary"
+              className="page-title-action"
               onClick={(): void => {
                 void selectTemplate('initial_form', 'Blank template');
               }}
+              type="button"
             >
-              {__('Or, start with a blank form', 'mailpoet')}
-            </Button>
+              {__('Or, Create Custom Form', 'mailpoet')}
+            </button>
           </PageHeader>
           <Categories
             categories={categories}

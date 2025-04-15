@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { Link, useLocation } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
-import { plusIcon } from 'common/button/icon/plus';
 import { PageHeader } from 'common/page-header';
 import { SubscribersInPlan } from 'common/subscribers-in-plan';
 import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
@@ -12,9 +11,10 @@ export function SubscribersHeading() {
 
   return (
     <>
-      <TopBarWithBoundary>
+      <TopBarWithBoundary />
+      <PageHeader heading={__('Subscribers', 'mailpoet')}>
         <Link
-          className="mailpoet-button button-secondary"
+          className="page-title-action"
           to={{
             pathname: '/new',
             state: {
@@ -22,28 +22,25 @@ export function SubscribersHeading() {
             },
           }}
         >
-          {plusIcon}
           <span data-automation-id="add-new-subscribers-button">
-            {MailPoet.I18n.t('new')}
+            {__('Add New Subscriber', 'mailpoet')}
           </span>
         </Link>
         <a
-          className="mailpoet-button not-small-screen button-secondary"
+          className="page-title-action not-small-screen"
           href="?page=mailpoet-import"
           data-automation-id="import-subscribers-button"
         >
-          {MailPoet.I18n.t('import')}
+          {__('Import', 'mailpoet')}
         </a>
         <a
           id="mailpoet_export_button"
-          className="mailpoet-button not-small-screen button-secondary"
+          className="page-title-action not-small-screen"
           href="?page=mailpoet-export"
         >
-          {MailPoet.I18n.t('export')}
+          {__('Export', 'mailpoet')}
         </a>
-      </TopBarWithBoundary>
-      <PageHeader heading={__('Subscribers', 'mailpoet')} />
-
+      </PageHeader>
       <div className="mailpoet-segment-subscriber-count">
         <SubscribersInPlan
           subscribersInPlan={MailPoet.subscribersCount}

@@ -43,11 +43,13 @@ function fromScratchHook(callback: () => void, errorHandler: Dispatch<string>) {
 }
 
 type FromScratchButtonProps = {
+  isPageTitleAction?: boolean;
   variant?: ButtonProps['variant'];
 };
 
 export function FromScratchButton({
   variant = 'secondary',
+  isPageTitleAction = false,
 }: FromScratchButtonProps): JSX.Element {
   const [showModal, setShowModal] = useState(false);
   const [error, errorHandler] = useState(null);
@@ -70,17 +72,32 @@ export function FromScratchButton({
           <p>{error}</p>
         </Notice>
       )}
-      <Button
-        variant={variant}
-        isBusy={isBusy && variant !== 'link'}
-        disabled={isBusy}
-        onClick={() => {
-          setIsBusy(true);
-          onClickScratchButton();
-        }}
-      >
-        {__('Create custom automation', 'mailpoet')}
-      </Button>
+      {isPageTitleAction ? (
+        <button
+          className={`page-title-action ${
+            isBusy ? 'mailpoet-button-with-spinner' : ''
+          }`}
+          onClick={() => {
+            setIsBusy(true);
+            onClickScratchButton();
+          }}
+          type="button"
+        >
+          {__('Or, Create Custom Automation', 'mailpoet')}
+        </button>
+      ) : (
+        <Button
+          variant={variant}
+          isBusy={isBusy && variant !== 'link'}
+          disabled={isBusy}
+          onClick={() => {
+            setIsBusy(true);
+            onClickScratchButton();
+          }}
+        >
+          {__('Create custom automation', 'mailpoet')}
+        </Button>
+      )}
       <FromScratchPremiumModal showModal={showModal} onClose={premiumClose} />
     </>
   );

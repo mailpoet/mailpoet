@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
-import { Button } from 'common/button/button';
-import { plusIcon } from 'common/button/icon/plus';
 import { PageHeader } from 'common/page-header';
 
 export const onAddNewForm = () => {
@@ -17,21 +15,22 @@ function FormsHeading() {
   const [loading, setLoading] = useState(false);
   return (
     <>
-      <TopBarWithBoundary>
-        <Button
+      <TopBarWithBoundary />
+      <PageHeader heading={__('Forms', 'mailpoet')}>
+        <button
           onClick={() => {
             setLoading(true);
             onAddNewForm();
           }}
-          withSpinner={loading}
-          automationId="create_new_form"
-          variant="secondary"
-          iconStart={plusIcon}
+          data-automation-id="create_new_form"
+          className={`page-title-action ${
+            loading ? 'mailpoet-button-with-spinner' : ''
+          }`}
+          type="button"
         >
-          {MailPoet.I18n.t('new')}
-        </Button>
-      </TopBarWithBoundary>
-      <PageHeader heading={__('Forms', 'mailpoet')} />
+          {__('Add New Form', 'mailpoet')}
+        </button>
+      </PageHeader>
     </>
   );
 }

@@ -24,11 +24,10 @@ export function PageHeader({
         <Flex direction="row" gap="4px">
           {headingPrefix}
           <FlexBlock>
-            <h1 className="wp-heading-inline">{heading}</h1>
+            <h1 className="wp-heading-inline">{heading}</h1> {children}
           </FlexBlock>
         </Flex>
       </FlexBlock>
-      {children}
     </Flex>
   );
 }

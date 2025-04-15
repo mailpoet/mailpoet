@@ -60,7 +60,7 @@ function Templates(): JSX.Element {
           />
         }
       >
-        <FromScratchButton />
+        <FromScratchButton isPageTitleAction />
       </PageHeader>
 
       <TabPanel tabs={tabs} initialTabName={initialTabParam}>
