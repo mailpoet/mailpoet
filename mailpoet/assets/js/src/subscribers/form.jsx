@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
-
+import { __ } from '@wordpress/i18n';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
@@ -245,7 +245,11 @@ function SubscriberForm() {
       <HideScreenOptions />
 
       <PageHeader
-        heading={MailPoet.I18n.t('subscriber')}
+        heading={
+          params.id
+            ? __('Edit Subscriber', 'mailpoet')
+            : __('Add New Subscriber', 'mailpoet')
+        }
         headingPrefix={
           <BackButton
             onClick={() => navigate(backUrl)}

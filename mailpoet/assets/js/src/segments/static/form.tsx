@@ -52,7 +52,11 @@ function SegmentForm() {
       <HideScreenOptions />
 
       <PageHeader
-        heading={MailPoet.I18n.t('segment')}
+        heading={
+          params.id
+            ? __('Edit List', 'mailpoet')
+            : __('Add New List', 'mailpoet')
+        }
         headingPrefix={
           <BackButton
             href="#/"
