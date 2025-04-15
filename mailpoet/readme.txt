@@ -222,9 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.10.1 - 2025-04-14 =
-* Added: ability to set subscriber status when creating new users in WordPress admin;
-* Improved: plugin release process.
-* Fixed: possible invalid styles in HTML list elements
+= x.x.x - YYYY-MM-DD =
+* Added: Dynamic Products block in email editor. Useful in automations to render order products, cross-sells, abandoned cart content, or selected categories or tags.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
