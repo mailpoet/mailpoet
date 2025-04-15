@@ -1,19 +1,15 @@
 import { useState } from 'react';
-import { Button as WPButton } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
-import ReactStringReplace from 'react-string-replace';
 import { Notice } from '../notices/notice';
 
 type Props = {
   cacheCalculation: string;
-  design?: 'old' | 'new'; // temporary property while some pages are using the old design (lists and subscribers) and some are using the new design (segments)
 };
 
 export function SubscribersCacheMessage({
   cacheCalculation,
-  design = 'old',
 }: Props): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -46,41 +42,7 @@ export function SubscribersCacheMessage({
       });
   };
 
-  return design === 'old' ? (
-    <div className="mailpoet-subscribers-cache-notice">
-      {ReactStringReplace(
-        __(
-          'Lists and Segments subscribers counts were calculated <abbr>{$mins} minutes ago</abbr>',
-          'mailpoet',
-        ),
-        /<abbr>(.*?)<\/abbr>/,
-        (match, i) => (
-          <abbr key={i} title={cacheCalculation}>
-            {match.replace(/(\{\$mins\}|\$mins)/i, String(minutes))}
-          </abbr>
-        ),
-      )}
-
-      <Button
-        className="mailpoet-subscribers-cache-notice-button"
-        type="button"
-        variant="secondary"
-        dimension="small"
-        onClick={handleRecalculate}
-        withSpinner={loading}
-      >
-        {__('Recalculate now', 'mailpoet')}
-      </Button>
-      <div className="mailpoet-gap" />
-      {errors.length > 0 && (
-        <Notice type="error">
-          {errors.map((error) => (
-            <p key={error}>{error}</p>
-          ))}
-        </Notice>
-      )}
-    </div>
-  ) : (
+  return (
     <>
       <span className="mailpoet-segment-subscriber-cache">
         {sprintf(
@@ -94,9 +56,13 @@ export function SubscribersCacheMessage({
           minutes.toLocaleString(),
         )}
       </span>
-      <WPButton variant="link" onClick={handleRecalculate}>
+      <Button
+        variant="tertiary"
+        onClick={handleRecalculate}
+        withSpinner={loading}
+      >
         {__('Recalculate', 'mailpoet')}
-      </WPButton>
+      </Button>
       {errors.length > 0 && (
         <Notice type="error">
           {errors.map((error) => (

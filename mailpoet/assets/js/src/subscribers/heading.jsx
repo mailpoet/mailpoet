@@ -48,11 +48,9 @@ export function SubscribersHeading() {
         <SubscribersInPlan
           subscribersInPlan={MailPoet.subscribersCount}
           subscribersInPlanLimit={MailPoet.subscribersLimit}
-          design="new"
         />
         <SubscribersCacheMessage
           cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
-          design="new"
         />
       </div>
     </>
