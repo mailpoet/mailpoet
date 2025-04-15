@@ -64,12 +64,17 @@ p.sender_email_address_warning:first-child {
   margin-bottom: $grid-gap;
 }
 
+.mailpoet-page-header {
+  padding-top: 2px;
+}
+
 .mailpoet-segment-subscriber-count {
   align-items: center;
   display: flex;
   font-size: 13px;
-  gap: 16px;
-  padding-top: 8px;
+  gap: $grid-gap;
+  margin-bottom: $grid-gap-half;
+  padding-top: $grid-gap-half;
 
   .mailpoet-segment-help-icon {
     display: flex;

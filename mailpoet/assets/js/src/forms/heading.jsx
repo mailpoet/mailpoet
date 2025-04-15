@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { PageHeader } from 'common/page-header';
+import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
 
 export const onAddNewForm = () => {
   MailPoet.trackEvent('Forms > Add New');
@@ -13,21 +14,24 @@ export const onAddNewForm = () => {
 function FormsHeading() {
   const [loading, setLoading] = useState(false);
   return (
-    <PageHeader heading={__('Forms', 'mailpoet')}>
-      <button
-        onClick={() => {
-          setLoading(true);
-          onAddNewForm();
-        }}
-        data-automation-id="create_new_form"
-        className={`page-title-action ${
-          loading ? 'mailpoet-button-with-spinner' : ''
-        }`}
-        type="button"
-      >
-        {__('Add New Form', 'mailpoet')}
-      </button>
-    </PageHeader>
+    <>
+      <CompensateScreenOptions />
+      <PageHeader heading={__('Forms', 'mailpoet')}>
+        <button
+          onClick={() => {
+            setLoading(true);
+            onAddNewForm();
+          }}
+          data-automation-id="create_new_form"
+          className={`page-title-action ${
+            loading ? 'mailpoet-button-with-spinner' : ''
+          }`}
+          type="button"
+        >
+          {__('Add New Form', 'mailpoet')}
+        </button>
+      </PageHeader>
+    </>
   );
 }
 

@@ -4,12 +4,14 @@ import { MailPoet } from 'mailpoet';
 import { PageHeader } from 'common/page-header';
 import { SubscribersInPlan } from 'common/subscribers-in-plan';
 import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
+import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
 
 export function SubscribersHeading() {
   const location = useLocation();
 
   return (
     <>
+      <CompensateScreenOptions />
       <PageHeader heading={__('Subscribers', 'mailpoet')}>
         <Link
           className="page-title-action"

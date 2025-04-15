@@ -14,6 +14,7 @@ import { Listing } from 'listing/listing.jsx';
 import { SegmentResponse } from 'segments/types';
 import { ListingsEngagementScore } from 'subscribers/listings-engagement-score';
 import { ListHeading } from 'segments/static/heading';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 
 type Segment = {
   type: string;
@@ -369,6 +370,7 @@ class SegmentListComponent extends Component<SegmentListComponentProps> {
   render() {
     return (
       <>
+        <HideScreenOptions />
         <ListHeading />
         <div className="mailpoet-segments-listing">
           <Listing

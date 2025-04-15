@@ -1,11 +1,8 @@
 .mailpoet-tabs {
   clear: both;
+  padding-top: 10px;
   position: relative;
   z-index: 1;
-
-  #screen-meta-links ~ .wrap .mailpoet-top-bar ~ & {
-    top: -20px;
-  }
 
   .notice ~ &,
   .notice ~ div > &,
