@@ -16,7 +16,11 @@ function Categories({ onSelect, categories, active }: Props) {
     />
   ));
 
-  return <div className="mailpoet-categories">{cats}</div>;
+  return (
+    <div className="mailpoet-categories">
+      <div className="components-tab-panel__tabs">{cats}</div>
+    </div>
+  );
 }
 
 Categories.displayName = 'Categories';

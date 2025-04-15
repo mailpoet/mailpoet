@@ -20,7 +20,11 @@ export function CategoriesItem({
   automationId,
   active,
 }: Props) {
-  const classes = classnames('mailpoet-categories-item', { active: !!active });
+  const classes = classnames(
+    'components-button',
+    'components-tab-panel__tabs-item',
+    { 'is-active': !!active },
+  );
 
   return (
     <a
@@ -33,11 +37,9 @@ export function CategoriesItem({
       }}
       data-automation-id={automationId}
     >
-      <span className="mailpoet-categories-title" data-title={label}>
-        {label}
-      </span>
+      <span data-title={label}>{label}</span>
       {Number(count) > 0 && (
-        <span className="mailpoet-categories-count">
+        <span className="count">
           {parseInt(count.toString(), 10).toLocaleString()}
         </span>
       )}

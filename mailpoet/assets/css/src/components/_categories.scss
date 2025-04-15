@@ -1,77 +1,36 @@
+.mailpoet-templates-tab-panel,
+.mailpoet-filter-tab-panel,
 .mailpoet-categories {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  line-height: 16px;
-  list-style: none;
-  margin: 0;
-  padding: $grid-gap 0 1px; // 1px to prevent https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing
-  row-gap: $grid-gap;
-}
+  .components-tab-panel__tabs {
+    box-shadow: inset 0 -1px 0 0 #dcdcde;
+    flex-wrap: wrap;
+  }
 
-.mailpoet-categories-item {
-  color: $color-text-light;
-  font-size: $font-size;
-  margin-bottom: $grid-gap;
-  padding-bottom: $grid-gap;
-  text-decoration: none;
-
-  &:hover,
-  &:focus {
+  .components-tab-panel__tabs-item:focus {
     box-shadow: none;
-    color: $color-text-light-hover;
   }
 
-  &.active {
-    color: $color-secondary;
-    font-weight: bold;
+  .components-tab-panel__tabs-item.is-active {
+    box-shadow: inset 0 -4px 0 0 var(--wp-admin-theme-color);
   }
 
-  + .mailpoet-categories-item {
-    margin-left: $grid-gap-large;
-  }
-}
-
-.mailpoet-categories-title {
-  display: inline-block;
-  position: relative;
-  vertical-align: top;
-
-  // Hack so the text is not jumping when changed to bold when active
-  &:before {
-    content: attr(data-title);
-    display: block;
-    font-weight: bold;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+  .components-tab-panel__tabs-item:focus-visible {
+    box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+      var(--wp-admin-theme-color);
   }
 
-  .mailpoet-categories-item.active &:after {
-    background: $color-secondary;
-    border-radius: 2px;
-    content: '';
-    height: 4px;
-    left: 0;
-    margin-top: 5px;
-    position: absolute;
-    top: 100%;
-    width: 100%;
+  .components-tab-panel__tabs-item.is-active:focus-visible {
+    box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+        var(--wp-admin-theme-color),
+      inset 0 -4px 0 0 var(--wp-admin-theme-color);
   }
-}
 
-.mailpoet-categories-count {
-  background-color: $color-tertiary-light;
-  border-radius: 8px;
-  display: inline-block;
-  font-size: $font-size-extra-small;
-  font-weight: 600;
-  line-height: 16px;
-  margin-left: $grid-gap-half;
-  padding: 0 6px;
-  vertical-align: top;
-
-  .mailpoet-categories-item.active & {
-    background-color: $color-secondary-light;
+  .count {
+    background-color: #f0f0f1;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 400;
+    margin-left: 6px;
+    padding: 2px 5px;
   }
 }

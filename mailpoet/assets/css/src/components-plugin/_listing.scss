@@ -20,8 +20,7 @@
   }
 
   .mailpoet-categories {
-    padding-left: $grid-gap-half;
-    padding-right: $grid-gap-half;
+    margin: 0 - $grid-gap 0 - $grid-gap $grid-gap;
   }
 
   a {

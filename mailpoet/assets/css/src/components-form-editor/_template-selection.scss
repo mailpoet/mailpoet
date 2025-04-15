@@ -24,6 +24,11 @@ $mailpoet-form-template-thumbnail-height: 316px;
   .mailpoet-categories {
     grid-column: 1 / -1;
     justify-content: center;
+
+    .components-tab-panel__tabs-item {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
   }
 }
 
