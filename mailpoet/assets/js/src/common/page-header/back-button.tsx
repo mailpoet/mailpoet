@@ -5,5 +5,9 @@ import { chevronLeft } from '@wordpress/icons';
 type Props = React.ComponentProps<typeof Button>;
 
 export function BackButton(props: Props): JSX.Element {
-  return <Button size="small" icon={chevronLeft} {...props} />;
+  return (
+    <div className="mailpoet-back-button">
+      <Button size="small" icon={chevronLeft} {...props} />
+    </div>
+  );
 }

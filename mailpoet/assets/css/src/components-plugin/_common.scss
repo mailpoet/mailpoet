@@ -68,6 +68,11 @@ p.sender_email_address_warning:first-child {
   padding-top: 2px;
 }
 
+.mailpoet-back-button {
+  display: flex;
+  padding-top: 5px;
+}
+
 .mailpoet-segment-subscriber-count {
   align-items: center;
   display: flex;
