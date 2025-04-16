@@ -223,6 +223,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
+* Improved: more consistent look and feel of MailPoet pages with WordPress;
 * Improved: optimized email templates images to decrease their file size;
 * Fixed: unreadable customer name in automation analytics when Gravatar fails to load;
 * Fixed: "Custom HTML" block in form editor doesn't preserve "Automatically add paragraphs" setting.
