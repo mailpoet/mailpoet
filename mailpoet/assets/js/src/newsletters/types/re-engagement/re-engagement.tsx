@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { __ as t } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
-import { Background } from 'common/background/background';
 import { Grid } from 'common/grid';
 import { Button } from 'common/button/button';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
@@ -59,8 +58,6 @@ export function NewsletterTypeReEngagement(): JSX.Element {
 
   return (
     <div>
-      <Background color="#fff" />
-
       {errors && <APIErrorsNotice errors={errors} />}
 
       <ListingHeadingStepsRoute

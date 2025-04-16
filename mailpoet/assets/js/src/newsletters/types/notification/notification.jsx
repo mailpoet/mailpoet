@@ -6,7 +6,6 @@ import { MailPoet } from 'mailpoet';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import _ from 'underscore';
 import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
-import { Background } from 'common/background/background';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
@@ -82,8 +81,6 @@ class NewsletterNotificationComponent extends Component {
   render() {
     return (
       <div>
-        <Background color="#fff" />
-
         <ListingHeadingStepsRoute
           emailType="notification"
           automationId="post_notification_creation_heading"

@@ -1,5 +1,4 @@
 import { __ } from '@wordpress/i18n';
-import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
@@ -48,7 +47,6 @@ function SegmentForm() {
 
   return (
     <div className="mailpoet-main-container">
-      <Background color="#fff" />
       <HideScreenOptions />
 
       <PageHeader

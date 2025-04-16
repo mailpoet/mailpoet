@@ -2,7 +2,6 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
 import { __ } from '@wordpress/i18n';
-import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
@@ -241,7 +240,6 @@ function SubscriberForm() {
   const backUrl = location.state?.backUrl || '/';
   return (
     <div className="mailpoet-main-container">
-      <Background color="#fff" />
       <HideScreenOptions />
 
       <PageHeader

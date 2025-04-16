@@ -13,7 +13,6 @@ import {
   Params,
 } from 'react-router-dom';
 
-import { Background } from 'common/background/background';
 import { Button, ErrorBoundary } from 'common';
 import { Form } from 'form/form.jsx';
 import { Grid } from 'common/grid';
@@ -814,7 +813,6 @@ class NewsletterSendComponent extends Component<
 
     return (
       <div className="mailpoet-form-send-email">
-        <Background color="#fff" />
         <ListingHeadingStepsRoute
           emailType={emailType}
           automationId="newsletter_send_heading"

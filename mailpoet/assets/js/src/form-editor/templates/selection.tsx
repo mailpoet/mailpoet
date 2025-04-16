@@ -2,7 +2,6 @@ import { __, _x } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Categories } from 'common/categories/categories';
-import { Background } from 'common/background/background';
 import { Loading } from 'common/loading';
 import { TemplateBox } from 'common/template-box/template-box';
 import { Notice } from 'notices/notice';
@@ -101,7 +100,6 @@ export function Selection(): JSX.Element {
         </Notice>
       )}
       <div data-automation-id="template_selection_list">
-        <Background color="#fff" />
         <div className="mailpoet-form-templates">
           <PageHeader
             heading={__('Start with a template', 'mailpoet')}

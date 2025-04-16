@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { __, _x } from '@wordpress/i18n';
 
-import { Background } from 'common/background/background';
 import { Categories } from 'common/categories/categories';
 import { GlobalContext } from 'context';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
@@ -340,8 +339,6 @@ class NewsletterTemplatesComponent extends Component {
 
     return (
       <div>
-        <Background color="#fff" />
-
         <ListingHeadingStepsRoute
           emailType={this.state.emailType}
           automationId="email_template_selection_heading"
