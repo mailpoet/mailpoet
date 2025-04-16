@@ -4,7 +4,7 @@ import { MailPoet } from 'mailpoet';
 import { PageHeader } from 'common/page-header';
 import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
 
-export function ListingHeading() {
+export function ListingHeading(): JSX.Element {
   return (
     <>
       <CompensateScreenOptions />
@@ -13,7 +13,9 @@ export function ListingHeading() {
           id="mailpoet-new-email"
           className="page-title-action"
           to="/new"
-          onClick={() => MailPoet.trackEvent('Emails > Add New')}
+          onClick={() => {
+            MailPoet.trackEvent('Emails > Add New');
+          }}
           data-automation-id="new_email"
         >
           {__('Add New Email', 'mailpoet')}

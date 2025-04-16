@@ -28,7 +28,7 @@ import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';
 import { withNpsPoll } from 'nps-poll.jsx';
-import { ListingHeading } from 'newsletters/listings/heading.jsx';
+import { ListingHeading } from 'newsletters/listings/heading';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading-display.jsx';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-emails-propose-opt-in-notice';
 import { MssAccessNotices } from 'notices/mss-access-notices';
