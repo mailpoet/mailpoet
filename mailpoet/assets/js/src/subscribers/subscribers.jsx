@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { SubscriberList } from 'subscribers/list.tsx';
-import { SubscriberForm } from 'subscribers/form.jsx';
+import { SubscriberForm } from 'subscribers/form';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';

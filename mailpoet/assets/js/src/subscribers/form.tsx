@@ -8,15 +8,113 @@ import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { BackButton, PageHeader } from '../common/page-header';
 
-const fields = [
+interface CustomField {
+  id: number;
+  name: string;
+  type: string;
+  params?: {
+    values?: Record<string, string>;
+  };
+}
+
+interface CustomFieldFormField {
+  name: string;
+  label: string;
+  type: string;
+  params?: Record<string, unknown>;
+  values?: Record<string, string>;
+  year_placeholder?: string;
+  month_placeholder?: string;
+  day_placeholder?: string;
+  placeholder?: string;
+}
+
+interface Subscriber {
+  wp_user_id: number;
+  is_woocommerce_user: number;
+  subscriptions?: Array<{
+    segment_id: number;
+    status: string;
+    updated_at: string;
+  }>;
+}
+
+interface Unsubscribe {
+  createdAt: {
+    date: string;
+  };
+  source: 'admin' | 'manage' | 'newsletter' | 'mp_api' | string;
+  meta?: string;
+  newsletterId?: string;
+  newsletterSubject?: string;
+}
+
+interface FormValues {
+  unsubscribes?: Unsubscribe[];
+}
+
+declare global {
+  interface Window {
+    mailpoet_custom_fields: CustomField[];
+    mailpoet_api_version: string;
+  }
+}
+
+interface BaseField {
+  name: string;
+  label: string;
+  type: string;
+}
+
+interface TextField extends BaseField {
+  type: 'text';
+  disabled?: (subscriber: Subscriber) => boolean;
+}
+
+interface SelectField extends BaseField {
+  type: 'select';
+  automationId?: string;
+  values: Record<string, string>;
+}
+
+interface SelectionField extends BaseField {
+  type: 'selection';
+  placeholder: string;
+  tip: string;
+  api_version: string;
+  endpoint: string;
+  multiple: boolean;
+  selected: (subscriber: Subscriber) => number[] | null;
+  filter: (segment: unknown) => boolean;
+  getLabel: (segment: unknown) => string;
+  getCount: (segment: unknown) => number;
+  getSearchLabel: (segment: unknown, subscriber: Subscriber) => string;
+}
+
+interface TokenField extends BaseField {
+  type: 'tokenField';
+  placeholder: string;
+  suggestedValues: unknown[];
+  endpoint: string;
+  getName: (tag: unknown) => string;
+}
+
+type FormField =
+  | TextField
+  | SelectField
+  | SelectionField
+  | TokenField
+  | CustomFieldFormField;
+
+const fields: FormField[] = [
   {
     name: 'email',
     label: MailPoet.I18n.t('email'),
     type: 'text',
-    disabled: function disabled(subscriber) {
-      return (
+    disabled: function disabled(subscriber: Subscriber) {
+      return Boolean(
         Number(subscriber.wp_user_id > 0) ||
-        Number(subscriber.is_woocommerce_user) === 1
+          Number(subscriber.is_woocommerce_user) === 1,
       );
     },
   },
@@ -24,10 +122,10 @@ const fields = [
     name: 'first_name',
     label: MailPoet.I18n.t('firstname'),
     type: 'text',
-    disabled: function disabled(subscriber) {
-      return (
+    disabled: function disabled(subscriber: Subscriber) {
+      return Boolean(
         Number(subscriber.wp_user_id > 0) ||
-        Number(subscriber.is_woocommerce_user) === 1
+          Number(subscriber.is_woocommerce_user) === 1,
       );
     },
   },
@@ -35,10 +133,10 @@ const fields = [
     name: 'last_name',
     label: MailPoet.I18n.t('lastname'),
     type: 'text',
-    disabled: function disabled(subscriber) {
-      return (
+    disabled: function disabled(subscriber: Subscriber) {
+      return Boolean(
         Number(subscriber.wp_user_id > 0) ||
-        Number(subscriber.is_woocommerce_user) === 1
+          Number(subscriber.is_woocommerce_user) === 1,
       );
     },
   },
@@ -64,7 +162,7 @@ const fields = [
     api_version: window.mailpoet_api_version,
     endpoint: 'segments',
     multiple: true,
-    selected: function selected(subscriber) {
+    selected: function selected(subscriber: Subscriber) {
       if (Array.isArray(subscriber.subscriptions) === false) {
         return null;
       }
@@ -73,22 +171,28 @@ const fields = [
         .filter((subscription) => subscription.status === 'subscribed')
         .map((subscription) => subscription.segment_id);
     },
-    filter: function filter(segment) {
-      return !segment.deleted_at && segment.type === 'default';
+    filter: function filter(segment: unknown) {
+      return (
+        !(segment as { deleted_at?: string })?.deleted_at &&
+        (segment as { type?: string })?.type === 'default'
+      );
     },
-    getLabel: function getLabel(segment) {
-      return segment.name;
+    getLabel: function getLabel(segment: unknown) {
+      return (segment as { name?: string })?.name || '';
     },
-    getCount: function getCount(segment) {
-      return segment.subscribers;
+    getCount: function getCount(segment: unknown) {
+      return (segment as { subscribers?: number })?.subscribers || 0;
     },
-    getSearchLabel: function getSearchLabel(segment, subscriber) {
+    getSearchLabel: function getSearchLabel(
+      segment: unknown,
+      subscriber: Subscriber,
+    ) {
       let label = '';
 
       if (subscriber.subscriptions !== undefined) {
         subscriber.subscriptions.forEach((subscription) => {
-          if (segment.id === subscription.segment_id) {
-            label = segment.name;
+          if ((segment as { id?: number })?.id === subscription.segment_id) {
+            label = (segment as { name?: string })?.name || '';
 
             if (subscription.status === 'unsubscribed') {
               const unsubscribedAt = MailPoet.Date.format(
@@ -115,19 +219,22 @@ const fields = [
     placeholder: MailPoet.I18n.t('addNewTag'),
     suggestedValues: [],
     endpoint: 'tags',
-    getName: function getName(tag) {
-      return Object.prototype.hasOwnProperty.call(tag, 'name') ? tag.name : tag;
+    getName: function getName(tag: unknown) {
+      return Object.prototype.hasOwnProperty.call(tag, 'name')
+        ? (tag as { name: string }).name
+        : String(tag);
     },
   },
 ];
 
 const customFields = window.mailpoet_custom_fields || [];
 customFields.forEach((customField) => {
-  const field = {
+  const field: CustomFieldFormField = {
     name: `cf_${customField.id}`,
     label: customField.name,
     type: customField.type,
   };
+
   if (customField.params) {
     field.params = customField.params;
     if (customField.params.values) {
@@ -165,7 +272,7 @@ const messages = {
   },
 };
 
-function beforeFormContent(subscriber) {
+function beforeFormContent(subscriber: Subscriber) {
   if (Number(subscriber.wp_user_id) > 0) {
     return (
       <p className="description">
@@ -184,7 +291,7 @@ function beforeFormContent(subscriber) {
   return undefined;
 }
 
-function afterFormContent(values) {
+function afterFormContent(values: FormValues) {
   return (
     <>
       {values?.unsubscribes?.map((unsubscribe) => {
@@ -195,19 +302,21 @@ function afterFormContent(values) {
         if (unsubscribe.source === 'admin') {
           message = MailPoet.I18n.t('unsubscribedAdmin')
             .replace('%1$d', date)
-            .replace('%2$d', unsubscribe.meta);
+            .replace('%2$d', unsubscribe.meta || '');
         } else if (unsubscribe.source === 'manage') {
           message = MailPoet.I18n.t('unsubscribedManage').replace('%1$d', date);
         } else if (unsubscribe.source === 'newsletter') {
           message = ReactStringReplace(
             MailPoet.I18n.t('unsubscribedNewsletter').replace('%1$d', date),
             /\[link\]/g,
-            (match, i) => (
+            (_match, i) => (
               <a
                 key={i}
-                href={`admin.php?page=mailpoet-newsletter-editor&id=${unsubscribe.newsletterId}`}
+                href={`admin.php?page=mailpoet-newsletter-editor&id=${
+                  unsubscribe.newsletterId || ''
+                }`}
               >
-                {unsubscribe.newsletterSubject}
+                {unsubscribe.newsletterSubject || ''}
               </a>
             ),
           );
@@ -237,7 +346,7 @@ function SubscriberForm() {
   const location = useLocation();
   const params = useParams();
   const navigate = useNavigate();
-  const backUrl = location.state?.backUrl || '/';
+  const backUrl = (location.state?.backUrl as string) || '/';
   return (
     <div className="mailpoet-main-container">
       <HideScreenOptions />
