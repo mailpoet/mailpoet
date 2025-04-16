@@ -14,7 +14,7 @@ import { NewsletterTemplates } from 'newsletters/templates.jsx';
 import { NewsletterSend } from 'newsletters/send';
 import { Congratulate } from 'newsletters/send/congratulate/congratulate.jsx';
 import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
-import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';
+import { NewsletterNotification } from 'newsletters/types/notification/notification';
 import { NewsletterTypeReEngagement } from 'newsletters/types/re-engagement/re-engagement';
 import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
 import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';

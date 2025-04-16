@@ -1,7 +1,5 @@
-import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
-
 import { MailPoet } from 'mailpoet';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import _ from 'underscore';
@@ -10,7 +8,33 @@ import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import { useNavigate } from 'react-router-dom';
-import { GlobalContext } from 'context';
+import { GlobalContext, GlobalContextValue } from 'context';
+
+interface NewsletterNotificationState {
+  options: {
+    intervalType: 'daily' | 'weekly' | 'monthly';
+    timeOfDay: number;
+    weekDay: number;
+    monthDay: number;
+    nthWeekDay: number;
+  };
+}
+
+interface NewsletterNotificationProps {
+  navigate: (path: string) => void;
+}
+
+type SuccessResponse = {
+  data: {
+    id: number;
+  };
+};
+
+type ErrorResponse = {
+  errors: Array<{
+    message: string;
+  }>;
+};
 
 const field = {
   name: 'options',
@@ -18,8 +42,14 @@ const field = {
   component: NotificationScheduling,
 };
 
-class NewsletterNotificationComponent extends Component {
-  constructor(props) {
+class NewsletterNotificationComponent extends Component<
+  NewsletterNotificationProps,
+  NewsletterNotificationState
+> {
+  // eslint-disable-next-line react/static-property-placement
+  declare context: GlobalContextValue;
+
+  constructor(props: NewsletterNotificationProps) {
     super(props);
     this.state = {
       options: {
@@ -45,14 +75,14 @@ class NewsletterNotificationComponent extends Component {
     }
   }
 
-  handleValueChange = (event) => {
+  handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const state = this.state;
     state[event.target.name] = event.target.value;
     this.setState(state);
   };
 
   handleNext = () => {
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post<SuccessResponse>({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'create',
@@ -67,14 +97,14 @@ class NewsletterNotificationComponent extends Component {
       .done((response) => {
         this.showTemplateSelection(response.data.id);
       })
-      .fail((response) => {
+      .fail((response: ErrorResponse) => {
         if (response.errors.length > 0) {
           this.context.notices.apiError(response, { scroll: true });
         }
       });
   };
 
-  showTemplateSelection = (newsletterId) => {
+  showTemplateSelection = (newsletterId: number) => {
     this.props.navigate(`/template/${newsletterId}`);
   };
 
@@ -108,13 +138,7 @@ class NewsletterNotificationComponent extends Component {
 
 NewsletterNotificationComponent.contextType = GlobalContext;
 
-NewsletterNotificationComponent.propTypes = {
-  navigate: PropTypes.func.isRequired,
-};
-
-NewsletterNotificationComponent.displayName = 'NewsletterNotification';
-
-export function NewsletterNotification(props) {
+export function NewsletterNotification() {
   const navigate = useNavigate();
-  return <NewsletterNotificationComponent {...props} navigate={navigate} />;
+  return <NewsletterNotificationComponent navigate={navigate} />;
 }
