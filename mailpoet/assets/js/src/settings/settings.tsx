@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
@@ -6,6 +7,7 @@ import { t } from 'common/functions';
 import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { Tab } from 'common/tabs/tab';
 import { UnsavedChangesNotice } from 'common/notices/unsaved-changes-notice';
+import { PageHeader } from 'common/page-header/page-header';
 import {
   Advanced,
   Basics,
@@ -27,6 +29,7 @@ export function Settings() {
       {isSaving && <Loading />}
       <GlobalNotices />
       <Notices />
+      <PageHeader heading={__('Settings', 'mailpoet')} />
       <MssAccessNotices />
       <UnsavedChangesNotice storeName="mailpoet-settings" />
       <RoutedTabs activeKey="basics">
