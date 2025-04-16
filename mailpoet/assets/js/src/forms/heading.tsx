@@ -4,15 +4,15 @@ import { __ } from '@wordpress/i18n';
 import { PageHeader } from 'common/page-header';
 import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
 
-export const onAddNewForm = () => {
+export const onAddNewForm = (): void => {
   MailPoet.trackEvent('Forms > Add New');
   setTimeout(() => {
-    window.location = window.mailpoet_form_template_selection_url;
+    window.location.href = window.mailpoet_form_template_selection_url;
   }, 200); // leave some time for the event to track
 };
 
-function FormsHeading() {
-  const [loading, setLoading] = useState(false);
+function FormsHeading(): JSX.Element {
+  const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
       <CompensateScreenOptions />

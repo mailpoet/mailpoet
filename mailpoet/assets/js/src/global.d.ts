@@ -298,4 +298,5 @@ interface Window {
   mailpoet_block_email_editor_enabled: boolean;
   satismeter: (action: string, data: Record<string, unknown>) => void;
   mailpoet_display_nps_email_editor: boolean;
+  mailpoet_form_template_selection_url: string;
 }
