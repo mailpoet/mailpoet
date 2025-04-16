@@ -2,10 +2,16 @@
 <% extends 'layout.html' %>
 <% block content %>
 <div id="mailpoet_subscribers_import" class="wrap">
-  <h1 class="mailpoet-h1 mailpoet-title">
-    <span><%= __('Import') %></span>
-    <a class="mailpoet-button button button-secondary button-small" href="?page=mailpoet-subscribers#/"><%= __('Back to Subscribers') %></a>
-  </h1>
+
+  <div class="mailpoet-page-header">
+    <div class="mailpoet-back-button">
+      <a href="?page=mailpoet-subscribers#/" aria-label="Navigate to the lists page" class="components-button is-small has-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M14.6 7l-1.2-1L8 12l5.4 6 1.2-1-4.6-5z"></path></svg>
+      </a>
+    </div>
+    <h1 class="wp-heading-inline"><%= __('Import Subscribers') %></h1>
+  </div>
+
   <!-- STEP subscriber data manipulation -->
   <% include 'subscribers/importExport/import/step_data_manipulation.html' %>
   <div id="import_container" class="mailpoet-tab-content"></div>
