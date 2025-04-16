@@ -299,4 +299,7 @@ interface Window {
   satismeter: (action: string, data: Record<string, unknown>) => void;
   mailpoet_display_nps_email_editor: boolean;
   mailpoet_form_template_selection_url: string;
+  mailpoet_legacy_automatic_emails_count: number;
+  mailpoet_legacy_automatic_emails_notice_dismissed: boolean;
+  mailpoet_newsletters_count: number;
 }

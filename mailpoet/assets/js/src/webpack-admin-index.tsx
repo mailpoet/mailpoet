@@ -6,7 +6,7 @@
 
 import 'homepage/homepage'; // side effect - renders ReactDOM to document
 import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to document
-import 'newsletters/newsletters.jsx'; // side effect - renders ReactDOM to window
+import 'newsletters/newsletters'; // side effect - renders ReactDOM to window
 import 'segments/static/static'; // side effect - renders ReactDOM to document
 import 'segments/dynamic/dynamic'; // side effect - renders ReactDOM to document
 import 'forms/forms.jsx'; // side effect - renders ReactDOM to document

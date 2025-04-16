@@ -6,7 +6,6 @@ import {
   Routes,
   useParams,
 } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
@@ -37,11 +36,18 @@ import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
 import { BackButton, PageHeader } from '../common/page-header';
 
-const trackTabSwitch = (tabKey) =>
+interface RouteConfig {
+  path: string;
+  name?: string;
+  children: React.ComponentType;
+}
+
+const trackTabSwitch = (tabKey: string): void => {
   MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
+};
 
 const Tabs = withNpsPoll(() => {
-  const { parentId } = useParams();
+  const { parentId } = useParams<{ parentId?: string }>();
   return (
     <>
       <ListingHeadingDisplay>
@@ -57,7 +63,7 @@ const Tabs = withNpsPoll(() => {
       <RoutedTabs
         activeKey="standard"
         routerType="switch-only"
-        onSwitch={(tabKey) => trackTabSwitch(tabKey)}
+        onSwitch={(tabKey: string) => trackTabSwitch(tabKey)}
         automationId="newsletters_listing_tabs"
       >
         <Tab
@@ -92,9 +98,8 @@ const Tabs = withNpsPoll(() => {
     </>
   );
 });
-Tabs.displayName = 'NewsletterTabs';
 
-function NewNewsletter({ history }) {
+function NewNewsletter() {
   return (
     <ErrorBoundary>
       <div className="mailpoet-main-container">
@@ -108,21 +113,13 @@ function NewNewsletter({ history }) {
             />
           }
         />
-        <NewsletterTypes history={history} />
+        <NewsletterTypes />
       </div>
     </ErrorBoundary>
   );
 }
 
-NewNewsletter.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-NewNewsletter.displayName = 'NewNewsletter';
-
-const routes = [
+const routes: RouteConfig[] = [
   /* Listings */
   {
     path: '/notification/history/:parentId/*',
@@ -204,7 +201,6 @@ function App() {
         </ErrorBoundary>
         <Routes>
           <Route
-            exact
             path="/"
             element={
               <Navigate
@@ -218,8 +214,6 @@ function App() {
             <Route
               key={route.path}
               path={route.path}
-              name={route.name || null}
-              data={route.data || null}
               element={<route.children />}
             />
           ))}
