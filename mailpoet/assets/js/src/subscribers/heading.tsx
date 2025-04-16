@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, To } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { PageHeader } from 'common/page-header';
 import { SubscribersInPlan } from 'common/subscribers-in-plan';
@@ -15,12 +15,14 @@ export function SubscribersHeading() {
       <PageHeader heading={__('Subscribers', 'mailpoet')}>
         <Link
           className="page-title-action"
-          to={{
-            pathname: '/new',
-            state: {
-              backUrl: location?.pathname,
-            },
-          }}
+          to={
+            {
+              pathname: '/new',
+              state: {
+                backUrl: location?.pathname,
+              },
+            } as To
+          }
         >
           <span data-automation-id="add-new-subscribers-button">
             {__('Add New Subscriber', 'mailpoet')}
