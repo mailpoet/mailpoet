@@ -1,107 +1,29 @@
-.mailpoet-tabs {
-  clear: both;
-  padding-top: 10px;
-  position: relative;
-  z-index: 1;
+.mailpoet-tabs > .components-tab-panel__tabs {
+  box-shadow: none;
+  margin-top: $grid-gap-half;
 
-  .notice ~ &,
-  .notice ~ div > &,
-  .notice ~ .wrap &,
-  .error ~ &,
-  .error ~ div > &,
-  .error ~ .wrap &,
-  .mailpoet-subscribers-in-plan ~ &,
-  #mailpoet_notices:not(:empty) ~ div > & {
-    top: 0 !important;
-  }
+  .components-tab-panel__tabs-item {
+    border: 1px solid transparent;
+    border-bottom: none;
+    box-shadow: none;
 
-  @include respond-to(small-screen) {
-    top: 0 !important;
-  }
-}
-
-.mailpoet-tabs-is-open {
-  z-index: 2;
-
-  &:after {
-    background: rgba(30, 36, 40, 0.1);
-    content: '';
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 1;
-  }
-}
-
-.mailpoet-tab,
-.mailpoet-tabs-title {
-  align-items: center;
-  background: none;
-  border: 1px solid transparent;
-  border-bottom: 0;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  box-sizing: border-box;
-  color: $color-heading;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: $font-size;
-  justify-content: center;
-  line-height: 24px;
-  margin-bottom: -1px;
-  max-width: 100%;
-  min-height: 56px;
-  padding: $grid-gap-half $grid-gap-medium;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: top;
-
-  &:focus {
-    outline: none;
-  }
-
-  &.mailpoet-tab-active {
-    background: $color-white;
-    border-color: $color-tertiary-light;
-    color: $color-secondary;
-    font-weight: 600;
-  }
-
-  svg {
-    fill: currentColor;
-    height: 16px;
-    width: 16px;
-
-    &:first-child {
-      margin-right: 6px;
+    &:after {
+      background: #fff;
+      bottom: -1px;
+      box-shadow: none;
+      transition: none;
     }
 
-    &:last-child {
-      margin-left: 6px;
-    }
+    &.is-active {
+      background-color: #fff;
+      border-color: #dcdcde;
+      box-shadow: none;
 
-    &:only-child {
-      margin-left: 0;
-      margin-right: 0;
+      &:focus-visible {
+        box-shadow: none;
+      }
     }
   }
-
-  // Hack so the text is not jumping when changed to bold when active
-  > span:before {
-    content: attr(data-title);
-    display: block;
-    font-weight: bold;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
-  }
-}
-
-.mailpoet-tabs-title {
-  display: none;
 }
 
 .mailpoet-tab-content {
@@ -119,56 +41,12 @@
 }
 
 @include respond-to(small-screen) {
-  .mailpoet-tabs {
-    margin-left: -10px;
-    margin-right: -12px;
-  }
-
-  .mailpoet-tabs-title {
-    background: $color-white;
-    border: 1px solid $color-tertiary-light;
-    border-bottom: none;
-    border-radius: 0;
-    display: flex;
-    font-weight: bold;
-    justify-content: flex-start;
-    margin-bottom: 0;
-    width: 100%;
-    z-index: 2;
-
-    &:after {
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231d2327' d='M10 0H2c-.552 0-1 .448-1 1 0 .216.07.427.2.6l4 5.333c.331.442.958.532 1.4.2.076-.057.143-.124.2-.2l4-5.333c.331-.442.242-1.069-.2-1.4-.173-.13-.384-.2-.6-.2z'/%3E%3C/svg%3E%0A")
-        no-repeat center;
-      content: '';
-      height: 8px;
-      margin-left: auto;
-      width: 12px;
-    }
-
-    .mailpoet-tabs-is-open > &:after {
-      transform: rotate(180deg);
-    }
-  }
-
   .mailpoet-tab {
     background: $color-white;
     border: 1px solid $color-tertiary-light;
     display: flex;
     justify-content: flex-start;
     width: 100%;
-  }
-
-  .mailpoet-tabs-wrapper {
-    display: none;
-    left: 0;
-    position: absolute;
-    top: 56px;
-    width: 100%;
-    z-index: 2;
-
-    .mailpoet-tabs-is-open > & {
-      display: block;
-    }
   }
 
   .mailpoet-tab-content {

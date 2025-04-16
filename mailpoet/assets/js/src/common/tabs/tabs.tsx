@@ -67,10 +67,8 @@ export function Tabs({
   children,
 }: Props) {
   const [activeTab, setActiveTab] = useState(activeKey);
-  const [isOpen, setIsOpen] = useState(false);
 
   const switchTab = (tabKey: string) => {
-    setIsOpen(false);
     if (tabKey !== activeTab) {
       setActiveTab(tabKey);
       onSwitch(tabKey);
@@ -95,28 +93,17 @@ export function Tabs({
 
   return (
     <div
-      className={classnames('mailpoet-tabs', {
-        'mailpoet-tabs-is-open': isOpen,
-      })}
+      className="mailpoet-categories mailpoet-tabs"
       data-automation-id={automationId}
     >
-      <button
-        type="button"
-        className="mailpoet-tabs-title"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {title(activeChild.props)}
-      </button>
-
-      <div className="mailpoet-tabs-wrapper">
+      <div className="components-tab-panel__tabs">
         {validChildren.map((child: ReactElement) => (
           <button
             key={child.key}
             className={classnames(
-              'mailpoet-tab',
-              {
-                'mailpoet-tab-active': child === activeChild,
-              },
+              'components-button',
+              'components-tab-panel__tabs-item',
+              { 'is-active': child === activeChild },
               String(child.props?.className || ''),
             )}
             type="button"
