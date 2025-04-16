@@ -92,7 +92,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Listen');
     $i->waitForText('Einstellungen');
     $i->waitForText('Hilfe');
-    $i->waitForText('Neue E-Mail');
+    // $i->waitForText('Neue E-Mail'); Temporary disabled because the string changed and is not yet translated
 
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
@@ -110,7 +110,7 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check Automation listing strings (translated with @wordpress/i18n)');
     $i->amOnMailpoetPage('automation');
     $i->waitForText('Erstelle deine eigenen Automatisierungen');
-    $i->waitForText('Neue Automatisierung');
+    $i->waitForText('Add New Automation'); // This will fail in the future when the string is translated
     $i->waitForText('Wesentliche Dinge erforschen');
     $i->waitForText('Bearbeiten');
     $i->waitForText('Eingetragen');
@@ -118,14 +118,14 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check some Forms page strings');
     $i->amOnMailpoetPage('forms');
-    $i->waitForText('Neues Formular');
+    $i->waitForText('Add New Form'); // This will fail in the future when the string is translated
     $i->waitForText('Unterhalb der Seiten');
     $i->waitForText('Registrierungen');
     $i->waitForText('Änderungsdatum');
 
     $i->wantTo('Check Subscribers filter strings and button');
     $i->amOnMailpoetPage('subscribers');
-    $i->waitForText('Neu hinzufügen');
+    $i->waitForText('Add New Subscriber'); // This will fail in the future when the string is translated
     $i->waitForText('Alle');
     $i->waitForText('Eingetragen');
     $i->waitForText('Unbestätigt');
@@ -134,7 +134,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Bounced');
 
     $i->wantTo('Check Subscribers listing strings');
-    $i->waitForText('Jetzt neu berechnen');
+    $i->waitForText('Neuberechnen');
     $i->waitForText('Abonnent');
     $i->waitForText('Unbestätigt');
     $i->waitForText('Schlagwörter');
@@ -142,9 +142,9 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check some Lists strings');
     $i->amOnMailpoetPage('lists');
-    $i->waitForText('Abonnenten in deinem Tarif');
+    $i->waitForText('Abonnenten');
     $i->waitForText('Listen-Bewertung');
-    $i->waitForText('Neue Liste');
+    $i->waitForText('Add New List'); // This will fail in the future when the string is translated
     $i->waitForText('Ausgetragen');
 
     $i->wantTo('Check Settings tabs strings');

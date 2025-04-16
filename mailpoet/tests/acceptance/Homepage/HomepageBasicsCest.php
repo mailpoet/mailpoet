@@ -12,7 +12,7 @@ class HomepageBasicsCest {
     $i->wantTo('Check homepage renders and is present in menu');
     $i->login();
     $i->amOnMailpoetPage('Homepage');
-    $i->waitForElement('.mailpoet-top-bar');
+    $i->waitForElement('.mailpoet-homepage__container');
     $i->see('Home', '#adminmenu');
   }
 

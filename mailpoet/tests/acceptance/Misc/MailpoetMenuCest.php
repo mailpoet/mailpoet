@@ -110,7 +110,7 @@ class MailpoetMenuCest {
   private function checkSubscribers(\AcceptanceTester $i) {
     $i->wantTo('Check Subscribers page and its menu as selected');
     $this->clickMenuItem($i, 'Subscribers');
-    $i->waitForElement('.mailpoet-subscribers-in-plan');
+    $i->waitForElement('.mailpoet-segment-subscriber-count-message');
     $i->seeInCurrentUrl('?page=mailpoet-subscribers');
     $this->assertSelectedMenuItem($i, 'Subscribers');
 
@@ -123,7 +123,7 @@ class MailpoetMenuCest {
 
     $i->wantTo('Check if the menu is still selected if I go to the export page');
     $this->clickMenuItem($i, 'Subscribers');
-    $i->waitForElement('.mailpoet-subscribers-in-plan');
+    $i->waitForElement('.mailpoet-segment-subscriber-count-message');
     $i->waitForElementClickable('#mailpoet_export_button');
     $i->click('#mailpoet_export_button');
     $i->waitForElement('#mailpoet-export');
@@ -132,7 +132,7 @@ class MailpoetMenuCest {
 
     $i->wantTo('Check if the menu is still selected if I go to the add new subscriber page');
     $this->clickMenuItem($i, 'Subscribers');
-    $i->waitForElement('.mailpoet-subscribers-in-plan');
+    $i->waitForElement('.mailpoet-segment-subscriber-count-message');
     $i->waitForElementClickable('[data-automation-id="add-new-subscribers-button"]');
     $i->click('[data-automation-id="add-new-subscribers-button"]');
     $i->waitForText('Subscriber');

@@ -39,7 +39,7 @@ class ReceiveScheduledEmailCest {
     $i->waitForElement('[data-automation-id="templates-standard"]');
     $i->click('[data-automation-id="templates-standard"]');
     $i->waitForElement($standardTemplate);
-    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories .is-active']);
     $i->click($standardTemplate);
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);

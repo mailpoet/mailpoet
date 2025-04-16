@@ -21,7 +21,7 @@ class TemplatesPagesLoadCest {
     $i->click($templateTab);
 
     // Standard email templates tab
-    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories .is-active']);
     $i->waitForElementVisible($templateThumbnail);
     $this->checkTemplatePreview($i, $templateThumbnail);
     $i->waitForElement('[data-automation-id="select_template_8"]');
@@ -31,7 +31,7 @@ class TemplatesPagesLoadCest {
 
     // Post Notification templates tab
     $i->click('Post Notifications');
-    $i->see('Post Notifications', ['css' => '.mailpoet-categories-item.active']);
+    $i->see('Post Notifications', ['css' => '.mailpoet-categories .is-active']);
     $i->waitForElementVisible($templateThumbnail);
     $this->checkTemplatePreview($i, $templateThumbnail);
     $i->waitForElement('[data-automation-id="select_template_5"]');
@@ -40,7 +40,7 @@ class TemplatesPagesLoadCest {
 
     // Welcome Emails templates tab
     $i->click('Welcome Emails');
-    $i->see('Welcome Emails', ['css' => '.mailpoet-categories-item.active']);
+    $i->see('Welcome Emails', ['css' => '.mailpoet-categories .is-active']);
     $i->waitForElementVisible($templateThumbnail);
     $this->checkTemplatePreview($i, $templateThumbnail);
     $i->waitForElement('[data-automation-id="select_template_5"]');
@@ -49,7 +49,7 @@ class TemplatesPagesLoadCest {
 
     // WooCommerce templates tab
     $i->click('WooCommerce Emails');
-    $i->see('WooCommerce Emails', ['css' => '.mailpoet-categories-item.active']);
+    $i->see('WooCommerce Emails', ['css' => '.mailpoet-categories .is-active']);
     $i->waitForElementVisible($templateThumbnail);
     $this->checkTemplatePreview($i, $templateThumbnail);
     $i->waitForElement('[data-automation-id="select_template_5"]');

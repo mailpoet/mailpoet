@@ -103,34 +103,6 @@ p.sender_email_address_warning:first-child {
   }
 }
 
-.mailpoet-subscribers-in-plan {
-  font-size: 18px;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-
-  .mailpoet-subscribers-in-plan-spacer {
-    display: inline-block;
-    width: 20px;
-  }
-
-  .tooltip {
-    position: relative;
-    top: -1px;
-    vertical-align: middle;
-  }
-
-  @include respond-to(small-screen) {
-    margin-top: 0;
-  }
-}
-
-.mailpoet-subscribers-cache-notice {
-  .mailpoet-subscribers-cache-notice-button {
-    margin-left: 10px;
-  }
-}
-
 .mailpoet_manage_sender_domain_wrapper {
   ol {
     counter-reset: item;
