@@ -828,16 +828,18 @@ class RendererTest extends \MailPoetTest {
 
     // Create test products
     $wp = $this->diContainer->get(\MailPoet\WP\Functions::class);
-    $productIds = [];
-    $productIds[] = $wp->wpInsertPost([
-      'post_title' => 'Test Product 1',
-      'post_status' => 'publish',
-      'post_type' => 'product',
+
+    // Create a published product using the tester
+    $this->tester->createWooCommerceProduct([
+      'name' => 'Test Product 1',
+      'status' => 'publish',
+      'price' => '10.00',
     ]);
-    $productIds[] = $wp->wpInsertPost([
-      'post_title' => 'Test Product 2',
-      'post_status' => 'publish',
-      'post_type' => 'product',
+
+    $this->tester->createWooCommerceProduct([
+      'name' => 'Test Product 2',
+      'status' => 'publish',
+      'price' => '10.00',
     ]);
 
     // Create a newsletter with a dynamic products block
@@ -860,6 +862,42 @@ class RendererTest extends \MailPoetTest {
       'imageFullWidth' => true,
       'titlePosition' => 'abovePost',
       'featuredImagePosition' => 'left',
+      'readMoreType' => 'button',
+      'readMoreText' => 'Read more',
+      'readMoreButton' => array(
+        'type' => 'button',
+        'text' => 'Read the post',
+        'url' => '[postLink]',
+        'styles' => array(
+          'block' => array(
+            'backgroundColor' => '#2ea1cd',
+            'borderColor' => '#0074a2',
+            'borderWidth' => '1px',
+            'borderRadius' => '5px',
+            'borderStyle' => 'solid',
+            'width' => '160px',
+            'lineHeight' => '30px',
+            'fontColor' => '#ffffff',
+            'fontFamily' => 'Verdana',
+            'fontSize' => '16px',
+            'fontWeight' => 'normal',
+            'textAlign' => 'center',
+          ),
+        ),
+      ),
+      'showDivider' => true,
+      'divider' => array(
+        'type' => 'divider',
+        'styles' => array(
+          'block' => array(
+            'backgroundColor' => 'transparent',
+            'padding' => '13px',
+            'borderStyle' => 'solid',
+            'borderWidth' => '3px',
+            'borderColor' => '#aaaaaa',
+          ),
+        ),
+      ),
     ];
 
     $newsletter->setBody([
@@ -901,11 +939,6 @@ class RendererTest extends \MailPoetTest {
 
     // Render the newsletter
     $template = $this->renderer->render($newsletter);
-
-    // Clean up test products
-    foreach ($productIds as $productId) {
-      $wp->wpDeletePost($productId, true);
-    }
 
     // Verify the products are rendered
     verify(isset($template['html']))->true();
