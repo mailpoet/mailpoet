@@ -864,12 +864,12 @@ class RendererTest extends \MailPoetTest {
       'featuredImagePosition' => 'left',
       'readMoreType' => 'button',
       'readMoreText' => 'Read more',
-      'readMoreButton' => array(
+      'readMoreButton' => [
         'type' => 'button',
         'text' => 'Read the post',
         'url' => '[postLink]',
-        'styles' => array(
-          'block' => array(
+        'styles' => [
+          'block' => [
             'backgroundColor' => '#2ea1cd',
             'borderColor' => '#0074a2',
             'borderWidth' => '1px',
@@ -882,22 +882,22 @@ class RendererTest extends \MailPoetTest {
             'fontSize' => '16px',
             'fontWeight' => 'normal',
             'textAlign' => 'center',
-          ),
-        ),
-      ),
+          ],
+        ],
+      ],
       'showDivider' => true,
-      'divider' => array(
+      'divider' => [
         'type' => 'divider',
-        'styles' => array(
-          'block' => array(
+        'styles' => [
+          'block' => [
             'backgroundColor' => 'transparent',
             'padding' => '13px',
             'borderStyle' => 'solid',
             'borderWidth' => '3px',
             'borderColor' => '#aaaaaa',
-          ),
-        ),
-      ),
+          ],
+        ],
+      ],
     ];
 
     $newsletter->setBody([
