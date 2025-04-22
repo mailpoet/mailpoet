@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.11.0 - 2025-04-22 =
+* Added: Dynamic Products block in email editor. Useful in automations to render order products, cross-sells, abandoned cart content, or selected categories or tags.
+
 = 5.10.1 - 2025-04-14 =
 * Added: ability to set subscriber status when creating new users in WordPress admin;
 * Improved: plugin release process;
