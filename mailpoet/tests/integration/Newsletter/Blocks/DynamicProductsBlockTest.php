@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @group woo
@@ -16,9 +15,6 @@ class DynamicProductsBlockTest extends \MailPoetTest {
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
-
-  /** @var WPFunctions */
-  private $wp;
 
   /** @var array */
   private $productIds = [];
@@ -85,7 +81,6 @@ class DynamicProductsBlockTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->block = $this->diContainer->get(DynamicProductsBlock::class);
-    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
 
     // Clear old products

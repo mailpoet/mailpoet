@@ -154,16 +154,6 @@ class AbandonedCartContentTest extends \MailPoetTest {
     verify($encodedResult)->stringContainsString('Product 1');
   }
 
-  private function createPost(string $title, string $publishDate, string $type = 'post') {
-    return $this->wp->wpInsertPost([
-      'post_title' => $title,
-      'post_status' => 'publish',
-      'post_date' => $publishDate,
-      'post_date_gmt' => $this->wp->getGmtFromDate($publishDate),
-      'post_type' => $type,
-    ]);
-  }
-
   private function createNewsletter($subject, $type, $parent = null) {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject($subject);
