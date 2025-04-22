@@ -61,7 +61,10 @@ const resumeSendingIfAuthorized = (fromAddress: string | null) =>
   isValidFromAddress(fromAddress).then((valid) => {
     if (!valid) {
       MailPoet.Notice.error(
-        MailPoet.I18n.t('mailerSendingNotResumedUnauthorized'),
+        __(
+          'Failed to resume sending because the email address is unauthorized. Please authorize it and try again.',
+          'mailpoet',
+        ),
         { scroll: true },
       );
       MailPoet.trackEvent('Unauthorized email used', {

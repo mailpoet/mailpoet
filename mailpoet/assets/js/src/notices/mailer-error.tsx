@@ -26,11 +26,19 @@ const resumeMailerSending = () =>
 function PHPMailerCheckSettingsNotice() {
   return (
     <>
-      <p>{MailPoet.I18n.t('mailerSendErrorCheckConfiguration')}</p>
+      <p>
+        {__(
+          'Please check your sending method configuration, you may need to consult with your hosting company.',
+          'mailpoet',
+        )}
+      </p>
       <br />
       <p>
         {ReactStringReplace(
-          MailPoet.I18n.t('mailerSendErrorUseSendingService'),
+          __(
+            'The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousands of other users do.',
+            'mailpoet',
+          ),
           /<b>(.*?)<\/b>/g,
           (match, key) => (
             <b key={key}>{match}</b>
@@ -45,7 +53,7 @@ function PHPMailerCheckSettingsNotice() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('mailerSendErrorSignUpForSendingService')}
+          {__('Sign up for free in minutes', 'mailpoet')}
         </a>
       </p>
       <br />
@@ -57,7 +65,7 @@ function MailerCheckSettingsNotice() {
   return (
     <p>
       {ReactStringReplace(
-        MailPoet.I18n.t('mailerCheckSettingsNotice'),
+        __('Check your [link]sending method settings[/link].', 'mailpoet'),
         /\[link\](.*?)\[\/link\]/g,
         (match) => (
           <a href="?page=mailpoet-settings#mta" key="check-sending">

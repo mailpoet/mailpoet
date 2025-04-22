@@ -1,3 +1,4 @@
+import { __, _x } from '@wordpress/i18n';
 import { useState } from 'react';
 import { Notice } from 'notices/notice';
 import { MailPoet } from 'mailpoet';
@@ -49,20 +50,34 @@ function TransactionalEmailsProposeOptInNotice({
 
   return (
     <Notice type="success" timeout={false} onClose={saveNoticeDismissed}>
-      <h3>{MailPoet.I18n.t('transactionalEmailNoticeTitle')}</h3>
+      <h3>
+        {__(
+          'Good news! MailPoet can now send your website’s emails too',
+          'mailpoet',
+        )}
+      </h3>
       <p>
-        {MailPoet.I18n.t('transactionalEmailNoticeBody')}{' '}
+        {__(
+          'All of your WordPress and WooCommerce emails are sent with your hosting company, unless you have an SMTP plugin. Would you like such emails to be delivered with MailPoet’s active sending method for better deliverability?',
+          'mailpoet',
+        )}{' '}
         <a
           href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('transactionalEmailNoticeBodyReadMore')}
+          {
+            // translators: This is a link that leads to more information about transactional emails
+            __('Read more.', 'mailpoet')
+          }
         </a>
       </p>
       <p>
         <button type="button" className="button" onClick={enable}>
-          {MailPoet.I18n.t('transactionalEmailNoticeCTA')}
+          {
+            // translators: Button, after clicking it we will enable transactional emails
+            _x('Enable', 'verb', 'mailpoet')
+          }
         </button>
       </p>
     </Notice>
