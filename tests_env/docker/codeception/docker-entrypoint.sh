@@ -144,6 +144,11 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
   wp plugin activate woocommerce-memberships --url=$ACTIVATION_CONTEXT
   wp plugin activate automatewoo --url=$ACTIVATION_CONTEXT
 
+  # patch WooCommerce CLI issue https://github.com/woocommerce/woocommerce/pull/57291
+  # This can be removed once WooCommerce 9.9.0 is released
+  WOO_CLI_FILE="/wp-core/wp-content/plugins/woocommerce/includes/class-wc-cli.php"
+  sed -i "s/FeaturesUtil::feature_is_enabled( 'blueprint' )/false/g" "$WOO_CLI_FILE"
+
   # print info about activated plugins
   wp plugin get woocommerce --url=$ACTIVATION_CONTEXT
   wp plugin get woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
