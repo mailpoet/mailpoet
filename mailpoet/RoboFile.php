@@ -1250,7 +1250,7 @@ class RoboFile extends \Robo\Tasks {
     $changelog = $this->getChangelogController()->get($version);
 
     $githubController = $this->createGitHubController();
-    $githubController->publishRelease($version, $changelog[1], self::ZIP_BUILD_PATH);
+    $githubController->publishRelease($version, $changelog, self::ZIP_BUILD_PATH);
     $this->say("Release '$version' was published to GitHub.");
   }
 
@@ -1259,7 +1259,7 @@ class RoboFile extends \Robo\Tasks {
     $changelog = $this->getChangelogController()->get($version);
 
     $slackNotifier = $this->createSlackNotifier();
-    $slackNotifier->notify($version, $changelog[1]);
+    $slackNotifier->notify($version, $changelog);
     $this->say("Release '$version' info was published on Slack.");
   }
 
