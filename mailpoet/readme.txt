@@ -223,6 +223,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 5.11.0 - 2025-04-22 =
-* Added: Dynamic Products block in email editor. Useful in automations to render order products, cross-sells, abandoned cart content, or selected categories or tags.
+* Added: Dynamic Products block in email editor. Useful in automations to render order products, cross-sells, abandoned cart content, or selected categories or tags;
+* Updated: minimum required WordPress version to 6.7 and tested up to version to 6.8;
+* Updated: minimum required WooCommerce version to 9.7.1 and tested up to version to 9.8.1.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
