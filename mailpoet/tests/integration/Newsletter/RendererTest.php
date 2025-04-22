@@ -26,6 +26,9 @@ use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @group woo
+ */
 class RendererTest extends \MailPoetTest {
   public $dOMParser;
   public $columnRenderer;
@@ -820,12 +823,6 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersDynamicProductsBlock() {
-    // Skip test if WooCommerce is not active
-    $woocommerceHelper = $this->diContainer->get(\MailPoet\WooCommerce\Helper::class);
-    if (!$woocommerceHelper->isWooCommerceActive()) {
-      $this->markTestSkipped('WooCommerce is not active');
-    }
-
     // Create test products
     $wp = $this->diContainer->get(\MailPoet\WP\Functions::class);
 
