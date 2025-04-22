@@ -160,11 +160,11 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedCategories->getArgs());
 
     // create products
-    $p1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']); // uncategorized
-    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'category_ids' => [$cat2Id]]);
-    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'category_ids' => [$subSubCat1Id]]);
-    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'category_ids' => [$cat2Id, $subSubCat1Id]]);
-    $p5 = $this->tester->createWooCommerceProduct(['name' => 'Product 5', 'category_ids' => [$cat3Id, $subCat2Id]]);
+    $p1 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 1']); // uncategorized
+    $p2 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 2', 'category_ids' => [$cat2Id]]);
+    $p3 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 3', 'category_ids' => [$subSubCat1Id]]);
+    $p4 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 4', 'category_ids' => [$cat2Id, $subSubCat1Id]]);
+    $p5 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 5', 'category_ids' => [$cat3Id, $subCat2Id]]);
 
     // check values (guest)
     $o1 = $this->createOrder(0, 123);
@@ -236,10 +236,10 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedTags->getArgs());
 
     // create products
-    $p1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']); // no tags
-    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'tag_ids' => [$tag1Id, $tag2Id]]);
-    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'tag_ids' => [$tag2Id]]);
-    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'tag_ids' => [$tag3Id]]);
+    $p1 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 1']); // no tags
+    $p2 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 2', 'tag_ids' => [$tag1Id, $tag2Id]]);
+    $p3 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 3', 'tag_ids' => [$tag2Id]]);
+    $p4 = $this->tester->createWooCommerceProduct(['name' => 'COF Product 4', 'tag_ids' => [$tag3Id]]);
 
     // check values (guest)
     $o1 = $this->createOrder(0, 123);
@@ -380,7 +380,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $tag2Id = $this->tester->createWordPressTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
 
     // check values (guest - fields are backfilled from order)
-    $product = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'tag_ids' => [$tag1Id, $tag2Id]]);
+    $product = $this->tester->createWooCommerceProduct(['name' => 'COF Product 1', 'tag_ids' => [$tag1Id, $tag2Id]]);
     $order = new WC_Order();
     $order->add_product($product);
     $order->set_status('wc-completed');
@@ -408,7 +408,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $subCat1Id = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
 
     // check values (guest - fields are backfilled from order)
-    $product = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'category_ids' => [$subCat1Id, $cat2Id]]);
+    $product = $this->tester->createWooCommerceProduct(['name' => 'COF Product 1', 'category_ids' => [$subCat1Id, $cat2Id]]);
     $order = new WC_Order();
     $order->add_product($product);
     $order->set_status('wc-completed');

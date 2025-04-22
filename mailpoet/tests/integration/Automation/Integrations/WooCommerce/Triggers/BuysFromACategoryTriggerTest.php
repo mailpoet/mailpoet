@@ -29,8 +29,8 @@ class BuysFromACategoryTriggerTest extends \MailPoetTest {
 
     $category1 = $this->createProductCategory("testItDoesRunOnlyOncePerOrder Category 1");
     $category2 = $this->createProductCategory("testItDoesRunOnlyOncePerOrder Category 2");
-    $product1 = $this->createProduct('product 1', $category1);
-    $product2 = $this->createProduct('product 2', $category2);
+    $product1 = $this->createProduct('BCT product 1', $category1);
+    $product2 = $this->createProduct('BCT product 2', $category2);
     $automation = $this->createAutomation([$category1], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -55,8 +55,8 @@ class BuysFromACategoryTriggerTest extends \MailPoetTest {
 
     $category1 = $this->createProductCategory("testItDoesRunOnAnyStatus Category 1");
     $category2 = $this->createProductCategory("testItDoesRunOnAnyStatus Category 2");
-    $product1 = $this->createProduct('product 1', $category1);
-    $product2 = $this->createProduct('product 2', $category2);
+    $product1 = $this->createProduct('BCT product 1', $category1);
+    $product2 = $this->createProduct('BCT product 2', $category2);
     $automation = $this->createAutomation([$category1], 'any');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -71,8 +71,8 @@ class BuysFromACategoryTriggerTest extends \MailPoetTest {
 
     $category1 = $this->createProductCategory("testItDoesNotRunWhenCategoriesDoNotMatch Category 1");
     $category2 = $this->createProductCategory("testItDoesNotRunWhenCategoriesDoNotMatch Category 2");
-    $product1 = $this->createProduct('product 1', $category1);
-    $product2 = $this->createProduct('product 2', $category2);
+    $product1 = $this->createProduct('BCT product 1', $category1);
+    $product2 = $this->createProduct('BCT product 2', $category2);
     $automation = $this->createAutomation([$category2], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1]);

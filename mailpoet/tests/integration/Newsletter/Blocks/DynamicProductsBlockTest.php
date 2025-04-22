@@ -94,37 +94,37 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     // Create test products using the tester
     $this->productIds = [];
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 1',
+      'name' => 'DPB Product 1',
       'date_created' => date('Y-m-d H:i:s', strtotime('-1 days')),
       'price' => '10.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 2',
+      'name' => 'DPB Product 2',
       'date_created' => date('Y-m-d H:i:s', strtotime('-2 days')),
       'price' => '20.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 3',
+      'name' => 'DPB Product 3',
       'date_created' => date('Y-m-d H:i:s', strtotime('-3 day')),
       'price' => '30.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 4',
+      'name' => 'DPB Product 4',
       'date_created' => date('Y-m-d H:i:s', strtotime('-4 days')),
       'price' => '40.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 5',
+      'name' => 'DPB Product 5',
       'date_created' => date('Y-m-d H:i:s', strtotime('-5 days')),
       'price' => '50.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 6',
+      'name' => 'DPB Product 6',
       'date_created' => date('Y-m-d H:i:s', strtotime('-6 days')),
       'price' => '60.00',
     ])->get_id();
@@ -134,53 +134,53 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringContainsString('DPB Product 1');
+    verify($encodedResult)->stringContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
   }
 
   public function testItRendersProductOnlyOncePerEmail() {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringContainsString('DPB Product 1');
+    verify($encodedResult)->stringContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
     $result = $this->block->render($automation, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringNotContainsString('DPB Product 1');
+    verify($encodedResult)->stringNotContainsString('DPB Product 2');
+    verify($encodedResult)->stringContainsString('DPB Product 3');
+    verify($encodedResult)->stringContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
   }
 
   public function testItCanRenderSameProductsForDifferentAutomations() {
     $automation1 = $this->createNewsletter('Automation 1', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation1, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringContainsString('DPB Product 1');
+    verify($encodedResult)->stringContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
     $automation2 = $this->createNewsletter('Automation 2', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation2, $this->dpBlock);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringContainsString('DPB Product 1');
+    verify($encodedResult)->stringContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
   }
 
   public function testItRendersOrderProducts() {
@@ -195,12 +195,12 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'order']);
     $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('PRODUCT 1');
-    verify($encodedResult)->stringContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringContainsString('DPB Product 1');
+    verify($encodedResult)->stringContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
   }
 
   public function testItRendersOrderCrossSellProducts() {
@@ -215,12 +215,12 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'cross-sell']);
     $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringContainsString('PRODUCT 3');
-    verify($encodedResult)->stringContainsString('PRODUCT 4');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 5');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 6');
+    verify($encodedResult)->stringNotContainsString('DPB Product 1');
+    verify($encodedResult)->stringNotContainsString('DPB Product 2');
+    verify($encodedResult)->stringContainsString('DPB Product 3');
+    verify($encodedResult)->stringContainsString('DPB Product 4');
+    verify($encodedResult)->stringNotContainsString('DPB Product 5');
+    verify($encodedResult)->stringNotContainsString('DPB Product 6');
   }
 
   public function testItRendersAbandonedCartProducts() {
@@ -235,12 +235,12 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     $block = array_merge($this->dpBlock, ['dynamicProductsType' => 'cart']);
     $result = $this->block->render($automation, $block, false, $sendingQueue);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('PRODUCT 1');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 2');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 3');
-    verify($encodedResult)->stringNotContainsString('PRODUCT 4');
-    verify($encodedResult)->stringContainsString('PRODUCT 5');
-    verify($encodedResult)->stringContainsString('PRODUCT 6');
+    verify($encodedResult)->stringNotContainsString('DPB Product 1');
+    verify($encodedResult)->stringNotContainsString('DPB Product 2');
+    verify($encodedResult)->stringNotContainsString('DPB Product 3');
+    verify($encodedResult)->stringNotContainsString('DPB Product 4');
+    verify($encodedResult)->stringContainsString('DPB Product 5');
+    verify($encodedResult)->stringContainsString('DPB Product 6');
   }
 
   private function createNewsletter($subject, $type, $parent = null) {

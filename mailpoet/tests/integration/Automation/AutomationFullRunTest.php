@@ -86,8 +86,8 @@ class AutomationFullRunTest extends \MailPoetTest {
     $noSubscriber = (new Subscriber())->withWpUserId($noCustomer->ID)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
 
     // reviews
-    $product1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']);
-    $product2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2']);
+    $product1 = $this->tester->createWooCommerceProduct(['name' => 'AFR Product 1']);
+    $product2 = $this->tester->createWooCommerceProduct(['name' => 'AFR Product 2']);
     $this->tester->createWooProductReview($yesCustomer->ID, '', $product1->get_id(), 5, Carbon::now());
     $this->tester->createWooProductReview($noCustomer->ID, '', $product2->get_id(), 1, Carbon::now()->subMonth());
 

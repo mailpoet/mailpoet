@@ -27,9 +27,9 @@ class CartFieldsTest extends \MailPoetTest {
     $this->assertSame(0.0, $cartTotalField->getValue($payload));
 
     // check values (with products)
-    $product1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'price' => '123.45']);
-    $product2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'price' => '100.00']);
-    $product3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3']);
+    $product1 = $this->tester->createWooCommerceProduct(['name' => 'CF Product 1', 'price' => '123.45']);
+    $product2 = $this->tester->createWooCommerceProduct(['name' => 'CF Product 2', 'price' => '100.00']);
+    $product3 = $this->tester->createWooCommerceProduct(['name' => 'CF Product 3']);
 
     $payload = new AbandonedCartPayload($customer, new DateTimeImmutable(), [$product1->get_id(), $product2->get_id(), $product3->get_id()]);
     $this->assertSame(223.45, $cartTotalField->getValue($payload));

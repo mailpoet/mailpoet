@@ -82,10 +82,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     }
 
     $this->productIds = [];
-    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'date_created' => '2020-05-01 01:01:01'])->get_id();
-    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'date_created' => '2020-06-01 01:01:01'])->get_id();
-    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'date_created' => '2020-07-01 01:01:01'])->get_id();
-    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'date_created' => '2020-08-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'ACC Product 1', 'date_created' => '2020-05-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'ACC Product 2', 'date_created' => '2020-06-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'ACC Product 3', 'date_created' => '2020-07-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'ACC Product 4', 'date_created' => '2020-08-01 01:01:01'])->get_id();
   }
 
   public function testItDoesNotRenderIfNewsletterTypeIsNotAutomatic() {
@@ -114,10 +114,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->accBlock['pricePosition'] = 'hidden';
     $result = $this->block->render($newsletter, $this->accBlock, true);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringContainsString('Product 4');
-    verify($encodedResult)->stringContainsString('Product 3');
-    verify($encodedResult)->stringNotContainsString('Product 2');
-    verify($encodedResult)->stringNotContainsString('Product 1');
+    verify($encodedResult)->stringContainsString('ACC Product 4');
+    verify($encodedResult)->stringContainsString('ACC Product 3');
+    verify($encodedResult)->stringNotContainsString('ACC Product 2');
+    verify($encodedResult)->stringNotContainsString('ACC Product 1');
   }
 
   public function testItDoesNotRenderIfNoSendingTaskIsSupplied() {
@@ -151,10 +151,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $queue = $sendingTask->getSendingQueue();
     $result = $this->block->render($newsletter, $this->accBlock, false, $queue);
     $encodedResult = json_encode($result);
-    verify($encodedResult)->stringNotContainsString('Product 4');
-    verify($encodedResult)->stringContainsString('Product 3');
-    verify($encodedResult)->stringContainsString('Product 2');
-    verify($encodedResult)->stringContainsString('Product 1');
+    verify($encodedResult)->stringNotContainsString('ACC Product 4');
+    verify($encodedResult)->stringContainsString('ACC Product 3');
+    verify($encodedResult)->stringContainsString('ACC Product 2');
+    verify($encodedResult)->stringContainsString('ACC Product 1');
   }
 
   private function createNewsletter($subject, $type, $parent = null) {

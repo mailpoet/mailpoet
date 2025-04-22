@@ -441,9 +441,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testProductsField(): void {
     // products
-    $product1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']);
-    $product2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2']);
-    $product3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3']);
+    $product1 = $this->tester->createWooCommerceProduct(['name' => 'OF Product 1']);
+    $product2 = $this->tester->createWooCommerceProduct(['name' => 'OF Product 2']);
+    $product3 = $this->tester->createWooCommerceProduct(['name' => 'OF Product 3']);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -452,9 +452,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('enum_array', $purchasedProducts->getType());
     $this->assertSame([
       'options' => [
-        ['id' => $product1->get_id(), 'name' => "Product 1 (#{$product1->get_id()})"],
-        ['id' => $product2->get_id(), 'name' => "Product 2 (#{$product2->get_id()})"],
-        ['id' => $product3->get_id(), 'name' => "Product 3 (#{$product3->get_id()})"],
+        ['id' => $product1->get_id(), 'name' => "OF Product 1 (#{$product1->get_id()})"],
+        ['id' => $product2->get_id(), 'name' => "OF Product 2 (#{$product2->get_id()})"],
+        ['id' => $product3->get_id(), 'name' => "OF Product 3 (#{$product3->get_id()})"],
       ],
     ], $purchasedProducts->getArgs());
 
@@ -475,11 +475,11 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testProductsFieldWithVariableProduct(): void {
     $product1 = new \WC_Product_Variable();
-    $product1->set_name('Product 1');
+    $product1->set_name('OF Product 1');
     $product1->save();
     $variableProduct = new \WC_Product_Variation();
     $variableProduct->set_parent_id($product1->get_id());
-    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->set_name('OF Product 1 Variation 1');
     $variableProduct->save();
 
     $order = $this->tester->createWooCommerceOrder();
@@ -497,12 +497,12 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
   public function testProductCategoriesFieldWithVariableProduct(): void {
     $catId = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
     $product1 = new \WC_Product_Variable();
-    $product1->set_name('Product 1');
+    $product1->set_name('OF Product 1');
     $product1->set_category_ids([$catId]);
     $product1->save();
     $variableProduct = new \WC_Product_Variation();
     $variableProduct->set_parent_id($product1->get_id());
-    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->set_name('OF Product 1 Variation 1');
     $variableProduct->save();
 
     $order = $this->tester->createWooCommerceOrder();
@@ -519,12 +519,12 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
   public function testProductTagssFieldWithVariableProduct(): void {
     $tagId = $this->tester->createWordPressTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
     $product1 = new \WC_Product_Variable();
-    $product1->set_name('Product 1');
+    $product1->set_name('OF Product 1');
     $product1->set_tag_ids([$tagId]);
     $product1->save();
     $variableProduct = new \WC_Product_Variation();
     $variableProduct->set_parent_id($product1->get_id());
-    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->set_name('OF Product 1 Variation 1');
     $variableProduct->save();
 
     $order = $this->tester->createWooCommerceOrder();

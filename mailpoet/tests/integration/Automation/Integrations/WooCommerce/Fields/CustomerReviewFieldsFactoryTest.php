@@ -24,9 +24,9 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     ], $reviewCountField->getArgs());
 
     // create products
-    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
-    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'Product 2'])->get_id();
-    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'Product 3'])->get_id();
+    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 1'])->get_id();
+    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 2'])->get_id();
+    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 3'])->get_id();
 
     // check values (guest)
     $this->createProductReview(0, '', $product1Id);
@@ -49,9 +49,9 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     $reviewCountField = $this->getFieldsMap()['woocommerce:customer:review-count'];
 
     // create products
-    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
-    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'Product 2'])->get_id();
-    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'Product 3'])->get_id();
+    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 1'])->get_id();
+    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 2'])->get_id();
+    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 3'])->get_id();
 
     $getDate = function (string $date): string {
       return (new DateTimeImmutable($date))->format('Y-m-d H:i:s');
@@ -82,7 +82,7 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('datetime', $lastReviewDateField->getType());
     $this->assertSame([], $lastReviewDateField->getArgs());
 
-    $productId = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
+    $productId = $this->tester->createWooCommerceProduct(['name' => 'CRF Product 1'])->get_id();
 
     // check values (guest)
     $this->createProductReview(0, '', $productId, '2023-05-04 12:08:29');

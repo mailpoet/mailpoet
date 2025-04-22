@@ -29,8 +29,8 @@ class BuysFromATagTriggerTest extends \MailPoetTest {
 
     $tag1 = $this->createProductTag("testItDoesRunOnlyOncePerOrder Tag 1");
     $tag2 = $this->createProductTag("testItDoesRunOnlyOncePerOrder Tag 2");
-    $product1 = $this->createProduct('product 1', $tag1);
-    $product2 = $this->createProduct('product 2', $tag2);
+    $product1 = $this->createProduct('BTT product 1', $tag1);
+    $product2 = $this->createProduct('BTT product 2', $tag2);
     $automation = $this->createAutomation([$tag1], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -55,8 +55,8 @@ class BuysFromATagTriggerTest extends \MailPoetTest {
 
     $tag1 = $this->createProductTag("testItDoesRunOnAnyStatus Tag 1");
     $tag2 = $this->createProductTag("testItDoesRunOnAnyStatus Tag 2");
-    $product1 = $this->createProduct('product 1', $tag1);
-    $product2 = $this->createProduct('product 2', $tag2);
+    $product1 = $this->createProduct('BTT product 1', $tag1);
+    $product2 = $this->createProduct('BTT product 2', $tag2);
     $automation = $this->createAutomation([$tag1], 'any');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -71,7 +71,7 @@ class BuysFromATagTriggerTest extends \MailPoetTest {
 
     $tag1 = $this->createProductTag("testItDoesNotRunWhenCategoriesDoNotMatch Tag 1");
     $tag2 = $this->createProductTag("testItDoesNotRunWhenCategoriesDoNotMatch Tag 2");
-    $product1 = $this->createProduct('product 1', $tag1);
+    $product1 = $this->createProduct('BTT product 1', $tag1);
     $automation = $this->createAutomation([$tag2], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1]);

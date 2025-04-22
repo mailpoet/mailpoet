@@ -27,8 +27,8 @@ class BuysAProductTriggerTest extends \MailPoetTest {
 
   public function testItDoesRunOnlyOncePerOrder() {
 
-    $product1 = $this->createProduct('product 1');
-    $product2 = $this->createProduct('product 2');
+    $product1 = $this->createProduct('BPT product 1');
+    $product2 = $this->createProduct('BPT product 2');
     $automation = $this->createAutomation([$product1], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -51,8 +51,8 @@ class BuysAProductTriggerTest extends \MailPoetTest {
 
   public function testItDoesRunOnAnyStatus() {
 
-    $product1 = $this->createProduct('product 1');
-    $product2 = $this->createProduct('product 2');
+    $product1 = $this->createProduct('BPT product 1');
+    $product2 = $this->createProduct('BPT product 2');
     $automation = $this->createAutomation([$product1], 'any');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1, $product2]);
@@ -65,8 +65,8 @@ class BuysAProductTriggerTest extends \MailPoetTest {
 
   public function testItDoesNotRunWhenProductsDoNotMatch() {
 
-    $product1 = $this->createProduct('product 1');
-    $product2 = $this->createProduct('product 2');
+    $product1 = $this->createProduct('BPT product 1');
+    $product2 = $this->createProduct('BPT product 2');
     $automation = $this->createAutomation([$product2], 'completed');
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $order = $this->createOrder([$product1]);

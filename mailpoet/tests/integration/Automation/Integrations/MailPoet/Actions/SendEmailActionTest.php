@@ -107,12 +107,12 @@ class SendEmailActionTest extends \MailPoetTest {
     // Create test products
     $this->productIds = [];
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 1',
+      'name' => 'SEA Product 1',
       'price' => '10.00',
     ])->get_id();
 
     $this->productIds[] = $this->tester->createWooCommerceProduct([
-      'name' => 'PRODUCT 2',
+      'name' => 'SEA Product 2',
       'price' => '10.00',
     ])->get_id();
   }
