@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 import { extractEmailDomain } from 'common/functions';
@@ -47,7 +48,7 @@ const resumeMailerSending = () => {
     action: 'resumeSending',
   })
     .done(() => {
-      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
     })
     .fail((response: ErrorResponse) => {
       if (response.errors.length > 0) {
