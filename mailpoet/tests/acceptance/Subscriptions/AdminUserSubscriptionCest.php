@@ -104,7 +104,11 @@ class AdminUserSubscriptionCest {
 
     // Verify the Unconfirmed option is not available when confirmation is disabled
     $i->amOnAdminPage('user-new.php');
-    $i->waitForText('Add New User');
+    try {
+      $i->waitForText('Add User'); // WP 6.8+
+    } catch (\Exception $e) {
+      $i->waitForText('Add New User'); // WP 6.7 and below;
+    }
     $i->waitForText('MailPoet Subscriber Status');
     $i->dontSee('Unconfirmed (will receive a confirmation email)');
   }
@@ -219,7 +223,11 @@ class AdminUserSubscriptionCest {
    */
   private function createUserWithStatus(\AcceptanceTester $i, $username, $email, $status = null) {
     $i->amOnAdminPage('user-new.php');
-    $i->waitForText('Add New User');
+    try {
+      $i->waitForText('Add User'); // WP 6.8+
+    } catch (\Exception $e) {
+      $i->waitForText('Add New User'); // WP 6.7 and below;
+    }
     $i->fillField('#user_login', $username);
     $i->fillField('#email', $email);
 
