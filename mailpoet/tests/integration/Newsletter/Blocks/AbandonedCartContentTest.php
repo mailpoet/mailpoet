@@ -79,10 +79,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     }
 
     $this->productIds = [];
-    $this->productIds[] = $this->createPost('Product 1', '2020-05-01 01:01:01', 'product');
-    $this->productIds[] = $this->createPost('Product 2', '2020-06-01 01:01:01', 'product');
-    $this->productIds[] = $this->createPost('Product 3', '2020-07-01 01:01:01', 'product');
-    $this->productIds[] = $this->createPost('Product 4', '2020-08-01 01:01:01', 'product');
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'date_created' => '2020-05-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'date_created' => '2020-06-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'date_created' => '2020-07-01 01:01:01'])->get_id();
+    $this->productIds[] = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'date_created' => '2020-08-01 01:01:01'])->get_id();
   }
 
   public function testItDoesNotRenderIfNewsletterTypeIsNotAutomatic() {

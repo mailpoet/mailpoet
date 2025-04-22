@@ -117,7 +117,11 @@ class DynamicProductsAPITest extends \MailPoetTest {
     }
 
     foreach ($this->createdUsers as $user) {
-      wp_delete_user($user->ID);
+      if (is_multisite()) {
+        wpmu_delete_user($user->ID);
+      } else {
+        wp_delete_user($user->ID);
+      }
     }
   }
 
@@ -127,7 +131,11 @@ class DynamicProductsAPITest extends \MailPoetTest {
     $existingUser = $this->wp->getUserBy("email", $email);
 
     if ($existingUser) {
-      wp_delete_user($existingUser->ID);
+      if (is_multisite()) {
+        wpmu_delete_user($existingUser->ID);
+      } else {
+        wp_delete_user($existingUser->ID);
+      }
     }
 
     wp_insert_user([

@@ -28,16 +28,11 @@ class DynamicProductsTest extends \MailPoetTest {
 
   public function testItGetTerms() {
     // Create a product category
-    $termId = wp_insert_term('Test Product Category', 'product_cat');
-    $this->assertIsArray($termId);
-
+    $this->tester->createWordPressTerm('Test Product Category', 'product_cat');
     $response = $this->endpoint->getTerms(['taxonomies' => ['product_cat']]);
 
     $this->assertInstanceOf(SuccessResponse::class, $response);
     $this->assertNotEmpty($response->data);
-
-    // Clean up
-    wp_delete_term($termId['term_id'], 'product_cat');
   }
 
   public function testItGetsTransformedProducts() {

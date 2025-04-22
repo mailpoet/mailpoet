@@ -135,17 +135,6 @@ class DynamicProductsBlockTest extends \MailPoetTest {
     ])->get_id();
   }
 
-  public function _after() {
-    parent::_after();
-
-    // Clean up any remaining products manually created outside the tester
-    foreach ($this->productIds as $productId) {
-      $this->wp->wpDeletePost($productId);
-    }
-
-    $this->productIds = [];
-  }
-
   public function testItRendersLatestProductsInDP() {
     $automation = $this->createNewsletter('Automation', NewsletterEntity::TYPE_AUTOMATION);
     $result = $this->block->render($automation, $this->dpBlock);
