@@ -13,6 +13,9 @@ use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group woo
+ */
 class AbandonedCartContentTest extends \MailPoetTest {
   /** @var AbandonedCartContent */
   private $block;
