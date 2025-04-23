@@ -27,7 +27,7 @@ export function SubscribersHeading() {
           }
         >
           <span data-automation-id="add-new-subscribers-button">
-            {__('Add New Subscriber', 'mailpoet')}
+            {__('Add new subscriber', 'mailpoet')}
           </span>
         </Link>
         <a

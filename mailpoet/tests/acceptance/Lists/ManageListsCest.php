@@ -30,9 +30,9 @@ class ManageListsCest {
 
     $i->login();
     $i->amOnMailpoetPage('Lists');
-    $i->click('Add New List');
+    $i->click('Add new list');
     $i->click('[aria-label="Navigate to the lists page"]');
-    $i->click('Add New List');
+    $i->click('Add new list');
     $i->fillField('Public list name', $newListTitle);
     $i->fillField('Description', $newListDesc);
     $i->click('Save');

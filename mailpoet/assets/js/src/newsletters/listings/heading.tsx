@@ -20,7 +20,7 @@ export function ListingHeading(): JSX.Element {
           }}
           data-automation-id="new_email"
         >
-          {__('Add New Email', 'mailpoet')}
+          {__('Add new email', 'mailpoet')}
         </Link>
       </PageHeader>
     </>

@@ -354,8 +354,8 @@ function SubscriberForm() {
       <PageHeader
         heading={
           params.id
-            ? __('Edit Subscriber', 'mailpoet')
-            : __('Add New Subscriber', 'mailpoet')
+            ? __('Edit subscriber', 'mailpoet')
+            : __('Add new subscriber', 'mailpoet')
         }
         headingPrefix={
           <BackButton

@@ -83,7 +83,7 @@ export function FromScratchButton({
           }}
           type="button"
         >
-          {__('Or, Create Custom Automation', 'mailpoet')}
+          {__('Or, create custom automation', 'mailpoet')}
         </button>
       ) : (
         <Button

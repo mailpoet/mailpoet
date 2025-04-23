@@ -18,7 +18,7 @@ function ListHeading(): JSX.Element {
           to="/new"
           data-automation-id="new-list"
         >
-          {__('Add New List', 'mailpoet')}
+          {__('Add new list', 'mailpoet')}
         </Link>
       </PageHeader>
 

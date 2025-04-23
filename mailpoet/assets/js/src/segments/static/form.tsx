@@ -52,8 +52,8 @@ function SegmentForm() {
       <PageHeader
         heading={
           params.id
-            ? __('Edit List', 'mailpoet')
-            : __('Add New List', 'mailpoet')
+            ? __('Edit list', 'mailpoet')
+            : __('Add new list', 'mailpoet')
         }
         headingPrefix={
           <BackButton

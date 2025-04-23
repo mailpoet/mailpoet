@@ -74,7 +74,7 @@ export function SegmentTemplates(): JSX.Element {
           onClick={() => void trackNewCustomSegment()}
           className="page-title-action"
         >
-          {__('Or, Create Custom Segment', 'mailpoet')}
+          {__('Or, create custom segment', 'mailpoet')}
         </a>
       </PageHeader>
 

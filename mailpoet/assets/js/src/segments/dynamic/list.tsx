@@ -21,7 +21,7 @@ export function DynamicSegmentList(): JSX.Element {
           data-automation-id="new-segment"
           className="page-title-action"
         >
-          {__('Add New Segment', 'mailpoet')}
+          {__('Add new segment', 'mailpoet')}
         </a>
       </PageHeader>
 

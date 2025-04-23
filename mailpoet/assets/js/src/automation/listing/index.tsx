@@ -27,7 +27,7 @@ export function AutomationListingHeader(): JSX.Element {
   return (
     <PageHeader heading={__('Automations', 'mailpoet')}>
       <a href={MailPoet.urls.automationTemplates} className="page-title-action">
-        {__('Add New Automation', 'mailpoet')}
+        {__('Add new automation', 'mailpoet')}
       </a>
     </PageHeader>
   );

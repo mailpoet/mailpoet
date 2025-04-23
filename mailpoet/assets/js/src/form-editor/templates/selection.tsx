@@ -120,7 +120,7 @@ export function Selection(): JSX.Element {
               }}
               type="button"
             >
-              {__('Or, Create Custom Form', 'mailpoet')}
+              {__('Or, create custom form', 'mailpoet')}
             </button>
           </PageHeader>
           <Categories

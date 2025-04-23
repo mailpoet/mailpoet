@@ -30,7 +30,7 @@ function FormsHeading(): JSX.Element {
           }`}
           type="button"
         >
-          {__('Add New Form', 'mailpoet')}
+          {__('Add new form', 'mailpoet')}
         </button>
       </PageHeader>
     </>

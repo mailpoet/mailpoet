@@ -40,8 +40,8 @@ export function Editor(): JSX.Element {
       <PageHeader
         heading={
           matchParams.id
-            ? __('Edit Segment', 'mailpoet')
-            : __('Add New Segment', 'mailpoet')
+            ? __('Edit segment', 'mailpoet')
+            : __('Add new segment', 'mailpoet')
         }
         headingPrefix={
           <BackButton
