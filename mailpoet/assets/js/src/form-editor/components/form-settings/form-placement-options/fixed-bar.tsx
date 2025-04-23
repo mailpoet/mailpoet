@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { FormPlacementOption } from './form-placement-option';
 import { FixedBarIcon } from './icons/fixed-bar-icon';
@@ -15,7 +15,7 @@ export function FixedBar(): JSX.Element {
   return (
     <FormPlacementOption
       active={formSettings.formPlacement.fixedBar.enabled}
-      label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
+      label={__('Fixed bar', 'mailpoet')}
       icon={FixedBarIcon}
       onClick={(): void => {
         void showPlacementSettings('fixed_bar');

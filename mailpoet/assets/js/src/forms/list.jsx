@@ -2,13 +2,13 @@ import classnames from 'classnames';
 import { Component } from 'react';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 import { escapeHTML } from '@wordpress/escape-html';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { Button } from 'common';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
-import { plusIcon } from 'common/button/icon/plus';
 import { SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 import { withNpsPoll } from 'nps-poll.jsx';
@@ -17,24 +17,24 @@ import { FormsHeading, onAddNewForm } from './heading';
 const columns = [
   {
     name: 'name',
-    label: MailPoet.I18n.t('formName'),
+    label: __('Name', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('segments'),
+    label: __('Lists', 'mailpoet'),
   },
   {
     name: 'type',
-    label: MailPoet.I18n.t('type'),
+    label: __('Type', 'mailpoet'),
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status'),
+    label: __('Status', 'mailpoet'),
   },
   {
     name: 'updated_at',
-    label: MailPoet.I18n.t('updatedAt'),
+    label: __('Modified date', 'mailpoet'),
     sortable: true,
   },
 ];
@@ -45,11 +45,11 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneFormTrashed');
+      message = __('1 form was moved to the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleFormsTrashed').replace(
+      message = __('%1$d forms were moved to the trash.', 'mailpoet').replace(
         '%1$d',
-        count.toLocaleString(),
+        count,
       );
     }
     MailPoet.Notice.success(message);
@@ -59,11 +59,11 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneFormDeleted');
+      message = __('1 form was permanently deleted.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleFormsDeleted').replace(
+      message = __('%1$d forms were permanently deleted.', 'mailpoet').replace(
         '%1$d',
-        count.toLocaleString(),
+        count,
       );
     }
     MailPoet.Notice.success(message);
@@ -73,24 +73,20 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneFormRestored');
+      message = __('1 form has been restored from the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleFormsRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d forms have been restored from the trash.',
+        'mailpoet',
+      ).replace('%1$d', count);
     }
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: () => (
     <div className="mailpoet-forms-add-new-row">
-      <p>{MailPoet.I18n.t('noItemsFound')}</p>
-      <Button
-        onClick={onAddNewForm}
-        automationId="add_new_form"
-        iconStart={plusIcon}
-      >
-        {MailPoet.I18n.t('new')}
+      <p>{__('No forms were found. Why not create a new one?', 'mailpoet')}</p>
+      <Button onClick={onAddNewForm} automationId="add_new_form">
+        {__('Add new form', 'mailpoet')}
       </Button>
     </div>
   ),
@@ -99,7 +95,7 @@ const messages = {
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -108,33 +104,38 @@ function getFormPlacement(settings) {
   const placements = [];
   /* eslint-disable camelcase */
   if (settings?.form_placement?.fixed_bar?.enabled === '1') {
-    placements.push(MailPoet.I18n.t('placeFixedBarFormOnPages'));
+    // translators: This is a text on a widget that leads to settings for form placement - form type is fixed bar
+    placements.push(__('Fixed bar', 'mailpoet'));
   }
   if (settings?.form_placement?.below_posts?.enabled === '1') {
-    placements.push(MailPoet.I18n.t('placeFormBellowPages'));
+    // translators: This is a text on a widget that leads to settings for form placement
+    placements.push(__('Below pages', 'mailpoet'));
   }
   if (settings?.form_placement?.popup?.enabled === '1') {
-    placements.push(MailPoet.I18n.t('placePopupFormOnPages'));
+    // translators: This is a text on a widget that leads to settings for form placement - form type is pop-up, it will be displayed on page in a small modal window
+    placements.push(__('Pop-up', 'mailpoet'));
   }
   if (settings?.form_placement?.slide_in?.enabled === '1') {
-    placements.push(MailPoet.I18n.t('placeSlideInFormOnPages'));
+    // translators: This is a text on a widget that leads to settings for form placement - form type is slide in
+    placements.push(__('Slide–in', 'mailpoet'));
   }
   if (placements.length > 0) {
     return placements.join(', ');
   }
   /* eslint-enable camelcase */
-  return MailPoet.I18n.t('placeFormOthers');
+  // translators: Placement of the form using theme widget
+  return __('Others (widget)', 'mailpoet');
 }
 
 const itemActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('edit'),
+    label: __('Edit', 'mailpoet'),
     link: function link(item) {
       return (
         <a href={`admin.php?page=mailpoet-form-editor&id=${item.id}`}>
-          {MailPoet.I18n.t('edit')}
+          {__('Edit', 'mailpoet')}
         </a>
       );
     },
@@ -142,7 +143,7 @@ const itemActions = [
   {
     name: 'duplicate',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('duplicate'),
+    label: __('Duplicate', 'mailpoet'),
     onClick: function onClick(item, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -155,9 +156,10 @@ const itemActions = [
         .done((response) => {
           const formName = response.data.name
             ? response.data.name
-            : MailPoet.I18n.t('noName');
+            : // translators: Fallback for forms without a name in a form list
+              __('no name', 'mailpoet');
           MailPoet.Notice.success(
-            MailPoet.I18n.t('formDuplicated').replace(
+            __('Form "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
               escapeHTML(formName),
             ),
@@ -194,7 +196,9 @@ class FormListComponent extends Component {
     })
       .done((response) => {
         if (response.data.status === 'enabled') {
-          MailPoet.Notice.success(MailPoet.I18n.t('formActivated'));
+          MailPoet.Notice.success(
+            __('Your Form is now activated!', 'mailpoet'),
+          );
         }
       })
       .fail((response) => {
@@ -217,7 +221,7 @@ class FormListComponent extends Component {
           defaultChecked={form.status === 'enabled'}
         />
         <p>
-          {MailPoet.I18n.t('signups')}
+          {__('Sign-ups', 'mailpoet')}
           {': '}
           {form.signups.toLocaleString()}
         </p>
@@ -228,7 +232,10 @@ class FormListComponent extends Component {
   renderItem = (form, actions) => {
     if (form.settings === null) {
       MailPoet.Notice.error(
-        MailPoet.I18n.t('formSettingsCorrupted')
+        __(
+          'Form settings of "%1$s" form are corrupted. Please [link]reconfigure the form in the editor[/link].',
+          'mailpoet',
+        )
           .replace('%1$s', escapeHTML(form.name))
           .replace(
             '[link]',
@@ -259,28 +266,28 @@ class FormListComponent extends Component {
             className="mailpoet-listing-title"
             href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
           >
-            {form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
+            {form.name ? form.name : `(${__('no name', 'mailpoet')})`}
           </a>
           {actions}
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('segments')}>
+        <td className="column" data-colname={__('Lists', 'mailpoet')}>
           <SegmentTags segments={segments} dimension="large">
             {form.settings?.segments_selected_by === 'user' && (
               <span className="mailpoet-tags-prefix">
-                {MailPoet.I18n.t('userChoice')}
+                {__('User choice:', 'mailpoet')}
               </span>
             )}
           </SegmentTags>
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('type')}>
+        <td className="column" data-colname={__('Type', 'mailpoet')}>
           {placement}
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <td className="column" data-colname={__('Status', 'mailpoet')}>
           {this.renderStatus(form)}
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('updatedAt')}
+          data-colname={__('Modified date', 'mailpoet')}
         >
           {MailPoet.Date.short(form.updated_at)}
           <br />

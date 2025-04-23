@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { SelectControl, Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { Modal } from 'common/modal/modal';
 import { Preview } from 'common/preview/preview.jsx';
@@ -120,22 +121,22 @@ function FormPreview(): JSX.Element {
               className="mailpoet_preview_form_type_selection"
               data-automation-id="form_type_selection"
               options={[
-                { value: 'others', label: MailPoet.I18n.t('placeFormOthers') },
+                { value: 'others', label: __('Others (widget)', 'mailpoet') },
                 {
                   value: 'below_posts',
-                  label: MailPoet.I18n.t('placeFormBellowPages'),
+                  label: __('Below pages', 'mailpoet'),
                 },
                 {
                   value: 'fixed_bar',
-                  label: MailPoet.I18n.t('placeFixedBarFormOnPages'),
+                  label: __('Fixed bar', 'mailpoet'),
                 },
                 {
                   value: 'popup',
-                  label: MailPoet.I18n.t('placePopupFormOnPages'),
+                  label: __('Pop-up', 'mailpoet'),
                 },
                 {
                   value: 'slide_in',
-                  label: MailPoet.I18n.t('placeSlideInFormOnPages'),
+                  label: __('Slide–in', 'mailpoet'),
                 },
               ]}
             />

@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import jQuery from 'jquery';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 
 import { Button, SegmentTags, SubscriberTags } from 'common';
 import { Listing } from 'listing/listing.jsx';
@@ -162,7 +163,7 @@ const createModal = (submitModal, closeModal, field, title) => (
     <Selection field={field} />
     <span className="mailpoet-gap-half" />
     <Button onClick={submitModal} dimension="small" variant="secondary">
-      {MailPoet.I18n.t('apply')}
+      {__('Apply', 'mailpoet')}
     </Button>
   </Modal>
 );
@@ -311,7 +312,7 @@ const bulkActions = [
             variant="secondary"
             automationId="bulk-unsubscribe-confirm"
           >
-            {MailPoet.I18n.t('apply')}
+            {__('Apply', 'mailpoet')}
           </Button>
         </Modal>
       );

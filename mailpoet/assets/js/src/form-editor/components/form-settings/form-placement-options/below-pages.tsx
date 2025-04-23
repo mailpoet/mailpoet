@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { BelowPageIcon } from './icons/below-pages-icon';
 import { FormPlacementOption } from './form-placement-option';
@@ -16,7 +16,7 @@ export function BelowPages(): JSX.Element {
   return (
     <FormPlacementOption
       active={formSettings.formPlacement.belowPosts.enabled}
-      label={MailPoet.I18n.t('placeFormBellowPages')}
+      label={__('Below pages', 'mailpoet')}
       icon={BelowPageIcon}
       onClick={(): void => {
         void showPlacementSettings('below_posts');

@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { FormPlacementOption } from './form-placement-option';
 import { PopupIcon } from './icons/popup-icon';
@@ -15,7 +15,7 @@ export function Popup(): JSX.Element {
   return (
     <FormPlacementOption
       active={formSettings.formPlacement.popup.enabled}
-      label={MailPoet.I18n.t('placePopupFormOnPages')}
+      label={__('Pop-up', 'mailpoet')}
       icon={PopupIcon}
       onClick={(): void => {
         void showPlacementSettings('popup');
