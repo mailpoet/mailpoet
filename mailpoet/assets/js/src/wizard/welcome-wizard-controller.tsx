@@ -19,7 +19,6 @@ import { Steps } from '../common/steps/steps';
 import { StepsContent } from '../common/steps/steps-content';
 import { TopBar } from '../common/top-bar/top-bar';
 import { ErrorBoundary } from '../common';
-import { HideScreenOptions } from '../common/hide-screen-options/hide-screen-options';
 import { finishWizard } from './finish-wizard';
 import { updateSettings } from './update-settings';
 import { navigateToPath } from './navigate-to-path';
@@ -113,8 +112,7 @@ function WelcomeWizardStepsController(): JSX.Element {
 
   return (
     <>
-      <HideScreenOptions />
-      <TopBar logoWithLink={false}>
+      <TopBar hideScreenOptions logoWithLink={false}>
         <Steps
           count={stepsCount}
           current={step}

@@ -3,11 +3,13 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PageHeader } from 'common/page-header';
 import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 
 export function ListingHeading(): JSX.Element {
   return (
     <>
       <CompensateScreenOptions />
+      <TopBarWithBoundary />
       <PageHeader heading={__('Emails', 'mailpoet')}>
         <Link
           id="mailpoet-new-email"

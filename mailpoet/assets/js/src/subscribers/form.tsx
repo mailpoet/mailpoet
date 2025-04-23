@@ -3,9 +3,9 @@ import moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
 import { __ } from '@wordpress/i18n';
 import { Form } from 'form/form.jsx';
-import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
+import { TopBarWithBoundary } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
 
 interface CustomField {
@@ -349,7 +349,7 @@ function SubscriberForm() {
   const backUrl = (location.state?.backUrl as string) || '/';
   return (
     <div className="mailpoet-main-container">
-      <HideScreenOptions />
+      <TopBarWithBoundary hideScreenOptions />
 
       <PageHeader
         heading={

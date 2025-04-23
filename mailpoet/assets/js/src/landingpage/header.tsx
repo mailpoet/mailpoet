@@ -1,13 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { Heading } from 'common/typography/heading/heading';
-import { MailPoetLogo } from 'common/top-bar/mailpoet-logo';
 import { WelcomeWizardButton } from './welcome-wizard-button';
 
 function Header() {
   return (
     <section className="landing-header">
       <div className="mailpoet-content-center">
-        <MailPoetLogo />
         <Heading level={0}>
           {__('Better email — without leaving WordPress', 'mailpoet')}
         </Heading>

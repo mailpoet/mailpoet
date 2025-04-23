@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { Link, useLocation, To } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { PageHeader } from 'common/page-header';
 import { SubscribersInPlan } from 'common/subscribers-in-plan';
 import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
@@ -12,6 +13,7 @@ export function SubscribersHeading() {
   return (
     <>
       <CompensateScreenOptions />
+      <TopBarWithBoundary />
       <PageHeader heading={__('Subscribers', 'mailpoet')}>
         <Link
           className="page-title-action"

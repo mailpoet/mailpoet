@@ -34,6 +34,7 @@ import { MssAccessNotices } from 'notices/mss-access-notices';
 import { CampaignStatsPage } from './campaign-stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
+import { TopBarWithBoundary } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
 
 interface RouteConfig {
@@ -102,6 +103,7 @@ const Tabs = withNpsPoll(() => {
 function NewNewsletter() {
   return (
     <ErrorBoundary>
+      <TopBarWithBoundary />
       <div className="mailpoet-main-container">
         <PageHeader
           heading={__('What would you like to create?', 'mailpoet')}

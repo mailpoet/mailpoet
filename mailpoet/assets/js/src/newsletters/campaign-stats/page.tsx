@@ -3,7 +3,7 @@ import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
 import { Tabs } from 'common/tabs/tabs';
 import { Tab } from 'common/tabs/tab';
@@ -84,8 +84,8 @@ export function CampaignStatsPage() {
 
   return (
     <>
-      <HideScreenOptions />
       <RemoveWrapMargin />
+      <TopBarWithBoundary hideScreenOptions />
 
       <div className="mailpoet-stats-page">
         <ErrorBoundary>

@@ -12,10 +12,12 @@ import { Notices } from 'notices/notices';
 import { RoutedTabs } from '../common/tabs/routed-tabs';
 import { registerTranslations, Tab } from '../common';
 import { PageHeader } from '../common/page-header/page-header';
+import { TopBar } from '../common/top-bar/top-bar';
 
 function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <TopBar />
       <GlobalNotices />
       <Notices />
       <PageHeader heading={__('Help', 'mailpoet')} />

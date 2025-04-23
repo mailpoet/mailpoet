@@ -3,6 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { PageHeader } from 'common/page-header';
 import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 
 export const onAddNewForm = (): void => {
   MailPoet.trackEvent('Forms > Add New');
@@ -16,6 +17,7 @@ function FormsHeading(): JSX.Element {
   return (
     <>
       <CompensateScreenOptions />
+      <TopBarWithBoundary />
       <PageHeader heading={__('Forms', 'mailpoet')}>
         <button
           onClick={() => {

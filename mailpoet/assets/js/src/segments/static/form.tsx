@@ -1,10 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { Form } from 'form/form.jsx';
-import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
 import { useParams } from 'react-router-dom';
 import { BackButton, PageHeader } from '../../common/page-header';
+import { TopBarWithBoundary } from '../../common/top-bar/top-bar';
 
 const fields = [
   {
@@ -47,7 +47,7 @@ function SegmentForm() {
 
   return (
     <div className="mailpoet-main-container">
-      <HideScreenOptions />
+      <TopBarWithBoundary hideScreenOptions />
 
       <PageHeader
         heading={

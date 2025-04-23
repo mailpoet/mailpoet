@@ -6,6 +6,7 @@ import { Loading } from 'common/loading';
 import { t } from 'common/functions';
 import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { Tab } from 'common/tabs/tab';
+import { TopBar } from 'common/top-bar/top-bar';
 import { UnsavedChangesNotice } from 'common/notices/unsaved-changes-notice';
 import { PageHeader } from 'common/page-header/page-header';
 import {
@@ -26,6 +27,7 @@ export function Settings() {
   const hasWooCommerce = useSelector('hasWooCommerce')();
   return (
     <>
+      <TopBar />
       {isSaving && <Loading />}
       <GlobalNotices />
       <Notices />
