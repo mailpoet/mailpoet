@@ -85,7 +85,7 @@ class BasicsPageCest {
     //check if user is really subscribed to a list
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('Newsletter mailing list');
-    $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
+    $i->clickItemRowActionByItemName('Newsletter mailing list', 'View subscribers');
     $i->waitForText('Subscribers');
     $i->changeGroupInListingFilter('unconfirmed');
     $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);

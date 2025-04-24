@@ -94,8 +94,8 @@ class MailpoetMenuCest {
     $this->assertSelectedMenuItem($i, 'Forms');
 
     $i->wantTo('Check if the menu is still selected if I go to the choose template page');
-    $i->waitForElementClickable(Locator::contains('button', 'New Form'));
-    $i->click(Locator::contains('button', 'New Form'));
+    $i->waitForElementClickable(Locator::contains('button', 'Add new form'));
+    $i->click(Locator::contains('button', 'Add new form'));
     $i->waitForElementClickable('[data-automation-id="select_template_template_1_popup"]');
     $i->seeInCurrentUrl('?page=mailpoet-form-editor-template-selection');
     $this->assertSelectedMenuItem($i, 'Forms');

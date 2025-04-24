@@ -119,9 +119,9 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check some Forms page strings');
     $i->amOnMailpoetPage('forms');
     $i->waitForText('Add new form'); // This will fail in the future when the string is translated
-    $i->waitForText('Unterhalb der Seiten');
-    $i->waitForText('Registrierungen');
-    $i->waitForText('Änderungsdatum');
+    $i->waitForText('Below pages'); // This will fail in the future when the string is translated
+    $i->waitForText('Sign-ups'); // This will fail in the future when the string is translated
+    $i->waitForText('Modified date'); // This will fail in the future when the string is translated
 
     $i->wantTo('Check Subscribers filter strings and button');
     $i->amOnMailpoetPage('subscribers');
