@@ -9,7 +9,6 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
-use Throwable;
 
 class SwitchingLanguagesCest {
   public function _before(\AcceptanceTester $i) {
@@ -159,14 +158,5 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check some Settings strings');
     $i->waitForText('Standardabsender');
     $i->waitForText('Einstellungen speichern');
-  }
-
-  public function _after(AcceptanceTester $i) {
-    try {
-      $i->cli(['language', 'core', 'uninstall', 'de_DE']);
-      $i->cli(['language', 'plugin', 'uninstall', 'mailpoet', 'de_DE']);
-    } catch (Throwable $e) {
-      // language already uninstalled
-    }
   }
 }

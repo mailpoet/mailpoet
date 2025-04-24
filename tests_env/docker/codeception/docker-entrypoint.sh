@@ -192,6 +192,9 @@ if [[ $BLOCKBASED_THEME == "1" ]]; then
   wp theme install twentytwentyfour --activate
 fi
 
+# Install German language for testing in foreign languages
+wp language core install de_DE
+
 # Remove Doctrine Annotations (they are not needed since generated metadata are packed)
 # We want to remove them for tests to make sure they are really not needed
 if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
