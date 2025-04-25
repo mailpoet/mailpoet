@@ -4,12 +4,13 @@ import { Icon } from './icon.jsx';
 
 const wp = window.wp;
 const { Placeholder, PanelBody } = wp.components;
-const { BlockIcon, InspectorControls } = wp.blockEditor;
+const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 
 const allForms = window.mailpoet_forms;
 
 function Edit({ attributes, setAttributes }) {
+  const blockProps = useBlockProps();
   function displayFormsSelect() {
     if (!Array.isArray(allForms)) return null;
     if (allForms.length === 0) return null;
@@ -27,7 +28,7 @@ function Edit({ attributes, setAttributes }) {
           {window.locale.selectForm}
         </option>
         {allForms.map((form) => (
-          <option value={form.id}>
+          <option value={form.id} key={`form-${form.id}`}>
             {form.name +
               (form.status === 'disabled'
                 ? ` (${window.locale.inactive})`
@@ -63,7 +64,7 @@ function Edit({ attributes, setAttributes }) {
   }
 
   return (
-    <>
+    <div {...blockProps}>
       <InspectorControls>
         <PanelBody title="MailPoet Subscription Form" initialOpen>
           {selectFormSettings()}
@@ -81,7 +82,7 @@ function Edit({ attributes, setAttributes }) {
         )}
         {attributes.formId !== null && renderForm()}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -122,22 +122,22 @@ class GutenbergFormBlockCest {
     $i->amEditingPostWithId($postId);
     $this->closeDialog($i);
     $i->waitForText('My Gutenberg form');
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Add title"]');
     $i->click('[aria-label="Add block"]');
+    $i->switchToIFrame();
     $i->fillField('[placeholder="Search"]', 'MailPoet Subscription Form');
     $i->waitForElement(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->click(Locator::contains('button', 'MailPoet Subscription Form'));
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->waitForElement('[aria-label="Block: MailPoet Subscription Form"]');
     $i->selectOption('.mailpoet-block-create-forms-list', 'Acceptance Test Block Form');
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->waitForElementVisible('[data-automation-id="form_first_name"]');
     $i->waitForElementVisible('[data-automation-id="form_last_name"]');
-    // From WP 6.6 the button label is Save
-    if (version_compare($i->getWordPressVersion(), '6.6', '<')) {
-      $i->click('Update');
-    } else {
-      $i->click('Save');
-    }
+    $i->switchToIFrame();
+    $i->click('Save');
+
     $i->waitForText('Post updated.');
 
     $i->wantTo('Verify the added form on the front-end');

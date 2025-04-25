@@ -6,6 +6,7 @@ const { registerBlockType } = wp.blocks;
 
 registerBlockType('mailpoet/subscription-form-block-render', {
   title: window.locale.subscriptionForm,
+  apiVersion: 3,
   attributes: {
     formId: {
       type: 'number',
@@ -19,6 +20,7 @@ registerBlockType('mailpoet/subscription-form-block-render', {
 
 registerBlockType('mailpoet/subscription-form-block', {
   title: window.locale.subscriptionForm,
+  apiVersion: 3,
   icon: Icon,
   category: 'widgets',
   example: {},
