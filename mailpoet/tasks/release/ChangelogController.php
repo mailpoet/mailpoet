@@ -32,7 +32,7 @@ class ChangelogController {
       throw new \Exception('Version is required');
     }
     $changelog = $this->getChangelogFromReadme();
-    if (!$this->containsNewChangelog($changelog)) {
+    if (!$this->containsNewChangelogOrVersionExists($changelog, $version)) {
       $changelog = self::NEW_CHANGELOG_TEMPLATE . "\n" . self::FALLBACK_RECORD;
     }
     $changelog = $this->updateHeading($changelog, $version);
@@ -48,8 +48,11 @@ class ChangelogController {
     return '';
   }
 
-  private function containsNewChangelog(string $changelog) {
-    return strpos($changelog, self::NEW_CHANGELOG_TEMPLATE) !== false;
+  private function containsNewChangelogOrVersionExists(string $changelog, string $version) {
+    return (
+      strpos($changelog, self::NEW_CHANGELOG_TEMPLATE) !== false ||
+      strpos($changelog, "= $version") !== false
+    );
   }
 
   private function updateHeading(string $changelog, string $version) {
@@ -73,7 +76,7 @@ class ChangelogController {
   private function updateReadmeTxt($changelog, $version) {
     $fileContents = file_get_contents($this->readmeFile);
 
-    if (!$this->containsNewChangelog($fileContents)) {
+    if (!$this->containsNewChangelogOrVersionExists($fileContents, $version)) {
       // In the free plugin, remove the previous changelog before adding a new one.
       // Premium plugin doesn't contain link to full changelog.
       $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
