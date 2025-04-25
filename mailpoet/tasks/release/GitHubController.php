@@ -25,9 +25,6 @@ class GitHubController {
   /** @var Client */
   private $httpClient;
 
-  /** @var Client */
-  private $freePluginHttpClient;
-
   public function __construct(
     $username,
     $token,
@@ -40,13 +37,6 @@ class GitHubController {
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject($project)}/",
-    ]);
-    $this->freePluginHttpClient = new Client([
-      'auth' => [$username, $token],
-      'headers' => [
-        'Accept' => 'application/vnd.github.v3+json',
-      ],
-      'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject(self::PROJECT_MAILPOET)}/",
     ]);
   }
 
@@ -287,7 +277,7 @@ class GitHubController {
    * @return string|null The latest version number or null if no releases exist
    */
   public function getLastReleasedVersion(): ?string {
-    $response = $this->freePluginHttpClient->get('releases', [
+    $response = $this->httpClient->get('releases', [
       'query' => [
         'per_page' => 1,
       ],
