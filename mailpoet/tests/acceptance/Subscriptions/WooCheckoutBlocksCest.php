@@ -63,7 +63,9 @@ class WooCheckoutBlocksCest {
     $i->wantTo('Check a message when opt-in is disabled');
     $i->login();
     $i->amOnAdminPage("post.php?post={$this->checkoutPostId}&action=edit");
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->canSee('MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.');
+    $i->switchToIframe();
     $i->logOut();
     $this->orderProduct($i, $customerEmail, true, false);
     $i->login();
@@ -223,25 +225,27 @@ class WooCheckoutBlocksCest {
       $i->wantTo('Choose a pattern was not present, skipping action.');
     }
     $this->closeDialog($i);
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Add title"]'); // For block inserter to show up
     $i->click('[aria-label="Add block"]');
+    $i->switchToIframe();
     $i->fillField('[placeholder="Search"]', 'Checkout');
     $i->waitForElement(Locator::contains('button > span > span', 'Checkout'));
     $i->click(Locator::contains('button > span > span', 'Checkout')); // Select Checkout block
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->waitForElement('[aria-label="Block: Checkout"]');
+
     // Close dialog with Compatibility notice
+    $i->switchToIframe();
     $this->closeDialog($i);
 
     // Enable registration during the checkout
+    $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Block: Contact Information"]');
 
-    // From WP 6.6 the button label is Save
-    $version = (string)preg_replace('/-(RC|beta)\d*/', '', $i->getWordPressVersion());
-    if (version_compare($version, '6.6', '<')) {
-      $i->click('Update');
-    } else {
-      $i->click('Save');
-    }
+    $i->switchToIframe();
+    $i->click('Save');
+
     $i->waitForText('Page updated.');
     $i->logOut();
     return $postId;

@@ -1,5 +1,5 @@
 {
-  "apiVersion": 2,
+  "apiVersion": 3,
   "name": "mailpoet/marketing-optin-block",
   "version": "0.1.0",
   "title": "MailPoet Marketing Opt-in",
