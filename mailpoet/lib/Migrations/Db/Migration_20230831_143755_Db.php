@@ -115,7 +115,7 @@ class Migration_20230831_143755_Db extends DbMigration {
         $stepId = strval($item['step_id']);
         $stepKey = strval($steps[$stepId]['key'] ?? 'unknown');
         $triggerId = $steps['root']['next_steps'][0]['id'];
-        $triggerKey = $steps['root']['next_steps'][0]['key'];
+        $triggerKey = $steps['root']['next_steps'][0]['key'] ?? 'unknown';
 
         $queries[] = "UPDATE {$logsTable} SET step_key = '{$stepKey}' WHERE id = {$id}";
 
@@ -132,7 +132,16 @@ class Migration_20230831_143755_Db extends DbMigration {
         }
       }
 
-      $this->connection->executeStatement(implode(';', $queries));
+      $nativeConnection = $this->connection->getNativeConnection();
+      // If the connection is a mysqli object, we can use the multi_query method
+      if (is_object($nativeConnection) && get_class($nativeConnection) === 'mysqli') {
+        $query = implode(';', $queries);
+        $nativeConnection->multi_query($query);
+      } else { // Otherwise, we need to execute each query individually (e.g. PDO or SQLite)
+        foreach ($queries as $query) {
+          $this->connection->executeStatement($query);
+        }
+      }
     }
   }
 }
