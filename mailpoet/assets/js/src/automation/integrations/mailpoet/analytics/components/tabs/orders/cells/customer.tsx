@@ -29,7 +29,7 @@ export function CustomerCell({
       }}
       href={isSample ? '' : `?page=mailpoet-subscribers#/edit/${customer.id}`}
     >
-      <img src={customer.avatar} alt={label} width="20" />
+      <img src={customer.avatar} alt="" width="20" />
       {label}
     </a>
   );
