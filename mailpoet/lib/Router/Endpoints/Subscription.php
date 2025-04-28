@@ -55,14 +55,14 @@ class Subscription {
   public function confirmUnsubscribe($data) {
     $enableUnsubscribeConfirmation = $this->wp->applyFilters('mailpoet_unsubscribe_confirmation_enabled', true);
     if ($this->request->isPost()) {
-      $this->applyOneClickUnsubscribeStrategy($data);
+      $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
       exit;
     }
 
     if ($enableUnsubscribeConfirmation) {
       $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM_UNSUBSCRIBE, $data);
     } else {
-      $this->unsubscribe($data);
+      $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_LINK);
     }
   }
 
@@ -74,11 +74,10 @@ class Subscription {
     if ($this->request->isPost()) {
       if ($this->request->getStringParam('type') === 'confirmation') {
         // POST from confirmation page
-        $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-        $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+        $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_LINK);
       } else {
         // POST from one click unsubscribe
-        $this->applyOneClickUnsubscribeStrategy($data);
+        $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
         exit;
       }
     } else {
@@ -95,8 +94,8 @@ class Subscription {
     return $this->subscriptionPages->init($action, $data, true, true);
   }
 
-  private function applyOneClickUnsubscribeStrategy($data): void {
+  private function performUnsubscribe($data, string $method): void {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-    $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    $subscription->unsubscribe($method);
   }
 }
