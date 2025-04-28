@@ -134,12 +134,29 @@ class ManageSubscriptionLinkCest {
     $link = $i->grabTextFrom('//div[@class="row headers"]//th[text()="List-Unsubscribe"]/following-sibling::td');
     Assert::assertIsString($link);
     $link = trim($link, '<>');
+    $i->wantTo('Verify that "List-Unsubscribe" link via GET displays confirmation page');
     $i->amOnUrl($link);
-    $i->waitForText('You are now unsubscribed', 15);
+    $confirmUnsubscribe = 'Yes, unsubscribe me';
+    $i->waitForText($confirmUnsubscribe);
+    $i->click($confirmUnsubscribe, '.mailpoet_confirm_unsubscribe');
+    $i->waitForText('You are now unsubscribed');
+    $manageLink = $i->grabAttributeFrom('.mailpoet_unsubscribed_content a', 'href');
     $i->click('Manage your subscription');
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
 
-    // Re-subscribe to test the link in newsletter body
+    $i->wantTo("Re-subscribe and test POST request to List-Unsubscribe");
+    $i->selectOption($formStatusElement, 'Subscribed');
+    $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
+    $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
+    $i->click('Save');
+    $i->waitForElement($formStatusElement);
+    $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
+
+    $this->sendPostRequestAndAssertSuccess($link);
+    $i->amOnUrl($manageLink);
+    $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
+
+    $i->wantTo("Re-subscribe and test link in newsletter body");
     $i->selectOption($formStatusElement, 'Subscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
@@ -160,7 +177,6 @@ class ManageSubscriptionLinkCest {
     );
     $i->click('Unsubscribe');
     $i->switchToNextTab();
-    $confirmUnsubscribe = 'Yes, unsubscribe me';
     $i->waitForText($confirmUnsubscribe);
     $i->click($confirmUnsubscribe, '.mailpoet_confirm_unsubscribe');
     $i->waitForText('You are now unsubscribed');
@@ -210,5 +226,16 @@ class ManageSubscriptionLinkCest {
     }
     $i->waitForText('Sent to 1 of 1');
     $i->see('Sent to 1 of 1');
+  }
+
+  private function sendPostRequestAndAssertSuccess(string $link) {
+    $context = stream_context_create([
+      'http' => [
+        'method' => 'POST',
+        'follow_location' => true,
+      ],
+    ]);
+    $response = file_get_contents($link, false, $context);
+    Assert::assertNotFalse($response);
   }
 }

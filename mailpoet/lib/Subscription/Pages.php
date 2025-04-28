@@ -434,7 +434,7 @@ class Pages {
   private function getUnsubscribeContent() {
     $content = '';
     if ($this->isPreview() || $this->subscriber !== null) {
-      $content .= '<p>' . __('Accidentally unsubscribed?', 'mailpoet') . ' <strong>';
+      $content .= '<p class="mailpoet_unsubscribed_content">' . __('Accidentally unsubscribed?', 'mailpoet') . ' <strong>';
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
     }
