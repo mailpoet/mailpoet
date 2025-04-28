@@ -1648,7 +1648,7 @@
       hiddenWidgets: ['automatedLatestContentLayout', 'header', 'footer', 'posts', 'products'],
       <% endif %>
       <% if is_confirmation_email_template %>
-      hiddenWidgets: ['automatedLatestContentLayout', 'coupon', 'header', 'footer', 'posts', 'products'],
+      hiddenWidgets: ['automatedLatestContentLayout', 'coupon', 'header', 'footer', 'posts', 'products', 'dynamicProducts'],
       <% endif %>
       coupon: <%= json_encode(woocommerce.coupon.config) %>,
     };
