@@ -427,7 +427,7 @@ export const formBodyToBlocksFactory = (
                   item.params && item.params.text ? item.params.text : '',
                 nl2br:
                   item.params && item.params.nl2br
-                    ? !!item.params.nl2br
+                    ? parseInt(item.params.nl2br, 10) > 0
                     : false,
               },
             };
