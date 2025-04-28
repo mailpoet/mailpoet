@@ -81,8 +81,12 @@ class Subscription {
         exit;
       }
     } else {
-      // For GET requests, we render to the confirmUnsubscribe endpoint
-      $this->confirmUnsubscribe($data);
+      // For GET requests, we render the confirmUnsubscribe page, unless it is preview request of successful unsubscribe
+      if (isset($data['preview']) && $data['preview'] && !isset($data['token'])) {
+        $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_LINK);
+      } else {
+        $this->confirmUnsubscribe($data);
+      }
     }
   }
 
