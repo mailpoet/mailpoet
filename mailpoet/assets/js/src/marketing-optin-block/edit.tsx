@@ -18,6 +18,7 @@ const adminUrl = getSetting('adminUrl');
 const { optinEnabled, defaultText } = getSetting('mailpoet_data');
 
 function EmptyState(): JSX.Element {
+  const adminUrlToEnableOptIn = `${adminUrl}admin.php?page=mailpoet-settings#/woocommerce`;
   return (
     <Placeholder
       icon={<Icon icon={megaphone} />}
@@ -32,10 +33,10 @@ function EmptyState(): JSX.Element {
       </span>
       <Button
         variant="primary"
-        href={`${adminUrl}admin.php?page=mailpoet-settings#/woocommerce`}
-        target="_blank"
-        rel="noopener noreferrer"
         className="wp-block-mailpoet-newsletter-block-placeholder__button"
+        onClick={() => {
+          window.open(adminUrlToEnableOptIn, '_blank', 'noopener noreferrer');
+        }}
       >
         {__('Enable opt-in for Checkout', 'mailpoet')}
       </Button>
