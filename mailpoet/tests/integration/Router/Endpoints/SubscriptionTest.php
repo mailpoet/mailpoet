@@ -45,11 +45,13 @@ class SubscriptionTest extends \MailPoetTest {
     do_shortcode('[mailpoet_manage_subscription]');
   }
 
-  public function testItDisplaysUnsubscribePage() {
+  public function testItDisplaysConfirmationPageOnGetRequest() {
     $pages = Stub::make(Pages::class, [
       'wp' => new WPFunctions,
-      'unsubscribe' => Expected::exactly(1),
+      'confirmUnsubscribe' => Expected::exactly(1),
     ], $this);
+    $request = $this->createMock(Request::class);
+    $request->method('isPost')->willReturn(false);
     $subscription = new Subscription($pages, $this->wp, $this->request);
     $subscription->unsubscribe($this->data);
   }

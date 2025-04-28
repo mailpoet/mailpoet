@@ -72,11 +72,18 @@ class Subscription {
 
   public function unsubscribe($data) {
     if ($this->request->isPost()) {
-      $this->applyOneClickUnsubscribeStrategy($data);
-      exit;
+      if ($this->request->getStringParam('type') === 'confirmation') {
+        // POST from confirmation page
+        $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
+        $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+      } else {
+        // POST from one click unsubscribe
+        $this->applyOneClickUnsubscribeStrategy($data);
+        exit;
+      }
     } else {
-      $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-      $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+      // For GET requests, we render to the confirmUnsubscribe endpoint
+      $this->confirmUnsubscribe($data);
     }
   }
 

@@ -1,7 +1,10 @@
 <% block content %>
-<p class="mailpoet_confirm_unsubscribe">
-  <%= __('Simply click on this link to stop receiving emails from us.') %>
-  <br>
-  <a href="<%= unsubscribeUrl %>" rel="nofollow"><%= _x('Yes, unsubscribe me', 'Text in unsubscribe link') %></a>
+<form action="<%= unsubscribeUrl %>" method="post">
+  <input type="hidden" name="type" value="confirmation">
+  <p class="mailpoet_confirm_unsubscribe">
+    <%= __('Simply click on this link to stop receiving emails from us.') %>
+    <br>
+    <a href="#" onclick="this.closest('form').submit(); return false;" rel="nofollow"><%= _x('Yes, unsubscribe me', 'Text in unsubscribe link') %></a>
 </p>
+</form>
 <% endblock %>
