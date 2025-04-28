@@ -187,12 +187,14 @@ function NewsletterListNotificationHistoryComponent(props) {
 
   return (
     <>
-      <Link
-        className="mailpoet-button button button-secondary button-small"
-        to="/notification"
-      >
-        {__('Back to Post notifications', 'mailpoet')}
-      </Link>
+      <p>
+        <Link
+          className="mailpoet-button button button-secondary button-small"
+          to="/notification"
+        >
+          {__('Back to Post notifications', 'mailpoet')}
+        </Link>
+      </p>
 
       <Listing
         limit={window.mailpoet_listing_per_page}
