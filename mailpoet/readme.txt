@@ -223,6 +223,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
-* Improved: optimized email templates images to decrease their file size.
+* Improved: optimized email templates images to decrease their file size;
+* Fixed: unreadable customer name in automation analytics when Gravatar fails to load.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
