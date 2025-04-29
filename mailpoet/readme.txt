@@ -224,7 +224,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = 5.12.0 - 2025-04-29 =
 * Improved: more consistent look and feel of MailPoet pages with WordPress;
-* Improved: optimized email templates images to decrease their file size;
+* Improved: optimized email template images to decrease their file size;
+* Improved: better handling of unsubscribes via the link provided in the List-Unsubscribe header;
 * Fixed: unreadable customer name in automation analytics when Gravatar fails to load;
 * Fixed: "Custom HTML" block in form editor doesn't preserve "Automatically add paragraphs" setting.
 
