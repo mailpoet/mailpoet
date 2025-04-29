@@ -57,35 +57,35 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const columns = [
   {
     name: 'email',
-    label: MailPoet.I18n.t('subscriber'),
+    label: __('Subscriber', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status'),
+    label: __('Status', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('lists'),
+    label: __('Lists', 'mailpoet'),
   },
   {
     name: 'tags',
-    label: MailPoet.I18n.t('tags'),
+    label: __('Tags', 'mailpoet'),
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statisticsColumn'),
+    label: __('Score', 'mailpoet'),
     display: mailpoetTrackingEnabled,
   },
   {
     name: 'last_subscribed_at',
-    label: MailPoet.I18n.t('subscribedOn'),
+    label: __('Subscribed on', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'created_at',
-    label: MailPoet.I18n.t('createdOn'),
+    label: __('Created on', 'mailpoet'),
     sortable: true,
   },
 ];
@@ -96,12 +96,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSubscriberTrashed');
+      message = __('1 subscriber was moved to the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleSubscribersTrashed').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d subscribers were moved to the trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -110,12 +110,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSubscriberDeleted');
+      message = __('1 subscriber was permanently deleted.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleSubscribersDeleted').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d subscribers were permanently deleted.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -124,12 +124,15 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSubscriberRestored');
-    } else {
-      message = MailPoet.I18n.t('multipleSubscribersRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
+      message = __(
+        '1 subscriber has been restored from the trash.',
+        'mailpoet',
       );
+    } else {
+      message = __(
+        '%1$d subscribers have been restored from the trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -141,13 +144,18 @@ const messages = {
     ) {
       return (
         <div>
-          <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
+          <p>
+            {__(
+              "Email addresses that are invalid or don't exist anymore are called \"bounced addresses\". It's a good practice not to send emails to bounced addresses to keep a good reputation with spam filters. Send your emails with MailPoet and we'll automatically ensure to keep a list of bounced addresses without any setup.",
+              'mailpoet',
+            )}
+          </p>
           <p>
             <a
               href="admin.php?page=mailpoet-upgrade"
               className="button-primary"
             >
-              {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
+              {__('Get premium version!', 'mailpoet')}
             </a>
           </p>
         </div>
@@ -171,7 +179,7 @@ const createModal = (submitModal, closeModal, field, title) => (
 const bulkActions = [
   {
     name: 'moveToList',
-    label: MailPoet.I18n.t('moveToList'),
+    label: __('Move to list...', 'mailpoet'),
     onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'move_to_segment',
@@ -186,7 +194,7 @@ const bulkActions = [
         submitModal,
         closeModal,
         field,
-        MailPoet.I18n.t('moveToList'),
+        __('Move to list...', 'mailpoet'),
       );
     },
     getData: function getData() {
@@ -196,7 +204,10 @@ const bulkActions = [
     },
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersMovedToList')
+        __(
+          '%1$d subscribers were moved to list <strong>%2$s</strong>.',
+          'mailpoet',
+        )
           .replace('%1$d', Number(response.meta.count).toLocaleString())
           .replace('%2$s', response.meta.segment),
       );
@@ -204,7 +215,7 @@ const bulkActions = [
   },
   {
     name: 'addToList',
-    label: MailPoet.I18n.t('addToList'),
+    label: __('Add to list...', 'mailpoet'),
     onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'add_to_segment',
@@ -219,7 +230,7 @@ const bulkActions = [
         submitModal,
         closeModal,
         field,
-        MailPoet.I18n.t('addToList'),
+        __('Add to list...', 'mailpoet'),
       );
     },
     getData: function getData() {
@@ -229,7 +240,10 @@ const bulkActions = [
     },
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersAddedToList')
+        __(
+          '%1$d subscribers were added to list <strong>%2$s</strong>.',
+          'mailpoet',
+        )
           .replace('%1$d', Number(response.meta.count).toLocaleString())
           .replace('%2$s', response.meta.segment),
       );
@@ -237,7 +251,7 @@ const bulkActions = [
   },
   {
     name: 'removeFromList',
-    label: MailPoet.I18n.t('removeFromList'),
+    label: __('Remove from list...', 'mailpoet'),
     onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'remove_from_segment',
@@ -252,7 +266,7 @@ const bulkActions = [
         submitModal,
         closeModal,
         field,
-        MailPoet.I18n.t('removeFromList'),
+        __('Remove from list...', 'mailpoet'),
       );
     },
     getData: function getData() {
@@ -262,7 +276,10 @@ const bulkActions = [
     },
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersRemovedFromList')
+        __(
+          '%1$d subscribers were removed from list <strong>%2$s</strong>.',
+          'mailpoet',
+        )
           .replace('%1$d', Number(response.meta.count).toLocaleString())
           .replace('%2$s', response.meta.segment),
       );
@@ -270,10 +287,10 @@ const bulkActions = [
   },
   {
     name: 'removeFromAllLists',
-    label: MailPoet.I18n.t('removeFromAllLists'),
+    label: __('Remove from all lists', 'mailpoet'),
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists').replace(
+        __('%1$d subscribers were removed from all lists.', 'mailpoet').replace(
           '%1$d',
           Number(response.meta.count).toLocaleString(),
         ),
@@ -282,12 +299,12 @@ const bulkActions = [
   },
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
   {
     name: 'unsubscribe',
-    label: MailPoet.I18n.t('unsubscribe'),
+    label: __('Unsubscribe', 'mailpoet'),
     onSelect: (submitModal, closeModal, bulkActionProps) => {
       const count =
         bulkActionProps.selection !== 'all'
@@ -295,15 +312,15 @@ const bulkActions = [
           : bulkActionProps.count;
       return (
         <Modal
-          title={MailPoet.I18n.t('unsubscribe')}
+          title={__('Unsubscribe', 'mailpoet')}
           onRequestClose={closeModal}
           isDismissible
         >
           <p>
-            {MailPoet.I18n.t('unsubscribeConfirm').replace(
-              '%s',
-              Number(count).toLocaleString(),
-            )}
+            {__(
+              'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
+              'mailpoet',
+            ).replace('%s', Number(count).toLocaleString())}
           </p>
           <span className="mailpoet-gap-half" />
           <Button
@@ -320,7 +337,7 @@ const bulkActions = [
   },
   {
     name: 'addTag',
-    label: MailPoet.I18n.t('addTag'),
+    label: __('Add tag...', 'mailpoet'),
     onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'add_tag',
@@ -332,7 +349,7 @@ const bulkActions = [
         submitModal,
         closeModal,
         field,
-        MailPoet.I18n.t('addTag'),
+        __('Add tag...', 'mailpoet'),
       );
     },
     getData: function getData() {
@@ -342,7 +359,10 @@ const bulkActions = [
     },
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('tagAddedToMultipleSubscribers')
+        __(
+          'Tag <strong>%1$s</strong> was added to %2$d subscribers.',
+          'mailpoet',
+        )
           .replace('%1$s', response.meta.tag)
           .replace('%2$d', Number(response.meta.count).toLocaleString()),
       );
@@ -350,7 +370,7 @@ const bulkActions = [
   },
   {
     name: 'removeTag',
-    label: MailPoet.I18n.t('removeTag'),
+    label: __('Remove tag...', 'mailpoet'),
     onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'remove_tag',
@@ -362,7 +382,7 @@ const bulkActions = [
         submitModal,
         closeModal,
         field,
-        MailPoet.I18n.t('removeTag'),
+        __('Remove tag...', 'mailpoet'),
       );
     },
     getData: function getData() {
@@ -372,7 +392,10 @@ const bulkActions = [
     },
     onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('tagRemovedFromMultipleSubscribers')
+        __(
+          'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
+          'mailpoet',
+        )
           .replace('%1$s', response.meta.tag)
           .replace('%2$d', Number(response.meta.count).toLocaleString()),
       );
@@ -383,7 +406,7 @@ const bulkActions = [
 const itemActions = [
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statsListingActionTitle'),
+    label: __('Statistics', 'mailpoet'),
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
@@ -392,14 +415,14 @@ const itemActions = [
             backUrl: location?.pathname,
           }}
         >
-          {MailPoet.I18n.t('statsListingActionTitle')}
+          {__('Statistics', 'mailpoet')}
         </Link>
       );
     },
   },
   {
     name: 'edit',
-    label: MailPoet.I18n.t('edit'),
+    label: __('Edit', 'mailpoet'),
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
@@ -408,7 +431,7 @@ const itemActions = [
             backUrl: location?.pathname,
           }}
         >
-          {MailPoet.I18n.t('edit')}
+          {__('Edit', 'mailpoet')}
         </Link>
       );
     },
@@ -416,7 +439,7 @@ const itemActions = [
   {
     name: 'sendConfirmationEmail',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('resendConfirmationEmail'),
+    label: __('Resend confirmation email', 'mailpoet'),
     display: function display(subscriber: Subscriber) {
       return subscriber.status === 'unconfirmed';
     },
@@ -430,7 +453,9 @@ const itemActions = [
         },
       })
         .done(() =>
-          MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent')),
+          MailPoet.Notice.success(
+            __('1 confirmation email has been sent.', 'mailpoet'),
+          ),
         )
         .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
     },
@@ -471,23 +496,23 @@ function SubscriberList() {
 
     switch (subscriber.status) {
       case 'subscribed':
-        status = MailPoet.I18n.t('subscribed');
+        status = __('Subscribed', 'mailpoet');
         break;
 
       case 'unconfirmed':
-        status = MailPoet.I18n.t('unconfirmed');
+        status = __('Unconfirmed', 'mailpoet');
         break;
 
       case 'unsubscribed':
-        status = MailPoet.I18n.t('unsubscribed');
+        status = __('Unsubscribed', 'mailpoet');
         break;
 
       case 'inactive':
-        status = MailPoet.I18n.t('inactive');
+        status = __('Inactive', 'mailpoet');
         break;
 
       case 'bounced':
-        status = MailPoet.I18n.t('bounced');
+        status = __('Bounced', 'mailpoet');
         break;
 
       default:
@@ -525,13 +550,13 @@ function SubscriberList() {
           </div>
           {actions}
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <td className="column" data-colname={__('Status', 'mailpoet')}>
           {status}
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('lists')}>
+        <td className="column" data-colname={__('Lists', 'mailpoet')}>
           <SegmentTags segments={subscribedSegments} dimension="large" />
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('tags')}>
+        <td className="column" data-colname={__('Tags', 'mailpoet')}>
           <SubscriberTags
             subscribers={subscriber.tags}
             variant="wordpress"
@@ -541,7 +566,7 @@ function SubscriberList() {
         {mailpoetTrackingEnabled === true ? (
           <td
             className="column mailpoet-listing-stats-column"
-            data-colname={MailPoet.I18n.t('statisticsColumn')}
+            data-colname={__('Score', 'mailpoet')}
           >
             <div className="mailpoet-listing-stats">
               <a
@@ -558,7 +583,7 @@ function SubscriberList() {
         ) : null}
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('confirmedOn')}
+          data-colname={__('Confirmed on', 'mailpoet')}
         >
           {subscriber.last_subscribed_at ? (
             <>
@@ -570,7 +595,7 @@ function SubscriberList() {
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('subscribedOn')}
+          data-colname={__('Subscribed on', 'mailpoet')}
         >
           {subscriber.created_at ? (
             <>
