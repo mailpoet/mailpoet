@@ -54,7 +54,7 @@ type Response = {
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
-const columns = [
+const getColumns = () => [
   {
     name: 'email',
     label: __('Subscriber', 'mailpoet'),
@@ -90,7 +90,7 @@ const columns = [
   },
 ];
 
-const messages = {
+const getMessages = () => ({
   onTrash: (response: Response) => {
     const count = Number(response.meta.count);
     let message = null;
@@ -164,7 +164,7 @@ const messages = {
     // use default message
     return false;
   },
-};
+});
 
 const createModal = (submitModal, closeModal, field, title) => (
   <Modal title={title} onRequestClose={closeModal} isDismissible>
@@ -176,7 +176,7 @@ const createModal = (submitModal, closeModal, field, title) => (
   </Modal>
 );
 
-const bulkActions = [
+const getBulkActions = () => [
   {
     name: 'moveToList',
     label: __('Move to list...', 'mailpoet'),
@@ -300,7 +300,7 @@ const bulkActions = [
   {
     name: 'trash',
     label: __('Move to trash', 'mailpoet'),
-    onSuccess: messages.onTrash,
+    onSuccess: getMessages().onTrash,
   },
   {
     name: 'unsubscribe',
@@ -403,7 +403,7 @@ const bulkActions = [
   },
 ];
 
-const itemActions = [
+const getItemActions = () => [
   {
     name: 'statistics',
     label: __('Statistics', 'mailpoet'),
@@ -621,10 +621,10 @@ function SubscriberList() {
         params={params}
         endpoint="subscribers"
         onRenderItem={renderItem}
-        columns={columns}
-        bulk_actions={bulkActions}
-        item_actions={itemActions}
-        messages={messages}
+        columns={getColumns()}
+        bulk_actions={getBulkActions()}
+        item_actions={getItemActions()}
+        messages={getMessages()}
         sort_by="created_at"
         sort_order="desc"
         isItemDeletable={isItemDeletable}
