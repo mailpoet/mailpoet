@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.11.0
+Stable tag: 5.12.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -222,7 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= x.x.x - YYYY-MM-DD =
+= 5.12.0 - 2025-04-29 =
 * Improved: more consistent look and feel of MailPoet pages with WordPress;
 * Improved: optimized email templates images to decrease their file size;
 * Fixed: unreadable customer name in automation analytics when Gravatar fails to load;

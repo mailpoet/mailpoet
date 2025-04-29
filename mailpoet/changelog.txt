@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.12.0 - 2025-04-29 =
+* Improved: more consistent look and feel of MailPoet pages with WordPress;
+* Improved: optimized email templates images to decrease their file size;
+* Fixed: unreadable customer name in automation analytics when Gravatar fails to load;
+* Fixed: "Custom HTML" block in form editor doesn't preserve "Automatically add paragraphs" setting.
+
 = 5.11.0 - 2025-04-22 =
 * Added: Dynamic Products block in email editor. Useful in automations to render order products, cross-sells, abandoned cart content, or selected categories or tags;
 * Updated: minimum required WordPress version to 6.7 and tested up to version to 6.8;
