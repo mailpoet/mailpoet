@@ -599,7 +599,20 @@ class SubscribersRepository extends Repository {
 
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
-    $count = (int)$this->entityManager->getConnection()->executeStatement("
+
+    // Count unique subscribers that will have segments removed
+    $uniqueSubscribersCount = $this->entityManager->getConnection()->executeQuery("
+       SELECT COUNT(DISTINCT subscriber_id)
+       FROM $subscriberSegmentsTable ss
+       JOIN $segmentsTable s ON s.id = ss.segment_id AND s.`type` = :typeDefault
+       WHERE ss.`subscriber_id` IN (:ids)
+    ", [
+      'ids' => $ids,
+      'typeDefault' => SegmentEntity::TYPE_DEFAULT,
+    ], ['ids' => ArrayParameterType::INTEGER])->fetchOne();
+
+    // Delete the segment relationships
+    $this->entityManager->getConnection()->executeStatement("
        DELETE ss FROM $subscriberSegmentsTable ss
        JOIN $segmentsTable s ON s.id = ss.segment_id AND s.`type` = :typeDefault
        WHERE ss.`subscriber_id` IN (:ids)
@@ -608,7 +621,7 @@ class SubscribersRepository extends Repository {
       'typeDefault' => SegmentEntity::TYPE_DEFAULT,
     ], ['ids' => ArrayParameterType::INTEGER]);
 
-    return $count;
+    return is_numeric($uniqueSubscribersCount) ? (int)$uniqueSubscribersCount : 0;
   }
 
   /**
