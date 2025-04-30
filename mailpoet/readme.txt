@@ -223,6 +223,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
-* Fixed: listing action items overlaying with row border when on two lines on smaller screens.
+* Fixed: listing action items overlaying with row border when on two lines on smaller screens;
+* Fixed: Handling of Japanese characters in custom field blocks in the form editor.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
