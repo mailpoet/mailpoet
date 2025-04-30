@@ -222,8 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.1 - 2025-05-06 =
-* Fixed: listing action items overlaying with row border when on two lines on smaller screens;
-* Fixed: Handling of Japanese characters in custom field blocks in the form editor.
+= x.x.x - YYYY-MM-DD =
+* Fixed: incorrect number in success message when bulk removing subscribers from all lists.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
