@@ -8,9 +8,11 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Migrations\App\Migration_20250501_114655_App;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsUnsubscribes;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\SubscriberSegment as SubscriberSegmentFactory;
 
 // phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 class Migration_20250501_114655_App_Test extends \MailPoetTest {
@@ -61,6 +63,34 @@ class Migration_20250501_114655_App_Test extends \MailPoetTest {
       ->withUrl('https://example.com/test3')
       ->create();
 
+    // Create a test segment
+    $segment = (new SegmentFactory())->create();
+
+    // Create subscriber segments for each subscriber
+    $subscriberSegmentFactory = new SubscriberSegmentFactory($subscriberUnsubscribedBefore, $segment);
+    $subscriberSegmentBefore = $subscriberSegmentFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withUpdatedAt(new DateTimeImmutable('2024-12-01 10:00:00'))
+      ->create();
+
+    $subscriberSegmentFactory = new SubscriberSegmentFactory($subscriberUnsubscribedByBot, $segment);
+    $subscriberSegmentByBot = $subscriberSegmentFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withUpdatedAt(new DateTimeImmutable('2025-04-01 10:00:03'))
+      ->create();
+
+    $subscriberSegmentFactory = new SubscriberSegmentFactory($subscriberUnsubscribedByUserManyClicks, $segment);
+    $subscriberSegmentByUserManyClicks = $subscriberSegmentFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withUpdatedAt(new DateTimeImmutable('2025-04-01 10:00:55'))
+      ->create();
+
+    $subscriberSegmentFactory = new SubscriberSegmentFactory($subscriberUnsubscribedByUserSingleClick, $segment);
+    $subscriberSegmentByUserSingleClick = $subscriberSegmentFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withUpdatedAt(new DateTimeImmutable('2025-04-01 10:00:00'))
+      ->create();
+
     // $subscriberUnsubscribedBefore Has many suspicious clicks but unsubscribed before the issue
     $subscriber1ClickFactory = new StatisticsClicks($newsletterLink, $subscriberUnsubscribedBefore);
     $subscriber1ClickFactory->withCreatedAt(new DateTimeImmutable('2024-12-01 10:00:00'))->create();
@@ -96,17 +126,25 @@ class Migration_20250501_114655_App_Test extends \MailPoetTest {
     $subscriber4ClickFactory->withCreatedAt(new DateTimeImmutable('2025-04-01 10:00:00'))->create();
     $subscriber4UnsubscribeFactory = new StatisticsUnsubscribes($newsletter, $subscriberUnsubscribedByUserSingleClick);
     $subscriber4UnsubscribeFactory->withCreatedAt(new DateTimeImmutable('2025-04-01 10:00:00'))->create();
-
     $this->migration->run();
 
     $this->entityManager->refresh($subscriberUnsubscribedBefore);
     $this->entityManager->refresh($subscriberUnsubscribedByBot);
     $this->entityManager->refresh($subscriberUnsubscribedByUserManyClicks);
     $this->entityManager->refresh($subscriberUnsubscribedByUserSingleClick);
+    $this->entityManager->refresh($subscriberSegmentBefore);
+    $this->entityManager->refresh($subscriberSegmentByBot);
+    $this->entityManager->refresh($subscriberSegmentByUserManyClicks);
+    $this->entityManager->refresh($subscriberSegmentByUserSingleClick);
 
     $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberUnsubscribedBefore->getStatus());
     $this->assertEquals(SubscriberEntity::STATUS_SUBSCRIBED, $subscriberUnsubscribedByBot->getStatus());
     $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberUnsubscribedByUserManyClicks->getStatus());
     $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberUnsubscribedByUserSingleClick->getStatus());
+
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegmentBefore->getStatus());
+    $this->assertEquals(SubscriberEntity::STATUS_SUBSCRIBED, $subscriberSegmentByBot->getStatus());
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegmentByUserManyClicks->getStatus());
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegmentByUserSingleClick->getStatus());
   }
 }
