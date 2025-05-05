@@ -222,12 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.0 - 2025-04-29 =
-* Improved: more consistent look and feel of MailPoet pages with WordPress;
-* Improved: optimized email template images to decrease their file size;
-* Improved: better handling of unsubscribes via the link provided in the List-Unsubscribe header;
-* Fixed: unreadable customer name in automation analytics when Gravatar fails to load;
-* Fixed: failing migration when updating from an old plugin version;
-* Fixed: "Custom HTML" block in form editor doesn't preserve "Automatically add paragraphs" setting.
+= x.x.x - YYYY-MM-DD =
+* Fixed: listing action items overlaying with row border when on two lines on smaller screens.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
