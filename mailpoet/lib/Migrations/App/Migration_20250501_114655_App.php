@@ -10,6 +10,8 @@ use MailPoet\Migrator\AppMigration;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
 class Migration_20250501_114655_App extends AppMigration {
+  private const DB_QUERY_CHUNK_SIZE = 1000;
+
   public function run(): void {
     $clicksStatsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
     $unsubscribeStatsTable = $this->entityManager->getClassMetadata(StatisticsUnsubscribeEntity::class)->getTableName();
@@ -33,7 +35,24 @@ class Migration_20250501_114655_App extends AppMigration {
       return;
     }
 
-    // Then switch the global subscriber status to subscribed
+    // Process subscriber IDs in chunks
+    foreach (array_chunk($subscriberIds, self::DB_QUERY_CHUNK_SIZE) as $chunk) {
+      $this->processSubscriberChunk(
+        $chunk,
+        $subscribersTable,
+        $subscribersSegmentsTable,
+        $unsubscribeStatsTable
+      );
+    }
+  }
+
+  private function processSubscriberChunk(
+    array $subscriberIds,
+    string $subscribersTable,
+    string $subscribersSegmentsTable,
+    string $unsubscribeStatsTable
+  ): void {
+    // Switch the global subscriber status to subscribed
     $this->entityManager->getConnection()->executeQuery(
       "UPDATE {$subscribersTable}
        SET status = :subscribedStatus
