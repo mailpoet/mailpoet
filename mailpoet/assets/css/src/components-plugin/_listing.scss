@@ -195,8 +195,8 @@ div.mailpoet-listing-bulk-actions-container {
     border-bottom: 1px solid $color-tertiary-light;
     box-shadow: none;
     max-width: 30vw;
-    padding: $grid-gap-medium $grid-gap-half;
-    vertical-align: middle;
+    padding: 12px $grid-gap-half;
+    vertical-align: top;
 
     @include respond-to(small-screen) {
       max-width: none;
@@ -310,13 +310,10 @@ a.mailpoet-listing-title {
 
 .mailpoet-listing-actions {
   align-items: center;
-  display: none;
+  display: flex;
   flex-wrap: wrap;
-  left: 0;
   line-height: 15px;
-  position: absolute;
-  top: 0;
-  width: 100%;
+  visibility: hidden;
 
   a {
     color: $color-text-light;
@@ -340,7 +337,7 @@ a.mailpoet-listing-title {
   }
 
   tr:hover & {
-    display: flex;
+    visibility: visible;
   }
 
   @include respond-to(small-screen) {
