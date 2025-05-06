@@ -7,7 +7,7 @@
     <p class="mailpoet_sending_methods_help help">
       <% set allowedHtml = {'a': {'href': [], 'target': [], 'id': []}, 'strong': {}} %>
       <%= __('<strong>Tip:</strong> check out [link]this list[/link] of form plugins that integrate with MailPoet.')
-      |replaceLinkTags('https://kb.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target': '_blank', id: 'mailpoet_helper_link'})
+      |replaceLinkTags('https://kb.mailpoet.com/article/198-forms-themes-plugins-that-work-with-mailpoet', {'target': '_blank', id: 'mailpoet_helper_link'})
       |wpKses(allowedHtml)
       %>
     </p>

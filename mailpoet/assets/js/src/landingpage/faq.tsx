@@ -44,7 +44,7 @@ function Faq() {
       ),
       readMoreText: __('Read More', 'mailpoet'),
       readMoreLink:
-        'https://kb.mailpoet.com/article/349-choosing-your-mailpoet-plan',
+        'https://kb.mailpoet.com/article/349-mailpoet-plans-and-limits-explained',
     },
     {
       slug: 'item-4',

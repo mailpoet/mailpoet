@@ -73,7 +73,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                   (match, i) => (
                     <a
                       key={i}
-                      href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
+                      href="https://kb.mailpoet.com/article/338-enabledisable-3rd-party-libraries"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

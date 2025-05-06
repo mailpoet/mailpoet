@@ -29,7 +29,7 @@ export function Libs3rdParty() {
             )}{' '}
             <a
               className="mailpoet-link"
-              href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
+              href="https://kb.mailpoet.com/article/338-enabledisable-3rd-party-libraries"
               rel="noopener noreferrer"
               target="_blank"
             >

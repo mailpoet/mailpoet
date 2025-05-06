@@ -73,7 +73,7 @@ export function TestSending() {
                     key={i}
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received"
+                    href="https://kb.mailpoet.com/article/146-the-newsletters-are-not-being-received"
                   >
                     {match}
                   </a>

@@ -9,7 +9,7 @@ const trackCampaignNameTyped = _.once(() =>
   MailPoet.trackEvent('User has typed a GA campaign name'),
 );
 const tipLink =
-  'https://kb.mailpoet.com/article/187-track-your-newsletters-subscribers-in-google-analytics';
+  'https://kb.mailpoet.com/article/187-track-newsletters-subscribers-in-google-analytics';
 const tip = ReactStringReplace(
   __('For example, “Spring email”. [link]Read the guide.[/link]', 'mailpoet'),
   /\[link\](.*?)\[\/link\]/g,

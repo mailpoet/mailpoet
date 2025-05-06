@@ -67,7 +67,7 @@ function Warnings({
         if (match === '%2$s') return role.join(', ');
         return (
           <a
-            href="https://kb.mailpoet.com/article/270-role-based-email-addresses-are-not-allowed"
+            href="https://kb.mailpoet.com/article/270-sending-to-role-based-email-addresses-is-not-allowed"
             target="_blank"
             rel="noopener noreferrer"
             key={match}

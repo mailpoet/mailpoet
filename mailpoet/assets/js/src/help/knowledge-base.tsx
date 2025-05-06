@@ -19,7 +19,7 @@ export function KnowledgeBase() {
           <a
             target="_blank"
             rel="noreferrer noopener"
-            href="https://kb.mailpoet.com/category/165-newsletters"
+            href="https://kb.mailpoet.com/category/165-guides-tips"
           >
             Newsletters
           </a>
@@ -37,7 +37,7 @@ export function KnowledgeBase() {
           <a
             target="_blank"
             rel="noreferrer noopener"
-            href="https://kb.mailpoet.com/category/149-sending-methods"
+            href="https://kb.mailpoet.com/category/149-other-sending-methods"
           >
             Sending Methods
           </a>
@@ -64,7 +64,7 @@ export function KnowledgeBase() {
           <a
             target="_blank"
             rel="noreferrer noopener"
-            href="https://kb.mailpoet.com/category/123-newsletter-designer"
+            href="https://kb.mailpoet.com/category/123-newsletter-editor-designer"
           >
             Newsletter Designer
           </a>

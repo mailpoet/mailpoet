@@ -17,7 +17,7 @@ export function TaskScheduler() {
             {__('Select what will activate your newsletter queue.', 'mailpoet')}{' '}
             <a
               className="mailpoet-link"
-              href="https://kb.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
+              href="https://kb.mailpoet.com/article/129-newsletter-task-scheduler-cron"
               rel="noopener noreferrer"
               target="_blank"
             >

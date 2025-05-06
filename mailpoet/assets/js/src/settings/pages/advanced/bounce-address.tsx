@@ -15,7 +15,7 @@ export function BounceAddress() {
             {t('yourBouncedEmails')}{' '}
             <a
               className="mailpoet-link"
-              href="https://kb.mailpoet.com/article/180-how-bounce-management-works-in-mailpoet-3"
+              href="https://kb.mailpoet.com/article/180-bounce-management-in-mailpoet-3"
               rel="noopener noreferrer"
               target="_blank"
             >
