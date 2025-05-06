@@ -92,7 +92,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Listen');
     $i->waitForText('Einstellungen');
     $i->waitForText('Hilfe');
-    // $i->waitForText('Neue E-Mail'); Temporary disabled because the string changed and is not yet translated
+    $i->waitForText('Add new email'); // This will fail in the future when the string is translated
 
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
@@ -120,8 +120,8 @@ class SwitchingLanguagesCest {
     $i->amOnMailpoetPage('forms');
     $i->waitForText('Add new form'); // This will fail in the future when the string is translated
     $i->waitForText('Below pages'); // This will fail in the future when the string is translated
-    $i->waitForText('Sign-ups'); // This will fail in the future when the string is translated
-    $i->waitForText('Modified date'); // This will fail in the future when the string is translated
+    $i->waitForText('Registrierungen');
+    $i->waitForText('Änderungsdatum');
 
     $i->wantTo('Check Subscribers filter strings and button');
     $i->amOnMailpoetPage('subscribers');
@@ -144,7 +144,7 @@ class SwitchingLanguagesCest {
     $i->amOnMailpoetPage('lists');
     $i->waitForText('Abonnenten');
     $i->waitForText('Listen-Bewertung');
-    $i->waitForText('Add new list'); // This will fail in the future when the string is translated
+    $i->waitForText('Neue Liste hinzufügen');
     $i->waitForText('Ausgetragen');
 
     $i->wantTo('Check Settings tabs strings');
