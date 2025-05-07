@@ -62,7 +62,7 @@ class SubscriberCountShortcodeCest {
     $i->waitForElement('[data-automation-id="listing_filter_segment"]');
     $i->selectOption('[data-automation-id="listing_filter_segment"]', self::SUBSCRIBERS_LIST_NAME_TWO);
     $i->waitForElementVisible('[data-automation-id="listing_filter_segment"]');
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->click('[data-automation-id="action-trash"]');
     $i->waitForListingItemsToLoad();
     $i->waitForNoticeAndClose('11 subscribers were moved to the trash.');

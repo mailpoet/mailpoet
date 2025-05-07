@@ -18,9 +18,8 @@ class DeleteNewsletterCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
     $i->waitForNoticeAndClose('1 email was moved to the trash.');
     $i->waitForListingItemsToLoad();
-    // click to select all newsletters
-    $i->click('[data-automation-id="select_all"]');
-    $i->waitForText('Move to trash');
+    $i->selectAllListingItems();
+    $i->waitForText('Move to trash', 10, '.mailpoet-listing-bulk-actions');
     $i->waitForElementClickable('[data-automation-id="action-trash"]');
     $i->click('[data-automation-id="action-trash"]');
     $i->waitForNoticeAndClose('2 emails were moved to the trash.', 20);
@@ -42,8 +41,7 @@ class DeleteNewsletterCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Restore');
     $i->waitForText('1 email has been restored from the Trash.');
     $i->waitForListingItemsToLoad();
-    // click to select all newsletters
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->waitForText('Restore');
     $i->waitForElementClickable('[data-automation-id="action-restore"]');
     $i->click('[data-automation-id="action-restore"]');
@@ -70,8 +68,7 @@ class DeleteNewsletterCest {
     $i->waitForElementNotVisible($newsletterName);
     $i->waitForText($newsletterName . '2');
     $i->waitForText($newsletterName . '3');
-    // click to select all newsletters
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->click('Delete permanently');
     $i->waitForText('2 emails were permanently deleted.');
     $i->waitForElement('[data-automation-id="filters_all"]');
@@ -107,8 +104,7 @@ class DeleteNewsletterCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($newsletterName);
-    // click to select all newsletters
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->waitForText('All items on this page are selected.');
     $i->click('Select all items on all pages');
     $i->waitForText('All 22 items are selected.');
@@ -117,8 +113,7 @@ class DeleteNewsletterCest {
     $i->waitForText('22 emails were moved to the trash.');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
-    // click to select all newsletters
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->waitForText('All items on this page are selected.');
     $i->click('Select all items on all pages');
     $i->waitForText('All 22 items are selected.');

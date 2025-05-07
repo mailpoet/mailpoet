@@ -71,6 +71,12 @@ input.mailpoet-listing-current-page {
   width: 37px;
 }
 
+.mailpoet-listing-loading {
+  [data-automation-id='select_all'] {
+    display: none;
+  }
+}
+
 .mailpoet-listing-loading tbody tr,
 .mailpoet_form_loading div.mailpoet-form-grid {
   opacity: 0.2;

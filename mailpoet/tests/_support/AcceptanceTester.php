@@ -271,6 +271,12 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->seeNoJSErrors();
   }
 
+  public function selectAllListingItems() {
+    $i = $this;
+    $i->waitForElementVisible('[data-automation-id="select_all"]');
+    $i->click('[data-automation-id="select_all"]');
+  }
+
   public function waitForListingItemsToLoad() {
     $i = $this;
     $i->waitForElementNotVisible('.mailpoet-listing-loading');

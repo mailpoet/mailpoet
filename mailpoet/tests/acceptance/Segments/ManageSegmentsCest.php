@@ -275,7 +275,7 @@ class ManageSegmentsCest {
     $i->waitForText($segment2Name);
 
     $i->wantTo('Select all segments and move them back to trash');
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->selectOption('Bulk actions', 'Trash');
     $i->waitForText('Are you sure you want to trash the selected segments');
     $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
@@ -284,7 +284,7 @@ class ManageSegmentsCest {
     $i->wantTo('Select all segments in trash and bulk delete them permanently');
     $i->changeWooTableTab('trash');
     $i->waitForText($segment1Name);
-    $i->click('[data-automation-id="select_all"]');
+    $i->selectAllListingItems();
     $i->selectOption('Bulk actions', 'Delete permanently');
     $i->click('Delete permanently'); // modal confirmation
     $i->waitForText('No data to display');
