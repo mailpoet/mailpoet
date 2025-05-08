@@ -59,6 +59,8 @@ class SubscribeOnRegistrationPageCest {
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForText('registerpagesignup@fake.fake');
     $i->clickItemRowActionByItemName($regpageuseremail, 'Edit');
+    $i->waitForText('Edit subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForText($regseg);
   }
 

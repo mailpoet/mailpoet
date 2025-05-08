@@ -192,7 +192,7 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->selectOptionInSelect2(self::MULTIPLE_SEGMENT_NAME_COOKING);
     $i->seeNoJSErrors();
@@ -214,6 +214,7 @@ class ManageSubscribersCest {
     $i->wantTo('Check subscriber edit page and the attached lists');
     $i->waitForText('Subscriber');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeSelectedInSelect2(self::MULTIPLE_SEGMENT_NAME_COOKING);
     $i->seeSelectedInSelect2(self::MULTIPLE_SEGMENT_NAME_CAMPING);
@@ -231,7 +232,7 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForText(self::SINGLE_SEGMENT_NAME);
     $i->click('.select2-selection__choice__remove');
@@ -244,7 +245,7 @@ class ManageSubscribersCest {
 
     $i->wantTo('Remove subscriber from list from the listing page');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->selectOptionInSelect2(self::SINGLE_SEGMENT_NAME);
     $i->click('Save');
@@ -274,11 +275,11 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->fillField(['name' => 'first_name'], 'EditedNew');
     $i->fillField(['name' => 'last_name'], 'EditedGlobalUser');
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Unsubscribed');
-    $i->waitForElementNotVisible('.mailpoet_form_loading');
     // we cannot use data-automation attribute because this input is based on guttenberg component
     $i->fillField('.mailpoet-form-field-tags input[type="text"]', 'My tag 1,'); // the comma separates the tag
     $i->fillField('.mailpoet-form-field-tags input[type="text"]', 'My tag 2,');
@@ -292,7 +293,7 @@ class ManageSubscribersCest {
     $i->see('My tag 2');
     $i->see('My tag 3');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Unsubscribed');
     $i->see('Unsubscribed at', $unsubscribedMessage);
@@ -312,7 +313,7 @@ class ManageSubscribersCest {
     $i->see(self::MULTIPLE_SEGMENT_NAME_COOKING);
     $i->see(self::MULTIPLE_SEGMENT_NAME_CAMPING);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeSelectedInSelect2(self::MULTIPLE_SEGMENT_NAME_COOKING);
     $i->seeSelectedInSelect2(self::MULTIPLE_SEGMENT_NAME_CAMPING);

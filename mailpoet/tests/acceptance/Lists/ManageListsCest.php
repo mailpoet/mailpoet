@@ -60,6 +60,8 @@ class ManageListsCest {
     $i->wantTo('Edit existing list');
     $i->waitForText('Lists');
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
+    $i->waitForText('Edit list');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForText($newListTitle);
     $i->clearFormField('#field_name');
     $i->fillField('Public list name', $editedListTitle);

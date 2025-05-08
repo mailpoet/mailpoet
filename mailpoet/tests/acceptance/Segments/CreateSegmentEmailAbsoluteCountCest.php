@@ -69,6 +69,8 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->wantTo('Edit the segment');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
     $i->seeInField('[data-automation-id="segment-number-of-opens"]', '2');
     $i->seeInField('[data-automation-id="segment-number-of-days"]', '3');
@@ -105,6 +107,8 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElementVisible('[data-automation-id="segment-email"]');
     $i->waitForText('This segment has 1 subscribers');
     $i->selectOptionInReactSelect('number of opens', '[data-automation-id="select-segment-action"]');

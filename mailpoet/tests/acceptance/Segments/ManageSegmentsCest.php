@@ -97,6 +97,8 @@ class ManageSegmentsCest {
 
     $i->wantTo('Edit existing segment');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForText('This segment has 3 subscribers');
     $i->clearFormField($nameElement);
     $i->clearField($descriptionElement, '');
@@ -363,7 +365,8 @@ class ManageSegmentsCest {
     $listingAutomationSelector = '[data-automation-id="mailpoet_dynamic_segment_name_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
-    $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');

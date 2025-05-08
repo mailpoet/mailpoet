@@ -148,7 +148,8 @@ class AdminUserSubscriptionCest {
 
     // Verify the first/last name values before WP user creation
     $i->clickItemRowActionByItemName($subscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForElementVisible(['css' => 'input[name="first_name"]']);
     $i->seeInField(['css' => 'input[name="first_name"]'], $uniqueFirstName);
     $i->seeInField(['css' => 'input[name="last_name"]'], $uniqueLastName);
@@ -176,7 +177,8 @@ class AdminUserSubscriptionCest {
 
     // Verify the first/last name were updated to match WordPress user data
     $i->clickItemRowActionByItemName($subscriberEmail, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForElementVisible(['css' => 'input[name="first_name"]']);
 
     // Check that the values match WordPress user data

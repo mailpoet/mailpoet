@@ -106,7 +106,8 @@ class ManageSubscriptionLinkCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
     $i->clickItemRowActionByItemName(\AcceptanceTester::ADMIN_EMAIL, 'Edit');
-    $i->waitForText('Subscriber');
+    $i->waitForText('Edit subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForElement('[data-automation-id="subscriber_edit_form"]');
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
     $i->click('Save');

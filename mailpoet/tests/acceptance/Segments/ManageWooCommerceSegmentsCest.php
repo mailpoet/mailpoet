@@ -50,6 +50,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($categorySelectElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -75,6 +77,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($categorySelectElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -116,6 +120,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($productSelectElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -142,6 +148,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($productSelectElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -182,6 +190,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -212,6 +222,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -252,6 +264,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($totalSpentTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -283,6 +297,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($totalSpentTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -323,6 +339,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($singleOrderValueTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -354,6 +372,8 @@ class ManageWooCommerceSegmentsCest {
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElement($singleOrderValueTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);

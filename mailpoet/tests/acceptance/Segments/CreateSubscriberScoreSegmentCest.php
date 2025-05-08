@@ -42,6 +42,8 @@ class CreateSubscriberScoreSegmentCest {
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->seeInField('[data-automation-id="segment-subscriber-score-value"]', '20.51');
     $i->waitForText('This segment has');
@@ -80,6 +82,8 @@ class CreateSubscriberScoreSegmentCest {
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->dontSeeElement('[data-automation-id="segment-subscriber-score-value"]');
     $i->waitForText('This segment has');
