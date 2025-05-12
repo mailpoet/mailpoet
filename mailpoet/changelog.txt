@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.12.2 - 2025-05-12 =
+* Fixed: incorrect number in success message when bulk removing subscribers from all lists.
+
 = 5.12.1 - 2025-05-06 =
 * Fixed: listing action items overlaying with row border when on two lines on smaller screens;
 * Fixed: Handling of Japanese characters in custom field blocks in the form editor.
