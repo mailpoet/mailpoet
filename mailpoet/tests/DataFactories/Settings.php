@@ -10,16 +10,19 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class Settings {
   const DEFAULT_OPTIN_MESSAGE = 'Yes, I would like to be added to your mailing list';
 
   private SettingsController $settings;
   private AuthorizedEmailsController $authorizedEmailsController;
+  private TransactionalEmails $transactionalEmails;
 
   public function __construct() {
     $this->settings = SettingsController::getInstance();
     $this->authorizedEmailsController = ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class);
+    $this->transactionalEmails = ContainerWrapper::getInstance()->get(TransactionalEmails::class);
     $this->settings->resetCache();
   }
 
@@ -242,6 +245,8 @@ class Settings {
 
   public function withWooCommerceEmailCustomizerEnabled() {
     $this->settings->set('woocommerce.use_mailpoet_editor', true);
+    // When we activate WC email customization directly via settings controller we need to init the transactional email.
+    $this->transactionalEmails->init();
     return $this;
   }
 
