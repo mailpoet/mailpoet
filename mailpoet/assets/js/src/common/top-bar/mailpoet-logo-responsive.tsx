@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailPoetLogo } from './mailpoet-logo';
-import { MailPoetLogoMobile } from './mailpoet-logo-mobile';
 
 type Props = {
   onClick?: () => void;
@@ -49,23 +48,13 @@ export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
           }
         }}
       >
-        <div className="mailpoet-top-bar-logo-desktop">
-          <MailPoetLogo />
-        </div>
-        <div className="mailpoet-top-bar-logo-mobile">
-          <MailPoetLogoMobile />
-        </div>
+        <MailPoetLogo />
       </a>
     );
   } else {
     logo = (
       <div className="mailpoet-top-bar-logo">
-        <div className="mailpoet-top-bar-logo-desktop">
-          <MailPoetLogo />
-        </div>
-        <div className="mailpoet-top-bar-logo-mobile">
-          <MailPoetLogoMobile />
-        </div>
+        <MailPoetLogo />
       </div>
     );
   }

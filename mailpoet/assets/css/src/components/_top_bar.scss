@@ -32,33 +32,13 @@
     z-index: 1;
 
     svg {
-      max-height: 100%;
-      max-width: 100%;
+      height: 23px;
+      width: 75px;
     }
   }
 
   a.mailpoet-top-bar-logo {
     cursor: pointer;
-  }
-}
-
-.mailpoet-top-bar-logo-desktop {
-  display: block;
-  height: 23px;
-  width: 75px;
-
-  @include respond-to(small-screen) {
-    display: none;
-  }
-}
-
-.mailpoet-top-bar-logo-mobile {
-  display: none;
-  height: 40px;
-  width: 39px;
-
-  @include respond-to(small-screen) {
-    display: block;
   }
 }
 
