@@ -144,8 +144,20 @@
     padding-inline-start: 24px;
 
     li {
-      list-style-image: url('../../img/upgrade/plus.svg');
+      list-style-type: none;
       margin-bottom: 8px;
+      position: relative;
+
+      &:before {
+        background: url('../../img/upgrade/check.svg') no-repeat;
+        background-size: contain;
+        content: '';
+        height: 20px;
+        left: -24px;
+        position: absolute;
+        top: 2px;
+        width: 20px;
+      }
 
       .tp-wrapper {
         position: relative;
@@ -184,14 +196,14 @@
     }
 
     &.free {
-      li {
-        list-style-image: url('../../img/upgrade/check.svg');
+      li:before {
+        background-image: url('../../img/upgrade/check.svg');
       }
     }
 
     &.business {
-      li {
-        list-style-image: url('../../img/upgrade/plus-orange.svg');
+      li:before {
+        background-image: url('../../img/upgrade/plus-orange.svg');
       }
     }
   }
