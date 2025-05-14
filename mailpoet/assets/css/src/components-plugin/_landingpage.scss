@@ -1,3 +1,28 @@
+.admin_page_mailpoet-landingpage {
+  #wpcontent {
+    overflow-x: hidden;
+  }
+
+  #wpwrap {
+    background: white;
+  }
+
+  div.updated,
+  div.error,
+  .update-nag,
+  .notice {
+    display: none !important;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  #wpfooter {
+    background: $color-grey-0;
+  }
+}
+
 #mailpoet_landingpage_container {
   $content-padding: 32px 65px;
   $mobile-content-padding: 25px;
