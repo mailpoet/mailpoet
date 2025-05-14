@@ -1,13 +1,12 @@
 @import '../components-automation/colors';
 
-$mp-toggle-border-radius: 0.125rem;
 $mp-toggle-transition: cubic-bezier(0, 1, 0.5, 1);
 
 .mp-toggle {
   --toggle-height: 40px;
   --font-size: 0.8125rem;
   background: #fff;
-  border-radius: $mp-toggle-border-radius;
+  border-radius: 3px;
   height: var(--toggle-height);
   position: relative;
 
@@ -32,46 +31,43 @@ $mp-toggle-transition: cubic-bezier(0, 1, 0.5, 1);
 
     .mp-toggle__switch {
       border: 1px solid $color-gutenberg-grey-400;
-      border-radius: $mp-toggle-border-radius;
+      border-radius: 3px;
       flex: 0 0 100%;
       height: var(--toggle-height);
       position: relative;
+      text-align: center;
 
       &:hover {
         cursor: pointer;
       }
 
-      &:before {
-        background-color: $color-gutenberg-grey-900;
-        border-radius: $mp-toggle-border-radius;
-        color: #fff !important;
-        content: attr(data-unchecked);
+      &:before,
+      &:after {
+        border-radius: 2px;
         font-size: var(--font-size);
-        font-weight: normal;
-        left: 0;
+        height: 100%;
         line-height: var(--toggle-height);
         min-width: 45px;
         padding: 0 12px;
         position: absolute;
-        text-align: center;
         top: 0;
         transition: background-color 0.3s $mp-toggle-transition;
         width: 50%;
       }
 
+      &:before {
+        background-color: $color-gutenberg-grey-900;
+        color: #fff;
+        content: attr(data-unchecked);
+        font-weight: normal;
+        left: 0;
+      }
+
       &:after {
+        background-color: #fff;
         color: $color-gutenberg-grey-700;
         content: attr(data-checked);
-        font-size: var(--font-size);
-        left: 50%;
-        line-height: var(--toggle-height);
-        min-width: 45px;
-        padding: 0 12px;
-        position: absolute;
-        text-align: center;
-        top: 0;
-        transition: background-color 0.3s $mp-toggle-transition;
-        width: 50%;
+        right: 0;
         z-index: 1;
       }
     }
@@ -96,46 +92,16 @@ $mp-toggle-transition: cubic-bezier(0, 1, 0.5, 1);
       ~ label {
         .mp-toggle__switch {
           &:before {
-            content: attr(data-checked);
-            left: 50%;
+            background-color: #fff;
+            color: $color-gutenberg-grey-700;
           }
 
           &:after {
-            color: $color-gutenberg-grey-700;
-            content: attr(data-unchecked);
-            left: 0;
-          }
-        }
-
-        &:hover {
-          color: $color-gutenberg-grey-700;
-        }
-      }
-
-      &:focus,
-      &:hover {
-        ~ label {
-          .mp-toggle__switch {
-            &:before {
-              background-color: $color-gutenberg-grey-900;
-              color: #fff;
-            }
+            background-color: $color-gutenberg-grey-900;
+            color: #fff;
           }
         }
       }
-    }
-
-    &:focus ~ label,
-    &:hover ~ label {
-      .mp-toggle__switch {
-        &:after {
-          color: $color-gutenberg-grey-900;
-        }
-      }
-    }
-
-    &:hover ~ label {
-      color: $color-gutenberg-grey-900;
     }
   }
 }
