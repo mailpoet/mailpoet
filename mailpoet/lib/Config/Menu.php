@@ -449,19 +449,17 @@ class Menu {
     );
 
     // Upgrade page
-    if ($this->capabilitiesManager->showUpgradePage()) {
-      $this->wp->addSubmenuPage(
-        self::MAIN_PAGE_SLUG,
-        $this->setPageTitle(__('Upgrade', 'mailpoet')),
-        esc_html__('Upgrade', 'mailpoet'),
-        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-        self::UPGRADE_PAGE_SLUG,
-        [
-          $this,
-          'upgrade',
-        ]
-      );
-    }
+    $this->wp->addSubmenuPage(
+      $this->capabilitiesManager->showUpgradePage() ? self::MAIN_PAGE_SLUG : self::HELP_PAGE_SLUG,
+      $this->setPageTitle(__('Upgrade', 'mailpoet')),
+      esc_html__('Upgrade', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      self::UPGRADE_PAGE_SLUG,
+      [
+        $this,
+        'upgrade',
+      ]
+    );
 
     // WooCommerce Setup
     $this->wp->addSubmenuPage(
