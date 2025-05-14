@@ -242,20 +242,22 @@
 }
 
 .mailpoet-tiers-page-tier-header__icon {
+  background-position: -4px -4px;
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: 48px 48px;
   height: 40px;
-  &.free {
-    background-image: url('../../img/upgrade/1-starter-plan.svg');
-    width: 30.44px;
+  width: 40px;
+
+  &.starter {
+    background-image: url('../../img/upgrade/starter.svg');
   }
-  &.basic {
-    background-image: url('../../img/upgrade/2-tier-1-plan.svg');
-    width: 40.37px;
+
+  &.business {
+    background-image: url('../../img/upgrade/business.svg');
   }
-  &.pro {
-    background-image: url('../../img/upgrade/3-business-plan.svg');
-    width: 30.44px;
+
+  &.agency {
+    background-image: url('../../img/upgrade/agency.svg');
   }
 }
 
@@ -308,23 +310,23 @@
       }
     }
   }
-  #mailpoet-pro-monthly-price,
-  #mailpoet-basic-monthly-price {
+  #mailpoet-agency-monthly-price,
+  #mailpoet-business-monthly-price {
     display: block;
   }
-  #mailpoet-pro-yearly-price,
-  #mailpoet-basic-yearly-price {
+  #mailpoet-agency-yearly-price,
+  #mailpoet-business-yearly-price {
     display: none;
   }
 }
 
 .mailpoet-tiers-page:has(#pricing_duration:checked) {
-  .mailpoet-tiers-page-tier-price #mailpoet-pro-monthly-price,
-  .mailpoet-tiers-page-tier-price #mailpoet-basic-monthly-price {
+  .mailpoet-tiers-page-tier-price #mailpoet-agency-monthly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-business-monthly-price {
     display: none;
   }
-  .mailpoet-tiers-page-tier-price #mailpoet-pro-yearly-price,
-  .mailpoet-tiers-page-tier-price #mailpoet-basic-yearly-price {
+  .mailpoet-tiers-page-tier-price #mailpoet-agency-yearly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-business-yearly-price {
     display: block;
   }
 }

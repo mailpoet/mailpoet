@@ -25,12 +25,12 @@
       <div class="mailpoet-tiers-page-content__tier">
         <div class="mailpoet-tiers-page-tier-header">
           <div class="mailpoet-tiers-page-tier-header__title">
-            <div class="mailpoet-tiers-page-tier-header__icon free"></div>
+            <div class="mailpoet-tiers-page-tier-header__icon starter"></div>
             <h2 class="mailpoet-tiers-page-tier-header-label">
-              <%= esc_html__('Free') %>
+              <%= esc_html__('Starter') %>
             </h2>
           </div>
-          <p><%= esc_html__('Essential email marketing tools for small businesses.') %></p>
+          <p><%= esc_html__('Email marketing essentials for bloggers, small businesses, or those just starting out.') %></p>
         </div>
         <div class="mailpoet-tiers-page-tier-price">
           <p>&nbsp;</p>
@@ -39,111 +39,15 @@
           </h3>
           <p><%= esc_html__('Up to 500 subscribers') %></p>
         </div>
-        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Free'), button_class: 'is-secondary', tier: 0, group:'free'}) %>
+        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Starter'), button_class: 'is-secondary', group:'starter'}) %>
         <ul class="free">
-          <li><%= __('<b>1,500</b> emails per month, <b>500</b> emails per day') | wpKses({'b': {}}) %></li>
-          <li>
-            <div class="tp-wrapper">
-              <div id="free-automations" role="tooltip">
-                <p><%= esc_html__('Automate communications with subscribers based on how and when they engage with your brand.') %></p>
-                <p><%= esc_html__('Customize automations based on email engagement.') %></p>
-              </div>
-              <em aria-describedby="free-automations" class="tp-trigger" tabindex="0"><%= esc_html__('Basic email automations') %></em>
-            </div>
-          </li>
-          <li>
-            <div class="tp-wrapper">
-              <div id="free-email" role="tooltip">
-                <%= esc_html__('Send bulk promotional and informational newsletters and new post notifications to your subscribers.') %>
-              </div>
-              <em aria-describedby="free-email" class="tp-trigger" tabindex="0"><%= esc_html__('Email and ecommerce marketing') %></em>
-            </div>
-          </li>
-          <li>
-            <div class="tp-wrapper">
-              <div id="free-widgets" role="tooltip">
-                <p><%= esc_html__('Leverage built-in or create custom subscription forms to grow your email list.') %></p>
-                <p><%= esc_html__('Includes popups, slide-ins, top/bottom bars and widgets.') %></p>
-              </div>
-              <em aria-describedby="free-widgets" class="tp-trigger" tabindex="0"><%= esc_html__('Widget and popup subscription forms') %></em>
-            </div>
-          </li>
-          <li>
-            <div class="tp-wrapper">
-              <div id="free-segmentation" role="tooltip">
-                <p><%= esc_html__('Segment and email subscribers by custom field values, email, site, or shopping behavior.') %></p>
-                <p><%= esc_html__('Leverage pre-built segment templates or create your own simple segments.') %></p>
-              </div>
-              <em aria-describedby="free-segmentation" class="tp-trigger" tabindex="0"><%= esc_html__('Basic subscriber segmentation') %></em>
-            </div>
-          </li>
-          <li>
-            <div class="tp-wrapper">
-              <div id="free-templates" role="tooltip">
-                <%= esc_html__('Leverage 70+ built-in email templates or create your own with an easy-to-use drag&drop editor.') %>
-              </div>
-              <em aria-describedby="free-widgets" class="tp-trigger" tabindex="0"><%= esc_html__('Customizable  email templates') %></em>
-            </div>
-          </li>
+          <li><%= __('Send up to <b>5,000</b> emails per month') | wpKses({'b': {}}) %></li>
+          <li><%= esc_html__('Subscription forms') %></li>
+          <li><%= esc_html__('Email and ecommerce marketing') %></li>
+          <li><%= esc_html__('Basic marketing automation') %></li>
+          <li><%= esc_html__('Summarized email engagement statistics') %></li>
+          <li><%= esc_html__('Send with MailPoet Sending Service') %></li>
         </ul>
-      </div>
-      <div class="mailpoet-tiers-page-content__tier">
-        <div class="mailpoet-tiers-page-tier-header">
-          <div class="mailpoet-tiers-page-tier-header__title">
-            <div class="mailpoet-tiers-page-tier-header__icon basic"></div>
-            <h2 class="mailpoet-tiers-page-tier-header-label">
-              <%= esc_html__('Basic') %>
-            </h2>
-          </div>
-          <p><%= esc_html__('Fuel business growth with data-driven email marketing tools and insights.') %></p>
-        </div>
-        <div class="mailpoet-tiers-page-tier-price">
-          <p><%= esc_html__('From') %></p>
-          <h3 id="mailpoet-basic-yearly-price">
-            <span class="pricing-discount">
-              <sup class="pricing-discount-currency">$</sup>
-              <span class="pricing-discount-value">11.00</span>
-              &nbsp;
-            </span>
-            <sup class="pricing-currency">$</sup>
-            <span class="pricing-value">9.50</span>
-            <%= esc_html__(' / month') %>
-          </h3>
-          <h3 id="mailpoet-basic-monthly-price">
-            <sup class="pricing-currency">$</sup>
-            <span class="pricing-value">11.00</span>
-            <%= esc_html__(' / month') %>
-          </h3>
-          <p><%= esc_html__('for 500 subscribers') %></p>
-        </div>
-        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Basic'), button_class:'is-secondary', tier: 1, group:'basic'}) %>
-        <div>
-          <p><%= __('<b>All Free plan features</b>, plus:') | wpKses({'b': {}}) %></p>
-          <ul>
-            <li><%= __('<b>5,000</b> emails per month, <b>no daily limit</b>') | wpKses({'b': {}}) %></li>
-            <li>
-              <div class="tp-wrapper">
-                <div id="basic-automations" role="tooltip">
-                  <p><%= esc_html__('Automate communications with subscribers based on how and when they engage with your brand.') %></p>
-                  <p><%= esc_html__('Customize automations based on email engagement, site or shopping patterns.') %></p>
-                </div>
-                <em aria-describedby="basic-automations" class="tp-trigger" tabindex="0"><%= esc_html__('Custom email automations') %></em>
-              </div>
-            </li>
-            <li>
-              <div class="tp-wrapper">
-                <div id="basic-stats" role="tooltip">
-                  <p><%= esc_html__('Understand how subscribers are engaging with your emails and automations, and how that translates to conversions.') %></p>
-                  <p><%= esc_html__('See who engaged with emails and how it influenced their purchasing behaviors.') %></p>
-                </div>
-                <em aria-describedby="basic-stats" class="tp-trigger" tabindex="0"><%= esc_html__('Detailed email and automation statistics') %></em>
-              </div>
-            </li>
-            <li><%= esc_html__('Google Analytics tracking') %></li>
-            <li><%= esc_html__('No MailPoet logo in emails') %></li>
-            <li><%= esc_html__('24/7 email support') %></li>
-          </ul>
-        </div>
       </div>
       <div class="mailpoet-tiers-page-content__tier popular">
         <div class="mailpoet-tiers-page-label">
@@ -153,56 +57,80 @@
         </div>
         <div class="mailpoet-tiers-page-tier-header">
           <div class="mailpoet-tiers-page-tier-header__title">
-            <div class="mailpoet-tiers-page-tier-header__icon pro"></div>
+            <div class="mailpoet-tiers-page-tier-header__icon business"></div>
             <h2 class="mailpoet-tiers-page-tier-header-label">
-              <%= esc_html__('Pro') %>
+              <%= esc_html__('Business') %>
             </h2>
           </div>
-          <p><%= esc_html__('Increase engagement (and conversions!) with personalized email campaigns.') %></p>
+          <p><%= esc_html__('Advanced email marketing functionality designed to help businesses of all sizes grow.') %></p>
         </div>
         <div class="mailpoet-tiers-page-tier-price">
           <p><%= esc_html__('From') %></p>
-          <h3 id="mailpoet-pro-yearly-price">
+          <h3 id="mailpoet-business-yearly-price">
             <span class="pricing-discount">
               <sup class="pricing-discount-currency">$</sup>
-              <span class="pricing-discount-value">13.00</span>
+              <span class="pricing-discount-value">10.00</span>
               &nbsp;
             </span>
             <sup class="pricing-currency">$</sup>
-            <span class="pricing-value">11.50</span>
+            <span class="pricing-value">9.00</span>
             <%= esc_html__(' / month') %>
           </h3>
-          <h3 id="mailpoet-pro-monthly-price">
+          <h3 id="mailpoet-business-monthly-price">
             <sup class="pricing-currency">$</sup>
-            <span class="pricing-value">13.00</span>
+            <span class="pricing-value">10.00</span>
             <%= esc_html__(' / month') %>
           </h3>
           <p><%= esc_html__('for 500 subscribers') %></p>
         </div>
-        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Pro'), button_class:'is-primary', tier: 2, group:'pro'}) %>
+        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Business'), button_class:'is-primary', group:'business'}) %>
         <div>
-          <p><%= __('<b>All Basic features</b>, plus:') | wpKses({'b': {}}) %></p>
+          <p><%= __('<b>All Starter plan features</b>, plus:') | wpKses({'b': {}}) %></p>
           <ul class="business">
-            <li><%= __('<b>7,500</b> emails per month, <b>no daily limit</b>') | wpKses({'b': {}}) %></li>
-            <li>
-              <div class="tp-wrapper">
-                <div id="pro-automations" role="tooltip">
-                  <p><%= esc_html__('Automate communications with subscribers based on how and when they engage with your brand.') %></p>
-                  <p><%= esc_html__('Automate multi-day journeys and refine further actions with conditional if/else logic based on email and shopping behavior.') %></p>
-                </div>
-                <em aria-describedby="pro-automations" class="tp-trigger" tabindex="0"><%= esc_html__('Email automation journeys with branching') %></em>
-              </div>
-            </li>
-            <li>
-              <div class="tp-wrapper">
-                <div id="pro-segmentation" role="tooltip">
-                  <p><%= esc_html__('Segment and email subscribers by custom field values, email, site, or shopping behavior.') %></p>
-                  <p><%= esc_html__('Segment subscribers by multiple properties using AND/OR operators.') %></p>
-                </div>
-                <em aria-describedby="pro-segmentation" class="tp-trigger" tabindex="0"><%= esc_html__('Advanced subscriber segmentation') %></em>
-              </div>
-            </li>
-            <li><%= esc_html__('24/7 email support') %></li>
+            <li><%= __('Send <b>unlimited</b> emails per month') | wpKses({'b': {}}) %></li>
+            <li><%= esc_html__('Remove MailPoet branding') %></li>
+            <li><%= esc_html__('Priority support') %></li>
+            <li><%= esc_html__('Subscriber segmentation') %></li>
+            <li><%= esc_html__('Targeted marketing automation') %></li>
+            <li><%= esc_html__('Detailed email engagement and ecommerce statistics') %></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mailpoet-tiers-page-content__tier">
+        <div class="mailpoet-tiers-page-tier-header">
+          <div class="mailpoet-tiers-page-tier-header__title">
+            <div class="mailpoet-tiers-page-tier-header__icon agency"></div>
+            <h2 class="mailpoet-tiers-page-tier-header-label">
+              <%= esc_html__('Agency') %>
+            </h2>
+          </div>
+          <p><%= esc_html__('Add MailPoet’s full functionality to multiple websites – perfect for WordPress agencies or freelancers.') %></p>
+        </div>
+        <div class="mailpoet-tiers-page-tier-price">
+          <p><%= esc_html__('From') %></p>
+          <h3 id="mailpoet-agency-yearly-price">
+            <span class="pricing-discount">
+              <sup class="pricing-discount-currency">$</sup>
+              <span class="pricing-discount-value">30.00</span>
+              &nbsp;
+            </span>
+            <sup class="pricing-currency">$</sup>
+            <span class="pricing-value">26.00</span>
+            <%= esc_html__(' / month') %>
+          </h3>
+          <h3 id="mailpoet-agency-monthly-price">
+            <sup class="pricing-currency">$</sup>
+            <span class="pricing-value">30.00</span>
+            <%= esc_html__(' / month') %>
+          </h3>
+          <p><%= esc_html__('for 500 subscribers') %></p>
+        </div>
+        <%= include('upgrade/upgrade_button.html', {label:esc_html__('Get Agency'), button_class:'is-secondary', group:'agency'}) %>
+        <div>
+          <p><%= __('<b>All Business features</b>, plus:') | wpKses({'b': {}}) %></p>
+          <ul>
+            <li><%= __('Use MailPoet on <b>50 websites</b>') | wpKses({'b': {}}) %></li>
+            <li><%= esc_html__('Number of subscribers is per MailPoet instance') %></li>
           </ul>
         </div>
       </div>
