@@ -222,7 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.2 - 2025-05-12 =
-* Fixed: incorrect number in success message when bulk removing subscribers from all lists.
+= x.x.x - YYYY-MM-DD =
+* Improved: new Upgrade page design.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
