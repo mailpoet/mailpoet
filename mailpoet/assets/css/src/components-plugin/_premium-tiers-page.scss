@@ -68,25 +68,47 @@
 .mailpoet-tiers-page-content__tier {
   align-items: flex-start;
   background: #fff;
-  border-bottom: 1px solid $color-gutenberg-grey-200;
-  border-left: 1px solid $color-gutenberg-grey-200;
-  border-radius: 4px 0 0 4px;
-  border-top: 1px solid $color-gutenberg-grey-200;
+  border: 1px solid $color-gutenberg-grey-200;
+  border-radius: 4px 4px 0 0;
   display: flex;
   flex: 1 0 0;
   flex-direction: column;
   gap: 24px;
-  height: 42.75rem;
+  min-height: 600px;
   padding: 24px;
 
   @include respond-to(small-screen) {
-    border: 1px solid $color-gutenberg-grey-200;
+    border-radius: 0;
+    flex-basis: auto;
+    min-height: 0 !important;
+  }
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+    border-right-width: 0;
+
+    @include respond-to(small-screen) {
+      border-bottom-width: 0;
+      border-radius: 4px 4px 0 0;
+      border-right-width: 1px;
+    }
+  }
+
+  &:last-child {
+    border-left-width: 0;
+    border-radius: 0 4px 4px 0;
+
+    @include respond-to(small-screen) {
+      border-left-width: 1px;
+      border-radius: 0 0 4px 4px;
+      border-top-width: 0;
+    }
   }
 
   &.popular {
     background: #fffaf2;
     border: 1px solid #ffe9cc;
-    height: 45.75rem;
+    min-height: 648px;
   }
 
   .components-button {
@@ -207,7 +229,7 @@
   color: #fff;
   font-size: 0.75rem;
   gap: 8px;
-  line-height: 1.333;
+  line-height: 16px;
 }
 
 .mailpoet-tiers-page-tier-header {
@@ -217,6 +239,10 @@
   flex-direction: column;
   gap: 8px;
   min-height: 7.5rem;
+
+  @include respond-to(small-screen) {
+    min-height: 0;
+  }
 
   p {
     color: $color-gutenberg-grey-900;
