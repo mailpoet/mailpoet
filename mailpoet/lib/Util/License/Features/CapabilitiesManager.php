@@ -144,17 +144,4 @@ class CapabilitiesManager {
     }
     return false;
   }
-
-  /**
-   * Returns true if there is a valid key for a tier that can be upgraded
-   * @todo remove after the a/b test is finished and keep only one page
-   */
-  public function showNewUpgradePage(): bool {
-    $tier = $this->getTier();
-    $isKeyValid = $this->subscribersFeature->hasValidPremiumKey() || $this->servicesChecker->isMailPoetAPIKeyValid(false);
-    if ($isKeyValid && isset($tier) && $tier < self::MIN_TIER_NO_UPGRADE_PAGE) {
-      return true;
-    }
-    return false;
-  }
 }
