@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.12.3 - 2025-05-19 =
+* Improved: new Upgrade page design.
+
 = 5.12.2 - 2025-05-12 =
 * Fixed: incorrect number in success message when bulk removing subscribers from all lists.
 
