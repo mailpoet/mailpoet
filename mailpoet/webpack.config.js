@@ -201,7 +201,6 @@ const adminConfig = {
   name: 'admin',
   entry: {
     vendor: 'webpack-vendor-index.jsx',
-    haw: 'vendor/happiness-assistant-widget.js',
     mailpoet: 'webpack-mailpoet-index.jsx',
     admin_vendor: ['prop-types', 'lodash', 'webpack-admin-expose.js'], // libraries shared between free and premium plugin
     admin: 'webpack-admin-index.tsx',
@@ -222,6 +221,10 @@ const adminConfig = {
         {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
+        },
+        {
+          from: 'assets/js/src/vendor/happiness-assistant-widget.js',
+          to: 'haw.js',
         },
       ],
     }),
