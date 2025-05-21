@@ -197,6 +197,16 @@
       document.addEventListener('DOMContentLoaded', function() {
         const supportLink = document.getElementById('mailpoet-support-link');
         if (supportLink) {
+          <% if has_premium_support %>
+            supportLink.addEventListener('click', function(e) {
+              const chatId = getChatId();
+              if (chatId) {
+                e.preventDefault();
+                window.open(`<%= support_form_url %>?chatId=${chatId}`, '_blank');
+              }
+            });
+          <% endif %>
+
           // Only show the support link once the chat has begun
           const checkChatId = setInterval(function() {
             const chatId = getChatId();
