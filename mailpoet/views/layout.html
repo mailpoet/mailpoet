@@ -216,6 +216,11 @@
             }
           }, 2000);
         }
+        // Prevent conflicts with other keydown events on Dotcom
+        function writingFixer (e) {
+            e.stopPropagation();
+        }
+        document.getElementById('chat').addEventListener('keydown', writingFixer);
       });
     </script>
   <% else %>
@@ -234,7 +239,7 @@
           <% endif %>
         },
       }).then(() => {
-          // stopping propagation to avoid conflicts with other keydown events form WP.com
+        // Prevent conflicts with other keydown events on Dotcom
         function writingFixer (e) {
           e.stopPropagation();
         }
