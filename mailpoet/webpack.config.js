@@ -3,6 +3,7 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const WebpackTerserPlugin = require('terser-webpack-plugin');
 const WebpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const fs = require('fs');
 const wpScriptConfig = require('@wordpress/scripts/config/webpack.config');
 const DependencyExtractionWebpackPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -17,6 +18,35 @@ const stats = {
   modules: false,
   chunks: true,
 };
+
+// A custom plugin to copy a file without Webpack processing it in
+// production mode. This is needed for the happiness-assistant-widget.js
+// because it would occasionally fail to process in CircleCI.
+class DirectCopyPlugin {
+  constructor(options) {
+    this.options = options;
+  }
+
+  apply(compiler) {
+    compiler.hooks.afterEmit.tapAsync(
+      'DirectCopyPlugin',
+      (_compilation, callback) => {
+        const sourcePath = path.resolve(__dirname, this.options.from);
+        const targetPath = path.resolve(__dirname, this.options.to);
+
+        // Ensure target directory exists
+        const targetDir = path.dirname(targetPath);
+        if (!fs.existsSync(targetDir)) {
+          fs.mkdirSync(targetDir, { recursive: true });
+        }
+
+        // Copy file directly
+        fs.copyFileSync(sourcePath, targetPath);
+        callback();
+      },
+    );
+  }
+}
 
 // Base config
 const baseConfig = {
@@ -222,11 +252,11 @@ const adminConfig = {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
         },
-        {
-          from: 'assets/js/src/vendor/happiness-assistant-widget.js',
-          to: 'haw.js',
-        },
       ],
+    }),
+    new DirectCopyPlugin({
+      from: 'assets/js/src/vendor/happiness-assistant-widget.js',
+      to: 'assets/dist/js/haw.js',
     }),
   ],
   optimization: {
