@@ -222,7 +222,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.4 - 2025-05-26 =
-* Improved: minor changes and fixes.
+= x.x.x - YYYY-MM-DD =
+* Improved: Add "4th" day of week as a monthly frequency option.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
