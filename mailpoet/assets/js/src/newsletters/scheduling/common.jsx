@@ -76,6 +76,7 @@ const nthWeekDayValues = {
   1: __('1st', 'mailpoet'),
   2: __('2nd', 'mailpoet'),
   3: __('3rd', 'mailpoet'),
+  4: __('4th', 'mailpoet'),
   L: _x('last', 'e.g. monthly every last Monday', 'mailpoet'),
 };
 
