@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.12.4 - 2025-05-26 =
+* Improved: minor changes and fixes.
+
 = 5.12.3 - 2025-05-19 =
 * Improved: new Upgrade page design.
 
