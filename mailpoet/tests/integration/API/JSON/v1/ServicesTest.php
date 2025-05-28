@@ -248,7 +248,7 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     foreach (array_keys(Installer::getPremiumStatus()) as $key) {
-      verify(isset($response->meta[$key]))->true();
+      verify(array_key_exists($key, $response->meta))->true();
     }
   }
 
