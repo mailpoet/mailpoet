@@ -195,7 +195,7 @@ class NewsletterSaveController {
     $this->newslettersRepository->flush();
 
     // duplicate wp post data
-    $post = $this->wp->getPost($newsletter->getWpPostId());
+    $post = !is_null($newsletter->getWpPostId()) ? $this->wp->getPost($newsletter->getWpPostId()) : null;
     if ($post instanceof \WP_Post) {
       $newPostId = $this->wp->wpInsertPost([
         'post_status' => NewsletterEntity::STATUS_DRAFT,
