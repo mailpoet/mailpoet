@@ -224,5 +224,6 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = x.x.x - YYYY-MM-DD =
 * Improved: Add "4th" day of week as a monthly frequency option.
+* Fixed an issue where duplicated newsletters could be incorrectly linked to unrelated posts under certain conditions.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
