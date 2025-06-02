@@ -34,8 +34,11 @@ Trusted by 600,000 WordPress websites since 2011.
 * Behavior and interest-based subscriber segmentation options
 * Pre-built and customizable email and subscription form templates
 * Multiple subscription form placements: below pages, fixed bar, popup, slide-in, shortcode, on exit intent
-* WooCommerce emails: abandoned cart, first purchase, specific product, product category
+* WooCommerce emails: abandoned cart, first purchase, specific product, product category, order status change, review added
 * Customize WooCommerce transactional emails
+* Automate subscriber management (add/remove from list, add/remove tags, update subscriber data) (paid plan required)
+* Create custom automation triggers and actions (paid plan required)
+* Branch your automations with if/else conditions to improve engagement (paid plan required)
 * Reliable email delivery with MailPoet Sending Service (available for free – plan required)
 * Basic engagement statistics (available for free) and detailed engagement statistics (paid plan required)
 * Multi-condition segmentation (paid plan required)
@@ -61,9 +64,11 @@ Use the automated email options to:
 
 * Welcome your new customers when they make their first purchase
 * Upsell by sending emails to customers who purchased a specific product or from a specific product category
-* Convert more customers by sending a series of abandoned cart emails.
+* Convert more customers by sending a series of abandoned cart emails
+* Re-engage customers who haven't made a purchase in a while with personalized offers (paid plan required)
+* Follow up with customers who left a review to encourage more engagement (paid plan required).
 
-And with WooCommerce-specific segmentation options, you’ll be able to send targeted emails to your customers based on criteria such as their country, the number of orders they’ve placed, how much they’ve spent, and if they have an active product subscription (powered by WooCommerce Subscriptions) or membership (powered by WooCommerce Memberships).
+And with WooCommerce-specific segmentation options, you’ll be able to send targeted emails to your customers based on criteria such as their country, the number of orders they’ve placed, how much they’ve spent, and if they have an active product subscription (powered by **WooCommerce Subscriptions**) or membership (powered by **WooCommerce Memberships**).
 
 In addition, you’ll also be able to increase brand recognition by customizing your WooCommerce transactional emails. Create a unified brand experience by changing the layout, colors, and fonts used in your emails, as well as adding any images or additional information to them.
 
