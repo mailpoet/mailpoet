@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.12.4
+Stable tag: 5.12.5
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= x.x.x - YYYY-MM-DD =
+= 5.12.5 - 2025-06-02 =
 * Improved: Add "4th" day of week as a monthly frequency option;
 * Fixed: issue where duplicated newsletters could be incorrectly linked to unrelated posts under certain conditions.
 
