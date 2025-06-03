@@ -21,10 +21,32 @@
   }
 }
 
+.mailpoet_social_icons_container {
+  > input {
+    vertical-align: top;
+
+    &:checked
+      ~ #mailpoet_social_icons_styles
+      .mailpoet_social_icon_set:not([data-setname^='official']) {
+      display: block;
+    }
+  }
+
+  > label {
+    display: inline-block;
+    margin: -0.25rem 0 0.5rem;
+    vertical-align: top;
+  }
+}
+
 .mailpoet_social_icon_set {
   border: 1px solid transparent;
   margin-bottom: 5px;
   padding: 5px;
+
+  &:not([data-setname^='official']) {
+    display: none;
+  }
 
   &:hover {
     border: 1px solid $editor-social-icon-border-color-hover;

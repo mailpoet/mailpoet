@@ -25,7 +25,11 @@
 
 <div id="mailpoet_social_icons_selection" class="mailpoet_form_field"></div>
 <h3><%= __('Styles') %></h3>
-<div id="mailpoet_social_icons_styles"></div>
+<div class="mailpoet_social_icons_container">
+  <input type="checkbox" name="show_legacy_icons" id="show_legacy_icons" class="mailpoet_social_block_show_legacy_icons" />
+  <label for="show_legacy_icons"><%= __('Show legacy icon sets') %></label>
+  <div id="mailpoet_social_icons_styles"></div>
+</div>
 <div class="mailpoet_form_field">
   <input type="button" class="button button-primary mailpoet_done_editing" data-automation-id="social_done_button" value="<%= __('Done') | escape('html_attr') %>" />
 </div>
