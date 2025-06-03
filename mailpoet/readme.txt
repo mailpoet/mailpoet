@@ -228,6 +228,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
+* Added: new networks in social icons block (Behance, Bluesky, Discord, GitHub, Gravatar, Mastodon, Medium, Patreon, Reddit, RSS, Spotify, Telegram, Threads, TikTok, Tumblr, Twitch, Viemo, WhatsApp, WordPress);
+* Improved: updated existing social networks with the official icons;
 * Improved: hide 'unsubscribe' bulk action when segmenting unsubscribed subscribers.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
