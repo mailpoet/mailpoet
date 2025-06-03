@@ -36,7 +36,11 @@
     <div class="mailpoet_social_icon_settings_row">
         <label>
         <div class="mailpoet_social_icon_settings_label">
-            {{ currentType.linkFieldName }}
+            {{#if currentType.linkFieldName}}
+                {{ currentType.linkFieldName }}
+            {{else}}
+                <%= __('Link') %>
+            {{/if}}
         </div>
         <div class="mailpoet_social_icon_settings_form_element">
             {{#ifCond iconType '==' 'email'}}
