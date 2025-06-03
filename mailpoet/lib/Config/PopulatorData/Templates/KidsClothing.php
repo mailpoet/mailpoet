@@ -177,7 +177,7 @@ class KidsClothing {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/11-official/Twitter.png',
+                                          'image' => $this->social_icon_url . '/11-official/X.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -1596,7 +1596,7 @@ class KidsClothing {
                      [
                       'height' => '32px',
                       'iconType' => 'twitter',
-                      'image' => $this->social_icon_url . '/11-official/Twitter.png',
+                      'image' => $this->social_icon_url . '/11-official/X.png',
                       'link' => 'http://www.twitter.com',
                       'text' => 'Twitter',
                       'type' => 'socialIcon',

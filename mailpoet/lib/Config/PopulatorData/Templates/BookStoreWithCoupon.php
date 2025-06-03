@@ -647,7 +647,7 @@ class BookStoreWithCoupon {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/11-official/Twitter.png',
+                        'image' => $this->social_icon_url . '/11-official/X.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',

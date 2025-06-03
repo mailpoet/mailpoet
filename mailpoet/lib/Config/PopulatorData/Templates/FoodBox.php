@@ -586,7 +586,7 @@ class FoodBox {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
+                        'image' => $this->social_icon_url . '/12-official-white/X.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
