@@ -1,5 +1,7 @@
 {{#each availableSets}}
     <div class="mailpoet_social_icon_set{{#ifCond ../activeSet '==' this }} mailpoet_active_icon_set{{/ifCond}}" data-setName="{{ this }}">
-    {{#each ../availableSocialIcons}}<img src="{{lookup (lookup ../../socialIconSets ../this) this}}" />{{/each}}
+      {{#each ../availableSocialIcons}}
+        <img src="{{#if (lookup (lookup ../../socialIconSets ../this) this)}}{{lookup (lookup ../../socialIconSets ../this) this}}{{else}}{{../../imageMissingSrc}}{{/if}}" />
+      {{/each}}
     </div>
 {{/each}}

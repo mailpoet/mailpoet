@@ -315,6 +315,7 @@ SocialBlockSettingsStylesView = Marionette.View.extend({
       socialIconSets: allIconSets.toJSON(),
       availableSets: _.keys(allIconSets.toJSON()),
       availableSocialIcons: this.model.get('icons').pluck('iconType'),
+      imageMissingSrc: App.getConfig().get('urls.imageMissing'),
     };
   },
   changeSocialIconSet: function (event) {
