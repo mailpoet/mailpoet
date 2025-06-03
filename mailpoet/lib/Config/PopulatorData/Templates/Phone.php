@@ -345,7 +345,7 @@ class Phone {
                               1 =>
                                  [
                                   'type' => 'social',
-                                  'iconSet' => 'full-symbol-grey',
+                                  'iconSet' => 'official-white',
                                   'icons' =>
                                      [
                                       0 =>
@@ -353,7 +353,7 @@ class Phone {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                                          'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -363,7 +363,7 @@ class Phone {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                                          'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -373,7 +373,7 @@ class Phone {
                                           'type' => 'socialIcon',
                                           'iconType' => 'pinterest',
                                           'link' => 'http://www.pinterest.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/Pinterest.png',
+                                          'image' => $this->social_icon_url . '/12-official-white/Pinterest.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Pinterest',
@@ -383,7 +383,7 @@ class Phone {
                                           'type' => 'socialIcon',
                                           'iconType' => 'linkedin',
                                           'link' => 'http://www.linkedin.com',
-                                          'image' => $this->social_icon_url . '/08-full-symbol-grey/LinkedIn.png',
+                                          'image' => $this->social_icon_url . '/12-official-white/LinkedIn.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'LinkedIn',
@@ -713,7 +713,7 @@ class Phone {
              ],
           'social' =>
              [
-              'iconSet' => 'default',
+              'iconSet' => 'official',
               'icons' =>
                  [
                   0 =>
@@ -721,7 +721,7 @@ class Phone {
                       'type' => 'socialIcon',
                       'iconType' => 'facebook',
                       'link' => 'http://www.facebook.com',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png',
+                      'image' => $this->social_icon_url . '/11-official/Facebook.png',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Facebook',
@@ -731,7 +731,7 @@ class Phone {
                       'type' => 'socialIcon',
                       'iconType' => 'twitter',
                       'link' => 'http://www.twitter.com',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png',
+                      'image' => $this->social_icon_url . '/11-official/Twitter.png',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Twitter',

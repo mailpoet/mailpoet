@@ -152,7 +152,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'social',
-                                  'iconSet' => 'circles',
+                                  'iconSet' => 'official',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -167,7 +167,7 @@ class KidsClothing {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+                                          'image' => $this->social_icon_url . '/11-official/Facebook.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -177,7 +177,7 @@ class KidsClothing {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+                                          'image' => $this->social_icon_url . '/11-official/Twitter.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -258,7 +258,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'social',
-                                  'iconSet' => 'circles',
+                                  'iconSet' => 'official',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -273,7 +273,7 @@ class KidsClothing {
                                           'type' => 'socialIcon',
                                           'iconType' => 'instagram',
                                           'link' => 'http://instagram.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Instagram.png',
+                                          'image' => $this->social_icon_url . '/11-official/Instagram.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Instagram',
@@ -1579,14 +1579,14 @@ class KidsClothing {
               'backgroundColorAlternate' => '#eeeeee',
             ],
           'social' => [
-              'iconSet' => 'default',
+              'iconSet' => 'official',
               'icons' =>
                  [
                   0 =>
                      [
                       'height' => '32px',
                       'iconType' => 'facebook',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png',
+                      'image' => $this->social_icon_url . '/11-official/Facebook.png',
                       'link' => 'http://www.facebook.com',
                       'text' => 'Facebook',
                       'type' => 'socialIcon',
@@ -1596,7 +1596,7 @@ class KidsClothing {
                      [
                       'height' => '32px',
                       'iconType' => 'twitter',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png',
+                      'image' => $this->social_icon_url . '/11-official/Twitter.png',
                       'link' => 'http://www.twitter.com',
                       'text' => 'Twitter',
                       'type' => 'socialIcon',

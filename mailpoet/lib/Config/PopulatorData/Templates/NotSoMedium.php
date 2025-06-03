@@ -227,7 +227,7 @@ class NotSoMedium {
                               1 =>
                                  [
                                   'type' => 'social',
-                                  'iconSet' => 'full-symbol-black',
+                                  'iconSet' => 'official',
                                   'icons' =>
                                      [
                                       0 =>
@@ -235,7 +235,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/07-full-symbol-black/Facebook.png',
+                                          'image' => $this->social_icon_url . '/11-official/Facebook.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -245,7 +245,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/07-full-symbol-black/Twitter.png',
+                                          'image' => $this->social_icon_url . '/11-official/Twitter.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -255,7 +255,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'website',
                                           'link' => '',
-                                          'image' => $this->social_icon_url . '/07-full-symbol-black/Website.png',
+                                          'image' => $this->social_icon_url . '/11-official/Website.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Website',
@@ -477,7 +477,7 @@ class NotSoMedium {
                               2 =>
                                  [
                                   'type' => 'social',
-                                  'iconSet' => 'circles',
+                                  'iconSet' => 'official',
                                   'icons' =>
                                      [
                                       0 =>
@@ -485,7 +485,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'facebook',
                                           'link' => 'http://www.facebook.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+                                          'image' => $this->social_icon_url . '/11-official/Facebook.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Facebook',
@@ -495,7 +495,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'twitter',
                                           'link' => 'http://www.twitter.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+                                          'image' => $this->social_icon_url . '/11-official/Twitter.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Twitter',
@@ -505,7 +505,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'linkedin',
                                           'link' => 'http://www.linkedin.com',
-                                          'image' => $this->social_icon_url . '/03-circles/LinkedIn.png',
+                                          'image' => $this->social_icon_url . '/11-official/LinkedIn.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'LinkedIn',
@@ -515,7 +515,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'email',
                                           'link' => '',
-                                          'image' => $this->social_icon_url . '/03-circles/Email.png',
+                                          'image' => $this->social_icon_url . '/11-official/Email.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'Email',
@@ -934,7 +934,7 @@ class NotSoMedium {
              ],
           'social' =>
              [
-              'iconSet' => 'default',
+              'iconSet' => 'official',
               'icons' =>
                  [
                   0 =>
@@ -942,7 +942,7 @@ class NotSoMedium {
                       'type' => 'socialIcon',
                       'iconType' => 'facebook',
                       'link' => 'http://www.facebook.com',
-                      'image' => $this->social_icon_url . '/01-social/Facebook.png',
+                      'image' => $this->social_icon_url . '/11-official/Facebook.png',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Facebook',
@@ -952,7 +952,7 @@ class NotSoMedium {
                       'type' => 'socialIcon',
                       'iconType' => 'twitter',
                       'link' => 'http://www.twitter.com',
-                      'image' => $this->social_icon_url . '/01-social/Twitter.png',
+                      'image' => $this->social_icon_url . '/11-official/Twitter.png',
                       'height' => '32px',
                       'width' => '32px',
                       'text' => 'Twitter',

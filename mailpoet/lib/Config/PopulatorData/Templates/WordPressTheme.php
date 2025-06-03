@@ -272,7 +272,7 @@ class WordPressTheme {
                   1 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'full-symbol-grey',
+                    'iconSet' => 'official-white',
                     'icons' =>
                      [
                       0 =>
@@ -280,7 +280,7 @@ class WordPressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -290,7 +290,7 @@ class WordPressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -300,7 +300,7 @@ class WordPressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'website',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Website.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Website.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Website',
@@ -310,7 +310,7 @@ class WordPressTheme {
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Email.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
@@ -1350,7 +1350,7 @@ class WordPressTheme {
          ],
         'social' =>
          [
-          'iconSet' => 'full-symbol-grey',
+          'iconSet' => 'official-white',
           'icons' =>
            [
             0 =>
@@ -1358,7 +1358,7 @@ class WordPressTheme {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+              'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -1368,7 +1368,7 @@ class WordPressTheme {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+              'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
@@ -1378,7 +1378,7 @@ class WordPressTheme {
               'type' => 'socialIcon',
               'iconType' => 'website',
               'link' => '',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Website.png',
+              'image' => $this->social_icon_url . '/12-official-white/Website.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Website',
@@ -1388,7 +1388,7 @@ class WordPressTheme {
               'type' => 'socialIcon',
               'iconType' => 'email',
               'link' => '',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Email.png',
+              'image' => $this->social_icon_url . '/12-official-white/Email.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Email',

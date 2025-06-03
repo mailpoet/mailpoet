@@ -1059,7 +1059,7 @@ class LifestyleBlogB {
                   1 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'circles',
+                    'iconSet' => 'official',
                     'icons' =>
                      [
                       0 =>
@@ -1067,7 +1067,7 @@ class LifestyleBlogB {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+                        'image' => $this->social_icon_url . '/11-official/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -1077,7 +1077,7 @@ class LifestyleBlogB {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+                        'image' => $this->social_icon_url . '/11-official/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -1087,7 +1087,7 @@ class LifestyleBlogB {
                         'type' => 'socialIcon',
                         'iconType' => 'website',
                         'link' => '',
-                        'image' => $this->social_icon_url . '/03-circles/Website.png',
+                        'image' => $this->social_icon_url . '/11-official/Website.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Website',
@@ -1097,7 +1097,7 @@ class LifestyleBlogB {
                         'type' => 'socialIcon',
                         'iconType' => 'pinterest',
                         'link' => 'http://www.pinterest.com',
-                        'image' => $this->social_icon_url . '/03-circles/Pinterest.png',
+                        'image' => $this->social_icon_url . '/11-official/Pinterest.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Pinterest',
@@ -1427,7 +1427,7 @@ class LifestyleBlogB {
          ],
         'social' =>
          [
-          'iconSet' => 'circles',
+          'iconSet' => 'official',
           'icons' =>
            [
             0 =>
@@ -1435,7 +1435,7 @@ class LifestyleBlogB {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+              'image' => $this->social_icon_url . '/11-official/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -1445,7 +1445,7 @@ class LifestyleBlogB {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+              'image' => $this->social_icon_url . '/11-official/Twitter.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
@@ -1455,7 +1455,7 @@ class LifestyleBlogB {
               'type' => 'socialIcon',
               'iconType' => 'website',
               'link' => '',
-              'image' => $this->social_icon_url . '/03-circles/Website.png',
+              'image' => $this->social_icon_url . '/11-official/Website.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Website',
@@ -1465,7 +1465,7 @@ class LifestyleBlogB {
               'type' => 'socialIcon',
               'iconType' => 'pinterest',
               'link' => 'http://www.pinterest.com',
-              'image' => $this->social_icon_url . '/03-circles/Pinterest.png',
+              'image' => $this->social_icon_url . '/11-official/Pinterest.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Pinterest',

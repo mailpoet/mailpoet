@@ -1453,7 +1453,7 @@ class ClearNews {
                   0 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'circles',
+                    'iconSet' => 'official',
                     'icons' =>
                      [
                       0 =>
@@ -1461,7 +1461,7 @@ class ClearNews {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+                        'image' => $this->social_icon_url . '/11-official/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -1471,7 +1471,7 @@ class ClearNews {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+                        'image' => $this->social_icon_url . '/11-official/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -1481,7 +1481,7 @@ class ClearNews {
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
-                        'image' => $this->social_icon_url . '/03-circles/Youtube.png',
+                        'image' => $this->social_icon_url . '/11-official/Youtube.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
@@ -1491,7 +1491,7 @@ class ClearNews {
                   1 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'default',
+                    'iconSet' => 'official',
                     'icons' =>
                      [
                      ],
@@ -1810,7 +1810,7 @@ class ClearNews {
          ],
         'social' =>
          [
-          'iconSet' => 'circles',
+          'iconSet' => 'official',
           'icons' =>
            [
             0 =>
@@ -1818,7 +1818,7 @@ class ClearNews {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $this->social_icon_url . '/03-circles/Facebook.png',
+              'image' => $this->social_icon_url . '/11-official/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -1828,7 +1828,7 @@ class ClearNews {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $this->social_icon_url . '/03-circles/Twitter.png',
+              'image' => $this->social_icon_url . '/11-official/Twitter.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
@@ -1838,7 +1838,7 @@ class ClearNews {
               'type' => 'socialIcon',
               'iconType' => 'youtube',
               'link' => 'http://www.youtube.com',
-              'image' => $this->social_icon_url . '/03-circles/Youtube.png',
+              'image' => $this->social_icon_url . '/11-official/Youtube.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Youtube',

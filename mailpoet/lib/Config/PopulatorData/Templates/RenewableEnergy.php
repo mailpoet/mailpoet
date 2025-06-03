@@ -263,7 +263,7 @@ class RenewableEnergy {
                   1 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'full-symbol-grey',
+                    'iconSet' => 'official-white',
                     'icons' =>
                      [
                       0 =>
@@ -271,7 +271,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -281,7 +281,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -291,7 +291,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'linkedin',
                         'link' => 'http://www.linkedin.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/LinkedIn.png',
+                        'image' => $this->social_icon_url . '/12-official-white/LinkedIn.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'LinkedIn',
@@ -937,7 +937,7 @@ class RenewableEnergy {
                   2 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'full-symbol-grey',
+                    'iconSet' => 'official-white',
                     'icons' =>
                      [
                       0 =>
@@ -945,7 +945,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -955,7 +955,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -965,7 +965,7 @@ class RenewableEnergy {
                         'type' => 'socialIcon',
                         'iconType' => 'linkedin',
                         'link' => 'http://www.linkedin.com',
-                        'image' => $this->social_icon_url . '/08-full-symbol-grey/LinkedIn.png',
+                        'image' => $this->social_icon_url . '/12-official-white/LinkedIn.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'LinkedIn',
@@ -1275,7 +1275,7 @@ class RenewableEnergy {
          ],
         'social' =>
          [
-          'iconSet' => 'full-symbol-grey',
+          'iconSet' => 'official-white',
           'icons' =>
            [
             0 =>
@@ -1283,7 +1283,7 @@ class RenewableEnergy {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Facebook.png',
+              'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -1293,7 +1293,7 @@ class RenewableEnergy {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/Twitter.png',
+              'image' => $this->social_icon_url . '/12-official-white/Twitter.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
@@ -1303,7 +1303,7 @@ class RenewableEnergy {
               'type' => 'socialIcon',
               'iconType' => 'linkedin',
               'link' => 'http://www.linkedin.com',
-              'image' => $this->social_icon_url . '/08-full-symbol-grey/LinkedIn.png',
+              'image' => $this->social_icon_url . '/12-official-white/LinkedIn.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'LinkedIn',
