@@ -57,7 +57,7 @@ export async function automationCreateCustom() {
     // Click on the button to start custom template
     await Promise.all([
       page.waitForNavigation(),
-      page.locator('.mailpoet-page-header > button').click(),
+      page.locator('.mailpoet-page-header button.page-title-action ').click(),
     ]);
     await page.waitForSelector(
       '.mailpoet-automation-editor-step-transition-wrapper',
