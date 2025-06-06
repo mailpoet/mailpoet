@@ -1,6 +1,6 @@
 services:
   setup:
-    image: wordpress:cli-2.7-php8.2
+    image: wordpress:cli-2.12.0-php8.3
     container_name: performance_setup
     depends_on:
       wordpress: { condition: service_started }
@@ -23,7 +23,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
 
   wordpress:
-    image: mailpoet/wordpress:wp-6.5_php8.2_20240405.1
+    image: wordpress:6.8.1-php8.3
     container_name: performance_wordpress
     depends_on:
       mysql: { condition: service_healthy }
