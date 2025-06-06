@@ -404,6 +404,15 @@ const getBulkActions = () => {
     },
   ];
 
+  // Filter out 'unsubscribe' action if we're in the unsubscribed group
+  const url = window.location.href;
+  const match = url.match(/group\[(.*?)\]/);
+  const group = match ? match[1] : null;
+
+  if (group === 'unsubscribed') {
+    return bulkActions.filter((action) => action.name !== 'unsubscribe');
+  }
+
   return bulkActions;
 };
 
