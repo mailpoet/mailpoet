@@ -176,232 +176,236 @@ const createModal = (submitModal, closeModal, field, title) => (
   </Modal>
 );
 
-const getBulkActions = () => [
-  {
-    name: 'moveToList',
-    label: __('Move to list...', 'mailpoet'),
-    onSelect: function onSelect(submitModal, closeModal) {
-      const field = {
-        id: 'move_to_segment',
-        name: 'move_to_segment',
-        endpoint: 'segments',
-        filter: function filter(segment) {
-          return !!(!segment.deleted_at && segment.type === 'default');
-        },
-      };
+const getBulkActions = () => {
+  const bulkActions = [
+    {
+      name: 'moveToList',
+      label: __('Move to list...', 'mailpoet'),
+      onSelect: function onSelect(submitModal, closeModal) {
+        const field = {
+          id: 'move_to_segment',
+          name: 'move_to_segment',
+          endpoint: 'segments',
+          filter: function filter(segment) {
+            return !!(!segment.deleted_at && segment.type === 'default');
+          },
+        };
 
-      return createModal(
-        submitModal,
-        closeModal,
-        field,
-        __('Move to list...', 'mailpoet'),
-      );
+        return createModal(
+          submitModal,
+          closeModal,
+          field,
+          __('Move to list...', 'mailpoet'),
+        );
+      },
+      getData: function getData() {
+        return {
+          segment_id: Number(jQuery('#move_to_segment').val()),
+        };
+      },
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            '%1$d subscribers were moved to list <strong>%2$s</strong>.',
+            'mailpoet',
+          )
+            .replace('%1$d', Number(response.meta.count).toLocaleString())
+            .replace('%2$s', response.meta.segment),
+        );
+      },
     },
-    getData: function getData() {
-      return {
-        segment_id: Number(jQuery('#move_to_segment').val()),
-      };
-    },
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __(
-          '%1$d subscribers were moved to list <strong>%2$s</strong>.',
-          'mailpoet',
-        )
-          .replace('%1$d', Number(response.meta.count).toLocaleString())
-          .replace('%2$s', response.meta.segment),
-      );
-    },
-  },
-  {
-    name: 'addToList',
-    label: __('Add to list...', 'mailpoet'),
-    onSelect: function onSelect(submitModal, closeModal) {
-      const field = {
-        id: 'add_to_segment',
-        name: 'add_to_segment',
-        endpoint: 'segments',
-        filter: function filter(segment) {
-          return !!(!segment.deleted_at && segment.type === 'default');
-        },
-      };
+    {
+      name: 'addToList',
+      label: __('Add to list...', 'mailpoet'),
+      onSelect: function onSelect(submitModal, closeModal) {
+        const field = {
+          id: 'add_to_segment',
+          name: 'add_to_segment',
+          endpoint: 'segments',
+          filter: function filter(segment) {
+            return !!(!segment.deleted_at && segment.type === 'default');
+          },
+        };
 
-      return createModal(
-        submitModal,
-        closeModal,
-        field,
-        __('Add to list...', 'mailpoet'),
-      );
+        return createModal(
+          submitModal,
+          closeModal,
+          field,
+          __('Add to list...', 'mailpoet'),
+        );
+      },
+      getData: function getData() {
+        return {
+          segment_id: Number(jQuery('#add_to_segment').val()),
+        };
+      },
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            '%1$d subscribers were added to list <strong>%2$s</strong>.',
+            'mailpoet',
+          )
+            .replace('%1$d', Number(response.meta.count).toLocaleString())
+            .replace('%2$s', response.meta.segment),
+        );
+      },
     },
-    getData: function getData() {
-      return {
-        segment_id: Number(jQuery('#add_to_segment').val()),
-      };
-    },
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __(
-          '%1$d subscribers were added to list <strong>%2$s</strong>.',
-          'mailpoet',
-        )
-          .replace('%1$d', Number(response.meta.count).toLocaleString())
-          .replace('%2$s', response.meta.segment),
-      );
-    },
-  },
-  {
-    name: 'removeFromList',
-    label: __('Remove from list...', 'mailpoet'),
-    onSelect: function onSelect(submitModal, closeModal) {
-      const field = {
-        id: 'remove_from_segment',
-        name: 'remove_from_segment',
-        endpoint: 'segments',
-        filter: function filter(segment) {
-          return segment.type === 'default';
-        },
-      };
+    {
+      name: 'removeFromList',
+      label: __('Remove from list...', 'mailpoet'),
+      onSelect: function onSelect(submitModal, closeModal) {
+        const field = {
+          id: 'remove_from_segment',
+          name: 'remove_from_segment',
+          endpoint: 'segments',
+          filter: function filter(segment) {
+            return segment.type === 'default';
+          },
+        };
 
-      return createModal(
-        submitModal,
-        closeModal,
-        field,
-        __('Remove from list...', 'mailpoet'),
-      );
+        return createModal(
+          submitModal,
+          closeModal,
+          field,
+          __('Remove from list...', 'mailpoet'),
+        );
+      },
+      getData: function getData() {
+        return {
+          segment_id: Number(jQuery('#remove_from_segment').val()),
+        };
+      },
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            '%1$d subscribers were removed from list <strong>%2$s</strong>.',
+            'mailpoet',
+          )
+            .replace('%1$d', Number(response.meta.count).toLocaleString())
+            .replace('%2$s', response.meta.segment),
+        );
+      },
     },
-    getData: function getData() {
-      return {
-        segment_id: Number(jQuery('#remove_from_segment').val()),
-      };
+    {
+      name: 'removeFromAllLists',
+      label: __('Remove from all lists', 'mailpoet'),
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            '%1$d subscribers were removed from all lists.',
+            'mailpoet',
+          ).replace('%1$d', Number(response.meta.count).toLocaleString()),
+        );
+      },
     },
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __(
-          '%1$d subscribers were removed from list <strong>%2$s</strong>.',
-          'mailpoet',
-        )
-          .replace('%1$d', Number(response.meta.count).toLocaleString())
-          .replace('%2$s', response.meta.segment),
-      );
+    {
+      name: 'trash',
+      label: __('Move to trash', 'mailpoet'),
+      onSuccess: getMessages().onTrash,
     },
-  },
-  {
-    name: 'removeFromAllLists',
-    label: __('Remove from all lists', 'mailpoet'),
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __('%1$d subscribers were removed from all lists.', 'mailpoet').replace(
-          '%1$d',
-          Number(response.meta.count).toLocaleString(),
-        ),
-      );
-    },
-  },
-  {
-    name: 'trash',
-    label: __('Move to trash', 'mailpoet'),
-    onSuccess: getMessages().onTrash,
-  },
-  {
-    name: 'unsubscribe',
-    label: __('Unsubscribe', 'mailpoet'),
-    onSelect: (submitModal, closeModal, bulkActionProps) => {
-      const count =
-        bulkActionProps.selection !== 'all'
-          ? bulkActionProps.selected_ids.length
-          : bulkActionProps.count;
-      return (
-        <Modal
-          title={__('Unsubscribe', 'mailpoet')}
-          onRequestClose={closeModal}
-          isDismissible
-        >
-          <p>
-            {__(
-              'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
-              'mailpoet',
-            ).replace('%s', Number(count).toLocaleString())}
-          </p>
-          <span className="mailpoet-gap-half" />
-          <Button
-            onClick={submitModal}
-            dimension="small"
-            variant="secondary"
-            automationId="bulk-unsubscribe-confirm"
+    {
+      name: 'unsubscribe',
+      label: __('Unsubscribe', 'mailpoet'),
+      onSelect: (submitModal, closeModal, bulkActionProps) => {
+        const count =
+          bulkActionProps.selection !== 'all'
+            ? bulkActionProps.selected_ids.length
+            : bulkActionProps.count;
+        return (
+          <Modal
+            title={__('Unsubscribe', 'mailpoet')}
+            onRequestClose={closeModal}
+            isDismissible
           >
-            {__('Apply', 'mailpoet')}
-          </Button>
-        </Modal>
-      );
+            <p>
+              {__(
+                'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
+                'mailpoet',
+              ).replace('%s', Number(count).toLocaleString())}
+            </p>
+            <span className="mailpoet-gap-half" />
+            <Button
+              onClick={submitModal}
+              dimension="small"
+              variant="secondary"
+              automationId="bulk-unsubscribe-confirm"
+            >
+              {__('Apply', 'mailpoet')}
+            </Button>
+          </Modal>
+        );
+      },
     },
-  },
-  {
-    name: 'addTag',
-    label: __('Add tag...', 'mailpoet'),
-    onSelect: function onSelect(submitModal, closeModal) {
-      const field = {
-        id: 'add_tag',
-        name: 'add_tag',
-        endpoint: 'tags',
-      };
+    {
+      name: 'addTag',
+      label: __('Add tag...', 'mailpoet'),
+      onSelect: function onSelect(submitModal, closeModal) {
+        const field = {
+          id: 'add_tag',
+          name: 'add_tag',
+          endpoint: 'tags',
+        };
 
-      return createModal(
-        submitModal,
-        closeModal,
-        field,
-        __('Add tag...', 'mailpoet'),
-      );
+        return createModal(
+          submitModal,
+          closeModal,
+          field,
+          __('Add tag...', 'mailpoet'),
+        );
+      },
+      getData: function getData() {
+        return {
+          tag_id: Number(jQuery('#add_tag').val()),
+        };
+      },
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            'Tag <strong>%1$s</strong> was added to %2$d subscribers.',
+            'mailpoet',
+          )
+            .replace('%1$s', response.meta.tag)
+            .replace('%2$d', Number(response.meta.count).toLocaleString()),
+        );
+      },
     },
-    getData: function getData() {
-      return {
-        tag_id: Number(jQuery('#add_tag').val()),
-      };
-    },
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __(
-          'Tag <strong>%1$s</strong> was added to %2$d subscribers.',
-          'mailpoet',
-        )
-          .replace('%1$s', response.meta.tag)
-          .replace('%2$d', Number(response.meta.count).toLocaleString()),
-      );
-    },
-  },
-  {
-    name: 'removeTag',
-    label: __('Remove tag...', 'mailpoet'),
-    onSelect: function onSelect(submitModal, closeModal) {
-      const field = {
-        id: 'remove_tag',
-        name: 'remove_tag',
-        endpoint: 'tags',
-      };
+    {
+      name: 'removeTag',
+      label: __('Remove tag...', 'mailpoet'),
+      onSelect: function onSelect(submitModal, closeModal) {
+        const field = {
+          id: 'remove_tag',
+          name: 'remove_tag',
+          endpoint: 'tags',
+        };
 
-      return createModal(
-        submitModal,
-        closeModal,
-        field,
-        __('Remove tag...', 'mailpoet'),
-      );
+        return createModal(
+          submitModal,
+          closeModal,
+          field,
+          __('Remove tag...', 'mailpoet'),
+        );
+      },
+      getData: function getData() {
+        return {
+          tag_id: Number(jQuery('#remove_tag').val()),
+        };
+      },
+      onSuccess: function onSuccess(response: Response) {
+        MailPoet.Notice.success(
+          __(
+            'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
+            'mailpoet',
+          )
+            .replace('%1$s', response.meta.tag)
+            .replace('%2$d', Number(response.meta.count).toLocaleString()),
+        );
+      },
     },
-    getData: function getData() {
-      return {
-        tag_id: Number(jQuery('#remove_tag').val()),
-      };
-    },
-    onSuccess: function onSuccess(response: Response) {
-      MailPoet.Notice.success(
-        __(
-          'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
-          'mailpoet',
-        )
-          .replace('%1$s', response.meta.tag)
-          .replace('%2$d', Number(response.meta.count).toLocaleString()),
-      );
-    },
-  },
-];
+  ];
+
+  return bulkActions;
+};
 
 const getItemActions = () => [
   {
