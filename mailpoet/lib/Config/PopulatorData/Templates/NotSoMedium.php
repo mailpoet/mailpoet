@@ -505,7 +505,7 @@ class NotSoMedium {
                                           'type' => 'socialIcon',
                                           'iconType' => 'linkedin',
                                           'link' => 'http://www.linkedin.com',
-                                          'image' => $this->social_icon_url . '/11-official/LinkedIn.png',
+                                          'image' => $this->social_icon_url . '/11-official/Linkedin.png',
                                           'height' => '32px',
                                           'width' => '32px',
                                           'text' => 'LinkedIn',
