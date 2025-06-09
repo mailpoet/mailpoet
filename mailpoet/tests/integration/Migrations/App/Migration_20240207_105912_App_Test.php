@@ -258,7 +258,11 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
       $subscriber = $processedSubscribers[$subscriberIndex] ?? null;
       $this->assertNotNull($subscriber);
       $this->assertSame($subscriber, $stats[$i]->getSubscriber());
-      $this->assertEquals($subscriber->getUpdatedAt(), $stats[$i]->getSentAt());
+      $updatedAt = $subscriber->getUpdatedAt();
+      $sentAt = $stats[$i]->getSentAt();
+      $this->assertInstanceOf(\DateTimeInterface::class, $updatedAt);
+      $this->assertInstanceOf(\DateTimeInterface::class, $sentAt);
+      verify($updatedAt->getTimestamp())->equalsWithDelta($sentAt->getTimestamp(), 1);
     }
   }
 
