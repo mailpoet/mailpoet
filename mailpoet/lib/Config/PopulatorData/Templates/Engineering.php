@@ -699,7 +699,7 @@ class Engineering {
                   1 =>
                    [
                     'type' => 'social',
-                    'iconSet' => 'official',
+                    'iconSet' => 'official-white',
                     'icons' =>
                      [
                       0 =>
@@ -707,7 +707,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
-                        'image' => $this->social_icon_url . '/11-official/Facebook.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
@@ -717,7 +717,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
-                        'image' => $this->social_icon_url . '/11-official/X.png',
+                        'image' => $this->social_icon_url . '/12-official-white/X.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
@@ -727,7 +727,7 @@ class Engineering {
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
-                        'image' => $this->social_icon_url . '/11-official/Instagram.png',
+                        'image' => $this->social_icon_url . '/12-official-white/Instagram.png',
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
@@ -1196,7 +1196,7 @@ class Engineering {
          ],
         'social' =>
          [
-          'iconSet' => 'official',
+          'iconSet' => 'official-white',
           'icons' =>
            [
             0 =>
@@ -1204,7 +1204,7 @@ class Engineering {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $this->social_icon_url . '/11-official/Facebook.png',
+              'image' => $this->social_icon_url . '/12-official-white/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -1214,7 +1214,7 @@ class Engineering {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $this->social_icon_url . '/11-official/X.png',
+              'image' => $this->social_icon_url . '/12-official-white/X.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
@@ -1224,7 +1224,7 @@ class Engineering {
               'type' => 'socialIcon',
               'iconType' => 'instagram',
               'link' => 'http://instagram.com',
-              'image' => $this->social_icon_url . '/11-official/Instagram.png',
+              'image' => $this->social_icon_url . '/12-official-white/Instagram.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Instagram',
