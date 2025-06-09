@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.12.6 - 2025-06-09 =
+* Added: new networks in social icons block (Behance, Bluesky, Discord, GitHub, Gravatar, Mastodon, Medium, Patreon, Reddit, RSS, Spotify, Telegram, Threads, TikTok, Tumblr, Twitch, Viemo, WhatsApp, WordPress);
+* Improved: updated existing social networks with the official icons;
+* Improved: hide 'unsubscribe' bulk action when segmenting unsubscribed subscribers.
+
 = 5.12.5 - 2025-06-02 =
 * Improved: Add "4th" day of week as a monthly frequency option;
 * Fixed: issue where duplicated newsletters could be incorrectly linked to unrelated posts under certain conditions.
