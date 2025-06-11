@@ -227,9 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.6 - 2025-06-09 =
-* Added: new networks in social icons block (Behance, Bluesky, Discord, GitHub, Gravatar, Mastodon, Medium, Patreon, Reddit, RSS, Spotify, Telegram, Threads, TikTok, Tumblr, Twitch, Viemo, WhatsApp, WordPress);
-* Improved: updated existing social networks with the official icons;
-* Improved: hide 'unsubscribe' bulk action when segmenting unsubscribed subscribers.
+= x.x.x - YYYY-MM-DD =
+* Updated: minimum required WooCommerce version to 9.8 and tested up to version to 9.9.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
