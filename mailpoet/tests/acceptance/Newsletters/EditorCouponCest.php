@@ -103,6 +103,7 @@ class EditorCouponCest {
     $i->click($couponInEditor);
     $i->waitForElement($couponSettingsHeading);
     $i->wantTo('Select predefined coupon');
+    $i->wait(0.5); // animation to open coupon settings panel
     $i->click(Locator::contains('button', 'All coupons'));
     $i->waitForElementClickable(Locator::contains('label', $couponCode));
     $i->click(Locator::contains('label', $couponCode));
