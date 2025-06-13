@@ -63,6 +63,12 @@ class NewsletterSegmentRepository extends Repository {
       }
       $nameMap[(string)$result['segment_id']][] = $result['subject'];
     }
+
+    // Sort email subjects alphabetically for each segment
+    foreach ($nameMap as &$names) {
+      sort($names);
+    }
+
     return $nameMap;
   }
 

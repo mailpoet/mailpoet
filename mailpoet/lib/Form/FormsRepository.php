@@ -38,6 +38,11 @@ class FormsRepository extends Repository {
       }
     }
 
+    // Sort form names alphabetically for each segment
+    foreach ($nameMap as &$names) {
+      sort($names);
+    }
+
     return $nameMap;
   }
 
