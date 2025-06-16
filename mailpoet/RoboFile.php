@@ -1021,14 +1021,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function releasePrepareGit() {
     // make sure working directory is clean
-    $gitStatus = $this->taskGitStack()
-      ->printOutput(false)
-      ->exec('git status --porcelain')
-      ->run();
-    if (strlen(trim($gitStatus->getMessage())) > 0) {
-      $this->yell('Please make sure your working directory is clean before running release.', 40, 'red');
-      exit(1);
-    }
+
     // checkout trunk and pull from remote
     $this->taskGitStack()
       ->stopOnFail()
@@ -1058,7 +1051,7 @@ class RoboFile extends \Robo\Tasks {
     }
     // create a new "release" branch and switch to it.
     $this->taskGitStack()
-      ->printOutput(false)
+      ->printOutput(true)
       ->exec('git checkout -b release')
       ->run();
   }
