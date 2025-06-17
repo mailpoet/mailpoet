@@ -39,6 +39,7 @@ class ConflictResolver {
       // third-party
       'query-monitor',
       'wpt-tx-updater-network',
+      'polylang',
       // WP.com
       'full-site-editing',
       'wpcomsh',
