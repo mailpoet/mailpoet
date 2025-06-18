@@ -227,7 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.7 - 2025-06-16 =
-* Updated: minimum required WooCommerce version to 9.8 and tested up to version to 9.9.
+= x.x.x - YYYY-MM-DD = =
+* Improved: Adds `polylang` to the list of permitted scripts.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
