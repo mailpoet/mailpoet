@@ -230,5 +230,6 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 = x.x.x - YYYY-MM-DD =
 * Improved: Adds `polylang` to the list of permitted scripts.
 * Fixed: warning `Undefined array key "blocks"`
+* Updated: Support custom order statuses in WooCommerce segments
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
