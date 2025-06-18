@@ -57,22 +57,18 @@ class WooCommerceUsedShippingMethod implements Filter {
     $data = $filterData->getData();
     $this->filterHelper->validateDaysPeriodData((array)$data);
 
-    $includedStatuses = array_keys($this->wooHelper->getOrderStatuses());
-    $failedKey = array_search('wc-failed', $includedStatuses, true);
-    if ($failedKey !== false) {
-      unset($includedStatuses[$failedKey]);
-    }
+    $excludedStatuses = $this->wooFilterHelper->defaultExcludedStatuses();
     $date = is_int($days) ? Carbon::now()->subDays($days) : Carbon::now();
 
     switch ($operator) {
       case DynamicSegmentFilterData::OPERATOR_ANY:
-        $this->applyForAnyOperator($queryBuilder, $includedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForAnyOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
         break;
       case DynamicSegmentFilterData::OPERATOR_ALL:
-        $this->applyForAllOperator($queryBuilder, $includedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForAllOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
         break;
       case DynamicSegmentFilterData::OPERATOR_NONE:
-        $this->applyForNoneOperator($queryBuilder, $includedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForNoneOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
         break;
     }
 
@@ -97,14 +93,14 @@ class WooCommerceUsedShippingMethod implements Filter {
     return $lookupData;
   }
 
-  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
     $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
     $orderItemsTable = $this->filterHelper->getPrefixedTable('woocommerce_order_items');
     $orderItemsTableAlias = 'orderItems';
     $orderItemMetaTable = $this->filterHelper->getPrefixedTable('woocommerce_order_itemmeta');
     $orderItemMetaTableAlias = 'orderItemMeta';
-    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $excludedStatuses);
     $queryBuilder
       ->innerJoin($orderStatsAlias, $orderItemsTable, $orderItemsTableAlias, "$orderStatsAlias.order_id = $orderItemsTableAlias.order_id")
       ->innerJoin($orderItemsTableAlias, $orderItemMetaTable, $orderItemMetaTableAlias, "$orderItemsTableAlias.order_item_id = $orderItemMetaTableAlias.order_item_id")
@@ -120,7 +116,7 @@ class WooCommerceUsedShippingMethod implements Filter {
     }
   }
 
-  private function applyForAllOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForAllOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
     $orderItemTypeParam = $this->filterHelper->getUniqueParameterName('orderItemType');
     $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
@@ -128,7 +124,7 @@ class WooCommerceUsedShippingMethod implements Filter {
     $orderItemsTableAlias = 'orderItems';
     $orderItemMetaTable = $this->filterHelper->getPrefixedTable('woocommerce_order_itemmeta');
     $orderItemMetaTableAlias = 'orderItemMeta';
-    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $excludedStatuses);
 
     $queryBuilder
       ->innerJoin($orderStatsAlias, $orderItemsTable, $orderItemsTableAlias, "$orderStatsAlias.order_id = $orderItemsTableAlias.order_id")
@@ -149,9 +145,9 @@ class WooCommerceUsedShippingMethod implements Filter {
     }
   }
 
-  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
     $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-    $this->applyForAnyOperator($subQuery, $includedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+    $this->applyForAnyOperator($subQuery, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
     $subscribersTable = $this->filterHelper->getSubscribersTable();
     $queryBuilder->andWhere($queryBuilder->expr()->notIn("$subscribersTable.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
   }

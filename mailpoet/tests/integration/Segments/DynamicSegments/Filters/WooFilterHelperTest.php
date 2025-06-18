@@ -18,19 +18,20 @@ class WooFilterHelperTest extends \MailPoetTest {
   }
 
   /**
-   * @dataProvider allowedStatuses
+   * @dataProvider includedStatuses
    */
   public function testItCanJoinCustomersBasedOnPurchaseStatus($status) {
     $customerId = $this->tester->createCustomer('customer@example.com');
     $this->createOrder($customerId, $status);
     $queryBuilder = $this->tester->getSubscribersQueryBuilder();
-    $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    // Pass an empty array to exclude no statuses, which should include all statuses
+    $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, []);
     $emails = $this->tester->getSubscriberEmailsFromQueryBuilder($queryBuilder);
     verify($emails)->arrayContains('customer@example.com');
   }
 
   /**
-   * @dataProvider disallowedStatuses
+   * @dataProvider excludedStatuses
    */
   public function testItExcludesDisallowedOrderStatuses($status) {
     $customerId = $this->tester->createCustomer('customer@example.com');
@@ -47,20 +48,21 @@ class WooFilterHelperTest extends \MailPoetTest {
     $customerId2 = $this->tester->createCustomer('completed@example.com');
     $this->createOrder($customerId2, 'wc-completed');
     $queryBuilder = $this->tester->getSubscribersQueryBuilder();
-    $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, ['wc-refunded']);
+    // Override to exclude both refunded and completed statuses
+    $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, ['wc-refunded', 'wc-completed']);
     $emails = $this->tester->getSubscriberEmailsFromQueryBuilder($queryBuilder);
-    verify($emails)->arrayContains('refunded@example.com');
+    verify($emails)->arrayNotContains('refunded@example.com');
     verify($emails)->arrayNotContains('completed@example.com');
   }
 
-  public function allowedStatuses() {
+  public function includedStatuses() {
+    // These are statuses that are not in the excluded list
     return [
-      'completed' => ['wc-completed'],
-      'processing' => ['wc-processing'],
+      'other' => ['wc-other-status'],
     ];
   }
 
-  public function disallowedStatuses() {
+  public function excludedStatuses() {
     return [
       'refunded' => ['wc-refunded'],
       'cancelled' => ['wc-cancelled'],

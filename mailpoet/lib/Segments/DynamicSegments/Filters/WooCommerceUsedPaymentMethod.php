@@ -57,23 +57,19 @@ class WooCommerceUsedPaymentMethod implements Filter {
     $data = $filterData->getData();
     $this->filterHelper->validateDaysPeriodData((array)$data);
 
-    $includedStatuses = array_keys($this->wooHelper->getOrderStatuses());
-    $failedKey = array_search('wc-failed', $includedStatuses, true);
-    if ($failedKey !== false) {
-      unset($includedStatuses[$failedKey]);
-    }
+    $excludedStatuses = $this->wooFilterHelper->defaultExcludedStatuses();
     $date = is_int($days) ? Carbon::now()->subDays($days) : Carbon::now();
 
     switch ($operator) {
       case DynamicSegmentFilterData::OPERATOR_ANY:
-        $this->applyForAnyOperator($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+        $this->applyForAnyOperator($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
         break;
       case DynamicSegmentFilterData::OPERATOR_ALL:
-        $this->applyForAllOperator($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+        $this->applyForAllOperator($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
         break;
       case DynamicSegmentFilterData::OPERATOR_NONE:
         $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-        $this->applyForAnyOperator($subQuery, $includedStatuses, $paymentMethods, $date, $isAllTime);
+        $this->applyForAnyOperator($subQuery, $excludedStatuses, $paymentMethods, $date, $isAllTime);
         $subscribersTable = $this->filterHelper->getSubscribersTable();
         $queryBuilder->andWhere($queryBuilder->expr()->notIn("$subscribersTable.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
         break;
@@ -82,31 +78,31 @@ class WooCommerceUsedPaymentMethod implements Filter {
     return $queryBuilder;
   }
 
-  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime): void {
+  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime): void {
     if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
-      $this->applyCustomOrderTableJoin($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+      $this->applyCustomOrderTableJoin($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
     } else {
-      $this->applyPostmetaOrderJoin($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+      $this->applyPostmetaOrderJoin($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
     }
   }
 
-  private function applyForAllOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime): void {
+  private function applyForAllOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime): void {
     if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
-      $ordersAlias = $this->applyCustomOrderTableJoin($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+      $ordersAlias = $this->applyCustomOrderTableJoin($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
       $queryBuilder->groupBy('inner_subscriber_id')
         ->having("COUNT(DISTINCT $ordersAlias.payment_method) = " . count($paymentMethods));
     } else {
-      $postmetaAlias = $this->applyPostmetaOrderJoin($queryBuilder, $includedStatuses, $paymentMethods, $date, $isAllTime);
+      $postmetaAlias = $this->applyPostmetaOrderJoin($queryBuilder, $excludedStatuses, $paymentMethods, $date, $isAllTime);
       $queryBuilder->groupBy('inner_subscriber_id')->having("COUNT(DISTINCT $postmetaAlias.meta_value) = " . count($paymentMethods));
     }
   }
 
-  private function applyPostmetaOrderJoin(QueryBuilder $queryBuilder, array $includedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime, string $postmetaAlias = 'postmeta'): string {
+  private function applyPostmetaOrderJoin(QueryBuilder $queryBuilder, array $excludedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime, string $postmetaAlias = 'postmeta'): string {
     $paymentMethodParam = $this->filterHelper->getUniqueParameterName('paymentMethod');
     $paymentMethodMetaKeyParam = $this->filterHelper->getUniqueParameterName('paymentMethod');
 
     $postMetaTable = $this->filterHelper->getPrefixedTable('postmeta');
-    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $excludedStatuses);
     $queryBuilder
       ->innerJoin($orderStatsAlias, $postMetaTable, $postmetaAlias, "$orderStatsAlias.order_id = $postmetaAlias.post_id")
       ->andWhere("postmeta.meta_key = :$paymentMethodMetaKeyParam")
@@ -122,10 +118,10 @@ class WooCommerceUsedPaymentMethod implements Filter {
     return $postmetaAlias;
   }
 
-  private function applyCustomOrderTableJoin(QueryBuilder $queryBuilder, array $includedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime, string $ordersAlias = 'orders'): string {
+  private function applyCustomOrderTableJoin(QueryBuilder $queryBuilder, array $excludedStatuses, array $paymentMethods, Carbon $date, bool $isAllTime, string $ordersAlias = 'orders'): string {
     $paymentMethodParam = $this->filterHelper->getUniqueParameterName('paymentMethod');
     $ordersTable = $this->wooHelper->getOrdersTableName();
-    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $excludedStatuses);
     $queryBuilder
       ->innerJoin($orderStatsAlias, $ordersTable, 'orders', "$orderStatsAlias.order_id = orders.id")
       ->andWhere("$ordersAlias.payment_method IN (:$paymentMethodParam)")
