@@ -227,7 +227,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= x.x.x - YYYY-MM-DD = =
+= x.x.x - YYYY-MM-DD =
 * Improved: Adds `polylang` to the list of permitted scripts.
+* Fixed: warning `Undefined array key "blocks"`
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
