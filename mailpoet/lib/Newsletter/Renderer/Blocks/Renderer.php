@@ -72,11 +72,14 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
-    if (empty($data['blocks']) && isset($data['type'])) {
-      return null;
+    if (
+      (!isset($data['blocks']) || !is_countable($data['blocks']))
+      && isset($data['type'])
+    ) {
+        return null;
     }
     $columnCount = count($data['blocks']);
-    $columnsLayout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
+    $columnsLayout = $data['columnLayout'] ?? null;
     $columnWidths = ColumnsHelper::columnWidth($columnCount, $columnsLayout);
     $columnContent = [];
 
