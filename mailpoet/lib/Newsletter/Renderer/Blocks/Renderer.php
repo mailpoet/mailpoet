@@ -72,7 +72,7 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
-    if (is_null($data['blocks']) && isset($data['type'])) {
+    if (empty($data['blocks']) && isset($data['type'])) {
       return null;
     }
     $columnCount = count($data['blocks']);
