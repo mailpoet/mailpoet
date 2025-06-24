@@ -228,8 +228,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 5.12.8 - 2025-06-24 =
-* Improved: Adds `polylang` to the list of permitted scripts.
-* Fixed: warning `Undefined array key "blocks"`
-* Updated: Support custom order statuses in WooCommerce segments
+* Updated: support custom order statuses in WooCommerce segments;
+* Improved: adds `polylang` to the list of permitted scripts;
+* Fixed: warning `Undefined array key "blocks"`.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

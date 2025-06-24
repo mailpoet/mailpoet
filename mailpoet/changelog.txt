@@ -1,9 +1,9 @@
 == Changelog ==
 
 = 5.12.8 - 2025-06-24 =
-* Improved: Adds `polylang` to the list of permitted scripts.
-* Fixed: warning `Undefined array key "blocks"`
-* Updated: Support custom order statuses in WooCommerce segments
+* Updated: support custom order statuses in WooCommerce segments;
+* Improved: adds `polylang` to the list of permitted scripts;
+* Fixed: warning `Undefined array key "blocks"`.
 
 = 5.12.7 - 2025-06-16 =
 * Updated: minimum required WooCommerce version to 9.8 and tested up to version to 9.9.
