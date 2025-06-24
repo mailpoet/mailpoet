@@ -162,7 +162,7 @@ class Templates {
 			if ( $block_template->plugin !== $this->template_prefix ) {
 				continue;
 			}
-			$templates[ $block_template->slug ] = $block_template;
+			$templates[ $block_template->slug ] = $block_template->title;  // Requires only the template title, not the full template object.
 		}
 		return $templates;
 	}
