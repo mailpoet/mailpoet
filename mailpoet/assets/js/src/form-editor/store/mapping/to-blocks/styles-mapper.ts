@@ -39,7 +39,9 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
     mappedStyles.borderSize = Number(styles.border_size);
   }
   if (has(styles, 'font_size') && styles.font_size !== undefined) {
-    mappedStyles.fontSize = Number(styles.font_size);
+    mappedStyles.fontSize = !Number.isNaN(Number(styles.font_size))
+      ? Number(styles.font_size)
+      : styles.font_size;
   }
   if (has(styles, 'font_color') && styles.font_color) {
     mappedStyles.fontColor = styles.font_color;

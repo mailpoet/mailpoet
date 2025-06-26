@@ -33,7 +33,7 @@ export type FormSettingsType = {
   fixedBarStyles: PlacementStyles;
   fontColor?: string;
   fontFamily?: string;
-  fontSize?: number;
+  fontSize?: string | number;
   formPadding: number;
   formPlacement: {
     popup: FormPlacementBase & {
@@ -105,7 +105,7 @@ export type InputBlockStyles = {
   backgroundColor?: string;
   gradient?: string;
   borderSize?: number;
-  fontSize?: number;
+  fontSize?: string | number;
   fontColor?: string;
   borderRadius?: number;
   borderColor?: string;
