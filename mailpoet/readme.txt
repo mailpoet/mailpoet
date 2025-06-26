@@ -157,7 +157,7 @@ To improve user experience, MailPoet may use the following 3rd party libraries i
 
 * [Google Fonts](https://fonts.google.com/) - used in Form Editor which you can use to customize your forms, and in the Email Editor to style emails. This can be individually [disabled by a filter](https://kb.mailpoet.com/article/332-how-to-disable-google-fonts). [TOS](https://policies.google.com/terms?hl=en) and [Privacy Policy](https://policies.google.com/privacy?hl=en)
 
-* [DocsBot](https://docsbot.ai) - used for searching in Knowledge Base with the help of AI. This functionality may load scripts from [https://widget.docsbot.ai/chat.js](https://widget.docsbot.ai/chat.js). [TOS and Privacy Policy](https://docsbot.ai/legal)
+* [WordPress.com](https://public-api.wordpress.com/) - used for searching in Knowledge Base with the help of AI.
 
 * [Mixpanel](https://mixpanel.com/) - used to send data about the usage of the MailPoet plugin when you [agree with sharing usage data with us](https://kb.mailpoet.com/article/130-sharing-your-data-with-us). [TOS](https://mixpanel.com/legal/terms-of-use/) and [Privacy Policy](https://mixpanel.com/legal/privacy-policy/)
 

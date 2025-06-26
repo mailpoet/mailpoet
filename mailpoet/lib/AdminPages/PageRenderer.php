@@ -204,7 +204,7 @@ class PageRenderer {
         'name' => $tag->getName(),
         ];
       }, $this->tagRepository->findAll()),
-      'display_docsbot_widget' => $this->displayDocsBotWidget(),
+      'display_chatbot_widget' => $this->displayChatBotWidget(),
       'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'cron_trigger_method' => $this->settings->get('cron_trigger.method'),
     ];
@@ -252,7 +252,7 @@ class PageRenderer {
     ];
   }
 
-  public function displayDocsBotWidget(): bool {
+  public function displayChatBotWidget(): bool {
     $display = $this->wp->applyFilters('mailpoet_display_docsbot_widget', $this->settings->get('3rd_party_libs.enabled') === '1');
     return (bool)$display;
   }

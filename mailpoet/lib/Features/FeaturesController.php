@@ -6,13 +6,11 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class FeaturesController {
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
-  const FEATURE_ODIE_CHATBOT = 'odie_chatbot';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
-    self::FEATURE_ODIE_CHATBOT => true,
   ];
 
   /** @var array|null */
