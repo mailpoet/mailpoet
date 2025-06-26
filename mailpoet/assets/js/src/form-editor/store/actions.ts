@@ -233,7 +233,9 @@ export function* showPreview() {
   yield changeActiveSidebar('default');
   const customFields = select(storeName).getAllAvailableCustomFields();
   const formData = select(storeName).getFormData();
-  const formBlocks = select(storeName).getFormBlocks();
+  // Get blocks directly from block editor store to ensure we have the latest state
+  const formBlocks = select(blockEditorStore).getBlocks();
+
   const blocksToFormBody = blocksToFormBodyFactory(
     FONT_SIZES,
     SETTINGS_DEFAULTS.colors,
