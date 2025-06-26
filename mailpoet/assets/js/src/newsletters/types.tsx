@@ -48,11 +48,6 @@ export function NewsletterTypes({
   };
 
   const renderType = (type): JSX.Element => {
-    const badgeClassName =
-      window.mailpoet_is_new_user === true
-        ? 'mailpoet_badge mailpoet_badge_video'
-        : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
-
     return (
       <div
         key={type.slug}
@@ -65,22 +60,6 @@ export function NewsletterTypes({
             {type.title} {type.beta ? `(${__('Beta', 'mailpoet')})` : ''}
           </Heading>
           <p>{type.description}</p>
-          {type.videoGuide && (
-            <a
-              className={badgeClassName}
-              href={type.videoGuide}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="dashicons dashicons-format-video" />
-              {__('See video guide', 'mailpoet')}
-            </a>
-          )}
-          {type.kbLink && (
-            <a href={type.kbLink} target="_blank" rel="noopener noreferrer">
-              {__('Read more.', 'mailpoet')}
-            </a>
-          )}
           <div className="mailpoet-flex-grow" />
           <div className="mailpoet-newsletter-type-action">{type.action}</div>
         </div>

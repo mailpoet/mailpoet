@@ -62,31 +62,6 @@
   background: $color-badge-green;
 }
 
-.mailpoet_badge_video {
-  background: $color-badge-video-guide;
-  display: inline-block;
-  line-height: 20px;
-  padding: 3px 6px;
-  text-decoration: none;
-  vertical-align: top;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background: $color-badge-green;
-    color: #fff;
-  }
-
-  .dashicons {
-    font-size: 14px;
-    line-height: 20px;
-  }
-}
-
-.mailpoet_badge_video_grey {
-  background: #c3c3c3;
-}
-
 // h1.title needed to override WP styles specificity
 h1.title.mailpoet-newsletter-listing-heading {
   margin-bottom: $grid-gap;
