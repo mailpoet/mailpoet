@@ -232,6 +232,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Improved: when choosing an email type, show loading animation only on the selected one;
 * Changed: replaced DocsBot with WordPress.com chatbot when searching MailPoet Knowledge Base;
 * Fixed: rendering submit button when font size is changed;
-* Fixed: fatal error in ACF and SCF when working with post templates in location rules.
+* Fixed: fatal error in ACF and SCF when working with post templates in location rules;
+* Fixed: apply the latest changes in the form editor in the preview.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
