@@ -47,25 +47,23 @@ export function NewsletterTypes({
     }
   };
 
-  const renderType = (type): JSX.Element => {
-    return (
-      <div
-        key={type.slug}
-        data-type={type.slug}
-        className="mailpoet-newsletter-type"
-      >
-        <div className="mailpoet-newsletter-type-image" />
-        <div className="mailpoet-newsletter-type-content">
-          <Heading level={4}>
-            {type.title} {type.beta ? `(${__('Beta', 'mailpoet')})` : ''}
-          </Heading>
-          <p>{type.description}</p>
-          <div className="mailpoet-flex-grow" />
-          <div className="mailpoet-newsletter-type-action">{type.action}</div>
-        </div>
+  const renderType = (type): JSX.Element => (
+    <div
+      key={type.slug}
+      data-type={type.slug}
+      className="mailpoet-newsletter-type"
+    >
+      <div className="mailpoet-newsletter-type-image" />
+      <div className="mailpoet-newsletter-type-content">
+        <Heading level={4}>
+          {type.title} {type.beta ? `(${__('Beta', 'mailpoet')})` : ''}
+        </Heading>
+        <p>{type.description}</p>
+        <div className="mailpoet-flex-grow" />
+        <div className="mailpoet-newsletter-type-action">{type.action}</div>
       </div>
-    );
-  };
+    </div>
+  );
 
   const createNewsletter = (type): void => {
     setIsCreating(type);
