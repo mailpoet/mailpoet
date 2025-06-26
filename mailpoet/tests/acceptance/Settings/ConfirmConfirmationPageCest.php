@@ -4,6 +4,7 @@
 
  use Codeception\Util\Locator;
  use MailPoet\Captcha\CaptchaConstants;
+ use MailPoet\Settings\Pages;
  use MailPoet\Test\DataFactories\Form;
  use MailPoet\Test\DataFactories\Settings;
 
@@ -62,7 +63,7 @@ class ConfirmConfirmationPageCest {
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="signup_settings_tab"]');
     $i->waitForText('Enable sign-up confirmation');
-    $i->waitForText('MailPoet Page');
+    $i->waitForText(Pages::PAGE_TITLE);
     $i->click('[data-automation-id="preview_page_link"]');
     $i->switchToNextTab();
     $i->see("You have subscribed to $siteTitle");
@@ -73,7 +74,7 @@ class ConfirmConfirmationPageCest {
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="signup_settings_tab"]');
     $i->waitForText('Enable sign-up confirmation');
-    $i->waitForText('MailPoet Page');
+    $i->waitForText(Pages::PAGE_TITLE);
     $i->selectOption('[data-automation-id="page_selection"]', $pageTitle);
     $i->click('Save settings');
     $i->waitForText('Settings saved');

@@ -3,6 +3,7 @@
 use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Extension;
+use MailPoet\Settings\Pages;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\UserFlags;
@@ -40,7 +41,7 @@ class DefaultsExtension extends Extension {
 
     // posts & pages
     $this->createPost('post', 'hello-world', 'Hello world!', 'Hello from WordPress.');
-    $this->createPost('mailpoet_page', '', 'MailPoet Page', '[mailpoet_page]');
+    $this->createPost('mailpoet_page', '', Pages::PAGE_TITLE, '[mailpoet_page]');
 
     // get rid of 'blog/' prefix that is added automatically to rewrite rules on multisite by default
     // (init() loads 'permalink_structure' option from DB, flush_rules() regenerates 'rewrite_rules')
