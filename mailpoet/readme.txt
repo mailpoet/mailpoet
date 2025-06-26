@@ -229,6 +229,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = x.x.x - YYYY-MM-DD =
 * Improved: add default re-engagement emails trigger value when "Inactive subscribers" feature is turned off;
+* Changed: replaced DocsBot with WordPress.com chatbot when searching MailPoet Knowledge Base;
 * Fixed: fatal error in ACF and SCF when working with post templates in location rules.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
