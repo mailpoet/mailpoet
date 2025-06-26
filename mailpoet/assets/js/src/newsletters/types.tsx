@@ -33,7 +33,7 @@ export function NewsletterTypes({
 }: Props): JSX.Element {
   const navigate = useNavigate();
 
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(null);
 
   const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
   const isNewEmailEditorEnabled = window.mailpoet_block_email_editor_enabled;
@@ -68,7 +68,7 @@ export function NewsletterTypes({
   };
 
   const createNewsletter = (type): void => {
-    setIsCreating(true);
+    setIsCreating(type);
     MailPoet.trackEvent('Emails > Type selected', {
       'Email type': type,
     });
@@ -85,7 +85,7 @@ export function NewsletterTypes({
         navigate(`/template/${response.data.id}`);
       })
       .fail((response) => {
-        setIsCreating(false);
+        setIsCreating(null);
         if (response.errors.length > 0) {
           return <APIErrorsNotice errors={response.errors} />;
         }
@@ -103,7 +103,7 @@ export function NewsletterTypes({
     're-engagement',
   );
   const createAutomation = () => {
-    setIsCreating(true);
+    setIsCreating('automation');
     window.location.href = 'admin.php?page=mailpoet-automation-templates';
   };
 
@@ -112,7 +112,8 @@ export function NewsletterTypes({
       <Button
         variant="secondary"
         onClick={createStandardNewsletter}
-        isBusy={isCreating}
+        isBusy={isCreating === 'standard'}
+        disabled={isCreating !== null}
         data-automation-id="create_standard"
       >
         {__('Create', 'mailpoet')}
@@ -193,7 +194,8 @@ export function NewsletterTypes({
         <Button
           variant="secondary"
           onClick={createAutomation}
-          isBusy={isCreating}
+          isBusy={isCreating === 'automation'}
+          disabled={isCreating !== null}
           data-automation-id="create_automation"
         >
           {__('Create', 'mailpoet')}
@@ -213,7 +215,8 @@ export function NewsletterTypes({
         <Button
           variant="secondary"
           onClick={createNotificationNewsletter}
-          isBusy={isCreating}
+          isBusy={isCreating === 'notification'}
+          disabled={isCreating !== null}
           data-automation-id="create_notification"
         >
           {__('Create', 'mailpoet')}
@@ -231,7 +234,8 @@ export function NewsletterTypes({
         <Button
           variant="secondary"
           onClick={createReEngagementNewsletter}
-          isBusy={isCreating}
+          isBusy={isCreating === 're_engagement'}
+          disabled={isCreating !== null}
           data-automation-id="create_notification"
         >
           {__('Create', 'mailpoet')}
