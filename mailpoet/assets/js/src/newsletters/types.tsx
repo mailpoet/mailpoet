@@ -128,6 +128,8 @@ export function NewsletterTypes({
             variant="secondary"
             className="mailpoet-button-with-wordpress-icon"
             onClick={onToggle}
+            isBusy={isCreating === 'standard'}
+            disabled={isCreating !== null}
             aria-expanded={isOpen}
             data-automation-id="create_standard_email_dropdown"
           >
