@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Fetch the versions of WooCommerce from the WordPress API
-VERSIONS=$(curl -s https://api.wordpress.org/plugins/info/1.0/woocommerce.json | jq -r '.versions | keys_unsorted | .[]' | grep -v 'trunk')
-LATEST_VERSION=""
-
-# Find the latest version
-for version in $VERSIONS; do
-  LATEST_VERSION=$version
-done
+LATEST_VERSION=$(
+  curl -s https://api.wordpress.org/plugins/info/1.0/woocommerce.json | \
+  jq -r '.versions | keys_unsorted | .[]' | \
+  grep -v 'trunk' | \
+  sort -V | \
+  tail -n 1
+)
 
 # Check if the latest version is a beta/RC version
 if [[ $LATEST_VERSION != *'beta'* && $LATEST_VERSION != *'rc'* ]]; then
