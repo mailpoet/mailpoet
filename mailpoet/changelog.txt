@@ -1,5 +1,14 @@
 == Changelog ==
 
+= 5.12.9 - 2025-06-30 =
+* Improved: handling of MailPoet Page title when switching website languages;
+* Improved: add default re-engagement emails trigger value when "Inactive subscribers" feature is turned off;
+* Improved: when choosing an email type, show loading animation only on the selected one;
+* Changed: replaced DocsBot with WordPress.com chatbot when searching MailPoet Knowledge Base;
+* Fixed: rendering submit button when font size is changed;
+* Fixed: fatal error in ACF and SCF when working with post templates in location rules;
+* Fixed: apply the latest changes in the form editor in the preview.
+
 = 5.12.8 - 2025-06-24 =
 * Updated: support custom order statuses in WooCommerce segments;
 * Improved: adds `polylang` to the list of permitted scripts;
