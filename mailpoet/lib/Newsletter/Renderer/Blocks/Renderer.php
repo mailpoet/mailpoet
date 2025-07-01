@@ -72,7 +72,7 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
-    if (!isset($data['blocks']) || !is_countable($data['blocks'])) {
+    if (!isset($data['blocks']) || !is_countable($data['blocks']) || !is_iterable($data['blocks'])) {
         return null;
     }
     $columnCount = count($data['blocks']);
