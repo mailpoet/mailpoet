@@ -83,9 +83,8 @@ class RendererTest extends \MailPoetUnitTest {
   }
 
   public function testItReturnsNullWhenDataHasTypeButNoCountableBlocks() {
-    // Test case 1: data has type but no blocks property
+    // Test case 1: data has no type but no blocks property
     $dataWithTypeNoBlocks = [
-      'type' => 'container',
       'styles' => ['block' => []],
     ];
 
@@ -102,9 +101,8 @@ class RendererTest extends \MailPoetUnitTest {
     $result = $this->renderer->render($this->newsletter, $dataWithTypeNullBlocks);
     verify($result)->null();
 
-    // Test case 3: data has type and blocks property but blocks is not countable (string)
+    // Test case 3: data has no type and blocks property but blocks is not countable (string)
     $dataWithTypeStringBlocks = [
-      'type' => 'container',
       'blocks' => 'not countable',
       'styles' => ['block' => []],
     ];
