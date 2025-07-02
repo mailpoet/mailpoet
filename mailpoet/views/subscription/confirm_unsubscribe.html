@@ -1,5 +1,6 @@
 <% block content %>
 <form action="<%= unsubscribeUrl %>" method="post">
+<!--  if updating this hidden field form value, remember to update here as well mailpoet/lib/Router/Endpoints/Subscription.php#L514 -->
   <input type="hidden" name="type" value="confirmation">
   <p class="mailpoet_confirm_unsubscribe">
     <%= __('Simply click on this link to stop receiving emails from us.') %>

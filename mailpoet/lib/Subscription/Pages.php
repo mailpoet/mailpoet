@@ -463,7 +463,7 @@ class Pages {
     return $this->wp->applyFilters(
       'mailpoet_unsubscribe_confirmation_page',
       $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData),
-      $unsubscribeUrl
+      $this->addTypeParamToUnsubscribeUrl($unsubscribeUrl)
     );
   }
 
@@ -503,5 +503,13 @@ class Pages {
       );
       $this->statisticsClicksRepository->flush();
     }
+  }
+
+  private function addTypeParamToUnsubscribeUrl(string $unsubscribeUrl): string {
+    if (!$unsubscribeUrl) {
+        return $unsubscribeUrl;
+    }
+    // using the same value as mailpoet/views/subscription/confirm_unsubscribe.html#4
+    return $this->wp->addQueryArg('type', 'confirmation', $unsubscribeUrl);
   }
 }
