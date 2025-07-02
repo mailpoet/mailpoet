@@ -506,7 +506,7 @@ class Pages {
   }
 
   private function addTypeParamToUnsubscribeUrl(string $unsubscribeUrl): string {
-    if (!$unsubscribeUrl) {
+    if (empty($unsubscribeUrl)) {
         return $unsubscribeUrl;
     }
     // using the same value as mailpoet/views/subscription/confirm_unsubscribe.html#4
