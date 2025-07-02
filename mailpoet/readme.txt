@@ -227,10 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.11 - 2025-07-14 =
-* Improved: JavaScript and CSS compatibility with other plugins and themes;
-* Fixed: inconsistent spacing when adding tags to subscribers;
-* Fixed: error message position when creating a list during import;
-* Fixed: page title replacement broken on non-English sites.
+= x.x.x - YYYY-MM-DD =
+* Updated: minimum required WooCommerce version to 9.9 and tested up to version to 10.0.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
