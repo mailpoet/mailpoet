@@ -228,7 +228,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
-* Fixed: PHP Warning: Undefined array key “blocks”.
-* Fixed: Filter `mailpoet_unsubscribe_confirmation_page` not redirecting to the success page.
+* Improved: SendGrid API key field and Amazon SES access key and secret key fields now use masked input fields to prevent accidental credential exposure;
+* Fixed: PHP Warning: Undefined array key “blocks”;
+* Fixed: filter `mailpoet_unsubscribe_confirmation_page` not redirecting to the success page.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
