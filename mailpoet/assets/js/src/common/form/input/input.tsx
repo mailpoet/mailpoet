@@ -2,7 +2,7 @@ import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 import { Tooltip } from 'common/tooltip/tooltip';
 
-type Props = InputHTMLAttributes<HTMLInputElement> & {
+export type Props = InputHTMLAttributes<HTMLInputElement> & {
   customLabel?: string;
   dimension?: 'small';
   isFullWidth?: boolean;
