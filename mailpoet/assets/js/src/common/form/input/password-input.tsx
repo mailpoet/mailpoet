@@ -1,4 +1,4 @@
-import { _x } from '@wordpress/i18n';
+import { _x, __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 
 import { Button } from 'common/button/button';
@@ -9,16 +9,18 @@ type Props = InputProps & {
   forceRevealed?: boolean;
 };
 
-export function PasswordInput({
-  forceRevealed = false,
-  ...attributes
-}: Props) {
+export function PasswordInput({ forceRevealed = false, ...attributes }: Props) {
   const [isRevealed, setIsRevealed] = useState(false);
   const inputType = forceRevealed || isRevealed ? 'text' : 'password';
   const toggleButton = !forceRevealed && (
     <Button
       className="mailpoet-password-input-toggle"
       variant="tertiary"
+      aria-label={
+        isRevealed
+          ? __('Hide input value', 'mailpoet')
+          : __('Show input value', 'mailpoet')
+      }
       onClick={() => setIsRevealed(!isRevealed)}
     >
       {isRevealed
@@ -29,11 +31,5 @@ export function PasswordInput({
     </Button>
   );
 
-  return (
-    <Input
-      type={inputType}
-      iconEnd={toggleButton}
-      {...attributes}
-    />
-  );
+  return <Input type={inputType} iconEnd={toggleButton} {...attributes} />;
 }
