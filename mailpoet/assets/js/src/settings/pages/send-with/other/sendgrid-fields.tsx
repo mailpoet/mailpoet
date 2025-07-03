@@ -1,6 +1,6 @@
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
-import { Input } from 'common/form/input/input';
+import { PasswordInput } from 'common/form';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import { SendingFrequency } from './sending-frequency';
 
@@ -15,9 +15,8 @@ export function SendGridFields() {
       />
       <Label title={t('apiKey')} htmlFor="mailpoet_sendgrid_api_key" />
       <Inputs>
-        <Input
+        <PasswordInput
           dimension="small"
-          type="text"
           value={apiKey}
           onChange={onChange(setApiKey)}
           id="mailpoet_sendgrid_api_key"
