@@ -245,6 +245,7 @@ progress::-moz-progress-bar {
 }
 
 .mailpoet-password-input-toggle {
-  height: 34px;
+  border-radius: 0 3px 3px 0 !important;
+  height: 100%;
   padding: 0 10px !important;
 }
