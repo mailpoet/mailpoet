@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.12.10 - 2025-07-07 =
+* Improved: SendGrid API key field and Amazon SES access key and secret key fields now use masked input fields to prevent accidental credential exposure;
+* Fixed: PHP Warning: Undefined array key “blocks”;
+* Fixed: filter `mailpoet_unsubscribe_confirmation_page` not redirecting to the success page.
+
 = 5.12.9 - 2025-06-30 =
 * Improved: handling of MailPoet Page title when switching website languages;
 * Improved: add default re-engagement emails trigger value when "Inactive subscribers" feature is turned off;

@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.12.9
+Stable tag: 5.12.10
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= x.x.x - YYYY-MM-DD =
+= 5.12.10 - 2025-07-07 =
 * Improved: SendGrid API key field and Amazon SES access key and secret key fields now use masked input fields to prevent accidental credential exposure;
 * Fixed: PHP Warning: Undefined array key “blocks”;
 * Fixed: filter `mailpoet_unsubscribe_confirmation_page` not redirecting to the success page.
