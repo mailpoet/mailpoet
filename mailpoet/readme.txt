@@ -228,6 +228,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = x.x.x - YYYY-MM-DD =
-* Improved: JavaScript and CSS compatibility with other plugins and themes.
+* Improved: JavaScript and CSS compatibility with other plugins and themes;
+* Fixed: page title replacement broken on non-English sites.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
