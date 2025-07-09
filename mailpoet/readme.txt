@@ -227,9 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.12.10 - 2025-07-07 =
-* Improved: SendGrid API key field and Amazon SES access key and secret key fields now use masked input fields to prevent accidental credential exposure;
-* Fixed: PHP Warning: Undefined array key “blocks”;
-* Fixed: filter `mailpoet_unsubscribe_confirmation_page` not redirecting to the success page.
+= x.x.x - YYYY-MM-DD =
+* Improved: JavaScript compatibility with other plugins and themes.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
