@@ -108,37 +108,28 @@ class EditorPageRenderer {
 
     // Email editor rich text JS - Because we Personalization Tags depend on Gutenberg 19.8.0 and higher
     // the following code replaces used Rich Text for the version containing the necessary changes.
-    $assetsParams = require Env::$assetsPath . '/dist/js/email-editor/rich-text.asset.php';
+    $assetsParams = require Env::$assetsPath . '/dist/js/email-editor/assets/rich-text.asset.php';
     $this->wp->wpDeregisterScript('wp-rich-text');
     $this->wp->wpEnqueueScript(
       'wp-rich-text',
-      Env::$assetsUrl . '/dist/js/email-editor/rich-text.js',
+      Env::$assetsUrl . '/dist/js/email-editor/assets/rich-text.js',
       $assetsParams['dependencies'],
       $assetsParams['version'],
       true
     );
     // End of replacing Rich Text package.
-
-    $assetsParams = require Env::$assetsPath . '/dist/js/email-editor/email_editor.asset.php';
-
-    $this->wp->wpEnqueueScript(
-      'mailpoet_email_editor',
-      Env::$assetsUrl . '/dist/js/email-editor/email_editor.js',
-      $assetsParams['dependencies'],
-      $assetsParams['version'],
-      true
-    );
+    $styleParams = require Env::$assetsPath . '/dist/js/email-editor/style/style.asset.php';
     $this->wp->wpEnqueueStyle(
       'mailpoet_email_editor',
-      Env::$assetsUrl . '/dist/js/email-editor/email_editor.css',
+      Env::$assetsUrl . '/dist/js/email-editor/style/style.css',
       [],
-      $assetsParams['version']
+      $styleParams['version']
     );
 
     $currentUserEmail = $this->wp->wpGetCurrentUser()->user_email;
     $this->wp->wpLocalizeScript(
-      'mailpoet_email_editor',
-      'MailPoetEmailEditor',
+      'email_editor_integration',
+      'WooCommerceEmailEditor',
       [
         'current_post_type' => esc_js($currentPostType),
         'current_post_id' => $post->ID,
@@ -184,7 +175,7 @@ class EditorPageRenderer {
       'mailpoet_review_request_illustration_url' => $this->cdnAssetUrl->generateCdnUrl('review-request/review-request-illustration.20190815-1427.svg'),
       'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
     ];
-    $this->wp->wpAddInlineScript('mailpoet_email_editor', implode('', array_map(function ($key) use ($inline_script_data) {
+    $this->wp->wpAddInlineScript('email_editor_integration', implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key]));
     }, array_keys($inline_script_data))), 'before');
 

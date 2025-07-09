@@ -252,6 +252,14 @@ const adminConfig = {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
         },
+        {
+          from: 'node_modules/@woocommerce/email-editor/build-style',
+          to: 'email-editor/style',
+        },
+        {
+          from: 'node_modules/@woocommerce/email-editor/assets',
+          to: 'email-editor/assets',
+        },
       ],
     }),
     new DirectCopyPlugin({
@@ -544,74 +552,6 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
   ],
 });
 
-const emailEditorCustom = Object.assign({}, wpScriptConfig, {
-  name: 'email_editor',
-  entry: {
-    email_editor: '../packages/js/email-editor/src/index.ts',
-  },
-  output: {
-    filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/email-editor'),
-  },
-  resolve: {
-    ...wpScriptConfig.resolve,
-    modules: ['node_modules', '../packages/js/email-editor'],
-  },
-  module: Object.assign({}, wpScriptConfig.module, {
-    rules: [
-      ...wpScriptConfig.module.rules,
-      {
-        test: /\.(t|j)sx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader?cacheDirectory',
-          options: {
-            presets: ['@wordpress/babel-preset-default'],
-          },
-        },
-      },
-    ],
-  }),
-  plugins: PRODUCTION_ENV
-    ? wpScriptConfig.plugins
-    : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
-});
-
-// Temporary solution to build rich-text package for email editor
-const emailEditorRichText = Object.assign({}, wpScriptConfig, {
-  name: 'email-editor-rich-text',
-  entry: {
-    'rich-text': path.resolve(
-      __dirname,
-      '../packages/js/email-editor/node_modules/@wordpress/rich-text/build/index.js',
-    ),
-  },
-  output: {
-    filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/email-editor'),
-    library: ['wp', 'richText'], // Expose the richText package to the global wp object
-    libraryTarget: 'window', // Ensure it is accessible globally
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
-  },
-  module: Object.assign({}, wpScriptConfig.module, {
-    rules: [
-      ...wpScriptConfig.module.rules,
-      {
-        test: /\.(t|j)sx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader?cacheDirectory',
-          options: {
-            presets: ['@wordpress/babel-preset-default'],
-          },
-        },
-      },
-    ],
-  }),
-});
-
 const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
   name: 'email_editor_integration',
   entry: {
@@ -633,13 +573,11 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
 const configs = [
   publicConfig,
   adminConfig,
-  emailEditorCustom,
   formPreviewConfig,
   postEditorBlock,
   marketingOptinBlock,
   emailEditorBlocks,
   emailEditorIntegration,
-  emailEditorRichText,
 ];
 
 module.exports = (env) => {

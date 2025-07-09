@@ -8,6 +8,7 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import { EmailSidebarExtension } from './email-sidebar-extension';
 import './index.scss';
 import { useValidationRules } from './validate-email-content';
+import { initializeEditor } from '@woocommerce/email-editor';
 
 addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
   withSatismeterSurvey(editor),
@@ -52,14 +53,14 @@ addAction('mailpoet_email_editor_events', 'mailpoet', (editorEvents) => {
 
 // enable email editor event tracking
 addFilter(
-  'mailpoet_email_editor_events_tracking_enabled',
+  'woocommerce_email_editor_events_tracking_enabled',
   'mailpoet',
   () => !!window.mailpoet_analytics_enabled,
 );
 
 // integration point for settings sidebar
 addFilter(
-  'mailpoet_email_editor_setting_sidebar_extension_component',
+  'woocommerce_email_editor_setting_sidebar_extension_component',
   'mailpoet',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   (RichTextWithButton) => EmailSidebarExtension.bind(null, RichTextWithButton),
@@ -67,7 +68,7 @@ addFilter(
 
 // use mailpoet data subject if available
 addFilter(
-  'mailpoet_email_editor_preferred_template_title',
+  'woocommerce_email_editor_preferred_template_title',
   'mailpoet',
   (...args) => {
     const [, post] = args;
@@ -75,3 +76,5 @@ addFilter(
     return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
   },
 );
+
+initializeEditor('mailpoet-email-editor');
