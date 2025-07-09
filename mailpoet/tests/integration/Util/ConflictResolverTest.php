@@ -72,7 +72,9 @@ class ConflictResolverTest extends \MailPoetTest {
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $inFooter = true); // test inside footer
+    wp_enqueue_script('some_random_script_2', 'https://examplewp.com/some_script.js', [], null, $inFooter = false); // test domain ending with wp.com
     wp_enqueue_script('permitted_script', trim($permittedAssetLocation, '^'));
+    wp_enqueue_script('permitted_script_2', 'https://wp.com/wp-content/some/offending/plugin/script.js');
     $this->conflictResolver->resolveScriptsConflict();
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
@@ -80,7 +82,9 @@ class ConflictResolverTest extends \MailPoetTest {
     // it should dequeue all scripts except those found on the list of permitted locations
     verify(in_array('select2', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify(in_array('some_random_script', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('some_random_script_2', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify(in_array('permitted_script', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('permitted_script_2', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItWhitelistsScripts() {
