@@ -30,7 +30,12 @@ class ConflictResolverTest extends \MailPoetTest {
   public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
     verify(!empty($this->wpFilter['mailpoet_conflict_resolver_styles']))->true();
     // grab a random permitted style location
-    $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['styles'][array_rand($this->conflictResolver->permittedAssetsLocations['styles'], 1)];
+    $excluded = ['\bwp\.com\b'];
+    $filteredPermittedLocations = array_values(array_filter(
+      $this->conflictResolver->permittedAssetsLocations['styles'],
+      fn($item) => !in_array($item, $excluded, true)
+    ));
+    $permittedAssetLocation = $filteredPermittedLocations[array_rand($filteredPermittedLocations)];
     // enqueue styles
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
     wp_enqueue_style('some_random_style', 'https://examplewp.com/some_style.css'); // test domain ending with wp.com
@@ -71,8 +76,13 @@ class ConflictResolverTest extends \MailPoetTest {
 
   public function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
     verify(!empty($this->wpFilter['mailpoet_conflict_resolver_scripts']))->true();
-    // grab a random permitted script location
-    $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['scripts'][array_rand($this->conflictResolver->permittedAssetsLocations['scripts'], 1)];
+    // grab a random permitted script location, but exclude the value for wp.com because it is regular expression and it causes failing test.
+    $excluded = ['\bwp\.com\b'];
+    $filteredPermittedLocations = array_values(array_filter(
+      $this->conflictResolver->permittedAssetsLocations['scripts'],
+      fn($item) => !in_array($item, $excluded, true)
+    ));
+    $permittedAssetLocation = $filteredPermittedLocations[array_rand($filteredPermittedLocations)];
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $inFooter = true); // test inside footer
