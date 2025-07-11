@@ -69,7 +69,8 @@ export const createNewSegment = (
             positionAfter: '#new_segment_error_message',
           });
         }
-      });
+      })
+      .catch(() => {});
   });
 
   jQuery('#new_segment_cancel').on('click', () => {
