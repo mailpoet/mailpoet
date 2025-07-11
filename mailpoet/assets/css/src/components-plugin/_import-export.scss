@@ -96,3 +96,12 @@ tr {
     font-size: $font-size;
   }
 }
+
+.mailpoet-notice-container {
+  .mailpoet_notice {
+    box-sizing: border-box;
+    margin: 0 0 1em 0;
+    max-width: $grid-column;
+    padding-right: 38px;
+  }
+}

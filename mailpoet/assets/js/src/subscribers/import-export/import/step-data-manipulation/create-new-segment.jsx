@@ -38,7 +38,7 @@ export const createNewSegment = (onCreateSegment) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.hide();
           MailPoet.Notice.showApiErrorNotice(response, {
-            positionAfter: '#new_segment_name',
+            positionAfter: '#new_segment_error_message',
           });
         }
       });
