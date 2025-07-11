@@ -229,6 +229,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = x.x.x - YYYY-MM-DD =
 * Improved: JavaScript and CSS compatibility with other plugins and themes;
+* Fixed: inconsistent spacing when adding tags to subscribers;
 * Fixed: page title replacement broken on non-English sites.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
