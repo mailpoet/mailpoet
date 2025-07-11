@@ -9,7 +9,7 @@ import {
   createSelection,
   destroySelection,
 } from './generate-segment-selection.jsx';
-import { createNewSegment } from './create-new-segment.jsx';
+import { createNewSegment } from './create-new-segment';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);
