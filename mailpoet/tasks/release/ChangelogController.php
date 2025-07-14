@@ -14,6 +14,11 @@ class ChangelogController {
   /** @var Changelogger */
   private $changelogger;
 
+  /**
+   * Initializes the ChangelogController with the specified readme file path and creates a Changelogger instance.
+   *
+   * @param string $readmeFile Path to the readme file used for changelog operations.
+   */
   public function __construct(
     $readmeFile
   ) {
@@ -21,6 +26,15 @@ class ChangelogController {
     $this->changelogger = new Changelogger();
   }
 
+  /**
+   * Updates the changelog and readme files with the changelog for the specified version.
+   *
+   * Retrieves the changelog for the given version, updates both `changelog.txt` and the readme file with the new changelog content, clears the changelog entries, and returns the compiled changelog string.
+   *
+   * @param string $version The version number for which to update the changelog.
+   * @return string The compiled changelog for the specified version.
+   * @throws \Exception If the version string is empty.
+   */
   public function update(string $version) {
     if (!$version) {
       throw new \Exception('Version is required');
@@ -35,6 +49,15 @@ class ChangelogController {
     return $changelog;
   }
 
+  /**
+   * Retrieves the changelog for the specified version.
+   *
+   * Attempts to compile the changelog using the Changelogger component. If no specific entries are found, falls back to extracting the changelog from the readme file or uses a default template. The changelog heading is updated with the current version and date.
+   *
+   * @param string $version The version for which to retrieve the changelog.
+   * @return string The finalized changelog content for the given version.
+   * @throws \Exception If the version string is empty.
+   */
   public function get(string $version) {
     if (!$version) {
       throw new \Exception('Version is required');

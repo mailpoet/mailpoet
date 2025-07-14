@@ -517,11 +517,21 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('../tests_env/vendor/bin/codecept run unit -g failed');
   }
 
+  /**
+   * Runs only the previously failed integration tests using Codeception.
+   *
+   * @return int The exit code from the test runner.
+   */
   public function testFailedIntegration() {
     $this->_exec('../tests_env/vendor/bin/codecept build');
     return $this->_exec('../tests_env/vendor/bin/codecept run integration -g failed');
   }
 
+  /**
+   * Regenerates the dependency injection container cache file.
+   *
+   * Deletes the existing DI container cache and generates a new PHP cache file using the current container configuration. Exits if the WordPress root path is invalid.
+   */
   public function containerDump() {
     if (!defined('ABSPATH')) {
       define('ABSPATH', getenv('WP_ROOT') . '/');
@@ -1205,12 +1215,24 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Changelog \n{$changelog}");
   }
 
+  /**
+   * Updates the changelog for the specified version and outputs the updated changelog content.
+   *
+   * @param string $version The version for which to update the changelog.
+   */
   public function releaseChangelogWrite($version) {
     $this->say("Updating changelog");
     $changelog = $this->getChangelogController()->update($version);
     $this->say("Changelog \n{$changelog}");
   }
 
+  /**
+   * Adds a new changelog entry with the specified type and description.
+   *
+   * Requires both a type and description to be provided via options. Valid types include: Added, Improved, Fixed, Changed, Updated, Removed. Outputs the path to the created changelog entry file.
+   *
+   * @param array $opts Options for the changelog entry, including 'type' and 'description'.
+   */
   public function changelogAdd($opts = ['type' => '', 'description' => '']) {
     $type = $opts['type'];
     $description = $opts['description'];
@@ -1232,6 +1254,13 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Changelog entry created: $filePath");
   }
 
+  /**
+   * Previews the changelog for a specified or upcoming release version.
+   *
+   * If no version is provided, previews the changelog for the next release version.
+   *
+   * @param string|null $version The release version to preview. If null, the next release version is used.
+   */
   public function changelogPreview($version = null) {
     if (!$version) {
       $version = $this->releaseVersionGetNext($version);
@@ -1244,6 +1273,13 @@ class RoboFile extends \Robo\Tasks {
     $this->say($changelog);
   }
 
+  /**
+   * Verifies that the downloaded ZIP file contains the specified version in the readme.txt file.
+   *
+   * Exits with an error if the ZIP cannot be opened or if the required version string is not found.
+   *
+   * @param string $version The version string to verify within the ZIP's readme.txt.
+   */
   public function releaseVerifyDownloadedZip($version) {
     $this->say('Verifying ZIP file');
     $zip = new ZipArchive();
@@ -1539,11 +1575,24 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
+  /**
+   * Creates and returns a WPOrgPluginDownloader instance for the specified plugin slug.
+   *
+   * @param string $pluginSlug The slug of the WordPress.org plugin to download.
+   * @return \MailPoetTasks\WPOrgPluginDownloader The plugin downloader instance.
+   */
   private function createWpOrgDownloader($pluginSlug) {
     require_once __DIR__ . '/tasks/WPOrgPluginDownloader.php';
     return new \MailPoetTasks\WPOrgPluginDownloader($pluginSlug);
   }
 
+  /**
+   * Creates and returns a Doctrine EntityManager configured for the MailPoet environment.
+   *
+   * Ensures required constants and database prefix are set before instantiating the EntityManager.
+   *
+   * @return \MailPoetVendor\Doctrine\ORM\EntityManager The configured Doctrine EntityManager instance.
+   */
   private function createDoctrineEntityManager() {
     if (!defined('ABSPATH')) {
       define('ABSPATH', getenv('WP_ROOT') . '/');

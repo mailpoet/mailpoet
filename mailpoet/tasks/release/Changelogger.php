@@ -9,6 +9,13 @@ class Changelogger {
   /** @var string */
   private $changelogDir;
 
+  /**
+   * Initializes the Changelogger with the specified changelog directory.
+   *
+   * If no directory is provided, the default changelog directory is used.
+   *
+   * @param string|null $changelogDir Optional path to the changelog directory.
+   */
   public function __construct(
     $changelogDir = null
   ) {
@@ -16,7 +23,12 @@ class Changelogger {
   }
 
   /**
-   * Compiles all changelog entries into a single changelog string
+   * Compiles all changelog entries into a formatted changelog string for a given version.
+   *
+   * If no changelog entries are found, returns a fallback changelog for the specified version.
+   *
+   * @param string $version The version number to include in the changelog heading.
+   * @return string The compiled changelog as a string.
    */
   public function compileChangelog(string $version): string {
     $entries = $this->getChangelogEntries();
@@ -36,7 +48,11 @@ class Changelogger {
   }
 
   /**
-   * Gets all changelog entries from individual files
+   * Retrieves and parses all valid changelog entries from markdown files in the changelog directory.
+   *
+   * Each entry is parsed and filtered for validity, then sorted by timestamp extracted from the filenames.
+   *
+   * @return array An array of changelog entries, each containing at least a timestamp, type, and description.
    */
   private function getChangelogEntries(): array {
     if (!is_dir($this->changelogDir)) {
@@ -62,7 +78,12 @@ class Changelogger {
   }
 
   /**
-   * Parses a single changelog file
+   * Parses a changelog markdown file and extracts the timestamp, type, and description.
+   *
+   * Returns an associative array with keys `timestamp`, `type`, and `description` if the file is valid and contains a recognized type and non-empty description. Returns `null` if the file is invalid, unreadable, or does not conform to the expected format.
+   *
+   * @param string $filePath Path to the changelog markdown file.
+   * @return array|null Parsed changelog entry or null if invalid.
    */
   public function parseChangelogFile(string $filePath): ?array {
     $content = file_get_contents($filePath);
@@ -106,7 +127,10 @@ class Changelogger {
   }
 
   /**
-   * Extracts timestamp from filename
+   * Extracts a timestamp in the format YYYY-MM-DD-HH-MM-SS from the beginning of a filename.
+   *
+   * @param string $filename The filename to extract the timestamp from.
+   * @return string The extracted timestamp, or '0000-00-00-00-00-00' if no valid timestamp is found.
    */
   private function extractTimestampFromFilename(string $filename): string {
     if (preg_match('/^(\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2})/', $filename, $matches)) {
@@ -116,7 +140,10 @@ class Changelogger {
   }
 
   /**
-   * Returns fallback changelog when no entries exist
+   * Generates a default changelog entry for the specified version when no individual entries are present.
+   *
+   * @param string $version The version number for which to generate the fallback changelog.
+   * @return string The fallback changelog string.
    */
   private function getFallbackChangelog(string $version): string {
     $date = date('Y-m-d');
@@ -124,7 +151,9 @@ class Changelogger {
   }
 
   /**
-   * Clears all changelog entries after compilation
+   * Deletes all changelog entry markdown files from the changelog directory.
+   *
+   * Removes every `.md` file in the configured changelog directory if it exists.
    */
   public function clearChangelogEntries(): void {
     if (!is_dir($this->changelogDir)) {
@@ -138,7 +167,14 @@ class Changelogger {
   }
 
   /**
-   * Creates a new changelog entry file
+   * Creates a new changelog entry file with the specified type and description.
+   *
+   * Validates the changelog type, generates a timestamped and sanitized filename, and writes the entry as a markdown file in the changelog directory.
+   *
+   * @param string $type The changelog entry type (must be one of the valid types).
+   * @param string $description The description of the changelog entry.
+   * @return string The full path to the created changelog file.
+   * @throws \Exception If the provided type is not valid.
    */
   public function createChangelogEntry(string $type, string $description): string {
     if (!in_array($type, self::VALID_TYPES)) {
@@ -161,7 +197,12 @@ class Changelogger {
   }
 
   /**
-   * Sanitizes filename for changelog entry
+   * Converts a changelog description into a sanitized, lowercase string suitable for use as a filename.
+   *
+   * Removes invalid characters, replaces whitespace with hyphens, trims hyphens, and limits the result to 50 characters.
+   *
+   * @param string $description The changelog entry description to sanitize.
+   * @return string The sanitized filename string.
    */
   private function sanitizeFilename(string $description): string {
     $filename = strtolower($description);
