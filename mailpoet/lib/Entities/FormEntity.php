@@ -43,6 +43,14 @@ class FormEntity {
   const COLUMNS_BLOCK_TYPE = 'columns';
   const COLUMN_BLOCK_TYPE = 'column';
 
+  public const FORM_DISPLAY_TYPES = [
+    self::DISPLAY_TYPE_BELOW_POST,
+    self::DISPLAY_TYPE_FIXED_BAR,
+    self::DISPLAY_TYPE_POPUP,
+    self::DISPLAY_TYPE_SLIDE_IN,
+    self::DISPLAY_TYPE_OTHERS,
+  ];
+
   public const FORM_FIELD_TYPES = [
     self::CHECKBOX_BLOCK_TYPE,
     self::RADIO_BLOCK_TYPE,

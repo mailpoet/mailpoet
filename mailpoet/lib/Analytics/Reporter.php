@@ -9,6 +9,8 @@ use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\FormEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
@@ -106,6 +108,9 @@ class Reporter {
   /*** @var ReporterCampaignData */
   private $reporterCampaignData;
 
+  /** @var FormsRepository */
+  private $formsRepository;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -121,7 +126,8 @@ class Reporter {
     AutomationStorage $automationStorage,
     UnsubscribeReporter $unsubscribeReporter,
     DotcomHelperFunctions $dotcomHelperFunctions,
-    ReporterCampaignData $reporterCampaignData
+    ReporterCampaignData $reporterCampaignData,
+    FormsRepository $formsRepository
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -138,6 +144,7 @@ class Reporter {
     $this->unsubscribeReporter = $unsubscribeReporter;
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
     $this->reporterCampaignData = $reporterCampaignData;
+    $this->formsRepository = $formsRepository;
   }
 
   public function getData() {
@@ -150,6 +157,7 @@ class Reporter {
     $hasWc = $this->woocommerceHelper->isWooCommerceActive();
     $inactiveSubscribersMonths = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
     $inactiveSubscribersStatus = $inactiveSubscribersMonths === 0 ? 'never' : "$inactiveSubscribersMonths months";
+    $activeFormCounts = $this->formsRepository->getActiveFormsCountByType();
 
     $result = [
       'PHP version' => PHP_VERSION,
@@ -269,6 +277,12 @@ class Reporter {
       'Sign-up confirmation: Confirmation Template > using html email editor template' => (boolean)$this->settings->get(ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER, false),
       'Is WordPress.com' => $this->dotcomHelperFunctions->isDotcom() ? 'yes' : 'no',
       'WordPress.com plan' => $this->dotcomHelperFunctions->getDotcomPlan(),
+      'Forms > Number of active forms' => $activeFormCounts['all'],
+      'Forms > Number of active Below pages forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_BELOW_POST],
+      'Forms > Number of active Fixed bar forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_FIXED_BAR],
+      'Forms > Number of active Pop-up forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_POPUP],
+      'Forms > Number of active Slide–in forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_SLIDE_IN],
+      'Forms > Number of active Others (widget) forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_OTHERS],
     ];
 
     $result = array_merge(

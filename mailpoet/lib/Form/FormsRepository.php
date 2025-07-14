@@ -27,6 +27,22 @@ class FormsRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @return FormEntity[]
+   */
+  public function findAllActive(): array {
+    return $this->entityManager
+      ->createQueryBuilder()
+      ->select('f')
+      ->from(FormEntity::class, 'f')
+      ->where('f.deletedAt IS NULL')
+      ->andWhere('f.status = :status')
+      ->setParameter('status', FormEntity::STATUS_ENABLED)
+      ->orderBy('f.updatedAt', 'desc')
+      ->getQuery()
+      ->getResult();
+  }
+
   public function getNamesOfFormsForSegments(): array {
     $allNonDeletedForms = $this->findAllNotDeleted();
 
@@ -52,6 +68,40 @@ class FormsRepository extends Repository {
       ->select('count(f.id)')
       ->getQuery()
       ->getSingleScalarResult();
+  }
+
+  public function getActiveFormsCountByType(): array {
+    $forms = $this->findAllActive();
+
+    $counts = [
+      'all' => count($forms),
+      FormEntity::DISPLAY_TYPE_BELOW_POST => 0,
+      FormEntity::DISPLAY_TYPE_FIXED_BAR => 0,
+      FormEntity::DISPLAY_TYPE_POPUP => 0,
+      FormEntity::DISPLAY_TYPE_SLIDE_IN => 0,
+      FormEntity::DISPLAY_TYPE_OTHERS => 0,
+    ];
+
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      if (!is_array($settings) || !isset($settings['form_placement'])) continue;
+
+      $hasAnyEnabled = false;
+      $formPlacement = $settings['form_placement'];
+
+      foreach (FormEntity::FORM_DISPLAY_TYPES as $type) {
+        if (isset($formPlacement[$type]['enabled']) && $formPlacement[$type]['enabled'] === '1') {
+          $counts[$type]++;
+          $hasAnyEnabled = true;
+        }
+      }
+
+      if (!$hasAnyEnabled) {
+        $counts['others']++;
+      }
+    }
+
+    return $counts;
   }
 
   public function delete(FormEntity $form) {
