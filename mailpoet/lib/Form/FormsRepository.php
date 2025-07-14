@@ -105,7 +105,7 @@ class FormsRepository extends Repository {
       }
 
       if (!$hasAnyEnabled) {
-        $counts['others']++;
+        $counts[FormEntity::DISPLAY_TYPE_OTHERS]++;
       }
     }
 
@@ -164,14 +164,14 @@ class FormsRepository extends Repository {
    * @return array
    */
   private function extractBlockTypes(array $blocks): array {
-    $ignored_blocks = ['columns', 'column', 'paragraph', 'heading', 'image', 'divider', 'submit', 'html'];
-    $field_block_ids = ['email', 'first_name', 'last_name', 'segments'];
+    $ignoredBlocks = ['columns', 'column', 'paragraph', 'heading', 'image', 'divider', 'submit', 'html'];
+    $fieldBlockIds = ['email', 'first_name', 'last_name', 'segments'];
     $blockTypes = [];
 
     foreach ($blocks as $block) {
-      if (in_array($block['id'], $field_block_ids)) {
+      if (in_array($block['id'], $fieldBlockIds)) {
         $blockTypes[] = $block['id'];
-      } elseif (!in_array($block['type'], $ignored_blocks)) {
+      } elseif (!in_array($block['type'], $ignoredBlocks)) {
         $blockTypes[] = 'custom_' . $block['type'];
       }
 
