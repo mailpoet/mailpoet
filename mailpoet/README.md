@@ -9,8 +9,9 @@
 4. [Coding and Testing](#coding-and-testing)
    1. [DI](#di)
    2. [PHP-Scoper](#php-scoper)
-   3. [i18n](#i18n)
-   4. [Acceptance testing](#acceptance-testing)
+   3. [Changelog](#changelog)
+   4. [i18n](#i18n)
+   5. [Acceptance testing](#acceptance-testing)
 
 ## MailPoet
 
@@ -121,6 +122,8 @@ $ ./do qa                  # PHP and JS linters.
 
 $ ./do release:changelog-get  [--version-name=...]     # Prints out changelog and release notes for given version or for newest version.
 $ ./do release:changelog-update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
+$ ./do changelog:add --type=<type> --description=<description> # Creates a new changelog entry
+$ ./do changelog:preview [--version=<version>] # Preview compiled changelog for next version
 
 $ ./do container:dump      # Generates DI container cache.
 
@@ -139,6 +142,16 @@ You can check [the docs](https://symfony.com/doc/3.4/components/dependency_injec
 
 We use PHP-Scoper package to prevent plugin libraries conflicts in PHP. Two plugins may be using different versions of a library. PHP-Scoper prefix dependencies namespaces and they are then moved into `vendor-prefixed` directory.
 Dependencies handled by PHP-Scoper are configured in extra configuration files `prefixer/composer.json` and `prefixer/scoper.inc.php`. Installation and processing is triggered in post scripts of the main `composer.json` file.
+
+### Changelog
+
+Create changelog entries using:
+
+```bash
+./do changelog:add --type=Fixed --description="Brief description of the change"
+```
+
+See [readme](changelog/README.md) for detailed documentation.
 
 ### i18n
 

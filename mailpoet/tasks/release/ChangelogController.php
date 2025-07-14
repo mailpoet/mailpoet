@@ -11,10 +11,14 @@ class ChangelogController {
   /** @var string */
   private $readmeFile;
 
+  /** @var Changelogger */
+  private $changelogger;
+
   public function __construct(
     $readmeFile
   ) {
     $this->readmeFile = $readmeFile;
+    $this->changelogger = new Changelogger();
   }
 
   public function update(string $version) {
@@ -24,6 +28,10 @@ class ChangelogController {
     $changelog = $this->get($version);
     $this->updateChangelogTxt($changelog);
     $this->updateReadmeTxt($changelog, $version);
+
+    // Clear changelog entries after compilation
+    $this->changelogger->clearChangelogEntries();
+
     return $changelog;
   }
 
@@ -31,11 +39,19 @@ class ChangelogController {
     if (!$version) {
       throw new \Exception('Version is required');
     }
-    $changelog = $this->getChangelogFromReadme();
-    if (!$this->containsNewChangelogOrVersionExists($changelog, $version)) {
-      $changelog = self::NEW_CHANGELOG_TEMPLATE . "\n" . self::FALLBACK_RECORD;
+
+    // Use the new Changelogger to compile changelog from individual files
+    $changelog = $this->changelogger->compileChangelog($version);
+
+    // If no changelog entries exist, fall back to the old method
+    if (strpos($changelog, '* Improved: minor changes and fixes.') !== false) {
+      $changelog = $this->getChangelogFromReadme();
+      if (!$this->containsNewChangelogOrVersionExists($changelog, $version)) {
+        $changelog = self::NEW_CHANGELOG_TEMPLATE . "\n" . self::FALLBACK_RECORD;
+      }
+      $changelog = $this->updateHeading($changelog, $version);
     }
-    $changelog = $this->updateHeading($changelog, $version);
+
     return $changelog;
   }
 
