@@ -140,6 +140,7 @@ class EditorPageRenderer {
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
           'send' => admin_url('admin.php?page=mailpoet-newsletters#/send/' . $newsletter->getId()),
+          'back' => admin_url('admin.php?page=mailpoet-newsletters'),
         ],
       ]
     );
