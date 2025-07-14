@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.12.11 - 2025-07-14 =
+* Improved: JavaScript and CSS compatibility with other plugins and themes;
+* Fixed: inconsistent spacing when adding tags to subscribers;
+* Fixed: error message position when creating a list during import;
+* Fixed: page title replacement broken on non-English sites.
+
 = 5.12.10 - 2025-07-07 =
 * Improved: SendGrid API key field and Amazon SES access key and secret key fields now use masked input fields to prevent accidental credential exposure;
 * Fixed: PHP Warning: Undefined array key “blocks”;
