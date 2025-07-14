@@ -523,7 +523,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function containerDump() {
-    define('ABSPATH', getenv('WP_ROOT') . '/');
+    if (!defined('ABSPATH')) {
+      define('ABSPATH', getenv('WP_ROOT') . '/');
+    }
     if (!file_exists(ABSPATH . 'wp-config.php')) {
       $this->yell('WP_ROOT env variable does not contain valid path to wordpress root.', 40, 'red');
       exit(1);
@@ -1209,6 +1211,39 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Changelog \n{$changelog}");
   }
 
+  public function changelogAdd($opts = ['type' => '', 'description' => '']) {
+    $type = $opts['type'];
+    $description = $opts['description'];
+
+    if (empty($type)) {
+      $this->say('Please specify a type with --type=<type>');
+      $this->say('Valid types: Added, Improved, Fixed, Changed, Updated, Removed');
+      exit(1);
+    }
+
+    if (empty($description)) {
+      $this->say('Please specify a description with --description=<description>');
+      exit(1);
+    }
+
+    $changelogger = new \MailPoetTasks\Release\Changelogger();
+    $filePath = $changelogger->createChangelogEntry($type, $description);
+
+    $this->say("Changelog entry created: $filePath");
+  }
+
+  public function changelogPreview($version = null) {
+    if (!$version) {
+      $version = $this->releaseVersionGetNext($version);
+    }
+
+    $changelogger = new \MailPoetTasks\Release\Changelogger();
+    $changelog = $changelogger->compileChangelog($version);
+
+    $this->say("Preview changelog for version $version:");
+    $this->say($changelog);
+  }
+
   public function releaseVerifyDownloadedZip($version) {
     $this->say('Verifying ZIP file');
     $zip = new ZipArchive();
@@ -1510,7 +1545,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private function createDoctrineEntityManager() {
-    define('ABSPATH', getenv('WP_ROOT') . '/');
+    if (!defined('ABSPATH')) {
+      define('ABSPATH', getenv('WP_ROOT') . '/');
+    }
     if (\MailPoet\Config\Env::$dbPrefix === null) {
       /**
        * Ensure some prefix is set
