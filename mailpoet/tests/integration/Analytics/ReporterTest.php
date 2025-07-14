@@ -4,8 +4,12 @@ namespace MailPoet\Analytics;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Form;
+use MailPoet\Test\DataFactories\CustomField;
 use MailPoetVendor\Carbon\Carbon;
 
 class ReporterTest extends \MailPoetTest {
@@ -252,6 +256,202 @@ class ReporterTest extends \MailPoetTest {
     $this->assertEquals(1, $processed['Number of post notification campaigns sent in the last 7 days']);
     $this->assertEquals(1, $processed['Number of post notification campaigns sent in the last 30 days']);
     $this->assertEquals(1, $processed['Number of post notification campaigns sent in the last 3 months']);
+  }
+
+  public function testItReportsFormsAnalyticsData(): void {
+    // Create a basic form
+    (new Form())->withName('Basic Form')->create();
+
+    // Create a form with first name field
+    (new Form())->withName('Form with First Name')
+      ->withFirstName()
+      ->create();
+
+    // Create a form with last name field
+    (new Form())->withName('Form with Last Name')
+      ->withLastName()
+      ->create();
+
+    // Create a form with custom field
+    $customField = (new CustomField())
+      ->withType(CustomFieldEntity::TYPE_TEXT)
+      ->withParams(['required' => '1'])
+      ->create();
+
+    (new Form())->withName('Form with Custom Field')
+      ->withCustomField($customField)
+      ->create();
+
+    // Create a form with multiple custom fields
+    $customField2 = (new CustomField())
+      ->withType(CustomFieldEntity::TYPE_CHECKBOX)
+      ->withParams(['required' => '0', 'values' => [['value' => 'Option 1', 'is_checked' => '']]])
+      ->create();
+
+    (new Form())->withName('Form with Multiple Custom Fields')
+      ->withCustomField($customField)
+      ->withCustomField($customField2)
+      ->create();
+
+    $processed = $this->reporter->getData();
+
+    // Test basic form counts
+    $this->assertEquals(5, $processed['Forms > Number of active forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active forms with first name']);
+    $this->assertEquals(1, $processed['Forms > Number of active forms with last name']);
+    $this->assertEquals(2, $processed['Forms > Number of active forms with custom fields']);
+    $this->assertEquals(1, $processed['Forms > Min custom fields']);
+    $this->assertEquals(2, $processed['Forms > Max custom fields']);
+    $this->assertEquals(1.5, $processed['Forms > Average custom fields']);
+  }
+
+  public function testItReportsFormsDisplayTypeCounts(): void {
+    // Create forms with different display types
+    $form1 = (new Form())->withName('Below Posts Form')->create();
+    $form1->setSettings([
+      'form_placement' => [
+        FormEntity::DISPLAY_TYPE_BELOW_POST => ['enabled' => '1'],
+      ],
+    ]);
+    $this->entityManager->flush();
+
+    $form2 = (new Form())->withName('Fixed Bar Form')->create();
+    $form2->setSettings([
+      'form_placement' => [
+        FormEntity::DISPLAY_TYPE_FIXED_BAR => ['enabled' => '1'],
+      ],
+    ]);
+    $this->entityManager->flush();
+
+    $form3 = (new Form())->withName('Popup Form')->create();
+    $form3->setSettings([
+      'form_placement' => [
+        FormEntity::DISPLAY_TYPE_POPUP => ['enabled' => '1'],
+      ],
+    ]);
+    $this->entityManager->flush();
+
+    $form4 = (new Form())->withName('Slide In Form')->create();
+    $form4->setSettings([
+      'form_placement' => [
+        FormEntity::DISPLAY_TYPE_SLIDE_IN => ['enabled' => '1'],
+      ],
+    ]);
+    $this->entityManager->flush();
+
+    // No placement settings, should be counted as Others (widget) form
+    $form5 = (new Form())->withName('Others Form')->create();
+    $form5->setSettings([
+      'form_placement' => [],
+    ]);
+    $this->entityManager->flush();
+
+    $processed = $this->reporter->getData();
+
+    $this->assertEquals(5, $processed['Forms > Number of active forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active Below pages forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active Fixed bar forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active Pop-up forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active Slide–in forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active Others (widget) forms']);
+  }
+
+  public function testItReportsFormsWithComplexCustomFields(): void {
+    // Create a form with many custom fields
+    $customFields = [];
+    for ($i = 1; $i <= 5; $i++) {
+      $customFields[] = (new CustomField())
+        ->withType(CustomFieldEntity::TYPE_TEXT)
+        ->withParams(['required' => '0'])
+        ->create();
+    }
+
+    (new Form())
+      ->withName('Form with Many Custom Fields')
+      ->withCustomField($customFields[0])
+      ->withCustomField($customFields[1])
+      ->withCustomField($customFields[2])
+      ->withCustomField($customFields[3])
+      ->withCustomField($customFields[4])
+      ->create();
+
+    $processed = $this->reporter->getData();
+
+    $this->assertEquals(1, $processed['Forms > Number of active forms with custom fields']);
+    $this->assertEquals(5, $processed['Forms > Min custom fields']);
+    $this->assertEquals(5, $processed['Forms > Max custom fields']);
+    $this->assertEquals(5.0, $processed['Forms > Average custom fields']);
+  }
+
+  public function testItReportsFormsWithNoCustomFields(): void {
+    // Create forms without custom fields
+    (new Form())->withName('Basic Form')->create();
+    (new Form())->withName('Form with First Name')->withFirstName()->create();
+    (new Form())->withName('Form with Last Name')->withLastName()->create();
+
+    $processed = $this->reporter->getData();
+
+    $this->assertEquals(3, $processed['Forms > Number of active forms']);
+    $this->assertEquals(0, $processed['Forms > Number of active forms with custom fields']);
+    $this->assertEquals(0, $processed['Forms > Min custom fields']);
+    $this->assertEquals(0, $processed['Forms > Max custom fields']);
+    $this->assertEquals(0, $processed['Forms > Average custom fields']);
+  }
+
+  public function testItReportsFormsWithMixedFieldTypes(): void {
+    $customFieldFactory = new CustomField();
+
+    // Create a form with first name, last name, and custom fields
+    $customField = $customFieldFactory
+      ->withType(CustomFieldEntity::TYPE_SELECT)
+      ->withParams(['required' => '1', 'values' => [['value' => 'Option 1'], ['value' => 'Option 2']]])
+      ->create();
+
+    $form = (new Form())->withName('Complete Form')
+      ->withFirstName()
+      ->withLastName()
+      ->withCustomField($customField)
+      ->create();
+
+    $processed = $this->reporter->getData();
+
+    $this->assertEquals(1, $processed['Forms > Number of active forms']);
+    $this->assertEquals(1, $processed['Forms > Number of active forms with first name']);
+    $this->assertEquals(1, $processed['Forms > Number of active forms with last name']);
+    $this->assertEquals(1, $processed['Forms > Number of active forms with custom fields']);
+    $this->assertEquals(1, $processed['Forms > Min custom fields']);
+    $this->assertEquals(1, $processed['Forms > Max custom fields']);
+    $this->assertEquals(1.0, $processed['Forms > Average custom fields']);
+  }
+
+  public function testItDoesNotReportFormsWithDisabledStatus(): void {
+    // Create an enabled form
+    (new Form())->withName('Active Form')->create();
+
+    // Create a disabled form
+    $disabledForm = (new Form())->withName('Disabled Form')->create();
+    $disabledForm->setStatus(FormEntity::STATUS_DISABLED);
+    $this->entityManager->flush();
+
+    $processed = $this->reporter->getData();
+
+    // Only enabled forms should be counted
+    $this->assertEquals(1, $processed['Forms > Number of active forms']);
+  }
+
+  public function testItDoesNotReportFormsWithDeletedStatus(): void {
+    // Create an active form
+    (new Form())->withName('Active Form')->create();
+
+    // Create a deleted form
+    $deletedForm = (new Form())->withName('Deleted Form')->create();
+    $deletedForm->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+
+    $processed = $this->reporter->getData();
+
+    // Only non-deleted forms should be counted
+    $this->assertEquals(1, $processed['Forms > Number of active forms']);
   }
 
   private function createSentNewsletter(string $type, Carbon $sentAt, array $segments, array $otherOptions = []): void {
