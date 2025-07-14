@@ -2,14 +2,14 @@
 
 namespace MailPoet\Analytics;
 
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Test\DataFactories\CustomField;
+use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment;
-use MailPoet\Test\DataFactories\Form;
-use MailPoet\Test\DataFactories\CustomField;
 use MailPoetVendor\Carbon\Carbon;
 
 class ReporterTest extends \MailPoetTest {
