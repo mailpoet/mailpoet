@@ -72,6 +72,7 @@ class FormsRepository extends Repository {
 
   public function getActiveFormsCountByType(): array {
     $forms = $this->findAllActive();
+    $formBlocks = $this->getActiveFormsBlocks();
 
     $counts = [
       'all' => count($forms),
@@ -80,6 +81,13 @@ class FormsRepository extends Repository {
       FormEntity::DISPLAY_TYPE_POPUP => 0,
       FormEntity::DISPLAY_TYPE_SLIDE_IN => 0,
       FormEntity::DISPLAY_TYPE_OTHERS => 0,
+      'with_first_name' => 0,
+      'with_last_name' => 0,
+      'with_custom_fields' => 0,
+      'min_custom_fields' => 0,
+      'max_custom_fields' => 0,
+      'average_custom_fields' => 0,
+      'median_custom_fields' => 0,
     ];
 
     foreach ($forms as $form) {
@@ -101,7 +109,79 @@ class FormsRepository extends Repository {
       }
     }
 
+    $customFieldsCounts = [];
+    foreach ($formBlocks as $blocks) {
+      if (in_array('first_name', $blocks)) {
+        $counts['with_first_name']++;
+      }
+      if (in_array('last_name', $blocks)) {
+        $counts['with_last_name']++;
+      }
+
+      $customFieldsInForm = array_filter($blocks, function($block) {
+        return strpos($block, 'custom_') === 0;
+      });
+
+      if (!empty($customFieldsInForm)) {
+        $counts['with_custom_fields']++;
+        $customFieldsCounts[] = count($customFieldsInForm);
+      }
+    }
+
+    if (!empty($customFieldsCounts)) {
+      $counts['min_custom_fields'] = min($customFieldsCounts);
+      $counts['max_custom_fields'] = max($customFieldsCounts);
+      $counts['average_custom_fields'] = round(array_sum($customFieldsCounts) / count($customFieldsCounts), 1);
+    }
+
     return $counts;
+  }
+
+  /**
+   * Get active forms with their placements and blocks for analytics tracking
+   * @return array
+   */
+  private function getActiveFormsBlocks(): array {
+    $forms = $this->findAllActive();
+    $formBlocks = [];
+
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      if (!is_array($settings)) continue;
+
+      $body = $form->getBody();
+      if (!is_array($body)) continue;
+
+      $formBlocks[] = $this->extractBlockTypes($body);
+    }
+
+    return $formBlocks;
+  }
+
+  /**
+   * Extract block types from form body recursively
+   * @param array $blocks
+   * @return array
+   */
+  private function extractBlockTypes(array $blocks): array {
+    $ignored_blocks = ['columns', 'column', 'paragraph', 'heading', 'image', 'divider', 'submit', 'html'];
+    $field_block_ids = ['email', 'first_name', 'last_name', 'segments'];
+    $blockTypes = [];
+
+    foreach ($blocks as $block) {
+      if (in_array($block['id'], $field_block_ids)) {
+        $blockTypes[] = $block['id'];
+      } elseif (!in_array($block['type'], $ignored_blocks)) {
+        $blockTypes[] = 'custom_' . $block['type'];
+      }
+
+      // Recursively check nested blocks (like in columns)
+      if (isset($block['body']) && is_array($block['body'])) {
+        $blockTypes = array_merge($blockTypes, $this->extractBlockTypes($block['body']));
+      }
+    }
+
+    return $blockTypes;
   }
 
   public function delete(FormEntity $form) {

@@ -283,6 +283,12 @@ class Reporter {
       'Forms > Number of active Pop-up forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_POPUP],
       'Forms > Number of active Slide–in forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_SLIDE_IN],
       'Forms > Number of active Others (widget) forms' => $activeFormCounts[FormEntity::DISPLAY_TYPE_OTHERS],
+      'Forms > Number of active forms with first name' => $activeFormCounts['with_first_name'],
+      'Forms > Number of active forms with last name' => $activeFormCounts['with_last_name'],
+      'Forms > Number of active forms with custom fields' => $activeFormCounts['with_custom_fields'],
+      'Forms > Min custom fields' => $activeFormCounts['min_custom_fields'],
+      'Forms > Max custom fields' => $activeFormCounts['max_custom_fields'],
+      'Forms > Average custom fields' => $activeFormCounts['average_custom_fields'],
     ];
 
     $result = array_merge(
