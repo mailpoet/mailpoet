@@ -43,11 +43,7 @@ class OrderNoteAddedTrigger implements Trigger {
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
       'note_contains' => Builder::string()->default(''),
-      'note_type' => Builder::oneOf([
-        Builder::string()->default('all'),
-        Builder::string()->default('customer'),
-        Builder::string()->default('private'),
-      ])->default('all'),
+      'note_type' => Builder::string()->default('all'),
     ]);
   }
 
@@ -88,7 +84,8 @@ class OrderNoteAddedTrigger implements Trigger {
       new Subject(CustomerSubject::KEY, ['customer_id' => $order->get_customer_id(), 'order_id' => $order->get_id()]),
       new Subject(CommentSubject::KEY, [
         'comment_id' => $commentId,
-        'comment_content' => $comment->commentContent,
+        // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'comment_content' => $comment->comment_content,
         'note_type' => $noteType,
       ]),
     ]);
@@ -99,20 +96,28 @@ class OrderNoteAddedTrigger implements Trigger {
     $configuredNoteContains = $triggerArgs['note_contains'] ?? '';
     $configuredNoteType = $triggerArgs['note_type'] ?? 'all';
 
-    /** @var \WP_Comment $comment */
-    $comment = $args->getSinglePayloadByClass(\WP_Comment::class);
+    // Get the comment from the CommentPayload
+    try {
+      $commentPayload = $args->getSinglePayloadByClass(\MailPoet\Automation\Integrations\WordPress\Payloads\CommentPayload::class);
+    } catch (\Exception $e) {
+      return false;
+    }
+
+    $comment = $commentPayload->getComment();
     if (!$comment) {
       return false;
     }
 
     // Check note content filter
-    if ($configuredNoteContains !== '' && stripos($comment->commentContent, $configuredNoteContains) === false) {
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (($configuredNoteContains !== '') && (stripos($comment->comment_content, $configuredNoteContains) === false)) {
       return false;
     }
 
     // Check note type filter
     if ($configuredNoteType !== 'all') {
-      $isCustomerNote = (bool)get_comment_meta($comment->commentId, 'is_customer_note', true);
+      // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $isCustomerNote = (bool)get_comment_meta((int)$comment->comment_ID, 'is_customer_note', true);
       $actualNoteType = $isCustomerNote ? 'customer' : 'private';
       if ($actualNoteType !== $configuredNoteType) {
         return false;

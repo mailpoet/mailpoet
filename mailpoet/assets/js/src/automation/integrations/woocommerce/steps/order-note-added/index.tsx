@@ -1,6 +1,7 @@
 import { __, _x } from '@wordpress/i18n';
 import { commentContent } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
+import { Edit } from './edit';
 
 const keywords = [
   __('woocommerce', 'mailpoet'),
@@ -26,5 +27,5 @@ export const step: StepType = {
   foreground: '#2271b1',
   background: '#f0f6fc',
   icon: () => commentContent,
-  edit: () => null,
+  edit: () => <Edit />,
 } as const;
