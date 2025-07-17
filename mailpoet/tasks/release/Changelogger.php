@@ -4,7 +4,7 @@ namespace MailPoetTasks\Release;
 
 class Changelogger {
   const CHANGELOG_DIR = __DIR__ . '/../../changelog/';
-  const VALID_TYPES = ['Added', 'Improved', 'Fixed', 'Changed', 'Updated', 'Removed'];
+  const VALID_TYPES = ['Added', 'Updated', 'Improved', 'Changed', 'Fixed', 'Removed'];
 
   /** @var string */
   private $changelogDir;
@@ -27,12 +27,36 @@ class Changelogger {
     $date = date('Y-m-d');
     $heading = "= $version - $date =\n";
 
+    // Group entries by type and order by importance
+    $groupedEntries = $this->groupEntriesByType($entries);
+
     $compiledEntries = [];
-    foreach ($entries as $entry) {
-      $compiledEntries[] = "* {$entry['type']}: {$entry['description']}";
+    foreach (self::VALID_TYPES as $type) {
+      if (isset($groupedEntries[$type])) {
+        foreach ($groupedEntries[$type] as $entry) {
+          $compiledEntries[] = "* {$entry['type']}: {$entry['description']}";
+        }
+      }
     }
 
-    return $heading . implode("\n", $compiledEntries);
+    $changelogContent = implode(";\n", $compiledEntries) . ".";
+
+    return $heading . $changelogContent;
+  }
+
+  /**
+   * Groups entries by their type
+   */
+  private function groupEntriesByType(array $entries): array {
+    $grouped = [];
+    foreach ($entries as $entry) {
+      $type = $entry['type'];
+      if (!isset($grouped[$type])) {
+        $grouped[$type] = [];
+      }
+      $grouped[$type][] = $entry;
+    }
+    return $grouped;
   }
 
   /**
