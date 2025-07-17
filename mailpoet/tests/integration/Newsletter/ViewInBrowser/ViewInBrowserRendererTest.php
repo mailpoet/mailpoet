@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
-use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;

@@ -2,8 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Dependency_Check;
 use MailPoet\Config\AccessControl;
-use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DependencyNotice {

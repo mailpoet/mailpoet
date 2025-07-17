@@ -14,7 +14,7 @@ class EmailEditorTest extends \MailPoetTest {
 
   public function testItRegistersMailPoetEmailPostType() {
     $this->emailEditor->initialize();
-    $this->diContainer->get(\MailPoet\EmailEditor\Engine\Email_Editor::class)->initialize();
+    $this->diContainer->get(\Automattic\WooCommerce\EmailEditor\Engine\Email_Editor::class)->initialize();
     $postTypes = get_post_types();
     $this->assertArrayHasKey('mailpoet_email', $postTypes);
   }

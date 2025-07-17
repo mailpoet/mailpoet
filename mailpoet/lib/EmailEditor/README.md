@@ -4,11 +4,6 @@ This folder contains the code for the MailPoet Plugin Email Editor Integration.
 
 **MailPoet** specific code and features should be placed here.
 
-Documentation for the core email editor packages can be located here:
-
-- Email Editor PHP Package: [docs-->packages/php/email-editor/README.md](../../../packages/php/email-editor/README.md)
-- Email Editor JS Package: [docs-->packages/js/email-editor/README.md](../../../packages/js/email-editor/README.md)
-
 ### Integrations
 
 - PHP Integration can be found [here-->mailpoet/lib/EmailEditor/Integrations/MailPoet](Integrations/MailPoet)

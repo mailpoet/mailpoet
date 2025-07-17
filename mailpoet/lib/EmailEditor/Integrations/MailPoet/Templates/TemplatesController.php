@@ -2,8 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Templates;
 
-use MailPoet\EmailEditor\Engine\Templates\Template;
-use MailPoet\EmailEditor\Engine\Templates\Templates_Registry;
+use Automattic\WooCommerce\EmailEditor\Engine\Templates\Template;
+use Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\Library\Newsletter;
 use MailPoet\Util\CdnAssetUrl;
@@ -23,7 +23,7 @@ class TemplatesController {
   }
 
   public function initialize() {
-    $this->wp->addFilter('mailpoet_email_editor_register_templates', [$this, 'registerTemplates'], 10, 1);
+    $this->wp->addFilter('woocommerce_email_editor_register_templates', [$this, 'registerTemplates'], 10, 1);
   }
 
   public function registerTemplates(Templates_Registry $templatesRegistry): Templates_Registry {

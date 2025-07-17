@@ -3,9 +3,9 @@
   "require": {
     "php": ">=7.4",
     "dragonmantank/cron-expression": "^3.3",
-    "mailpoet/email-editor": "*",
     "mixpanel/mixpanel-php": "2.*",
-    "woocommerce/action-scheduler": "3.9.2"
+    "woocommerce/action-scheduler": "3.9.2",
+    "woocommerce/email-editor": "1.1.0"
   },
   "require-dev": {
     "ext-gd": "*",
@@ -26,17 +26,10 @@
     "wp-cli/wp-cli-bundle": "2.10.0",
     "symfony/process": "5.4.46"
   },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../packages/php/email-editor"
-    }
-  ],
   "autoload": {
     "classmap": [
       "lib-3rd-party",
-      "vendor-prefixed",
-      "vendor/mailpoet/email-editor/src"
+      "vendor-prefixed"
     ],
     "files": [
       "lib/exceptions.php",

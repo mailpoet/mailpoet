@@ -2,11 +2,11 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Dependency_Check;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
-use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;

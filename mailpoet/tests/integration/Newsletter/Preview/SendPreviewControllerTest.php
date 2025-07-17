@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\Preview;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
-use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;

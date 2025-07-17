@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags;
 
-use MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor;
 
 /**
  * Converts link tags to shortcodes.
