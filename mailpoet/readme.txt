@@ -227,7 +227,4 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= x.x.x - YYYY-MM-DD =
-* Updated: minimum required WooCommerce version to 9.9 and tested up to version to 10.0.
-
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
