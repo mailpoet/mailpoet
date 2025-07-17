@@ -43,9 +43,6 @@ if [ -d 'vendor-prefixed' ]; then
 	mv vendor-prefixed vendor-prefixed-backup
 fi
 
-echo '[BUILD] Install email editor dependencies'
-cd ../packages/php/email-editor && ../../../mailpoet/tools/vendor/composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts && cd -
-
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 mkdir vendor-prefixed

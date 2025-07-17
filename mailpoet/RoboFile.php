@@ -22,7 +22,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar install')
-      ->exec('cd ../packages/php/email-editor && ../../../mailpoet/tools/vendor/composer.phar install && cd -')
       ->exec('cd .. && pnpm install --frozen-lockfile --prefer-offline')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
@@ -32,7 +31,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar install')
-      ->exec('cd ../packages/php/email-editor && ../../../mailpoet/tools/vendor/composer.phar install && cd -')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
   }
@@ -691,7 +689,6 @@ class RoboFile extends \Robo\Tasks {
     return $collection->taskExecStack()
       ->stopOnFail()
       ->exec('pnpm run check-types && pnpm run lint')
-      ->exec('cd .. && cd packages/js/email-editor && pnpm run check-types && pnpm run lint:js')
       ->run();
   }
 
@@ -700,7 +697,6 @@ class RoboFile extends \Robo\Tasks {
     return $collection->taskExecStack()
       ->stopOnFail()
       ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
-      ->exec('cd .. && cd packages/js/email-editor && pnpm run lint:css')
       ->run();
   }
 

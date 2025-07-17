@@ -1,7 +1,0 @@
-{
-	"*.php": [
-		"../../../mailpoet/tools/vendor/composer.phar code-style-fix",
-		"../../../mailpoet/tools/vendor/composer.phar phpstan"
-	],
-	"*": "../../../mailpoet/tools/vendor/composer.phar code-style"
-}
