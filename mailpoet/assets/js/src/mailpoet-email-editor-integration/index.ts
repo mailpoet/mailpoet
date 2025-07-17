@@ -4,22 +4,28 @@
 
 import { addFilter, addAction } from '@wordpress/hooks';
 import { MailPoet } from 'mailpoet';
+import { initializeEditor } from '@woocommerce/email-editor';
+import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
 import { withSatismeterSurvey } from './satismeter-survey';
 import { EmailSidebarExtension } from './email-sidebar-extension';
 import './index.scss';
-import { useValidationRules } from './validate-email-content';
-import { initializeEditor } from '@woocommerce/email-editor';
+import { emailValidationRule } from './validate-email-content';
 
-addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
-  withSatismeterSurvey(editor),
+addFilter(
+  'woocommerce_email_editor_wrap_editor_component',
+  'mailpoet',
+  (editor) => withSatismeterSurvey(editor),
 );
 
 // validate email editor content using the defined validation rules
 // content is first validated when the "Send" button is clicked and revalidated on "Save Draft"
 addFilter(
-  'mailpoet_email_editor_content_validation_rules',
-  'mailpoet',
-  () => useValidationRules(), // returns a memorized set of rules (array of rules)
+  'woocommerce_email_editor_content_validation_rules',
+  'mailpoet/email-editor-integration',
+  (rules: EmailContentValidationRule[]) => [
+    ...(rules || []),
+    emailValidationRule,
+  ],
 );
 
 const EVENTS_TO_TRACK = [
