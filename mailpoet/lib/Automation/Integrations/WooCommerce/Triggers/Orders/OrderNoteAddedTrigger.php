@@ -56,6 +56,7 @@ class OrderNoteAddedTrigger implements Trigger {
   }
 
   public function validate(StepValidationArgs $args): void {
+    // No validation required for this trigger
   }
 
   public function registerHooks(): void {
