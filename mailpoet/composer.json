@@ -2,6 +2,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.4",
+    "automattic/jetpack-autoloader": "^5.0.8",
     "dragonmantank/cron-expression": "^3.3",
     "mixpanel/mixpanel-php": "2.*",
     "woocommerce/action-scheduler": "3.9.2",
@@ -92,6 +93,9 @@
     "platform": {
       "php": "7.4.0"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "automattic/jetpack-autoloader": true
+    }
   }
 }

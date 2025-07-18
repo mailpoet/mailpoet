@@ -23,7 +23,7 @@ $mailpoetPlugin = [
   'version' => '5.13.0',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
-  'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',
+  'autoloader' => dirname(__FILE__) . '/vendor/autoload_packages.php',
   'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php',
 ];
 
