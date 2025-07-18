@@ -121,12 +121,12 @@ class NewslettersResponseBuilder {
       // we don't need to parse anything if there are no personalization tags
       return $content;
     }
-    if (!class_exists('\MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor')) {
+    if (!class_exists('\Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor')) {
       // editor is not active, we cannot process personalization tags
       return $content;
     }
 
-    $content_processor = new \MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor($content);
+    $content_processor = new \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor($content);
     while ($content_processor->next_token()) {
       $type = $content_processor->get_token_type();
       if ($type === '#comment') {
