@@ -8,3 +8,21 @@
   box-sizing: border-box;
   padding-bottom: 40px;
 }
+
+.woocommerce-email-editor__settings-panel {
+  .mailpoet-settings-panel__subject-label-suffix {
+    float: right;
+  }
+  .mailpoet-settings-panel__preview-text-length {
+    color: #000;
+    display: inline-block;
+    float: right;
+    font-weight: 500;
+  }
+  .mailpoet-settings-panel__preview-text-length-warning {
+    color: #f0b849;
+  }
+  .mailpoet-settings-panel__preview-text-length-error {
+    color: #cc1818;
+  }
+}

@@ -91,13 +91,18 @@ export function EmailSidebarExtensionBody({ RichTextWithButton }) {
 
   return (
     <>
+      <br />
+
       <RichTextWithButton
         attributeName="subject"
         attributeValue={mailpoetEmailData?.subject}
         updateProperty={updateEmailMailPoetProperty}
         label={__('Subject', 'mailpoet')}
         labelSuffix={
-          <ExternalLink href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list">
+          <ExternalLink
+            href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
+            className="mailpoet-settings-panel__subject-label-suffix"
+          >
             {__('Guide', 'mailpoet')}
           </ExternalLink>
         }
