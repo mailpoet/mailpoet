@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use Automattic\WooCommerce\EmailEditor\Bootstrap as EmailEditorBootstrap;
+use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger;
 use MailPoet\API\JSON\API;
 use MailPoet\API\REST\API as RestApi;
 use MailPoet\AutomaticEmails\AutomaticEmails;
@@ -14,6 +15,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
+use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -132,6 +134,7 @@ class Initializer {
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
+  private Email_Editor_Logger $emailEditorLogger;
 
   public function __construct(
     RendererFactory $rendererFactory,
@@ -165,6 +168,7 @@ class Initializer {
     EmailEditorBootstrap $emailEditorBootstrap,
     BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
+    Email_Editor_Logger $emailEditorLogger,
     Url $urlHelper
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -198,6 +202,7 @@ class Initializer {
     $this->emailEditorBootstrap = $emailEditorBootstrap;
     $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
     $this->blockTypesController = $blockTypesController;
+    $this->emailEditorLogger = $emailEditorLogger;
     $this->urlHelper = $urlHelper;
   }
 
@@ -320,6 +325,7 @@ class Initializer {
       $this->setupWidget();
       $this->setupWoocommerceTransactionalEmails();
       $this->assetsLoader->loadStyles();
+      $this->emailEditorLogger->set_logger(new Logger());
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
