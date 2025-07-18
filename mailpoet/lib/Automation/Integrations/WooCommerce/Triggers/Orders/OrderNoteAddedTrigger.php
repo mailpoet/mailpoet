@@ -56,7 +56,14 @@ class OrderNoteAddedTrigger implements Trigger {
   }
 
   public function validate(StepValidationArgs $args): void {
-    // No validation required for this trigger
+    $triggerArgs = $args->getStep()->getArgs();
+    $noteType = $triggerArgs['note_type'] ?? 'all';
+
+    if (!in_array($noteType, ['all', 'customer', 'private'], true)) {
+      throw new \InvalidArgumentException(
+        sprintf('Invalid note_type "%s". Allowed values: all, customer, private', $noteType)
+      );
+    }
   }
 
   public function registerHooks(): void {
