@@ -19,6 +19,21 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.step.more-controls',
     {
+      ...(step.key !== 'core:if-else' && {
+        duplicate: {
+          key: 'duplicate',
+          control: {
+            title: __('Duplicate step', 'mailpoet'),
+            icon: null,
+            onClick: () => {
+              // Placeholder for duplicate logic
+              // TODO: Implement actual duplication
+              // eslint-disable-next-line no-alert
+              alert(__('Duplicate step clicked', 'mailpoet'));
+            },
+          },
+        },
+      }),
       delete: {
         key: 'delete',
         control: {
