@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { DropdownMenu } from '@wordpress/components';
-import { moreVertical, trash } from '@wordpress/icons';
+import { moreVertical, trash, copy } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium-modal';
@@ -15,6 +15,7 @@ type Props = {
 export function StepMoreMenu({ step }: Props): JSX.Element {
   const { context } = useContext(AutomationContext);
   const [showModal, setShowModal] = useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.step.more-controls',
@@ -24,13 +25,29 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
           key: 'duplicate',
           control: {
             title: __('Duplicate step', 'mailpoet'),
-            icon: null,
-            onClick: () => {
-              // Placeholder for duplicate logic
-              // TODO: Implement actual duplication
-              // eslint-disable-next-line no-alert
-              alert(__('Duplicate step clicked', 'mailpoet'));
-            },
+            icon: copy,
+            onClick: () => setShowDuplicateModal(true),
+          },
+          slot: () => {
+            if (!showDuplicateModal) {
+              return false;
+            }
+            return (
+              <PremiumModal
+                onRequestClose={() => {
+                  setShowDuplicateModal(false);
+                }}
+                tracking={{
+                  utm_medium: 'upsell_modal',
+                  utm_campaign: 'duplicate_automation_step',
+                }}
+              >
+                {__(
+                  'You cannot duplicate a step in the automation.',
+                  'mailpoet',
+                )}
+              </PremiumModal>
+            );
           },
         },
       }),
