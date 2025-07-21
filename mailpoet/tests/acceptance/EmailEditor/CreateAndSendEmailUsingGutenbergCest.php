@@ -40,22 +40,22 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
 
     $i->wantTo('Change Campaign name');
-    $i->click('New Email');
-    $i->waitForElement('[name="campaign_name"]');
-    $i->clearFormField('[name="campaign_name"]');
-    $i->type('My Campaign Name');
-
-    $i->wantTo('Change subject and preheader');
-    $i->click('[aria-label="Change campaign name"]');
     $i->click('Email', '.editor-sidebar__panel-tabs');
+    $i->click('.editor-all-actions-button');
+    $i->waitForElementVisible('//div[@role="menuitem"]//span[normalize-space(.)="Rename"]');
+    $i->click('//div[@role="menuitem"][.//span[normalize-space(.)="Rename"]]');
+    $i->fillField('Name', 'My Campaign Name');
+    $i->click('.components-modal__content .components-button.is-primary');
+
+    $i->wantTo('Change subject and preheader in the settings panel');
+    $i->click('Settings', '.woocommerce-email-editor__settings-panel');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preheader"]', 'My New Preview Text');
 
     $i->wantTo('Send an email and verify it was delivered');
-    $i->click('Save Draft');
+    $i->waitForText('Save draft', 10, '.edit-post-header');
+    $i->click('Save draft', '.edit-post-header');
     $i->waitForText('Saved');
-    $i->waitForText('Email saved!');
-    $i->click('[aria-label="Close sidebar"]'); // close the sidebar. It sometimes interferes with the send button click
     $i->click('[data-automation-id="email_editor_send_button"]');
     $i->waitForElement('[name="subject"]');
     $subject = $i->grabValueFrom('[name="subject"]');
@@ -109,13 +109,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->switchToIFrame();
 
     $i->wantTo('Save draft and display preview');
-    $i->click('Save Draft');
+    $i->click('Save draft', '.edit-post-header');
     $i->waitForText('Saved');
-    $i->waitForText('Email saved!');
-    // there is weird issue in the acceptance env where preview popup goes beyond sidebar
-    // this issue is not confirmed to be real issue but only on the acceptance test site
-    $i->click('[aria-label="Close sidebar"]'); // close sidebar
-    $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
+    $i->click('.editor-preview-dropdown__toggle');
     $i->waitForElementVisible('//a[text()="Preview in new tab"]');
     $i->waitForElementClickable('//a[text()="Preview in new tab"]');
     $i->click('//a[text()="Preview in new tab"]');
@@ -125,13 +121,13 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->closeTab();
 
     $i->wantTo('Send preview email and verify it was delivered');
-    $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
+    $i->click('.editor-preview-dropdown__toggle');
     $i->waitForElementVisible('//span[text()="Send a test email"]');
     $i->click('//span[text()="Send a test email"]'); // MenuItem component renders a button containing span
     $i->waitForElementClickable('//button[text()="Send test email"]');
     $i->click('//button[text()="Send test email"]');
     $i->waitForText('Test email sent successfully!');
-    $i->click('//button[text()="Close"]');
+    $i->click('//button[text()="Cancel"]');
     $i->waitForElementNotVisible('//button[text()="Send test email"]');
   }
 
