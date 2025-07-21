@@ -124,9 +124,9 @@ class OrderNoteAddedTrigger implements Trigger {
 
     // Check note type filter
     if ($configuredNoteType !== 'all') {
-      // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $isCustomerNote = (bool)get_comment_meta((int)$comment->comment_ID, 'is_customer_note', true);
-      $actualNoteType = $isCustomerNote ? 'customer' : 'private';
+      $commentSubjectEntry = $args->getSingleSubjectEntry(CommentSubject::KEY);
+      $subjectArgs = $commentSubjectEntry->getSubjectData()->getArgs();
+      $actualNoteType = $subjectArgs['note_type'] ?? null;
       if ($actualNoteType !== $configuredNoteType) {
         return false;
       }
