@@ -19,16 +19,17 @@ class EmailTemplatesCest {
 
     $this->selectTemplate($i, 'Newsletter - 1 Column');
 
-    $i->wantTo('Verify correct template is selected');
-    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
+    $i->wantTo('Verify settings panel is visible');
+    $i->waitForText('Settings', 10, '.woocommerce-email-editor__settings-panel');
 
     $i->wantTo('Edit template');
-    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->click('Settings', '.woocommerce-email-editor__settings-panel');
+    $i->waitForText('Template');
+    $i->click('Newsletter', '.woocommerce-email-editor__settings-panel');
     $i->waitForText('Edit template');
     $i->click('Edit template');
-    $i->waitForText('Note that the same template can be used by multiple emails, so any changes made here may affect other emails on the site.');
-    $i->click('Continue');
-    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
+    $i->waitForText('This template is used by multiple emails. Any changes made would affect other emails on the site. Are you sure you want to edit the template?');
+    $i->click('Edit template');
 
     $textInTemplate = 'Text added to template';
     $i->wantTo('Add some text to the template');
@@ -41,39 +42,28 @@ class EmailTemplatesCest {
 
     $i->wantTo('Return to editor and save all');
     $i->click('Back', '.editor-document-bar');
-    $i->waitForText('Save', 10, '.edit-post-header__settings');
-    $i->click('Save', '.edit-post-header__settings');
-    $i->waitForText('Save', 10, '.entities-saved-states__panel');
+    $i->waitForText('Save draft', 10, '.edit-post-header');
+    $i->click('Save draft', '.edit-post-header');
+    $i->waitForText('Saved', 10, '.edit-post-header');
+    $i->click('Save', '.editor-header__settings');
+    $i->waitForText('Are you ready to save?', 10, '.entities-saved-states__panel');
     $i->click('Save', '.entities-saved-states__panel');
-    $i->waitForText('Send', 10, '.edit-post-header__settings');
+    $i->waitForText('Send', 10, '.editor-header__settings');
     $this->checkTextIsInEmail($i, $textInTemplate);
 
-    $i->wantTo('Swap template');
-    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
-    $i->waitForText('Swap template');
-    $i->click('Swap template');
-    $this->selectTemplate($i, 'Newsletter'); // Todo - select different template when available
-    $i->wantTo('Verify correct template is selected');
-    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
-
-    $i->wantTo('Swap template back');
-    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
-    $i->waitForText('Swap template');
-    $i->click('Swap template');
-    $this->selectTemplate($i, 'Newsletter');
-    $this->checkTextIsInEmail($i, $textInTemplate);
-
-    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->wantTo('Edit template');
+    $i->click('Newsletter', '.woocommerce-email-editor__settings-panel');
     $i->waitForText('Edit template');
     $i->click('Edit template');
-    $i->click('Continue');
+    $i->waitForText('This template is used by multiple emails. Any changes made would affect other emails on the site. Are you sure you want to edit the template?');
+    $i->click('Edit template');
 
     $i->wantTo('Restore template content to default');
-    $i->click('[aria-label="Template actions"]');
-    $i->waitForText('Reset');
-    $i->click('Reset');
-    $i->waitForText('This will clear ANY and ALL template customization. All updates made to the template will be lost. Do you want to proceed?');
-    $i->click('Reset');
+    $i->click('.editor-all-actions-button');
+    $i->waitForElementVisible('//div[@role="menuitem"]//span[normalize-space(.)="Reset"]');
+    $i->click('//div[@role="menuitem"][.//span[normalize-space(.)="Reset"]]');
+    $i->waitForText('Reset to default and clear all customizations?', 10, '.components-modal__content');
+    $i->click('.components-modal__content .components-button.is-primary');
     $i->waitForText('"Newsletter" reset.');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
   }
