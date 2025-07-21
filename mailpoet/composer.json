@@ -5,6 +5,7 @@
     "automattic/jetpack-autoloader": "^5.0.8",
     "dragonmantank/cron-expression": "^3.3",
     "mixpanel/mixpanel-php": "2.*",
+    "soundasleep/html2text": "^2.1",
     "woocommerce/action-scheduler": "3.9.2",
     "woocommerce/email-editor": "1.1.0"
   },
@@ -55,9 +56,6 @@
       "MailPoet\\Test\\DataGenerator\\": "tests/DataGenerator"
     }
   },
-  "replace": {
-    "soundasleep/html2text": "*"
-  },
   "scripts": {
     "pre-install-cmd": [
       "@php tools/install.php",
@@ -86,8 +84,7 @@
     "pre-autoload-dump": [
       "php ./tasks/fix-codeception-stub.php",
       "php ./tasks/fix-requests.php",
-      "php ./tasks/fix-php82-robo.php",
-      "php ./tasks/fix-email-editor.php"
+      "php ./tasks/fix-php82-robo.php"
     ]
   },
   "config": {

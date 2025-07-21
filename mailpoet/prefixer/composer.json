@@ -18,7 +18,6 @@
     "pelago/emogrifier": "7.2.0",
     "psr/cache": "^1.0",
     "sabberworm/php-css-parser": "8.5.1",
-    "soundasleep/html2text": "dev-master",
     "symfony/dependency-injection": "5.4.40",
     "symfony/polyfill-ctype": "1.29.0",
     "symfony/polyfill-iconv": "1.29.0",

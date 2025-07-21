@@ -651,7 +651,6 @@ class RoboFile extends \Robo\Tasks {
       'vendor/composer',
       'vendor/dragonmantank',
       'vendor-prefixed/',
-      'vendor-prefixed/soundasleep',
       'mailpoet.php',
     ]);
     // The list of files and folders to exclude is coming from build.sh
@@ -669,7 +668,7 @@ class RoboFile extends \Robo\Tasks {
       'vendor/phpmailer/phpmailer/test',
       'vendor-prefixed/psr/log/Psr/Log/Test',
       'vendor-prefixed/sabberworm/php-css-parser/tests',
-      'vendor-prefixed/soundasleep/html2text/tests',
+      'vendor/soundasleep/html2text/tests',
       'vendor-prefixed/swiftmailer/swiftmailer/tests',
       'vendor-prefixed/symfony/service-contracts/Tests',
       'vendor-prefixed/symfony/translation/Tests',

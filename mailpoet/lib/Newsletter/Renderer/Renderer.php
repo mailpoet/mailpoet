@@ -14,7 +14,7 @@ use MailPoet\NewsletterProcessingException;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Html2Text\Html2Text;
+use Soundasleep\Html2Text;
 
 class Renderer {
   const NEWSLETTER_TEMPLATE = 'Template.html';

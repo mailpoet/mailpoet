@@ -15,7 +15,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Html2Text\Html2Text;
+use Soundasleep\Html2Text;
 
 class ConfirmationEmailMailer {
 
