@@ -228,6 +228,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 5.12.12 - 2025-07-22 =
-* Added: A new Automation Trigger when a new WooCommerce order note is added.
+* Added: A new Automation Trigger when a new WooCommerce order note is added;
+* Updated: minimum required WooCommerce version to 9.9 and tested up to version to 10.0.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
