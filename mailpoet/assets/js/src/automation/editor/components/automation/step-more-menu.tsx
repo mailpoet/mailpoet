@@ -12,6 +12,8 @@ type Props = {
   step: StepData;
 };
 
+// TODO duplicate email
+
 export function StepMoreMenu({ step }: Props): JSX.Element {
   const { context } = useContext(AutomationContext);
   const [showModal, setShowModal] = useState(false);
@@ -20,37 +22,38 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.step.more-controls',
     {
-      ...(step.key !== 'core:if-else' && {
-        duplicate: {
-          key: 'duplicate',
-          control: {
-            title: __('Duplicate step', 'mailpoet'),
-            icon: copy,
-            onClick: () => setShowDuplicateModal(true),
+      ...(step.key !== 'core:if-else' &&
+        step.type !== 'trigger' && {
+          duplicate: {
+            key: 'duplicate',
+            control: {
+              title: __('Duplicate step', 'mailpoet'),
+              icon: copy,
+              onClick: () => setShowDuplicateModal(true),
+            },
+            slot: () => {
+              if (!showDuplicateModal) {
+                return false;
+              }
+              return (
+                <PremiumModal
+                  onRequestClose={() => {
+                    setShowDuplicateModal(false);
+                  }}
+                  tracking={{
+                    utm_medium: 'upsell_modal',
+                    utm_campaign: 'duplicate_automation_step',
+                  }}
+                >
+                  {__(
+                    'You cannot duplicate a step in the automation.',
+                    'mailpoet',
+                  )}
+                </PremiumModal>
+              );
+            },
           },
-          slot: () => {
-            if (!showDuplicateModal) {
-              return false;
-            }
-            return (
-              <PremiumModal
-                onRequestClose={() => {
-                  setShowDuplicateModal(false);
-                }}
-                tracking={{
-                  utm_medium: 'upsell_modal',
-                  utm_campaign: 'duplicate_automation_step',
-                }}
-              >
-                {__(
-                  'You cannot duplicate a step in the automation.',
-                  'mailpoet',
-                )}
-              </PremiumModal>
-            );
-          },
-        },
-      }),
+        }),
       delete: {
         key: 'delete',
         control: {
