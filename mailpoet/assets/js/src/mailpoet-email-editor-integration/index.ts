@@ -48,7 +48,7 @@ const EVENTS_TO_TRACK = [
   'email_editor_events_trash_modal_move_to_trash_button_clicked', // Move to trash button was clicked
 ];
 
-addAction('mailpoet_email_editor_events', 'mailpoet', (editorEvents) => {
+addAction('woocommerce_email_editor_events', 'mailpoet', (editorEvents) => {
   const { name, ...data } = editorEvents;
   // To prevent going over mixpanel quota, we will limit the number of email editor events we track with mixpanel
   // Tracks will log all events. This will be done in MAILPOET-5995

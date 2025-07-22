@@ -21,7 +21,7 @@ class EmailEditorTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    remove_filter('mailpoet_email_editor_post_types', [$this->emailEditor, 'addEmailPostType']);
+    remove_filter('woocommerce_email_editor_post_types', [$this->emailEditor, 'addEmailPostType']);
     $this->truncateEntity(NewsletterEntity::class);
   }
 }
