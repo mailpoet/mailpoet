@@ -12,8 +12,6 @@ type Props = {
   step: StepData;
 };
 
-// TODO duplicate email
-
 export function StepMoreMenu({ step }: Props): JSX.Element {
   const { context } = useContext(AutomationContext);
   const [showModal, setShowModal] = useState(false);
