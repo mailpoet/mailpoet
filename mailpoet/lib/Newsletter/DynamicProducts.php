@@ -93,6 +93,12 @@ class DynamicProducts {
       'exclude' => $query->postsToExclude, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
     ];
 
+    // Exclude out-of-stock and products that are not on backorder
+    $excludeOutOfStock = $query->args['excludeOutOfStock'] ?? false;
+    if ($excludeOutOfStock === true || $excludeOutOfStock === 'true') {
+      $wcArgs['stock_status'] = ['instock', 'lowstock', 'onbackorder'];
+    }
+
     // If we have specific product IDs to include, use them
     if (!empty($parameters['post__in'])) {
       $wcArgs['include'] = $parameters['post__in'];

@@ -95,7 +95,7 @@ Module.DynamicProductsBlockModel = base.BlockModel.extend({
     base.BlockView.prototype.initialize.apply(this, args);
 
     this.on(
-      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:sortBy change:showDivider change:dynamicProductsType change:titlePosition',
+      'change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:sortBy change:showDivider change:dynamicProductsType change:titlePosition change:excludeOutOfStock',
       this._handleChanges,
       this,
     );
@@ -219,6 +219,10 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_dynamic_products_include_or_exclude': _.partial(
         this.changeField,
         'inclusionType',
+      ),
+      'change .mailpoet_dynamic_products_exclude_out_of_stock': _.partial(
+        this.changeBoolCheckboxField,
+        'excludeOutOfStock',
       ),
       'change .mailpoet_dynamic_products_title_alignment': _.partial(
         this.changeField,
