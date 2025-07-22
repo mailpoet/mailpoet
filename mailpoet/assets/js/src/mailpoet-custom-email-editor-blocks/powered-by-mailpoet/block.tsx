@@ -9,7 +9,7 @@ import { PremiumModal } from '../../common/premium-modal';
 import './style.scss';
 
 const getCdnUrl = () => window.mailpoet_cdn_url;
-const getPremiumPluginStatus = () => window.mailpoet_premium_active;
+const getHasValidPremiumKey = () => window.mailpoet_has_valid_premium_key;
 
 function LogoImage({
   logoSrc,
@@ -56,9 +56,9 @@ function Edit({
   const blockProps = useBlockProps();
 
   const cdnUrl = getCdnUrl();
-  const isPremiumPluginActive = getPremiumPluginStatus();
+  const hasValidPremiumKey = getHasValidPremiumKey();
 
-  if (isPremiumPluginActive) {
+  if (hasValidPremiumKey) {
     return null;
   }
   const selectedLogo = attributes?.logo ?? 'default';

@@ -2,24 +2,24 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
-use MailPoet\Config\ServicesChecker;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class PoweredByMailpoet extends AbstractBlock {
-  private ServicesChecker $servicesChecker;
+  private SubscribersFeature $subscribersFeature;
   private CdnAssetUrl $cdnAssetUrl;
   protected $blockName = 'powered-by-mailpoet';
 
   public function __construct(
-    ServicesChecker $servicesChecker,
+    SubscribersFeature $subscribersFeature,
     CdnAssetUrl $cdnAssetUrl
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
-    $this->servicesChecker = $servicesChecker;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function render($attributes, $content, $block) {
-    if ($this->servicesChecker->isPremiumPluginActive()) {
+    if ($this->subscribersFeature->hasValidPremiumKey()) {
       return '';
     }
 

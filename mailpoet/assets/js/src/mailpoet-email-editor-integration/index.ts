@@ -13,7 +13,7 @@ import { emailValidationRule } from './validate-email-content';
 
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
-  'mailpoet',
+  'mailpoet/email-editor-integration',
   (editor) => withSatismeterSurvey(editor),
 );
 
@@ -60,14 +60,14 @@ addAction('woocommerce_email_editor_events', 'mailpoet', (editorEvents) => {
 // enable email editor event tracking
 addFilter(
   'woocommerce_email_editor_events_tracking_enabled',
-  'mailpoet',
+  'mailpoet/email-editor-integration',
   () => !!window.mailpoet_analytics_enabled,
 );
 
 // integration point for settings sidebar
 addFilter(
   'woocommerce_email_editor_setting_sidebar_extension_component',
-  'mailpoet',
+  'mailpoet/email-editor-integration',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   (RichTextWithButton) => EmailSidebarExtension.bind(null, RichTextWithButton),
 );
@@ -75,7 +75,7 @@ addFilter(
 // use mailpoet data subject if available
 addFilter(
   'woocommerce_email_editor_preferred_template_title',
-  'mailpoet',
+  'mailpoet/email-editor-integration',
   (...args) => {
     const [, post] = args;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
