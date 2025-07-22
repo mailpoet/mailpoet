@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.12.12 - 2025-07-22 =
+* Added: A new Automation Trigger when a new WooCommerce order note is added.
+
 = 5.12.11 - 2025-07-14 =
 * Improved: JavaScript and CSS compatibility with other plugins and themes;
 * Fixed: inconsistent spacing when adding tags to subscribers;

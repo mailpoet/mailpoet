@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.12.11
+Stable tag: 5.12.12
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -226,5 +226,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. Automation editor (Premium)
 
 == Changelog ==
+
+= 5.12.12 - 2025-07-22 =
+* Added: A new Automation Trigger when a new WooCommerce order note is added.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
