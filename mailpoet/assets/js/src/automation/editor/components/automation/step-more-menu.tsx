@@ -17,41 +17,41 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const [showModal, setShowModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
+  const canDuplicate = step.key !== 'core:if-else' && step.type !== 'trigger';
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.step.more-controls',
     {
-      ...(step.key !== 'core:if-else' &&
-        step.type !== 'trigger' && {
-          duplicate: {
-            key: 'duplicate',
-            control: {
-              title: __('Duplicate step', 'mailpoet'),
-              icon: copy,
-              onClick: () => setShowDuplicateModal(true),
-            },
-            slot: () => {
-              if (!showDuplicateModal) {
-                return false;
-              }
-              return (
-                <PremiumModal
-                  onRequestClose={() => {
-                    setShowDuplicateModal(false);
-                  }}
-                  tracking={{
-                    utm_medium: 'upsell_modal',
-                    utm_campaign: 'duplicate_automation_step',
-                  }}
-                >
-                  {__(
-                    'You cannot duplicate a step in the automation.',
-                    'mailpoet',
-                  )}
-                </PremiumModal>
-              );
-            },
+      ...(canDuplicate && {
+        duplicate: {
+          key: 'duplicate',
+          control: {
+            title: __('Duplicate step', 'mailpoet'),
+            icon: copy,
+            onClick: () => setShowDuplicateModal(true),
           },
-        }),
+          slot: () => {
+            if (!showDuplicateModal) {
+              return false;
+            }
+            return (
+              <PremiumModal
+                onRequestClose={() => {
+                  setShowDuplicateModal(false);
+                }}
+                tracking={{
+                  utm_medium: 'upsell_modal',
+                  utm_campaign: 'duplicate_automation_step',
+                }}
+              >
+                {__(
+                  'Duplicating automation steps is available in premium plans. Upgrade to unlock this feature.',
+                  'mailpoet',
+                )}
+              </PremiumModal>
+            );
+          },
+        },
+      }),
       delete: {
         key: 'delete',
         control: {
