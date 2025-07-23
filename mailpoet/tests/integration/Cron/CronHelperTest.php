@@ -226,20 +226,25 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   public function testItGetsSiteUrl() {
+    $siteUrl = getenv('MAILPOET_TEST_SITE_URL');
+    // fallback to public URL local test URL is not set
+    if (!$siteUrl) {
+      $siteUrl = 'http://example.com';
+    }
+
     // 1. do nothing when the url does not contain port
-    $siteUrl = 'http://example.com';
     verify($this->cronHelper->getSiteUrl($siteUrl))->equals($siteUrl);
 
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     // 2. when url contains valid port, try connecting to it
-    $siteUrl = 'http://example.com:80';
-    verify($this->cronHelper->getSiteUrl($siteUrl))->equals($siteUrl);
+    $siteTestUrl = $siteUrl . ':80';
+    verify($this->cronHelper->getSiteUrl($siteTestUrl))->equals($siteTestUrl);
 
     // 3. when url contains invalid port, try connecting to it. when connection fails,
     // another attempt will be made to connect to the standard port derived from URL schema
-    $siteUrl = 'http://example.com:8080';
-    verify($this->cronHelper->getSiteUrl($siteUrl))->equals('http://example.com');
+    $siteTestUrl = $siteUrl . ':8080';
+    verify($this->cronHelper->getSiteUrl($siteTestUrl))->equals($siteUrl);
 
     // 4. when connection can't be established, exception should be thrown
     $siteUrl = 'https://invalid:80';

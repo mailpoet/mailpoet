@@ -59,6 +59,7 @@ services:
       WORDPRESS_TABLE_PREFIX: mp_
       TEST_TYPE: integration
       PHP_IDE_CONFIG: 'serverName=MailPoetTest'
+      MAILPOET_TEST_SITE_URL: 'http://test.local'
 
   smtp:
     image: mailhog/mailhog:v1.0.0
