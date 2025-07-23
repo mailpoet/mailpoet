@@ -1,6 +1,6 @@
 # Changelog System
 
-This directory contains individual changelog entries that are compiled into the final changelog during releases.
+The `changelog/` directory contains individual changelog entries that are compiled into the final changelog during releases.
 
 ## How it works
 
