@@ -21,10 +21,38 @@ class UpdateStepsController {
     $steps = [];
     foreach ($data as $index => $stepData) {
       $step = $this->processStep($stepData, $automation->getStep($stepData['id']));
-      $steps[$index] = $step;
+      $this->maybeRunOnDuplicate($step, $automation);
+      $steps[$index] = $automation->getStep($step->getId()) ?? $step;
     }
     $automation->setSteps($steps);
     return $automation;
+  }
+
+  private function maybeRunOnDuplicate(Step $step, Automation $automation): void {
+    if ($step->getType() === 'action') {
+      $args = $step->getArgs();
+      $isStepDuplicated = !empty($args['stepDuplicated']);
+      if ($isStepDuplicated) {
+        $action = $this->registry->getAction($step->getKey());
+        if ($action) {
+          $duplicatedStep = $action->onDuplicate($step);
+          $dupArgs = $duplicatedStep->getArgs();
+          unset($dupArgs['stepDuplicated']);
+          $duplicatedStep = new Step(
+            $duplicatedStep->getId(),
+            $duplicatedStep->getType(),
+            $duplicatedStep->getKey(),
+            $dupArgs,
+            $duplicatedStep->getNextSteps(),
+            $duplicatedStep->getFilters()
+          );
+          // save the updated step into the automation
+          $allSteps = $automation->getSteps();
+          $allSteps[$step->getId()] = $duplicatedStep;
+          $automation->setSteps($allSteps);
+        }
+      }
+    }
   }
 
   private function processStep(array $data, ?Step $existingStep): Step {

@@ -82,8 +82,6 @@ class UpdateAutomationController {
       foreach ($automation->getSteps() as $step) {
         $this->hooks->doAutomationStepBeforeSave($step, $automation);
         $this->hooks->doAutomationStepByKeyBeforeSave($step, $automation);
-
-        $this->maybeRunOnDuplicate($step, $automation);
       }
     }
 
@@ -183,32 +181,6 @@ class UpdateAutomationController {
       $automationArgs = reset($args);
       if (isset($automationArgs['automation_run_id']) && isset($runIds[$automationArgs['automation_run_id']])) {
         $this->actionScheduler->unscheduleAction(Hooks::AUTOMATION_STEP, $args);
-      }
-    }
-  }
-
-  /**
-   * @param Step $step
-   * @param Automation $automation
-   * @return void
-   */
-  public function maybeRunOnDuplicate(Step $step, Automation $automation): void {
-    if ($step->getType() === 'action') {
-      $args = $step->getArgs();
-      $isStepDuplicated = !empty($args['stepDuplicated']);
-      if ($isStepDuplicated) {
-        $action = $this->registry->getAction($step->getKey());
-        if ($action) {
-
-          $duplicatedStep = $action->onDuplicate($step);
-
-          unset($duplicatedStep->getArgs()['stepDuplicated']);
-          
-          // save the updated step into the automation
-          $allSteps = $automation->getSteps();
-          $allSteps[$step->getId()] = $duplicatedStep;
-          $automation->setSteps($allSteps);
-        }
       }
     }
   }
