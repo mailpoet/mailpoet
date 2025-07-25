@@ -117,7 +117,6 @@ rm -rf $plugin_name/vendor/dragonmantank/cron-expression/tests
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor-prefixed/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor-prefixed/sabberworm/php-css-parser/tests
-rm -rf $plugin_name/vendor/soundasleep/html2text/tests
 rm -rf $plugin_name/vendor-prefixed/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Tests
 rm -rf $plugin_name/vendor-prefixed/symfony/translation/Tests

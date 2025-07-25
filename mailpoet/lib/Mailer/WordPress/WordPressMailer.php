@@ -2,12 +2,12 @@
 
 namespace MailPoet\Mailer\WordPress;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
-use Soundasleep\Html2Text;
 
 PHPMailerLoader::load();
 

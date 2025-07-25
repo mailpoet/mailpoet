@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f1b9698083c1ce8287434681159e8d3",
+    "content-hash": "8e7e7064dc7b4fa01eb4b8b978f1c169",
     "packages": [
         {
             "name": "automattic/jetpack-autoloader",
@@ -331,61 +331,6 @@
             "time": "2025-07-11T13:20:48+00:00"
         },
         {
-            "name": "soundasleep/html2text",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/soundasleep/html2text.git",
-                "reference": "83502b6f8f1aaef8e2e238897199d64f284b4af3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/soundasleep/html2text/zipball/83502b6f8f1aaef8e2e238897199d64f284b4af3",
-                "reference": "83502b6f8f1aaef8e2e238897199d64f284b4af3",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-libxml": "*",
-                "php": "^7.3|^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.9",
-                "phpunit/phpunit": "^7.0|^8.0|^9.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Soundasleep\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jevon Wright",
-                    "homepage": "https://jevon.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PHP script to convert HTML into a plain text format",
-            "homepage": "https://github.com/soundasleep/html2text",
-            "keywords": [
-                "email",
-                "html",
-                "php",
-                "text"
-            ],
-            "support": {
-                "email": "support@jevon.org",
-                "issues": "https://github.com/soundasleep/html2text/issues",
-                "source": "https://github.com/soundasleep/html2text/tree/2.1.0"
-            },
-            "time": "2023-01-06T09:28:15+00:00"
-        },
-        {
             "name": "symfony/css-selector",
             "version": "5.4.x-dev",
             "source": {
@@ -635,22 +580,21 @@
         },
         {
             "name": "woocommerce/email-editor",
-            "version": "1.1.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/email-editor.git",
-                "reference": "c5ae28223a58158237d587f986594b2fb1ecf15c"
+                "reference": "f50ff19e92d6e3dfe001dd0252957898a86ba8f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/woocommerce/email-editor/zipball/c5ae28223a58158237d587f986594b2fb1ecf15c",
-                "reference": "c5ae28223a58158237d587f986594b2fb1ecf15c",
+                "url": "https://api.github.com/repos/woocommerce/email-editor/zipball/f50ff19e92d6e3dfe001dd0252957898a86ba8f3",
+                "reference": "f50ff19e92d6e3dfe001dd0252957898a86ba8f3",
                 "shasum": ""
             },
             "require": {
                 "pelago/emogrifier": "^7.3",
-                "php": ">=7.4",
-                "soundasleep/html2text": "^2.1"
+                "php": ">=7.4"
             },
             "require-dev": {
                 "automattic/jetpack-changelogger": "3.3.0",
@@ -687,9 +631,9 @@
             ],
             "description": "Email editor based on WordPress Gutenberg package.",
             "support": {
-                "source": "https://github.com/woocommerce/email-editor/tree/1.1.0"
+                "source": "https://github.com/woocommerce/email-editor/tree/1.3.0"
             },
-            "time": "2025-07-17T07:25:56+00:00"
+            "time": "2025-07-24T13:45:34+00:00"
         }
     ],
     "packages-dev": [
@@ -8691,7 +8635,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

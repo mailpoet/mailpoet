@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer as GuntenbergRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
@@ -14,7 +15,6 @@ use MailPoet\NewsletterProcessingException;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
-use Soundasleep\Html2Text;
 
 class Renderer {
   const NEWSLETTER_TEMPLATE = 'Template.html';
