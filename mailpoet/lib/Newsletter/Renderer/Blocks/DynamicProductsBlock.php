@@ -96,7 +96,7 @@ class DynamicProductsBlock {
       // Don't show any products if we don't have specific product IDs
       // and the user didn't choose "selected" in the dynamic products type dropdown
       if ($sendingQueue) {
-        if (!empty($args['dynamicProductsType']) || $args['dynamicProductsType'] !== 'selected') {
+        if (($args['dynamicProductsType'] ?? null) !== 'selected') {
           $queryArgs['includeProductIds'] = [0];
         }
       }
