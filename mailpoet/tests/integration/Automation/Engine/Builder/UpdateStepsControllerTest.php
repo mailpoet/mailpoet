@@ -37,7 +37,7 @@ class UpdateStepsControllerTest extends MailPoetTest {
       ],
       [new NextStep('end')]
     );
-    $automation = new Automation('Test automation', [$step], \wp_get_current_user());
+    $automation = new Automation('Test automation', [$step->getId() => $step], \wp_get_current_user());
 
     $updateStepsController = $this->diContainer->get(UpdateStepsController::class);
     $updateStepsController->updateSteps($automation, [

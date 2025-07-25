@@ -10,7 +10,6 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -32,9 +31,6 @@ class UpdateAutomationController {
   /** @var UpdateStepsController */
   private $updateStepsController;
 
-  /** @var Registry */
-  private $registry;
-
   private AutomationRunStorage $automationRunStorage;
 
   private ActionScheduler $actionScheduler;
@@ -46,8 +42,7 @@ class UpdateAutomationController {
     AutomationValidator $automationValidator,
     AutomationRunStorage $automationRunStorage,
     ActionScheduler $actionScheduler,
-    UpdateStepsController $updateStepsController,
-    Registry $registry
+    UpdateStepsController $updateStepsController
   ) {
     $this->hooks = $hooks;
     $this->storage = $storage;
@@ -56,7 +51,6 @@ class UpdateAutomationController {
     $this->updateStepsController = $updateStepsController;
     $this->automationRunStorage = $automationRunStorage;
     $this->actionScheduler = $actionScheduler;
-    $this->registry = $registry;
   }
 
   public function updateAutomation(int $id, array $data): Automation {

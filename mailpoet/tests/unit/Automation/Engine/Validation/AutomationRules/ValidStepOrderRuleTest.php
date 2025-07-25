@@ -231,8 +231,8 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
       public function validate(StepValidationArgs $args): void {
       }
 
-      public function onDuplicate(\MailPoet\Automation\Engine\Integration\Step $step, \MailPoet\Automation\Engine\Data\Automation $automation): void {
-          // Intentionally left empty for now
+      public function onDuplicate(\MailPoet\Automation\Engine\Data\Step $step): \MailPoet\Automation\Engine\Data\Step {
+          return $step;
       }
     };
   }

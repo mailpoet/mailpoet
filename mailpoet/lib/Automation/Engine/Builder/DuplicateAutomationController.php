@@ -45,14 +45,16 @@ class DuplicateAutomationController {
     );
     $duplicate->setStatus(Automation::STATUS_DRAFT);
 
-    foreach ($duplicate->getSteps() as $step) {
+    $steps = $duplicate->getSteps();
+    foreach ($steps as $id => $step) {
       if ($step->getType() === 'action') {
         $action = $this->registry->getAction($step->getKey());
         if ($action) {
-          $action->onDuplicate($step);
+          $steps[$id] = $action->onDuplicate($step);
         }
       }
     }
+    $duplicate->setSteps($steps);
 
     $automationId = $this->automationStorage->createAutomation($duplicate);
     $savedAutomation = $this->automationStorage->getAutomation($automationId);

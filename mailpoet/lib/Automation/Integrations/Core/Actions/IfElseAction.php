@@ -73,7 +73,7 @@ class IfElseAction implements Action {
     $controller->scheduleNextStepByIndex($matches ? 0 : 1);
   }
 
-  public function onDuplicate(\MailPoet\Automation\Engine\Data\Step $step): Step {
+  public function onDuplicate(Step $step): Step {
         // Intentionally left empty for now, this cannot be duplicated
         return $step;
   }

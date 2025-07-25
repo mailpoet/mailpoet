@@ -117,7 +117,7 @@ class SendEmailAction implements Action {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     WordPress $wp,
-    NewsletterSaveController $newsletterSaveController,
+    NewsletterSaveController $newsletterSaveController
   ) {
     $this->automationController = $automationController;
     $this->settings = $settings;
@@ -554,10 +554,14 @@ class SendEmailAction implements Action {
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
     ]);
-    if (!$emailId) {
-      return $step;
+    if (!$email) {
+      throw new \MailPoet\Automation\Engine\Exceptions\InvalidStateException('Automation email entity not found for duplication.');
     }
-    $duplicatedNewsletter = $this->newsletterSaveController->duplicate($email);
+    try {
+      $duplicatedNewsletter = $this->newsletterSaveController->duplicate($email);
+    } catch (\Throwable $e) {
+      throw new \MailPoet\Automation\Engine\Exceptions\InvalidStateException('Failed to duplicate automation email: ' . $e->getMessage());
+    }
     $duplicatedNewsletter->setStatus($email->getStatus());
     $this->newslettersRepository->flush();
 

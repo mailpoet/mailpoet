@@ -52,7 +52,7 @@ class DelayAction implements Action {
     }
   }
 
-  public function onDuplicate(\MailPoet\Automation\Engine\Data\Step $step): Step {
+  public function onDuplicate(Step $step): Step {
         // Intentionally left empty for now
         return $step;
   }
