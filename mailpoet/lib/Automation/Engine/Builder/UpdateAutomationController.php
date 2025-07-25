@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -31,6 +32,9 @@ class UpdateAutomationController {
   /** @var UpdateStepsController */
   private $updateStepsController;
 
+  /** @var Registry */
+  private $registry;
+
   private AutomationRunStorage $automationRunStorage;
 
   private ActionScheduler $actionScheduler;
@@ -42,7 +46,8 @@ class UpdateAutomationController {
     AutomationValidator $automationValidator,
     AutomationRunStorage $automationRunStorage,
     ActionScheduler $actionScheduler,
-    UpdateStepsController $updateStepsController
+    UpdateStepsController $updateStepsController,
+    Registry $registry
   ) {
     $this->hooks = $hooks;
     $this->storage = $storage;
@@ -51,6 +56,7 @@ class UpdateAutomationController {
     $this->updateStepsController = $updateStepsController;
     $this->automationRunStorage = $automationRunStorage;
     $this->actionScheduler = $actionScheduler;
+    $this->registry = $registry;
   }
 
   public function updateAutomation(int $id, array $data): Automation {
@@ -76,6 +82,8 @@ class UpdateAutomationController {
       foreach ($automation->getSteps() as $step) {
         $this->hooks->doAutomationStepBeforeSave($step, $automation);
         $this->hooks->doAutomationStepByKeyBeforeSave($step, $automation);
+
+        $this->maybeRunOnDuplicate($step, $automation);
       }
     }
 
@@ -175,6 +183,32 @@ class UpdateAutomationController {
       $automationArgs = reset($args);
       if (isset($automationArgs['automation_run_id']) && isset($runIds[$automationArgs['automation_run_id']])) {
         $this->actionScheduler->unscheduleAction(Hooks::AUTOMATION_STEP, $args);
+      }
+    }
+  }
+
+  /**
+   * @param Step $step
+   * @param Automation $automation
+   * @return void
+   */
+  public function maybeRunOnDuplicate(Step $step, Automation $automation): void {
+    if ($step->getType() === 'action') {
+      $args = $step->getArgs();
+      $isStepDuplicated = !empty($args['stepDuplicated']);
+      if ($isStepDuplicated) {
+        $action = $this->registry->getAction($step->getKey());
+        if ($action) {
+
+          $duplicatedStep = $action->onDuplicate($step);
+
+          unset($duplicatedStep->getArgs()['stepDuplicated']);
+          
+          // save the updated step into the automation
+          $allSteps = $automation->getSteps();
+          $allSteps[$step->getId()] = $duplicatedStep;
+          $automation->setSteps($allSteps);
+        }
       }
     }
   }

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Stubs;
 
 use MailPoet\Automation\Engine\Control\StepRunController;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Action;
@@ -39,6 +40,11 @@ class TestAction implements Action {
     if ($this->callback) {
       ($this->callback)($args);
     }
+  }
+
+  public function onDuplicate(Step $step): Step {
+        // Intentionally left empty for now
+        return $step;
   }
 
   public function getKey(): string {

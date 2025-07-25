@@ -23,6 +23,7 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
@@ -103,6 +104,8 @@ class SendEmailAction implements Action {
 
   private WordPress $wp;
 
+  private NewsletterSaveController $newsletterSaveController;
+
   public function __construct(
     AutomationController $automationController,
     SettingsController $settings,
@@ -113,7 +116,8 @@ class SendEmailAction implements Action {
     AutomationEmailScheduler $automationEmailScheduler,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
-    WordPress $wp
+    WordPress $wp,
+    NewsletterSaveController $newsletterSaveController,
   ) {
     $this->automationController = $automationController;
     $this->settings = $settings;
@@ -125,6 +129,7 @@ class SendEmailAction implements Action {
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
     $this->wp = $wp;
+    $this->newsletterSaveController = $newsletterSaveController;
   }
 
   public function getKey(): string {
@@ -536,5 +541,36 @@ class SendEmailAction implements Action {
       );
     }
     return $email;
+  }
+
+  public function onDuplicate(Step $step): Step {
+    $args = $step->getArgs();
+    $emailId = (int)$args['email_id'];
+    if (!$emailId) {
+      // if the email is not yet designed, we don't need to duplicate it
+      return $step;
+    }
+
+    $email = $this->newslettersRepository->findOneBy([
+      'id' => $emailId,
+    ]);
+    if (!$emailId) {
+      return $step;
+    }
+    $duplicatedNewsletter = $this->newsletterSaveController->duplicate($email);
+    $duplicatedNewsletter->setStatus($email->getStatus());
+    $this->newslettersRepository->flush();
+
+    $args['email_id'] = $duplicatedNewsletter->getId();
+    $args['subject'] = $duplicatedNewsletter->getSubject();
+
+    return new Step(
+      $step->getId(),
+      $step->getType(),
+      $step->getKey(),
+      $args,
+      $step->getNextSteps(),
+      $step->getFilters()
+    );
   }
 }
