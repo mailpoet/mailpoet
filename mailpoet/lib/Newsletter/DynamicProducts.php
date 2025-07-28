@@ -96,7 +96,7 @@ class DynamicProducts {
     // Exclude out-of-stock and products that are not on backorder
     $excludeOutOfStock = $query->args['excludeOutOfStock'] ?? false;
     if ($excludeOutOfStock === true || $excludeOutOfStock === 'true') {
-      $wcArgs['stock_status'] = ['instock', 'lowstock', 'onbackorder'];
+      $wcArgs['stock_status'] = $this->wp->applyFilters('mailpoet_products_exclude_out_of_stock_stock_status', ['instock', 'lowstock', 'onbackorder']);
     }
 
     // If we have specific product IDs to include, use them
