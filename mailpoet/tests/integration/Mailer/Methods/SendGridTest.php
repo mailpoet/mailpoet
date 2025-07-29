@@ -115,8 +115,8 @@ class SendGridTest extends \MailPoetTest {
     verify($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
   }
 
-  public function testItCanSend() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
+  public function testItCanSendWithSendGrid() {
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true' || empty(getenv('WP_TEST_MAILER_SENDGRID_API'))) $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

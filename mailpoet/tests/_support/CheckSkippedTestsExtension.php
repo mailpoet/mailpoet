@@ -22,6 +22,7 @@ class CheckSkippedTestsExtension extends Extension {
       'testAllSubscribersFoundWithOperatorAllOf',
       'automationTriggeredByRegistrationWitConfirmationNeeded',
       'automationTriggeredByRegistrationWithoutConfirmationNeeded',
+      'testItCanSendWithSendGrid',
       // Email editor works with the latest WP version only
       'createAndSendStandardNewsletter',
       'displayNewsletterPreview',
