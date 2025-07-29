@@ -603,6 +603,87 @@ class WooCommerceTest extends \MailPoetTest {
     verify($association2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  public function testGuestCustomerSubscribedWhenShouldSubscribeToWooSegment(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set(\MailPoet\WooCommerce\Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    $this->settings->resetCache();
+
+    $guest = $this->insertGuestCustomer();
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testGuestCustomerUnsubscribedWhenOnCheckoutWithOptinNotChecked(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set(\MailPoet\WooCommerce\Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $this->settings->resetCache();
+
+    unset($_POST[\MailPoet\WooCommerce\Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+
+    $wooHelper = $this->createMock(\MailPoet\WooCommerce\Helper::class);
+    $wooHelper->method('isCheckoutRequest')->willReturn(true); // Simulate checkout
+    $wooHelper->method('wcGetOrder')->willReturnCallback(function ($orderId) {
+      return wc_get_order($orderId); // Use WooCommerce function directly
+    });
+
+    $wooSegment = new \MailPoet\Segments\WooCommerce(
+      $this->settings,
+      $this->diContainer->get(\MailPoet\WP\Functions::class),
+      $wooHelper,
+      $this->subscribersRepository,
+      $this->segmentsRepository,
+      $this->subscriberSegmentsRepository,
+      $this->diContainer->get(\MailPoet\Subscribers\SubscriberSaveController::class),
+      $this->diContainer->get(\MailPoet\Segments\WP::class),
+      $this->entityManager,
+      $this->entityManager->getConnection(),
+      $this->createMock(\MailPoet\Config\SubscriberChangesNotifier::class),
+      $this->diContainer->get(\MailPoet\Services\Validator::class)
+    );
+
+    $guest = $this->insertGuestCustomer();
+    $wooSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
+  public function testGuestCustomerSubscribedWhenCheckoutOptinChecked(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set(\MailPoet\WooCommerce\Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $this->settings->resetCache();
+
+    $_POST[\MailPoet\WooCommerce\Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+
+    $guest = $this->insertGuestCustomer();
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    unset($_POST[\MailPoet\WooCommerce\Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+  }
+
+  public function testGuestCustomerUnsubscribedWhenSignupConfirmationEnabled(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $this->settings->set(\MailPoet\WooCommerce\Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    $this->settings->resetCache();
+
+    $guest = $this->insertGuestCustomer();
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
   public function _after(): void {
     parent::_after();
     $this->cleanData();
