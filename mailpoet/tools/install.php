@@ -1,6 +1,6 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-$tracyVersion = '2.9.7';
+$tracyVersion = '2.10.9'; // 2.10.10 causes SyntaxError in JS
 // The newer tracy version doesn't support PHP 7.X which we still support in tests and also in development environment.
 if (PHP_VERSION_ID < 80000) {
   $tracyVersion = '2.9.4';
