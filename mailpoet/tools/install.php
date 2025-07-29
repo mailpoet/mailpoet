@@ -1,14 +1,18 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
+$composerVersion = '2.8.10';
+$phpScoperVersion = '0.18.17';
 $tracyVersion = '2.10.9'; // 2.10.10 causes SyntaxError in JS
 // The newer tracy version doesn't support PHP 7.X which we still support in tests and also in development environment.
 if (PHP_VERSION_ID < 80000) {
+  $composerVersion = '2.7.7';
+  $phpScoperVersion = '0.17.2';
   $tracyVersion = '2.9.4';
 }
 
 $tools = [
-  'https://github.com/composer/composer/releases/download/2.7.7/composer.phar' => 'composer.phar',
-  'https://github.com/humbug/php-scoper/releases/download/0.17.2/php-scoper.phar' => 'php-scoper.phar',
+  "https://github.com/composer/composer/releases/download/$composerVersion/composer.phar" => 'composer.phar',
+  "https://github.com/humbug/php-scoper/releases/download/$phpScoperVersion/php-scoper.phar" => 'php-scoper.phar',
   "https://github.com/nette/tracy/releases/download/v$tracyVersion/tracy.phar" => 'tracy.phar',
 ];
 // ensure installation in dev-mode only
