@@ -48,6 +48,15 @@ $replacements = [
       '',
     ],
   ],
+  [
+    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Timestamp.php',
+    'find' => [
+      'public static function createFromTimestamp($timestamp, $tz = null)',
+    ],
+    'replace' => [
+      '#[\ReturnTypeWillChange]' . PHP_EOL . 'public static function createFromTimestamp($timestamp, $tz = null)',
+    ],
+  ],
 ];
 
 foreach ($replacements as $singleFile) {
