@@ -78,14 +78,16 @@
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
       "./tools/vendor/composer.phar --working-dir=../tests_env install",
       "php ./tasks/fix-guzzle.php",
-      "php ./tasks/fix-php82-deprecations.php"
+      "php ./tasks/fix-php82-deprecations.php",
+      "php ./tasks/FixPhp84Deprecations.php"
     ],
     "post-install-cmd": [
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
       "./tools/vendor/composer.phar --working-dir=../tests_env install",
       "php ./tasks/fix-guzzle.php",
-      "php ./tasks/fix-php82-deprecations.php"
+      "php ./tasks/fix-php82-deprecations.php",
+      "php ./tasks/FixPhp84Deprecations.php"
     ],
     "pre-autoload-dump": [
       "php ./tasks/fix-codeception-stub.php",
