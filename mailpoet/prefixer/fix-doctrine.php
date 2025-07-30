@@ -13,6 +13,8 @@ foreach ($files as $file) {
     $data = file_get_contents($file);
     $data = str_replace('\'Doctrine\\\\', '\'MailPoetVendor\\\\Doctrine\\\\', $data);
     $data = str_replace('"Doctrine\\\\', '"MailPoetVendor\\\\Doctrine\\\\', $data);
+    $data = str_replace('\'Doctrine\\', '\'MailPoetVendor\\Doctrine\\', $data);
+    $data = str_replace('"Doctrine\\', '"MailPoetVendor\\Doctrine\\', $data);
     $data = str_replace(' \\Doctrine\\', ' \\MailPoetVendor\\Doctrine\\', $data);
     $data = str_replace('* @var array<\\Doctrine\\', '* @var array<\\MailPoetVendor\\Doctrine\\', $data);
     file_put_contents($file, $data);
