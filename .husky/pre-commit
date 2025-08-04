@@ -4,5 +4,3 @@
 
 npx lint-staged -c mailpoet/package.json --cwd mailpoet
 npx lint-staged -c package.json
-npx lint-staged -c packages/js/email-editor/package.json --cwd packages/js/email-editor
-npx lint-staged -c packages/php/email-editor/.lintstagedrc.json --cwd packages/php/email-editor
