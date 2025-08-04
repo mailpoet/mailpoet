@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.12.13 - 2025-08-04 =
+* Added: The dynamic products block can filter out out-of-stock products;
+* Fixed: Prevent automatic "Subscribed" status for guest order subscribers when Sign-up Confirmation is disabled.
+
 = 5.12.12 - 2025-07-22 =
 * Added: A new Automation Trigger when a new WooCommerce order note is added;
 * Updated: minimum required WooCommerce version to 9.9 and tested up to version to 10.0.
