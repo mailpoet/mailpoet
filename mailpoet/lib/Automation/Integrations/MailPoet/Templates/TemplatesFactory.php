@@ -45,6 +45,7 @@ class TemplatesFactory {
       $templates[] = $this->createPurchasedProductTemplate();
       $templates[] = $this->createPurchasedProductWithTagTemplate();
       $templates[] = $this->createPurchasedInCategoryTemplate();
+      $templates[] = $this->createAskForReviewTemplate();
     }
 
     return $templates;
@@ -392,6 +393,28 @@ class TemplatesFactory {
         'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createAskForReviewTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'ask-for-review',
+      'review',
+      __('Ask to leave a review post-purchase', 'mailpoet'),
+      __(
+        'Encourage your customers to leave a review a few days after their purchase. Show them their opinion matters.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Ask to leave a review post-purchase', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 2, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
     );
   }
 }
