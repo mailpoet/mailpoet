@@ -40,6 +40,8 @@ class PersonalizationTagManager {
         __('Subscriber', 'mailpoet'),
         [$this->subscriber, 'getFirstName'],
         ['default' => __('subscriber', 'mailpoet')],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
         __('Last Name', 'mailpoet'),
@@ -47,12 +49,17 @@ class PersonalizationTagManager {
         __('Subscriber', 'mailpoet'),
         [$this->subscriber, 'getLastName'],
         ['default' => __('subscriber', 'mailpoet')],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
         __('Email', 'mailpoet'),
         'mailpoet/subscriber-email',
         __('Subscriber', 'mailpoet'),
         [$this->subscriber, 'getEmail'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
 
       // Site Personalization Tags
@@ -61,12 +68,18 @@ class PersonalizationTagManager {
         'mailpoet/site-title',
         __('Site', 'mailpoet'),
         [$this->site, 'getTitle'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
         __('Homepage URL', 'mailpoet'),
         'mailpoet/site-homepage-url',
         __('Site', 'mailpoet'),
         [$this->site, 'getHomepageURL'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
 
       // Links registration
@@ -75,18 +88,27 @@ class PersonalizationTagManager {
         'mailpoet/subscription-unsubscribe-url',
         __('Link', 'mailpoet'),
         [$this->link, 'getSubscriptionUnsubscribeUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
         __('Manage subscription URL', 'mailpoet'),
         'mailpoet/subscription-manage-url',
         __('Link', 'mailpoet'),
         [$this->link, 'getSubscriptionManageUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
         __('View in browser URL', 'mailpoet'),
         'mailpoet/newsletter-view-in-browser-url',
         __('Link', 'mailpoet'),
         [$this->link, 'getNewsletterViewInBrowserUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       return $registry;
     });
