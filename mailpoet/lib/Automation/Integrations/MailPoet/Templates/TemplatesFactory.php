@@ -47,6 +47,7 @@ class TemplatesFactory {
       $templates[] = $this->createPurchasedInCategoryTemplate();
       $templates[] = $this->createAskForReviewTemplate();
       $templates[] = $this->createFollowUpPositiveReviewTemplate();
+      $templates[] = $this->createFollowUpNegativeReviewTemplate();
     }
 
     return $templates;
@@ -431,6 +432,28 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Follow up on a positive review (4-5 stars)', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createFollowUpNegativeReviewTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'follow-up-negative-review',
+      'review',
+      __('Follow up on a negative review (1-2 stars)', 'mailpoet'),
+      __(
+        'Reach out to unhappy customers and show you care. Offer help or gather more feedback to improve.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Follow up on a negative review (1-2 stars)', 'mailpoet'),
           []
         );
       },
