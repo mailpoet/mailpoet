@@ -73,7 +73,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -102,7 +102,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -124,7 +124,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 2,
+        'automationSteps' => 2, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
@@ -146,7 +146,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 2,
+        'automationSteps' => 2, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
@@ -193,7 +193,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -215,7 +215,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
@@ -237,7 +237,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 4,
+        'automationSteps' => 4, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
@@ -268,7 +268,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -290,7 +290,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 5,
+        'automationSteps' => 5, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
@@ -323,7 +323,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -356,7 +356,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
@@ -389,7 +389,7 @@ class TemplatesFactory {
         );
       },
       [
-        'automationSteps' => 1,
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );
