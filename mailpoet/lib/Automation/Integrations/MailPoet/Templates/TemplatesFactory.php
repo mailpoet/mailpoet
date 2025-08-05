@@ -49,6 +49,7 @@ class TemplatesFactory {
       $templates[] = $this->createFollowUpPositiveReviewTemplate();
       $templates[] = $this->createFollowUpNegativeReviewTemplate();
       $templates[] = $this->createFollowUpAfterSubscriptionPurchaseTemplate();
+      $templates[] = $this->createFollowUpAfterSubscriptionRenewalTemplate();
     }
 
     return $templates;
@@ -477,6 +478,28 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Follow up after a subscription purchase', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createFollowUpAfterSubscriptionRenewalTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'follow-up-after-subscription-renewal',
+      'subscriptions',
+      __('Follow up after a subscription renewal', 'mailpoet'),
+      __(
+        'Reinforce the value of your subscription by reminding customers what they’re getting after every renewal.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Follow up after a subscription renewal', 'mailpoet'),
           []
         );
       },
