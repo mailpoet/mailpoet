@@ -59,11 +59,11 @@ class Registry {
 
   public function setupTemplateCategories(): void {
     $this->templateCategories = [
-      'welcome' => new AutomationTemplateCategory('welcome', __('Welcome', 'mailpoet')),
-      'abandoned-cart' => new AutomationTemplateCategory('abandoned-cart', __('Abandoned Cart', 'mailpoet')),
-      'reengagement' => new AutomationTemplateCategory('reengagement', __('Re-engagement', 'mailpoet')),
-      'purchase' => new AutomationTemplateCategory('purchase', __('Post-purchase', 'mailpoet')),
-      'review' => new AutomationTemplateCategory('review', __('Review', 'mailpoet')),
+      'welcome' => new AutomationTemplateCategory('welcome', _x('Welcome', 'automation template category title', 'mailpoet')),
+      'abandoned-cart' => new AutomationTemplateCategory('abandoned-cart', _x('Abandoned Cart', 'automation template category title', 'mailpoet')),
+      'reengagement' => new AutomationTemplateCategory('reengagement', _x('Re-engagement', 'automation template category title', 'mailpoet')),
+      'purchase' => new AutomationTemplateCategory('purchase', _x('Post-purchase', 'automation template category title', 'mailpoet')),
+      'review' => new AutomationTemplateCategory('review', _x('Review', 'automation template category title', 'mailpoet')),
     ];
   }
 
