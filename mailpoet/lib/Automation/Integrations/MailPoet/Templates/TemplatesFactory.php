@@ -584,14 +584,14 @@ class TemplatesFactory {
     return new AutomationTemplate(
       'win-back-churned-subscribers',
       'subscriptions',
-      __('Win-back churned subscribers', 'mailpoet'),
+      __('Win back churned subscribers', 'mailpoet'),
       __(
         'Re-engage former subscribers by showing what’s new and why it’s worth coming back.',
         'mailpoet'
       ),
       function (): Automation {
         return $this->builder->createFromSequence(
-          __('Win-back churned subscribers', 'mailpoet'),
+          __('Win back churned subscribers', 'mailpoet'),
           []
         );
       },
