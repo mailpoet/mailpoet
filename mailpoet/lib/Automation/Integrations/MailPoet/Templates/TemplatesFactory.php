@@ -50,6 +50,7 @@ class TemplatesFactory {
       $templates[] = $this->createFollowUpNegativeReviewTemplate();
       $templates[] = $this->createFollowUpAfterSubscriptionPurchaseTemplate();
       $templates[] = $this->createFollowUpAfterSubscriptionRenewalTemplate();
+      $templates[] = $this->createFollowUpAfterFailedRenewalTemplate();
     }
 
     return $templates;
@@ -500,6 +501,28 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Follow up after a subscription renewal', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createFollowUpAfterFailedRenewalTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'follow-up-after-failed-renewal',
+      'subscriptions',
+      __('Follow up after failed renewal', 'mailpoet'),
+      __(
+        'Help customers fix failed payments and continue their subscription without disruption.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Follow up after failed renewal', 'mailpoet'),
           []
         );
       },
