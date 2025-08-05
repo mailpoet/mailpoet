@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
+use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WooCommerceSubscriptions;
 
 class TemplatesFactory {
   /** @var AutomationBuilder */
@@ -14,6 +15,9 @@ class TemplatesFactory {
   /** @var WooCommerce */
   private $woocommerce;
 
+  /** @var WooCommerceSubscriptions */
+  private $woocommerceSubscriptions;
+
   /** @var EmailFactory */
   /** @phpstan-ignore-next-line Property is reserved for future use */
   private $emailFactory;
@@ -21,10 +25,12 @@ class TemplatesFactory {
   public function __construct(
     AutomationBuilder $builder,
     WooCommerce $woocommerce,
+    WooCommerceSubscriptions $woocommerceSubscriptions,
     EmailFactory $emailFactory
   ) {
     $this->builder = $builder;
     $this->woocommerce = $woocommerce;
+    $this->woocommerceSubscriptions = $woocommerceSubscriptions;
     $this->emailFactory = $emailFactory;
   }
 
@@ -48,12 +54,14 @@ class TemplatesFactory {
       $templates[] = $this->createAskForReviewTemplate();
       $templates[] = $this->createFollowUpPositiveReviewTemplate();
       $templates[] = $this->createFollowUpNegativeReviewTemplate();
-      $templates[] = $this->createFollowUpAfterSubscriptionPurchaseTemplate();
-      $templates[] = $this->createFollowUpAfterSubscriptionRenewalTemplate();
-      $templates[] = $this->createFollowUpAfterFailedRenewalTemplate();
-      $templates[] = $this->createFollowUpOnChurnedSubscriptionTemplate();
-      $templates[] = $this->createFollowUpWhenTrialEndsTemplate();
-      $templates[] = $this->createWinBackChurnedSubscribersTemplate();
+      if ($this->woocommerceSubscriptions->isWooCommerceSubscriptionsActive()) {
+        $templates[] = $this->createFollowUpAfterSubscriptionPurchaseTemplate();
+        $templates[] = $this->createFollowUpAfterSubscriptionRenewalTemplate();
+        $templates[] = $this->createFollowUpAfterFailedRenewalTemplate();
+        $templates[] = $this->createFollowUpOnChurnedSubscriptionTemplate();
+        $templates[] = $this->createFollowUpWhenTrialEndsTemplate();
+        $templates[] = $this->createWinBackChurnedSubscribersTemplate();
+      }
     }
 
     return $templates;
