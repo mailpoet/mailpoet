@@ -53,6 +53,7 @@ class TemplatesFactory {
       $templates[] = $this->createFollowUpAfterFailedRenewalTemplate();
       $templates[] = $this->createFollowUpOnChurnedSubscriptionTemplate();
       $templates[] = $this->createFollowUpWhenTrialEndsTemplate();
+      $templates[] = $this->createWinBackChurnedSubscribersTemplate();
     }
 
     return $templates;
@@ -574,6 +575,28 @@ class TemplatesFactory {
       },
       [
         'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createWinBackChurnedSubscribersTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'win-back-churned-subscribers',
+      'subscriptions',
+      __('Win-back churned subscribers', 'mailpoet'),
+      __(
+        'Re-engage former subscribers by showing what’s new and why it’s worth coming back.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Win-back churned subscribers', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 2, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM
     );
