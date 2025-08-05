@@ -242,14 +242,14 @@ class TemplatesFactory {
     return new AutomationTemplate(
       'win-back-customers',
       'purchase',
-      __('Win-back customers', 'mailpoet'),
+      __('Win back customers', 'mailpoet'),
       __(
         'Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand.',
         'mailpoet'
       ),
       function (): Automation {
         return $this->builder->createFromSequence(
-          __('Win-back customers', 'mailpoet'),
+          __('Win back customers', 'mailpoet'),
           []
         );
       },
