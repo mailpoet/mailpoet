@@ -62,7 +62,7 @@ class Registry {
       'welcome' => new AutomationTemplateCategory('welcome', __('Welcome', 'mailpoet')),
       'abandoned-cart' => new AutomationTemplateCategory('abandoned-cart', __('Abandoned Cart', 'mailpoet')),
       'reengagement' => new AutomationTemplateCategory('reengagement', __('Re-engagement', 'mailpoet')),
-      'woocommerce' => new AutomationTemplateCategory('woocommerce', __('WooCommerce', 'mailpoet')),
+      'purchase' => new AutomationTemplateCategory('purchase', __('Post-purchase', 'mailpoet')),
       'review' => new AutomationTemplateCategory('review', __('Review', 'mailpoet')),
     ];
   }

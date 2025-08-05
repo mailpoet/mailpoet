@@ -158,7 +158,7 @@ class TemplatesFactory {
   private function createFirstPurchaseTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'first-purchase',
-      'woocommerce',
+      'purchase',
       __('Celebrate first-time buyers', 'mailpoet'),
       __(
         'Welcome your first-time customers by sending an email with a special offer for their next purchase. Make them feel appreciated within your brand.',
@@ -205,7 +205,7 @@ class TemplatesFactory {
   private function createThankLoyalCustomersTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'thank-loyal-customers',
-      'woocommerce',
+      'purchase',
       __('Thank loyal customers', 'mailpoet'),
       __(
         'These are your most important customers. Make them feel special by sending a thank you note for supporting your brand.',
@@ -227,7 +227,7 @@ class TemplatesFactory {
   private function createWinBackCustomersTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'win-back-customers',
-      'woocommerce',
+      'purchase',
       __('Win-back customers', 'mailpoet'),
       __(
         'Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand.',
@@ -302,7 +302,7 @@ class TemplatesFactory {
   private function createPurchasedProductTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'purchased-product',
-      'woocommerce',
+      'purchase',
       __('Purchased a product', 'mailpoet'),
       __(
         'Share care instructions or simply thank the customer for making an order.',
@@ -335,7 +335,7 @@ class TemplatesFactory {
   private function createPurchasedProductWithTagTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'purchased-product-with-tag',
-      'woocommerce',
+      'purchase',
       __('Purchased a product with a tag', 'mailpoet'),
       __(
         'Share care instructions or simply thank the customer for making an order.',
@@ -368,7 +368,7 @@ class TemplatesFactory {
   private function createPurchasedInCategoryTemplate(): AutomationTemplate {
     return new AutomationTemplate(
       'purchased-in-category',
-      'woocommerce',
+      'purchase',
       __('Purchased in a category', 'mailpoet'),
       __(
         'Share care instructions or simply thank the customer for making an order.',
