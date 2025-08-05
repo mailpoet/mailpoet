@@ -52,6 +52,7 @@ class TemplatesFactory {
       $templates[] = $this->createFollowUpAfterSubscriptionRenewalTemplate();
       $templates[] = $this->createFollowUpAfterFailedRenewalTemplate();
       $templates[] = $this->createFollowUpOnChurnedSubscriptionTemplate();
+      $templates[] = $this->createFollowUpWhenTrialEndsTemplate();
     }
 
     return $templates;
@@ -546,6 +547,28 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Follow up on churned subscription', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createFollowUpWhenTrialEndsTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'follow-up-when-trial-ends',
+      'subscriptions',
+      __('Follow up when trial ends', 'mailpoet'),
+      __(
+        'Check in with customers after their trial ends. Encourage them to keep enjoying the benefits of their subscription.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Follow up when trial ends', 'mailpoet'),
           []
         );
       },
