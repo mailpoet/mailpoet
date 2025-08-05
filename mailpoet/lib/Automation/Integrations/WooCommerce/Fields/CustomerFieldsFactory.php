@@ -12,12 +12,17 @@ class CustomerFieldsFactory {
   /** @var CustomerReviewFieldsFactory */
   private $customerReviewFieldsFactory;
 
+  /** @var CustomerSubscriptionFieldsFactory */
+  private $customerSubscriptionFieldsFactory;
+
   public function __construct(
     CustomerOrderFieldsFactory $customerOrderFieldsFactory,
-    CustomerReviewFieldsFactory $customerReviewFieldsFactory
+    CustomerReviewFieldsFactory $customerReviewFieldsFactory,
+    CustomerSubscriptionFieldsFactory $customerSubscriptionFieldsFactory
   ) {
     $this->customerOrderFieldsFactory = $customerOrderFieldsFactory;
     $this->customerReviewFieldsFactory = $customerReviewFieldsFactory;
+    $this->customerSubscriptionFieldsFactory = $customerSubscriptionFieldsFactory;
   }
 
   /** @return Field[] */
@@ -128,7 +133,8 @@ class CustomerFieldsFactory {
         ),
       ],
       $this->customerOrderFieldsFactory->getFields(),
-      $this->customerReviewFieldsFactory->getFields()
+      $this->customerReviewFieldsFactory->getFields(),
+      $this->customerSubscriptionFieldsFactory->getFields()
     );
   }
 
