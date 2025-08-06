@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\Email_Editor;
 use MailPoet\Entities\NewsletterEntity;
 
 class EmailEditorTest extends \MailPoetTest {
@@ -14,7 +16,7 @@ class EmailEditorTest extends \MailPoetTest {
 
   public function testItRegistersMailPoetEmailPostType() {
     $this->emailEditor->initialize();
-    $this->diContainer->get(\Automattic\WooCommerce\EmailEditor\Engine\Email_Editor::class)->initialize();
+    Email_Editor_Container::container()->get(Email_Editor::class)->initialize();
     $postTypes = get_post_types();
     $this->assertArrayHasKey('mailpoet_email', $postTypes);
   }

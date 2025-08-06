@@ -1,5 +1,6 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use MailPoet\Config\Env;
 use MailPoet\Config\RequirementsChecker;
 use Tracy\Debugger;
@@ -81,6 +82,9 @@ if (
 
 // Ensure functions like get_plugins, etc.
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+
+// Initialize the Email Editor container to allow getting its instances in MailPoet constructors.
+Email_Editor_Container::init();
 
 $initializer = MailPoet\DI\ContainerWrapper::getInstance()->get(MailPoet\Config\Initializer::class);
 $initializer->init();

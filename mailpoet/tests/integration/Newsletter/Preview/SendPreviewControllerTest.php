@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Preview;
 
-use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
@@ -92,7 +91,6 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
       $shortcodes,
-      $this->diContainer->get(Personalizer::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -124,7 +122,6 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(Personalizer::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }

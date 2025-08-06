@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -35,15 +36,14 @@ class ViewInBrowserRenderer {
     TrackingConfig $trackingConfig,
     Shortcodes $shortcodes,
     Renderer $renderer,
-    Links $links,
-    Personalizer $personalizer
+    Links $links
   ) {
     $this->emoji = $emoji;
     $this->trackingConfig = $trackingConfig;
     $this->renderer = $renderer;
     $this->shortcodes = $shortcodes;
     $this->links = $links;
-    $this->personalizer = $personalizer;
+    $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
   }
 
   public function render(

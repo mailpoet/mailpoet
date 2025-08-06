@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
-use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
@@ -172,7 +171,6 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class),
       $this->diContainer->get(Links::class),
-      $this->diContainer->get(Personalizer::class)
     );
     $renderedBody = $viewInBrowser->render(
       $preview = false,

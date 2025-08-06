@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\User_Theme;
@@ -45,12 +46,9 @@ class EditorPageRenderer {
 
   public function __construct(
     WPFunctions $wp,
-    Settings_Controller $settingsController,
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
     SubscribersFeature $subscribersFeature,
-    Theme_Controller $themeController,
-    User_Theme $userTheme,
     DependencyNotice $dependencyNotice,
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository,
@@ -58,12 +56,12 @@ class EditorPageRenderer {
     Analytics $analytics
   ) {
     $this->wp = $wp;
-    $this->settingsController = $settingsController;
+    $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
     $this->subscribersFeature = $subscribersFeature;
-    $this->themeController = $themeController;
-    $this->userTheme = $userTheme;
+    $this->themeController = Email_Editor_Container::container()->get(Theme_Controller::class);
+    $this->userTheme = Email_Editor_Container::container()->get(User_Theme::class);
     $this->dependencyNotice = $dependencyNotice;
     $this->mailpoetSettings = $mailpoetSettings;
     $this->newslettersRepository = $newslettersRepository;

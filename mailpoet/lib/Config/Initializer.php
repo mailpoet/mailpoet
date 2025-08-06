@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use Automattic\WooCommerce\EmailEditor\Bootstrap as EmailEditorBootstrap;
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger;
 use MailPoet\API\JSON\API;
 use MailPoet\API\REST\API as RestApi;
@@ -131,10 +132,11 @@ class Initializer {
 
   private EmailEditorBootstrap $emailEditorBootstrap;
 
+  private Email_Editor_Logger $emailEditorLogger;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
-  private Email_Editor_Logger $emailEditorLogger;
 
   public function __construct(
     RendererFactory $rendererFactory,
@@ -165,10 +167,8 @@ class Initializer {
     WooCommerceIntegration $woocommerceIntegration,
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner,
-    EmailEditorBootstrap $emailEditorBootstrap,
     BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
-    Email_Editor_Logger $emailEditorLogger,
     Url $urlHelper
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -199,11 +199,13 @@ class Initializer {
     $this->woocommerceIntegration = $woocommerceIntegration;
     $this->personalDataExporters = $personalDataExporters;
     $this->actionSchedulerRunner = $actionSchedulerRunner;
-    $this->emailEditorBootstrap = $emailEditorBootstrap;
     $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
     $this->blockTypesController = $blockTypesController;
-    $this->emailEditorLogger = $emailEditorLogger;
     $this->urlHelper = $urlHelper;
+
+    $emailEditorContainer = Email_Editor_Container::container();
+    $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
+    $this->emailEditorLogger = $emailEditorContainer->get(Email_Editor_Logger::class);
   }
 
   public function init() {

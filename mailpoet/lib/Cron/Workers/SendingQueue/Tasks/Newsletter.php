@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
@@ -111,7 +112,7 @@ class Newsletter {
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
-    $this->personalizer = ContainerWrapper::getInstance()->get(Personalizer::class);
+    $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {

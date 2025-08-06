@@ -61,7 +61,6 @@ class RendererTest extends \MailPoetTest {
     $this->capabilitiesManager->method('getCapability')->willReturn(new Capability('mailpoetLogoInEmails', 'boolean', false));
     $this->renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
-      $this->diContainer->get(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(WPFunctions::class),
@@ -633,7 +632,6 @@ class RendererTest extends \MailPoetTest {
     $capabilitiesManager->method('getCapability')->willReturn(new Capability('mailpoetLogoInEmails', 'boolean', true));
     $renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
-      $this->diContainer->get(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(WPFunctions::class),
@@ -654,7 +652,6 @@ class RendererTest extends \MailPoetTest {
     $capabilitiesManager->method('getCapability')->willReturn(new Capability('mailpoetLogoInEmails', 'boolean', true));
     $renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
-      $this->diContainer->get(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(WPFunctions::class),

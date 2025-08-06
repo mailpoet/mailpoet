@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer as GuntenbergRenderer;
 use MailPoet\Config\Env;
@@ -48,7 +49,6 @@ class Renderer {
 
   public function __construct(
     BodyRenderer $bodyRenderer,
-    GuntenbergRenderer $guntenbergRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
     WPFunctions $wp,
@@ -58,7 +58,7 @@ class Renderer {
     CapabilitiesManager $capabilitiesManager
   ) {
     $this->bodyRenderer = $bodyRenderer;
-    $this->guntenbergRenderer = $guntenbergRenderer;
+    $this->guntenbergRenderer = Email_Editor_Container::container()->get(GuntenbergRenderer::class);
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
     $this->wp = $wp;
