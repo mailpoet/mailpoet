@@ -29,28 +29,32 @@ class UpdateStepsController {
   }
 
   private function maybeRunOnDuplicate(Step $step): Step {
-    if ($step->getType() === 'action') {
-      $args = $step->getArgs();
-      $isStepDuplicated = !empty($args['stepDuplicated']);
-      if ($isStepDuplicated) {
-        $action = $this->registry->getAction($step->getKey());
-        if ($action) {
-          $duplicatedStep = $action->onDuplicate($step);
-          $dupArgs = $duplicatedStep->getArgs();
-          unset($dupArgs['stepDuplicated']);
-          $duplicatedStep = new Step(
-            $duplicatedStep->getId(),
-            $duplicatedStep->getType(),
-            $duplicatedStep->getKey(),
-            $dupArgs,
-            $duplicatedStep->getNextSteps(),
-            $duplicatedStep->getFilters()
-          );
-          return $duplicatedStep;
-        }
-      }
+    if ($step->getType() !== 'action') {
+      return $step;
     }
-    return $step;
+
+    $args = $step->getArgs();
+    if (empty($args['stepDuplicated'])) {
+      return $step;
+    }
+
+    $action = $this->registry->getAction($step->getKey());
+    if (!$action) {
+      return $step;
+    }
+
+    $duplicatedStep = $action->onDuplicate($step);
+    $dupArgs = $duplicatedStep->getArgs();
+    unset($dupArgs['stepDuplicated']);
+
+    return new Step(
+      $duplicatedStep->getId(),
+      $duplicatedStep->getType(),
+      $duplicatedStep->getKey(),
+      $dupArgs,
+      $duplicatedStep->getNextSteps(),
+      $duplicatedStep->getFilters()
+    );
   }
 
   private function processStep(array $data, ?Step $existingStep): Step {
