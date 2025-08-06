@@ -1311,29 +1311,33 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceMembershipsZip(): void {
-    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
+    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
       $this->yell("Skipping download of WooCommerce Memberships", 40, 'red');
       exit(0); // Exit with 0 since it is a valid state for some environments
     }
-    $this->createGithubClient('woocommerce/all-plugins')
+    $this->createGithubClient('woocommerce/all-plugins', $token)
       ->downloadRawFile('https://api.github.com/repos/woocommerce/all-plugins/contents/product-packages/woocommerce-memberships/woocommerce-memberships.zip?ref=master', 'woocommerce-memberships.zip', __DIR__ . '/tests/plugins/');
   }
 
   public function downloadWooCommerceSubscriptionsZip($tag = null) {
-    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
+    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
       $this->yell("Skipping download of WooCommerce Subscriptions", 40, 'red');
       exit(0); // Exit with 0 since it is a valid state for some environments
     }
-    $this->createGithubClient('woocommerce/woocommerce-subscriptions')
+
+    $this->createGithubClient('woocommerce/woocommerce-subscriptions', $token)
       ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
   public function downloadAutomateWooZip($tag = null) {
-    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
+    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
       $this->yell("Skipping download of Automate Woo", 40, 'red');
       exit(0); // Exit with 0 since it is a valid state for some environments
     }
-    $this->createGithubClient('woocommerce/automatewoo')
+    $this->createGithubClient('woocommerce/automatewoo', $token)
       ->downloadReleaseZip('automatewoo.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
@@ -1489,11 +1493,12 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  protected function createGitHubController($project = \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET) {
+  protected function createGitHubController($project = \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET, $token = null) {
     $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
+    $token = $token ?: $this->getEnv('WP_GITHUB_TOKEN', $help);
     return new \MailPoetTasks\Release\GitHubController(
       $this->getEnv('WP_GITHUB_USERNAME', $help),
-      $this->getEnv('WP_GITHUB_TOKEN', $help),
+      $token,
       $project
     );
   }
@@ -1530,12 +1535,13 @@ class RoboFile extends \Robo\Tasks {
     return $exitCode;
   }
 
-  private function createGithubClient($repositoryName) {
+  private function createGithubClient($repositoryName, $token = null) {
     require_once __DIR__ . '/tasks/GithubClient.php';
+    $token = $token ?: $this->getEnv('WP_GITHUB_TOKEN');
     return new \MailPoetTasks\GithubClient(
       $repositoryName,
       getenv('WP_GITHUB_USERNAME') ?: null,
-      getenv('WP_GITHUB_TOKEN') ?: null
+      $token
     );
   }
 

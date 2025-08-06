@@ -118,10 +118,21 @@ function replacePrivatePluginVersion(
   string $configParameterName,
   string $versionsFilename
 ): void {
-// Read the GitHub token from environment variable
-  $token = getenv('GH_TOKEN');
+  // Read the GitHub token from environment variable. Set at https://github.com/mailpoet/mailpoet/settings/secrets/actions.
+
+  // If the repository is woocommerce, use the WooCommerce token, otherwise use the general token.
+  $isWooCommerceRepository = strpos($repository, 'woocommerce/') !== false;
+  if ($isWooCommerceRepository) {
+    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
+  } else {
+    $token = getenv('WP_GITHUB_TOKEN');
+  }
   if (!$token) {
-    die("GitHub token not found. Make sure it's set in the environment variable 'GH_TOKEN'.");
+    if ($isWooCommerceRepository) {
+      die("WooCommerce token not found. For WooCommerce repositories requests, make sure to set the token in the environment variable 'WP_GITHUB_WOOCOMMERCE_TOKEN'.");
+    } else {
+      die("GitHub token not found. Make sure it's set in the environment variable 'WP_GITHUB_TOKEN'.");
+    }
   }
 
   $page = 1;
