@@ -43,8 +43,8 @@ class TestAction implements Action {
   }
 
   public function onDuplicate(Step $step): Step {
-        // Intentionally left empty for now
-        return $step;
+    // Intentionally left empty for now
+    return $step;
   }
 
   public function getKey(): string {

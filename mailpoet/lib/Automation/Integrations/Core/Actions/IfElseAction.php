@@ -74,7 +74,7 @@ class IfElseAction implements Action {
   }
 
   public function onDuplicate(Step $step): Step {
-        // Intentionally left empty for now, this cannot be duplicated
-        return $step;
+    // Intentionally left empty for now, this cannot be duplicated
+    return $step;
   }
 }
