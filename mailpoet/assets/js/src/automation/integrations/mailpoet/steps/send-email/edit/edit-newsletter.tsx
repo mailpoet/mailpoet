@@ -2,6 +2,7 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import { useCallback, useEffect, useState } from 'react';
+import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
@@ -30,6 +31,8 @@ export function EditNewsletter(): JSX.Element {
   const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
     useState(false);
   const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
+  const [isHandlingDuplicatedStep, setIsHandlingDuplicatedStep] =
+    useState(false);
 
   const { selectedStep, automationId, savedState, errors } = useSelect(
     (select) => ({
@@ -47,6 +50,7 @@ export function EditNewsletter(): JSX.Element {
   const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
+  const isDuplicatedStep = selectedStep?.args?.stepDuplicated === true;
 
   const createEmail = useCallback(async () => {
     setRedirectToTemplateSelection(true);
@@ -73,6 +77,61 @@ export function EditNewsletter(): JSX.Element {
 
     void dispatch(storeName).save();
   }, [automationId, automationStepId]);
+
+  const handleDuplicatedStep = useCallback(async (): Promise<number | null> => {
+    try {
+      // Save the automation to trigger backend duplication
+      const savedData = await dispatch(storeName).save();
+      const newSelectedStep = savedData.automation.steps[automationStepId];
+      const newEmailId = Number(newSelectedStep?.args?.email_id);
+
+      if (newEmailId && !Number.isNaN(newEmailId)) {
+        return newEmailId;
+      }
+
+      throw new Error('Failed to retrieve new email ID after duplication');
+    } catch (error) {
+      void dispatch(noticesStore).createErrorNotice(
+        __('Email duplication failed. Please try again.', 'mailpoet'),
+        { explicitDismiss: true },
+      );
+
+      return null;
+    }
+  }, [automationStepId]);
+
+  const handleEditContent = useCallback(async () => {
+    // Ensure we have a valid selected step
+    if (!selectedStep?.args?.email_id) {
+      return;
+    }
+
+    // Ensure email ID is a valid number to prevent injection
+    const currentEmailId = Number(selectedStep.args.email_id);
+    if (!currentEmailId || Number.isNaN(currentEmailId)) {
+      return;
+    }
+
+    let newUrl = `?page=mailpoet-newsletter-editor&id=${currentEmailId}&context=automation`;
+
+    if (isDuplicatedStep) {
+      setIsHandlingDuplicatedStep(true);
+
+      const newEmailId = await handleDuplicatedStep();
+
+      if (newEmailId) {
+        newUrl = `?page=mailpoet-newsletter-editor&id=${newEmailId}&context=automation`;
+      } else {
+        // If duplication failed, don't redirect and let user see the error
+        setIsHandlingDuplicatedStep(false);
+        return;
+      }
+
+      setIsHandlingDuplicatedStep(false);
+    }
+
+    window.location.href = newUrl;
+  }, [isDuplicatedStep, selectedStep?.args?.email_id, handleDuplicatedStep]);
 
   // This component is rendered only when no email ID is set. Once we have the ID
   // and the automation is saved, we can safely redirect to the email design flow.
@@ -112,9 +171,9 @@ export function EditNewsletter(): JSX.Element {
       <Button
         variant="sidebar-primary"
         centered
-        href={`?page=mailpoet-newsletter-editor&id=${
-          selectedStep.args.email_id as string
-        }&context=automation`}
+        onClick={handleEditContent}
+        isBusy={isHandlingDuplicatedStep}
+        disabled={isHandlingDuplicatedStep}
       >
         {__('Edit content', 'mailpoet')}
       </Button>
