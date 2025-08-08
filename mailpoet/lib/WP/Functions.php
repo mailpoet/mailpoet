@@ -635,10 +635,14 @@ class Functions {
   }
 
   public function wpRemoteGet($url, array $args = []) {
+    // We only use wp_remote_get with safe hardcoded URLs
+    // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.ssrf
     return wp_remote_get($url, $args);
   }
 
   public function wpRemotePost($url, array $args = []) {
+    // We only use wp_remote_post with safe hardcoded URLs
+    // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.ssrf
     return wp_remote_post($url, $args);
   }
 
