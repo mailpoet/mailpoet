@@ -178,7 +178,7 @@ class Changelogger {
     $filePath = $this->changelogDir . $timestamp . '-' . strtolower($type) . '-' . $filename . '.md';
 
     $content = "# Type: $type\n\n";
-    $content .= "# Description\n$description\n";
+    $content .= "# Description\n\n$description\n";
 
     file_put_contents($filePath, $content);
     return $filePath;
