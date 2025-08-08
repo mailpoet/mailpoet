@@ -20,6 +20,11 @@ class FixPhp84Deprecations {
   ];
 
   public function run(): void {
+    // Only run on PHP 8.4
+    if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+      return;
+    }
+
     foreach ($this->vendorDirectories as $vendorDir) {
       if (is_dir($vendorDir)) {
         $this->processDirectory($vendorDir);
