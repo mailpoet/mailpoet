@@ -125,17 +125,18 @@ class FirstPurchase {
         $meta = $queue->getMeta();
         $result = (!empty($meta['order_date'])) ? WPFunctions::get()->dateI18n(get_option('date_format'), $meta['order_date']) : $defaultValue;
       }
+
+      $this->loggerFactory->getLogger(self::SLUG)->info(
+        'handleOrderDateShortcode called',
+        [
+          'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
+          'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
+          'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
+          'shortcode' => $shortcode,
+          'result' => $result,
+        ]
+      );
     }
-    $this->loggerFactory->getLogger(self::SLUG)->info(
-      'handleOrderDateShortcode called',
-      [
-        'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
-        'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
-        'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
-        'shortcode' => $shortcode,
-        'result' => $result,
-      ]
-    );
     return $result;
   }
 
@@ -149,17 +150,18 @@ class FirstPurchase {
         $meta = $queue->getMeta();
         $result = (!empty($meta['order_amount'])) ? $this->helper->wcPrice($meta['order_amount']) : $defaultValue;
       }
+
+      $this->loggerFactory->getLogger(self::SLUG)->info(
+        'handleOrderTotalShortcode called',
+        [
+          'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
+          'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
+          'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
+          'shortcode' => $shortcode,
+          'result' => $result,
+        ]
+      );
     }
-    $this->loggerFactory->getLogger(self::SLUG)->info(
-      'handleOrderTotalShortcode called',
-      [
-        'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
-        'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
-        'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
-        'shortcode' => $shortcode,
-        'result' => $result,
-      ]
-    );
     return $result;
   }
 
