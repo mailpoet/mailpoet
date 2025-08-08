@@ -10,6 +10,7 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import { EmailSidebarExtension } from './email-sidebar-extension';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
+import { initStripPostStatusOnSaveMiddleware } from './middleware/strip-post-status-on-save';
 
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
@@ -82,5 +83,7 @@ addFilter(
     return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
   },
 );
+
+initStripPostStatusOnSaveMiddleware();
 
 initializeEditor('mailpoet-email-editor');
