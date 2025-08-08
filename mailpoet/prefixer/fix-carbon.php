@@ -47,8 +47,11 @@ $replacements = [
     'replace' => [
       '',
     ],
-  ],
-  [
+  ]
+];
+
+if (PHP_VERSION_ID >= 80400) {
+  $replacements[] = [
     'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Timestamp.php',
     'find' => [
       'public static function createFromTimestamp($timestamp, $tz = null)',
@@ -56,8 +59,8 @@ $replacements = [
     'replace' => [
       '#[\ReturnTypeWillChange]' . PHP_EOL . 'public static function createFromTimestamp($timestamp, $tz = null)',
     ],
-  ],
-];
+  ];
+}
 
 foreach ($replacements as $singleFile) {
   $data = file_get_contents($singleFile['file']);

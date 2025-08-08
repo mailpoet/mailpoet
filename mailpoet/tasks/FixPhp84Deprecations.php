@@ -13,6 +13,12 @@ use RecursiveIteratorIterator;
  * but are not explicitly marked as nullable with the ? prefix.
  */
 
+ // exit for php versions less than 8.4
+if (PHP_VERSION_ID < 80400) {
+  echo 'PHP version less than 8.4, exiting...';
+  exit;
+}
+
 class FixPhp84Deprecations {
   private array $vendorDirectories = [
     'vendor',
