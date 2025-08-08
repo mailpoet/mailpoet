@@ -1,15 +1,21 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-$composerVersion = '2.8.10';
-$phpScoperVersion = '0.18.17';
-$tracyVersion = '2.10.9'; // 2.10.10 causes SyntaxError in JS
 
-// The newer versions drop support for PHP 7.4 and PHP-Scoper also drops 8.1 which we still
-// support in tests and also in development environment.
-if (PHP_VERSION_ID < 80200) {
-  $composerVersion = '2.7.7';
-  $phpScoperVersion = '0.17.2';
-  $tracyVersion = '2.9.4';
+// Tools versions for PHP 7.4+
+$composerVersion = '2.7.7';
+$phpScoperVersion = '0.17.2';
+$tracyVersion = '2.9.4';
+
+// Tools versions for PHP 8.0+
+if (PHP_VERSION_ID >= 80000) {
+  $tracyVersion = '2.9.7'; // Tracy 2.9.4 doesn't support PHP 7.4
+}
+
+// Tools versions for PHP 8.4+
+if (PHP_VERSION_ID >= 80400) {
+  $composerVersion = '2.8.10';
+  $phpScoperVersion = '0.18.17';
+  $tracyVersion = '2.10.9'; // 2.10.10 causes SyntaxError in JS
 }
 
 $tools = [
