@@ -116,10 +116,28 @@ class ThumbnailSaver {
   }
 
   /**
-   * Simply saves base64 to a file without any compression
+   * Saves base64 to a file without any compression. We decode the base64 data, because encoded data
+   * is considered URL, and file_put_contents() would fail when allow_url_fopen is disabled in PHP.
+   *
+   * @param string $file The path to the file to save the base64 data to.
+   * @param string $data The base64 data to save to the file.
+   *
    * @return bool
    */
   private function saveBase64AsImageFile(string $file, string $data): bool {
-    return file_put_contents($file, file_get_contents($data)) !== false;
+    // Extract the base64 data from the data URI
+    if (preg_match('/^data:.*;base64,(.+)$/', $data, $matches)) {
+      $base64Data = $matches[1];
+    } else {
+      // If it's not a proper data URI, assume it's already base64 encoded
+      $base64Data = $data;
+    }
+
+    $decodedData = base64_decode($base64Data, true);
+    if ($decodedData === false) {
+      return false;
+    }
+
+    return file_put_contents($file, $decodedData) !== false;
   }
 }
