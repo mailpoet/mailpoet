@@ -4,8 +4,7 @@ import { dispatch, select } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
-
-const emailEditorStore = 'email-editor/editor';
+import { storeName as emailEditorStore } from '@woocommerce/email-editor';
 
 const contentLink = `<a data-link-href='[mailpoet/subscription-unsubscribe-url]' contenteditable='false' style='text-decoration: underline;' class='mailpoet-email-editor__personalization-tags-link'>${__(
   'Unsubscribe',
@@ -28,14 +27,10 @@ function getEditorContext() {
     'core/post-content',
   ) as string[] | undefined;
 
-  const editedTemplateContent = select(
-    emailEditorStore,
-    // @ts-expect-error getCurrentTemplateContent is not typed
-  ).getCurrentTemplateContent() as string;
+  const editedTemplateContent =
+    select(emailEditorStore).getCurrentTemplateContent();
 
-  // @ts-expect-error getCurrentTemplate is not typed
-  const postTemplateId = select(emailEditorStore).getCurrentTemplate()
-    ?.id as string;
+  const postTemplateId = select(emailEditorStore).getCurrentTemplate()?.id;
 
   return {
     contentBlockId: blocks?.[0],
