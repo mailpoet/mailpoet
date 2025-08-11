@@ -12,7 +12,7 @@
  * Domain Path: /lang
  *
  * WC requires at least: 10.0
- * WC tested up to: 10.0
+ * WC tested up to: 10.1
  *
  * @package WordPress
  * @author MailPoet
