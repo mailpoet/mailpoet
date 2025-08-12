@@ -15,10 +15,11 @@ class ChangelogController {
   private $changelogger;
 
   public function __construct(
-    $readmeFile
+    $readmeFile,
+    $changelogDir = null
   ) {
     $this->readmeFile = $readmeFile;
-    $this->changelogger = new Changelogger();
+    $this->changelogger = new Changelogger($changelogDir);
   }
 
   public function update(string $version) {
