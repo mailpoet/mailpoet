@@ -16,11 +16,13 @@ import { registerAutomationSidebar } from './automation-sidebar';
 import { step as TagAddedTrigger } from './steps/tag-added';
 import { step as TagRemovedTrigger } from './steps/tag-removed';
 import { step as ClicksEmailLinkTrigger } from './steps/clicks-email-link';
+import { step as WpUserRoleChangedTrigger } from './steps/wp-user-role-changed';
 // Insert new imports here
 
 export const initialize = (): void => {
   registerStepType(SendEmailStep);
   registerStepType(WpUserRegisteredTrigger);
+  registerStepType(WpUserRoleChangedTrigger);
   registerStepType(SomeoneSubscribesTrigger);
   registerStepType(CustomTriggerStep);
   registerStepType(CustomActionStep);
