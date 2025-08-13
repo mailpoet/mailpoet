@@ -1,10 +1,4 @@
 {
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mailpoet/html2text"
-    }
-  ],
   "require": {
     "php": ">=7.4",
     "carbonphp/carbon-doctrine-types": "2.*",

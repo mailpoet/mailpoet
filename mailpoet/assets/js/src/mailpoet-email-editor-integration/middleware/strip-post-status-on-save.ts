@@ -57,7 +57,7 @@ async function processAndDispatchStrippedStatus(
     if (
       typeof recordOrId !== 'object' ||
       recordOrId === null ||
-      typeof (recordOrId as Record<string, unknown>).id !== 'number'
+      typeof (recordOrId as Record<string, unknown>)?.id !== 'number'
     ) {
       return await originalAction(...args);
     }
@@ -74,7 +74,7 @@ async function processAndDispatchStrippedStatus(
       ) as Record<string, unknown> | null;
 
     // If post is missing or status is not defined, fallback to original action
-    if (!post || typeof post.status !== 'string') {
+    if (!post || typeof post?.status !== 'string') {
       return await originalAction(...args);
     }
 
