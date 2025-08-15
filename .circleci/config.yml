@@ -94,28 +94,28 @@ executors:
   wpcli_php_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.4_20231129.1
+      - image: mailpoet/wordpress:7.4_20250815.1
 
   wpcli_php_max_wporg:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.1_20230307.1 # We need to use 8.1 to emulate the WP.org environment
+      - image: mailpoet/wordpress:8.1_20250815.1 # We need to use 8.1 to emulate the WP.org environment
 
   wpcli_php_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.3_20250305.1
+      - image: mailpoet/wordpress:8.3_20250815.1
 
   wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.4_20231129.1
+      - image: mailpoet/wordpress:7.4_20250815.1
       - image: cimg/mysql:5.7
 
   wpcli_php_mysql_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.3_20250305.1
+      - image: mailpoet/wordpress:8.3_20250815.1
       - image: cimg/mysql:8.0
         command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_520_ci
 
