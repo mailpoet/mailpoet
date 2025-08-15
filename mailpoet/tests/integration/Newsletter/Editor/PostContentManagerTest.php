@@ -218,4 +218,28 @@ EOT;
     verify($this->postContent->filterContent($html, 'excerpt'))
       ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '"><span>some text</span></p>');
   }
+
+  public function testItFixesAnchorOnlyLinks(): void {
+    $post = (object)[
+      'ID' => 123,
+      'post_content' => '<p>Read more in <a href="#section1">Section 1</a> and <a href="#section-2">Section 2</a>.</p>',
+    ];
+
+    $wpFunctions = $this->make(WPFunctions::class, [
+      'getPermalink' => 'https://example.com/test-post/',
+    ]);
+
+    $postContentManager = new PostContentManager(
+      $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false]),
+      $wpFunctions
+    );
+
+    $content = $postContentManager->getContent($post, 'full');
+
+    // Verify that anchor-only links are converted to full URLs
+    verify($content)->stringContainsString('https://example.com/test-post/#section1');
+    verify($content)->stringContainsString('https://example.com/test-post/#section-2');
+    verify($content)->stringNotContainsString('href="#section1"');
+    verify($content)->stringNotContainsString('href="#section-2"');
+  }
 }
