@@ -2,6 +2,7 @@
 .env
 .idea
 .vscode
+.claude/settings.local.json
 dev/data
 docker-compose.override.yml
 node_modules
