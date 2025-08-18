@@ -141,7 +141,8 @@ class Help {
       'id' => $task->getId(),
       'type' => $task->getType(),
       'priority' => $task->getPriority(),
-      'updatedAt' => $task->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
+      'updatedAt' => $task->getUpdatedAt() ?
+        $task->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
       'scheduledAt' => $task->getScheduledAt() ?
         $task->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
         : null,

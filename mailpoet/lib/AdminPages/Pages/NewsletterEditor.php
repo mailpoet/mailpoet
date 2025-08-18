@@ -163,7 +163,7 @@ class NewsletterEditor {
       'confirmed_at' => ($confirmedAt = $subscriber->getConfirmedAt()) ? $confirmedAt->format(self::DATE_FORMAT) : null,
       'last_subscribed_at' => ($lastSubscribedAt = $subscriber->getLastSubscribedAt()) ? $lastSubscribedAt->format(self::DATE_FORMAT) : null,
       'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-      'updated_at' => $subscriber->getUpdatedAt()->format(self::DATE_FORMAT),
+      'updated_at' => ($updatedAt = $subscriber->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $subscriber->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'unconfirmed_data' => $subscriber->getUnconfirmedData(),
       'source' => $subscriber->getSource(),

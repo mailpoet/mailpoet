@@ -16,7 +16,7 @@ class NewsletterTemplatesResponseBuilder {
       'readonly' => $template->getReadonly(),
       'body' => $template->getBody(),
       'created_at' => ($createdAt = $template->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-      'updated_at' => $template->getUpdatedAt()->format(self::DATE_FORMAT),
+      'updated_at' => ($updatedAt = $template->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'newsletter_id' => ($newsletter = $template->getNewsletter()) ? $newsletter->getId() : null,
     ];
   }

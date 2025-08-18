@@ -198,7 +198,7 @@ class Segments {
       'type' => $segment->getType(),
       'description' => $segment->getDescription(),
       'created_at' => ($createdAt = $segment->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-      'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
+      'updated_at' => ($updatedAt = $segment->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
     ];
   }

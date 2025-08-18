@@ -105,7 +105,7 @@ class SubscribersResponseBuilder {
           'created_at' => ($createdAt = $subscriberSegment->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
           'segment_id' => (string)$segment->getId(),
           'status' => $subscriberSegment->getStatus(),
-          'updated_at' => $subscriberSegment->getUpdatedAt()->format(self::DATE_FORMAT),
+          'updated_at' => ($updatedAt = $subscriberSegment->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
         ];
       }
     }
@@ -161,7 +161,7 @@ class SubscribersResponseBuilder {
         'subscriber_id' => (string)$subscriber->getId(),
         'tag_id' => (string)$tag->getId(),
         'created_at' => ($createdAt = $subscriberTag->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-        'updated_at' => $subscriberTag->getUpdatedAt()->format(self::DATE_FORMAT),
+        'updated_at' => ($updatedAt = $subscriberTag->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
         'name' => $tag->getName(),
       ];
     }

@@ -26,7 +26,7 @@ class FormsResponseBuilder {
       'settings' => $form->getSettings(),
       'styles' => $form->getStyles(),
       'created_at' => ($createdAt = $form->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-      'updated_at' => $form->getUpdatedAt()->format(self::DATE_FORMAT),
+      'updated_at' => ($updatedAt = $form->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $form->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
     ];
   }
