@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.13.1 - 2025-08-18 =
+* Added: Explanation to Subscribe In Comments that only native WP comments are supported;
+* Improved: used the last version of the WooCommerce email editor packages;
+* Improved: Allow saving email template image with allow_url_fopen disabled;
+* Fixed: anchor links in posts added to emails were not working.
+
 = 5.13.0 - 2025-08-12 =
 * Added: Add duplication of an automation step;
 * Added: "Active WooCommerce subscriptions count" field in automation filters;

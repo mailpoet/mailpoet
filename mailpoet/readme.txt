@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.13.0
+Stable tag: 5.13.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.13.0 - 2025-08-12 =
-* Added: Add duplication of an automation step;
-* Added: "Active WooCommerce subscriptions count" field in automation filters;
-* Updated: Bump the minimum required WooCommerce version to 10.0 and tested up to version to 10.1;
-* Improved: Ensure that logging of WooCommerce First Purchase is done only when necessary.
+= 5.13.1 - 2025-08-18 =
+* Added: Explanation to Subscribe In Comments that only native WP comments are supported;
+* Improved: used the last version of the WooCommerce email editor packages;
+* Improved: Allow saving email template image with allow_url_fopen disabled;
+* Fixed: anchor links in posts added to emails were not working.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
