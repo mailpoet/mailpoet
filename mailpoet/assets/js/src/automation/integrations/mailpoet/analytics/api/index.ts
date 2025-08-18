@@ -1,5 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { api } from '../config';
+import { useCustomFetchHandler } from '../../../../api';
 
 export type ApiError = {
   code?: string;
@@ -16,4 +17,5 @@ export const initializeApi = () => {
   const apiUrl = `${api.root}/mailpoet/v1/`;
   apiFetch.use(apiFetch.createRootURLMiddleware(apiUrl));
   apiFetch.use(apiFetch.createNonceMiddleware(api.nonce));
+  apiFetch.setFetchHandler(useCustomFetchHandler);
 };
