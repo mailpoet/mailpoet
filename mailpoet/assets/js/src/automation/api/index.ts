@@ -16,12 +16,12 @@ export type ApiError = {
   };
 };
 
-const OVERRIDE_METHODS = new Set( [ 'PATCH', 'PUT', 'DELETE' ] );
+const OVERRIDE_METHODS = new Set(['PATCH', 'PUT', 'DELETE']);
 
 // This is mainly used to remove the httpV1Middleware.
-export const useCustomFetchHandler = ( nextOptions ) => {
-  if ( !MailPoet.FeaturesController.isSupported('remove_http_v1_middleware') ) {
-    return defaultFetchHandler( nextOptions );
+export const useCustomFetchHandler = (nextOptions) => {
+  if (!MailPoet.FeaturesController.isSupported('remove_http_v1_middleware')) {
+    return defaultFetchHandler(nextOptions);
   }
 
   let { method } = nextOptions;
@@ -31,16 +31,19 @@ export const useCustomFetchHandler = ( nextOptions ) => {
 
   // we need to override the header here because custom middleware are added after core middlewares
   // and this is the only place to update the core middleware.
-  if ( Object.prototype.hasOwnProperty.call( headers, headerName ) && OVERRIDE_METHODS.has( (headers[headerName] || '').toUpperCase() ) ) {
+  if (
+    Object.prototype.hasOwnProperty.call(headers, headerName) &&
+    OVERRIDE_METHODS.has((headers[headerName] || '').toUpperCase())
+  ) {
     method = headers[headerName];
     delete headers[headerName];
   }
 
-  return defaultFetchHandler( {
+  return defaultFetchHandler({
     ...nextOptions,
     method,
     headers,
-  } );
+  });
 };
 
 export const initializeApi = () => {
