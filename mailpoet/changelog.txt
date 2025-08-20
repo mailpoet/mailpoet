@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.13.2 - 2025-08-20 =
+* Improved: minor changes and fixes.
+
 = 5.13.1 - 2025-08-18 =
 * Added: Explanation to Subscribe In Comments that only native WP comments are supported;
 * Improved: used the last version of the WooCommerce email editor packages;
