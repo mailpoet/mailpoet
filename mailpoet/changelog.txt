@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.13.2 - 2025-08-20 =
+* Fixed: revert 5.13.1 release.
+
 = 5.13.0 - 2025-08-12 =
 * Added: Add duplication of an automation step;
 * Added: "Active WooCommerce subscriptions count" field in automation filters;
