@@ -3,8 +3,17 @@ import { __ } from '@wordpress/i18n';
 import { dispatch, select } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as coreDataStore } from '@wordpress/core-data';
-import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
+import {
+  EmailContentValidationRule,
+  EmailTemplate,
+} from '@woocommerce/email-editor/build-types/store';
 import { storeName as emailEditorStore } from '@woocommerce/email-editor';
+
+// Define types for the email editor store selectors
+type EmailEditorSelectors = {
+  getCurrentTemplateContent(): string;
+  getCurrentTemplate(): EmailTemplate;
+};
 
 const contentLink = `<a data-link-href='[mailpoet/subscription-unsubscribe-url]' contenteditable='false' style='text-decoration: underline;' class='mailpoet-email-editor__personalization-tags-link'>${__(
   'Unsubscribe',
@@ -27,10 +36,13 @@ function getEditorContext() {
     'core/post-content',
   ) as string[] | undefined;
 
-  const editedTemplateContent =
-    select(emailEditorStore).getCurrentTemplateContent();
+  const editedTemplateContent = (
+    select(emailEditorStore) as EmailEditorSelectors
+  ).getCurrentTemplateContent();
 
-  const postTemplateId = select(emailEditorStore).getCurrentTemplate()?.id;
+  const postTemplateId = (
+    select(emailEditorStore) as EmailEditorSelectors
+  ).getCurrentTemplate()?.id;
 
   return {
     contentBlockId: blocks?.[0],
@@ -62,13 +74,13 @@ export const emailValidationRule: EmailContentValidationRule = {
           content: contentLink,
         });
 
-        if (!hasFooter) {
+        if (!hasFooter && contentBlockId) {
           void dispatch(blockEditorStore).insertBlock(
             linksParagraphBlock,
             undefined,
             contentBlockId,
           );
-        } else {
+        } else if (postTemplateId) {
           void dispatch(coreDataStore).editEntityRecord(
             'postType',
             'wp_template',
