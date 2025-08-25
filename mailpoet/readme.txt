@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.13.1
+Stable tag: 5.14.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.13.1 - 2025-08-18 =
-* Added: Explanation to Subscribe In Comments that only native WP comments are supported;
-* Improved: used the last version of the WooCommerce email editor packages;
-* Improved: Allow saving email template image with allow_url_fopen disabled;
-* Fixed: anchor links in posts added to emails were not working.
+= 5.14.0 - 2025-08-25 =
+* Updated: Update the email editor version;
+* Fixed: Fix: license expiration notice was displayed only on the Plugins page; it now appears on all MailPoet admin pages;
+* Fixed: Fix the error "Call to a member function format on null"..
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

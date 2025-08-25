@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.14.0 - 2025-08-25 =
+* Updated: Update the email editor version;
+* Fixed: Fix: license expiration notice was displayed only on the Plugins page; it now appears on all MailPoet admin pages;
+* Fixed: Fix the error "Call to a member function format on null"..
+
 = 5.13.1 - 2025-08-18 =
 * Added: Explanation to Subscribe In Comments that only native WP comments are supported;
 * Improved: used the last version of the WooCommerce email editor packages;
