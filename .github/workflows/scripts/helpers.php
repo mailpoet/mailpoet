@@ -33,23 +33,17 @@ function filterStableVersions(array $versions): array {
 }
 
 /**
- * Function to get the latest and previous versions from a list of versions.
- * First tries to find the immediate previous version (patch-level), then falls back to previous minor/major version.
+ * Function to get the latest and previous minor/major versions from a list of versions.
  */
 function getLatestAndPreviousMinorMajorVersions(array $versions): array {
   usort($versions, 'version_compare');
   $currentVersion = end($versions);
 
-  // First, try to find the immediate previous version (any version lower than current)
-  $previousVersion = getActualPreviousVersion($versions, $currentVersion);
-  
-  // If no immediate previous version found, fall back to the old logic for major.minor differences
-  if ($previousVersion === null) {
-    foreach (array_reverse($versions) as $version) {
-      if (version_compare($version, $currentVersion, '<') && getMinorMajorVersion($version) !== getMinorMajorVersion($currentVersion)) {
-        $previousVersion = $version;
-        break;
-      }
+  $previousVersion = null;
+  foreach (array_reverse($versions) as $version) {
+    if (version_compare($version, $currentVersion, '<') && getMinorMajorVersion($version) !== getMinorMajorVersion($currentVersion)) {
+      $previousVersion = $version;
+      break;
     }
   }
 
@@ -59,21 +53,6 @@ function getLatestAndPreviousMinorMajorVersions(array $versions): array {
 function getMinorMajorVersion(string $version): string {
   $parts = explode('.', $version);
   return $parts[0] . '.' . $parts[1];
-}
-
-/**
- * Function to find the immediate previous version from a list of versions.
- * Returns the highest version that is still lower than the current version.
- */
-function getActualPreviousVersion(array $versions, string $currentVersion): ?string {
-  $previousVersion = null;
-  foreach (array_reverse($versions) as $version) {
-    if (version_compare($version, $currentVersion, '<')) {
-      $previousVersion = $version;
-      break;
-    }
-  }
-  return $previousVersion;
 }
 
 /**
