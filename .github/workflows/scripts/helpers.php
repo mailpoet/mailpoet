@@ -82,15 +82,6 @@ function fetchGitHubTags(string $repo, string $token, int $page = 1, int $limit 
   return array_column($data, 'name');
 }
 
-/**
- * Function saving versions to a temporary files.
- * File containing latest version is prefixed with 'latest_' and previous version is prefixed with 'previous_'.
- */
-function saveVersionsToFiles(?string $latestVersion, ?string $previousVersion, string $fileNameSuffix): void {
-  file_put_contents("/tmp/latest_{$fileNameSuffix}", $latestVersion);
-  file_put_contents("/tmp/previous_{$fileNameSuffix}", $previousVersion);
-}
-
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
   replaceVersionInFile(
     __DIR__ . '/../../../.circleci/config.yml',
@@ -162,6 +153,4 @@ function replacePrivatePluginVersion(
   } else {
     echo "No previous version found.\n";
   }
-
-  saveVersionsToFiles($latestVersion, $previousVersion, $versionsFilename);
 }

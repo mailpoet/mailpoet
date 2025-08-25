@@ -41,5 +41,3 @@ if ($previousVersion) {
 } else {
   echo "No previous version found.\n";
 }
-
-saveVersionsToFiles($latestVersion, $previousVersion, $versionsFilenameSuffix);
