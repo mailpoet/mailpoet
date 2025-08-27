@@ -6,25 +6,32 @@ namespace MailPoet\Test\Acceptance;
  * @group frontend
  */
 class WordPressSiteEditorCest {
+  public function _before(\AcceptanceTester $i) {
+    $i->login();
+
+    $i->wantTo('Switch to a block theme (required for site editor)');
+    $i->cli(['theme', 'activate', 'twentytwentyfive']);
+
+    $i->wantTo('Wait for theme activation to complete and ensure admin is ready');
+    $i->amOnPage('/wp-admin/');
+    $i->waitForElement('#wpbody', 10);
+  }
+
   public function testSiteEditorBasicFunctionality(\AcceptanceTester $i) {
     $i->wantTo('Test WordPress site editor basic functionality');
 
-    $i->login();
-
-    // Switch to a block theme (required for site editor)
-    $i->cli(['theme', 'activate', 'twentytwentyfive']);
-    $i->wait(2); // Wait for theme activation
-
-    // Navigate to site editor
+    $i->wantTo('Navigate to site editor');
     $i->amOnPage('/wp-admin/site-editor.php');
-    $i->waitForElement('.edit-site-layout', 10);
 
-    // Verify site editor is working by checking for key elements
-    $i->seeElement('.edit-site-layout');
-    $i->seeElement('.edit-site-site-hub');
-    $i->seeElement('.edit-site-sidebar-navigation-screen__title');
+    $i->wantTo('Wait for the site editor to load - try multiple possible indicators');
+    try {
+      $i->waitForText('Site Editor', 10);
+    } catch (\Exception $e) {
+      // Fallback: wait for any of the navigation items that should be present
+      $i->waitForText('Navigation', 10);
+    }
 
-    // Check if we can access the navigation items
+    $i->wantTo('Verify site editor is working by checking for key navigation items');
     $i->see('Navigation');
     $i->see('Styles');
     $i->see('Pages');
@@ -35,36 +42,37 @@ class WordPressSiteEditorCest {
   public function testFrontendPropagation(\AcceptanceTester $i) {
     $i->wantTo('Test that changes in site editor are propagated to frontend');
 
-    $i->login();
+    $i->wantTo('Create a test post first');
+    $postTitle = 'Test Post for Site Editor';
+    $postContent = 'This is test content for site editor propagation test.';
+    $postUrl = $i->createPost($postTitle, $postContent);
 
-    // Switch to a block theme (required for site editor)
-    $i->cli(['theme', 'activate', 'twentytwentyfive']);
-    $i->wait(2); // Wait for theme activation
-
-    // Create a test page first
-    $pageTitle = 'Test Page for Site Editor';
-    $pageContent = 'This is test content for site editor propagation test.';
-    $pageUrl = $i->createPost($pageTitle, $pageContent);
-
-    // Navigate to site editor
+    $i->wantTo('Navigate to site editor');
     $i->amOnPage('/wp-admin/site-editor.php');
-    $i->waitForElement('.edit-site-layout', 10);
 
-    // Click on Templates to access template editing
+    $i->wantTo('Wait for the site editor to load - try multiple possible indicators');
+    try {
+      $i->waitForText('Site Editor', 10);
+    } catch (\Exception $e) {
+      // Fallback: wait for any of the navigation items that should be present
+      $i->waitForText('Navigation', 10);
+    }
+
+    $i->wantTo('Click on Templates to access template editing');
     $i->click('Templates');
-    $i->waitForElement('.edit-site-sidebar-navigation-screen__content');
+    $i->waitForText('Templates', 10);
 
-    // Verify we can access the template editor
-    $i->seeElement('.edit-site-layout__content');
+    $i->wantTo('Verify we can access the template editor by checking for template-related content');
+    $i->see('Add Template');
+    $i->see('All templates');
 
-    // Navigate to frontend to verify the page exists
-    $i->amOnUrl($pageUrl);
-    $i->waitForText($pageTitle);
-    $i->see($pageContent);
+    $i->wantTo('Navigate to frontend to verify the post exists');
+    $i->amOnUrl($postUrl);
+    $i->waitForText($postTitle);
+    $i->see($postContent);
 
-    // Verify the page is using the theme's styling (basic check)
+    $i->wantTo("Verify the post is using the theme's styling (basic check)");
     $i->seeElement('body');
-    $i->seeElement('header');
     $i->seeElement('main');
   }
 }

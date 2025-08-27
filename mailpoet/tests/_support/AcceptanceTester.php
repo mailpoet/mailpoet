@@ -758,8 +758,8 @@ class AcceptanceTester extends \Codeception\Actor {
     $postData = $this->cliToString(['post', 'get', $post, '--format=json']);
     $postData = json_decode($postData, true);
     Assert::assertIsArray($postData);
-    Assert::assertIsString($postData['guid']);
-    return $postData['guid'];
+    Assert::assertIsString($postData['url']);
+    return $postData['url'];
   }
 
   public function addFromBlockInEditor($name, $context = null) {
