@@ -1,0 +1,5 @@
+# Type: Fixed
+
+# Description
+
+Improved error handling for invalid segment statistics results.
