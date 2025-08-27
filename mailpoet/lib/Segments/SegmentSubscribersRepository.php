@@ -8,6 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
@@ -488,6 +489,26 @@ class SegmentSubscribersRepository {
     }
 
     $statement = $this->executeQuery($queryBuilder);
-    return $statement->fetch();
+    $result = $statement->fetch();
+    if (is_array($result)) {
+      return $result;
+    }
+
+    $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
+    $logger->error('Invalid result for segment statistics count', [
+      'segment_id' => $segment->getId(),
+      'result' => $result,
+      'query' => $queryBuilder->getSQL(),
+    ]);
+
+    return [
+      'all' => 0,
+      'trash' => 0,
+      'subscribed' => 0,
+      'unsubscribed' => 0,
+      'inactive' => 0,
+      'unconfirmed' => 0,
+      'bounced' => 0,
+    ];
   }
 }

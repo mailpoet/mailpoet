@@ -507,11 +507,6 @@ parameters:
 			path: ../../lib/Segments/SegmentSubscribersRepository.php
 
 		-
-			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersStatisticsCount\\(\\) should return array but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersWithoutSegmentStatisticsCount\\(\\) should return array but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Segments/SegmentSubscribersRepository.php
