@@ -31,7 +31,11 @@ class Installer {
   public function generatePluginDownloadUrl(): string {
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $freeMinorVersion = self::getFreeMinorVersionZero();
-    return "https://release.mailpoet.com/downloads/mailpoet-premium/$premiumKey/$freeMinorVersion/mailpoet-premium.zip";
+    return sprintf(
+      'https://release.mailpoet.com/downloads/mailpoet-premium/%s/%s/mailpoet-premium.zip',
+      rawurlencode((string)$premiumKey),
+      rawurlencode($freeMinorVersion)
+    );
   }
 
   public function generatePluginActivationUrl(string $plugin): string {
