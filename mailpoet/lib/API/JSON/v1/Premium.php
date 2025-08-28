@@ -5,10 +5,10 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomHelperFunctions;
-use WP_Error;
 
 class Premium extends APIEndpoint {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
@@ -20,23 +20,24 @@ class Premium extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  /** @var ServicesChecker */
-  private $servicesChecker;
+  private ServicesChecker $servicesChecker;
 
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
-  /** @var DotcomHelperFunctions */
-  private $dotcomHelperFunctions;
+  private DotcomHelperFunctions $dotcomHelperFunctions;
+
+  private Installer $premiumInstaller;
 
   public function __construct(
     ServicesChecker $servicesChecker,
     WPFunctions $wp,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    DotcomHelperFunctions $dotcomHelperFunctions,
+    ?Installer $premiumInstaller = null
   ) {
     $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
+    $this->premiumInstaller = $premiumInstaller ?? new Installer(Installer::PREMIUM_PLUGIN_SLUG);
   }
 
   public function installPlugin() {
@@ -44,16 +45,6 @@ class Premium extends APIEndpoint {
     if (!$premiumKeyValid) {
       return $this->error(__('Premium key is not valid.', 'mailpoet'));
     }
-
-    $pluginInfo = $this->wp->pluginsApi('plugin_information', [
-      'slug' => self::PREMIUM_PLUGIN_SLUG,
-    ]);
-
-    if (!$pluginInfo || $pluginInfo instanceof WP_Error) {
-      return $this->error(__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
-    }
-
-    $pluginInfo = (array)$pluginInfo;
 
     // If we are in Dotcom platform, we try to symlink the plugin instead of downloading it
     try {
@@ -67,7 +58,7 @@ class Premium extends APIEndpoint {
       // Do nothing and continue with a regular installation
     }
 
-    $result = $this->wp->installPlugin($pluginInfo['download_link']);
+    $result = $this->wp->installPlugin($this->premiumInstaller->generatePluginDownloadUrl());
     if ($result !== true) {
       return $this->error(__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }
