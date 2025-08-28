@@ -41,7 +41,16 @@ class InstallerTest extends \MailPoetTest {
     $key = 'premium-key';
     $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
     $url = $this->installer->generatePluginDownloadUrl();
-    verify($url)->same("https://release.mailpoet.com/downloads/mailpoet-premium/$key/latest/mailpoet-premium.zip");
+    $version = defined('MAILPOET_VERSION') ? (string)MAILPOET_VERSION : '';
+    if ($version === '') {
+      $expectedSegment = 'latest';
+    } else {
+      $parts = explode('.', $version);
+      $major = $parts[0] ?? '0';
+      $minor = $parts[1] ?? '0';
+      $expectedSegment = $major . '.' . $minor . '.0';
+    }
+    verify($url)->same("https://release.mailpoet.com/downloads/mailpoet-premium/$key/$expectedSegment/mailpoet-premium.zip");
   }
 
   public function testItGetsPluginInformation() {
