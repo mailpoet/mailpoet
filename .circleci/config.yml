@@ -1309,7 +1309,7 @@ workflows:
   nightly_qit:
     triggers:
       - schedule:
-          cron: '0 2 * * 3' # Every Wednesday at 2am UTC
+          cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
           filters:
             branches:
               only:
