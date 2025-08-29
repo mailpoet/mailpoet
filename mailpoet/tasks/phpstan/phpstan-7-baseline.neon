@@ -502,16 +502,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceTotalSpent.php
 
 		-
-			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersGlobalStatusStatisticsCount\\(\\) should return array but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
-			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersWithoutSegmentStatisticsCount\\(\\) should return array but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
 			count: 3
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php

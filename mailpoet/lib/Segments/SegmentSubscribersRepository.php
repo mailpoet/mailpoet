@@ -125,8 +125,12 @@ class SegmentSubscribersRepository {
     $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
     $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, null);
     $statement = $this->executeQuery($queryBuilder);
-    /** @var array{all:string} $result */
     $result = $statement->fetch();
+
+    if (!is_array($result)) {
+      $result = $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
+    }
+
     return (int)$result['all'];
   }
 
@@ -324,7 +328,11 @@ class SegmentSubscribersRepository {
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetch();
 
-    return $result;
+    if (is_array($result)) {
+      return $result;
+    }
+
+    return $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
   }
 
   public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {
@@ -477,7 +485,12 @@ class SegmentSubscribersRepository {
     }
 
     $statement = $this->executeQuery($queryBuilder);
-    return $statement->fetch();
+    $result = $statement->fetch();
+    if (is_array($result)) {
+      return $result;
+    }
+
+    return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
   }
 
   public function getSubscribersStatisticsCount(SegmentEntity $segment): array {
@@ -494,9 +507,19 @@ class SegmentSubscribersRepository {
       return $result;
     }
 
+    return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
+  }
+
+  /**
+   * @param null|SegmentEntity $segment
+   * @param QueryBuilder $queryBuilder
+   * @param mixed $result
+   * @return int[]
+   */
+  private function logErrorAndReturnEmptyResult(?SegmentEntity $segment, QueryBuilder $queryBuilder, $result): array {
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
     $logger->error('Invalid result for segment statistics count', [
-      'segment_id' => $segment->getId(),
+      'segment_id' => $segment ? $segment->getId() : null,
       'result' => $result,
       'query' => $queryBuilder->getSQL(),
     ]);
