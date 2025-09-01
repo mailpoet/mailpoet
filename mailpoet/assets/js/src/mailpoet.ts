@@ -21,17 +21,20 @@ const getBlockEmailEditorUrl = (postId: string | number): string =>
 const getNewsletterEditorUrl = (
   newsletterId: string | number,
   context = '',
-): string =>
-  context
-    ? `?page=mailpoet-newsletter-editor&id=${newsletterId}&context=${context}`
-    : `?page=mailpoet-newsletter-editor&id=${newsletterId}`;
+): string => {
+  const base = 'admin.php?page=mailpoet-newsletter-editor';
+  const id = encodeURIComponent(String(newsletterId));
+  return context
+    ? `${base}&id=${id}&context=${encodeURIComponent(context)}`
+    : `${base}&id=${id}`;
+};
 
 const getTheEmailEditorUrl = (
   newsletter: NewsletterType,
   context = '',
 ): string => {
   if (!newsletter || !newsletter.id) {
-    return '';
+    return '#';
   }
 
   if (newsletter.wp_post_id) {

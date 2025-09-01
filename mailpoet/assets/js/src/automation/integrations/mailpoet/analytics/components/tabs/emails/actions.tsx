@@ -3,7 +3,7 @@ import { DropdownMenu } from '@wordpress/components';
 import { moreVertical, pencil, seen } from '@wordpress/icons';
 import { MailPoet } from '../../../../../../../mailpoet';
 
-const getEditorLink = (id: number, wpPostId: number) => {
+const getEditorLink = (id: number, wpPostId?: number) => {
   if (wpPostId) {
     return MailPoet.getBlockEmailEditorUrl(wpPostId);
   }

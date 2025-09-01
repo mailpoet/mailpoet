@@ -152,7 +152,7 @@ class EditorPageRenderer {
     $backUrl = 'page=mailpoet-newsletters';
 
     if ($isAutomationNewsletter) {
-      $listingUrl = 'page=mailpoet-automations';
+      $listingUrl = 'page=mailpoet-automation';
       $sendUrl = 'page=mailpoet-automation-editor&id=' . $automationId;
       $backUrl = $sendUrl;
     }

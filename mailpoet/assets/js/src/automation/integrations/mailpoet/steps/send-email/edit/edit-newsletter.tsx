@@ -151,7 +151,13 @@ export function EditNewsletter(): JSX.Element {
     if (isDuplicatedStep) {
       setIsHandlingDuplicatedStep(true);
 
-      const { newEmailId, newEmailWpPostId } = await handleDuplicatedStep();
+      const info = await handleDuplicatedStep();
+      if (!info) {
+        setIsHandlingDuplicatedStep(false);
+        return;
+      }
+
+      const { newEmailId, newEmailWpPostId } = info;
 
       if (newEmailWpPostId) {
         newUrl = MailPoet.getBlockEmailEditorUrl(newEmailWpPostId);
