@@ -322,7 +322,7 @@ class NewsletterListReEngagementComponent extends Component {
         <td className={rowClasses}>
           <a
             className="mailpoet-listing-title"
-            href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
+            href={MailPoet.getTheEmailEditorUrl(newsletter)}
             onClick={(event) => {
               event.preventDefault();
               confirmEdit(newsletter);

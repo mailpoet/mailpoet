@@ -102,7 +102,7 @@ export const newsletterTypesWithActivation = [
 export const automationTypes = ['automation', 'automation_transactional'];
 
 export const confirmEdit = (newsletter) => {
-  const editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  const editorHref = MailPoet.getTheEmailEditorUrl(newsletter);
 
   if (
     newsletterTypesWithActivation.includes(newsletter.type) &&

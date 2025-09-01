@@ -109,10 +109,7 @@ const bulkActions = [
 ];
 
 const confirmEdit = (newsletter) => {
-  let editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
-  if (newsletter.wp_post_id) {
-    editorHref = MailPoet.getBlockEmailEditorUrl(newsletter.wp_post_id);
-  }
+  const editorHref = MailPoet.getTheEmailEditorUrl(newsletter);
 
   if (
     !newsletter.queue ||
