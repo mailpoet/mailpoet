@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.14.1 - 2025-09-01 =
+* Improved: Use specific version when downloading premium plugin.
+
 = 5.14.0 - 2025-08-25 =
 * Updated: Update the email editor version;
 * Fixed: Fix: license expiration notice was displayed only on the Plugins page; it now appears on all MailPoet admin pages;
