@@ -22,6 +22,7 @@ export function UseBlockEditorForAutomation() {
           value="1"
           checked={enabled === '1'}
           onCheck={setEnabled}
+          automationId="block-editor-for-automation-enabled"
         />
         <label htmlFor="use-block-editor-for-automation-enabled">
           {t('yes')}
@@ -32,6 +33,7 @@ export function UseBlockEditorForAutomation() {
           value=""
           checked={enabled === ''}
           onCheck={setEnabled}
+          automationId="block-editor-for-automation-disabled"
         />
         <label htmlFor="use-block-editor-for-automation-disabled">
           {t('no')}
