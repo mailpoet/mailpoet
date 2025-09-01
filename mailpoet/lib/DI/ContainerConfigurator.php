@@ -665,6 +665,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     // WooCommerce Subscriptions
     $container->autowire(\MailPoet\WooCommerce\WooCommerceSubscriptions\Helper::class)->setPublic(true);
 
+    // WooCommerce Bookings
+    $container->autowire(\MailPoet\WooCommerce\WooCommerceBookings\Helper::class)->setPublic(true);
+
     // WordPress
     $container->autowire(\MailPoet\WP\Emoji::class)->setPublic(true);
     $container->autowire(\MailPoet\WP\Functions::class)->setPublic(true);
