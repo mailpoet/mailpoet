@@ -72,9 +72,22 @@ class AutomationEditorLoadingHooks {
         continue;
       }
 
+      if ($newsletterEntity && $newsletterEntity->getWpPostId()) {
+        $wpPost = $this->wp->getPost($newsletterEntity->getWpPostId());
+        // Skip if the wp post has content for emails created by the new block editor.
+        if ($wpPost && $wpPost instanceof \WP_Post && !empty($wpPost->post_content)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          continue;
+        }
+      }
+
       $this->newsletterDeleteController->bulkDelete([$emailId]);
       $args = $step->getArgs();
       unset($args['email_id']);
+
+      if (isset($args['email_wp_post_id'])) {
+        unset($args['email_wp_post_id']);
+      }
+
       $updatedStep = new Step(
         $step->getId(),
         $step->getType(),
