@@ -50,6 +50,7 @@
   var mailpoet_free_domains = <%= json_encode(mailpoet_free_domains()) %>;
   var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active()) %>;
   var mailpoet_woocommerce_email_improvements_enabled = <%= json_encode(is_woocommerce_email_improvements_enabled()) %>;
+  var mailpoet_woocommerce_bookings_active = <%= json_encode(is_woocommerce_bookings_active) %>;
   var mailpoet_woocommerce_subscriptions_active = <%= json_encode(is_woocommerce_subscriptions_active) %>;
   var mailpoet_woocommerce_store_config = <%= json_encode(woocommerce_store_config) %>;
   // RFC 5322 standard; http://emailregex.com/ combined with https://google.github.io/closure-library/api/goog.format.EmailAddress.html#isValid
