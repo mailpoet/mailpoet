@@ -74,7 +74,7 @@ export function EditNewsletter(): JSX.Element {
         type: 'automation',
         subject: '',
         options,
-        new_editor: true,
+        new_editor: MailPoet.useBlockEmailEditorForAutomationNewsletter,
       },
     });
 
