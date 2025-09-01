@@ -85,8 +85,8 @@ if (!isAutomationNewsletter) {
   addFilter(
     'woocommerce_email_editor_setting_sidebar_extension_component',
     'mailpoet/email-editor-integration',
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     (RichTextWithButton) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       EmailSidebarExtension.bind(null, RichTextWithButton),
   );
 }

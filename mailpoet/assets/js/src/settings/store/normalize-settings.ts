@@ -127,6 +127,9 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     ),
     analytics: asObject({ enabled: disabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
+    use_block_email_editor_for_automation_newsletter: asObject({
+      enabled: disabledRadio,
+    }),
     captcha: asObject({
       type: asEnum(
         ['', 'built-in', 'recaptcha', 'recaptcha-invisible'],
