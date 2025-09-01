@@ -84,6 +84,7 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['revenue'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
       $data['emails'][$newsletterId]['previewUrl'] = $newsletter ? $this->newsletterUrl->getViewInBrowserUrl($newsletter) : '';
       $data['emails'][$newsletterId]['order'] = count($data['emails']);
+      $data['emails'][$newsletterId]['wpPostId'] = $newsletter ? $newsletter->getWpPostId() : 0;
     }
 
     $previousStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(

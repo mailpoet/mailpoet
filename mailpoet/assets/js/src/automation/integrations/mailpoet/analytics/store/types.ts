@@ -21,6 +21,7 @@ export type EmailStats = {
   orders: number;
   revenue: number;
   unsubscribed: number;
+  wpPostId?: number;
 };
 
 type OverviewSectionData = SectionData & {

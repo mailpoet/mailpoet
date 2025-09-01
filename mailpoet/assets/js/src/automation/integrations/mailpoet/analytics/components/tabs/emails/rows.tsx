@@ -131,7 +131,13 @@ export function transformEmailsToRows(emails: EmailStats[]) {
         value: email.unsubscribed,
       },
       {
-        display: <Actions id={email.id} previewUrl={email.previewUrl} />,
+        display: (
+          <Actions
+            id={email.id}
+            previewUrl={email.previewUrl}
+            wpPostId={email?.wpPostId ?? 0}
+          />
+        ),
         value: null,
       },
     ]);

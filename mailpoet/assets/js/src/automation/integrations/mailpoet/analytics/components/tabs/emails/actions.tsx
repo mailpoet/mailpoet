@@ -1,12 +1,25 @@
 import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical, pencil, seen } from '@wordpress/icons';
+import { MailPoet } from '../../../../../../../mailpoet';
+
+const getEditorLink = (id: number, wpPostId: number) => {
+  if (wpPostId) {
+    return MailPoet.getBlockEmailEditorUrl(wpPostId);
+  }
+  return MailPoet.getNewsletterEditorUrl(id, 'automation');
+};
 
 type ActionsProps = {
   id: number;
   previewUrl: string;
+  wpPostId?: number;
 };
-export function Actions({ id, previewUrl }: ActionsProps): JSX.Element {
+export function Actions({
+  id,
+  previewUrl,
+  wpPostId,
+}: ActionsProps): JSX.Element {
   const controls = [
     {
       title: __('Preview email', 'mailpoet'),
@@ -19,7 +32,7 @@ export function Actions({ id, previewUrl }: ActionsProps): JSX.Element {
       title: __('Edit email', 'mailpoet'),
       icon: pencil,
       onClick: () => {
-        window.location.href = `?page=mailpoet-newsletter-editor&id=${id}&context=automation`;
+        window.location.href = getEditorLink(id, wpPostId);
       },
     },
   ];
