@@ -13,9 +13,33 @@ import {
 import { MailPoetNum } from './num';
 import { MailPoetHelpTooltip } from './help-tooltip-helper';
 import { MailPoetIframe } from './iframe';
+import { NewsletterType } from './newsletters/campaign-stats/newsletter-type';
 
 const getBlockEmailEditorUrl = (postId: string | number): string =>
   `post.php?post=${postId}&action=edit`;
+
+const getNewsletterEditorUrl = (
+  newsletterId: string | number,
+  context = '',
+): string =>
+  context
+    ? `?page=mailpoet-newsletter-editor&id=${newsletterId}&context=${context}`
+    : `?page=mailpoet-newsletter-editor&id=${newsletterId}`;
+
+const getTheEmailEditorUrl = (
+  newsletter: NewsletterType,
+  context = '',
+): string => {
+  if (!newsletter || !newsletter.id) {
+    return '';
+  }
+
+  if (newsletter.wp_post_id) {
+    return getBlockEmailEditorUrl(newsletter.wp_post_id);
+  }
+
+  return getNewsletterEditorUrl(newsletter.id, context);
+};
 
 // A placeholder for MailPoet object
 export const MailPoet = {
@@ -93,6 +117,8 @@ export const MailPoet = {
   isDotcom: window.mailpoet_is_dotcom,
   cronTriggerMethod: window.mailpoet_cron_trigger_method,
   getBlockEmailEditorUrl,
+  getNewsletterEditorUrl,
+  getTheEmailEditorUrl,
 } as const;
 
 declare global {
