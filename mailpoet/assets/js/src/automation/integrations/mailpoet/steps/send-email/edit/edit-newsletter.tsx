@@ -7,6 +7,11 @@ import { Button } from '../../../components/button';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
+type HandleDuplicatedStepType = {
+  newEmailId: number;
+  newEmailWpPostId?: number;
+};
+
 const emailPreviewLinkCache = {};
 const retrievePreviewLink = async (emailId) => {
   if (
@@ -47,6 +52,9 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
+  const emailWpPostId = selectedStep?.args?.email_wp_post_id as
+    | number
+    | undefined;
   const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
@@ -66,6 +74,7 @@ export function EditNewsletter(): JSX.Element {
         type: 'automation',
         subject: '',
         options,
+        new_editor: true,
       },
     });
 
@@ -75,30 +84,49 @@ export function EditNewsletter(): JSX.Element {
       parseInt(response.data.id as string, 10),
     );
 
+    if (response?.data?.wp_post_id) {
+      void dispatch(storeName).updateStepArgs(
+        automationStepId,
+        'email_wp_post_id',
+        parseInt(response.data.wp_post_id as string, 10),
+      );
+    }
+
     void dispatch(storeName).save();
   }, [automationId, automationStepId]);
 
-  const handleDuplicatedStep = useCallback(async (): Promise<number | null> => {
-    try {
-      // Save the automation to trigger backend duplication
-      const savedData = await dispatch(storeName).save();
-      const newSelectedStep = savedData.automation.steps[automationStepId];
-      const newEmailId = Number(newSelectedStep?.args?.email_id);
+  const handleDuplicatedStep =
+    useCallback(async (): Promise<HandleDuplicatedStepType | null> => {
+      try {
+        // Save the automation to trigger backend duplication
+        const savedData = await dispatch(storeName).save();
+        const newSelectedStep = savedData.automation.steps[automationStepId];
+        const newEmailId = Number(newSelectedStep?.args?.email_id);
 
-      if (newEmailId && !Number.isNaN(newEmailId)) {
-        return newEmailId;
+        if (!newEmailId || Number.isNaN(newEmailId)) {
+          throw new Error('Failed to retrieve new email ID after duplication');
+        }
+
+        const newEmailWpPostId = Number(
+          newSelectedStep?.args?.email_wp_post_id,
+        );
+
+        const info: HandleDuplicatedStepType = { newEmailId };
+
+        if (newEmailWpPostId && !Number.isNaN(newEmailWpPostId)) {
+          info.newEmailWpPostId = newEmailWpPostId;
+        }
+
+        return info;
+      } catch (error) {
+        void dispatch(noticesStore).createErrorNotice(
+          __('Email duplication failed. Please try again.', 'mailpoet'),
+          { explicitDismiss: true },
+        );
+
+        return null;
       }
-
-      throw new Error('Failed to retrieve new email ID after duplication');
-    } catch (error) {
-      void dispatch(noticesStore).createErrorNotice(
-        __('Email duplication failed. Please try again.', 'mailpoet'),
-        { explicitDismiss: true },
-      );
-
-      return null;
-    }
-  }, [automationStepId]);
+    }, [automationStepId]);
 
   const handleEditContent = useCallback(async () => {
     // Ensure we have a valid selected step
@@ -112,15 +140,23 @@ export function EditNewsletter(): JSX.Element {
       return;
     }
 
-    let newUrl = `?page=mailpoet-newsletter-editor&id=${currentEmailId}&context=automation`;
+    let newUrl = MailPoet.getNewsletterEditorUrl(currentEmailId, 'automation');
+
+    const currentEmailWpPostId = Number(selectedStep?.args?.email_wp_post_id);
+
+    if (currentEmailWpPostId && !Number.isNaN(currentEmailWpPostId)) {
+      newUrl = MailPoet.getBlockEmailEditorUrl(currentEmailWpPostId);
+    }
 
     if (isDuplicatedStep) {
       setIsHandlingDuplicatedStep(true);
 
-      const newEmailId = await handleDuplicatedStep();
+      const { newEmailId, newEmailWpPostId } = await handleDuplicatedStep();
 
-      if (newEmailId) {
-        newUrl = `?page=mailpoet-newsletter-editor&id=${newEmailId}&context=automation`;
+      if (newEmailWpPostId) {
+        newUrl = MailPoet.getBlockEmailEditorUrl(newEmailWpPostId);
+      } else if (newEmailId) {
+        newUrl = MailPoet.getNewsletterEditorUrl(newEmailId, 'automation');
       } else {
         // If duplication failed, don't redirect and let user see the error
         setIsHandlingDuplicatedStep(false);
@@ -131,15 +167,24 @@ export function EditNewsletter(): JSX.Element {
     }
 
     window.location.href = newUrl;
-  }, [isDuplicatedStep, selectedStep?.args?.email_id, handleDuplicatedStep]);
+  }, [
+    isDuplicatedStep,
+    selectedStep?.args?.email_id,
+    selectedStep?.args?.email_wp_post_id,
+    handleDuplicatedStep,
+  ]);
 
   // This component is rendered only when no email ID is set. Once we have the ID
   // and the automation is saved, we can safely redirect to the email design flow.
   useEffect(() => {
     if (redirectToTemplateSelection && emailId && savedState === 'saved') {
-      window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
+      if (emailWpPostId) {
+        window.location.href = MailPoet.getBlockEmailEditorUrl(emailWpPostId);
+      } else {
+        window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
+      }
     }
-  }, [emailId, savedState, redirectToTemplateSelection]);
+  }, [emailId, emailWpPostId, savedState, redirectToTemplateSelection]);
 
   if (!emailId || redirectToTemplateSelection) {
     return (
