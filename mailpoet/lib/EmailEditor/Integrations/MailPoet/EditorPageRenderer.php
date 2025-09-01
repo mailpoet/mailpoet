@@ -143,6 +143,20 @@ class EditorPageRenderer {
     $editorSettings['displaySendEmailButton'] = true;
 
     $currentUserEmail = $this->wp->wpGetCurrentUser()->user_email;
+
+    $isAutomationNewsletter = $newsletter->isAutomation() || $newsletter->isAutomationTransactional();
+    $automationId = $newsletter->getOptionValue('automationId');
+
+    $listingUrl = 'page=mailpoet-newsletters';
+    $sendUrl = 'page=mailpoet-newsletters#/send/' . $newsletter->getId();
+    $backUrl = 'page=mailpoet-newsletters';
+
+    if ($isAutomationNewsletter) {
+      $listingUrl = 'page=mailpoet-automations';
+      $sendUrl = 'page=mailpoet-automation-editor&id=' . $automationId;
+      $backUrl = $sendUrl;
+    }
+
     $this->wp->wpLocalizeScript(
       'email_editor_integration',
       'WooCommerceEmailEditor',
@@ -154,9 +168,9 @@ class EditorPageRenderer {
         'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'urls' => [
-          'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
-          'send' => admin_url('admin.php?page=mailpoet-newsletters#/send/' . $newsletter->getId()),
-          'back' => admin_url('admin.php?page=mailpoet-newsletters'),
+          'listings' => admin_url('admin.php?' . $listingUrl),
+          'send' => admin_url('admin.php?' . $sendUrl),
+          'back' => admin_url('admin.php?' . $backUrl),
         ],
       ]
     );
@@ -191,6 +205,8 @@ class EditorPageRenderer {
       'mailpoet_site_url' => $this->wp->siteUrl(),
       'mailpoet_review_request_illustration_url' => $this->cdnAssetUrl->generateCdnUrl('review-request/review-request-illustration.20190815-1427.svg'),
       'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
+      'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
+      'mailpoet_automation_id' => $automationId,
     ];
     $this->wp->wpAddInlineScript('email_editor_integration', implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key]));

@@ -3,6 +3,7 @@
 // Here, we can expose MailPoet specific components for use in the Email editor.
 
 import { addFilter, addAction } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { initializeEditor } from '@woocommerce/email-editor';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
@@ -28,6 +29,18 @@ addFilter(
     emailValidationRule,
   ],
 );
+
+const isAutomationNewsletter = window?.mailpoet_is_automation_newsletter;
+
+// Show custom label for Automation emails.
+// Using the same label as /assets/js/src/newsletter-editor/initializer.jsx#L49
+if (isAutomationNewsletter) {
+  addFilter(
+    'woocommerce_email_editor_send_button_label',
+    'mailpoet/email-editor-integration',
+    () => __('Save and continue', 'mailpoet'),
+  );
+}
 
 const EVENTS_TO_TRACK = [
   'email_editor_events_editor_layout_loaded', // email editor was opened
@@ -66,12 +79,17 @@ addFilter(
 );
 
 // integration point for settings sidebar
-addFilter(
-  'woocommerce_email_editor_setting_sidebar_extension_component',
-  'mailpoet/email-editor-integration',
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  (RichTextWithButton) => EmailSidebarExtension.bind(null, RichTextWithButton),
-);
+// Hide subject and preview text fields for Automation emails.
+// This is because the Automation editor has its own subject and preview text fields and there isn't a need to show them again in the email editor.
+if (!isAutomationNewsletter) {
+  addFilter(
+    'woocommerce_email_editor_setting_sidebar_extension_component',
+    'mailpoet/email-editor-integration',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    (RichTextWithButton) =>
+      EmailSidebarExtension.bind(null, RichTextWithButton),
+  );
+}
 
 // use mailpoet data subject if available
 addFilter(

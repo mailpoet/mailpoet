@@ -652,4 +652,12 @@ class NewsletterEntity {
       NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     ]);
   }
+
+  public function isAutomation(): bool {
+    return $this->getType() === NewsletterEntity::TYPE_AUTOMATION;
+  }
+
+  public function isAutomationTransactional(): bool {
+    return $this->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL;
+  }
 }
