@@ -59,6 +59,26 @@ namespace {
     }
   }
 
+  if (!class_exists(\WC_Booking::class)) {
+    class WC_Booking extends WC_Order {
+      public function get_persons() {
+        return 2;
+      }
+
+      public function get_all_day() {
+        return false;
+      }
+
+      public function get_start() {
+        return 6;
+      }
+
+      public function get_end() {
+        return 8;
+      }
+    }
+  }
+
   if (!function_exists('wcs_create_subscription')) {
     function wcs_create_subscription($args) {
     }
