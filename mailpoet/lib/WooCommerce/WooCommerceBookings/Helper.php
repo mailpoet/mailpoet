@@ -17,4 +17,24 @@ class Helper {
   public function isWooCommerceBookingsActive(): bool {
     return $this->wp->isPluginActive('woocommerce-bookings/woocommerce-bookings.php');
   }
+
+  public function getBookingStatuses(): array {
+    if (!function_exists('get_wc_booking_statuses')) {
+      return [];
+    }
+
+    return get_wc_booking_statuses('fully_booked', true);
+  }
+
+  /**
+   * @param int $id
+   * @return false|\WC_Booking
+   */
+  public function getBooking(int $id) {
+    if (!function_exists('get_wc_booking')) {
+      return false;
+    }
+
+    return get_wc_booking($id);
+  }
 }
