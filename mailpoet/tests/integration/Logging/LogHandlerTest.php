@@ -5,7 +5,6 @@ namespace MailPoet\Logging;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class LogHandlerTest extends \MailPoetTest {
@@ -37,68 +36,6 @@ class LogHandlerTest extends \MailPoetTest {
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     verify($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
-  }
-
-  public function testItPurgesOldLogs() {
-    $entity = new LogEntity();
-    $entity->setName('old name');
-    $entity->setLevel(5);
-    $entity->setMessage('xyz');
-    $entity->setCreatedAt(Carbon::now()->subDays(100));
-    $this->repository->saveLog($entity);
-
-    $random = function() {
-      return 0;
-    };
-
-    $logHandler = new LogHandler(
-      $this->repository,
-      \MailPoetVendor\Monolog\Logger::DEBUG,
-      true,
-      $random
-    );
-    $logHandler->handle([
-      'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
-      'extra' => [],
-      'context' => [],
-      'channel' => 'name',
-      'datetime' => new \DateTime(),
-      'message' => 'some log message',
-    ]);
-
-    $log = $this->repository->findBy(['name' => 'old name']);
-    verify($log)->empty();
-  }
-
-  public function testItNotPurgesOldLogs() {
-    $entity = new LogEntity();
-    $entity->setName('old name keep');
-    $entity->setLevel(5);
-    $entity->setMessage('xyz');
-    $entity->setCreatedAt(Carbon::now()->subDays(100));
-    $this->repository->saveLog($entity);
-
-    $random = function() {
-      return 100;
-    };
-
-    $logHandler = new LogHandler(
-      $this->repository,
-      \MailPoetVendor\Monolog\Logger::DEBUG,
-      true,
-      $random
-    );
-    $logHandler->handle([
-      'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
-      'extra' => [],
-      'context' => [],
-      'channel' => 'name',
-      'datetime' => new \DateTime(),
-      'message' => 'some log message',
-    ]);
-
-    $log = $this->repository->findBy(['name' => 'old name keep']);
-    verify($log)->notEmpty();
   }
 
   public function testItResilientToSqlError(): void {

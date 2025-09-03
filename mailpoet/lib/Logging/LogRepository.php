@@ -90,13 +90,14 @@ class LogRepository extends Repository {
     return $query->getQuery()->getResult();
   }
 
-  public function purgeOldLogs(int $daysToKeepLogs, int $limit = 1000) {
+  public function purgeOldLogs(int $daysToKeepLogs, int $limit = 1000): int {
     $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeStatement(
+    $result = $this->entityManager->getConnection()->executeStatement(
       "
-      DELETE FROM $logsTable
+      DELETE FROM `{$logsTable}`
       WHERE `created_at` < :date
-      ORDER BY `id` ASC LIMIT :limit
+      ORDER BY `created_at` ASC, `id` ASC
+      LIMIT :limit
     ",
       [
       'date' => Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString(),
@@ -107,6 +108,8 @@ class LogRepository extends Repository {
       'limit' => ParameterType::INTEGER,
       ]
     );
+
+    return (int)$result;
   }
 
   public function getRawMessagesForNewsletter(NewsletterEntity $newsletter, string $topic): array {
