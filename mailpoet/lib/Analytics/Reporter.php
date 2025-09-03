@@ -185,6 +185,7 @@ class Reporter {
       'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
       'Open and click tracking' => $this->trackingConfig->isEmailTrackingEnabled(),
       'Tracking level' => $this->settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
+      'Logging level' => $this->settings->get('logging', 'errors'),
       'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
       'Number of active post notifications' => $newsletters['notifications_count'],
