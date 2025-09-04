@@ -11,7 +11,7 @@ class LogCleanup extends SimpleWorker {
   const DAYS_TO_KEEP_LOGS = 30;
   const BATCH_SIZE = 5000;
   const MAX_EXECUTION_TIME = 30;
-
+  const SUPPORT_MULTIPLE_INSTANCES = false;
   /** @var LogRepository */
   private $logRepository;
 
