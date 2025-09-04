@@ -105,4 +105,22 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
     verify($timeout)->equals(ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
   }
+
+  public function testItCanScheduleMultipleTasksOfSameType() {
+    $nextRunDate1 = Carbon::now()->addHour();
+    $nextRunDate2 = Carbon::now()->addDay();
+    
+    $task1 = $this->cronWorkerScheduler->scheduleMultiple('test', $nextRunDate1);
+    $task2 = $this->cronWorkerScheduler->scheduleMultiple('test', $nextRunDate2);
+    
+    $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
+    verify($tasks)->arrayCount(2);
+    
+    // Verify both tasks have the same type but different IDs and scheduled times
+    verify($task1->getType())->same('test');
+    verify($task2->getType())->same('test');
+    verify($task1->getId())->notEquals($task2->getId());
+    verify($task1->getScheduledAt())->same($nextRunDate1);
+    verify($task2->getScheduledAt())->same($nextRunDate2);
+  }
 }

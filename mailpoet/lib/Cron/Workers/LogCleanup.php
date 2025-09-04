@@ -12,6 +12,7 @@ class LogCleanup extends SimpleWorker {
   const BATCH_SIZE = 5000;
   const MAX_EXECUTION_TIME = 30;
   const SUPPORT_MULTIPLE_INSTANCES = false;
+
   /** @var LogRepository */
   private $logRepository;
 
@@ -65,7 +66,7 @@ class LogCleanup extends SimpleWorker {
         $scheduleDate->addDay();
       }
 
-      $this->cronWorkerScheduler->schedule(static::TASK_TYPE, $scheduleDate);
+      $this->cronWorkerScheduler->scheduleMultiple(static::TASK_TYPE, $scheduleDate);
     }
   }
 

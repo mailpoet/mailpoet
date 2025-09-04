@@ -38,6 +38,15 @@ class CronWorkerScheduler {
     if ($alreadyScheduled) {
       return $alreadyScheduled;
     }
+    return $this->createAndPersistTask($taskType, $nextRunDate, $priority);
+  }
+
+  public function scheduleMultiple($taskType, $nextRunDate, $priority = ScheduledTaskEntity::PRIORITY_LOW): ScheduledTaskEntity {
+    // Allow multiple tasks of the same type with different run dates
+    return $this->createAndPersistTask($taskType, $nextRunDate, $priority);
+  }
+
+  private function createAndPersistTask($taskType, $nextRunDate, $priority): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
     $task->setType($taskType);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
