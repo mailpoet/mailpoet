@@ -143,7 +143,7 @@ class DynamicSegments {
           ]
         );
 
-        if (!isset($attributeTerms['errors'])) {
+        if ((!$attributeTerms instanceof \WP_Error) && !isset($attributeTerms['errors'])) {
           $data['product_attributes'][$taxonomy] = [ // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
             'id' => $attribute->attribute_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
             'label' => $attribute->attribute_label, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
