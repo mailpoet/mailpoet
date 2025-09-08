@@ -196,10 +196,10 @@ class CaptchaFormRenderer {
 
     $formHtml .= '<div class="mailpoet_form_hide_on_success">';
     $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<img class="mailpoet_captcha" src="' . $this->wp->escAttr($captchaUrl) . '" width="' . $this->wp->escAttr($width) . '" height="' . $this->wp->escAttr($height) . '" title="' . esc_attr__('CAPTCHA', 'mailpoet') . '" />';
+    $formHtml .= '<img class="mailpoet_captcha" src="' . $this->wp->escUrl($captchaUrl) . '" width="' . $this->wp->escAttr($width) . '" height="' . $this->wp->escAttr($height) . '" title="' . esc_attr__('CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($reloadIcon) . '" alt="" /></button>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($playIcon) . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($reloadIcon) . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($playIcon) . '" alt="" /></button>';
     $formHtml .= '<audio class="mailpoet_captcha_player">';
     $formHtml .= '<source src="' . $this->wp->escUrl($mp3CaptchaUrl) . '" type="audio/mpeg">';
     $formHtml .= '</audio>';
