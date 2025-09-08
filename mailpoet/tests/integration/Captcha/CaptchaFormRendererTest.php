@@ -209,4 +209,128 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $result = $testee->render($data);
     $this->assertStringContainsString('value="Subscribe"', $result);
   }
+
+  public function testItEscapesHtmlAttributesInHiddenFields(): void {
+    $sessionId = 'test"&session';
+    $actionUrl = 'https://example.com/?param=value&other=test';
+    $fieldName = 'field"name';
+    $fieldValue = 'value"&test';
+
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'referrer_form_url' => $actionUrl,
+      'wp-submit' => 'Register',
+      $fieldName => $fieldValue,
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($data);
+
+    $this->assertStringContainsString('value="test&quot;&amp;session"', $result);
+    $this->assertStringContainsString('action="https://example.com/?param=value&#038;other=test"', $result);
+    $this->assertStringContainsString('name="field&quot;name"', $result);
+    $this->assertStringContainsString('value="value&quot;&amp;test"', $result);
+  }
+
+  public function testItEscapesSuccessAndErrorMessages(): void {
+    $formRepository = $this->diContainer->get(FormsRepository::class);
+    $form = new FormEntity('captcha-render-test-form');
+
+    $successMessage = 'Success! <script>alert("test")</script>';
+    $form->setBody([
+      [
+        'id' => 'email',
+        'type' => 'text',
+      ],
+      [
+        'type' => 'submit',
+        'params' => [
+          'label' => 'Subscribe',
+        ],
+      ],
+    ]);
+
+    $form->setSettings([
+      'success_message' => $successMessage,
+    ]);
+
+    $form->setId(1);
+    $formRepository->persist($form);
+    $formRepository->flush();
+
+    $sessionId = '123';
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
+
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($data);
+
+    $this->assertStringContainsString('Success! &lt;script&gt;alert(&quot;test&quot;)&lt;/script&gt;', $result);
+    $this->assertStringNotContainsString('<script>alert("test")</script>', $result);
+  }
+
+  public function testItEscapesReferrerFormUrlProperly(): void {
+    $sessionId = 'test-session';
+
+    $maliciousUrl = 'https://example.com/register?param=value"onload=alert(1)&other=test';
+
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'referrer_form_url' => $maliciousUrl,
+      'wp-submit' => 'Register',
+      'user_login' => 'testuser',
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($data);
+
+    $this->assertStringContainsString('action="https://example.com/register?param=valueonload=alert(1)&#038;other=test"', $result);
+    $this->assertStringNotContainsString('param=value"onload', $result);
+    $this->assertStringNotContainsString('action="https://example.com/register?param=value"onload', $result);
+    $this->assertStringNotContainsString('name="referrer_form_url"', $result);
+    $this->assertStringContainsString('name="user_login" value="testuser"', $result);
+  }
+
+  public function testItValidatesReferrerFormTypes(): void {
+    $sessionId = 'test-session';
+
+    // Test with invalid referrer_form - should return false
+    $invalidData = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => 'invalid_type',
+      'referrer_form_url' => 'https://example.com',
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($invalidData);
+
+    // Should return false for invalid referrer_form
+    $this->assertFalse($result);
+
+    // Test with valid referrer_form types
+    $validTypes = [
+      CaptchaUrlFactory::REFERER_WP_FORM,
+      CaptchaUrlFactory::REFERER_WC_FORM,
+    ];
+
+    foreach ($validTypes as $validType) {
+      $validData = [
+        'captcha_session_id' => $sessionId,
+        'referrer_form' => $validType,
+        'referrer_form_url' => 'https://example.com',
+        'wp-submit' => 'Register',
+      ];
+
+      $result = $testee->render($validData);
+      $this->assertIsString($result);
+      $this->assertStringContainsString('<form', $result);
+    }
+  }
 }

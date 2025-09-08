@@ -102,7 +102,7 @@ class CaptchaFormRenderer {
     $hiddenFields .= '<input type="hidden" name="api_version" value="v1" />';
     $hiddenFields .= '<input type="hidden" name="endpoint" value="subscribers" />';
     $hiddenFields .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
-    $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $this->wp->escAttr($redirectUrl) . '" />';
+    $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $this->wp->escUrl($redirectUrl) . '" />';
 
     $actionUrl = admin_url('admin-post.php?action=mailpoet_subscription_form');
 
@@ -131,7 +131,7 @@ class CaptchaFormRenderer {
 
     unset($data['referrer_form']);
     foreach ($data as $key => $value) {
-      $hiddenFields .= '<input type="hidden" name="' . $key . '" value="' . $this->wp->escAttr($value) . '" />';
+      $hiddenFields .= '<input type="hidden" name="' . $this->wp->escAttr($key) . '" value="' . $this->wp->escAttr($value) . '" />';
     }
 
     $submitLabel = $data[$submitLabelKey] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
@@ -182,7 +182,7 @@ class CaptchaFormRenderer {
       $classes = 'mailpoet_captcha_form';
     }
 
-    $formHtml = '<form method="POST" action="' . $this->wp->escAttr($actionUrl) . '" class="' . $this->wp->escAttr($classes) . '" id="mailpoet_captcha_form" novalidate>';
+    $formHtml = '<form method="POST" action="' . $this->wp->escUrl($actionUrl) . '" class="' . $this->wp->escAttr($classes) . '" id="mailpoet_captcha_form" novalidate>';
     $formHtml .= $hiddenFields;
 
     $width = 220;
@@ -199,7 +199,7 @@ class CaptchaFormRenderer {
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($reloadIcon) . '" alt="" /></button>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escAttr($playIcon) . '" alt="" /></button>';
     $formHtml .= '<audio class="mailpoet_captcha_player">';
-    $formHtml .= '<source src="' . $this->wp->escAttr($mp3CaptchaUrl) . '" type="audio/mpeg">';
+    $formHtml .= '<source src="' . $this->wp->escUrl($mp3CaptchaUrl) . '" type="audio/mpeg">';
     $formHtml .= '</audio>';
 
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);
