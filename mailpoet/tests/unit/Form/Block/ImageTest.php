@@ -52,6 +52,7 @@ class ImageTest extends \MailPoetUnitTest {
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
     $this->wpMock->method('escHtml')->will($this->returnArgument(0));
+    $this->wpMock->method('escUrl')->will($this->returnArgument(0));
     $this->htmlSanitizerMock = $this->createMock(FormHtmlSanitizer::class);
     $this->htmlSanitizerMock->method('sanitize')->will($this->returnArgument(0));
     $this->image = new Image($this->wpMock, $this->htmlSanitizerMock);
@@ -124,5 +125,42 @@ class ImageTest extends \MailPoetUnitTest {
     $block['params']['url'] = '';
     $html = $this->image->render($block);
     verify($html)->equals('');
+  }
+
+  public function testItEscapesUrlsProperlyInLinks() {
+    // Create a fresh mock to override the default behavior
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $wpMock->method('escHtml')->will($this->returnArgument(0));
+    
+    $imageUrl = 'http://example.com/image.jpg';
+    $maliciousHref = 'http://example.com?param=value"onload=alert(1)&other=test';
+    $escapedHref = 'http://example.com?param=valueonload=alert(1)&other=test';
+    
+    // Mock escUrl to handle both image src and link href
+    $wpMock
+      ->method('escUrl')
+      ->willReturnMap([
+        [$imageUrl, $imageUrl], // Image src
+        [$maliciousHref, $escapedHref], // Link href
+      ]);
+    
+    $image = new Image($wpMock, $this->htmlSanitizerMock);
+    
+    $block = $this->block;
+    $block['params']['id'] = null;
+    $block['params']['url'] = $imageUrl;
+    $block['params']['href'] = $maliciousHref;
+    
+    $html = $image->render($block);
+    
+    // Verify the href is properly escaped
+    $figure = $this->htmlParser->getElementByXpath($html, '//figure');
+    $link = $this->htmlParser->getChildElement($figure, 'a');
+    $linkHref = $this->htmlParser->getAttribute($link, 'href');
+    
+    // Should contain the escaped version without dangerous quotes
+    verify($linkHref->value)->equals($escapedHref);
+    verify($linkHref->value)->stringNotContainsString('"onload');
   }
 }
