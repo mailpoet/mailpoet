@@ -63,11 +63,12 @@ class CaptchaFormRenderer {
       return false;
     }
 
-    if ($data['referrer_form'] == CaptchaUrlFactory::REFERER_MP_FORM) {
+    $ref = $data['referrer_form'] ?? null;
+    if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
       return $this->renderFormInSubscriptionForm($sessionId);
-    } elseif ($data['referrer_form'] == CaptchaUrlFactory::REFERER_WP_FORM) {
+    } elseif ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
       return $this->renderFormInWPRegisterForm($data, 'wp-submit');
-    } elseif ($data['referrer_form'] == CaptchaUrlFactory::REFERER_WC_FORM) {
+    } elseif ($ref === CaptchaUrlFactory::REFERER_WC_FORM) {
       return $this->renderFormInWPRegisterForm($data, 'register');
     }
 
@@ -131,6 +132,7 @@ class CaptchaFormRenderer {
 
     unset($data['referrer_form']);
     foreach ($data as $key => $value) {
+      if (!is_scalar($value)) continue;
       $hiddenFields .= '<input type="hidden" name="' . $this->wp->escAttr($key) . '" value="' . $this->wp->escAttr($value) . '" />';
     }
 
@@ -226,8 +228,10 @@ class CaptchaFormRenderer {
     $settings = $formModel->getSettings() ?? [];
     $errorMessage = __('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet');
 
+    $success = isset($settings['success_message']) ? (string)$settings['success_message'] : '';
+
     $formHtml = '<div class="mailpoet_message" role="alert" aria-live="assertive">';
-    $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $this->wp->escHtml($settings['success_message']) . '</p>';
+    $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $this->wp->escHtml($success) . '</p>';
     $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . $this->wp->escHtml($errorMessage) . '</p>';
     $formHtml .= '</div>';
 

@@ -321,11 +321,12 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     ];
 
     foreach ($validTypes as $validType) {
+      $submitKey = ($validType === CaptchaUrlFactory::REFERER_WC_FORM) ? 'register' : 'wp-submit';
       $validData = [
         'captcha_session_id' => $sessionId,
         'referrer_form' => $validType,
         'referrer_form_url' => 'https://example.com',
-        'wp-submit' => 'Register',
+        $submitKey => 'Register',
       ];
 
       $result = $testee->render($validData);
