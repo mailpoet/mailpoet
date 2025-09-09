@@ -339,7 +339,7 @@ class NewsletterListNotificationComponent extends Component {
         <td className={rowClasses}>
           <a
             className="mailpoet-listing-title"
-            href={MailPoet.getTheEmailEditorUrl(newsletter)}
+            href={MailPoet.getActiveEmailEditorUrl(newsletter)}
             onClick={(event) => {
               event.preventDefault();
               confirmEdit(newsletter);

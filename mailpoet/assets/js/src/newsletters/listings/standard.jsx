@@ -109,7 +109,7 @@ const bulkActions = [
 ];
 
 const confirmEdit = (newsletter) => {
-  const editorHref = MailPoet.getTheEmailEditorUrl(newsletter);
+  const editorHref = MailPoet.getActiveEmailEditorUrl(newsletter);
 
   if (
     !newsletter.queue ||

@@ -29,7 +29,7 @@ const getNewsletterEditorUrl = (
     : `${base}&id=${id}`;
 };
 
-const getTheEmailEditorUrl = (
+const getActiveEmailEditorUrl = (
   newsletter: NewsletterType,
   context = '',
 ): string => {
@@ -123,7 +123,7 @@ export const MailPoet = {
     window?.mailpoet_use_block_email_editor_for_automation_emails ?? false,
   getBlockEmailEditorUrl,
   getNewsletterEditorUrl,
-  getTheEmailEditorUrl,
+  getActiveEmailEditorUrl,
 } as const;
 
 declare global {

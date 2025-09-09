@@ -33,7 +33,7 @@ const redirectToNewsletterHome = () => {
 };
 
 const getEditorLink = (newsletter: NewsletterType) =>
-  MailPoet.getTheEmailEditorUrl(newsletter);
+  MailPoet.getActiveEmailEditorUrl(newsletter);
 
 const editNewsletter = (newsletter: NewsletterType) => {
   const editorHref = getEditorLink(newsletter);

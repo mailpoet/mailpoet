@@ -22,7 +22,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Enable block email editor for automation newsletters in settings');
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Use block email editor for automation eamils');
+    $i->waitForText('Use block email editor for automation emails');
     $i->click('[data-automation-id="block-editor-for-automation-enabled"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
@@ -117,7 +117,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Ensure block email editor for automation newsletters is disabled');
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Use block email editor for automation eamils');
+    $i->waitForText('Use block email editor for automation emails');
     $i->click('[data-automation-id="block-editor-for-automation-disabled"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');

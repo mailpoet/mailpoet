@@ -163,10 +163,17 @@ class NewsletterSaveController {
     if (!isset($data['new_editor'])) {
       return false;
     }
-    if (is_string($data['new_editor'])) {
-      return strtolower(trim($data['new_editor'])) === 'true';
+
+    $value = $data['new_editor'];
+
+    if (is_bool($value)) return $value;
+    if (is_int($value)) return $value === 1;
+    if (is_string($value)) {
+      $norm = strtolower(trim($value));
+      if (in_array($norm, ['1', 'true', 'yes', 'on'], true)) return true;
+      if (in_array($norm, ['0', 'false', 'no', 'off', ''], true)) return false;
     }
-    return (bool)$data['new_editor'];
+    return (bool)$value;
   }
 
   private function sanitizeAutomationEmailData(array $data, NewsletterEntity $newsletter): array {
