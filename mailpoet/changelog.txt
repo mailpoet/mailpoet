@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.14.2 - 2025-09-09 =
+* Improved: Optimized log cleanup by moving it to a dedicated recurring task.;
+* Improved: Enhanced CAPTCHA form HTML output processing;
+* Fixed: Invalid product attributes may break the Segments page.
+
 = 5.14.1 - 2025-09-01 =
 * Improved: Use specific version when downloading premium plugin.
 
