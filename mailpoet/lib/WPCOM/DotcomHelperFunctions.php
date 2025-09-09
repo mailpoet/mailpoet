@@ -48,6 +48,40 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_ecommerce_plan') && wc_calypso_bridge_is_ecommerce_plan();
   }
 
+  public function isGarden(): bool {
+    if (!function_exists('is_blog_garden')) {
+      return false;
+    }
+    $blog_id = \get_current_blog_id();
+    $site = function_exists('get_site')
+      ? \get_site($blog_id)
+      : (function_exists('get_blog_details') ? \get_blog_details($blog_id) : null);
+    return $site ? \is_blog_garden($site) : false;
+  }
+
+  protected function getSiteMetaValue(string $meta_key): ?string {
+    if (!function_exists('get_site_meta')) {
+      return null;
+    }
+    $blog_id = \get_current_blog_id();
+    $value = \get_site_meta($blog_id, $meta_key, true);
+    return is_string($value) && $value !== '' ? $value : null;
+  }
+
+  public function gardenName(): ?string {
+    if (!$this->isGarden()) {
+      return null;
+    }
+    return $this->getSiteMetaValue('garden_name');
+  }
+
+  public function gardenPartner(): ?string {
+    if (!$this->isGarden()) {
+      return null;
+    }
+    return $this->getSiteMetaValue('garden_partner');
+  }
+
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.

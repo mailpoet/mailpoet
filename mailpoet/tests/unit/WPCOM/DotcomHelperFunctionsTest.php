@@ -60,4 +60,72 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     $dotcomHelper->method('isEcommerce')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('ecommerce');
   }
+
+  public function testIsGardenReturnsFalseWhenFunctionDoesNotExist() {
+    verify($this->dotcomHelper->isGarden())->false();
+  }
+
+  public function testGardenNameReturnsNullWhenNotGarden() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
+    $dotcomHelper->method('isGarden')->willReturn(false);
+    verify($dotcomHelper->gardenName())->null();
+  }
+
+  public function testGardenNameReturnsNullWhenGetSiteMetaNotAvailable() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+
+    // Mock getSiteMetaValue to return null when get_site_meta is not available
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
+
+    verify($dotcomHelper->gardenName())->null();
+  }
+
+  public function testGardenNameReturnsNullWhenMetaValueIsEmpty() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
+
+    verify($dotcomHelper->gardenName())->null();
+  }
+
+  public function testGardenNameReturnsValueWhenMetaValueIsValid() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn('My Garden');
+
+    verify($dotcomHelper->gardenName())->equals('My Garden');
+  }
+
+  public function testGardenPartnerReturnsNullWhenNotGarden() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
+    $dotcomHelper->method('isGarden')->willReturn(false);
+    verify($dotcomHelper->gardenPartner())->null();
+  }
+
+  public function testGardenPartnerReturnsNullWhenGetSiteMetaNotAvailable() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
+
+    verify($dotcomHelper->gardenPartner())->null();
+  }
+
+  public function testGardenPartnerReturnsNullWhenMetaValueIsEmpty() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
+
+    verify($dotcomHelper->gardenPartner())->null();
+  }
+
+  public function testGardenPartnerReturnsValueWhenMetaValueIsValid() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getSiteMetaValue')->willReturn('Partner Name');
+
+    verify($dotcomHelper->gardenPartner())->equals('Partner Name');
+  }
 }
