@@ -120,7 +120,7 @@ export const MailPoet = {
   isDotcom: window.mailpoet_is_dotcom,
   cronTriggerMethod: window.mailpoet_cron_trigger_method,
   useBlockEmailEditorForAutomationNewsletter:
-    window?.mailpoet_use_block_email_editor_for_automation_newsletter ?? false,
+    window?.mailpoet_use_block_email_editor_for_automation_emails ?? false,
   getBlockEmailEditorUrl,
   getNewsletterEditorUrl,
   getTheEmailEditorUrl,

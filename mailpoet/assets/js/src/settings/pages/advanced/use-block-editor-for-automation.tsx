@@ -5,7 +5,7 @@ import { Label, Inputs } from 'settings/components';
 
 export function UseBlockEditorForAutomation() {
   const [enabled, setEnabled] = useSetting(
-    'use_block_email_editor_for_automation_newsletter',
+    'use_block_email_editor_for_automation_emails',
     'enabled',
   );
 

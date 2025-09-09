@@ -135,7 +135,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
           <Actions
             id={email.id}
             previewUrl={email.previewUrl}
-            wpPostId={email?.wpPostId ?? 0}
+            wpPostId={email?.wpPostId ?? null}
           />
         ),
         value: null,

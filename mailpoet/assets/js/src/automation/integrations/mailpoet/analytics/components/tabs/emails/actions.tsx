@@ -13,7 +13,7 @@ const getEditorLink = (id: number, wpPostId?: number) => {
 type ActionsProps = {
   id: number;
   previewUrl: string;
-  wpPostId?: number;
+  wpPostId?: number | null;
 };
 export function Actions({
   id,

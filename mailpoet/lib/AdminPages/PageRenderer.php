@@ -207,7 +207,7 @@ class PageRenderer {
       'display_chatbot_widget' => $this->displayChatBotWidget(),
       'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'cron_trigger_method' => $this->settings->get('cron_trigger.method'),
-      'use_block_email_editor_for_automation_newsletter' => $this->useBlockEmailEditorForAutomationNewsletter(),
+      'use_block_email_editor_for_automation_emails' => $this->useBlockEmailEditorForAutomationNewsletter(),
     ];
 
     if (!$defaults['premium_plugin_active']) {
@@ -259,8 +259,8 @@ class PageRenderer {
   }
 
   public function useBlockEmailEditorForAutomationNewsletter(): bool {
-    $default = $this->settings->get('use_block_email_editor_for_automation_newsletter.enabled') === '1';
-    $status = $this->wp->applyFilters('mailpoet_use_block_email_editor_for_automation_newsletter', $default);
+    $default = $this->settings->get('use_block_email_editor_for_automation_emails.enabled') === '1';
+    $status = $this->wp->applyFilters('mailpoet_use_block_email_editor_for_automation_emails', $default);
     return (bool)$status;
   }
 }

@@ -54,7 +54,7 @@ export type Settings = {
   '3rd_party_libs': {
     enabled: '' | '1';
   };
-  use_block_email_editor_for_automation_newsletter: {
+  use_block_email_editor_for_automation_emails: {
     enabled: '' | '1';
   };
   send_transactional_emails: '' | '1';
