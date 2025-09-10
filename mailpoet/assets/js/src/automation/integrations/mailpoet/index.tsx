@@ -20,17 +20,25 @@ import { step as WpUserRoleChangedTrigger } from './steps/wp-user-role-changed';
 // Insert new imports here
 
 export const initialize = (): void => {
+  const isGarden =
+    (window as { mailpoet_automation_context?: { is_garden?: boolean } })
+      .mailpoet_automation_context?.is_garden === true;
+
   registerStepType(SendEmailStep);
   registerStepType(WpUserRegisteredTrigger);
   registerStepType(WpUserRoleChangedTrigger);
   registerStepType(SomeoneSubscribesTrigger);
   registerStepType(CustomTriggerStep);
-  registerStepType(CustomActionStep);
-  registerStepType(AddTagsAction);
-  registerStepType(RemoveTagsAction);
-  registerStepType(AddToListStep);
-  registerStepType(RemoveFromListStep);
-  registerStepType(UpdateSubscriberStep);
+
+  if (!isGarden) {
+    registerStepType(CustomActionStep);
+    registerStepType(AddTagsAction);
+    registerStepType(RemoveTagsAction);
+    registerStepType(AddToListStep);
+    registerStepType(RemoveFromListStep);
+    registerStepType(UpdateSubscriberStep);
+  }
+
   registerStepType(UnsubscribeStep);
   registerStepType(NotificationEmail);
   registerStepType(TagAddedTrigger);
