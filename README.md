@@ -15,7 +15,8 @@
    2. [Available PHP versions](#available-php-versions)
    3. [Disabling the Tracy panel](#disabling-the-tracy-panel)
    4. [Running individual tests](#running-individual-tests)
-6. [TODO](#todo)
+6. [Code Formatting](#code-formatting)
+7. [TODO](#todo)
 
 ## MailPoet
 
@@ -209,6 +210,17 @@ cd ../mailpoet-premium # switch to premium plugin directory
 ```shell
 cd ./mailpoet-premium # switch to premium plugin directory on your local machine
 ./do test:acceptance --skip-deps --file tests/acceptance/PremiumCheckCest.php
+```
+
+## Code Formatting
+
+We use [Prettier](https://prettier.io/) to ensure consistent code formatting across the project.
+
+### Quick Commands
+
+```bash
+./do qa:prettier-write    # Format all files
+./do qa:prettier-check    # Check if files are properly formatted
 ```
 
 ## TODO
