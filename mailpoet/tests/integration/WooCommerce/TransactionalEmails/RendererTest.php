@@ -243,6 +243,117 @@ class RendererTest extends \MailPoetTest {
     verify($html)->equals('<h1 style="font-family:Arial;">Heading not in Woo</h1><p style="font-family:Verdana;">Content</p><h2 style="font-family:Arial;">Footer not in Woo</h2>');
   }
 
+  public function testItHandlesMaliciousFontFamilyValues() {
+    $maliciousFonts = [
+      'Arial" onload="alert(\'XSS\')" x="',
+      'Times" onclick="javascript:alert(1)" data="',
+      'Helvetica\' onmouseover=\'alert(1)\' x=\'',
+      'Verdana; background: url(javascript:alert(1));',
+    ];
+
+    foreach ($maliciousFonts as $maliciousFont) {
+      $this->newsletter->setBody([
+        'globalStyles' => [
+          'text' => ['fontFamily' => $maliciousFont],
+          'woocommerce' => ['isSavedWithUpdatedStyles' => true],
+        ],
+      ]);
+
+      $content = '
+        <div>Before Content</div>
+        <!--WooContent-->
+        <div style="color: red; font-family: Times;">Content with font</div>
+        <p style="font-family: Arial; color: blue;">More content</p>
+        <!--WooContent-->
+        <div>After Content</div>
+      ';
+
+      $result = $this->getRenderer(true)->updateRenderedContent($this->newsletter, $content);
+      $validator = $this->diContainer->get(\MailPoet\WooCommerce\TransactionalEmails\FontFamilyValidator::class);
+      $expected = $validator->validateFontFamily($maliciousFont);
+
+      // Verify dangerous attributes are not present
+      verify($result)->stringNotContainsString('onload=');
+      verify($result)->stringNotContainsString('onclick=');
+      verify($result)->stringNotContainsString('onmouseover=');
+      verify($result)->stringNotContainsString('javascript:');
+      verify($result)->stringNotContainsString('alert(');
+      
+      // Verify structure is preserved
+      verify($result)->stringContainsString('Before Content');
+      verify($result)->stringContainsString('After Content');
+      verify($result)->stringContainsString('font-family:' . $expected);
+    }
+  }
+
+  public function testItHandlesLegitimateCustomFonts() {
+    $legitimateFonts = [
+      'Arial',
+      'Times New Roman', 
+      'Helvetica, sans-serif',
+      'MyCustomFont123',
+      'Custom Web Font',
+    ];
+
+    foreach ($legitimateFonts as $font) {
+      $this->newsletter->setBody([
+        'globalStyles' => [
+          'text' => ['fontFamily' => $font],
+          'woocommerce' => ['isSavedWithUpdatedStyles' => true],
+        ],
+      ]);
+
+      $content = '
+        <div>Before</div>
+        <!--WooContent-->
+        <div style="font-family: Times;">Content</div>
+        <!--WooContent-->
+        <div>After</div>
+      ';
+
+      $result = $this->getRenderer(true)->updateRenderedContent($this->newsletter, $content);
+      verify($result)->stringContainsString('font-family:');
+      verify($result)->stringContainsString('Before');
+      verify($result)->stringContainsString('After');
+    }
+  }
+
+  public function testItHandlesEdgeCaseValues() {
+    // Test with empty font family
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'text' => ['fontFamily' => ''],
+        'woocommerce' => ['isSavedWithUpdatedStyles' => true],
+      ],
+    ]);
+
+    $content = '
+      <div>Before</div>
+      <!--WooContent-->
+      <div style="font-family: Arial;">Content</div>
+      <!--WooContent-->
+      <div>After</div>
+    ';
+
+    $result = $this->getRenderer(true)->updateRenderedContent($this->newsletter, $content);
+    verify($result)->stringContainsString('Arial');
+    verify($result)->stringContainsString('Before');
+    verify($result)->stringContainsString('After');
+
+    // Test with null font family
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'text' => ['fontFamily' => null],
+        'woocommerce' => ['isSavedWithUpdatedStyles' => true],
+      ],
+    ]);
+
+    $result = $this->getRenderer(true)->updateRenderedContent($this->newsletter, $content);
+    verify($result)->stringContainsString('Arial');
+    verify($result)->stringContainsString('Before');
+    verify($result)->stringContainsString('After');
+  }
+
   private function getNewsletterRenderer(): NewsletterRenderer {
     $wooPreprocessor = new ContentPreprocessor(Stub::make(
       \MailPoet\WooCommerce\TransactionalEmails::class,
@@ -273,10 +384,12 @@ class RendererTest extends \MailPoetTest {
 
   private function getRenderer($useNewsletterDI = false) {
     $newsletterRenderer = $useNewsletterDI ? $this->diContainer->get(NewsletterRenderer::class) : $this->getNewsletterRenderer();
+    $fontFamilyValidator = $this->diContainer->get(\MailPoet\WooCommerce\TransactionalEmails\FontFamilyValidator::class);
     return new Renderer(
       new csstidy,
       $newsletterRenderer,
-      $this->diContainer->get(NewsletterShortcodes::class)
+      $this->diContainer->get(NewsletterShortcodes::class),
+      $fontFamilyValidator
     );
   }
 

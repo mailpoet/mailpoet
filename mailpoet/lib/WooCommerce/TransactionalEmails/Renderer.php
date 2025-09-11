@@ -26,16 +26,21 @@ class Renderer {
   /** @var Shortcodes */
   private $shortcodes;
 
+  /** @var FontFamilyValidator */
+  private $fontFamilyValidator;
+
   public function __construct(
     csstidy $cssParser,
     NewsletterRenderer $renderer,
-    Shortcodes $shortcodes
+    Shortcodes $shortcodes,
+    FontFamilyValidator $fontFamilyValidator
   ) {
     $this->cssParser = $cssParser;
     $this->htmlBeforeContent = '';
     $this->htmlAfterContent = '';
     $this->renderer = $renderer;
     $this->shortcodes = $shortcodes;
+    $this->fontFamilyValidator = $fontFamilyValidator;
   }
 
   public function render(NewsletterEntity $newsletter, ?string $subject = null) {
@@ -82,15 +87,65 @@ class Renderer {
     }
     [$beforeWooContent, $wooContent, $afterWooContent] = $contentParts;
     $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
-    $replaceFontFamilyCallback = function ($matches) use ($fontFamily) {
-      $pattern = '/font-family\s*:\s*[^;]+;/i';
-      $style = $matches[1];
-      $style = preg_replace($pattern, "font-family:$fontFamily;", $style);
-      return 'style="' . esc_attr($style) . '"';
-    };
-    $stylePattern = '/style="(.*?)"/i';
-    $wooContent = (string)preg_replace_callback($stylePattern, $replaceFontFamilyCallback, $wooContent);
+
+    // Only replace font family if user provided a custom font
+    if (!empty($fontFamily)) {
+      // Validate and sanitize font family
+      $safeFontFamily = $this->fontFamilyValidator->validateFontFamily($fontFamily);
+      $wooContent = $this->replaceFontFamily($wooContent, $safeFontFamily);
+    }
+    
     return implode('', [$beforeWooContent, $wooContent, $afterWooContent]);
+  }
+
+  private function replaceFontFamily(string $content, string $fontFamily): string {
+    $processor = new \WP_HTML_Tag_Processor($content);
+
+    // Process all tags that might have style attributes
+    while ($processor->next_tag()) {
+      $styleAttr = $processor->get_attribute('style');
+      if (empty($styleAttr)) {
+        continue;
+      }
+
+      // Fast path: avoid parsing when no font-family present
+      if (stripos($styleAttr, 'font-family') === false) {
+        continue;
+      }
+
+      // Use CSS parser for CSS manipulation
+      // Wrap inline style in a selector so csstidy can parse it properly
+      $cssParser = new csstidy();
+      $cssParser->settings['compress_colors'] = false;
+      $cssParser->settings['remove_last_;'] = false;
+      $cssParser->parse('x { ' . $styleAttr . ' }');
+
+      // Update font-family in parsed CSS
+      $updated = false;
+      foreach ($cssParser->css as $index => $rules) {
+        foreach ($rules as $selector => $properties) {
+          if (isset($properties['font-family'])) {
+            $properties['font-family'] = $fontFamily;
+            $cssParser->css[$index][$selector] = $properties;
+            $updated = true;
+          }
+        }
+      }
+
+      // Only update the attribute if we made changes
+      if ($updated) {
+        /** @var csstidy_print $print */
+        $print = $cssParser->print;
+        $fullCss = $print->plain();
+        // Extract the properties from "x { ... }" format
+        if (preg_match('/x\s*{\s*(.*)\s*}/s', $fullCss, $matches)) {
+          $updatedStyle = trim($matches[1]);
+          $processor->set_attribute('style', $updatedStyle);
+        }
+      }
+    }
+
+    return $processor->get_updated_html();
   }
 
   /**
@@ -142,8 +197,8 @@ class Renderer {
    */
   private function prepareNewsletterForRendering(NewsletterEntity $newsletter): NewsletterEntity {
     $newsletterClone = clone($newsletter);
-    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
-    if ($headingFontFamily) {
+    $headingFontFamily = $this->fontFamilyValidator->validateFontFamily($newsletter->getGlobalStyle('woocommerce', 'headingFontFamily'));
+    if ($headingFontFamily !== FontFamilyValidator::DEFAULT_FONT_FAMILY) {
       $newsletterClone->setGlobalStyle('h1', 'fontFamily', $headingFontFamily);
       $newsletterClone->setGlobalStyle('h2', 'fontFamily', $headingFontFamily);
       $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
@@ -169,14 +224,16 @@ class Renderer {
     if (!is_array($properties)) {
       $properties = [];
     }
-    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
-    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
+    $fontFamilyRaw = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $headingFontFamilyRaw = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
+    $fontFamily = $fontFamilyRaw !== null ? $this->fontFamilyValidator->validateFontFamily($fontFamilyRaw) : null;
+    $headingFontFamily = $headingFontFamilyRaw !== null ? $this->fontFamilyValidator->validateFontFamily($headingFontFamilyRaw) : null;
     $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
     $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
     $contentHeadingColor = $newsletter->getGlobalStyle('woocommerce', 'contentHeadingFontColor') ?? $brandingColor;
 
     // Update font family if it's set in the editor
-    if ($fontFamily && !empty($properties['font-family'])) {
+    if (!empty($fontFamilyRaw) && !empty($properties['font-family'])) {
       $properties['font-family'] = $fontFamily;
     }
     // Update font size for inner content
@@ -191,7 +248,7 @@ class Renderer {
       if ($headingFontSize && ($selectors === $heading)) {
         $properties['font-size'] = $headingFontSize;
       }
-      if ($headingFontFamily && ($selectors === $heading)) {
+      if (!empty($headingFontFamilyRaw) && ($selectors === $heading)) {
         $properties['font-family'] = $headingFontFamily;
       }
       if ($contentHeadingColor && ($selectors === $heading)) {
