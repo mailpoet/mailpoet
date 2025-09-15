@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.14.3 - 2025-09-15 =
+* Added: Enable support for creating and editing Automation newsletters with the block email editor.;
+* Updated: Update the email editor version.
+
 = 5.14.2 - 2025-09-09 =
 * Improved: Optimized log cleanup by moving it to a dedicated recurring task.;
 * Improved: Enhanced CAPTCHA form HTML output processing;
