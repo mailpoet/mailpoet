@@ -74,7 +74,7 @@ class SwitchingLanguagesCest {
         // Wait before clicking the update button to prevent triggering too many requests too translate.wordpress.com within one second
         $i->wait(1);
         $i->click('Übersetzungen aktualisieren');
-        $i->waitForText('Weiter zur WordPress-Aktualisierungs-Seite');
+        $i->waitForText('Zur WordPress-Aktualisierungsseite');
         break;
       } catch (ElementNotFound $e) {
         // translations are not yet scheduled for update, or are already up-to-date
