@@ -59,8 +59,30 @@ namespace {
     }
   }
 
+
+  if (!class_exists(\WC_Bookings_Data::class)) {
+    class WC_Bookings_Data {
+    }
+  }
+
   if (!class_exists(\WC_Booking::class)) {
-    class WC_Booking extends WC_Order {
+    class WC_Booking extends WC_Bookings_Data {
+      public function get_id() {
+        return 1;
+      }
+
+      public function get_status( $context = 'view' ) {
+        return 'pending';
+      }
+
+      public function get_date_created() {
+        return 1;
+      }
+
+      public function get_date_modified() {
+        return 1;
+      }
+
       public function get_persons() {
         return 2;
       }
@@ -75,6 +97,17 @@ namespace {
 
       public function get_end() {
         return 8;
+      }
+
+      /**
+       * @return WC_Order|Boolean
+       */
+      public function get_order() {
+        return true;
+      }
+
+      public function get_customer_id() {
+        return 1;
       }
     }
   }
