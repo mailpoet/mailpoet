@@ -4,8 +4,7 @@ import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
 const keywords = [
-  // translators: noun, used as a search keyword for "WordPress user registers" trigger
-  __('wordpress', 'mailpoet'),
+  'WordPress',
   // translators: noun, used as a search keyword for "WordPress user registers" trigger
   __('user', 'mailpoet'),
   // translators: verb, used as a search keyword for "WordPress user registers" trigger

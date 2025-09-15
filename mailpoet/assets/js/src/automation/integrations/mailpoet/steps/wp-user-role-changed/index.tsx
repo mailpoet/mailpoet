@@ -5,8 +5,7 @@ import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 
 const keywords = [
-  // translators: used as a search keyword for "WordPress user role changes" automation trigger
-  __('wordpress', 'mailpoet'),
+  'WordPress',
   // translators: used as a search keyword for "WordPress user role changes" automation trigger
   __('user', 'mailpoet'),
   // translators: used as a search keyword for "WordPress user role changes" automation trigger
