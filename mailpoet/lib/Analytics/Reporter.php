@@ -213,6 +213,7 @@ class Reporter {
       'Plugin > WooCommerce Email Customizer' => $this->wp->isPluginActive('woocommerce-email-customizer/woocommerce-email-customizer.php'),
       'Plugin > WooCommerce Memberships' => $this->wp->isPluginActive('woocommerce-memberships/woocommerce-memberships.php'),
       'Plugin > WooCommerce MailChimp' => $this->wp->isPluginActive('woocommerce-mailchimp/woocommerce-mailchimp.php'),
+      'Plugin > WooCommerce Bookings' => $this->wp->isPluginActive('woocommerce-bookings/woocommerce-bookings.php'),
       'Plugin > MailChimp for WooCommerce' => $this->wp->isPluginActive('mailchimp-for-woocommerce/mailchimp-woocommerce.php'),
       'Plugin > The Event Calendar' => $this->wp->isPluginActive('the-events-calendar/the-events-calendar.php'),
       'Plugin > Gravity Forms' => $this->wp->isPluginActive('gravityforms/gravityforms.php'),
