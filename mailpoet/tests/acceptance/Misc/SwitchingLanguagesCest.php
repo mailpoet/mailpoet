@@ -74,7 +74,8 @@ class SwitchingLanguagesCest {
         // Wait before clicking the update button to prevent triggering too many requests too translate.wordpress.com within one second
         $i->wait(1);
         $i->click('Übersetzungen aktualisieren');
-        $i->waitForText('Zur WordPress-Aktualisierungsseite');
+        // Covers both current and old German translations of the "Go to WordPress Updates page" link, to ensure compatibility with WordPress 6.7.2 and older translations.
+        $i->waitForElement(['xpath' => "//*[text()='Zur WordPress-Aktualisierungsseite' or text()='Weiter zur WordPress-Aktualisierungs-Seite']"]);
         break;
       } catch (ElementNotFound $e) {
         // translations are not yet scheduled for update, or are already up-to-date
