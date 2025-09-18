@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Monolog\Logger as MonologLogger;
 
 /**
@@ -14,9 +15,40 @@ use MailPoetVendor\Monolog\Logger as MonologLogger;
 class Logger implements Email_Editor_Logger_Interface {
 
   private MonologLogger $mailpoetLogger;
+  private SettingsController $settings;
 
   public function __construct() {
     $this->mailpoetLogger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR);
+    $this->settings = SettingsController::getInstance();
+  }
+
+  /**
+   * Determines if a log level should be logged based on MailPoet settings and WP_DEBUG.
+   *
+   * @param int $level The Monolog log level constant
+   * @return bool True if the log level should be logged, false otherwise
+   */
+  private function shouldLogLevel(int $level): bool {
+    $mailpoetLogLevel = $this->settings->get('logging', 'errors');
+    
+    if ($mailpoetLogLevel === 'nothing') {
+      return false;
+    }
+
+    if ($mailpoetLogLevel === 'errors') {
+      return $level >= MonologLogger::ERROR;
+    }
+    
+    if ($mailpoetLogLevel === 'everything') {
+      if (defined('WP_DEBUG') && WP_DEBUG) {
+        return $level >= MonologLogger::DEBUG;
+      }
+
+      // If WP_DEBUG is disabled, log INFO level and above to reduce log entries.
+      return $level >= MonologLogger::INFO;
+    }
+    
+    return $level >= MonologLogger::ERROR;
   }
 
   /**
@@ -27,7 +59,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function emergency(string $message, array $context = []): void {
-    $this->mailpoetLogger->emergency($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::EMERGENCY)) {
+      $this->mailpoetLogger->emergency($message, $context);
+    }
   }
 
   /**
@@ -38,7 +72,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function alert(string $message, array $context = []): void {
-    $this->mailpoetLogger->alert($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::ALERT)) {
+      $this->mailpoetLogger->alert($message, $context);
+    }
   }
 
   /**
@@ -49,7 +85,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function critical(string $message, array $context = []): void {
-    $this->mailpoetLogger->critical($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::CRITICAL)) {
+      $this->mailpoetLogger->critical($message, $context);
+    }
   }
 
   /**
@@ -60,7 +98,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function error(string $message, array $context = []): void {
-    $this->mailpoetLogger->error($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::ERROR)) {
+      $this->mailpoetLogger->error($message, $context);
+    }
   }
 
   /**
@@ -71,7 +111,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function warning(string $message, array $context = []): void {
-    $this->mailpoetLogger->warning($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::WARNING)) {
+      $this->mailpoetLogger->warning($message, $context);
+    }
   }
 
   /**
@@ -82,7 +124,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function notice(string $message, array $context = []): void {
-    $this->mailpoetLogger->notice($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::NOTICE)) {
+      $this->mailpoetLogger->notice($message, $context);
+    }
   }
 
   /**
@@ -93,7 +137,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function info(string $message, array $context = []): void {
-    $this->mailpoetLogger->info($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::INFO)) {
+      $this->mailpoetLogger->info($message, $context);
+    }
   }
 
   /**
@@ -104,7 +150,9 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function debug(string $message, array $context = []): void {
-    $this->mailpoetLogger->debug($message, $context);
+    if ($this->shouldLogLevel(MonologLogger::DEBUG)) {
+      $this->mailpoetLogger->debug($message, $context);
+    }
   }
 
   /**
@@ -116,7 +164,14 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function log(string $level, string $message, array $context = []): void {
-    /** @phpstan-ignore-next-line PHPStan reports string in level as an error but it's okay */
-    $this->mailpoetLogger->log($level, $message, $context);
+    if (!in_array($level, MonologLogger::getLevels()) && !is_numeric($level)) {
+      $level = MonologLogger::DEBUG;
+    }
+    /** @phpstan-ignore-next-line We check above that it's valid monolog level */
+    $monologLevel = MonologLogger::toMonologLevel($level);
+    if ($this->shouldLogLevel($monologLevel)) {
+      /** @phpstan-ignore-next-line PHPStan reports string in level as an error but it's okay */
+      $this->mailpoetLogger->log($level, $message, $context);
+    }
   }
 }
