@@ -356,4 +356,12 @@ class Helper {
     }
     return \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled('email_improvements');
   }
+
+  public function wcPlaceholderImgSrc(string $size = 'woocommerce_thumbnail'): string {
+    if (!$this->isWooCommerceActive() || !function_exists('wc_placeholder_img_src')) {
+      return '';
+    }
+
+    return wc_placeholder_img_src($size);
+  }
 }
