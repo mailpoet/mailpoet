@@ -364,4 +364,12 @@ class Helper {
 
     return wc_placeholder_img_src($size);
   }
+
+  public function wcGetPagePermalink(string $page): string {
+    if (!$this->isWooCommerceActive() || !function_exists('wc_get_page_permalink')) {
+      return '';
+    }
+
+    return wc_get_page_permalink($page);
+  }
 }
