@@ -164,11 +164,13 @@ class Logger implements Email_Editor_Logger_Interface {
    * @return void
    */
   public function log(string $level, string $message, array $context = []): void {
-    if (!in_array($level, MonologLogger::getLevels()) && !is_numeric($level)) {
-      $level = MonologLogger::DEBUG;
+    try {
+      /** @phpstan-ignore-next-line toMonologLevel expects specific string or numeric values, but we handle invalid values gracefully with fallback */
+      $monologLevel = MonologLogger::toMonologLevel($level);
+    } catch (\Exception $e) {
+      $monologLevel = MonologLogger::DEBUG;
     }
-    /** @phpstan-ignore-next-line We check above that it's valid monolog level */
-    $monologLevel = MonologLogger::toMonologLevel($level);
+
     if ($this->shouldLogLevel($monologLevel)) {
       /** @phpstan-ignore-next-line PHPStan reports string in level as an error but it's okay */
       $this->mailpoetLogger->log($level, $message, $context);
