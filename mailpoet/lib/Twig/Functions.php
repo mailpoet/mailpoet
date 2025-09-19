@@ -393,6 +393,6 @@ class Functions extends AbstractExtension {
   }
 
   public function wcPlaceholderImgSrc(string $size = 'woocommerce_thumbnail'): string {
-    return $this->getWooCommerceHelper()->wcPlaceholderImgSrc($size);
+    return esc_url($this->getWooCommerceHelper()->wcPlaceholderImgSrc($size));
   }
 }
