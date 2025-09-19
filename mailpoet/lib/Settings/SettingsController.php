@@ -67,8 +67,6 @@ class SettingsController {
         'signup_confirmation' => [
           'enabled' => true,
           'use_mailpoet_editor' => true,
-          'subject' => __('Confirm your subscription to [site:title]', 'mailpoet'),
-          'body' => __("Hello [subscriber:firstname | default:there],\n\nYou've received this message because you subscribed to [site:title]. Please confirm your subscription to receive emails from us:\n\n[activation_link]Click here to confirm your subscription.[/activation_link] \n\nIf you received this email by mistake, simply delete it. You won't receive any more emails from us unless you confirm your subscription using the link above.\n\nThank you,\n\n<a target=\"_blank\" href=\"[site:homepage_url]\">[site:title]</a>", 'mailpoet'),
         ],
         'tracking' => [
           'level' => TrackingConfig::LEVEL_FULL,
@@ -80,7 +78,60 @@ class SettingsController {
         'deactivate_subscriber_after_inactive_days' => self::DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS,
       ];
     }
+
+    // Always include subject and body in defaults, using translated versions when available
+    $this->defaults['signup_confirmation']['subject'] = $this->getTranslatedDefaultSubject();
+    $this->defaults['signup_confirmation']['body'] = $this->getTranslatedDefaultBody();
+
     return $this->defaults;
+  }
+
+  /**
+   * Get translated default subject with fallback
+   *
+   * @return string
+   */
+  private function getTranslatedDefaultSubject(): string {
+    if ($this->isTranslationReady()) {
+      return __('Confirm your subscription to [site:title]', 'mailpoet');
+    }
+    return 'Confirm your subscription to [site:title]';
+  }
+
+  /**
+   * Get translated default body with fallback
+   *
+   * @return string
+   */
+  private function getTranslatedDefaultBody(): string {
+    if ($this->isTranslationReady()) {
+      return __("Hello [subscriber:firstname | default:there],\n\nYou've received this message because you subscribed to [site:title]. Please confirm your subscription to receive emails from us:\n\n[activation_link]Click here to confirm your subscription.[/activation_link] \n\nIf you received this email by mistake, simply delete it. You won't receive any more emails from us unless you confirm your subscription using the link above.\n\nThank you,\n\n<a target=\"_blank\" href=\"[site:homepage_url]\">[site:title]</a>", 'mailpoet');
+    }
+    return "Hello [subscriber:firstname | default:there],\n\nYou've received this message because you subscribed to [site:title]. Please confirm your subscription to receive emails from us:\n\n[activation_link]Click here to confirm your subscription.[/activation_link] \n\nIf you received this email by mistake, simply delete it. You won't receive any more emails from us unless you confirm your subscription using the link above.\n\nThank you,\n\n<a target=\"_blank\" href=\"[site:homepage_url]\">[site:title]</a>";
+  }
+
+  /**
+   * Check if translations are ready to be used
+   *
+   * @return bool
+   */
+  private function isTranslationReady(): bool {
+    if (!function_exists('__')) {
+      return false;
+    }
+
+    // Prefer using is_textdomain_loaded to confirm the 'mailpoet' text domain is present
+    if (function_exists('is_textdomain_loaded')) {
+      return (bool)is_textdomain_loaded('mailpoet');
+    }
+
+    // Fall back to did_action('init') if is_textdomain_loaded is unavailable
+    // Guard did_action() with function_exists to avoid fatals in non-WP contexts
+    if (function_exists('did_action')) {
+      return (bool)did_action('init');
+    }
+
+    return false;
   }
 
   /**
@@ -156,6 +207,7 @@ class SettingsController {
         return null;
       }
     }
+
     return $default;
   }
 
