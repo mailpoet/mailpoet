@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.15.0 - 2025-09-22 =
+* Improved: Improve font family handling in WooCommerce transactional emails;
+* Improved: Updated used Email Editor package to 1.6.0;
+* Improved: Implement log level filtering for the email editor;
+* Fixed: Fix placeholder images URLs in WooCommerce template customizer;
+* Fixed: Fix hardcoded URL for my account page in new account template.
+
 = 5.14.3 - 2025-09-15 =
 * Added: Enable support for creating and editing Automation newsletters with the block email editor.;
 * Updated: Update the email editor version.
