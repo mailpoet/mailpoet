@@ -33,6 +33,7 @@ class WorkersFactory {
     Mixpanel::TASK_TYPE,
     AbandonedCartWorker::TASK_TYPE,
     LogCleanup::TASK_TYPE,
+    Tracks::TASK_TYPE,
   ];
 
   /** @var ContainerWrapper */
@@ -166,5 +167,9 @@ class WorkersFactory {
 
   public function createMixpanelWorker() {
     return $this->container->get(Mixpanel::class);
+  }
+
+  public function createTracksWorker() {
+    return $this->container->get(Tracks::class);
   }
 }

@@ -113,5 +113,6 @@ class Daemon {
     yield $this->workersFactory->createAbandonedCartWorker();
     yield $this->workersFactory->createBackfillEngagementDataWorker();
     yield $this->workersFactory->createMixpanelWorker();
+    yield $this->workersFactory->createTracksWorker();
   }
 }
