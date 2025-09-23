@@ -24,7 +24,7 @@ class Tracks extends SimpleWorker {
   }
 
   public function maybeReportAnalyticsToTracks(): bool {
-    if (!$this->analytics->shouldSend()) {
+    if (!$this->analytics->shouldSendToTracks()) {
       return true;
     }
     return $this->reportAnalyticsToTracks();
@@ -42,7 +42,7 @@ class Tracks extends SimpleWorker {
     $success = $this->sendToTracksAPI($publicId, $data);
 
     if ($success) {
-      $this->analytics->recordDataSent();
+      $this->analytics->recordTracksDataSent();
     }
 
     return $success;
@@ -127,6 +127,6 @@ class Tracks extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return $this->analytics->getNextSendDate()->addMinutes(rand(0, 59));
+    return $this->analytics->getNextSendDateForTracks()->addMinutes(rand(0, 59));
   }
 }

@@ -141,7 +141,7 @@ class AnalyticsTest extends \MailPoetTest {
   public function testGetNextSendDateIsWeekFromLastSend(): void {
     $this->settings->set('analytics_last_sent', Carbon::now());
     $weekFromNow = Carbon::now()->addDays(7);
-    $nextSendDate = $this->analytics->getNextSendDate();
+    $nextSendDate = $this->analytics->getNextSendDateForMixpanel();
     verify($nextSendDate->getTimestamp())->equals($weekFromNow->getTimestamp());
   }
 }

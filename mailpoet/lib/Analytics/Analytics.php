@@ -10,6 +10,7 @@ use MailPoetVendor\Carbon\Carbon;
 class Analytics {
 
   const SETTINGS_LAST_SENT_KEY = 'analytics_last_sent';
+  const SETTINGS_LAST_SENT_TRACKS_KEY = 'analytics_last_sent_tracks';
   const SEND_AFTER_DAYS = 7;
   const ANALYTICS_FILTER = 'mailpoet_analytics';
 
@@ -33,9 +34,9 @@ class Analytics {
 
   /** @return array|null */
   public function generateAnalytics() {
-    if ($this->shouldSend()) {
+    if ($this->shouldSendToMixpanel()) {
       $data = $this->getAnalyticsData();
-      $this->recordDataSent();
+      $this->recordMixpanelDataSent();
       return $data;
     }
     return null;
@@ -87,15 +88,15 @@ class Analytics {
     return false;
   }
 
-  public function shouldSend() {
+  public function shouldSendToMixpanel() {
     if (!$this->isEnabled()) {
       return false;
     }
-    $nextSend = $this->getNextSendDate();
+    $nextSend = $this->getNextSendDateForMixpanel();
     return $nextSend->isPast();
   }
 
-  public function getNextSendDate(): Carbon {
+  public function getNextSendDateForMixpanel(): Carbon {
     $lastSent = $this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY);
     if (!$lastSent) {
       return Carbon::now()->subMinute();
@@ -104,7 +105,28 @@ class Analytics {
     return Carbon::createFromTimestamp(strtotime($lastSent))->addDays(self::SEND_AFTER_DAYS);
   }
 
-  public function recordDataSent() {
+  public function recordMixpanelDataSent() {
     $this->settings->set(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
+  }
+
+  public function recordTracksDataSent() {
+    $this->settings->set(Analytics::SETTINGS_LAST_SENT_TRACKS_KEY, Carbon::now());
+  }
+
+  public function shouldSendToTracks() {
+    if (!$this->isEnabled()) {
+      return false;
+    }
+    $nextSend = $this->getNextSendDateForTracks();
+    return $nextSend->isPast();
+  }
+
+  public function getNextSendDateForTracks(): Carbon {
+    $lastSent = $this->settings->get(Analytics::SETTINGS_LAST_SENT_TRACKS_KEY);
+    if (!$lastSent) {
+      return Carbon::now()->subMinute();
+    }
+
+    return Carbon::createFromTimestamp(strtotime($lastSent))->addDays(self::SEND_AFTER_DAYS);
   }
 }

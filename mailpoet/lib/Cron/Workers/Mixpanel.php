@@ -31,7 +31,7 @@ class Mixpanel extends SimpleWorker {
   }
 
   public function maybeReportAnalyticsToMixpanel(): bool {
-    if (!$this->analytics->shouldSend()) {
+    if (!$this->analytics->shouldSendToMixpanel()) {
       return true;
     }
     return $this->reportAnalyticsToMixpanel();
@@ -50,12 +50,12 @@ class Mixpanel extends SimpleWorker {
     $this->mixpanel->people->set($publicId, $data);
     $this->mixpanel->track('User Properties', $data);
 
-    $this->analytics->recordDataSent();
+    $this->analytics->recordMixpanelDataSent();
 
     return true;
   }
 
   public function getNextRunDate() {
-    return $this->analytics->getNextSendDate()->addMinutes(rand(0, 59));
+    return $this->analytics->getNextSendDateForMixpanel()->addMinutes(rand(0, 59));
   }
 }
