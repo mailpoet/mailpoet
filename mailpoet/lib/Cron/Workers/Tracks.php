@@ -92,11 +92,9 @@ class Tracks extends SimpleWorker {
         'public_id' => $publicId,
       ], $convertedData),
       'events' => [
-        [
-          '_ut' => 'anon',
-          '_ui' => $publicId,
-          '_en' => 'mailpoet_user_profile',
-        ],
+        '_ut' => 'anon',
+        '_ui' => $publicId,
+        '_en' => 'mailpoet_user_profile',
       ],
     ];
 
