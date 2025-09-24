@@ -197,24 +197,28 @@ function trackTracksIfEnabled(event) {
 }
 
 function trackCachedEvents() {
-  const storageItem = localStorage.getItem(LOCALSTORAGE_KEY);
-  if (storageItem && window.mailpoet_analytics_enabled) {
-    const localEventsCache = JSON.parse(storageItem);
-    localEventsCache.forEach(trackIfEnabled);
-    localStorage.removeItem(LOCALSTORAGE_KEY);
-    return;
+  if (typeof localStorage !== 'undefined') {
+    const storageItem = localStorage.getItem(LOCALSTORAGE_KEY);
+    if (storageItem && window.mailpoet_analytics_enabled) {
+      const localEventsCache = JSON.parse(storageItem);
+      localEventsCache.forEach(trackIfEnabled);
+      localStorage.removeItem(LOCALSTORAGE_KEY);
+      return;
+    }
   }
 
   eventsCache.forEach(trackIfEnabled);
 }
 
 function trackCachedTracksEvents() {
-  const storageItem = localStorage.getItem(TRACKS_LOCALSTORAGE_KEY);
-  if (storageItem && window.mailpoet_analytics_enabled) {
-    const localTracksEventsCache = JSON.parse(storageItem);
-    localTracksEventsCache.forEach(trackTracksIfEnabled);
-    localStorage.removeItem(TRACKS_LOCALSTORAGE_KEY);
-    return;
+  if (typeof localStorage !== 'undefined') {
+    const storageItem = localStorage.getItem(TRACKS_LOCALSTORAGE_KEY);
+    if (storageItem && window.mailpoet_analytics_enabled) {
+      const localTracksEventsCache = JSON.parse(storageItem);
+      localTracksEventsCache.forEach(trackTracksIfEnabled);
+      localStorage.removeItem(TRACKS_LOCALSTORAGE_KEY);
+      return;
+    }
   }
 
   tracksEventsCache.forEach(trackTracksIfEnabled);
@@ -228,7 +232,10 @@ function cacheEvent(forced, name, data, options, callback) {
     callback: callback,
     forced: forced,
   });
-  if (options === CacheEventOptionSaveInStorage) {
+  if (
+    options === CacheEventOptionSaveInStorage &&
+    typeof localStorage !== 'undefined'
+  ) {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(eventsCache));
   }
   if (typeof callback === 'function') {
@@ -243,7 +250,10 @@ function cacheTracksEvent(forced, name, data, options) {
     options: options,
     forced: forced,
   });
-  if (options === CacheEventOptionSaveInStorage) {
+  if (
+    options === CacheEventOptionSaveInStorage &&
+    typeof localStorage !== 'undefined'
+  ) {
     localStorage.setItem(
       TRACKS_LOCALSTORAGE_KEY,
       JSON.stringify(tracksEventsCache),
