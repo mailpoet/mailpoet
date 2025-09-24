@@ -91,11 +91,11 @@ class Tracks extends SimpleWorker {
       'commonProps' => array_merge([
         'public_id' => $publicId,
       ], $convertedData),
-      'events' => [
+      'events' => [[
         '_ut' => 'anon',
         '_ui' => $publicId,
         '_en' => 'mailpoet_user_profile',
-      ],
+      ]],
     ];
 
     $jsonPayload = json_encode($payload);

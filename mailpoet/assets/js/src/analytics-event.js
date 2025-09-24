@@ -102,11 +102,13 @@ function createMailPoetTracks() {
             public_id: publicId,
             ...properties,
           },
-          events: {
-            _ut: 'anon',
-            _ui: publicId,
-            _en: eventName,
-          },
+          events: [
+            {
+              _ut: 'anon',
+              _ui: publicId,
+              _en: eventName,
+            },
+          ],
         };
 
         tracksRequestQueue.push(payload);
@@ -184,15 +186,7 @@ function trackTracksIfEnabled(event) {
   if (window.mailpoet_analytics_enabled || event.forced) {
     createMailPoetTracks();
 
-    const tracksEventName = convertEventNameForTracks(event.name);
-    const tracksData = convertDataForTracks(event.data);
-
-    if (
-      window.mailpoetTracks &&
-      typeof window.mailpoetTracks.recordEvent === 'function'
-    ) {
-      window.mailpoetTracks.recordEvent(tracksEventName, tracksData);
-    }
+    trackToTracks(event.name, event.data);
   }
 }
 
@@ -267,7 +261,7 @@ export function queueTrackEvent(
   options = {},
   callback = null,
 ) {
-  let trackedData = data;
+  let trackedData = { ...data };
 
   if (typeof window.mailpoet_version !== 'undefined') {
     trackedData['MailPoet Free version'] = window.mailpoet_version;
