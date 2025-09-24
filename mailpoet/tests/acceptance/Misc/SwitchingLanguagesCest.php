@@ -93,7 +93,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Listen');
     $i->waitForText('Einstellungen');
     $i->waitForText('Hilfe');
-    $i->waitForText('Add new email'); // This will fail in the future when the string is translated
+    $i->waitForText('Neue E-Mail hinzufügen');
 
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
@@ -111,7 +111,7 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check Automation listing strings (translated with @wordpress/i18n)');
     $i->amOnMailpoetPage('automation');
     $i->waitForText('Erstelle deine eigenen Automatisierungen');
-    $i->waitForText('Add new automation'); // This will fail in the future when the string is translated
+    $i->waitForText('Neue Automatisierung hinzufügen');
     $i->waitForText('Wesentliche Dinge erforschen');
     $i->waitForText('Bearbeiten');
     $i->waitForText('Eingetragen');
@@ -119,14 +119,14 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check some Forms page strings');
     $i->amOnMailpoetPage('forms');
-    $i->waitForText('Add new form'); // This will fail in the future when the string is translated
-    $i->waitForText('Below pages'); // This will fail in the future when the string is translated
+    $i->waitForText('Neues Formular hinzufügen');
+    $i->waitForText('Unter Seiten');
     $i->waitForText('Registrierungen');
     $i->waitForText('Änderungsdatum');
 
     $i->wantTo('Check Subscribers filter strings and button');
     $i->amOnMailpoetPage('subscribers');
-    $i->waitForText('Add new subscriber'); // This will fail in the future when the string is translated
+    $i->waitForText('Neuen Abonnenten hinzufügen');
     $i->waitForText('Alle');
     $i->waitForText('Eingetragen');
     $i->waitForText('Unbestätigt');
