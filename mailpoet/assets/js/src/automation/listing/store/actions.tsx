@@ -17,7 +17,7 @@ export function* loadAutomations() {
 
   return {
     type: 'SET_AUTOMATIONS',
-    automations: data.data,
+    automations: Array.isArray(data.data?.items) ? data.data.items : [],
   } as const;
 }
 
