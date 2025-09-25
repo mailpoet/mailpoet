@@ -153,10 +153,44 @@ class AutomationStorage {
   }
 
   /** @return Automation[] */
-  public function getAutomations(?array $status = null): array {
+  public function getAutomations(
+    ?array $status = null,
+    ?string $orderBy = 'id',
+    ?string $order = 'DESC',
+    ?int $page = null,
+    ?int $perPage = null,
+    ?string $search = null
+  ): array {
     global $wpdb;
 
-    $statusFilter = $status ? 'AND a.status IN (' . implode(',', array_fill(0, count($status), '%s')) . ')' : '';
+    $statusFilter = '';
+    $statusParams = [];
+    if ($status) {
+      $statusFilter = ' AND a.status IN (' . implode(',', array_fill(0, count($status), '%s')) . ')';
+      $statusParams = $status;
+    }
+
+    // Handle search
+    $searchFilter = '';
+    $searchParams = [];
+    if ($search !== null && trim($search) !== '') {
+      $searchFilter = ' AND a.name LIKE %s';
+      $searchParams[] = '%' . $wpdb->esc_like($search) . '%';
+    }
+
+    // Handle ordering
+    $validOrderByColumns = ['id', 'name', 'status', 'created_at', 'updated_at'];
+    $orderByColumn = $orderBy && in_array($orderBy, $validOrderByColumns, true) ? $orderBy : 'id';
+    $orderDirection = $order && strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
+    $orderClause = " ORDER BY a.{$orderByColumn} {$orderDirection}";
+
+    // Handle pagination
+    $limitClause = '';
+    if ($page !== null && $perPage !== null && $perPage > 0) {
+      $offset = ($page - 1) * $perPage;
+      $limitClause = $wpdb->prepare(' LIMIT %d OFFSET %d', $perPage, $offset);
+    }
+
     $data = $wpdb->get_results(
       // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
       $wpdb->prepare(
@@ -167,13 +201,19 @@ class AutomationStorage {
           WHERE v.id = (
             SELECT MAX(id) FROM %i WHERE automation_id = v.automation_id
           )
-          ' . $statusFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The condition uses placeholders. */ '
-          ORDER BY a.id DESC
-        ',
-        $this->automationsTable,
-        $this->versionsTable,
-        $this->versionsTable,
-        ...($status ?? []),
+          ' . $statusFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The status filter uses placeholders. */ '
+          ' . $searchFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The search filter uses placeholders. */ '
+          ' . $orderClause . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The order clause is sanitized. */ '
+          ' . $limitClause, /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The limit clause is prepared. */
+        array_merge(
+          [
+            $this->automationsTable,
+            $this->versionsTable,
+            $this->versionsTable,
+          ],
+          $statusParams,
+          $searchParams
+        )
       ),
       ARRAY_A
     );
@@ -218,10 +258,34 @@ class AutomationStorage {
     return array_map('intval', $result);
   }
 
-  public function getAutomationCount(): int {
+  public function getAutomationCount(?array $status = null, ?string $search = null): int {
     global $wpdb;
+
+    $statusFilter = '';
+    $statusParams = [];
+    if ($status) {
+      $statusFilter = ' AND a.status IN (' . implode(',', array_fill(0, count($status), '%s')) . ')';
+      $statusParams = $status;
+    }
+
+    $searchFilter = '';
+    $searchParams = [];
+    if ($search !== null && trim($search) !== '') {
+      $searchFilter = ' AND a.name LIKE %s';
+      $searchParams[] = '%' . $wpdb->esc_like($search) . '%';
+    }
+
     return (int)$wpdb->get_var(
-      $wpdb->prepare('SELECT COUNT(*) FROM %i', $this->automationsTable)
+      $wpdb->prepare(
+        'SELECT COUNT(*) FROM %i AS a WHERE 1=1'
+        . $statusFilter /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The status filter uses placeholders. */
+        . $searchFilter, /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The search filter uses placeholders. */
+        array_merge(
+          [$this->automationsTable],
+          $statusParams,
+          $searchParams
+        )
+      )
     );
   }
 
