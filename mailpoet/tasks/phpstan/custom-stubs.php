@@ -100,13 +100,45 @@ namespace {
       }
 
       /**
-       * @return WC_Order|Boolean
+       * @return WC_Order|false
        */
       public function get_order() {
-        return true;
+        return false;
       }
 
       public function get_customer_id() {
+        return 1;
+      }
+
+      /**
+       * Get meta data.
+       *
+       * @param string $key     Meta key. Default empty string.
+       * @param bool   $single  Whether to return a single value. Default true.
+       * @param string $context What the value is for. Default 'view'.
+       * @return mixed
+       */
+      public function get_meta( $key = '', $single = true, $context = 'view' ) {
+        return '';
+      }
+
+      /**
+       * Update meta data.
+       *
+       * @param string $key    Meta key.
+       * @param mixed  $value  Meta value.
+       * @param bool   $unique Whether the meta key should be unique. Default false.
+       * @return void
+       */
+      public function update_meta_data( $key, $value, $unique = false ) {
+      }
+
+      /**
+       * Save the booking.
+       *
+       * @return int The booking ID.
+       */
+      public function save(): int {
         return 1;
       }
     }
