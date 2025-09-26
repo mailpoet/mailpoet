@@ -187,7 +187,8 @@ class AutomationStorage {
     // Handle pagination
     $limitClause = '';
     if ($page !== null && $perPage !== null && $perPage > 0) {
-      $offset = ($page - 1) * $perPage;
+      $currentPage = max(1, $page);
+      $offset = ($currentPage - 1) * $perPage;
       $limitClause = $wpdb->prepare(' LIMIT %d OFFSET %d', $perPage, $offset);
     }
 

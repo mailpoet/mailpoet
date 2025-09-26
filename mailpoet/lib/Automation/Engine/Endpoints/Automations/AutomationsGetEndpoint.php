@@ -34,10 +34,10 @@ class AutomationsGetEndpoint extends Endpoint {
     $order = is_string($orderParam) ? $orderParam : null;
 
     $pageParam = $request->getParam('page');
-    $page = is_numeric($pageParam) ? (int)$pageParam : null;
+    $page = is_numeric($pageParam) ? max(1, (int)$pageParam) : 1;
 
     $perPageParam = $request->getParam('per_page');
-    $perPage = is_numeric($perPageParam) ? (int)$perPageParam : null;
+    $perPage = is_numeric($perPageParam) ? max(1, (int)$perPageParam) : null;
 
     $searchParam = $request->getParam('search');
     $search = is_string($searchParam) ? $searchParam : null;
@@ -45,9 +45,12 @@ class AutomationsGetEndpoint extends Endpoint {
     $automations = $this->automationStorage->getAutomations($status, $orderBy, $order, $page, $perPage, $search);
     $automationCount = $this->automationStorage->getAutomationCount($status, $search);
 
-    $pages = $automationCount;
-    if ($perPage !== null && $perPage > 0) {
+    if ($automationCount === 0) {
+      $pages = 0;
+    } elseif ($perPage !== null) {
       $pages = (int)ceil($automationCount / $perPage);
+    } else {
+      $pages = 1;
     }
 
     return new Response([
