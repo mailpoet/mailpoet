@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 6 * * 1' # At 06:00 on Monday
   workflow_dispatch: # Allows manual triggering
+  push:
+    branches:
+      - stomail-7573-fix-token-for-gh-workflow-update-wordpress-and-plugins
 
 jobs:
   check-versions:
@@ -20,67 +23,16 @@ jobs:
         with:
           php-version: ${{ env.MAX_PHP_VERSION }}
 
-      # Updating used WordPress
-      - name: Check WordPress Docker Versions
-        run: php .github/workflows/scripts/check_wordpress_versions.php ${{ env.MAX_PHP_VERSION }}
-
-      - name: Check for WordPress changes
-        id: check_wp_changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [ "$(git status --porcelain)" != "" ]; then
-            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
-            echo "WORDPRESS_CHANGES=true" >> $GITHUB_ENV
-          fi
-
-      - name: Commit WordPress changes
-        if: env.WORDPRESS_CHANGES == 'true'
-        run: |
-          git add .
-          git commit -m $'Update used WordPress images in Circle CI'
-
-      # Updating used WooCommerce plugin
-      - name: Check WooCommerce Versions
-        run: php .github/workflows/scripts/check_woocommerce_versions.php
-
-      - name: Check for WooCommerce changes
-        id: check_wc_changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [ "$(git status --porcelain)" != "" ]; then
-            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
-            echo "WOOCOMMERCE_CHANGES=true" >> $GITHUB_ENV
-          fi
-
-      - name: Commit WooCommerce changes
-        if: env.WOOCOMMERCE_CHANGES == 'true'
-        run: |
-          git add .
-          git commit -m $'Update used WooCommerce plugin in Circle CI'
-
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
         env:
           GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
         run: php .github/workflows/scripts/check_automate_woo_versions.php
 
-      - name: Check for Automate Woo changes
-        id: check_aw_changes
+      - name: Diff Automate Woo changes
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [ "$(git status --porcelain)" != "" ]; then
-            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
-            echo "AUTOMATE_WOO_CHANGES=true" >> $GITHUB_ENV
-          fi
-
-      - name: Commit Automate Woo changes
-        if: env.AUTOMATE_WOO_CHANGES == 'true'
-        run: |
-          git add .
-          git commit -m $'Update used Automate Woo plugin in Circle CI'
+          git diff
+          git restore .
 
       # Updating used WooCommerce Subscriptions plugin
       - name: Check WooCommerce Subscriptions Versions
@@ -88,21 +40,10 @@ jobs:
           GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
         run: php .github/workflows/scripts/check_woocommerce_subscriptions_versions.php
 
-      - name: Check for WooCommerce Subscriptions changes
-        id: check_ws_changes
+      - name: Diff WooCommerce Subscriptions changes
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [ "$(git status --porcelain)" != "" ]; then
-            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
-            echo "SUBSCRIPTIONS_CHANGES=true" >> $GITHUB_ENV
-          fi
-
-      - name: Commit WooCommerce Subscriptions changes
-        if: env.SUBSCRIPTIONS_CHANGES == 'true'
-        run: |
-          git add .
-          git commit -m $'Update used WooCommerce Subscriptions plugin in Circle CI'
+          git diff
+          git restore .
 
       # Updating used WooCommerce Memberships plugin
       - name: Check WooCommerce Memberships Versions
@@ -110,45 +51,7 @@ jobs:
           GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
         run: php .github/workflows/scripts/check_woocommerce_memberships_versions.php
 
-      - name: Check for WooCommerce Memberships changes
-        id: check_wm_changes
+      - name: Diff WooCommerce Memberships changes
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [ "$(git status --porcelain)" != "" ]; then
-            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
-            echo "MEMBERSHIPS_CHANGES=true" >> $GITHUB_ENV
-          fi
-
-      - name: Commit WooCommerce Memberships changes
-        if: env.MEMBERSHIPS_CHANGES == 'true'
-        run: |
-          git add .
-          git commit -m $'Update used WooCommerce Memberships plugin in Circle CI'
-
-      # Push all changes at the end if any changes were detected
-      #
-      # For local testing with act tool add following:
-      # env:
-      #   GH_PAT: ${{ secrets.GH_TOKEN }}
-      # run: |
-      #   git remote set-url origin https://${GH_PAT}@github.com/mailpoet/mailpoet
-      #   git push -f origin HEAD:refs/heads/update-plugins-and-wordpress-test
-      - name: Push changes
-        if: env.CHANGES_DETECTED == 'true'
-        run: |
-          git push -f origin HEAD:refs/heads/update-plugins-and-wordpress
-
-      # Create a pull request if there are changes
-      - name: Create Pull Request
-        if: env.CHANGES_DETECTED == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          branch: update-plugins-and-wordpress
-          title: Update WordPress and plugins in CI jobs
-          base: trunk
-          labels: automated, check-versions
-          body: |
-            1. If all checks passed, you can merge this PR.
-            2. If the build failed, please investigate the failure and either address the issues or delegate the job. Then, make sure these changes are merged.
+          git diff
+          git restore .
