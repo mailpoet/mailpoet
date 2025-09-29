@@ -62,6 +62,13 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
         'in_progress' => $expectedInProgress,
         'exited' => $expectedExited,
       ],
+      'emails' => [
+        'sent' => 0,
+        'opened' => 0,
+        'clicked' => 0,
+        'orders' => 0,
+        'revenue' => 0.0,
+      ],
     ], $statistics->toArray());
   }
 
@@ -99,6 +106,12 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
       $this->assertEquals($statistic->getExited(), $pluralStatistics[$automationId]->getExited());
       $this->assertEquals($statistic->getVersionId(), $pluralStatistics[$automationId]->getVersionId());
       $this->assertEquals($statistic->getAutomationId(), $pluralStatistics[$automationId]->getAutomationId());
+      // Test new email statistics getters
+      $this->assertEquals($statistic->getEmailsSent(), $pluralStatistics[$automationId]->getEmailsSent());
+      $this->assertEquals($statistic->getEmailsOpened(), $pluralStatistics[$automationId]->getEmailsOpened());
+      $this->assertEquals($statistic->getEmailsClicked(), $pluralStatistics[$automationId]->getEmailsClicked());
+      $this->assertEquals($statistic->getOrders(), $pluralStatistics[$automationId]->getOrders());
+      $this->assertEquals($statistic->getRevenue(), $pluralStatistics[$automationId]->getRevenue());
     }
 
 
@@ -167,6 +180,31 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
 
     $stats = $this->testee->getAutomationStats($newestAutomation->getId(), $oldestAutomation->getVersionId());
     $this->assertEquals(1, $stats->getEntered());
+  }
+
+  public function testEmailStatisticsDefaultsToZero() {
+    $automation = $this->automationStorage->getAutomation($this->automations[0]);
+    $this->assertInstanceOf(Automation::class, $automation);
+
+    $statistics = $this->testee->getAutomationStats($automation->getId());
+
+    // Test that email statistics default to zero when no emails exist
+    $this->assertEquals(0, $statistics->getEmailsSent());
+    $this->assertEquals(0, $statistics->getEmailsOpened());
+    $this->assertEquals(0, $statistics->getEmailsClicked());
+    $this->assertEquals(0, $statistics->getOrders());
+    $this->assertEquals(0.0, $statistics->getRevenue());
+
+    // Test that toArray includes email statistics
+    $array = $statistics->toArray();
+    $this->assertArrayHasKey('emails', $array);
+    $this->assertEquals([
+      'sent' => 0,
+      'opened' => 0,
+      'clicked' => 0,
+      'orders' => 0,
+      'revenue' => 0.0,
+    ], $array['emails']);
   }
 
   private function createRun(Automation $automation, string $status) {
