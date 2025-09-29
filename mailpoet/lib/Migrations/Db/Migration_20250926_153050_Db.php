@@ -21,6 +21,10 @@ class Migration_20250926_153050_Db extends DbMigration {
   private function updateLoggingLevel(): void {
     $settingsTable = $this->getTableName(SettingEntity::class);
 
+    if (!$this->tableExists($settingsTable)) {
+      return;
+    }
+
     // Check if logging level is 'everything'
     $loggingLevel = $this->connection->fetchOne("
       SELECT value
@@ -43,6 +47,10 @@ class Migration_20250926_153050_Db extends DbMigration {
   private function pruneLogTableIfNeeded(): void {
     $settingsTable = $this->getTableName(SettingEntity::class);
     $logTable = $this->getTableName(\MailPoet\Entities\LogEntity::class);
+
+    if (!$this->tableExists($settingsTable) || !$this->tableExists($logTable)) {
+      return;
+    }
 
     // Check if pruning flag exists and is true
     $flagResult = $this->connection->fetchOne("
