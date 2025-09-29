@@ -62,7 +62,13 @@ class Migration_20250926_153050_Db extends DbMigration {
     // If flag doesn't exist or is not '1', proceed with pruning
     if ($flagResult !== '1') {
       // Truncate the log table
-      $this->connection->executeStatement("TRUNCATE TABLE {$logTable}");
+      try {
+        // Prefer fast path
+        $this->connection->executeStatement("TRUNCATE TABLE {$logTable}");
+      } catch (\Throwable $e) {
+        // Fallback for environments without TRUNCATE privileges
+        $this->connection->executeStatement("DELETE FROM {$logTable}");
+      }
 
       // Set the pruning flag to true
       $this->connection->executeStatement("
