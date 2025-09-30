@@ -90,6 +90,13 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
           'in_progress' => 0,
           'exited' => 0,
         ],
+        'emails' => [
+          'sent' => 0,
+          'opened' => 0,
+          'clicked' => 0,
+          'orders' => 0,
+          'revenue' => 0,
+        ],
       ],
       'steps' => [
         'root' => [
