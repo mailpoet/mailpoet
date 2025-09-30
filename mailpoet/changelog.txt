@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.15.1 - 2025-09-30 =
+* Updated: Bump the minimum required WooCommerce version to 10.1 and tested up to version to 10.2.;
+* Updated: Reporting analytics data;
+* Updated: Clean MailPoet Log table;
+* Improved: Automation endpoint supports filtering, sorting and pagination;
+* Fixed: Fixed a user warning on the registration screen.
+
 = 5.15.0 - 2025-09-22 =
 * Improved: Improve font family handling in WooCommerce transactional emails;
 * Improved: Updated used Email Editor package to 1.6.0;
