@@ -228,7 +228,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 5.15.1 - 2025-09-30 =
-* Updated: Bump the minimum required WooCommerce version to 10.1 and tested up to version to 10.2.;
+* Updated: Bump the minimum required WooCommerce version to 10.1 and tested up to version to 10.2;
 * Updated: Reporting analytics data;
 * Updated: Clean MailPoet Log table;
 * Improved: Automation endpoint supports filtering, sorting and pagination;
