@@ -4,19 +4,26 @@ namespace MailPoet\Automation\Engine\Mappers;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 
 class AutomationMapper {
   /** @var AutomationStatisticsStorage */
   private $statisticsStorage;
 
+  /** @var AutomationRunStorage */
+  private $runStorage;
+
   public function __construct(
-    AutomationStatisticsStorage $statisticsStorage
+    AutomationStatisticsStorage $statisticsStorage,
+    AutomationRunStorage $runStorage
   ) {
     $this->statisticsStorage = $statisticsStorage;
+    $this->runStorage = $runStorage;
   }
 
   public function buildAutomation(Automation $automation, ?AutomationStatistics $statistics = null): array {
@@ -52,12 +59,17 @@ class AutomationMapper {
   /** @param Automation[] $automations */
   public function buildAutomationList(array $automations): array {
     $statistics = $this->statisticsStorage->getAutomationStatisticsForAutomations(...$automations);
-    return array_map(function (Automation $automation) use ($statistics) {
-      return $this->buildAutomationListItem($automation, $statistics[$automation->getId()]);
+    $lastRuns = $this->runStorage->getLastAutomationRunsForAutomations(...$automations);
+    return array_map(function (Automation $automation) use ($statistics, $lastRuns) {
+      return $this->buildAutomationListItem(
+        $automation,
+        $statistics[$automation->getId()],
+        $lastRuns[$automation->getId()] ?? null
+      );
     }, $automations);
   }
 
-  private function buildAutomationListItem(Automation $automation, AutomationStatistics $statistics): array {
+  private function buildAutomationListItem(Automation $automation, AutomationStatistics $statistics, ?AutomationRun $lastRun): array {
     return [
       'id' => $automation->getId(),
       'name' => $automation->getName(),
@@ -70,6 +82,12 @@ class AutomationMapper {
         'id' => $automation->getAuthor()->ID,
         'name' => $automation->getAuthor()->display_name,
       ],
+      'last_run' => $lastRun ? [
+        'id' => $lastRun->getId(),
+        'status' => $lastRun->getStatus(),
+        'created_at' => $lastRun->getCreatedAt()->format(DateTimeImmutable::W3C),
+        'updated_at' => $lastRun->getUpdatedAt()->format(DateTimeImmutable::W3C),
+      ] : null,
     ];
   }
 }

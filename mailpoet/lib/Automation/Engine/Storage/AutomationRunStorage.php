@@ -180,6 +180,72 @@ class AutomationRunStorage {
     return $result ? (int)current($result) : 0;
   }
 
+  /**
+   * @return array<int, AutomationRun|null>
+   */
+  public function getLastAutomationRunsForAutomations(Automation ...$automations): array {
+    global $wpdb;
+
+    if (!count($automations)) {
+      return [];
+    }
+
+    $automationIds = array_map(function (Automation $automation) {
+      return $automation->getId();
+    }, $automations);
+
+    // Using a subquery to get the max ID per automation_id (most recent run)
+    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
+    $runs = $wpdb->get_results(
+      $wpdb->prepare(
+        '
+          SELECT r.*
+          FROM %i AS r
+          INNER JOIN (
+            SELECT automation_id, MAX(id) AS max_id
+            FROM %i
+            WHERE automation_id IN (' . implode(',', array_fill(0, count($automationIds), '%d')) . ')
+            GROUP BY automation_id
+          ) AS latest ON r.id = latest.max_id
+        ',
+        array_merge([$this->table, $this->table], $automationIds)
+      ),
+      ARRAY_A
+    );
+
+    if (!is_array($runs) || !$runs) {
+      return array_fill_keys($automationIds, null);
+    }
+
+    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
+    $subjects = $wpdb->get_results(
+      $wpdb->prepare(
+        '
+          SELECT *
+          FROM %i
+          WHERE automation_run_id IN (' . implode(',', array_fill(0, count($runs), '%d')) . ')
+        ',
+        array_merge([$this->subjectTable], array_column($runs, 'id'))
+      ),
+      ARRAY_A
+    );
+
+    $result = array_fill_keys($automationIds, null);
+
+    foreach ($runs as $runData) {
+      $runData['subjects'] = array_values(array_filter(
+        is_array($subjects) ? $subjects : [],
+        function($subjectData) use ($runData): bool {
+          /** @var array $subjectData */
+          return (int)$subjectData['automation_run_id'] === (int)$runData['id'];
+        }
+      ));
+      $result[(int)$runData['automation_id']] = AutomationRun::fromArray($runData);
+    }
+
+    return $result;
+  }
+
   public function updateStatus(int $id, string $status): void {
     global $wpdb;
     $result = $wpdb->query(
