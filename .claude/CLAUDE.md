@@ -130,3 +130,4 @@ Integration with WordPress uses a wrapper class:
 - Free plugin README: `mailpoet/README.md`
 - Premium plugin README: `mailpoet-premium/README.md`
 - Contributing Guide: `CONTRIBUTING.md`
+- Read all the rules in the folder `.cursor/rules/` and consider them when working on the project.
