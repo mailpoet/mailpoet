@@ -267,6 +267,15 @@ class Widget extends \WP_Widget {
       try {
         $output = $renderer->render('form/front_end_form.html', $data);
         $output = WPFunctions::get()->doShortcode($output);
+      /**
+        * Filters the rendered MailPoet form HTML after shortcodes are processed.
+        *
+        * @since TBD Added the $data context parameter.
+        *
+        * @param string                $output Rendered form HTML.
+        * @param array<string, mixed>  $data   Rendering context (form id, type, success/error flags, nonce, etc.).
+        * @return string Filtered HTML.
+        */
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output, $data);
       } catch (\Exception $e) {
         $output = $e->getMessage();
