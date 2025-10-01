@@ -2,6 +2,9 @@
 
 namespace MailPoet\Form;
 
+if (!defined('ABSPATH')) exit;
+
+
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Config\RendererFactory;
@@ -262,6 +265,7 @@ class Widget extends \WP_Widget {
       // render form
       $renderer = (new RendererFactory())->getRenderer();
       try {
+        $data = $this->wp->applyFilters('mailpoet_form_widget_pre_process', $data);
         $output = $renderer->render('form/front_end_form.html', $data);
         $output = WPFunctions::get()->doShortcode($output);
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output);
