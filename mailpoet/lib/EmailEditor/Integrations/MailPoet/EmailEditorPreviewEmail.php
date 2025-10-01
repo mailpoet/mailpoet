@@ -7,8 +7,6 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 
 class EmailEditorPreviewEmail {
-  const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
-
   private NewslettersRepository $newslettersRepository;
 
   private SendPreviewController $sendPreviewController;
@@ -28,7 +26,7 @@ class EmailEditorPreviewEmail {
    * @throws \Exception
    */
   public function sendPreviewEmail($postData) {
-    if (is_bool($postData) || !isset($postData['postId']) || get_post_type((int)$postData['postId']) !== self::MAILPOET_EMAIL_POST_TYPE) {
+    if (is_bool($postData) || !isset($postData['postId']) || get_post_type((int)$postData['postId']) !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) {
       return $postData;
     }
 
