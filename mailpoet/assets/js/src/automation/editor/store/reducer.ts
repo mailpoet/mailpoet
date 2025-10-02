@@ -166,6 +166,11 @@ export function reducer(state: State, action): State {
           },
         },
       };
+    case 'SET_FULLSCREEN_FORCED':
+      return {
+        ...state,
+        isFullscreenForced: action.value,
+      };
     default:
       return state;
   }

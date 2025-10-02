@@ -13,9 +13,10 @@ import { MailPoet } from '../../../../mailpoet';
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/more-menu/index.js
 
 export function MoreMenu(): JSX.Element {
-  const automation = useSelect((select) =>
-    select(storeName).getAutomationData(),
-  );
+  const { automation, isFullscreenForced } = useSelect((select) => ({
+    automation: select(storeName).getAutomationData(),
+    isFullscreenForced: select(storeName).isFullscreenForced(),
+  }));
 
   return (
     <DropdownMenu
@@ -28,17 +29,22 @@ export function MoreMenu(): JSX.Element {
     >
       {() => (
         <>
-          <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
-            <PreferenceToggleMenuItem
-              scope={storeName}
-              name="fullscreenMode"
-              label={__('Fullscreen mode', 'mailpoet')}
-              info={__('Work without distraction', 'mailpoet')}
-              messageActivated={__('Fullscreen mode activated', 'mailpoet')}
-              messageDeactivated={__('Fullscreen mode deactivated', 'mailpoet')}
-              shortcut={displayShortcut.secondary('f')}
-            />
-          </MenuGroup>
+          {!isFullscreenForced && (
+            <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
+              <PreferenceToggleMenuItem
+                scope={storeName}
+                name="fullscreenMode"
+                label={__('Fullscreen mode', 'mailpoet')}
+                info={__('Work without distraction', 'mailpoet')}
+                messageActivated={__('Fullscreen mode activated', 'mailpoet')}
+                messageDeactivated={__(
+                  'Fullscreen mode deactivated',
+                  'mailpoet',
+                )}
+                shortcut={displayShortcut.secondary('f')}
+              />
+            </MenuGroup>
+          )}
           <MenuGroup>
             <MenuItem
               onClick={() => {

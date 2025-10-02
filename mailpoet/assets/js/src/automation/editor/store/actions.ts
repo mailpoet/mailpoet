@@ -289,3 +289,10 @@ export function alterContext(context: string, key: string, value: unknown) {
     value,
   };
 }
+
+export function setFullscreenForced(value: boolean) {
+  return {
+    type: 'SET_FULLSCREEN_FORCED',
+    value,
+  } as const;
+}
