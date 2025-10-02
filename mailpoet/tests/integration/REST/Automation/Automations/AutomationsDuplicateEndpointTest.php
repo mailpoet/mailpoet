@@ -94,8 +94,11 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
           'sent' => 0,
           'opened' => 0,
           'clicked' => 0,
-          'orders' => 0,
-          'revenue' => 0,
+          'revenue' => [
+            'currency' => function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : '',
+            'value' => 0,
+            'count' => 0,
+          ],
         ],
       ],
       'steps' => [

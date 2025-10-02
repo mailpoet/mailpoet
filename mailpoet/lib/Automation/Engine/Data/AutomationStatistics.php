@@ -88,8 +88,11 @@ class AutomationStatistics {
         'sent' => $this->getEmailsSent(),
         'opened' => $this->getEmailsOpened(),
         'clicked' => $this->getEmailsClicked(),
-        'orders' => $this->getOrders(),
-        'revenue' => $this->getRevenue(),
+        'revenue' => [
+          'currency' => function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : '',
+          'value' => $this->getRevenue(),
+          'count' => $this->getOrders(),
+        ],
       ],
     ];
   }

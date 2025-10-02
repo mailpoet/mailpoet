@@ -69,8 +69,11 @@ class AutomationStatisticsTest extends \MailPoetUnitTest {
         'sent' => 30,
         'opened' => 25,
         'clicked' => 15,
-        'orders' => 5,
-        'revenue' => 299.99,
+        'revenue' => [
+          'currency' => '',
+          'value' => 299.99,
+          'count' => 5,
+        ],
       ],
     ];
 
@@ -91,8 +94,11 @@ class AutomationStatisticsTest extends \MailPoetUnitTest {
         'sent' => 0,
         'opened' => 0,
         'clicked' => 0,
-        'orders' => 0,
-        'revenue' => 0.0,
+        'revenue' => [
+          'currency' => '',
+          'value' => 0.0,
+          'count' => 0,
+        ],
       ],
     ];
 

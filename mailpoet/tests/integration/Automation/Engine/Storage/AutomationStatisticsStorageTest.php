@@ -66,8 +66,11 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
         'sent' => 0,
         'opened' => 0,
         'clicked' => 0,
-        'orders' => 0,
-        'revenue' => 0.0,
+        'revenue' => [
+          'currency' => function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : '',
+          'count' => 0,
+          'value' => 0.0,
+        ],
       ],
     ], $statistics->toArray());
   }
@@ -202,8 +205,11 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
       'sent' => 0,
       'opened' => 0,
       'clicked' => 0,
-      'orders' => 0,
-      'revenue' => 0.0,
+      'revenue' => [
+        'currency' => function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : '',
+        'count' => 0,
+        'value' => 0.0,
+      ],
     ], $array['emails']);
   }
 
