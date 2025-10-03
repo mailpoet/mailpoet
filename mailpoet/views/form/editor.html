@@ -9,23 +9,23 @@
 
 <script>
   <% autoescape 'js' %>
-  var mailpoet_form_data = <%= json_encode(form) %>;
-  var mailpoet_form_exports = <%= json_encode(form_exports) %>;
-  var mailpoet_form_segments = <%= json_encode(segments) %>;
-  var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
-  var mailpoet_date_types = <%= json_encode(date_types) %>;
-  var mailpoet_date_formats = <%= json_encode(date_formats) %>;
-  var mailpoet_month_names = <%= json_encode(month_names) %>;
-  var mailpoet_form_preview_page = <%= json_encode(preview_page_url) %>;
-  var mailpoet_custom_fonts = <%= json_encode(custom_fonts) %>;
-  var mailpoet_translations = <%= json_encode(translations) %>;
-  var mailpoet_all_wp_posts = <%= json_encode(posts) %>;
-  var mailpoet_all_wp_pages = <%= json_encode(pages) %>;
-  var mailpoet_all_wp_categories = <%= json_encode(categories) %>;
-  var mailpoet_all_wp_tags = <%= json_encode(tags) %>;
-  var mailpoet_woocommerce_products = <%= json_encode(products) %>;
-  var mailpoet_woocommerce_categories = <%= json_encode(product_categories) %>;
-  var mailpoet_woocommerce_tags = <%= json_encode(product_tags) %>;
+  var mailpoet_form_data = <%= form|wp_json_encode %>;
+  var mailpoet_form_exports = <%= form_exports|wp_json_encode %>;
+  var mailpoet_form_segments = <%= segments|wp_json_encode %>;
+  var mailpoet_custom_fields = <%= custom_fields|wp_json_encode %>;
+  var mailpoet_date_types = <%= date_types|wp_json_encode %>;
+  var mailpoet_date_formats = <%= date_formats|wp_json_encode %>;
+  var mailpoet_month_names = <%= month_names|wp_json_encode %>;
+  var mailpoet_form_preview_page = <%= preview_page_url|wp_json_encode %>;
+  var mailpoet_custom_fonts = <%= custom_fonts|wp_json_encode %>;
+  var mailpoet_translations = <%= translations|wp_json_encode %>;
+  var mailpoet_all_wp_posts = <%= posts|wp_json_encode %>;
+  var mailpoet_all_wp_pages = <%= pages|wp_json_encode %>;
+  var mailpoet_all_wp_categories = <%= categories|wp_json_encode %>;
+  var mailpoet_all_wp_tags = <%= tags|wp_json_encode %>;
+  var mailpoet_woocommerce_products = <%= products|wp_json_encode %>;
+  var mailpoet_woocommerce_categories = <%= product_categories|wp_json_encode %>;
+  var mailpoet_woocommerce_tags = <%= product_tags|wp_json_encode %>;
   var mailpoet_close_icons_url = '<%= image_url("form_close_icon") %>';
   var mailpoet_tutorial_seen = '<%= editor_tutorial_seen %>';
   var mailpoet_tutorial_url = '<%= cdn_url('form-editor/tutorial.mp4') %>';
