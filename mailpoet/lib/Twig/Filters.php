@@ -26,11 +26,21 @@ class Filters extends AbstractExtension {
         [$this, 'wpKses'],
         ['is_safe' => ['html']]
       ),
+      new TwigFilter(
+        'wp_json_encode',
+        [$this, 'wpJsonEncode'],
+        ['is_safe' => ['js']]
+      ),
     ];
   }
 
   public function wpKses($content, $allowedHtml) {
     $wp = WPFunctions::get();
     return $wp->wpKses($content, $allowedHtml);
+  }
+
+  public function wpJsonEncode($data) {
+    $wp = WPFunctions::get();
+    return $wp->wpJsonEncode($data);
   }
 }
