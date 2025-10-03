@@ -12,11 +12,17 @@ import { MailPoet } from '../../../../mailpoet';
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/more-menu/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/more-menu/index.js
 
-export function MoreMenu(): JSX.Element {
-  const { automation, isFullscreenForced } = useSelect((select) => ({
+export function MoreMenu(): JSX.Element | null {
+  const { automation, isFullscreenForced, isGarden } = useSelect((select) => ({
     automation: select(storeName).getAutomationData(),
     isFullscreenForced: select(storeName).isFullscreenForced(),
+    isGarden: select(storeName).getContext('is_garden') === true,
   }));
+
+  // Hide the entire menu if both conditions would make it empty
+  if (isFullscreenForced && isGarden) {
+    return null;
+  }
 
   return (
     <DropdownMenu
@@ -45,27 +51,29 @@ export function MoreMenu(): JSX.Element {
               />
             </MenuGroup>
           )}
-          <MenuGroup>
-            <MenuItem
-              onClick={() => {
-                window.location.href = addQueryArgs(
-                  MailPoet.urls.automationAnalytics,
-                  {
-                    id: automation.id,
-                  },
-                );
-              }}
-            >
-              {__('Analytics', 'mailpoet')}
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                window.location.href = MailPoet.urls.automationListing;
-              }}
-            >
-              {__('View all automations', 'mailpoet')}
-            </MenuItem>
-          </MenuGroup>
+          {!isGarden && (
+            <MenuGroup>
+              <MenuItem
+                onClick={() => {
+                  window.location.href = addQueryArgs(
+                    MailPoet.urls.automationAnalytics,
+                    {
+                      id: automation.id,
+                    },
+                  );
+                }}
+              >
+                {__('Analytics', 'mailpoet')}
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  window.location.href = MailPoet.urls.automationListing;
+                }}
+              >
+                {__('View all automations', 'mailpoet')}
+              </MenuItem>
+            </MenuGroup>
+          )}
         </>
       )}
     </DropdownMenu>
