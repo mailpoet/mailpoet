@@ -290,7 +290,16 @@ class WooCheckoutBlocksCest {
 
   private function placeOrder(\AcceptanceTester $i): void {
     // Add a note to order just to avoid flakiness due to race conditions
-    $i->click(Locator::contains('label', 'Add a note to your order'));
+    $i->scrollTo('.wc-block-components-checkout-place-order-button');
+    $locator = Locator::contains('label', 'Add a note to your order');
+    $i->waitForElementClickable($locator);
+    $i->wait(0.5); 
+    $i->click($locator);
+
+    // Find the checkbox and verify it's checked
+    $checkboxId = $i->grabAttributeFrom($locator, 'for');
+    $i->seeCheckboxIsChecked('#' . $checkboxId);
+
     $i->waitForElementVisible('.wc-block-components-textarea');
     $i->fillField('.wc-block-components-textarea', 'This is a note');
     $i->waitForText('Place Order');
