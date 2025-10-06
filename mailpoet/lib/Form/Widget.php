@@ -290,7 +290,7 @@ class Widget extends \WP_Widget {
         * @since TBD Added the $data context parameter.
         *
         * @param string                $output Rendered form HTML.
-        * @param array<string, mixed>  $filter_context_data   Rendering context (form id, type, success/error flags, etc.).
+        * @param array<string, mixed>  $filter_context_data   Rendering context (form id, type, styles, and more).
         * @return string Filtered HTML.
         */
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output, $filter_context_data);
