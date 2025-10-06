@@ -22,7 +22,6 @@ import {
   DeactivateImmediatelyModal,
   DeactivateModal,
 } from '../modals/deactivate-modal';
-import { MailPoet } from '../../../../mailpoet';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
@@ -253,32 +252,16 @@ type Props = {
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
   const { setAutomationName } = useDispatch(storeName);
-  const { automationName, automationStatus, isGarden } = useSelect(
+  const { automationName, automationStatus } = useSelect(
     (select) => ({
       automationName: select(storeName).getAutomationData().name,
       automationStatus: select(storeName).getAutomationData().status,
-      isGarden: select(storeName).getContext('is_garden') === true,
     }),
     [],
   );
 
-  const handleBackClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isGarden && window.parent !== window) {
-      e.preventDefault();
-      window.parent.postMessage(
-        { type: 'mailpoet_close_automation_editor' },
-        '*',
-      );
-    }
-  };
-
   return (
     <div className="editor-header edit-post-header">
-      <div className="mailpoet-automation-editor__header-breadcrumbs">
-        <a href={MailPoet.urls.automationListing} onClick={handleBackClick}>
-          <h1>{__('Automations', 'mailpoet')}</h1>
-        </a>
-      </div>
       <div className="editor-header__toolbar">
         <NavigableMenu
           className="editor-document-tools edit-post-header-toolbar"
