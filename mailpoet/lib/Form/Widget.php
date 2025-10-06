@@ -2,9 +2,6 @@
 
 namespace MailPoet\Form;
 
-if (!defined('ABSPATH')) exit;
-
-
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Config\RendererFactory;
@@ -267,16 +264,36 @@ class Widget extends \WP_Widget {
       try {
         $output = $renderer->render('form/front_end_form.html', $data);
         $output = WPFunctions::get()->doShortcode($output);
-      /**
+
+        // Define the exact keys we want to keep for the filter context
+        $allowed_keys = [
+            'form_html_id' => null,
+            'form_id' => null,
+            'form_type' => null,
+            'form_success_message' => null,
+            'title' => null,
+            'styles' => null,
+            'html' => null,
+            'before_widget' => null,
+            'after_widget' => null,
+            'before_title' => null,
+            'after_title' => null,
+        ];
+
+        // Create a new context array for the filter, containing only the allowed keys.
+        // This automatically excludes 'success', 'error', 'token', and 'api_version'.
+        $filter_context_data = array_intersect_key($data, $allowed_keys);
+        
+        /**
         * Filters the rendered MailPoet form HTML after shortcodes are processed.
         *
         * @since TBD Added the $data context parameter.
         *
         * @param string                $output Rendered form HTML.
-        * @param array<string, mixed>  $data   Rendering context (form id, type, success/error flags, nonce, etc.).
+        * @param array<string, mixed>  $filter_context_data   Rendering context (form id, type, success/error flags, etc.).
         * @return string Filtered HTML.
         */
-        $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output, $data);
+        $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output, $filter_context_data);
       } catch (\Exception $e) {
         $output = $e->getMessage();
       }
