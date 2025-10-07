@@ -24,11 +24,11 @@ echo esc_html($email_heading);
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 /* translators: %s: Subscriber first name */
-echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), esc_html($subscriber_firstname ?: __('there', 'mailpoet'))));
+echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname ?: __('there', 'mailpoet')));
 echo "\n\n";
 
 /* translators: %s: Site name */
-echo esc_html(sprintf(__('You\'ve received this message because you subscribed to %s. Please confirm your subscription to receive emails from us:', 'mailpoet'), esc_html(get_bloginfo('name'))));
+echo esc_html(sprintf(__('You\'ve received this message because you subscribed to %s. Please confirm your subscription to receive emails from us:', 'mailpoet'), get_bloginfo('name')));
 echo "\n\n";
 
 esc_html_e('Click here to confirm your subscription:', 'mailpoet');

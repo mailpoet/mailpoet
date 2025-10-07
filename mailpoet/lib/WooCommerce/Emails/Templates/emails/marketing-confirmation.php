@@ -29,14 +29,14 @@ do_action('woocommerce_email_header', $email_heading, $email); ?>
 <p>
 <?php
   /* translators: %s: Subscriber first name */
-  echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), esc_html($subscriber_firstname ?: _x('there', 'subscriber name placeholder', 'mailpoet'))));
+  echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname ?: _x('there', 'subscriber name placeholder', 'mailpoet')));
 ?>
 </p>
 
 <p>
 <?php
   /* translators: %s: Site name */
-  echo esc_html(sprintf(__('You\'ve received this message because you subscribed to %s. Please confirm your subscription to receive emails from us:', 'mailpoet'), esc_html(get_bloginfo('name'))));
+  echo esc_html(sprintf(__('You\'ve received this message because you subscribed to %s. Please confirm your subscription to receive emails from us:', 'mailpoet'), get_bloginfo('name')));
 ?>
 </p>
 
