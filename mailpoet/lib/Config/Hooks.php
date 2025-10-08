@@ -310,20 +310,15 @@ class Hooks {
     // In some cases on multisite instance, this code may run before DB migrator and settings table is not ready at that time
     try {
       $optInEnabled = (bool)$this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+      
+      // Register WooCommerce opt-in message with WPML for translation
+      $optInMessage = $this->settings->get(Subscription::OPTIN_MESSAGE_SETTING_NAME);
+      if ($optInMessage) {
+        Subscription::registerOptinMessageWithWPML($optInMessage);
+      }
     } catch (\Exception $e) {
       $optInEnabled = false;
-    }
-    
-    // Register WooCommerce opt-in message with WPML for translation
-    if (function_exists('icl_register_string')) {
-      try {
-        $optInMessage = $this->settings->get(Subscription::OPTIN_MESSAGE_SETTING_NAME);
-        if ($optInMessage) {
-          icl_register_string('mailpoet', 'woocommerce_checkout_optin_message', $optInMessage);
-        }
-      } catch (\Exception $e) {
-        // Silently fail if settings are not ready
-      }
+      // Silently fail if settings are not ready
     }
     
     // WooCommerce: subscribe on checkout

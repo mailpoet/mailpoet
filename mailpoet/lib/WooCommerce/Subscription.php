@@ -111,6 +111,23 @@ class Subscription {
   }
 
   /**
+   * Register opt-in message string with WPML for translation.
+   *
+   * @param string $message The opt-in message to register
+   */
+  public static function registerOptinMessageWithWPML($message) {
+    if (function_exists('icl_register_string')) {
+      try {
+        if (is_string($message) && !empty($message)) {
+          icl_register_string('mailpoet', 'woocommerce_checkout_optin_message', $message);
+        }
+      } catch (\Exception $e) {
+        // Silently fail if WPML registration fails
+      }
+    }
+  }
+
+  /**
    * Generate the subscription checkbox field HTML with WPML translation support.
    *
    * @param string $inputName The name attribute for the checkbox input

@@ -141,8 +141,8 @@ class Settings extends APIEndpoint {
         $this->settings->set($name, $value);
         
         // Register WooCommerce opt-in message with WPML for translation
-        if ($name === 'woocommerce.optin_on_checkout.message' && function_exists('icl_register_string')) {
-          icl_register_string('mailpoet', 'woocommerce_checkout_optin_message', $value);
+        if ($name === 'woocommerce.optin_on_checkout.message') {
+          \MailPoet\WooCommerce\Subscription::registerOptinMessageWithWPML($value);
         }
       }
 
