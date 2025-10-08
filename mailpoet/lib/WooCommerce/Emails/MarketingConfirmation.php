@@ -21,8 +21,8 @@ class MarketingConfirmation extends \WC_Email {
     $this->title = __('MailPoet Marketing Confirmation', 'mailpoet');
     $this->description = __('Email sent to confirm marketing subscriptions.', 'mailpoet');
     $this->customer_email = true;
-    $this->heading = __('Confirm your subscription to {site_title}', 'mailpoet');
-    $this->subject = __('Confirm your subscription to {site_title}', 'mailpoet');
+    $this->heading = $this->get_default_heading();
+    $this->subject = $this->get_default_subject();
     $this->template_base = $this->get_template_base_path();
     $this->template_html = 'emails/marketing-confirmation.php';
     $this->template_plain = 'emails/plain/marketing-confirmation.php';
