@@ -113,9 +113,12 @@ class Subscription {
   private function getSubscriptionField($inputName, $checked, $labelString) {
     $checked = checked($checked, true, false);
 
+    // Make the label string translatable with WPML
+    $translatedLabel = $this->wp->applyFilters('wpml_translate_single_string', $labelString, 'mailpoet', 'woocommerce_checkout_optin_message');
+    
     return '<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" data-automation-id="woo-commerce-subscription-opt-in">
       <input id="mailpoet_woocommerce_checkout_optin" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" ' . $checked . ' type="checkbox" name="' . $this->wp->escAttr($inputName) . '" value="1" />
-      <span>' . $this->wp->escHtml($labelString) . '</span>
+      <span>' . $this->wp->escHtml($translatedLabel) . '</span>
     </label>';
   }
 
