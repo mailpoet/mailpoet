@@ -26,7 +26,7 @@ class MarketingConfirmation extends \WC_Email {
   public function __construct() {
     $this->id = 'mailpoet_marketing_confirmation';
     $this->title = __('MailPoet Marketing Confirmation', 'mailpoet');
-    $this->description = __('Email sent to confirm marketing subscriptions.', 'mailpoet');
+    $this->description = __('Send an email for customers to confirm their subscription to marketing emails.', 'mailpoet');
     $this->customer_email = true;
     $this->email_group = 'marketing';
     $this->heading = $this->get_default_heading();
