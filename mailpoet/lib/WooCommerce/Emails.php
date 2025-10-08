@@ -40,6 +40,8 @@ class Emails {
     $this->wp->addFilter('woocommerce_email_classes', [$this, 'registerEmailClasses']);
     // Register the emails for the block editor.
     $this->wp->addFilter('woocommerce_transactional_emails_for_block_editor', [$this, 'registerTransactionalEmailsForBlockEditor']);
+    // Register the marketing email group title.
+    $this->wp->addFilter('woocommerce_email_groups', [$this, 'registerEmailGroups']);
     // This filter is required because WCTransactionalEmailPostsGenerator does not provide the email's $template_base property when loading templates.
     // As a result, WooCommerce attempts to load the template from its default template directory instead of MailPoet's.
     // We need to apply this filter until this issue is addressed upstream to ensure MailPoet email templates are found.
@@ -69,6 +71,20 @@ class Emails {
     $emails[] = 'mailpoet_marketing_confirmation';
     
     return $emails;
+  }
+
+  /**
+   * Register email group titles.
+   *
+   * @param array $email_groups Array of email groups.
+   * @return array Modified array of email groups.
+   */
+  public function registerEmailGroups($email_groups) {
+    if (!isset($email_groups['marketing'])) {
+      $email_groups['marketing'] = __('Marketing', 'mailpoet');
+    }
+
+    return $email_groups;
   }
 
   /**

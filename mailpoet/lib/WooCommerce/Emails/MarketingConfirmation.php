@@ -16,11 +16,19 @@ if (!defined('ABSPATH')) exit;
  * Only available in Garden environment.
  */
 class MarketingConfirmation extends \WC_Email {
+  /**
+   * Email group slug.
+   *
+   * @var string
+   */
+  protected $email_group;
+
   public function __construct() {
     $this->id = 'mailpoet_marketing_confirmation';
     $this->title = __('MailPoet Marketing Confirmation', 'mailpoet');
     $this->description = __('Email sent to confirm marketing subscriptions.', 'mailpoet');
     $this->customer_email = true;
+    $this->email_group = 'marketing';
     $this->heading = $this->get_default_heading();
     $this->subject = $this->get_default_subject();
     $this->template_base = $this->get_template_base_path();
