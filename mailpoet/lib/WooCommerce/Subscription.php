@@ -110,6 +110,14 @@ class Subscription {
     }
   }
 
+  /**
+   * Generate the subscription checkbox field HTML with WPML translation support.
+   *
+   * @param string $inputName The name attribute for the checkbox input
+   * @param bool $checked Whether the checkbox should be checked
+   * @param string $labelString The label text to display (will be translated via WPML if available)
+   * @return string HTML markup for the subscription checkbox field
+   */
   private function getSubscriptionField($inputName, $checked, $labelString) {
     $checked = checked($checked, true, false);
 
