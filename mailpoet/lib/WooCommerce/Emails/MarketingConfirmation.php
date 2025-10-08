@@ -21,7 +21,7 @@ class MarketingConfirmation extends \WC_Email {
    *
    * @var string
    */
-  protected $email_group;
+  public $email_group;
 
   public function __construct() {
     $this->id = 'mailpoet_marketing_confirmation';
