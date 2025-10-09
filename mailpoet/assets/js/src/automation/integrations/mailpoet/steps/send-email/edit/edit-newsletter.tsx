@@ -143,6 +143,7 @@ export function EditNewsletter(): JSX.Element {
     let newUrl = MailPoet.getNewsletterEditorUrl(currentEmailId, 'automation');
 
     const currentEmailWpPostId = Number(selectedStep?.args?.email_wp_post_id);
+    let postIdForNextAdmin = currentEmailWpPostId;
 
     if (currentEmailWpPostId && !Number.isNaN(currentEmailWpPostId)) {
       newUrl = MailPoet.getBlockEmailEditorUrl(currentEmailWpPostId);
@@ -161,8 +162,10 @@ export function EditNewsletter(): JSX.Element {
 
       if (newEmailWpPostId) {
         newUrl = MailPoet.getBlockEmailEditorUrl(newEmailWpPostId);
+        postIdForNextAdmin = newEmailWpPostId;
       } else if (newEmailId) {
         newUrl = MailPoet.getNewsletterEditorUrl(newEmailId, 'automation');
+        postIdForNextAdmin = undefined;
       } else {
         // If duplication failed, don't redirect and let user see the error
         setIsHandlingDuplicatedStep(false);
@@ -170,6 +173,23 @@ export function EditNewsletter(): JSX.Element {
       }
 
       setIsHandlingDuplicatedStep(false);
+    }
+
+    // Check if we're in an iframe and navigating to block email editor
+    if (
+      window.parent &&
+      window.parent !== window &&
+      postIdForNextAdmin &&
+      !Number.isNaN(postIdForNextAdmin)
+    ) {
+      window.parent.postMessage(
+        {
+          type: 'mailpoet-navigate-to-email-editor',
+          postId: postIdForNextAdmin,
+        },
+        window.location.origin,
+      );
+      return;
     }
 
     window.location.href = newUrl;
@@ -185,6 +205,17 @@ export function EditNewsletter(): JSX.Element {
   useEffect(() => {
     if (redirectToTemplateSelection && emailId && savedState === 'saved') {
       if (emailWpPostId) {
+        // Check if we're in an iframe and navigating to block email editor
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(
+            {
+              type: 'mailpoet-navigate-to-email-editor',
+              postId: emailWpPostId,
+            },
+            window.location.origin,
+          );
+          return;
+        }
         window.location.href = MailPoet.getBlockEmailEditorUrl(emailWpPostId);
       } else {
         window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
