@@ -23,13 +23,19 @@ class CaptchaHooks {
   }
 
   public function isEnabled(): bool {
-    if (!$this->settings->get(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false)) {
+    // In some cases on multisite instance or during fresh install, this code may run
+    // before DB migrator and settings table is not ready at that time
+    try {
+      if (!$this->settings->get(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false)) {
+        return false;
+      }
+
+      $type = $this->settings->get('captcha.type');
+      return CaptchaConstants::isBuiltIn($type)
+        || (CaptchaConstants::isDisabled($type) && $this->captchaRenderer->isSupported());
+    } catch (\Exception $e) {
       return false;
     }
-
-    $type = $this->settings->get('captcha.type');
-    return CaptchaConstants::isBuiltIn($type)
-      || (CaptchaConstants::isDisabled($type) && $this->captchaRenderer->isSupported());
   }
 
   public function renderInWPRegisterForm() {

@@ -41,13 +41,19 @@ class ReCaptchaHooks {
   }
 
   public function isEnabled(): bool {
-    if (!$this->settings->get(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false)) {
+    // In some cases on multisite instance or during fresh install, this code may run
+    // before DB migrator and settings table is not ready at that time
+    try {
+      if (!$this->settings->get(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false)) {
+        return false;
+      }
+
+      return CaptchaConstants::isReCaptcha(
+        $this->settings->get('captcha.type')
+      );
+    } catch (\Exception $e) {
       return false;
     }
-
-    return CaptchaConstants::isReCaptcha(
-      $this->settings->get('captcha.type')
-    );
   }
 
   public function enqueueScripts() {
