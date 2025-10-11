@@ -1,4 +1,5 @@
 import { SaveButton } from 'settings/components';
+import { useSetting } from 'settings/store/hooks';
 import { TaskScheduler } from './task-scheduler';
 import { Roles } from './roles';
 import { EngagementTracking } from './engagement-tracking';
@@ -17,6 +18,8 @@ import { CaptchaPage } from './captcha-page';
 import { UseBlockEditorForAutomation } from './use-block-editor-for-automation';
 
 export function Advanced() {
+  const [captchaType] = useSetting('captcha', 'type');
+
   return (
     <div className="mailpoet-settings-grid">
       <BounceAddress />
@@ -30,7 +33,7 @@ export function Advanced() {
       <ShareData />
       <Libs3rdParty />
       <Captcha />
-      <CaptchaPage />
+      {captchaType === 'built-in' && <CaptchaPage />}
       <CaptchaOnSignup />
       <UseBlockEditorForAutomation />
       <Reinstall />
