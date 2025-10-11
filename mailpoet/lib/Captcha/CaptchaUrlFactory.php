@@ -57,6 +57,38 @@ class CaptchaUrlFactory {
     );
   }
 
+  public function getCaptchaPreviewUrl($post = null) {
+    if ($post === null) {
+      $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
+    }
+    if ($post === null) return;
+
+    $url = $this->wp->getPermalink($post);
+
+    // Use preview session ID for preview
+    $data = [
+      'captcha_session_id' => 'preview',
+      'referrer_form' => self::REFERER_MP_FORM,
+      'preview' => 1,
+    ];
+
+    $params = [
+      Router::NAME,
+      'endpoint=' . CaptchaEndpoint::ENDPOINT,
+      'action=' . CaptchaEndpoint::ACTION_RENDER,
+      'data=' . Router::encodeRequestData($data),
+    ];
+
+    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+
+    $urlParams = parse_url($url);
+    if (!is_array($urlParams) || empty($urlParams['scheme'])) {
+      $url = $this->wp->getBloginfo('url') . $url;
+    }
+
+    return $url;
+  }
+
   private function getUrl(string $action, array $data) {
     $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
     $url = $this->wp->getPermalink($post);
