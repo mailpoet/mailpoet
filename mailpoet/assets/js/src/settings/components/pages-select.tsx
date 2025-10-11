@@ -13,7 +13,8 @@ type Props = {
     | 'unsubscribe'
     | 'confirm'
     | 'confirm_unsubscribe'
-    | 're_engagement';
+    | 're_engagement'
+    | 'captcha';
 };
 
 export function PageSelect(props: Props) {

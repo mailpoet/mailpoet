@@ -13,6 +13,7 @@ import { RecalculateSubscriberScore } from './recalculate-subscriber-score';
 import { Logging } from './logging';
 import { BounceAddress } from './bounce-address';
 import { CaptchaOnSignup } from './captcha-on-signup';
+import { CaptchaPage } from './captcha-page';
 import { UseBlockEditorForAutomation } from './use-block-editor-for-automation';
 
 export function Advanced() {
@@ -29,6 +30,7 @@ export function Advanced() {
       <ShareData />
       <Libs3rdParty />
       <Captcha />
+      <CaptchaPage />
       <CaptchaOnSignup />
       <UseBlockEditorForAutomation />
       <Reinstall />
