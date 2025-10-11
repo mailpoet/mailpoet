@@ -53,4 +53,24 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
   }
+
+  public function testItReturnsCaptchaPreviewUrl() {
+    $url = $this->urlFactory->getCaptchaPreviewUrl();
+
+    verify($url)->notNull();
+    verify($url)->stringContainsString(Router::NAME);
+    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_CAPTCHA);
+    verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_RENDER);
+    verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
+    verify($url)->stringContainsString('data=');
+  }
+
+  public function testItReturnsNullWhenNoCaptchaPageSet() {
+    $settings = $this->diContainer->get(\MailPoet\Settings\SettingsController::class);
+    $settings->set('subscription.pages.captcha', null);
+
+    $url = $this->urlFactory->getCaptchaPreviewUrl();
+
+    verify($url)->null();
+  }
 }
