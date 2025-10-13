@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.16.1 - 2025-10-13 =
+* Added: Add WooCommerce email for marketing confirmation;
+* Changed: Update automation editor UI for garden mode compatibility.
+
 = 5.16.0 - 2025-10-06 =
 * Added: Include last automation run details and email statistics in Automations listing endpoint;
 * Fixed: Restrict sendPreviewEmail filter to mailpoet_email post type;
