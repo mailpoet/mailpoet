@@ -74,7 +74,7 @@ class PageRenderer {
     if (isset($this->data['preview']) && $this->data['preview']) {
       $content = '<div class="mailpoet_captcha_preview">' .
         '<p>' . __('This is a preview of the CAPTCHA page.', 'mailpoet') . '</p>' .
-        '<p>' . __('When users need to verify they\'re not a robot, the CAPTCHA form will be displayed here.', 'mailpoet') . '</p>' .
+        '<p>' . __('When users need to verify they’re not a robot, the CAPTCHA form will be displayed here.', 'mailpoet') . '</p>' .
         '</div>';
     } else {
       $content = $this->formRenderer->render($this->data);

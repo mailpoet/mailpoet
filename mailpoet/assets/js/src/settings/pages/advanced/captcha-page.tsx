@@ -18,7 +18,7 @@ export function CaptchaPage() {
           <>
             {ReactStringReplace(
               __(
-                "Built-in CAPTCHA is shown when users need to verify they're not a robot. You can customize this page by editing it in WordPress and using the [mailpoet_page] shortcode to display the CAPTCHA form.",
+                'Built-in CAPTCHA is shown when users need to verify they’re not a robot. You can customize this page by editing it in WordPress and using the [mailpoet_page] shortcode to display the CAPTCHA form.',
                 'mailpoet',
               ),
               '[mailpoet_page]',
