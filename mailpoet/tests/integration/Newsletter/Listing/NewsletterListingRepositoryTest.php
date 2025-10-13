@@ -5,7 +5,9 @@ namespace MailPoet\Newsletter\Listing;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Listing\Handler;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
@@ -388,6 +390,191 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     verify($filters['segment'][1]['value'])->equals($segment1->getId());
   }
 
+  public function testItFiltersBySentAtFrom() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
+    $this->entityManager->persist($newsletter1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
+    $this->entityManager->persist($newsletter2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
+    $this->entityManager->persist($newsletter3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter from Feb 1st onwards
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_from' => '2025-02-01 00:00:00',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(2);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 2');
+    verify($newsletters[1]->getSubject())->equals('Newsletter 3');
+  }
+
+  public function testItFiltersBySentAtTo() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
+    $this->entityManager->persist($newsletter1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
+    $this->entityManager->persist($newsletter2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
+    $this->entityManager->persist($newsletter3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter up to Feb 1st
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_to' => '2025-02-01 23:59:59',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(2);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 1');
+    verify($newsletters[1]->getSubject())->equals('Newsletter 2');
+  }
+
+  public function testItFiltersBySentAtRange() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
+    $this->entityManager->persist($newsletter1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
+    $this->entityManager->persist($newsletter2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
+    $this->entityManager->persist($newsletter3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter between Jan 15th and Feb 15th
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_from' => '2025-01-15 00:00:00',
+        'sent_at_to' => '2025-02-15 23:59:59',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 2');
+  }
+
+  public function testItFiltersBySentAtIncludingScheduledNewsletters() {
+    // Create a sent newsletter
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Sent Newsletter');
+    $newsletter1->setStatus(NewsletterEntity::STATUS_SENT);
+    $newsletter1->setSentAt(new \DateTime('2025-02-01 10:00:00'));
+    $this->entityManager->persist($newsletter1);
+
+    // Create a scheduled newsletter
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Scheduled Newsletter');
+    $newsletter2->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($newsletter2);
+
+    $task2 = new ScheduledTaskEntity();
+    $task2->setScheduledAt(new \DateTime('2025-02-15 10:00:00'));
+    $task2->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task2);
+
+    $queue2 = new SendingQueueEntity();
+    $queue2->setTask($task2);
+    $queue2->setNewsletter($newsletter2);
+    $this->entityManager->persist($queue2);
+
+    // Create another sent newsletter outside the range
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Old Newsletter');
+    $newsletter3->setStatus(NewsletterEntity::STATUS_SENT);
+    $newsletter3->setSentAt(new \DateTime('2025-01-01 10:00:00'));
+    $this->entityManager->persist($newsletter3);
+
+    // Create another scheduled newsletter outside the range
+    $newsletter4 = new NewsletterEntity();
+    $newsletter4->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter4->setSubject('Future Newsletter');
+    $newsletter4->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($newsletter4);
+
+    $task4 = new ScheduledTaskEntity();
+    $task4->setScheduledAt(new \DateTime('2025-03-01 10:00:00'));
+    $task4->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task4);
+
+    $queue4 = new SendingQueueEntity();
+    $queue4->setTask($task4);
+    $queue4->setNewsletter($newsletter4);
+    $this->entityManager->persist($queue4);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter from Feb 1st to Feb 20th - should include both sent and scheduled newsletters in range
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_from' => '2025-02-01 00:00:00',
+        'sent_at_to' => '2025-02-20 23:59:59',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(2);
+    $subjects = array_map(fn($n) => $n->getSubject(), $newsletters);
+    verify(in_array('Sent Newsletter', $subjects))->true();
+    verify(in_array('Scheduled Newsletter', $subjects))->true();
+
+    // Filter from Feb 10th onwards - should include only the scheduled newsletter
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_from' => '2025-02-10 00:00:00',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(2); // Scheduled Newsletter and Future Newsletter
+    $subjects = array_map(fn($n) => $n->getSubject(), $newsletters);
+    verify(in_array('Scheduled Newsletter', $subjects))->true();
+    verify(in_array('Future Newsletter', $subjects))->true();
+  }
+
   public function testItFiltersBySegmentIdsWithIsAnyOperator() {
     $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Description 1');
     $this->entityManager->persist($segment1);
@@ -536,5 +723,56 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     ]));
     verify($newsletters)->arrayCount(1);
     verify($newsletters[0]->getSubject())->equals('Newsletter with no segments');
+  }
+
+  public function testItCombinesSentAtAndSegmentFilters() {
+    $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Description 1');
+    $this->entityManager->persist($segment1);
+
+    $segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Description 2');
+    $this->entityManager->persist($segment2);
+
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
+    $this->entityManager->persist($newsletter1);
+
+    $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
+    $this->entityManager->persist($newsletterSegment1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
+    $this->entityManager->persist($newsletter2);
+
+    $newsletterSegment2 = new NewsletterSegmentEntity($newsletter2, $segment1);
+    $this->entityManager->persist($newsletterSegment2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
+    $this->entityManager->persist($newsletter3);
+
+    $newsletterSegment3 = new NewsletterSegmentEntity($newsletter3, $segment2);
+    $this->entityManager->persist($newsletterSegment3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Combine sent_at_from and segment filter
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'sent_at_from' => '2025-01-15 00:00:00',
+        'segment_ids' => [$segment1->getId()],
+        'segment_operator' => 'isAny',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 2');
   }
 }
