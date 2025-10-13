@@ -32,14 +32,13 @@ export function useSetting<
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useSetting(...path: string[]): [any, (value: any) => any] {
-  const value = useSelect(
+  const settingsValue = useSelect(
     (select) => select(STORE_NAME).getSetting(path),
     path,
   );
   const setValue = useAction('setSetting');
   return [
-    value,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useCallback((value) => setValue(path, value), path),
+    settingsValue,
+    useCallback((value) => setValue(path, value), [path, setValue]),
   ];
 }
