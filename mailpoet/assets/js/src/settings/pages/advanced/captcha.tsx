@@ -65,7 +65,7 @@ export function Captcha() {
               {t('readMore')}
             </a>
             {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
-              <p>
+              <span>
                 <span>{t('reCaptchaDescription')} </span>
                 <a
                   className="mailpoet-link"
@@ -75,7 +75,7 @@ export function Captcha() {
                 >
                   {t('signupForCaptchaKey')}
                 </a>
-              </p>
+              </span>
             )}
           </>
         }
