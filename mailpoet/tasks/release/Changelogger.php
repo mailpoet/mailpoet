@@ -169,6 +169,16 @@ class Changelogger {
       throw new \Exception("Invalid changelog type: $type");
     }
 
+    // Trim whitespace and remove trailing punctuation
+    $description = trim($description);
+    $description = rtrim($description, '.!?;,');
+    // Ensure description starts with a capital letter
+    $description = ucfirst($description);
+
+    if (empty($description)) {
+      throw new \Exception("Description cannot be empty");
+    }
+
     if (!is_dir($this->changelogDir)) {
       mkdir($this->changelogDir, 0755, true);
     }
