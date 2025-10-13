@@ -229,6 +229,40 @@ class NewsletterListingRepository extends ListingRepository {
         ->andWhere('ns.segment = :segmentId')
         ->setParameter('segmentId', (int)$segmentId);
     }
+
+    // Filter by segment IDs with advanced operators
+    $segmentIds = $filters['segment_ids'] ?? null;
+    if (!$segmentIds || !is_array($segmentIds)) {
+      return;
+    }
+    $segmentIds = array_filter($segmentIds, 'is_numeric');
+    $segmentIds = array_map('intval', $segmentIds);
+    if (empty($segmentIds)) {
+      return;
+    }
+
+    $segmentOperator = $filters['segment_operator'] ?? null;
+    if (!in_array($segmentOperator, ['isAny', 'isNone'], true)) {
+      return;
+    }
+
+    if ($segmentOperator === 'isAny') {
+      $queryBuilder
+        ->join('n.newsletterSegments', 'ns2')
+        ->andWhere('ns2.segment IN (:segmentIds)')
+        ->setParameter('segmentIds', $segmentIds);
+    } elseif ($segmentOperator === 'isNone') {
+      $subQuery = $queryBuilder->getEntityManager()->createQueryBuilder()
+        ->select('1')
+        ->from(NewsletterEntity::class, 'nNone')
+        ->join('nNone.newsletterSegments', 'nsNone')
+        ->where('nNone.id = n.id')
+        ->andWhere('nsNone.segment IN (:segmentIdsNone)')
+        ->getDQL();
+      $queryBuilder
+        ->andWhere('NOT EXISTS (' . $subQuery . ')')
+        ->setParameter('segmentIdsNone', $segmentIds);
+    }
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
