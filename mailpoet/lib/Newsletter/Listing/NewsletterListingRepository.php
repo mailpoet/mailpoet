@@ -223,11 +223,11 @@ class NewsletterListingRepository extends ListingRepository {
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
     $segmentId = $filters['segment'] ?? null;
-    if ($segmentId) {
+    if ($segmentId && is_numeric($segmentId)) {
       $queryBuilder
         ->join('n.newsletterSegments', 'ns')
         ->andWhere('ns.segment = :segmentId')
-        ->setParameter('segmentId', $segmentId);
+        ->setParameter('segmentId', (int)$segmentId);
     }
   }
 
