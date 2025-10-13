@@ -230,6 +230,37 @@ class NewsletterListingRepository extends ListingRepository {
         ->setParameter('segmentId', (int)$segmentId);
     }
 
+    // Filter by sent_at/scheduled_at date
+    $sentAtFrom = $filters['sent_at_from'] ?? null;
+    if ($sentAtFrom && is_string($sentAtFrom) && $this->isValidDateTime($sentAtFrom)) {
+      $subQueryFrom = $queryBuilder->getEntityManager()->createQueryBuilder()
+        ->select('1')
+        ->from('MailPoet\Entities\SendingQueueEntity', 'queueFrom')
+        ->join('queueFrom.task', 'taskFrom')
+        ->where('queueFrom.newsletter = n.id')
+        ->andWhere('taskFrom.scheduledAt >= :sentAtFrom')
+        ->getDQL();
+
+      $queryBuilder
+        ->andWhere('(n.sentAt >= :sentAtFrom OR EXISTS (' . $subQueryFrom . '))')
+        ->setParameter('sentAtFrom', $sentAtFrom);
+    }
+
+    $sentAtTo = $filters['sent_at_to'] ?? null;
+    if ($sentAtTo && is_string($sentAtTo) && $this->isValidDateTime($sentAtTo)) {
+      $subQueryTo = $queryBuilder->getEntityManager()->createQueryBuilder()
+        ->select('1')
+        ->from('MailPoet\Entities\SendingQueueEntity', 'queueTo')
+        ->join('queueTo.task', 'taskTo')
+        ->where('queueTo.newsletter = n.id')
+        ->andWhere('taskTo.scheduledAt <= :sentAtTo')
+        ->getDQL();
+
+      $queryBuilder
+        ->andWhere('(n.sentAt <= :sentAtTo OR EXISTS (' . $subQueryTo . '))')
+        ->setParameter('sentAtTo', $sentAtTo);
+    }
+
     // Filter by segment IDs with advanced operators
     $segmentIds = $filters['segment_ids'] ?? null;
     if (!$segmentIds || !is_array($segmentIds)) {
@@ -262,6 +293,15 @@ class NewsletterListingRepository extends ListingRepository {
       $queryBuilder
         ->andWhere('NOT EXISTS (' . $subQuery . ')')
         ->setParameter('segmentIdsNone', $segmentIds);
+    }
+  }
+
+  private function isValidDateTime(string $dateTime): bool {
+    try {
+      new \DateTime($dateTime);
+      return true;
+    } catch (\Exception $e) {
+      return false;
     }
   }
 
