@@ -387,4 +387,154 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     verify($filters['segment'][1]['label'])->equals('Segment 1 (1)');
     verify($filters['segment'][1]['value'])->equals($segment1->getId());
   }
+
+  public function testItFiltersBySegmentIdsWithIsAnyOperator() {
+    $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Description 1');
+    $this->entityManager->persist($segment1);
+
+    $segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Description 2');
+    $this->entityManager->persist($segment2);
+
+    $segment3 = new SegmentEntity('Segment 3', SegmentEntity::TYPE_DEFAULT, 'Description 3');
+    $this->entityManager->persist($segment3);
+
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $this->entityManager->persist($newsletter1);
+
+    $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
+    $this->entityManager->persist($newsletterSegment1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $this->entityManager->persist($newsletter2);
+
+    $newsletterSegment2 = new NewsletterSegmentEntity($newsletter2, $segment2);
+    $this->entityManager->persist($newsletterSegment2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $this->entityManager->persist($newsletter3);
+
+    $newsletterSegment3 = new NewsletterSegmentEntity($newsletter3, $segment3);
+    $this->entityManager->persist($newsletterSegment3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter by segment 1 and 2 with isAny operator
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'segment_ids' => [$segment1->getId(), $segment2->getId()],
+        'segment_operator' => 'isAny',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(2);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 1');
+    verify($newsletters[1]->getSubject())->equals('Newsletter 2');
+  }
+
+  public function testItFiltersBySegmentIdsWithIsNoneOperator() {
+    $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Description 1');
+    $this->entityManager->persist($segment1);
+
+    $segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Description 2');
+    $this->entityManager->persist($segment2);
+
+    $segment3 = new SegmentEntity('Segment 3', SegmentEntity::TYPE_DEFAULT, 'Description 3');
+    $this->entityManager->persist($segment3);
+
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter 1');
+    $this->entityManager->persist($newsletter1);
+
+    $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
+    $this->entityManager->persist($newsletterSegment1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter 2');
+    $this->entityManager->persist($newsletter2);
+
+    $newsletterSegment2 = new NewsletterSegmentEntity($newsletter2, $segment2);
+    $this->entityManager->persist($newsletterSegment2);
+
+    $newsletter3 = new NewsletterEntity();
+    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter3->setSubject('Newsletter 3');
+    $this->entityManager->persist($newsletter3);
+
+    $newsletterSegment3 = new NewsletterSegmentEntity($newsletter3, $segment3);
+    $this->entityManager->persist($newsletterSegment3);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter by segment 1 and 2 with isNone operator - should return only newsletter 3
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'segment_ids' => [$segment1->getId(), $segment2->getId()],
+        'segment_operator' => 'isNone',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getSubject())->equals('Newsletter 3');
+  }
+
+  public function testItFiltersBySegmentIdsWithMultipleSegmentsAssigned() {
+    $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Description 1');
+    $this->entityManager->persist($segment1);
+
+    $segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Description 2');
+    $this->entityManager->persist($segment2);
+
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter with both segments');
+    $this->entityManager->persist($newsletter1);
+
+    $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
+    $this->entityManager->persist($newsletterSegment1);
+
+    $newsletterSegment2 = new NewsletterSegmentEntity($newsletter1, $segment2);
+    $this->entityManager->persist($newsletterSegment2);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter2->setSubject('Newsletter with no segments');
+    $this->entityManager->persist($newsletter2);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Filter by segment 1 with isAny - should return newsletter 1
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'segment_ids' => [$segment1->getId()],
+        'segment_operator' => 'isAny',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getSubject())->equals('Newsletter with both segments');
+
+    // Filter by segment 1 with isNone - should return newsletter 2
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'filter' => [
+        'segment_ids' => [$segment1->getId()],
+        'segment_operator' => 'isNone',
+      ],
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getSubject())->equals('Newsletter with no segments');
+  }
 }
