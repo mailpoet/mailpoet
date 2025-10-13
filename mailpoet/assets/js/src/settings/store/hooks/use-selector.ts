@@ -7,10 +7,11 @@ type Selectors = typeof selectors;
 
 export function useSelector<Key extends keyof Selectors>(
   key: Key,
-  deps: any[] = [], // eslint-disable-line @typescript-eslint/no-explicit-any
 ): ExcludeFirstParam<Selectors[Key]> {
-  return useSelect((select) => {
-    const selects = select(STORE_NAME);
-    return selects[key].bind(selects);
-  }, deps);
+  const selector = useSelect((select) => select(STORE_NAME)[key], [key]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((...args: any[]) => (selector as any)(...args)) as ExcludeFirstParam<
+    Selectors[Key]
+  >;
 }
