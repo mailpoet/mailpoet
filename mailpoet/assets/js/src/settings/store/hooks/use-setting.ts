@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
+import { useSelect } from '@wordpress/data';
 import { Settings } from '../types';
-import { useSelector } from './use-selector';
 import { ValueAndSetter } from './types';
 import { useAction } from './use-actions';
+import { STORE_NAME } from '../store-name';
 /**
  * Takes the path of a setting (ie. key1, key2, key3,...) and returns an array with two items:
  * the first is the setting value and the second is a setter for that setting.
@@ -31,10 +32,13 @@ export function useSetting<
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useSetting(...path: string[]): [any, (value: any) => any] {
-  const getValue = useSelector('getSetting');
+  const value = useSelect(
+    (select) => select(STORE_NAME).getSetting(path),
+    path,
+  );
   const setValue = useAction('setSetting');
   return [
-    getValue(path),
+    value,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useCallback((value) => setValue(path, value), path),
   ];
