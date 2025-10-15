@@ -21,4 +21,8 @@ class Site {
   public function getHomepageURL(array $context, array $args = []): string {
     return $this->wp->getBloginfo('url');
   }
+
+  public function getDescription(array $context, array $args = []): string {
+    return htmlspecialchars_decode($this->wp->getBloginfo('description'), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+  }
 }

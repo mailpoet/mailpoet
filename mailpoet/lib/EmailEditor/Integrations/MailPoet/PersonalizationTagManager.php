@@ -82,6 +82,15 @@ class PersonalizationTagManager {
         [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
       $registry->register(new Personalization_Tag(
+        __('Site Description', 'mailpoet'),
+        'mailpoet/site-description',
+        __('Site', 'mailpoet'),
+        [$this->site, 'getDescription'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
         __('Homepage URL', 'mailpoet'),
         'mailpoet/site-homepage-url',
         __('Site', 'mailpoet'),
