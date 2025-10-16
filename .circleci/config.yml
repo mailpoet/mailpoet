@@ -200,7 +200,7 @@ jobs:
             ./do download:woo-commerce-zip 10.2.2
             ./do download:woo-commerce-subscriptions-zip 7.9.0
             ./do download:woo-commerce-memberships-zip
-            ./do download:automate-woo-zip 6.1.17
+            ./do download:automate-woo-zip 6.1.18
       - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
