@@ -198,7 +198,7 @@ jobs:
           name: Download additional WP Plugins for tests
           command: |
             ./do download:woo-commerce-zip 10.2.2
-            ./do download:woo-commerce-subscriptions-zip 7.9.0
+            ./do download:woo-commerce-subscriptions-zip 8.0.0
             ./do download:woo-commerce-memberships-zip
             ./do download:automate-woo-zip 6.1.18
       - run:
@@ -1183,7 +1183,7 @@ workflows:
           <<: *slack-fail-post-step
           name: acceptance_oldest
           woo_core_version: 10.1.2
-          woo_subscriptions_version: 7.8.2
+          woo_subscriptions_version: 7.9.0
           automate_woo_version: 6.0.33
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
@@ -1223,7 +1223,7 @@ workflows:
           <<: *slack-fail-post-step
           name: integration_oldest
           woo_core_version: 10.1.2
-          woo_subscriptions_version: 7.8.2
+          woo_subscriptions_version: 7.9.0
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
@@ -1285,7 +1285,7 @@ workflows:
           <<: *slack-fail-post-step
           name: acceptance_with_premium_oldest
           woo_core_version: 10.1.2
-          woo_subscriptions_version: 7.8.2
+          woo_subscriptions_version: 7.9.0
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
@@ -1296,7 +1296,7 @@ workflows:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
           woo_core_version: 10.1.2
-          woo_subscriptions_version: 7.8.2
+          woo_subscriptions_version: 7.9.0
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
