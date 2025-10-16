@@ -128,7 +128,7 @@ class EditorPageRenderer {
     // See: https://github.com/WordPress/WordPress/blob/753817d462955eb4e40a89034b7b7c375a1e43f3/wp-admin/edit-form-blocks.php#L116-L120.
     wp_add_inline_script(
       'wp-blocks',
-      sprintf('wp.blocks.setCategories( %s );', wp_json_encode(get_block_categories($post))),
+      sprintf('wp.blocks.setCategories( %s );', wp_json_encode(get_block_categories($post), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES)),
       'after'
     );
 
@@ -136,7 +136,7 @@ class EditorPageRenderer {
     // See: https://github.com/WordPress/WordPress/blob/753817d462955eb4e40a89034b7b7c375a1e43f3/wp-admin/edit-form-blocks.php#L144C1-L148C3.
     wp_add_inline_script(
       'wp-blocks',
-      sprintf('wp.blocks.unstable__bootstrapServerSideBlockDefinitions( %s );', wp_json_encode(get_block_editor_server_block_settings()))
+      sprintf('wp.blocks.unstable__bootstrapServerSideBlockDefinitions( %s );', wp_json_encode(get_block_editor_server_block_settings(), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES))
     );
 
     $editorSettings = $this->settingsController->get_settings();
@@ -209,7 +209,7 @@ class EditorPageRenderer {
       'mailpoet_automation_id' => $automationId,
     ];
     $this->wp->wpAddInlineScript('email_editor_integration', implode('', array_map(function ($key) use ($inline_script_data) {
-      return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key]));
+      return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key], JSON_HEX_TAG | JSON_UNESCAPED_SLASHES));
     }, array_keys($inline_script_data))), 'before');
 
     // Load CSS from Post Editor
@@ -259,7 +259,7 @@ class EditorPageRenderer {
       'wp-blocks',
       sprintf(
         'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );',
-        wp_json_encode($preloadData)
+        wp_json_encode($preloadData, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES)
       )
     );
   }
@@ -275,8 +275,8 @@ class EditorPageRenderer {
       <script type="text/javascript"> <?php // phpcs:ignore ?>
         window.mailpoet_analytics_enabled = true;
         window.mailpoet_analytics_public_id = '<?php echo esc_js($publicId); ?>';
-        window.mailpoet_analytics_new_public_id = <?php echo wp_json_encode($isPublicIdNew); ?>;
-        window.mailpoet_3rd_party_libs_enabled = <?php echo wp_json_encode($libs3rdPartyEnabled); ?>;
+        window.mailpoet_analytics_new_public_id = <?php echo wp_json_encode($isPublicIdNew, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES); ?>;
+        window.mailpoet_3rd_party_libs_enabled = <?php echo wp_json_encode($libs3rdPartyEnabled, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES); ?>;
         window.mailpoet_version = '<?php echo esc_js(MAILPOET_VERSION); ?>';
         window.mailpoet_premium_version = '<?php echo esc_js((defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : ''); ?>';
       </script>

@@ -49,7 +49,8 @@ class SubscriptionFormBlock {
             return $form->toArray();
           },
           $forms
-        )
+        ),
+        JSON_HEX_TAG | JSON_UNESCAPED_SLASHES
       );
       ?>
       <script type="text/javascript">
