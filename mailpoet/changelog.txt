@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.16.2 - 2025-10-20 =
+* Added: setting to customize built-in CAPTCHA page.
+
 = 5.16.1 - 2025-10-13 =
 * Added: Add WooCommerce email for marketing confirmation;
 * Changed: Update automation editor UI for garden mode compatibility.
