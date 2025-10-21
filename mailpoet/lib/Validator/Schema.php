@@ -62,7 +62,7 @@ abstract class Schema {
   }
 
   public function toString(): string {
-    $json = json_encode($this->schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+    $json = json_encode($this->schema, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
     $error = json_last_error();
     if ($error || $json === false) {
       throw new InvalidStateException(json_last_error_msg(), (string)$error);
