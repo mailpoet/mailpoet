@@ -1,3 +1,6 @@
+/* stylelint-disable selector-nested-pattern */
+@import '~@wordpress/base-styles/variables';
+
 .mailpoet-editor-feedback-button {
   bottom: 5px;
   position: absolute;
@@ -24,5 +27,64 @@
   }
   .mailpoet-settings-panel__preview-text-length-error {
     color: #cc1818;
+  }
+}
+
+.mailpoet-status-panel {
+  &__date-time-picker {
+    min-width: 320px;
+    padding: $grid-unit-10;
+  }
+
+  &__recipients-selector {
+    min-width: 280px;
+    padding: $grid-unit-10;
+  }
+
+  &__recipients-segments {
+    margin-top: $grid-unit-20;
+  }
+
+  &__recipients-total-count {
+    color: $gray-700;
+    font-size: $font-size-small;
+  }
+}
+
+.mailpoet-content-settings-panel {
+  &__help-text {
+    flex: 1;
+  }
+
+  &__text-length {
+    color: $gray-900;
+    font-weight: 500;
+
+    &--warning {
+      color: $alert-yellow;
+    }
+
+    &--error {
+      color: $alert-red;
+    }
+  }
+}
+
+.mailpoet-inbox-preview-panel {
+  &__card {
+    padding: $grid-unit-15;
+  }
+
+  &__from-address {
+    color: $gray-700;
+    font-size: $font-size-small;
+  }
+
+  &__subject {
+    color: $gray-900;
+  }
+
+  &__preheader {
+    color: $gray-700;
   }
 }

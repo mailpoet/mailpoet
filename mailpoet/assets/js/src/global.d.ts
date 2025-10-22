@@ -304,4 +304,10 @@ interface Window {
   mailpoet_legacy_automatic_emails_count: number;
   mailpoet_legacy_automatic_emails_notice_dismissed: boolean;
   mailpoet_newsletters_count: number;
+  mailpoet_settings?: {
+    sender?: {
+      name: string;
+      address: string;
+    };
+  };
 }

@@ -4,6 +4,9 @@
 
 import { addFilter, addAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { select } from '@wordpress/data';
+import { store as coreDataStore } from '@wordpress/core-data';
+import { store as editorStore } from '@wordpress/editor';
 import { MailPoet } from 'mailpoet';
 import { initializeEditor } from '@woocommerce/email-editor';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
@@ -32,15 +35,34 @@ addFilter(
 
 const isAutomationNewsletter = window?.mailpoet_is_automation_newsletter;
 
-// Show custom label for Automation emails.
-// Using the same label as /assets/js/src/newsletter-editor/initializer.jsx#L49
-if (isAutomationNewsletter) {
-  addFilter(
-    'woocommerce_email_editor_send_button_label',
-    'mailpoet/email-editor-integration',
-    () => __('Save and continue', 'mailpoet'),
-  );
-}
+addFilter(
+  'woocommerce_email_editor_send_button_label',
+  'mailpoet/email-editor-integration',
+  () => {
+    // For automation newsletters, use the same label as the legacy editor
+    // See /assets/js/src/newsletter-editor/initializer.jsx#L49
+    if (isAutomationNewsletter) {
+      return __('Save and continue', 'mailpoet');
+    }
+
+    // For regular campaign emails, check if scheduled
+    const postId = select(editorStore).getCurrentPostId();
+    const editedPost = select(coreDataStore).getEditedEntityRecord(
+      'postType',
+      'mailpoet_email',
+      postId,
+    );
+
+    // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
+    const scheduledAt = editedPost?.mailpoet_data?.scheduled_at;
+
+    if (scheduledAt) {
+      return __('Review & schedule', 'mailpoet');
+    }
+
+    return __('Review & send', 'mailpoet');
+  },
+);
 
 const EVENTS_TO_TRACK = [
   'email_editor_events_editor_layout_loaded', // email editor was opened
@@ -85,9 +107,7 @@ if (!isAutomationNewsletter) {
   addFilter(
     'woocommerce_email_editor_setting_sidebar_extension_component',
     'mailpoet/email-editor-integration',
-    (RichTextWithButton) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      EmailSidebarExtension.bind(null, RichTextWithButton),
+    () => EmailSidebarExtension,
   );
 }
 
