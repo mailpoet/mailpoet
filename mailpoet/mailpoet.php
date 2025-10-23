@@ -11,8 +11,8 @@
  * Text Domain: mailpoet
  * Domain Path: /lang
  *
- * WC requires at least: 10.1
- * WC tested up to: 10.2
+ * WC requires at least: 10.2
+ * WC tested up to: 10.3
  *
  * @package WordPress
  * @author MailPoet
@@ -28,7 +28,7 @@ $mailpoetPlugin = [
 ];
 
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.7'; // L-1 version, not the latest
-const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '10.1'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '10.2'; // L-1 version, not the latest
 
 
 // Display WP version error notice
