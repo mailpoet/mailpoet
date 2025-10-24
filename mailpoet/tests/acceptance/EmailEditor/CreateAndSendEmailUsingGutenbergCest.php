@@ -49,6 +49,7 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Change subject and preheader in the settings panel');
     $i->click('Settings', '.woocommerce-email-editor__settings-panel');
+    $i->click('Content settings', '.mailpoet-content-settings-panel');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preheader"]', 'My New Preview Text');
 

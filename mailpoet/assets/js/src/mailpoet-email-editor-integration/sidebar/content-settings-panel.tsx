@@ -103,6 +103,7 @@ export function ContentSettingsPanel() {
         onChange={(value) => updateEmailMailPoetProperty('subject', value)}
         help={subjectHelp}
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
+        data-automation-id="email_subject"
       />
 
       <TextareaControl
@@ -114,6 +115,7 @@ export function ContentSettingsPanel() {
           "Add a preview text to capture subscribers' attention and increase open rates.",
           'mailpoet',
         )}
+        data-automation-id="email_preheader"
       />
     </PluginDocumentSettingPanel>
   );

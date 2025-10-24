@@ -48,7 +48,7 @@ class EmailTemplatesCest {
     $i->click('Save', '.editor-header__settings');
     $i->waitForText('Are you ready to save?', 10, '.entities-saved-states__panel');
     $i->click('Save', '.entities-saved-states__panel');
-    $i->waitForText('Send', 10, '.editor-header__settings');
+    $i->waitForText('Review & send', 10, '.editor-header__settings');
     $this->checkTextIsInEmail($i, $textInTemplate);
 
     $i->wantTo('Edit template');
