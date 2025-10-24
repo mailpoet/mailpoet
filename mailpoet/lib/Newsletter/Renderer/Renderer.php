@@ -83,7 +83,24 @@ class Renderer {
     $wpPostEntity = $newsletter->getWpPost();
     $wpPost = $wpPostEntity ? $wpPostEntity->getWpPostInstance() : null;
     if ($wpPost instanceof \WP_Post) {
+      $filterCallback = function($context) use ($newsletter, $sendingQueue): array {
+        if ($sendingQueue) {
+          $task = $sendingQueue->getTask();
+          $subscribers = $task ? $task->getSubscribers() : null;
+          $subscriber = ($subscribers && $subscriber = $subscribers->first()) ? $subscriber->getSubscriber() : null;
+
+          if ($subscriber) {
+            $context['recipient_email'] = $subscriber->getEmail();
+          }
+        }
+        $context['email_type'] = $newsletter->getType();
+        return $context;
+      };
+      $this->wp->addFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
+
       $renderedNewsletter = $this->guntenbergRenderer->render($wpPost, $subject, $newsletter->getPreheader(), $language, $metaRobots);
+
+      $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
     } else {
       $body = (is_array($newsletter->getBody()))
         ? $newsletter->getBody()
