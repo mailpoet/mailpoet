@@ -91,26 +91,22 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServe
 
 // cleanup Doctrine ORM
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/bin');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/Console');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/Event');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/Export');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/*.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/Driver/DatabaseDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/Driver/SimplifiedXmlDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/Driver/SimplifiedYamlDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/Driver/XmlDriver.php');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/Driver/YamlDriver.php');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Tools/Console');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Tools/Event');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Tools/Export');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/src/Tools/*.php');
 
 // cleanup Doctrine deps
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/inflector');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/collections/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/docs');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/lib/Doctrine/Deprecations/PHPUnit');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/test_fixtures');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/phpcs.xml');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/src/PHPUnit');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php74');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php81');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
 
 // Removing #[\SensitiveParameter] attribute because it can break the plugin on PHP 7.4
@@ -134,7 +130,7 @@ $files = [
 
 $replacements = [
   [
-    'file' => '../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php',
+    'file' => '../vendor-prefixed/doctrine/orm/src/Mapping/ReflectionReadonlyProperty.php',
     'find' => [
       'private ReflectionProperty',
     ],
