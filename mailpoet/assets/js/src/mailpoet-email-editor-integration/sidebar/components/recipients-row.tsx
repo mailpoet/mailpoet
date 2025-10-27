@@ -79,7 +79,11 @@ export function RecipientsRow() {
           setSegments([]);
         }
       })
-      .always(() => setIsLoadingSegments(false));
+      .always(() => {
+        if (mounted) {
+          setIsLoadingSegments(false);
+        }
+      });
     return () => {
       mounted = false;
     };

@@ -10,7 +10,7 @@ import {
   __experimentalHeading as Heading,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useRef } from '@wordpress/element';
 import { dateI18n, getSettings } from '@wordpress/date';
 import { closeSmall } from '@wordpress/icons';
@@ -135,7 +135,10 @@ export function ScheduledRow() {
                   currentDate={scheduledDate}
                   onChange={(newDate) => setScheduledDate(newDate)}
                   /* @ts-expect-error dateOrder prop is available in the external @wordpress/components package */
-                  dateOrder="dmy"
+                  dateOrder={
+                    /* translators: Order of day, month, and year. Available formats are 'dmy', 'mdy', and 'ymd'. */
+                    _x('dmy', 'date order', 'mailpoet')
+                  }
                   is12Hour={is12HourTime}
                 />
               </div>

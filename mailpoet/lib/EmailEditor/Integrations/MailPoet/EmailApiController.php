@@ -110,6 +110,15 @@ class EmailApiController {
   }
 
   private function updateScheduledAtOption($newsletter, $scheduledAtValue): void {
+    // Validate the scheduled_at value
+    if ($scheduledAtValue !== null && $scheduledAtValue !== '') {
+      try {
+        new \DateTime($scheduledAtValue);
+      } catch (\Exception $e) {
+        throw new UnexpectedValueException('Invalid scheduled_at format. Expected a valid datetime string.');
+      }
+    }
+
     $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
       'name' => NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
       'newsletterType' => $newsletter->getType(),
