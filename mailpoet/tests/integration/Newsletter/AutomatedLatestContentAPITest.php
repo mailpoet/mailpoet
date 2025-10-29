@@ -128,14 +128,8 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
       wp_delete_user($existingUser->ID);
     }
 
-    wp_insert_user([
-      'user_login' => $username,
-      'user_email' => $email,
-      'user_pass' => '',
-    ]);
+    $this->tester->createWordPressUser($email, $role, $username);
     $user = $this->wp->getUserBy("email", $email);
-
-    $user->add_role($role);
 
     wp_set_current_user($user->ID);
     $this->createdUsers[] = $user;

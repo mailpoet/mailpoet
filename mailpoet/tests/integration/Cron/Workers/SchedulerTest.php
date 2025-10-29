@@ -912,13 +912,7 @@ class SchedulerTest extends \MailPoetTest {
     $email = 'test@example.com';
     $username = 'phoenix_test_user';
     if (email_exists($email) === false) {
-      wp_insert_user(
-        [
-          'user_login' => $username,
-          'user_email' => $email,
-          'user_pass' => '',
-        ]
-      );
+      $this->tester->createWordPressUser($email, $role, $username);
     }
     $user = get_user_by('login', $username);
     $this->assertInstanceOf(WP_User::class, $user);

@@ -69,9 +69,9 @@ class IntegrationTester extends \Codeception\Actor {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
   }
 
-  public function createWordPressUser(string $email, string $role) {
+  public function createWordPressUser(string $email, string $role, ?string $username = null) {
     $userId = wp_insert_user([
-      'user_login' => explode('@', $email)[0],
+      'user_login' => $username ?? explode('@', $email)[0],
       'user_email' => $email,
       'role' => $role,
       'user_pass' => '12123154',

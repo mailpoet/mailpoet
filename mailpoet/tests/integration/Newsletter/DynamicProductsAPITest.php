@@ -13,10 +13,6 @@ use MailPoet\WP\Functions as WPFunctions;
  * @group woo
  */
 class DynamicProductsAPITest extends \MailPoetTest {
-
-  /*** @var array WP_User[] */
-  private $createdUsers = [];
-
   /*** @var DynamicProductsAPI */
   private $dpAPI;
 
@@ -115,14 +111,6 @@ class DynamicProductsAPITest extends \MailPoetTest {
     if (is_multisite()) {
       restore_current_blog();
     }
-
-    foreach ($this->createdUsers as $user) {
-      if (is_multisite()) {
-        wpmu_delete_user($user->ID);
-      } else {
-        wp_delete_user($user->ID);
-      }
-    }
   }
 
   private function loginWithRole(string $role): \WP_User {
@@ -138,17 +126,9 @@ class DynamicProductsAPITest extends \MailPoetTest {
       }
     }
 
-    wp_insert_user([
-      'user_login' => $username,
-      'user_email' => $email,
-      'user_pass' => '',
-    ]);
+    $this->tester->createWordPressUser($email, $role, $username);
     $user = $this->wp->getUserBy("email", $email);
-
-    $user->add_role($role);
-
     wp_set_current_user($user->ID);
-    $this->createdUsers[] = $user;
 
     return $user;
   }
