@@ -101,9 +101,12 @@ class SMTPTest extends \MailPoetTest {
     verify($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
     verify($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    verify($mailer->getReplyToAddresses())->equals([
-      'reply-to@mailpoet.com' => ['reply-to@mailpoet.com', 'Reply To'],
-    ]);
+    $replyToAddresses = $mailer->getReplyToAddresses();
+    verify(reset($replyToAddresses))
+      ->equals([
+        $this->replyTo['reply_to_email'],
+        $this->replyTo['reply_to_name'],
+      ]);
     verify($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
