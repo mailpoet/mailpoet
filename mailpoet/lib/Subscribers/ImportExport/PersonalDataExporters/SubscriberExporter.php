@@ -121,13 +121,16 @@ class SubscriberExporter {
    * @return array<int, string>
    */
   private function getCustomFields(): array {
-    if (!empty($this->customFields)) {
+    if (count($this->customFields) > 0) {
       return $this->customFields;
     }
 
     $fields = $this->customFieldsRepository->findAll();
     foreach ($fields as $field) {
-      $this->customFields[$field->getId()] = $field->getName();
+      $fieldId = $field->getId();
+      if ($fieldId !== null) {
+        $this->customFields[$fieldId] = $field->getName();
+      }
     }
     return $this->customFields;
   }

@@ -203,7 +203,10 @@ class Renderer {
    * @return string
    */
   private function renderTextVersion($template) {
-    $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : mb_convert_encoding($template, 'UTF-8', mb_list_encodings());
+    if (!mb_detect_encoding($template, 'UTF-8', true)) {
+      $converted = mb_convert_encoding($template, 'UTF-8', mb_list_encodings());
+      $template = $converted !== false ? $converted : $template;
+    }
     return @Html2Text::convert($template);
   }
 

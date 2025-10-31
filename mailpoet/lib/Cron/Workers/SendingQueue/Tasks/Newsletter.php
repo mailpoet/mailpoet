@@ -124,7 +124,6 @@ class Newsletter {
       is_null($newsletter)
       || $newsletter->getDeletedAt() !== null
       || !in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
-      || $newsletter->getStatus() === NewsletterEntity::STATUS_CORRUPT
     ) {
       $this->recoverFromInvalidState($task);
       return null;

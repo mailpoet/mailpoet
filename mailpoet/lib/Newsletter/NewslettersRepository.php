@@ -205,31 +205,37 @@ class NewslettersRepository extends Repository {
     foreach ($results as $result) {
       $type = $result['type'];
       if ($type === NewsletterEntity::TYPE_AUTOMATIC) {
+        if (!isset($analyticsMap[$type]) || !is_array($analyticsMap[$type])) {
+          $analyticsMap[$type] = [];
+        }
         $analyticsMap[$type][$result['event'] ?? ''] = (int)$result['cnt'];
       } else {
         $analyticsMap[$type] = (int)$result['cnt'];
       }
     }
 
+    $automaticEmailsMap = $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] ?? [];
+    $automaticEmailsMap = is_array($automaticEmailsMap) ? $automaticEmailsMap : [];
+
     $data = [
       'welcome_newsletters_count' => $analyticsMap[NewsletterEntity::TYPE_WELCOME] ?? 0,
       'notifications_count' => $analyticsMap[NewsletterEntity::TYPE_NOTIFICATION] ?? 0,
-      'automatic_emails_count' => array_sum($analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] ?? []),
+      'automatic_emails_count' => array_sum($automaticEmailsMap),
       'automation_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATION] ?? 0,
       're-engagement_emails_count' => $analyticsMap[NewsletterEntity::TYPE_RE_ENGAGEMENT] ?? 0,
       'sent_newsletters_count' => $analyticsMap[NewsletterEntity::TYPE_STANDARD] ?? 0,
       'sent_newsletters_7_days' => $this->getStandardNewsletterSentCount(Carbon::now()->subDays(7)),
       'sent_newsletters_3_months' => $this->getStandardNewsletterSentCount(Carbon::now()->subMonths(3)),
       'sent_newsletters_30_days' => $this->getStandardNewsletterSentCount(Carbon::now()->subDays(30)),
-      'first_purchase_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][FirstPurchase::SLUG] ?? 0,
-      'product_purchased_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][PurchasedProduct::SLUG] ?? 0,
-      'product_purchased_in_category_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][PurchasedInCategory::SLUG] ?? 0,
-      'abandoned_cart_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][AbandonedCart::SLUG] ?? 0,
+      'first_purchase_emails_count' => $automaticEmailsMap[FirstPurchase::SLUG] ?? 0,
+      'product_purchased_emails_count' => $automaticEmailsMap[PurchasedProduct::SLUG] ?? 0,
+      'product_purchased_in_category_emails_count' => $automaticEmailsMap[PurchasedInCategory::SLUG] ?? 0,
+      'abandoned_cart_emails_count' => $automaticEmailsMap[AbandonedCart::SLUG] ?? 0,
       'total_gutenberg_newsletter_count' => $this->getTotalGutenbergNewsletterCount() ?: 0,
       'sent_gutenberg_newsletter_count' => $this->getGutenbergNewsletterSentCount() ?: 0,
     ];
     // Count all campaigns
-    $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] = array_sum($analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] ?? []);
+    $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] = array_sum($automaticEmailsMap);
     // Post notification history is not a campaign, we count only the parent notification
     unset($analyticsMap[NewsletterEntity::TYPE_NOTIFICATION_HISTORY]);
     $data['campaigns_count'] = array_sum($analyticsMap);
