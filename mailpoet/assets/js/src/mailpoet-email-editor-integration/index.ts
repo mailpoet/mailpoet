@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 import { select } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
+import { registerPlugin } from '@wordpress/plugins';
 import { MailPoet } from 'mailpoet';
 import { initializeEditor } from '@woocommerce/email-editor';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
@@ -100,15 +101,12 @@ addFilter(
   () => !!window.mailpoet_analytics_enabled,
 );
 
-// integration point for settings sidebar
-// Hide subject and preview text fields for Automation emails.
-// This is because the Automation editor has its own subject and preview text fields and there isn't a need to show them again in the email editor.
+// Register MailPoet sidebar panels component
 if (!isAutomationNewsletter) {
-  addFilter(
-    'woocommerce_email_editor_setting_sidebar_extension_component',
-    'mailpoet/email-editor-integration',
-    () => EmailSidebarExtension,
-  );
+  registerPlugin('mailpoet-settings-sidebar', {
+    render: EmailSidebarExtension,
+    scope: 'woocommerce-email-editor',
+  });
 }
 
 // use mailpoet data subject if available

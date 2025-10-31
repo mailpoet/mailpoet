@@ -1,4 +1,4 @@
-import { EmailStatus } from './sidebar/email-status';
+import { EmailSettingsPanel } from './sidebar/email-settings-panel';
 import { ContentSettingsPanel } from './sidebar/content-settings-panel';
 import { InboxPreviewPanel } from './sidebar/inbox-preview-panel';
 import { TrackingPanel } from './sidebar/tracking-panel';
@@ -6,7 +6,7 @@ import { TrackingPanel } from './sidebar/tracking-panel';
 export function EmailSidebarExtension() {
   return (
     <>
-      <EmailStatus />
+      <EmailSettingsPanel />
       <ContentSettingsPanel />
       <InboxPreviewPanel />
       <TrackingPanel />
