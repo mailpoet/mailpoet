@@ -22,11 +22,12 @@ parameters:
     - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - custom-stubs.php
   inferPrivatePropertyTypeFromConstructor: true
-  checkGenericClassInNonGenericObjectType: false
   parallel:
     processTimeout: 300.0
     maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
   ignoreErrors:
+    - identifier: missingType.iterableValue
+    - identifier: missingType.generics
     - '#Function members_register_.+ not found#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
 
@@ -85,7 +86,6 @@ parameters:
     objectManagerLoader: create-entity-manager.php
 
   # exclude level 6 errors
-  checkMissingIterableValueType: false
   treatPhpDocTypesAsCertain: false # We have some incorrect phpdoc types, but I want to address them later
 
   excludePaths:
