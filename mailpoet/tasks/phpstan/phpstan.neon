@@ -24,7 +24,7 @@ parameters:
   inferPrivatePropertyTypeFromConstructor: true
   parallel:
     processTimeout: 300.0
-    maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
+    maximumNumberOfProcesses: 2 # Static analysis is running on Circle CI medium+ that has 3 CPUs, but runs out of memory with 3 processes
   ignoreErrors:
     - identifier: missingType.iterableValue
     - identifier: missingType.generics
