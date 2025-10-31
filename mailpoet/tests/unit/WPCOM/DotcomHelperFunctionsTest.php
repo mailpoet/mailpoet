@@ -2,13 +2,24 @@
 
 namespace MailPoet\WPCOM;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   /*** @var DotcomHelperFunctions */
   private $dotcomHelper;
 
+  /*** @var WPFunctions */
+  private $wp;
+
   public function _before() {
     parent::_before();
-    $this->dotcomHelper = new DotcomHelperFunctions();
+    $this->wp = $this->createMock(WPFunctions::class);
+    $this->wp->expects($this->any())
+      ->method('applyFilters')
+      ->willReturnCallback(function ($tag, $value) {
+        return $value;
+      });
+    $this->dotcomHelper = new DotcomHelperFunctions($this->wp);
   }
 
   public function testItReturnsFalseIfNotDotcom() {
@@ -26,37 +37,55 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testItReturnsPerformanceIfWooExpressPerformance() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressPerformance']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isWooExpressPerformance'])
+      ->getMock();
     $dotcomHelper->method('isWooExpressPerformance')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('performance');
   }
 
   public function testItReturnsEssentialIfWooExpressEssential() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressEssential']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isWooExpressEssential'])
+      ->getMock();
     $dotcomHelper->method('isWooExpressEssential')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('essential');
   }
 
   public function testItReturnsBusinessIfWooBusiness() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isBusiness']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isBusiness'])
+      ->getMock();
     $dotcomHelper->method('isBusiness')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('business');
   }
 
   public function testItReturnsEcommerceTrialIfEcommerceTrial() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerceTrial']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isEcommerceTrial'])
+      ->getMock();
     $dotcomHelper->method('isEcommerceTrial')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('ecommerce_trial');
   }
 
   public function testItReturnsEcommerceWPComIfEcommerceWPCom() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerceWPCom']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isEcommerceWPCom'])
+      ->getMock();
     $dotcomHelper->method('isEcommerceWPCom')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('ecommerce_wpcom');
   }
 
   public function testItReturnsEcommerceIfEcommerce() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerce']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isEcommerce'])
+      ->getMock();
     $dotcomHelper->method('isEcommerce')->willReturn(true);
     verify($dotcomHelper->getDotcomPlan())->equals('ecommerce');
   }
@@ -66,17 +95,19 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenNameReturnsNullWhenNotGarden() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(false);
     verify($dotcomHelper->gardenName())->null();
   }
 
   public function testGardenNameReturnsNullWhenGetSiteMetaNotAvailable() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
-    $dotcomHelper->method('isGarden')->willReturn(true);
-
-    // Mock getSiteMetaValue to return null when get_site_meta is not available
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
 
@@ -84,7 +115,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenNameReturnsNullWhenMetaValueIsEmpty() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
 
@@ -92,7 +126,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenNameReturnsValueWhenMetaValueIsValid() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn('My Garden');
 
@@ -100,13 +137,19 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenPartnerReturnsNullWhenNotGarden() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(false);
     verify($dotcomHelper->gardenPartner())->null();
   }
 
   public function testGardenPartnerReturnsNullWhenGetSiteMetaNotAvailable() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
 
@@ -114,7 +157,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenPartnerReturnsNullWhenMetaValueIsEmpty() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn(null);
 
@@ -122,7 +168,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testGardenPartnerReturnsValueWhenMetaValueIsValid() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isGarden', 'getSiteMetaValue']);
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getSiteMetaValue'])
+      ->getMock();
     $dotcomHelper->method('isGarden')->willReturn(true);
     $dotcomHelper->method('getSiteMetaValue')->willReturn('Partner Name');
 

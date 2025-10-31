@@ -19,6 +19,9 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $wp = $this->make(WPFunctions::class, [
       'installPlugin' => Expected::once(true),
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
@@ -39,11 +42,15 @@ class PremiumTest extends \MailPoetUnitTest {
       'isPremiumKeyValid' => Expected::once(false),
     ]);
 
-    $wp = $this->makeEmpty(WPFunctions::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
+    ]);
 
     $installer = $this->makeEmpty(Installer::class);
 
-    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->installPlugin();
     verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
@@ -59,13 +66,16 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $wp = $this->make(WPFunctions::class, [
       'installPlugin' => Expected::once(false),
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
       'generatePluginDownloadUrl' => Expected::once(''),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->installPlugin();
     verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
@@ -81,11 +91,14 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $wp = $this->make(WPFunctions::class, [
       'installPlugin' => Expected::once(false),
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
 
-    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->installPlugin();
     verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
@@ -101,11 +114,14 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $wp = $this->make(WPFunctions::class, [
       'activatePlugin' => Expected::once(null),
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
 
-    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->activatePlugin();
     verify($response)->instanceOf(SuccessResponse::class);
   }
@@ -115,9 +131,14 @@ class PremiumTest extends \MailPoetUnitTest {
       'isPremiumKeyValid' => Expected::once(false),
     ]);
 
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
+    ]);
     $installer = $this->makeEmpty(Installer::class);
 
-    $premium = new Premium($servicesChecker, new WPFunctions(), new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->activatePlugin();
     verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
@@ -133,11 +154,14 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $wp = $this->make(WPFunctions::class, [
       'activatePlugin' => Expected::once('error'),
+      'applyFilters' => function ($tag, $value) {
+        return $value;
+      },
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
 
-    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions(), $installer);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
     $response = $premium->activatePlugin();
     verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
