@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dfc1e051d204f1e6f475b5ff6edc51b7",
+    "content-hash": "56b309dc337fa9b415246dc1c922d794",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -873,16 +873,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.20.6",
+            "version": "2.20.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "c322c71cd40da12d255dabd7b6ce0d9cf208a5d5"
+                "reference": "59938cae57c88b386cb79c81685426c83d27a120"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/c322c71cd40da12d255dabd7b6ce0d9cf208a5d5",
-                "reference": "c322c71cd40da12d255dabd7b6ce0d9cf208a5d5",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/59938cae57c88b386cb79c81685426c83d27a120",
+                "reference": "59938cae57c88b386cb79c81685426c83d27a120",
                 "shasum": ""
             },
             "require": {
@@ -909,14 +909,13 @@
             },
             "require-dev": {
                 "doctrine/annotations": "^1.13 || ^2",
-                "doctrine/coding-standard": "^9.0.2 || ^13.0",
+                "doctrine/coding-standard": "^9.0.2 || ^14.0",
                 "phpbench/phpbench": "^0.16.10 || ^1.0",
                 "phpstan/extension-installer": "~1.1.0 || ^1.4",
-                "phpstan/phpstan": "~1.4.10 || 2.0.3",
+                "phpstan/phpstan": "~1.4.10 || 2.1.22",
                 "phpstan/phpstan-deprecation-rules": "^1 || ^2",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6",
                 "psr/log": "^1 || ^2 || ^3",
-                "squizlabs/php_codesniffer": "3.12.0",
                 "symfony/cache": "^4.4 || ^5.4 || ^6.4 || ^7.0",
                 "symfony/var-exporter": "^4.4 || ^5.4 || ^6.2 || ^7.0",
                 "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0 || ^7.0"
@@ -969,9 +968,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.20.6"
+                "source": "https://github.com/doctrine/orm/tree/2.20.7"
             },
-            "time": "2025-08-08T06:55:44+00:00"
+            "time": "2025-10-27T21:19:59+00:00"
         },
         {
             "name": "doctrine/persistence",
