@@ -908,7 +908,7 @@ class SchedulerTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  public function _createOrUpdateWPUser($role = null) {
+  public function _createOrUpdateWPUser(string $role) {
     $email = 'test@example.com';
     $username = 'phoenix_test_user';
     if (email_exists($email) === false) {
