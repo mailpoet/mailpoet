@@ -105,7 +105,8 @@ class CreateSubscriberScoreSegmentCest {
     $i->dontSee('This segment has 0 subscribers.');
     $subscribersCountText = $i->grabTextFrom('.mailpoet-segments-counter-section');
     Assert::assertIsString($subscribersCountText);
-    preg_match('/has (\d+) subscribers/i', $subscribersCountText, $matches);
+    $result = preg_match('/has (\d+) subscribers/i', $subscribersCountText, $matches);
+    Assert::assertSame(1, $result, 'Expected to find subscriber count in text');
     verify((int)$matches[1])->greaterThan(0);
   }
 }

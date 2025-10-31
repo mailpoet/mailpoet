@@ -133,7 +133,7 @@ class StepRunLoggerTest extends MailPoetTest {
     $error = new Exception('test error');
     $logger->logFailure($error);
 
-    $this->assertSame(2, $runs);
+    $this->assertSame(2, $runs); // @phpstan-ignore-line - PHPStan thinks $runs === 0 from the previous assert
     $this->assertNotNull($lastLog);
     $this->assertLogData($lastLog, ['step_key' => 'step-key', 'status' => 'failed', 'data' => '{"test":"value"}', 'error' => $error]);
   }
