@@ -71,7 +71,7 @@ class SubscriberSegment implements Filter {
       'segments' => [],
     ];
     $segmentIds = $filterData->getArrayParam('segments');
-    $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    $segments = $this->segmentsRepository->findByIds($segmentIds);
     foreach ($segments as $segment) {
       $lookupData['segments'][$segment->getId()] = $segment->getName();
     }

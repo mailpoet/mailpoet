@@ -81,7 +81,7 @@ class Segment {
 
   private function getSegmentsNames($values): array {
     $ids = array_column($values, 'id');
-    $segments = $this->segmentsRepository->findBy(['id' => $ids]);
+    $segments = $this->segmentsRepository->findByIds($ids);
     $namesMap = [];
     foreach ($segments as $segment) {
       $namesMap[$segment->getId()] = $segment->getName();

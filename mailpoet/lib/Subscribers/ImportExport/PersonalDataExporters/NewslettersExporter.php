@@ -116,7 +116,7 @@ class NewslettersExporter {
 
     if (empty($newsletterIds)) return [];
 
-    $newsletters = $this->newslettersRepository->findBy(['id' => $newsletterIds]);
+    $newsletters = $this->newslettersRepository->findByIds($newsletterIds);
 
     $result = [];
     foreach ($newsletters as $newsletter) {

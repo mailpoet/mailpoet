@@ -54,8 +54,7 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersCountBySegmentIds(array $segmentIds, ?string $status = null, ?int $filterSegmentId = null): int {
-    $segmentRepository = $this->entityManager->getRepository(SegmentEntity::class);
-    $segments = $segmentRepository->findBy(['id' => $segmentIds]);
+    $segments = $this->segmentsRepository->findByIds($segmentIds);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $this->createCountQueryBuilder();
 

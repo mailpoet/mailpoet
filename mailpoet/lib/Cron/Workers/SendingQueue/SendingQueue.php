@@ -26,6 +26,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use Throwable;
 
@@ -259,7 +260,15 @@ class SendingQueue {
           $this->scheduledTasksRepository->flush();
           return;
         }
-        $foundSubscribers = empty($foundSubscribersIds) ? [] : $this->subscribersRepository->findBy(['id' => $foundSubscribersIds, 'deletedAt' => null]);
+        $foundSubscribers = [];
+        if (!empty($foundSubscribersIds)) {
+          $foundSubscribers = $this->subscribersRepository->createQueryBuilder('s')
+            ->where('s.id IN (:subscriberIds)')
+            ->setParameter('subscriberIds', $foundSubscribersIds, ArrayParameterType::INTEGER)
+            ->andWhere('s.deletedAt IS NULL')
+            ->getQuery()
+            ->getResult();
+        }
       } else {
         // No segments = Welcome emails or some Automatic emails.
         // Welcome emails or some Automatic emails use segments only for scheduling and store them as a newsletter option
@@ -498,7 +507,7 @@ class SendingQueue {
       return true;
     }
     $segmentIds = array_unique($segmentIds);
-    $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    $segments = $this->segmentsRepository->findByIds($segmentIds);
     // Some segment was deleted from DB
     if (count($segmentIds) > count($segments)) {
       return false;

@@ -183,7 +183,7 @@ class Manage {
     }
 
     if ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED && $newSegmentIds) {
-      $newSegments = $this->segmentsRepository->findBy(['id' => $newSegmentIds]);
+      $newSegments = $this->segmentsRepository->findByIds($newSegmentIds);
       $this->newSubscriberNotificationMailer->send($subscriber, $newSegments);
       $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
         $subscriber->getId(),

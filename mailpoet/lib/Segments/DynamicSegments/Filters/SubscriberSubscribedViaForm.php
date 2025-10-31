@@ -64,7 +64,7 @@ class SubscriberSubscribedViaForm implements Filter {
       'forms' => [],
     ];
     $formIds = $filterData->getArrayParam('form_ids');
-    $forms = $this->formsRepository->findBy(['id' => $formIds]);
+    $forms = $this->formsRepository->findByIds($formIds);
     foreach ($forms as $form) {
       $lookupData['forms'][$form->getId()] = $form->getName();
     }

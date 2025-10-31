@@ -104,7 +104,7 @@ class SubscriberActions {
 
     $metaData = ['confirmationEmailResult' => false];
     // link subscriber to segments
-    $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    $segments = $this->segmentsRepository->findByIds($segmentIds);
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
 
     try {
@@ -115,7 +115,7 @@ class SubscriberActions {
 
     // We want to send the notification on subscribe only when signupConfirmation is disabled
     if ($signupConfirmationEnabled === false && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
-      $this->newSubscriberNotificationMailer->send($subscriber, $this->segmentsRepository->findBy(['id' => $segmentIds]));
+      $this->newSubscriberNotificationMailer->send($subscriber, $this->segmentsRepository->findByIds($segmentIds));
 
       $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
         $subscriber->getId(),

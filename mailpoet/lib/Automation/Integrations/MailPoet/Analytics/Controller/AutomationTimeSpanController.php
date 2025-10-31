@@ -93,6 +93,6 @@ class AutomationTimeSpanController {
       )
     );
 
-    return $this->newslettersRepository->findBy(['id' => $emailIds]);
+    return $this->newslettersRepository->findByIds($emailIds);
   }
 }

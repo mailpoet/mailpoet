@@ -187,7 +187,7 @@ class Subscription {
     $segmentIds = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
     $moreSegmentsToSubscribe = [];
     if (!empty($segmentIds)) {
-      $moreSegmentsToSubscribe = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+      $moreSegmentsToSubscribe = $this->segmentsRepository->findByIds($segmentIds);
     }
     $signupConfirmation = $this->settings->get('signup_confirmation');
 

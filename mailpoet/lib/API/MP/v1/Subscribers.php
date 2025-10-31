@@ -281,7 +281,7 @@ class Subscribers {
     }
 
     if (!$skipSubscriberNotification && ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)) {
-      $this->newSubscriberNotificationMailer->send($subscriber, $this->segmentsRepository->findBy(['id' => $foundSegmentsIds]));
+      $this->newSubscriberNotificationMailer->send($subscriber, $this->segmentsRepository->findByIds($foundSegmentsIds));
     }
 
     $this->subscribersRepository->refresh($subscriber);
@@ -436,7 +436,7 @@ class Subscribers {
    */
   private function getAndValidateSegments(array $listIds, string $context): array {
     // throw exception when none of the segments exist
-    $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
+    $foundSegments = $this->segmentsRepository->findByIds($listIds);
     if (!$foundSegments) {
       $exception = _n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
       throw new APIException($exception, APIException::LIST_NOT_EXISTS);
