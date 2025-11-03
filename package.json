@@ -28,6 +28,7 @@
     "overrides": {
       "@babel/runtime": ">=7.26.10",
       "@babel/helpers": ">=7.26.10",
+      "@automattic/tour-kit@<1.1.3": ">=1.1.3",
       "@types/react": "18.3.3",
       "@types/react-dom": "18.3.0",
       "body-parser": ">=1.20.3",

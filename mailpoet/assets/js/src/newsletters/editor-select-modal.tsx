@@ -76,19 +76,13 @@ export function EditorSelectModal({
       </div>
       <p>
         {__(
-          'Get a sneak peek of an early version of the upcoming email design experience and help shape its development.',
-          'mailpoet',
-        )}
-      </p>
-      <p>
-        {__(
-          'Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.',
+          'Take a first look at our new email editor. It introduces a more flexible, modern way to design your emails. This version is still evolving, and your feedback will help guide what comes next.',
           'mailpoet',
         )}
       </p>
       <p className="mailpoet-new-editor-modal-note">
         {__(
-          'Emails created in the new editor cannot be reverted to the legacy version.',
+          "Note: Emails created here can't be opened in the legacy editor.",
           'mailpoet',
         )}
       </p>
@@ -120,7 +114,7 @@ export function EditorSelectModal({
             );
           }}
         >
-          {__('Continue', 'mailpoet')}
+          {__('Try it now', 'mailpoet')}
         </Button>
       </div>
     </Modal>
