@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * WooCommerce Emails Manager
- * 
+ *
  * Manages registration of MailPoet emails with WooCommerce.
  * Only available in Garden environment.
  */
@@ -23,8 +23,8 @@ class Emails {
   private $wp;
 
   public function __construct() {
-    $this->dotcomHelperFunctions = new DotcomHelperFunctions();
     $this->wp = new WPFunctions();
+    $this->dotcomHelperFunctions = new DotcomHelperFunctions($this->wp);
   }
 
   /**
@@ -56,7 +56,7 @@ class Emails {
    */
   public function registerEmailClasses($email_classes) {
     $email_classes['mailpoet_marketing_confirmation'] = new MarketingConfirmation();
-    
+
     return $email_classes;
   }
 
@@ -69,7 +69,7 @@ class Emails {
   public function registerTransactionalEmailsForBlockEditor($emails) {
     // Register marketing confirmation email for block editor
     $emails[] = 'mailpoet_marketing_confirmation';
-    
+
     return $emails;
   }
 

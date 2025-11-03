@@ -2,11 +2,22 @@
 
 namespace MailPoet\WPCOM;
 
+use MailPoet\WP\Functions;
+
 /**
  * Plan detection documentation:
  * https://github.com/Automattic/wc-calypso-bridge#active-plan-detection
  */
 class DotcomHelperFunctions {
+
+  private Functions $wp;
+
+  public function __construct(
+    Functions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
   /**
    * Returns true if in the context of WordPress.com Atomic platform.
    *
@@ -14,7 +25,8 @@ class DotcomHelperFunctions {
    */
   public function isAtomicPlatform(): bool {
     // ATOMIC_CLIENT_ID === '2' corresponds to WordPress.com client on the Atomic platform
-    return defined('IS_ATOMIC') && IS_ATOMIC && defined('ATOMIC_CLIENT_ID') && (ATOMIC_CLIENT_ID === '2');
+    $is_atomic_platform = defined('IS_ATOMIC') && IS_ATOMIC && defined('ATOMIC_CLIENT_ID') && (ATOMIC_CLIENT_ID === '2');
+    return (bool)$this->wp->applyFilters('mailpoet_is_atomic_platform', $is_atomic_platform);
   }
 
   /**

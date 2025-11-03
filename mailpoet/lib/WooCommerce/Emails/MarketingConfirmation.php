@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce\Emails;
 
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomHelperFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -11,7 +12,7 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * Marketing Confirmation Email
- * 
+ *
  * This email is sent to confirm marketing subscriptions.
  * Only available in Garden environment.
  */
@@ -79,7 +80,7 @@ class MarketingConfirmation extends \WC_Email {
       $this->recipient = $to;
       $this->placeholders['{activation_link}'] = $activation_link;
       $this->placeholders['{subscriber_firstname}'] = $subscriber_firstname;
-      
+
       $this->send($to, $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
     }
 
@@ -180,7 +181,7 @@ class MarketingConfirmation extends \WC_Email {
    * Check if this email should be available.
    */
   public static function is_available() {
-    $dotcomHelperFunctions = new DotcomHelperFunctions();
+    $dotcomHelperFunctions = new DotcomHelperFunctions(WPFunctions::get());
     // Only available in Garden environment.
     return $dotcomHelperFunctions->isGarden();
   }
