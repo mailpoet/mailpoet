@@ -468,6 +468,7 @@ jobs:
                 name: Download WooCommerce Core
                 command: |
                   cd ../tests_env/docker
+                  echo "Downloading WooCommerce Core with tag: '${WOOCOMMERCE_VERSION}'"
                   docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_subscriptions_version >>
