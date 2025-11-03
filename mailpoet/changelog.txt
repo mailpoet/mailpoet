@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.16.4 - 2025-11-03 =
+* Added: Add email campaign sending option panels to the editor.
+
 = 5.16.3 - 2025-10-27 =
 * Updated: Bump the minimum required WooCommerce version to 10.2 and tested up to version to 10.3;
 * Improved: Improved JSON encoding for data output in script tags to prevent HTML parsing issues.
