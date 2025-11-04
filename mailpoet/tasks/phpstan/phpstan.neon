@@ -11,6 +11,7 @@ parameters:
     - ../../tests/_support/_generated/AcceptanceTesterActions.php
     - ../../tests/_support/_generated/IntegrationTesterActions.php
     - ../../tests/_support/_generated/UnitTesterActions.php
+    - ../../tasks/Php84DeprecationsFix.php
   scanDirectories:
     - ../../tests/_support
     - ../../tests/acceptance

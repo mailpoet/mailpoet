@@ -81,8 +81,8 @@ class Php84DeprecationsFix {
         return $fullMatch; // Don't modify union types
       }
 
-      // Check if already nullable (look for ? before the type in the prefix)
-      if (strpos($prefix, '?') !== false) {
+      // Check if type already starts with ? (shouldn't match pattern, but safety check)
+      if (strpos($type, '?') !== false) {
         return $fullMatch; // Already nullable
       }
 
