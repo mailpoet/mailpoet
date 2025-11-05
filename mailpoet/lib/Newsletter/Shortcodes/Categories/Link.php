@@ -124,8 +124,13 @@ class Link implements CategoryInterface {
     ?SendingQueueEntity $queue = null,
     $wpUserPreview = false
   ): ?string {
+    // Parse shortcode to extract action and arguments
+    $shortcodeDetails = $this->parseShortcode($shortcodeAction);
+    $action = $shortcodeDetails['action'];
+    $arguments = $shortcodeDetails['arguments'];
+
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-    switch ($shortcodeAction) {
+    switch ($action) {
       case 'subscription_unsubscribe_url':
         $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl(
           $subscriber,
@@ -153,16 +158,17 @@ class Link implements CategoryInterface {
         $url = $subscriptionUrlFactory->getReEngagementUrl($subscriber);
         break;
       default:
-        $shortcode = self::getFullShortcode($shortcodeAction);
+        $shortcode = self::getFullShortcode($action);
         $url = $this->wp->applyFilters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
           $newsletter,
           $subscriber,
           $queue,
+          $arguments,
           $wpUserPreview
         );
-        $url = ($url !== $shortcodeAction) ? $url : null;
+        $url = ($url !== $shortcode) ? $url : null;
         break;
     }
     return $url;
@@ -170,5 +176,41 @@ class Link implements CategoryInterface {
 
   private function getFullShortcode($action): string {
     return sprintf('[link:%s]', $action);
+  }
+
+  /**
+   * Parse a shortcode string to extract action and arguments.
+   * Supports both MailPoet-style [link:action | arg:value] and WordPress-style [link:action arg="value"].
+   */
+  private function parseShortcode(string $shortcode): array {
+    // Try WordPress-style shortcode parsing first (supports multiple arguments)
+    $atts = $this->wp->shortcodeParseAtts(trim($shortcode, '[]'));
+    if (!empty($atts[0]) && strpos($atts[0], ':') !== false) {
+      [, $action] = explode(':', $atts[0], 2);
+      $arguments = [];
+      foreach ($atts as $attrName => $attrValue) {
+        if (!is_numeric($attrName)) {
+          $arguments[$attrName] = $attrValue;
+        }
+      }
+      return ['action' => $action, 'arguments' => $arguments];
+    }
+
+    // Fallback to MailPoet-style parsing (single argument with pipe syntax)
+    if (preg_match('/\[link:(?P<action>\w+)(?:.*?\|.*?(?P<argument>\w+):(?P<argument_value>.*?))?\]/', $shortcode, $match)) {
+      $arguments = [];
+      if (!empty($match['argument'])) {
+        $arguments[$match['argument']] = $match['argument_value'] ?? '';
+      }
+      return ['action' => $match['action'], 'arguments' => $arguments];
+    }
+
+    // Simple action-only shortcode
+    if (preg_match('/\[link:(?P<action>\w+)\]/', $shortcode, $match)) {
+      return ['action' => $match['action'], 'arguments' => []];
+    }
+
+    // If all parsing fails, return the shortcode as action with no arguments
+    return ['action' => $shortcode, 'arguments' => []];
   }
 }

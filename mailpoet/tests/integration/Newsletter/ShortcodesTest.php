@@ -420,8 +420,40 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals('[link:shortcode]');
   }
 
+  public function testItPassesArgumentsToCustomLinkShortcodesInClickTracking() {
+    $linkCategory = $this->diContainer->get(\MailPoet\Newsletter\Shortcodes\Categories\Link::class);
+
+    // Set up a custom filter that expects arguments
+    remove_all_filters('mailpoet_newsletter_shortcode_link');
+    $argumentsReceived = null;
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments, $wpUserPreview) use (&$argumentsReceived) {
+      $argumentsReceived = $arguments;
+      if ($shortcode === '[link:express_login]') {
+        return 'https://example.com/express-login?token=xyz&valid_for=' . ($arguments['valid_for'] ?? 'missing');
+      }
+      return $shortcode;
+    }, 10, 6);
+
+    // Test the processShortcodeAction method (used during click tracking for URL fields)
+    $shortcodeWithArgs = '[link:express_login valid_for="1month" link="https://example.com/checkout"]';
+    $result = $linkCategory->processShortcodeAction(
+      $shortcodeWithArgs,
+      $this->newsletter,
+      $this->subscriber,
+      null,
+      false
+    );
+
+    verify($argumentsReceived)->isArray();
+    verify($argumentsReceived)->arrayHasKey('valid_for');
+    verify($argumentsReceived['valid_for'])->equals('1month');
+    verify($argumentsReceived)->arrayHasKey('link');
+    verify($argumentsReceived['link'])->equals('https://example.com/checkout');
+    verify($result)->equals('https://example.com/express-login?token=xyz&valid_for=1month');
+  }
+
   public function testItCanProcessSiteTitleShortcode() {
-    $siteName = 'Test site name with characters like ’, <, >, &';
+    $siteName = "Test site name with characters like ', <, >, &";
     update_option('blogname', $siteName);
 
     $shortcode = '[site:title]';

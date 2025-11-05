@@ -494,6 +494,40 @@ class ClicksTest extends \MailPoetTest {
     );
   }
 
+  public function testItPassesArgumentsToCustomShortcodesInUrls() {
+    // This test verifies the full integration: Clicks::processUrl() -> Link::processShortcodeAction()
+    // with arguments being properly passed through to the filter
+    remove_all_filters('mailpoet_newsletter_shortcode_link');
+    $argumentsReceived = null;
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments, $wpUserPreview) use (&$argumentsReceived) {
+      $argumentsReceived = $arguments;
+      if ($shortcode === '[link:custom_login]') {
+        // Use the arguments to build a dynamic URL
+        $token = $arguments['token'] ?? 'default';
+        $expires = $arguments['expires'] ?? '30days';
+        return "https://example.com/login?token={$token}&expires={$expires}";
+      }
+      return $shortcode;
+    }, 10, 6);
+
+    // Test with WordPress-style arguments (multiple arguments)
+    $url = $this->clicks->processUrl(
+      '[link:custom_login token="abc123" expires="7days"]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      false
+    );
+
+    // Verify arguments were received and processed correctly
+    verify($argumentsReceived)->isArray();
+    verify($argumentsReceived)->arrayHasKey('token');
+    verify($argumentsReceived['token'])->equals('abc123');
+    verify($argumentsReceived)->arrayHasKey('expires');
+    verify($argumentsReceived['expires'])->equals('7days');
+    verify($url)->equals('https://example.com/login?token=abc123&expires=7days');
+  }
+
   public function testItDoesNotConvertNonexistentShortcodeToUrl() {
     $link = $this->clicks->processUrl(
       '[link:unknown_shortcode]',

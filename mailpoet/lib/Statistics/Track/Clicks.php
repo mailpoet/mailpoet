@@ -154,14 +154,19 @@ class Clicks {
     bool $wpUserPreview
   ) {
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
-      if (!$shortcode['action']) $this->abort();
-      $url = $this->linkShortcodeCategory->processShortcodeAction(
-        $shortcode['action'],
+      if (empty($shortcode['action'])) $this->abort();
+      $processedUrl = $this->linkShortcodeCategory->processShortcodeAction(
+        $shortcode[0],
         $newsletter,
         $subscriber,
         $queue,
         $wpUserPreview
       );
+      // If shortcode was not processed, return original shortcode unchanged
+      if ($processedUrl === null) {
+        return $shortcode[0];
+      }
+      $url = $processedUrl;
       // We need to know the original method for unsubscribe actions
       if ($this->request->isPost() && $url) {
         $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
