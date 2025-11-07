@@ -493,6 +493,35 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result2)->equals('https://example.com/test?token=abc123');
   }
 
+  public function testItSupportsMailPoetPipeSyntaxForArguments() {
+    // Test MailPoet-style pipe syntax: [link:action | argument:value]
+    $linkCategory = $this->diContainer->get(\MailPoet\Newsletter\Shortcodes\Categories\Link::class);
+
+    remove_all_filters('mailpoet_newsletter_shortcode_link');
+    $argumentsReceived = null;
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments, $wpUserPreview) use (&$argumentsReceived) {
+      $argumentsReceived = $arguments;
+      if ($shortcode === '[link:test_pipe]') {
+        $token = $arguments['token'] ?? 'default';
+        return "https://example.com/pipe?token={$token}";
+      }
+      return $shortcode;
+    }, 10, 6);
+
+    // Test MailPoet pipe syntax
+    $result = $linkCategory->processShortcodeAction(
+      '[link:test_pipe | token:pipe123]',
+      $this->newsletter,
+      $this->subscriber,
+      null,
+      false
+    );
+
+    verify($argumentsReceived)->isArray();
+    verify($argumentsReceived['token'])->equals('pipe123');
+    verify($result)->equals('https://example.com/pipe?token=pipe123');
+  }
+
   public function testItCanProcessSiteTitleShortcode() {
     $siteName = "Test site name with characters like ', <, >, &";
     update_option('blogname', $siteName);

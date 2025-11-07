@@ -186,6 +186,8 @@ class Link implements CategoryInterface {
     // Decode HTML entities in case the shortcode came from HTML content (e.g., &quot; -> ")
     $shortcode = html_entity_decode($shortcode, ENT_QUOTES, 'UTF-8');
 
+    $action = null;
+
     // Try WordPress-style shortcode parsing first (supports multiple arguments)
     $atts = $this->wp->shortcodeParseAtts(trim($shortcode, '[]'));
     if (!empty($atts[0]) && strpos($atts[0], ':') !== false) {
@@ -197,7 +199,11 @@ class Link implements CategoryInterface {
           $arguments[$attrName] = trim($attrValue, '"\' ');
         }
       }
-      return ['action' => $action, 'arguments' => $arguments];
+      // Only return if we found at least one named attribute
+      // Otherwise, fall through to try MailPoet-style parsing
+      if (!empty($arguments)) {
+        return ['action' => $action, 'arguments' => $arguments];
+      }
     }
 
     // Fallback to MailPoet-style parsing (single argument with pipe syntax)
@@ -225,7 +231,12 @@ class Link implements CategoryInterface {
       return ['action' => $match['action'], 'arguments' => []];
     }
 
-    // If all parsing fails, return the shortcode as action with no arguments
+    // If all parsing fails, return the action from WordPress parser if available
+    // Otherwise return the shortcode as action with no arguments
+    if ($action !== null) {
+      return ['action' => $action, 'arguments' => []];
+    }
+
     return ['action' => $shortcode, 'arguments' => []];
   }
 }
