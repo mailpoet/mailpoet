@@ -21,10 +21,7 @@ export const step: StepType = {
   // translators: automation action title
   title: () => _x('If / Else', 'mailpoet'),
   description: () =>
-    __(
-      'Branch the automation based on specific conditions.',
-      'mailpoet',
-    ),
+    __('Branch the automation based on specific conditions.', 'mailpoet'),
   subtitle: (data) => {
     const fieldKeys = [
       ...new Set(

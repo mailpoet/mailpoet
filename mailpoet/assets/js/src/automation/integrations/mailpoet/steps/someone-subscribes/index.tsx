@@ -17,10 +17,7 @@ export const step: StepType = {
   // translators: automation trigger title
   title: () => __('New email subscriber added', 'mailpoet'),
   description: () =>
-    __(
-      'Starts when a new person subscribes to your email list.',
-      'mailpoet',
-    ),
+    __('Starts when a new person subscribes to your email list.', 'mailpoet'),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   keywords,
   foreground: '#2271b1',

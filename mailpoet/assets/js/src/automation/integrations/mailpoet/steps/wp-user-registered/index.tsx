@@ -18,10 +18,7 @@ export const step: StepType = {
   foreground: '#2271b1',
   background: '#f0f6fc',
   description: () =>
-    __(
-      'Starts when a new user account is created.',
-      'mailpoet',
-    ),
+    __('Starts when a new user account is created.', 'mailpoet'),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   keywords,
   icon: () => wordpress,

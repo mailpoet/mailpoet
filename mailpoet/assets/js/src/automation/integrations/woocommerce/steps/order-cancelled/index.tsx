@@ -15,8 +15,7 @@ export const step: StepType = {
   group: 'triggers',
   // translators: automation trigger title
   title: () => __('Order canceled', 'mailpoet'),
-  description: () =>
-    __('Starts when an order is canceled.', 'mailpoet'),
+  description: () => __('Starts when an order is canceled.', 'mailpoet'),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   keywords,
   foreground: '#2271b1',
