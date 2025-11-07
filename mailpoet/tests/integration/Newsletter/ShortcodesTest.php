@@ -452,6 +452,47 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result)->equals('https://example.com/express-login?token=xyz&valid_for=1month');
   }
 
+  public function testItStripsQuotesFromShortcodeArguments() {
+    // Test that quotes are properly stripped from attribute values
+    $linkCategory = $this->diContainer->get(\MailPoet\Newsletter\Shortcodes\Categories\Link::class);
+
+    remove_all_filters('mailpoet_newsletter_shortcode_link');
+    $argumentsReceived = null;
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments, $wpUserPreview) use (&$argumentsReceived) {
+      $argumentsReceived = $arguments;
+      if ($shortcode === '[link:test_link]') {
+        $token = $arguments['token'] ?? 'default';
+        return "https://example.com/test?token={$token}";
+      }
+      return $shortcode;
+    }, 10, 6);
+
+    // Test with regular double quotes
+    $result = $linkCategory->processShortcodeAction(
+      '[link:test_link token="abc123"]',
+      $this->newsletter,
+      $this->subscriber,
+      null,
+      false
+    );
+
+    verify($argumentsReceived)->isArray();
+    verify($argumentsReceived['token'])->equals('abc123');
+    verify($result)->equals('https://example.com/test?token=abc123');
+
+    // Test with HTML-encoded quotes (as it appears when extracted from HTML)
+    $result2 = $linkCategory->processShortcodeAction(
+      '[link:test_link token=&quot;abc123&quot;]',
+      $this->newsletter,
+      $this->subscriber,
+      null,
+      false
+    );
+
+    verify($argumentsReceived['token'])->equals('abc123');
+    verify($result2)->equals('https://example.com/test?token=abc123');
+  }
+
   public function testItCanProcessSiteTitleShortcode() {
     $siteName = "Test site name with characters like ', <, >, &";
     update_option('blogname', $siteName);

@@ -183,6 +183,9 @@ class Link implements CategoryInterface {
    * Supports both MailPoet-style [link:action | arg:value] and WordPress-style [link:action arg="value"].
    */
   private function parseShortcode(string $shortcode): array {
+    // Decode HTML entities in case the shortcode came from HTML content (e.g., &quot; -> ")
+    $shortcode = html_entity_decode($shortcode, ENT_QUOTES, 'UTF-8');
+
     // Try WordPress-style shortcode parsing first (supports multiple arguments)
     $atts = $this->wp->shortcodeParseAtts(trim($shortcode, '[]'));
     if (!empty($atts[0]) && strpos($atts[0], ':') !== false) {
@@ -190,13 +193,21 @@ class Link implements CategoryInterface {
       $arguments = [];
       foreach ($atts as $attrName => $attrValue) {
         if (!is_numeric($attrName)) {
-          $arguments[$attrName] = $attrValue;
+          // Strip surrounding quotes from attribute values
+          $arguments[$attrName] = trim($attrValue, '"\' ');
         }
       }
       return ['action' => $action, 'arguments' => $arguments];
     }
 
     // Fallback to MailPoet-style parsing (single argument with pipe syntax)
+    // Pattern matches: [link:action | argument:value] or [link:action]
+    // Example: [link:custom_link | token:abc123]
+    // Captures:
+    //   - action: \w+ (word characters only, e.g., "custom_link")
+    //   - argument: \w+ (word characters only, e.g., "token")
+    //   - argument_value: .*? (any characters, non-greedy, e.g., "abc123")
+    // Note: Only supports a single argument with pipe syntax
     if (preg_match('/\[link:(?P<action>\w+)(?:.*?\|.*?(?P<argument>\w+):(?P<argument_value>.*?))?\]/', $shortcode, $match)) {
       $arguments = [];
       if (!empty($match['argument'])) {
@@ -205,7 +216,11 @@ class Link implements CategoryInterface {
       return ['action' => $match['action'], 'arguments' => $arguments];
     }
 
-    // Simple action-only shortcode
+    // Simple action-only shortcode without arguments
+    // Pattern matches: [link:action]
+    // Example: [link:unsubscribe]
+    // Captures:
+    //   - action: \w+ (word characters only, e.g., "unsubscribe")
     if (preg_match('/\[link:(?P<action>\w+)\]/', $shortcode, $match)) {
       return ['action' => $match['action'], 'arguments' => []];
     }
