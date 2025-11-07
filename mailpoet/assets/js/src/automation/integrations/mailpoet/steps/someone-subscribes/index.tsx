@@ -14,10 +14,10 @@ const keywords = [
 export const step: StepType = {
   key: 'mailpoet:someone-subscribes',
   group: 'triggers',
-  title: () => __('Someone subscribes', 'mailpoet'),
+  title: () => __('New email subscriber added', 'mailpoet'),
   description: () =>
     __(
-      'Starts the automation when a new subscriber is added to MailPoet.',
+      'Starts when a new person subscribes to your email list.',
       'mailpoet',
     ),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),

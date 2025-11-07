@@ -27,7 +27,7 @@ export const step: StepType = {
   group: 'actions',
   title: () => _x('Delay', 'noun', 'mailpoet'),
   description: () =>
-    __('Wait some time before proceeding with the steps below.', 'mailpoet'),
+    __('Wait for a set amount of time before moving to the next step.', 'mailpoet'),
   subtitle: (data): string => {
     if (!data.args.delay || !data.args.delay_type) {
       return __('Not set up yet', 'mailpoet');

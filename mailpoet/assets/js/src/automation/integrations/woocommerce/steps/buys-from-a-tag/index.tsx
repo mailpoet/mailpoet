@@ -22,10 +22,10 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:buys-from-a-tag',
   group: 'triggers',
-  title: () => __('Customer buys from a tag', 'mailpoet'),
+  title: () => __('Product purchased (tag)', 'mailpoet'),
   description: () =>
     __(
-      'Start the automation when a customer buys a product from a tag.',
+      'Starts when a customer buys a product with a selected tag.',
       'mailpoet',
     ),
 

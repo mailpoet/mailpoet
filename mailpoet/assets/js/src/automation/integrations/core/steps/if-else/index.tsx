@@ -18,10 +18,10 @@ const keywords = [
 export const step: StepType = {
   key: 'core:if-else',
   group: 'actions',
-  title: () => _x('If/Else', 'mailpoet'),
+  title: () => _x('If / Else', 'mailpoet'),
   description: () =>
     __(
-      'The automation follows a different path based on specified conditions.',
+      'Branch the automation based on specific conditions.',
       'mailpoet',
     ),
   subtitle: (data) => {

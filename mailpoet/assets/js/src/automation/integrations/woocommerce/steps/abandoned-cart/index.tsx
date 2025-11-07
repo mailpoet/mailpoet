@@ -20,10 +20,10 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:abandoned-cart',
   group: 'triggers',
-  title: () => __('User abandons cart', 'mailpoet'),
+  title: () => __('Cart abandoned', 'mailpoet'),
   description: () =>
     __(
-      'Start the automation when a user who has items in the shopping cart leaves your website without checking out.',
+      'Starts when a shopper leaves your site with items in their cart without checking out.',
       'mailpoet',
     ),
   subtitle: (): JSX.Element | string => __('Trigger', 'mailpoet'),

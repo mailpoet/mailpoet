@@ -19,7 +19,7 @@ export const step: StepType = {
   title: () => __('Order note added', 'mailpoet'),
   description: () =>
     __(
-      'Fires when any note is added to an order, can include both private notes and notes to the customer. These notes appear on the right of the order edit screen.',
+      'Starts when a note is added to an order, including private notes and customer notes.',
       'mailpoet',
     ),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),

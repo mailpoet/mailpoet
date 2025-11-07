@@ -13,9 +13,9 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:order-cancelled',
   group: 'triggers',
-  title: () => __('Order cancelled', 'mailpoet'),
+  title: () => __('Order canceled', 'mailpoet'),
   description: () =>
-    __('Start the automation when an order is cancelled.', 'mailpoet'),
+    __('Starts when an order is canceled.', 'mailpoet'),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   keywords,
   foreground: '#2271b1',
