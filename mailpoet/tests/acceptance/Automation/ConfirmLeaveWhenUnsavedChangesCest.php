@@ -53,7 +53,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-automation-editor&id=' . $automationId);
     $i->waitForText('Draft');
     $i->waitForText('Move to Trash');
-    $i->waitForText('Someone subscribes');
+    $i->waitForText('New email subscriber added');
     $i->waitForText('Wait for 5 minutes');
   }
 }
