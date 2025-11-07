@@ -16,6 +16,7 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:order-note-added',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('Order note added', 'mailpoet'),
   description: () =>
     __(

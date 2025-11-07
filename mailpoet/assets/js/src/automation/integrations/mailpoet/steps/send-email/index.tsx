@@ -20,6 +20,7 @@ const keywords = [
 export const step: StepType = {
   key: 'mailpoet:send-email',
   group: 'actions',
+  // translators: automation action title
   title: (data, context) => {
     if (context !== 'automation') {
       return __('Send email', 'mailpoet');

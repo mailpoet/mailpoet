@@ -18,6 +18,7 @@ const keywords = [
 export const step: StepType = {
   key: 'core:if-else',
   group: 'actions',
+  // translators: automation action title
   title: () => _x('If / Else', 'mailpoet'),
   description: () =>
     __(

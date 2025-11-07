@@ -20,6 +20,7 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:abandoned-cart',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('Cart abandoned', 'mailpoet'),
   description: () =>
     __(

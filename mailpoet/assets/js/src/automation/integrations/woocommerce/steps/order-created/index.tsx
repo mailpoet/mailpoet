@@ -15,6 +15,7 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:order-created',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('Order created', 'mailpoet'),
   description: () =>
     __('Starts when a new order is created.', 'mailpoet'),

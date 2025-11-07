@@ -13,6 +13,7 @@ const keywords = [
 export const step: StepType = {
   key: 'mailpoet:wp-user-registered',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('New user registered', 'mailpoet'),
   foreground: '#2271b1',
   background: '#f0f6fc',

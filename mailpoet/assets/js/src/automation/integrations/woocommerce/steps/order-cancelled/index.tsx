@@ -13,6 +13,7 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:order-cancelled',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('Order canceled', 'mailpoet'),
   description: () =>
     __('Starts when an order is canceled.', 'mailpoet'),

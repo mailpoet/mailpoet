@@ -25,6 +25,7 @@ const keywords = [
 export const step: StepType = {
   key: 'core:delay',
   group: 'actions',
+  // translators: automation action title
   title: () => _x('Delay', 'noun', 'mailpoet'),
   description: () =>
     __('Wait for a set amount of time before moving to the next step.', 'mailpoet'),

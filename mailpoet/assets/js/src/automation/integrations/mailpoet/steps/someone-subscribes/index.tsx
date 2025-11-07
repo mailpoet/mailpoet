@@ -14,6 +14,7 @@ const keywords = [
 export const step: StepType = {
   key: 'mailpoet:someone-subscribes',
   group: 'triggers',
+  // translators: automation trigger title
   title: () => __('New email subscriber added', 'mailpoet'),
   description: () =>
     __(
