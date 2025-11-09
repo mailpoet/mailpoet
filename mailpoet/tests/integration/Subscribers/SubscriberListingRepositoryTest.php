@@ -310,6 +310,96 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($data[1]->getEmail())->equals($subscriber3->getEmail());
   }
 
+  public function testFilterSubscribersByCreatedAtFrom() {
+    $subscriber1 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-10 12:00:00'))
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-11 12:00:00'))
+      ->create();
+    $subscriber3 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-12 12:00:00'))
+      ->create();
+
+    $this->listingData['filter'] = ['createdAtFrom' => '2022-10-11 12:00:00'];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriber2->getEmail());
+    verify($data[1]->getEmail())->equals($subscriber3->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByCreatedAtTo() {
+    $subscriber1 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-10 12:00:00'))
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-11 12:00:00'))
+      ->create();
+    $subscriber3 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-12 12:00:00'))
+      ->create();
+
+    $this->listingData['filter'] = ['createdAtTo' => '2022-10-11 12:00:00'];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriber1->getEmail());
+    verify($data[1]->getEmail())->equals($subscriber2->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByCreatedAtRange() {
+    $subscriber1 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-10 12:00:00'))
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-11 12:00:00'))
+      ->create();
+    $subscriber3 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-12 12:00:00'))
+      ->create();
+    $subscriber4 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-13 12:00:00'))
+      ->create();
+
+    $this->listingData['filter'] = [
+      'createdAtFrom' => '2022-10-11 12:00:00',
+      'createdAtTo' => '2022-10-12 12:00:00',
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriber2->getEmail());
+    verify($data[1]->getEmail())->equals($subscriber3->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByCreatedAtWithInvalidDate() {
+    $subscriber1 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-10 12:00:00'))
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withCreatedAt(new Carbon('2022-10-11 12:00:00'))
+      ->create();
+
+    // Test with invalid createdAtFrom - should be ignored
+    $this->listingData['filter'] = ['createdAtFrom' => 'invalid-date'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    // Test with invalid createdAtTo - should be ignored
+    $this->listingData['filter'] = ['createdAtTo' => 'not-a-date'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    $this->listingData['filter'] = [];
+  }
+
   public function testLoadSubscribersInDefaultSegmentConsideringSubscriberStatusPerSegmentAndNotGlobally() {
     $list = $this->segmentRepository->createOrUpdate('Segment 5');
     $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
