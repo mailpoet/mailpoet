@@ -458,6 +458,300 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     return $subscriberSegment;
   }
 
+  public function testFilterSubscribersByStatusIncludeWithSingleStatus() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+
+    $this->listingData['filter'] = ['statusInclude' => SubscriberEntity::STATUS_SUBSCRIBED];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($subscribed->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusIncludeWithMultipleStatuses() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+    $bounced = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_BOUNCED)
+      ->create();
+
+    $this->listingData['filter'] = ['statusInclude' => [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_INACTIVE,
+    ]];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscribed->getEmail());
+    verify($data[1]->getEmail())->equals($inactive->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusIncludeWithInvalidStatus() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    // Invalid status should be filtered out, resulting in no filter applied
+    $this->listingData['filter'] = ['statusInclude' => ['invalid_status']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    // Empty array should also result in no filter applied
+    $this->listingData['filter'] = ['statusInclude' => []];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusIncludeWithMixedValidAndInvalidStatuses() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+
+    // Invalid statuses should be filtered out, only valid ones should be used
+    $this->listingData['filter'] = ['statusInclude' => [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      'invalid_status',
+      SubscriberEntity::STATUS_INACTIVE,
+      123, // non-string value should be filtered out
+    ]];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscribed->getEmail());
+    verify($data[1]->getEmail())->equals($inactive->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusExcludeWithSingleStatus() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+
+    $this->listingData['filter'] = ['statusExclude' => SubscriberEntity::STATUS_SUBSCRIBED];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unsubscribed->getEmail());
+    verify($data[1]->getEmail())->equals($inactive->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusExcludeWithMultipleStatuses() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+    $bounced = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_BOUNCED)
+      ->create();
+
+    $this->listingData['filter'] = ['statusExclude' => [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_BOUNCED,
+    ]];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unsubscribed->getEmail());
+    verify($data[1]->getEmail())->equals($inactive->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusExcludeWithInvalidStatus() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    // Invalid status should be filtered out, resulting in no filter applied
+    $this->listingData['filter'] = ['statusExclude' => ['invalid_status']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    // Empty array should also result in no filter applied
+    $this->listingData['filter'] = ['statusExclude' => []];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned
+
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusExcludeWithMixedValidAndInvalidStatuses() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+    $bounced = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_BOUNCED)
+      ->create();
+
+    // Invalid statuses should be filtered out, only valid ones should be used
+    $this->listingData['filter'] = ['statusExclude' => [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      'invalid_status',
+      SubscriberEntity::STATUS_BOUNCED,
+      456, // non-string value should be filtered out
+    ]];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unsubscribed->getEmail());
+    verify($data[1]->getEmail())->equals($inactive->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByBothStatusIncludeAndExclude() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $inactive = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_INACTIVE)
+      ->create();
+    $bounced = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_BOUNCED)
+      ->create();
+    $unconfirmed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+
+    // Include subscribed, unsubscribed, and inactive, but exclude inactive
+    // Result should be only subscribed and unsubscribed
+    $this->listingData['filter'] = [
+      'statusInclude' => [
+        SubscriberEntity::STATUS_SUBSCRIBED,
+        SubscriberEntity::STATUS_UNSUBSCRIBED,
+        SubscriberEntity::STATUS_INACTIVE,
+      ],
+      'statusExclude' => [SubscriberEntity::STATUS_INACTIVE],
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscribed->getEmail());
+    verify($data[1]->getEmail())->equals($unsubscribed->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusIncludeAsStringInsteadOfArray() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    // Test that single string value is converted to array
+    $this->listingData['filter'] = ['statusInclude' => SubscriberEntity::STATUS_UNSUBSCRIBED];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($unsubscribed->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByStatusExcludeAsStringInsteadOfArray() {
+    $subscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $unsubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    // Test that single string value is converted to array
+    $this->listingData['filter'] = ['statusExclude' => SubscriberEntity::STATUS_UNSUBSCRIBED];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($subscribed->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testStatusFiltersWorkWithOtherFilters() {
+    $list = $this->segmentRepository->createOrUpdate('Segment 8');
+    
+    $subscribedInList = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$list])
+      ->create();
+    $unsubscribedInList = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSegments([$list])
+      ->create();
+    $subscribedNotInList = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    // Filter by segment AND statusInclude
+    $this->listingData['filter'] = [
+      'segment' => $list->getId(),
+      'statusInclude' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($subscribedInList->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
   private function getListingDefinition(): ListingDefinition {
     return new ListingDefinition(
       $this->listingData['group'],
