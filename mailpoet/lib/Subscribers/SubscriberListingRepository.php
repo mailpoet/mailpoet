@@ -178,6 +178,34 @@ class SubscriberListingRepository extends ListingRepository {
       }
     }
 
+    // Status inclusion filter
+    $statusInclude = $filters['statusInclude'] ?? [];
+    if (!empty($statusInclude)) {
+      $statusInclude = is_array($statusInclude) ? $statusInclude : [$statusInclude];
+      // Sanitize: only allow valid status values
+      $statusInclude = array_filter($statusInclude, function($status) {
+        return is_string($status) && in_array($status, self::$supportedStatuses, true);
+      });
+      if (!empty($statusInclude)) {
+        $queryBuilder->andWhere('s.status IN (:statusInclude)')
+          ->setParameter('statusInclude', $statusInclude);
+      }
+    }
+
+    // Status exclusion filter
+    $statusExclude = $filters['statusExclude'] ?? [];
+    if (!empty($statusExclude)) {
+      $statusExclude = is_array($statusExclude) ? $statusExclude : [$statusExclude];
+      // Sanitize: only allow valid status values
+      $statusExclude = array_filter($statusExclude, function($status) {
+        return is_string($status) && in_array($status, self::$supportedStatuses, true);
+      });
+      if (!empty($statusExclude)) {
+        $queryBuilder->andWhere('s.status NOT IN (:statusExclude)')
+          ->setParameter('statusExclude', $statusExclude);
+      }
+    }
+
     // Filter by created_at date
     $createdAtFrom = $filters['createdAtFrom'] ?? null;
     if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
