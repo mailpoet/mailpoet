@@ -177,6 +177,30 @@ class SubscriberListingRepository extends ListingRepository {
           ->setParameter('stTag', $tag);
       }
     }
+
+    // Filter by created_at date
+    $createdAtFrom = $filters['createdAtFrom'] ?? null;
+    if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
+      $queryBuilder
+        ->andWhere('s.createdAt >= :createdAtFrom')
+        ->setParameter('createdAtFrom', $createdAtFrom);
+    }
+
+    $createdAtTo = $filters['createdAtTo'] ?? null;
+    if ($createdAtTo && is_string($createdAtTo) && $this->isValidDateTime($createdAtTo)) {
+      $queryBuilder
+        ->andWhere('s.createdAt <= :createdAtTo')
+        ->setParameter('createdAtTo', $createdAtTo);
+    }
+  }
+
+  private function isValidDateTime(string $dateTime): bool {
+    try {
+      new \DateTime($dateTime);
+      return true;
+    } catch (\Exception $e) {
+      return false;
+    }
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
