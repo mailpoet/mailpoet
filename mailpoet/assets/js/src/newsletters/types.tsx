@@ -240,7 +240,7 @@ export function NewsletterTypes({
           isBusy={isCreating === 're_engagement'}
           disabled={isCreating !== null}
           aria-label={__('Create Re-engagement Email', 'mailpoet')}
-          data-automation-id="create_notification"
+          data-automation-id="create_re_engagement"
         >
           {__('Create', 'mailpoet')}
         </Button>
