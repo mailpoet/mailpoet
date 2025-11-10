@@ -117,7 +117,6 @@ export function NewsletterTypes({
         {__('Create', 'mailpoet')}
       </Button>
       <Dropdown
-        focusOnMount={false}
         className="mailpoet-dropdown-button"
         contentClassName="mailpoet-dropdown-button-content"
         popoverProps={{ placement: 'bottom-end' }}
@@ -129,6 +128,7 @@ export function NewsletterTypes({
             isBusy={isCreating === 'standard'}
             disabled={isCreating !== null}
             aria-expanded={isOpen}
+            aria-label={__('Open dropdown menu', 'mailpoet')}
             data-automation-id="create_standard_email_dropdown"
           >
             <Icon icon={chevronDown} size={24} />
