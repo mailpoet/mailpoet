@@ -112,6 +112,7 @@ export function NewsletterTypes({
         onClick={createStandardNewsletter}
         isBusy={isCreating === 'standard'}
         disabled={isCreating !== null}
+        aria-label={__('Create Newsletter', 'mailpoet')}
         data-automation-id="create_standard"
       >
         {__('Create', 'mailpoet')}
@@ -196,6 +197,7 @@ export function NewsletterTypes({
           onClick={createAutomation}
           isBusy={isCreating === 'automation'}
           disabled={isCreating !== null}
+          aria-label={__('Create Automation', 'mailpoet')}
           data-automation-id="create_automation"
         >
           {__('Create', 'mailpoet')}
@@ -217,6 +219,7 @@ export function NewsletterTypes({
           onClick={createNotificationNewsletter}
           isBusy={isCreating === 'notification'}
           disabled={isCreating !== null}
+          aria-label={__('Create Latest Post Notification', 'mailpoet')}
           data-automation-id="create_notification"
         >
           {__('Create', 'mailpoet')}
@@ -236,6 +239,7 @@ export function NewsletterTypes({
           onClick={createReEngagementNewsletter}
           isBusy={isCreating === 're_engagement'}
           disabled={isCreating !== null}
+          aria-label={__('Create Re-engagement Email', 'mailpoet')}
           data-automation-id="create_notification"
         >
           {__('Create', 'mailpoet')}
