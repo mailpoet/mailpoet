@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.16.4
+Stable tag: 5.17.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.16.4 - 2025-11-03 =
-* Added: Add email campaign sending option panels to the editor.
+= 5.17.0 - 2025-11-10 =
+* Improved: Titles and descriptions for automation triggers and actions;
+* Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons).
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
