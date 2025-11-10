@@ -97,7 +97,7 @@ class EmailApiController {
       $newsletter->setDeletedAt($data['deleted_at']);
     }
 
-    if (isset($data['scheduled_at'])) {
+    if (array_key_exists('scheduled_at', $data)) {
       $this->updateScheduledAtOption($newsletter, $data['scheduled_at']);
     }
 
@@ -142,17 +142,42 @@ class EmailApiController {
 
     // Set the value (null or the datetime string)
     $option->setValue($scheduledAtValue);
+
+    // Also update the isScheduled option
+    $isScheduledOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
+      'name' => NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+      'newsletterType' => $newsletter->getType(),
+    ]);
+
+    if ($isScheduledOptionField) {
+      $isScheduledOption = $this->newsletterOptionsRepository->findOneBy([
+        'newsletter' => $newsletter,
+        'optionField' => $isScheduledOptionField,
+      ]);
+
+      if (!$isScheduledOption) {
+        $isScheduledOption = new NewsletterOptionEntity($newsletter, $isScheduledOptionField);
+        $this->newsletterOptionsRepository->persist($isScheduledOption);
+        $newsletter->getOptions()->add($isScheduledOption);
+      }
+
+      // Set isScheduled to '1' if scheduled_at has a value, '0' otherwise
+      $isScheduledOption->setValue($scheduledAtValue !== null && $scheduledAtValue !== '' ? '1' : '0');
+    }
   }
 
   /**
-   * @param array $segmentIds Array of segment IDs as strings
+   * @param array $segmentIds Array of segment IDs
    */
   private function updateSegments($newsletter, array $segmentIds): void {
+    // Normalize segment IDs to integers for consistent strict comparison
+    $segmentIds = array_map('intval', $segmentIds);
+
     // Remove existing segments that are not in the new list
     $existingSegments = $newsletter->getNewsletterSegments();
     foreach ($existingSegments as $newsletterSegment) {
       $segment = $newsletterSegment->getSegment();
-      if (!$segment || !in_array((string)$segment->getId(), $segmentIds, true)) {
+      if (!$segment || !in_array($segment->getId(), $segmentIds, true)) {
         $this->entityManager->remove($newsletterSegment);
       }
     }

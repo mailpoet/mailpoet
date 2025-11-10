@@ -73,6 +73,9 @@ export function ScheduledRow() {
       .reverse()
       .join(''), // Reverse the string and test for "a" not followed by a slash.
   );
+  // Used for comparing today with DateTimePicker dates to determine validity.
+  // We set the hours to 0:00:00 to match the time format of DateTimePicker dates.
+  const today = new Date().setHours(0, 0, 0, 0);
 
   return (
     <PanelRow>
@@ -140,6 +143,7 @@ export function ScheduledRow() {
                     _x('dmy', 'date order', 'mailpoet')
                   }
                   is12Hour={is12HourTime}
+                  isInvalidDate={(date) => date.getTime() < today}
                 />
               </div>
             )}

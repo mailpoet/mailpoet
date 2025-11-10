@@ -18,6 +18,20 @@ class TimeSelect extends Component {
         {timeOfDayItems[val]}
       </option>
     ));
+    // If the current value is not in the predefined timeOfDayItems list,
+    // create a custom option for it. This handles cases where the scheduled time
+    // is set from within the email editor, as the datetime picker allows for
+    // setting any time (not just the predefined options). This ensures the select
+    // renders the correct value and doesn't fall back to the first predefined time.
+    const predefinedTimeKeys = Object.keys(timeOfDayItems);
+    const isCustomTime = value && !predefinedTimeKeys.includes(value);
+    // To match the format of the predefined time options, we remove the seconds from the custom time value.
+    const lastColonIndex = value.lastIndexOf(':');
+    const customOptionLabel =
+      lastColonIndex > 0 ? value.slice(0, lastColonIndex) : value;
+    const customOption = isCustomTime ? (
+      <option value={value}>{customOptionLabel}</option>
+    ) : null;
 
     return (
       <Select
@@ -28,6 +42,7 @@ class TimeSelect extends Component {
         isMinWidth
         {...validation}
       >
+        {customOption}
         {options}
       </Select>
     );
