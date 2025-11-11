@@ -357,6 +357,22 @@ class SendEmailAction implements Action {
       ],
     ];
 
+    // Store all automation subjects and their arguments for personalization tags
+    $subjects = [];
+    foreach ($args->getSubjectEntries() as $key => $entries) {
+      // For each subject, store its key and args
+      foreach ($entries as $entry) {
+        $subjectData = $entry->getSubjectData();
+        $subjects[$key] = [
+          'key' => $subjectData->getKey(),
+          'args' => $subjectData->getArgs(),
+        ];
+      }
+    }
+    if (!empty($subjects)) {
+      $meta['automation']['subjects'] = $subjects;
+    }
+
     if ($this->automationHasAbandonedCartTrigger($args->getAutomation())) {
       $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
       $meta[AbandonedCart::TASK_META_NAME] = $payload->getProductIds();

@@ -44,6 +44,8 @@ class EditorPageRenderer {
 
   private Analytics $analytics;
 
+  private PersonalizationTagManager $personalizationTagManager;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -53,7 +55,8 @@ class EditorPageRenderer {
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository,
     UserFlagsController $userFlagsController,
-    Analytics $analytics
+    Analytics $analytics,
+    PersonalizationTagManager $personalizationTagManager
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -67,6 +70,7 @@ class EditorPageRenderer {
     $this->newslettersRepository = $newslettersRepository;
     $this->userFlagsController = $userFlagsController;
     $this->analytics = $analytics;
+    $this->personalizationTagManager = $personalizationTagManager;
   }
 
   public function render() {
@@ -146,6 +150,10 @@ class EditorPageRenderer {
 
     $isAutomationNewsletter = $newsletter->isAutomation() || $newsletter->isAutomationTransactional();
     $automationId = $newsletter->getOptionValue('automationId');
+
+    if ($isAutomationNewsletter && $automationId) {
+      $this->personalizationTagManager->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
+    }
 
     $listingUrl = 'page=mailpoet-newsletters';
     $sendUrl = 'page=mailpoet-newsletters#/send/' . $newsletter->getId();

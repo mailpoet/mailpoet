@@ -289,11 +289,44 @@ class Newsletter {
     }
     $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
     if ($newsletter->getWpPostId() !== null) {
-      $this->personalizer->set_context([
+      $context = [
         'recipient_email' => $subscriber->getEmail(),
         'newsletter_id' => $newsletter->getId(),
         'queue_id' => $queue->getId(),
-      ]);
+      ];
+
+      $queueMeta = $queue->getMeta();
+      if (
+        is_array($queueMeta)
+        && isset($queueMeta['automation']['subjects'])
+        && is_array($queueMeta['automation']['subjects'])
+      ) {
+        if (
+          isset($queueMeta['automation']['subjects']['woocommerce:order'])
+          && isset($queueMeta['automation']['subjects']['woocommerce:order']['args']['order_id'])
+          && function_exists('wc_get_order')
+        ) {
+          $orderId = (int)$queueMeta['automation']['subjects']['woocommerce:order']['args']['order_id'];
+          $order = wc_get_order($orderId);
+          if ($order instanceof \WC_Order) {
+            $context['order'] = $order;
+          }
+        }
+
+        if (
+          isset($queueMeta['automation']['subjects']['woocommerce:customer'])
+          && isset($queueMeta['automation']['subjects']['woocommerce:customer']['args']['customer_id'])
+          && class_exists(\WC_Customer::class)
+        ) {
+          $customerId = (int)$queueMeta['automation']['subjects']['woocommerce:customer']['args']['customer_id'];
+          $customer = new \WC_Customer($customerId);
+          if ($customer->get_id()) {
+            $context['customer'] = $customer;
+          }
+        }
+      }
+
+      $this->personalizer->set_context($context);
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
       }
