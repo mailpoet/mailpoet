@@ -2,6 +2,7 @@ import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 import { yesIcon } from './icons/yes';
 import { noIcon } from './icons/no';
+import {__} from "@wordpress/i18n";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
@@ -29,6 +30,7 @@ export function YesNo({
     >
       <label>
         <input
+          aria-label={__('Yes', 'mailpoet')}
           type="radio"
           checked={checked === true}
           onChange={() => onCheck(true)}
@@ -40,6 +42,7 @@ export function YesNo({
       </label>
       <label>
         <input
+          aria-label={__('No', 'mailpoet')}
           type="radio"
           checked={checked === false}
           onChange={() => onCheck(false)}
