@@ -26,6 +26,7 @@ type Segment = {
   type: string;
   subscribers: string;
   deleted_at?: string;
+  count_all?: string;
   subscribers_count?: {
     all: string;
     subscribed: string;
@@ -59,14 +60,27 @@ export function RecipientsRow() {
   useEffect(() => {
     let mounted = true;
     setIsLoadingSegments(true);
-    void MailPoet.Ajax.post({
+
+    // Fetch both segments and dynamic_segments in parallel
+    const segmentsPromise = MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'segments',
       action: 'listing',
       data: {},
-    })
-      .done((response) => {
-        const allSegments = response.data || [];
+    });
+
+    const dynamicSegmentsPromise = MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'dynamic_segments',
+      action: 'listing',
+      data: {},
+    });
+
+    Promise.all([segmentsPromise, dynamicSegmentsPromise])
+      .then(([segmentsResponse, dynamicSegmentsResponse]) => {
+        const staticSegments = segmentsResponse.data || [];
+        const dynamicSegments = dynamicSegmentsResponse.data || [];
+        const allSegments = [...staticSegments, ...dynamicSegments];
         const activeSegments = allSegments.filter(
           (segment: Segment) => !segment.deleted_at,
         );
@@ -74,16 +88,17 @@ export function RecipientsRow() {
           setSegments(activeSegments as Segment[]);
         }
       })
-      .fail(() => {
+      .catch(() => {
         if (mounted) {
           setSegments([]);
         }
       })
-      .always(() => {
+      .finally(() => {
         if (mounted) {
           setIsLoadingSegments(false);
         }
       });
+
     return () => {
       mounted = false;
     };
@@ -135,13 +150,14 @@ export function RecipientsRow() {
     );
   };
 
+  // Filter segments by type
+  const allowedSegments = segments.filter(
+    (segment) => segment.type === 'default' || segment.type === 'dynamic',
+  );
   const setSelectedSegments = (segmentNames: string[]) => {
-    const defaultSegments = segments.filter(
-      (segment) => segment.type === 'default',
-    );
     const segmentIds = segmentNames
       .map((name) => {
-        const segment = defaultSegments.find(
+        const segment = allowedSegments.find(
           (_segment) => _segment.name === name,
         );
         return segment ? segment.id : null;
@@ -166,10 +182,8 @@ export function RecipientsRow() {
     }
   };
 
-  // Filter segments by type
-  const defaultSegments = segments.filter((s) => s.type === 'default');
   const allCustomersSegment = segments.find(
-    (s) => s.type === 'woocommerce_users',
+    (segment) => segment.type === 'woocommerce_users',
   );
   const allCustomersSegmentCount = parseInt(
     allCustomersSegment?.subscribers_count?.all || '0',
@@ -186,20 +200,22 @@ export function RecipientsRow() {
 
   // Calculate total recipients from selected segments
   const recipientCount = selectedSegments.reduce((total, segment) => {
-    const count = parseInt(segment.subscribers_count?.all || '0', 10);
-    return total + count;
+    const countValue =
+      segment.count_all || segment.subscribers_count?.all || '0';
+    const count = parseInt(countValue, 10);
+    return total + (Number.isNaN(count) ? 0 : count);
   }, 0);
 
-  // Filter selected segments to only show default type segments
-  const selectedDefaultSegments = selectedSegments.filter(
-    (segment) => segment.type === 'default',
+  // Filter selected segments to only show default and dynamic type segments
+  const selectedAllowedSegments = selectedSegments.filter(
+    (segment) => segment.type === 'default' || segment.type === 'dynamic',
   );
 
   let buttonLabel = __('Select recipients', 'mailpoet');
   if (recipientType === 'all_customers') {
     buttonLabel = __('All customers', 'mailpoet');
-  } else if (selectedDefaultSegments.length > 0) {
-    buttonLabel = selectedDefaultSegments
+  } else if (selectedAllowedSegments.length > 0) {
+    buttonLabel = selectedAllowedSegments
       .map((segment) => segment.name)
       .join(', ');
   }
@@ -290,10 +306,10 @@ export function RecipientsRow() {
                       <div className="mailpoet-status-panel__recipients-segments">
                         <FormTokenField
                           label={__('Select segment(s)', 'mailpoet')}
-                          value={selectedDefaultSegments.map(
+                          value={selectedAllowedSegments.map(
                             (segment) => segment.name,
                           )}
-                          suggestions={defaultSegments.map(
+                          suggestions={allowedSegments.map(
                             (segment) => segment.name,
                           )}
                           onChange={setSelectedSegments}
