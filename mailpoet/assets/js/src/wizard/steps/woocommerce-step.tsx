@@ -154,7 +154,7 @@ function WizardWooCommerceStep({
           </div>
         </div>
 
-        <div className="mailpoet-gap"/>
+        <div className="mailpoet-gap" />
         <Button
           className="mailpoet-wizard-continue-button"
           isFullWidth

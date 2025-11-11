@@ -78,7 +78,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                   const newState = {
                     libs3rdParty: value,
                   };
-                  setState((prevState) => ({...prevState, ...newState}));
+                  setState((prevState) => ({ ...prevState, ...newState }));
                 }}
                 checked={state.libs3rdParty}
                 name="mailpoet_libs_3rdParty"
@@ -86,7 +86,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
             </div>
           </div>
 
-          <div className="mailpoet-gap"/>
+          <div className="mailpoet-gap" />
 
           <div
             id="mailpoet-wizard-tracking"
@@ -122,7 +122,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                   const newState = {
                     tracking: value,
                   };
-                  setState((prevState) => ({...prevState, ...newState}));
+                  setState((prevState) => ({ ...prevState, ...newState }));
                 }}
                 checked={state.tracking}
                 name="mailpoet_tracking"
@@ -131,7 +131,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           </div>
         </div>
 
-        <div className="mailpoet-gap"/>
+        <div className="mailpoet-gap" />
         <Button
           className="mailpoet-wizard-continue-button"
           isFullWidth

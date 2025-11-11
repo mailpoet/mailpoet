@@ -1,8 +1,8 @@
 import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
+import { __ } from '@wordpress/i18n';
 import { yesIcon } from './icons/yes';
 import { noIcon } from './icons/no';
-import {__} from "@wordpress/i18n";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
