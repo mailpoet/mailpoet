@@ -229,6 +229,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = 5.17.0 - 2025-11-10 =
 * Improved: Titles and descriptions for automation triggers and actions;
-* Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons).
+* Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons);
+* Updated: Update the Email Editor JS package to version 1.4.0 to resolve a conflict with the latest version of the Gutenberg plugin.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

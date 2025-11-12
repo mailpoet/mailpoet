@@ -2,7 +2,8 @@
 
 = 5.17.0 - 2025-11-10 =
 * Improved: Titles and descriptions for automation triggers and actions;
-* Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons).
+* Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons);
+* Updated: Update the Email Editor JS package to version 1.4.0 to resolve a conflict with the latest version of the Gutenberg plugin.
 
 = 5.16.4 - 2025-11-03 =
 * Added: Add email campaign sending option panels to the editor.
