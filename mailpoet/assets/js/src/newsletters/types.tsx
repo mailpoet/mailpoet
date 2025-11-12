@@ -129,7 +129,7 @@ export function NewsletterTypes({
             isBusy={isCreating === 'standard'}
             disabled={isCreating !== null}
             aria-expanded={isOpen}
-            aria-label={__('Open dropdown menu', 'mailpoet')}
+            aria-label={__('Choose editor version', 'mailpoet')}
             data-automation-id="create_standard_email_dropdown"
           >
             <Icon icon={chevronDown} size={24} />
