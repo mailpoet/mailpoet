@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomHelperFunctions;
 
@@ -28,6 +29,8 @@ class EmailEditor {
 
   private DotcomHelperFunctions $dotcomHelperFunctions;
 
+  private NewslettersRepository $newslettersRepository;
+
   public function __construct(
     WPFunctions $wp,
     EmailApiController $emailApiController,
@@ -37,7 +40,8 @@ class EmailEditor {
     TemplatesController $templatesController,
     Cli $cli,
     DotcomHelperFunctions $dotcomHelperFunctions,
-    PersonalizationTagManager $personalizationTagManager
+    PersonalizationTagManager $personalizationTagManager,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->wp = $wp;
     $this->emailApiController = $emailApiController;
@@ -48,6 +52,7 @@ class EmailEditor {
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
     $this->emailEditorPreviewEmail = $emailEditorPreviewEmail;
     $this->personalizationTagManager = $personalizationTagManager;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function initialize(): void {
@@ -57,6 +62,7 @@ class EmailEditor {
     $this->wp->addFilter('woocommerce_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
+    $this->wp->addFilter('woocommerce_email_editor_send_preview_email_personalizer_context', [$this, 'extendPreviewPersonalizerContext'], 10, 1);
     $this->patternsController->registerPatterns();
     // Skip classic templates in Garden environment.
     if (!$this->dotcomHelperFunctions->isGarden()) {
@@ -107,5 +113,38 @@ class EmailEditor {
       return true;
     }
     return $replace;
+  }
+
+  /**
+   * Extend preview personalizer context with automation sample data.
+   * This is called by WooCommerce Email Editor when rendering preview in browser.
+   *
+   * @param array<string, mixed> $context
+   * @return array<string, mixed>
+   */
+  public function extendPreviewPersonalizerContext(array $context): array {
+    // Get the current post being previewed
+    $post = $this->wp->getPost();
+    if (!$post || $post->post_type !== self::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $context;
+    }
+
+    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $post->ID]);
+    if (!$newsletter || (!$newsletter->isAutomation() && !$newsletter->isAutomationTransactional())) {
+      return $context;
+    }
+
+    // Get automation ID and extend tags
+    $automationId = $newsletter->getOptionValue('automationId');
+    if (!$automationId) {
+      return $context;
+    }
+
+    // Extend personalization tags based on automation subjects
+    $this->personalizationTagManager->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
+
+    // Context is populated via woocommerce_email_editor_send_preview_email_personalizer_context filter
+    // which extensions can hook into to add their sample data
+    return $context;
   }
 }

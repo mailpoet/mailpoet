@@ -324,6 +324,10 @@ class Newsletter {
             $context['customer'] = $customer;
           }
         }
+
+        // Allow extensions to add their own subject context
+        /** @var array<string, mixed> $context */
+        $context = $this->wp->applyFilters('mailpoet_automation_email_personalization_context', $context, $queueMeta['automation']['subjects']);
       }
 
       $this->personalizer->set_context($context);

@@ -54,7 +54,10 @@ class PersonalizationTagManager {
       Personalization_Tags_Registry::class
     );
 
-    $this->extendWooCommerceTagsForMailPoet($registry, $automationId);
+    $availableSubjects = $this->getAutomationSubjects($automationId);
+    $this->extendWooCommerceTagsForMailPoet($registry, $availableSubjects);
+
+    $this->wp->applyFilters('mailpoet_automation_email_extend_personalization_tags', $registry, $availableSubjects);
   }
 
   /**
@@ -224,9 +227,7 @@ class PersonalizationTagManager {
    * This allows WooCommerce Order and Customer tags to be used in MailPoet automation emails
    * when the appropriate subjects (order, customer) are available.
    */
-  public function extendWooCommerceTagsForMailPoet(Personalization_Tags_Registry $registry, int $automationId): Personalization_Tags_Registry {
-    $availableSubjects = $this->getAutomationSubjects($automationId);
-
+  public function extendWooCommerceTagsForMailPoet(Personalization_Tags_Registry $registry, array $availableSubjects): Personalization_Tags_Registry {
     $tags = $registry->get_all();
 
     foreach ($tags as $tag) {
@@ -270,6 +271,7 @@ class PersonalizationTagManager {
    */
   private function shouldExtendTagCategory(string $category, ?array $availableSubjects): bool {
     // Map categories to required subjects
+    /** @var array<string, string[]> $categoryToSubjects */
     $categoryToSubjects = [
       'Order' => ['woocommerce:order'],
       'Customer' => ['woocommerce:customer'],

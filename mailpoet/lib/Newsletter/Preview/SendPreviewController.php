@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Preview;
 
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MailerFactory;
@@ -35,6 +36,9 @@ class SendPreviewController {
   /** @var Personalizer */
   private $personalizer;
 
+  /** @var PersonalizationTagManager */
+  private $personalizationTagManager;
+
   public function __construct(
     MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
@@ -42,6 +46,7 @@ class SendPreviewController {
     WPFunctions $wp,
     SubscribersRepository $subscribersRepository,
     Shortcodes $shortcodes,
+    PersonalizationTagManager $personalizationTagManager
   ) {
     $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
@@ -50,6 +55,7 @@ class SendPreviewController {
     $this->shortcodes = $shortcodes;
     $this->subscribersRepository = $subscribersRepository;
     $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
+    $this->personalizationTagManager = $personalizationTagManager;
   }
 
   public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
@@ -86,6 +92,8 @@ class SendPreviewController {
       if ($newsletter->isAutomation() || $newsletter->isAutomationTransactional()) {
         $automationId = $newsletter->getOptionValue('automationId');
         if ($automationId) {
+          // Extend personalization tags based on automation subjects before personalizing
+          $this->personalizationTagManager->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
           $context = $this->addSampleDataToContext($context);
         }
       }
@@ -118,8 +126,8 @@ class SendPreviewController {
    * Add sample WooCommerce order/customer data to context for preview.
    * Uses WooCommerce's dummy data for consistent, predictable previews.
    *
-   * @param array $context Existing context
-   * @return array Context with sample data added
+   * @param array<string, mixed> $context Existing context
+   * @return array<string, mixed> Context with sample data added
    */
   private function addSampleDataToContext(array $context): array {
     $dummyOrder = $this->getWooCommerceDummyOrder();
@@ -131,6 +139,10 @@ class SendPreviewController {
     if ($dummyCustomer instanceof \WC_Customer) {
       $context['customer'] = $dummyCustomer;
     }
+
+    // Allow extensions (like premium plugin) to add additional sample data for preview
+    /** @var array<string, mixed> $context */
+    $context = $this->wp->applyFilters('mailpoet_automation_email_preview_sample_data', $context);
 
     return $context;
   }
