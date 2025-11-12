@@ -8,11 +8,6 @@ class EmailTemplatesCest {
       $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
     }
 
-    $wordPressVersion = $i->getWordPressVersion();
-    if (version_compare($wordPressVersion, '6.9', '>=')) {
-      $scenario->skip('Skipping this test for WP 6.9+ due to template changes');
-    }
-
     $i->wantTo('Create standard newsletter using Gutenberg editor');
     $i->login();
     $i->amOnMailpoetPage('Emails');
