@@ -56,6 +56,21 @@ namespace {
       public function get_date(string $dateType, string $timeZone = 'gmt') {
         return 0;
       }
+
+      public function set_billing_period($period) {
+      }
+
+      public function set_billing_interval($interval) {
+      }
+
+      public function set_requires_manual_renewal($manual) {
+      }
+
+      public function set_cancelled_email_sent($sent) {
+      }
+
+      public function update_dates($dates) {
+      }
     }
   }
 
@@ -140,6 +155,27 @@ namespace {
        */
       public function save(): int {
         return 1;
+      }
+
+      public function set_id($id) {
+      }
+
+      public function set_status($status) {
+      }
+
+      public function set_start($start) {
+      }
+
+      public function set_end($end) {
+      }
+
+      public function set_all_day($all_day) {
+      }
+
+      public function set_date_created($date) {
+      }
+
+      public function set_date_modified($date) {
       }
     }
   }
