@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Config\Env;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
@@ -11,6 +12,7 @@ class Updater {
   private $plugin;
   private $slug;
   private $version;
+  public $currentFreeVersion;
 
   /** @var SettingsController */
   private $settings;
@@ -24,6 +26,7 @@ class Updater {
     $this->slug = $slug;
     $this->version = $version;
     $this->settings = SettingsController::getInstance();
+    $this->currentFreeVersion = MAILPOET_VERSION;
   }
 
   public function init() {
@@ -35,7 +38,17 @@ class Updater {
       $updateTransient = new \stdClass;
     }
 
+    if (property_exists($updateTransient, 'response') && isset($updateTransient->response[$this->plugin])) {
+      unset($updateTransient->response[$this->plugin]); // remove the cached version from the transient.
+    }
+
     $latestVersion = $this->getLatestVersion();
+
+    $latestFreeVersion = $updateTransient->response[Env::$pluginPath]->new_version ?? null;
+
+    if (!$this->shouldShowUpdateNotice($latestVersion->new_version, $latestFreeVersion)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $updateTransient; // skip update notice.
+    }
 
     if (isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       if (version_compare((string)$this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -55,5 +68,32 @@ class Updater {
     $api = new API($key);
     $data = $api->getPluginInformation($this->slug . '/latest');
     return $data;
+  }
+
+  public function isVersionCompatible($premiumVersion, $freeVersion): bool {
+    if (empty($premiumVersion) || empty($freeVersion)) {
+      return false;
+    }
+
+    // Extract required main plugin version from premium version
+    preg_match('/(\d+\.\d+)\.\d+/i', $premiumVersion, $matches);
+    $requiredMainVersion = end($matches);
+
+    // Extract current main plugin minor version
+    preg_match('/^\d\.\d+/', $freeVersion, $match);
+    $currentMainVersion = !empty($match[0]) ? $match[0] : $freeVersion;
+
+    // Check compatibility
+    return version_compare($currentMainVersion, (string)$requiredMainVersion, '>=');
+  }
+
+  public function shouldShowUpdateNotice($premiumLatestVersion, $latestFreeVersion = null): bool {
+    // first check if the free version in the update transient is compatible with the premium latest version
+    if (!empty($latestFreeVersion) && $this->isVersionCompatible($premiumLatestVersion, $latestFreeVersion)) {
+      return true;
+    }
+
+    // then check if the current free version is compatible with the premium latest version
+    return $this->isVersionCompatible($premiumLatestVersion, $this->currentFreeVersion);
   }
 }
