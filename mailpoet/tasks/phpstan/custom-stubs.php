@@ -71,6 +71,10 @@ namespace {
 
       public function update_dates($dates) {
       }
+
+      public function get_time($date_type, $timezone = 'gmt') {
+        return 0;
+      }
     }
   }
 
