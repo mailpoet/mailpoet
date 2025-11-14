@@ -52,6 +52,9 @@ COMPOSER_MIRROR_PATH_REPOS=1 ./tools/vendor/composer.phar install --no-dev --pre
 echo '[BUILD] Fetching prefixed production libraries'
 ./tools/vendor/composer.phar install --no-dev --prefer-dist --working-dir=./prefixer/
 
+# Run patches for production libraries
+./tools/vendor/composer.phar run-script patch-production-libraries
+
 # Remove Doctrine Annotations (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations

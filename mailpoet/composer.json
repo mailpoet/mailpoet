@@ -84,6 +84,10 @@
       "php ./tasks/fix-codeception-stub.php",
       "php ./tasks/fix-requests.php",
       "php ./tasks/fix-php82-robo.php"
+    ],
+    "patch-production-libraries": [
+      "php ./tasks/fix-php82-deprecations.php",
+      "php ./tasks/FixPhp84Deprecations.php"
     ]
   },
   "config": {
