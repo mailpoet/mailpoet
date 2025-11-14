@@ -79,8 +79,12 @@ class PersonalizationTagManager {
       $postId = null;
       if (isset($_SERVER['HTTP_REFERER'])) {
         $referer = sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER']));
-        if (preg_match('/[?&]post=(\d+)/', $referer, $matches)) {
-          $postId = (int)$matches[1];
+        $queryString = parse_url($referer, PHP_URL_QUERY);
+        if ($queryString) {
+          parse_str($queryString, $params);
+          if (isset($params['post'])) {
+            $postId = (int)$params['post'];
+          }
         }
       }
 
