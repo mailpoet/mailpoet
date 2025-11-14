@@ -38,27 +38,32 @@ class Updater {
       $updateTransient = new \stdClass;
     }
 
+    $latestVersion = $this->getLatestVersion();
+
+    if (!isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $updateTransient; // no latest version found.
+    }
+
     if (property_exists($updateTransient, 'response') && isset($updateTransient->response[$this->plugin])) {
       unset($updateTransient->response[$this->plugin]); // remove the cached version from the transient.
     }
 
-    $latestVersion = $this->getLatestVersion();
-
-    $latestFreeVersion = $updateTransient->response[Env::$pluginPath]->new_version ?? null;
+    $latestFreeVersion = null;
+    if (property_exists($updateTransient, 'response') && isset($updateTransient->response[Env::$pluginPath]->new_version)) {
+      $latestFreeVersion = $updateTransient->response[Env::$pluginPath]->new_version;
+    }
 
     if (!$this->shouldShowUpdateNotice($latestVersion->new_version, $latestFreeVersion)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return $updateTransient; // skip update notice.
     }
 
-    if (isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      if (version_compare((string)$this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-        $updateTransient->response[$this->plugin] = $latestVersion;
-      } else {
-        $updateTransient->no_update[$this->plugin] = $latestVersion; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      }
-      $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $updateTransient->checked[$this->plugin] = $this->version;
+    if (version_compare((string)$this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $updateTransient->response[$this->plugin] = $latestVersion;
+    } else {
+      $updateTransient->no_update[$this->plugin] = $latestVersion; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
+    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $updateTransient->checked[$this->plugin] = $this->version;
 
     return $updateTransient;
   }

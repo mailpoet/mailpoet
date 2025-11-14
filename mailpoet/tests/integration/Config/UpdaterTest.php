@@ -238,6 +238,8 @@ class UpdaterTest extends \MailPoetTest {
     // Test compatible versions (free version higher minor)
     verify($this->updater->isVersionCompatible('5.16.0', '5.17.0'))->true();
     verify($this->updater->isVersionCompatible('4.20.0', '5.1.0'))->true();
+    // multi-digit major versions
+    verify($this->updater->isVersionCompatible('10.2.0', '10.3.1'))->true();
   }
 
   public function testIsVersionCompatibleReturnsFalseForIncompatibleVersions() {
@@ -245,6 +247,7 @@ class UpdaterTest extends \MailPoetTest {
     verify($this->updater->isVersionCompatible('5.18.0', '5.17.0'))->false();
     verify($this->updater->isVersionCompatible('6.0.0', '5.17.0'))->false();
     verify($this->updater->isVersionCompatible('5.17.0', '5.16.0'))->false();
+    verify($this->updater->isVersionCompatible('11.0.0', '10.9.9'))->false();
   }
 
   public function testIsVersionCompatibleReturnsFalseForEmptyVersions() {
@@ -294,9 +297,10 @@ class UpdaterTest extends \MailPoetTest {
       ],
       $this
     );
-    $updater->currentFreeVersion = '5.16.0';
+    $updater->currentFreeVersion = '5.17.0';
 
-    $result = $updater->shouldShowUpdateNotice('5.17.0', '5.18.0'); // Incompatible latest, but current is compatible
+    // Latest free version in transient is lower than required, but the currently installed free version is compatible.
+    $result = $updater->shouldShowUpdateNotice('5.17.0', '5.16.0');
     verify($result)->true();
   }
 
