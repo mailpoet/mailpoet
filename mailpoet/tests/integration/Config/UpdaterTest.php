@@ -240,6 +240,9 @@ class UpdaterTest extends \MailPoetTest {
     verify($this->updater->isVersionCompatible('4.20.0', '5.1.0'))->true();
     // multi-digit major versions
     verify($this->updater->isVersionCompatible('10.2.0', '10.3.1'))->true();
+    verify($this->updater->isVersionCompatible('5.4.3', '10.4.3'))->true();
+    verify($this->updater->isVersionCompatible('10.4.3', '10.4.3'))->true();
+    verify($this->updater->isVersionCompatible('10.4.2', '10.4.3'))->true();
   }
 
   public function testIsVersionCompatibleReturnsFalseForIncompatibleVersions() {

@@ -77,19 +77,23 @@ class Updater {
 
   public function isVersionCompatible($premiumVersion, $freeVersion): bool {
     if (empty($premiumVersion) || empty($freeVersion)) {
-      return false;
+        return false;
     }
 
-    // Extract required main plugin version from premium version
-    preg_match('/(\d+\.\d+)\.\d+/i', $premiumVersion, $matches);
-    $requiredMainVersion = end($matches);
+    // Extract major.minor from premium version (e.g., "5.17.0" -> "5.17")
+    $premiumParts = explode('.', $premiumVersion);
+    $requiredMainVersion = isset($premiumParts[0], $premiumParts[1])
+        ? $premiumParts[0] . '.' . $premiumParts[1]
+        : $premiumVersion;
 
-    // Extract current main plugin minor version
-    preg_match('/^\d\.\d+/', $freeVersion, $match);
-    $currentMainVersion = !empty($match[0]) ? $match[0] : $freeVersion;
+    // Extract major.minor from free version (e.g., "5.17.5" -> "5.17")
+    $freeParts = explode('.', $freeVersion);
+    $currentMainVersion = isset($freeParts[0], $freeParts[1])
+        ? $freeParts[0] . '.' . $freeParts[1]
+        : $freeVersion;
 
-    // Check compatibility
-    return version_compare($currentMainVersion, (string)$requiredMainVersion, '>=');
+    // Check compatibility: free version must be >= required version
+    return version_compare($currentMainVersion, $requiredMainVersion, '>=');
   }
 
   public function shouldShowUpdateNotice($premiumLatestVersion, $latestFreeVersion = null): bool {
