@@ -638,6 +638,14 @@ class Hooks {
   }
 
   public function setFooterRated(): void {
+    if (!$this->wp->currentUserCan('manage_options')) {
+      $this->wp->wpDie(
+        esc_html__('You do not have permission to perform this action.', 'mailpoet'),
+        esc_html__('Unauthorized', 'mailpoet'),
+        ['response' => 403]
+      );
+    }
+
     $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
     if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet-rated')) {
