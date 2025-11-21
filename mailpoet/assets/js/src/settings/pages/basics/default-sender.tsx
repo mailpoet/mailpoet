@@ -13,7 +13,7 @@ import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender-email-address-warning';
 
 export function DefaultSender({ showModal }) {
-  const isMssActive = useSelector('isMssActive')();
+  const isMssActive = useSelector('isMssActive');
   const [senderName, setSenderName] = useSetting('sender', 'name');
   const [senderEmail, setSenderEmail] = useSetting('sender', 'address');
   const [isAuthorized, setIsAuthorized] = useState(true);

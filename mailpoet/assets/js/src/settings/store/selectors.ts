@@ -67,15 +67,29 @@ export function getPaths(state: State) {
   return state.paths;
 }
 
-export function getWebHosts(state: State) {
-  return {
-    ...state.hosts.web,
-    manual: {
-      name: t('notListed'),
-      emails: 25,
-      interval: 5,
-    },
-  };
+type WebHost = {
+  name: string;
+  emails: number;
+  interval: number;
+};
+type WebHosts = { [key: string]: WebHost };
+
+let cachedWebHosts: WebHosts | null = null;
+let cachedWebHostsInput: State['hosts']['web'] | null = null;
+
+export function getWebHosts(state: State): WebHosts {
+  if (cachedWebHostsInput !== state.hosts.web) {
+    cachedWebHostsInput = state.hosts.web;
+    cachedWebHosts = {
+      ...state.hosts.web,
+      manual: {
+        name: t('notListed'),
+        emails: 25,
+        interval: 5,
+      },
+    };
+  }
+  return cachedWebHosts || {};
 }
 
 export function getAmazonSesOptions(state: State) {

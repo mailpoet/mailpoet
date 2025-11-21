@@ -14,7 +14,7 @@ export function SegmentsSelect(props: Props) {
   const selector = props.segmentsSelector
     ? props.segmentsSelector
     : 'getDefaultSegments';
-  const segments = useSelector(selector)().map((segment) => ({
+  const segments = useSelector(selector).map((segment) => ({
     value: segment.id,
     label: segment.name,
     count: segment.subscribers,

@@ -1,17 +1,28 @@
 import { useSelect } from '@wordpress/data';
 import * as selectors from '../selectors';
-import { ExcludeFirstParam } from './types';
+import { SelectorResult } from './types';
 import { STORE_NAME } from '../store-name';
 
 type Selectors = typeof selectors;
 
 export function useSelector<Key extends keyof Selectors>(
   key: Key,
-): ExcludeFirstParam<Selectors[Key]> {
-  const selector = useSelect((select) => select(STORE_NAME)[key], [key]);
+  deps: unknown[] = [],
+): SelectorResult<Selectors[Key]> {
+  return useSelect(
+    (select) => {
+      const storeSelects = select(STORE_NAME) as Record<
+        string,
+        (...args: unknown[]) => unknown
+      >;
+      const selectorFn = selectors[key];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((...args: any[]) => (selector as any)(...args)) as ExcludeFirstParam<
-    Selectors[Key]
-  >;
+      if (selectorFn.length <= 1) {
+        return storeSelects[key as string]();
+      }
+
+      return storeSelects[key as string].bind(storeSelects);
+    },
+    [key, ...deps],
+  );
 }

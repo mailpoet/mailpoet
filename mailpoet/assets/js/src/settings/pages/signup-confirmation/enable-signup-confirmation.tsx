@@ -4,7 +4,7 @@ import { Label, Inputs } from 'settings/components';
 import { useSelector, useSetting } from 'settings/store/hooks';
 
 export function EnableSignupConfirmation() {
-  const isMssActive = useSelector('isMssActive')();
+  const isMssActive = useSelector('isMssActive');
   const [enabled, setEnabled] = useSetting('signup_confirmation', 'enabled');
   const handleChange = (value: '1' | '') => {
     // eslint-disable-next-line no-alert

@@ -30,15 +30,22 @@ export function useSetting<
   key3: Key3,
 ): ValueAndSetter<Settings[Key1][Key2][Key3]>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useSetting(...path: string[]): [any, (value: any) => any] {
+export function useSetting(
+  ...path: string[]
+): [unknown, (value: unknown) => void] {
+  const pathString = JSON.stringify(path);
+
   const settingsValue = useSelect(
     (select) => select(STORE_NAME).getSetting(path),
-    path,
+    [pathString],
   );
+
   const setValue = useAction('setSetting');
-  return [
-    settingsValue,
-    useCallback((value) => setValue(path, value), [path, setValue]),
-  ];
+
+  const setterCallback = useCallback(
+    (value: unknown) => setValue(path, value),
+    [setValue, pathString], // eslint-disable-line react-hooks/exhaustive-deps -- path is captured but tracked via pathString to avoid reference changes
+  );
+
+  return [settingsValue, setterCallback];
 }

@@ -32,11 +32,11 @@ const showReEngagementNotice = (action, showError, showSuccess) => {
 
 export function SaveButton() {
   const [clicked, setClicked] = useState(false);
-  const isSaving = useSelector('isSaving')();
-  const hasError = useSelector('hasErrorFlag')();
-  const error = useSelector('getSavingError')();
-  const hasReEngagementNotice = useSelector('hasReEngagementNotice')();
-  const reEngagementAction = useSelector('getReEngagementAction')();
+  const isSaving = useSelector('isSaving');
+  const hasError = useSelector('hasErrorFlag');
+  const error = useSelector('getSavingError');
+  const hasReEngagementNotice = useSelector('hasReEngagementNotice');
+  const reEngagementAction = useSelector('getReEngagementAction');
   const save = useAction('saveSettings');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);

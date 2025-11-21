@@ -22,7 +22,7 @@ export function TestSending() {
     window.mailpoet_current_user_email,
   );
   const [mailer] = useSetting('mta');
-  const { state, error } = useSelector('getTestEmailState')();
+  const { state, error } = useSelector('getTestEmailState');
   const sendTestEmail = useAction('sendTestEmail');
 
   return (

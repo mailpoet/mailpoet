@@ -93,7 +93,7 @@ type Props = {
 };
 
 function PremiumMessages({ canUseSuccessClass, keyMessage = '' }: Props) {
-  const { premiumStatus: status } = useSelector('getKeyActivationState')();
+  const { premiumStatus: status } = useSelector('getKeyActivationState');
 
   switch (status) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:

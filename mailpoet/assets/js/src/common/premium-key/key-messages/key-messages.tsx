@@ -27,7 +27,7 @@ function KeyNotValidMessage() {
 type KeyMessagesProps = { canUseSuccessClass: boolean };
 
 export function KeyMessages({ canUseSuccessClass }: KeyMessagesProps) {
-  const { isKeyValid } = useSelector('getKeyActivationState')();
+  const { isKeyValid } = useSelector('getKeyActivationState');
   return isKeyValid ? (
     <KeyValidMessage canUseSuccessClass={canUseSuccessClass} />
   ) : (

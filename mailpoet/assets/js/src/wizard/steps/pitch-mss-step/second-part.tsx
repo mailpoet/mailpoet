@@ -12,7 +12,7 @@ import { navigateToPath } from '../../navigate-to-path';
 function MSSStepSecondPart(): JSX.Element {
   const navigate = useNavigate();
   const { step } = useParams<{ step: string }>();
-  const state = useSelector('getKeyActivationState')();
+  const state = useSelector('getKeyActivationState');
 
   useEffect(() => {
     if (state.isKeyValid === true) {

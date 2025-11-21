@@ -20,4 +20,13 @@ export type ExcludeFirstParam<F extends (...args: any[]) => any> = (
   ...args: Tail<Parameters<F>>
 ) => ReturnType<F>;
 
+/**
+ * For selectors that only take state (1 param), return the ReturnType directly.
+ * For selectors with additional params, return a function (ExcludeFirstParam).
+ * This allows useSelector to return values for parameterless selectors
+ * and functions for selectors that need parameters.
+ */
+export type SelectorResult<F extends (...args: any[]) => any> =
+  Parameters<F>['length'] extends 0 | 1 ? ReturnType<F> : ExcludeFirstParam<F>;
+
 export type ValueAndSetter<T> = [T, (value: T) => any];

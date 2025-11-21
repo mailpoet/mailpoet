@@ -6,7 +6,7 @@ import { Label, Inputs } from 'settings/components';
 
 export function TaskScheduler() {
   const [method, setMethod] = useSetting('cron_trigger', 'method');
-  const paths = useSelector('getPaths')();
+  const paths = useSelector('getPaths');
 
   return (
     <>

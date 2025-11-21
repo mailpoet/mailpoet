@@ -24,7 +24,7 @@ export function Captcha() {
     'captcha',
     'recaptcha_invisible_secret_token',
   );
-  const hasBuiltInCaptcha = useSelector('isBuiltInCaptchaSupported')();
+  const hasBuiltInCaptcha = useSelector('isBuiltInCaptchaSupported');
   const setErrorFlag = useAction('setErrorFlag');
   const missingRecaptchaCheckboxToken =
     type === 'recaptcha' && recaptchaCheckboxToken.trim() === '';

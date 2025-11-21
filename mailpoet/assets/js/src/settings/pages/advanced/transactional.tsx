@@ -7,7 +7,7 @@ import { useSetting, useSelector } from 'settings/store/hooks';
 
 export function Transactional() {
   const [provider] = useSetting('smtp_provider');
-  const isMssActive = useSelector('isMssActive')();
+  const isMssActive = useSelector('isMssActive');
   const [enabled, setEnabled] = useSetting('send_transactional_emails');
   let methodLabel = '';
   if (isMssActive) methodLabel = 'MailPoet Sending Service';

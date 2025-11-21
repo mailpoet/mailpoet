@@ -42,7 +42,7 @@ const premiumTabGetKey = ReactStringReplace(
 );
 
 export function KeyActivation({ subscribersCount }: Props) {
-  const state = useSelector('getKeyActivationState')();
+  const state = useSelector('getKeyActivationState');
   const setState = useAction('updateKeyActivationState');
   const sendCongratulatoryMssEmail = useAction('sendCongratulatoryMssEmail');
   const [senderAddress, setSenderAddress] = useSetting('sender', 'address');

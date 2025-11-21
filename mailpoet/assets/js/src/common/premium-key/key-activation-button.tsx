@@ -29,7 +29,7 @@ export function KeyActivationButton({
 }: KeyActivationButtonPropType) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
-  const state = useSelector('getKeyActivationState')();
+  const state = useSelector('getKeyActivationState');
   const setState = useAction('updateKeyActivationState');
   const verifyMssKey = useAction('verifyMssKey');
   const verifyPremiumKey = useAction('verifyPremiumKey');

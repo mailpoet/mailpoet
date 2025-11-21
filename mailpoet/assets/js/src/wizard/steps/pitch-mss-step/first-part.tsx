@@ -20,7 +20,7 @@ function openMailPoetShopAndGoToTheNextPart(event, navigate, step: string) {
 function MSSStepFirstPart(): JSX.Element {
   const navigate = useNavigate();
   const { step } = useParams<{ step: string }>();
-  const state = useSelector('getKeyActivationState')();
+  const state = useSelector('getKeyActivationState');
 
   useEffect(() => {
     if (state.isKeyValid === true) {

@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function PageSelect(props: Props) {
-  const pages = useSelector('getPages')();
+  const pages = useSelector('getPages');
   let selectedPage = pages.find((x) => x.id === parseInt(props.value, 10));
   if (!selectedPage) selectedPage = pages[0];
   return (

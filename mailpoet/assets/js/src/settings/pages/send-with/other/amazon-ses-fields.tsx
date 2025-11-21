@@ -9,7 +9,7 @@ export function AmazonSesFields() {
   const [region, setRegion] = useSetting('mta', 'region');
   const [accessKey, setAccessKey] = useSetting('mta', 'access_key');
   const [secretKey, setSecretKey] = useSetting('mta', 'secret_key');
-  const options = useSelector('getAmazonSesOptions')();
+  const options = useSelector('getAmazonSesOptions');
 
   return (
     <>

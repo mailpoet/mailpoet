@@ -5,7 +5,7 @@ import { useSelector } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
 export function Roles() {
-  const isMembersPluginActive = useSelector('hasMembersPlugin')();
+  const isMembersPluginActive = useSelector('hasMembersPlugin');
   return (
     <>
       <Label

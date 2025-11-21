@@ -62,7 +62,7 @@ function EmailVolumeLimitReachedMessage() {
 export function AccessRestrictedMessages() {
   const { mssAccessRestriction, premiumAccessRestriction } = useSelector(
     'getKeyActivationState',
-  )();
+  );
   if (
     mssAccessRestriction === 'email_volume_limit_reached' ||
     premiumAccessRestriction === 'email_volume_limit_reached'

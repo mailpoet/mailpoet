@@ -77,7 +77,7 @@ export function MssMessages({
 }: Props) {
   const { mssStatus, mssAccessRestriction } = useSelector(
     'getKeyActivationState',
-  )();
+  );
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:
       return <MssActiveMessage canUseSuccessClass={canUseSuccessClass} />;

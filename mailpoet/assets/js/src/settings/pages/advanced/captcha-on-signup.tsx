@@ -9,7 +9,7 @@ export function CaptchaOnSignup() {
     'on_register_forms',
     'enabled',
   );
-  const hasWooCommerce = useSelector('hasWooCommerce')();
+  const hasWooCommerce = useSelector('hasWooCommerce');
 
   return (
     <>

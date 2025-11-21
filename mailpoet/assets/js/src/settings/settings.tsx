@@ -23,8 +23,8 @@ import { SendingMethodConfirmationModal } from './components/sending-method-conf
 const isOnSendWithPage = window.location.href.includes('/mta');
 
 export function Settings() {
-  const isSaving = useSelector('isSaving')();
-  const hasWooCommerce = useSelector('hasWooCommerce')();
+  const isSaving = useSelector('isSaving');
+  const hasWooCommerce = useSelector('hasWooCommerce');
   return (
     <>
       <TopBar />

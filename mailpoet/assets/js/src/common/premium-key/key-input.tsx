@@ -12,7 +12,7 @@ export function KeyInput({
   isFullWidth = false,
   forceRevealed = false,
 }: KeyInputPropType) {
-  const state = useSelector('getKeyActivationState')();
+  const state = useSelector('getKeyActivationState');
   const setState = useAction('updateKeyActivationState');
   return (
     <PasswordInput

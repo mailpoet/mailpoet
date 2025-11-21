@@ -13,9 +13,9 @@ declare let window: SendWithChoiceWindow;
 
 export function SendWithChoice() {
   const navigate = useNavigate();
-  const isMssActive = useSelector('isMssActive')();
+  const isMssActive = useSelector('isMssActive');
   const [key] = useSetting('mta', 'mailpoet_api_key');
-  const { mssStatus, premiumStatus } = useSelector('getKeyActivationState')();
+  const { mssStatus, premiumStatus } = useSelector('getKeyActivationState');
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
   const isPremiumKeyValid =
     premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;

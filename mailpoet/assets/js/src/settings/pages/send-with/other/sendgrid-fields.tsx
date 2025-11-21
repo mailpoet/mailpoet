@@ -6,7 +6,7 @@ import { SendingFrequency } from './sending-frequency';
 
 export function SendGridFields() {
   const [apiKey, setApiKey] = useSetting('mta', 'api_key');
-  const options = useSelector('getSendGridOptions')();
+  const options = useSelector('getSendGridOptions');
   return (
     <>
       <SendingFrequency
