@@ -1006,8 +1006,8 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         $this->releaseCreatePullRequest($version);
       })
-      ->addCode(function () use ($version) {
-        $this->releaseRerunCircleWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
+      ->addCode(function () {
+        $this->releaseRerunCircleWorkflowForPremium();
       })
       ->addCode(function () use ($version) {
         $this->translationsPrepareLanguagePacks($version);
@@ -1298,9 +1298,20 @@ class RoboFile extends \Robo\Tasks {
     // Sometimes can be useful to know which Circle project workflow was restarted
     $project = $project ? " for the project '{$project}'" : '';
     if (!$result) {
-      $this->yell("Circle Workflow{$project} was not restarted", 40, 'red');
+      $this->say("Rerunning the CircleCI workflow{$project} ... failed");
     } else {
-      $this->say("Circle Workflow{$project} was started from the beginning");
+      $this->say("Rerunning the CircleCI workflow{$project} ... done");
+    }
+  }
+
+  public function releaseRerunCircleWorkflowForPremium() {
+    $isPremiumReleased = $this->createGitHubController()->projectBranchExists(
+      \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
+      \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH
+    );
+
+    if ($isPremiumReleased) {
+      $this->releaseRerunCircleWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
     }
   }
 
