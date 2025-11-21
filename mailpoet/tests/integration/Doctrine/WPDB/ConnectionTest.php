@@ -140,10 +140,11 @@ class ConnectionTest extends MailPoetTest {
     $connection->exec(sprintf("INSERT INTO %s (value) VALUES ('one')", self::TEST_TABLE_NAME));
     $connection->exec(sprintf("INSERT INTO %s (value) VALUES ('two')", self::TEST_TABLE_NAME));
     $connection->exec(sprintf("INSERT INTO %s (value) VALUES ('three')", self::TEST_TABLE_NAME));
+    global $wpdb;
     $autoIncrement = $connection->query(
       sprintf(
         "SELECT auto_increment FROM information_schema.tables WHERE table_schema = '%s' AND table_name = '%s'",
-        DB_NAME,
+        $wpdb->dbname, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         self::TEST_TABLE_NAME
       )
     )->fetchOne();
@@ -172,8 +173,9 @@ class ConnectionTest extends MailPoetTest {
       $exception = $e;
     }
 
+    global $wpdb;
     $this->assertInstanceOf(QueryException::class, $exception);
-    $this->assertSame(sprintf("Table '%s.non_existent_table' doesn't exist", DB_NAME), $exception->getMessage());
+    $this->assertSame(sprintf("Table '%s.non_existent_table' doesn't exist", $wpdb->dbname), $exception->getMessage()); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->assertSame('42S02', $exception->getSQLState());
     $this->assertSame(1146, $exception->getCode());
   }

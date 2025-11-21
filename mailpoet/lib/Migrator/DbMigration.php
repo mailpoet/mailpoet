@@ -32,8 +32,9 @@ abstract class DbMigration {
   }
 
   protected function createTable(string $tableName, array $attributes): void {
+    global $wpdb;
     $prefix = Env::$dbPrefix;
-    $charsetCollate = Env::$dbCharsetCollate;
+    $charsetCollate = $wpdb->get_charset_collate();
     $sql = implode(",\n", $attributes);
     $this->connection->executeStatement("
       CREATE TABLE IF NOT EXISTS {$prefix}{$tableName} (

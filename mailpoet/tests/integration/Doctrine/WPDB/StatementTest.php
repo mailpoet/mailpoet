@@ -26,10 +26,9 @@ class StatementTest extends MailPoetTest {
       $exception = $e;
     }
 
-    $this->assertInstanceOf(QueryException::class, $exception);
-    $this->assertEquals(sprintf("Table '%s.test_table' doesn't exist", DB_NAME), $exception->getMessage());
-
     global $wpdb;
+    $this->assertInstanceOf(QueryException::class, $exception);
+    $this->assertEquals(sprintf("Table '%s.test_table' doesn't exist", $wpdb->dbname), $exception->getMessage()); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->assertSame("SELECT * FROM test_table WHERE id = '123' AND name = 'Test' AND value = 'abc'", $wpdb->last_query);
   }
 }

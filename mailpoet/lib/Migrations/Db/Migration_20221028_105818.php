@@ -72,8 +72,9 @@ class Migration_20221028_105818 extends DbMigration {
   ];
 
   public function run(): void {
+    global $wpdb;
     $this->prefix = Env::$dbPrefix;
-    $this->charsetCollate = Env::$dbCharsetCollate;
+    $this->charsetCollate = $wpdb->get_charset_collate();
 
     // Ensure dbDelta function
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -706,7 +707,6 @@ class Migration_20221028_105818 extends DbMigration {
       return false;
     }
 
-    $dbName = Env::$dbName;
     $statisticsTables = [
       esc_sql("{$this->prefix}statistics_clicks"),
       esc_sql("{$this->prefix}statistics_opens"),

@@ -65,11 +65,7 @@ define('MAILPOET_VERSION', $mailpoetPlugin['version']);
 
 Env::init(
   $mailpoetPlugin['filename'],
-  $mailpoetPlugin['version'],
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_NAME
+  $mailpoetPlugin['version']
 );
 
 $requirements = new RequirementsChecker();

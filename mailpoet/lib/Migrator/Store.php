@@ -70,7 +70,8 @@ class Store {
   }
 
   public function ensureMigrationsTable(): void {
-    $collate = Env::$dbCharsetCollate;
+    global $wpdb;
+    $collate = $wpdb->get_charset_collate();
     $this->connection->executeStatement("
       CREATE TABLE IF NOT EXISTS {$this->table} (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
