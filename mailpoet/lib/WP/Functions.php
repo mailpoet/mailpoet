@@ -1016,6 +1016,10 @@ class Functions {
     nocache_headers();
   }
 
+  public function wpDie(): void {
+    wp_die();
+  }
+
   public function wpUniqueId($prefix = ''): string {
     return wp_unique_id($prefix);
   }

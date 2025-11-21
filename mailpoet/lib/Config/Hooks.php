@@ -586,6 +586,8 @@ class Hooks {
       $this->wp->wpRegisterScript($handle, false, [], Env::$version, true);
       $this->wp->wpEnqueueScript($handle);
 
+      $nonce = $this->wp->wpCreateNonce('mailpoet-rated');
+
       $script = "(function() {
         'use strict';
         var ratingLink = document.querySelector('a.mailpoet-rating-link');
@@ -594,6 +596,7 @@ class Hooks {
             var link = e.currentTarget;
             var formData = new FormData();
             formData.append('action', 'mailpoet_rated');
+            formData.append('nonce', '" . esc_js($nonce) . "');
 
             fetch('" . esc_js(admin_url('admin-ajax.php')) . "', {
               method: 'POST',
@@ -634,7 +637,18 @@ class Hooks {
   }
 
   public function setFooterRated(): void {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+
+    if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet-rated')) {
+      $this->wp->wpDie(
+        esc_html__('Security check failed.', 'mailpoet'),
+        esc_html__('Error', 'mailpoet'),
+        ['response' => 403]
+      );
+    }
+
     $this->wp->updateOption('mailpoet_admin_footer_text_rated', 1);
+    $this->wp->wpDie();
   }
 
   public function setupSettingsLinkInPluginPage() {
