@@ -131,11 +131,6 @@ parameters:
 			path: ../../lib/Cache/TransientCache.php
 
 		-
-			message: "#^Cannot use array destructuring on array\\|true\\.$#"
-			count: 1
-			path: ../../lib/Config/Env.php
-
-		-
 			message: "#^Call to an undefined method object\\:\\:get\\(\\)\\.$#"
 			count: 1
 			path: ../../lib/Config/Populator.php
