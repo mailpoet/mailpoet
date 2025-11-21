@@ -552,22 +552,89 @@ class Hooks {
   }
 
   public function setupFooter() {
-    if (!Menu::isOnMailPoetAdminPage()) {
-      return;
-    }
+    // Register AJAX handler on all admin pages (AJAX requests go to admin-ajax.php)
+    $this->wp->addAction(
+      'wp_ajax_mailpoet_rated',
+      [$this, 'setFooterRated']
+    );
+
+    // Register hooks that will check the page later
     $this->wp->addFilter(
       'admin_footer_text',
       [$this, 'setFooter'],
       1,
       1
     );
+    $this->wp->addAction(
+      'admin_enqueue_scripts',
+      [$this, 'enqueueFooterRatingScript']
+    );
+  }
+
+  public function enqueueFooterRatingScript(): void {
+    // Only show on MailPoet pages
+    if (!Menu::isOnMailPoetAdminPage()) {
+      return;
+    }
+
+    if (Menu::isOnMailPoetAutomationPage()) {
+      return;
+    }
+
+    if (!$this->wp->getOption('mailpoet_admin_footer_text_rated')) {
+      $handle = 'mailpoet-admin-footer-rating';
+      $this->wp->wpRegisterScript($handle, false, [], Env::$version, true);
+      $this->wp->wpEnqueueScript($handle);
+
+      $script = "(function() {
+        'use strict';
+        var ratingLink = document.querySelector('a.mailpoet-rating-link');
+        if (ratingLink) {
+          ratingLink.addEventListener('click', function(e) {
+            var link = e.currentTarget;
+            var formData = new FormData();
+            formData.append('action', 'mailpoet_rated');
+
+            fetch('" . esc_js(admin_url('admin-ajax.php')) . "', {
+              method: 'POST',
+              body: formData,
+              credentials: 'same-origin'
+            });
+
+            if (link) {
+              link.textContent = link.getAttribute('data-rated');
+            }
+          });
+        }
+      })();";
+
+      $this->wp->wpAddInlineScript($handle, $script);
+    }
   }
 
   public function setFooter(): string {
+    // Only show footer on MailPoet pages
+    if (!Menu::isOnMailPoetAdminPage()) {
+      return '';
+    }
+
     if (Menu::isOnMailPoetAutomationPage()) {
       return '';
     }
-    return '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">' . esc_html__('Give feedback', 'mailpoet') . '</a>';
+
+    $feedbackLink = '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">' . esc_html__('Give feedback', 'mailpoet') . '</a>';
+
+    if (!$this->wp->getOption('mailpoet_admin_footer_text_rated')) {
+      $reviewLink = '<a href="https://wordpress.org/support/plugin/mailpoet/reviews/#new-post" rel="noopener noreferrer" target="_blank" class="mailpoet-rating-link" aria-label="' . esc_attr__('five star', 'mailpoet') . '" data-rated="' . esc_attr__('Thanks :)', 'mailpoet') . '">' . esc_html__('Help other businesses grow their email lists – share your ★★★★★ MailPoet experience!', 'mailpoet') . '</a>';
+
+      return $reviewLink . ' | ' . $feedbackLink;
+    } else {
+      return esc_html__('Thank you for using MailPoet.', 'mailpoet') . ' | ' . $feedbackLink;
+    }
+  }
+
+  public function setFooterRated(): void {
+    $this->wp->updateOption('mailpoet_admin_footer_text_rated', 1);
   }
 
   public function setupSettingsLinkInPluginPage() {
