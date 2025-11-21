@@ -37,6 +37,7 @@ class Hooks {
     self::OPTIN_POSITION_BEFORE_PAYMENT_METHODS => 'woocommerce_review_order_before_payment',
     self::OPTIN_POSITION_BEFORE_TERMS_AND_CONDITIONS => 'woocommerce_checkout_before_terms_and_conditions',
   ];
+  const FOOTER_RATED_OPTION = 'mailpoet_admin_footer_text_rated';
 
   /** @var Form */
   private $subscriptionForm;
@@ -581,7 +582,7 @@ class Hooks {
       return;
     }
 
-    if (!$this->wp->getOption('mailpoet_admin_footer_text_rated')) {
+    if (!$this->wp->getOption(self::FOOTER_RATED_OPTION)) {
       $handle = 'mailpoet-admin-footer-rating';
       $this->wp->wpRegisterScript($handle, false, [], Env::$version, true);
       $this->wp->wpEnqueueScript($handle);
@@ -627,7 +628,7 @@ class Hooks {
 
     $feedbackLink = '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">' . esc_html__('Give feedback', 'mailpoet') . '</a>';
 
-    if (!$this->wp->getOption('mailpoet_admin_footer_text_rated')) {
+    if (!$this->wp->getOption(self::FOOTER_RATED_OPTION)) {
       $reviewLink = '<a href="https://wordpress.org/support/plugin/mailpoet/reviews/#new-post" rel="noopener noreferrer" target="_blank" class="mailpoet-rating-link" aria-label="' . esc_attr__('five star', 'mailpoet') . '" data-rated="' . esc_attr__('Thanks :)', 'mailpoet') . '">' . esc_html__('Help other businesses grow their email lists – share your ★★★★★ MailPoet experience!', 'mailpoet') . '</a>';
 
       return $reviewLink . ' | ' . $feedbackLink;
@@ -647,7 +648,7 @@ class Hooks {
       );
     }
 
-    $this->wp->updateOption('mailpoet_admin_footer_text_rated', 1);
+    $this->wp->updateOption(self::FOOTER_RATED_OPTION, 1);
     $this->wp->wpDie();
   }
 
