@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\AutomationFlowEndpoint;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\UpdateRunStatusEndpoint;
 
 class Analytics {
 
@@ -23,6 +24,7 @@ class Analytics {
     $this->wordPress->addAction(Hooks::API_INITIALIZE, function (API $api) {
       $api->registerGetRoute('automation/analytics/automation_flow', AutomationFlowEndpoint::class);
       $api->registerGetRoute('automation/analytics/overview', OverviewEndpoint::class);
+      $api->registerPutRoute('automation/analytics/runs/(?P<id>\d+)/status', UpdateRunStatusEndpoint::class);
     });
   }
 }
