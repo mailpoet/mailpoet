@@ -1,5 +1,10 @@
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Button, DropdownMenu } from '@wordpress/components';
+import {
+  Button,
+  DropdownMenu,
+  __experimentalConfirmDialog as ConfirmDialog,
+} from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from '@wordpress/data';
@@ -12,6 +17,8 @@ export function ActivityCell({
   runId: number;
   status: string;
 }): JSX.Element {
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showResumeConfirm, setShowResumeConfirm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { updateRunStatus } = useDispatch(storeName);
@@ -22,20 +29,16 @@ export function ActivityCell({
     navigate({ search: params.toString() });
   };
 
-  const handleStatusChange = (newStatus: string) => {
-    void updateRunStatus(runId, newStatus);
-  };
-
   const menuControls = [];
   if (status === 'running') {
     menuControls.push({
       title: __('Cancel run', 'mailpoet'),
-      onClick: () => handleStatusChange('cancelled'),
+      onClick: () => setShowCancelConfirm(true),
     });
   } else if (status === 'cancelled') {
     menuControls.push({
       title: __('Resume run', 'mailpoet'),
-      onClick: () => handleStatusChange('running'),
+      onClick: () => setShowResumeConfirm(true),
     });
   }
 
@@ -44,6 +47,35 @@ export function ActivityCell({
       <Button variant="tertiary" onClick={openActivityModal}>
         {__('View activity', 'mailpoet')}
       </Button>
+      <ConfirmDialog
+        isOpen={showCancelConfirm}
+        title={__('Cancel run', 'mailpoet')}
+        confirmButtonText={__('Yes, cancel run', 'mailpoet')}
+        __experimentalHideHeader={false}
+        onConfirm={() => {
+          void updateRunStatus(runId, 'cancelled');
+          setShowCancelConfirm(false);
+        }}
+        onCancel={() => setShowCancelConfirm(false)}
+      >
+        {__(
+          'Are you sure you want to cancel this run for this subscriber?',
+          'mailpoet',
+        )}
+      </ConfirmDialog>
+      <ConfirmDialog
+        isOpen={showResumeConfirm}
+        title={__('Resume run', 'mailpoet')}
+        confirmButtonText={__('Yes, resume', 'mailpoet')}
+        __experimentalHideHeader={false}
+        onConfirm={() => {
+          void updateRunStatus(runId, 'running');
+          setShowResumeConfirm(false);
+        }}
+        onCancel={() => setShowResumeConfirm(false)}
+      >
+        {__('Are you sure you want to resume this run?', 'mailpoet')}
+      </ConfirmDialog>
       {menuControls.length > 0 && (
         <DropdownMenu
           className="mailpoet-analytics-subscribers-more-button"
