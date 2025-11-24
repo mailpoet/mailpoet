@@ -3,6 +3,7 @@ import { getCurrentDates } from '@woocommerce/date';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
+import { store as noticesStore } from '@wordpress/notices';
 import { Hooks } from 'wp-js-hooks';
 import { Data } from 'common/premium-modal/upgrade-info';
 import { CurrentView, Query, Section, SectionData } from '../types';
@@ -146,5 +147,38 @@ export function openPremiumModalForSampleData() {
 export function closePremiumModal() {
   return {
     type: 'CLOSE_PREMIUM_MODAL',
+  };
+}
+
+export function* updateRunStatus(runId: number, status: string) {
+  const response: { data: { id: number; status: string; updated_at: string } } =
+    yield apiFetch({
+      path: `/automation/analytics/runs/${runId}/status`,
+      method: 'PUT',
+      data: { status },
+    });
+
+  const { createNotice } = dispatch(noticesStore);
+  if (response.data.status === status) {
+    const message =
+      status === 'cancelled'
+        ? __('Run cancelled successfully.', 'mailpoet')
+        : __('Run resumed successfully.', 'mailpoet');
+    void createNotice('success', message, {
+      type: 'snackbar',
+    });
+  } else {
+    void createNotice('error', __('Failed to update run status.', 'mailpoet'), {
+      type: 'snackbar',
+    });
+  }
+
+  return {
+    type: 'UPDATE_RUN_STATUS',
+    payload: {
+      runId: response.data.id,
+      status: response.data.status,
+      updatedAt: response.data.updated_at,
+    },
   };
 }

@@ -1,4 +1,4 @@
-import { State } from './types';
+import { State, SubscriberSection } from './types';
 
 export function reducer(state: State, action): State {
   switch (action.type) {
@@ -29,6 +29,40 @@ export function reducer(state: State, action): State {
         ...state,
         premiumModal: undefined,
       };
+    case 'UPDATE_RUN_STATUS': {
+      const subscribersSection = state.sections
+        .subscribers as SubscriberSection;
+      if (!subscribersSection?.data?.items) {
+        return state;
+      }
+
+      const updatedItems = subscribersSection.data.items.map((item) => {
+        if (item.run.id === action.payload.runId) {
+          return {
+            ...item,
+            run: {
+              ...item.run,
+              status: action.payload.status,
+            },
+          };
+        }
+        return item;
+      });
+
+      return {
+        ...state,
+        sections: {
+          ...state.sections,
+          subscribers: {
+            ...subscribersSection,
+            data: {
+              ...subscribersSection.data,
+              items: updatedItems,
+            },
+          },
+        },
+      };
+    }
     default:
       return state;
   }

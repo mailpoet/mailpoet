@@ -37,7 +37,12 @@ export function transformSubscribersToRows(data: SubscriberSection['data']) {
           value: subscriber.date,
         },
         {
-          display: <ActivityCell runId={subscriber.run.id} />,
+          display: (
+            <ActivityCell
+              runId={subscriber.run.id}
+              status={subscriber.run.status}
+            />
+          ),
         },
       ]);
 }
