@@ -284,6 +284,23 @@ class AutomationRunStorage {
     }
   }
 
+  public function getNextStepId(int $id): ?string {
+    global $wpdb;
+    $result = $wpdb->get_row(
+      $wpdb->prepare(
+        'SELECT next_step_id FROM %i WHERE id = %d',
+        $this->table,
+        $id
+      ),
+      ARRAY_A
+    );
+    if (!is_array($result) || !array_key_exists('next_step_id', $result)) {
+      return null;
+    }
+    $value = $result['next_step_id'];
+    return $value !== null ? (string)$value : null;
+  }
+
   public function getAutomationStepStatisticForTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, ?int $versionId = null): array {
     global $wpdb;
     $andWhere = $versionId ? 'AND version_id = %d' : '';
