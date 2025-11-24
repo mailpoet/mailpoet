@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import {
   Button,
@@ -7,7 +7,7 @@ import {
 } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../../../store';
 
 export function ActivityCell({
@@ -22,12 +22,32 @@ export function ActivityCell({
   const navigate = useNavigate();
   const location = useLocation();
   const { updateRunStatus } = useDispatch(storeName);
+  const { runStatusUpdate } = useSelect(
+    (select) => ({
+      runStatusUpdate: select(storeName).getRunStatusUpdate(runId),
+    }),
+    [runId],
+  );
+  const isBusyCancel = runStatusUpdate?.status === 'cancelled';
+  const isBusyResume = runStatusUpdate?.status === 'running';
 
   const openActivityModal = () => {
     const params = new URLSearchParams(location.search);
     params.set('runId', runId.toString());
     navigate({ search: params.toString() });
   };
+
+  useEffect(() => {
+    if (showCancelConfirm && status === 'cancelled') {
+      setShowCancelConfirm(false);
+    }
+  }, [status, showCancelConfirm]);
+
+  useEffect(() => {
+    if (showResumeConfirm && status === 'running') {
+      setShowResumeConfirm(false);
+    }
+  }, [status, showResumeConfirm]);
 
   const menuControls = [];
   if (status === 'running') {
@@ -50,13 +70,23 @@ export function ActivityCell({
       <ConfirmDialog
         isOpen={showCancelConfirm}
         title={__('Cancel run', 'mailpoet')}
-        confirmButtonText={__('Yes, cancel run', 'mailpoet')}
+        confirmButtonText={
+          isBusyCancel
+            ? __('Cancelling…', 'mailpoet')
+            : __('Yes, cancel run', 'mailpoet')
+        }
         __experimentalHideHeader={false}
         onConfirm={() => {
+          if (isBusyCancel) {
+            return;
+          }
           void updateRunStatus(runId, 'cancelled');
-          setShowCancelConfirm(false);
         }}
-        onCancel={() => setShowCancelConfirm(false)}
+        onCancel={() => {
+          if (!isBusyCancel) {
+            setShowCancelConfirm(false);
+          }
+        }}
       >
         {__(
           'Are you sure you want to cancel this run for this subscriber?',
@@ -66,13 +96,23 @@ export function ActivityCell({
       <ConfirmDialog
         isOpen={showResumeConfirm}
         title={__('Resume run', 'mailpoet')}
-        confirmButtonText={__('Yes, resume', 'mailpoet')}
+        confirmButtonText={
+          isBusyResume
+            ? __('Resuming…', 'mailpoet')
+            : __('Yes, resume', 'mailpoet')
+        }
         __experimentalHideHeader={false}
         onConfirm={() => {
+          if (isBusyResume) {
+            return;
+          }
           void updateRunStatus(runId, 'running');
-          setShowResumeConfirm(false);
         }}
-        onCancel={() => setShowResumeConfirm(false)}
+        onCancel={() => {
+          if (!isBusyResume) {
+            setShowResumeConfirm(false);
+          }
+        }}
       >
         {__('Are you sure you want to resume this run?', 'mailpoet')}
       </ConfirmDialog>

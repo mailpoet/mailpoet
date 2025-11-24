@@ -180,9 +180,14 @@ export type AutomationFlowSectionData = SectionData & {
 export type AutomationFlowSection = Section & {
   data: undefined | AutomationFlowSectionData;
 };
+export type RunStatusUpdate = {
+  status: string;
+  error?: string;
+};
 export type State = {
   sections: Record<string, Section>;
   query: Query;
+  runStatusUpdates: Record<number, RunStatusUpdate>;
   premiumModal?: {
     content: string | JSX.Element;
     utmCampaign?: string;

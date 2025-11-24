@@ -151,34 +151,56 @@ export function closePremiumModal() {
 }
 
 export function* updateRunStatus(runId: number, status: string) {
-  const response: { data: { id: number; status: string; updated_at: string } } =
-    yield apiFetch({
+  yield {
+    type: 'RUN_STATUS_UPDATE_REQUEST',
+    payload: { runId, status },
+  };
+
+  try {
+    const response: {
+      data: { id: number; status: string; updated_at: string };
+    } = yield apiFetch({
       path: `/automation/analytics/runs/${runId}/status`,
       method: 'PUT',
       data: { status },
     });
 
-  const { createNotice } = dispatch(noticesStore);
-  if (response.data.status === status) {
-    const message =
-      status === 'cancelled'
-        ? __('Run cancelled successfully.', 'mailpoet')
-        : __('Run resumed successfully.', 'mailpoet');
-    void createNotice('success', message, {
-      type: 'snackbar',
-    });
-  } else {
+    const { createNotice } = dispatch(noticesStore);
+    if (response.data.status === status) {
+      const message =
+        status === 'cancelled'
+          ? __('Run cancelled successfully.', 'mailpoet')
+          : __('Run resumed successfully.', 'mailpoet');
+      void createNotice('success', message, {
+        type: 'snackbar',
+      });
+    } else {
+      void createNotice(
+        'error',
+        __('Failed to update run status.', 'mailpoet'),
+        {
+          type: 'snackbar',
+        },
+      );
+    }
+
+    return {
+      type: 'UPDATE_RUN_STATUS',
+      payload: {
+        runId: response.data.id,
+        status: response.data.status,
+        updatedAt: response.data.updated_at,
+      },
+    };
+  } catch (_error) {
+    const { createNotice } = dispatch(noticesStore);
     void createNotice('error', __('Failed to update run status.', 'mailpoet'), {
       type: 'snackbar',
     });
-  }
 
-  return {
-    type: 'UPDATE_RUN_STATUS',
-    payload: {
-      runId: response.data.id,
-      status: response.data.status,
-      updatedAt: response.data.updated_at,
-    },
-  };
+    return {
+      type: 'RUN_STATUS_UPDATE_FAILURE',
+      payload: { runId },
+    };
+  }
 }

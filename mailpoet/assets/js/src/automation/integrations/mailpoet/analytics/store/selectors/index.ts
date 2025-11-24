@@ -15,3 +15,7 @@ export function getSection(state: State, id: string): Section | undefined {
 export function getPremiumModal(state: State): State['premiumModal'] {
   return state.premiumModal;
 }
+
+export function getRunStatusUpdate(state: State, runId: number) {
+  return state.runStatusUpdates[runId];
+}

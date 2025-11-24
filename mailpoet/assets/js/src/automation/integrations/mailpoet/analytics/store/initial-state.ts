@@ -81,4 +81,5 @@ export const getInitialState = (): State => ({
     after: undefined,
     before: undefined,
   },
+  runStatusUpdates: {},
 });
