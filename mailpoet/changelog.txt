@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.17.1 - 2025-11-25 =
+* Improved: Accessibility to the new newsletter editor;
+* Improved: Screenreader access in the onboarding flow;
+* Improved: Prevent auto-updating the premium plugin to avoid version mismatches.;
+* Fixed: Fixed the schedule and recipients fields in the email editor sidebar not working correctly;
+* Fixed: Include segments in Recipients dropdown in email editor sidebar.
+
 = 5.17.0 - 2025-11-10 =
 * Improved: Titles and descriptions for automation triggers and actions;
 * Fixed: Fix custom link shortcodes with arguments not working in URL fields (buttons);
