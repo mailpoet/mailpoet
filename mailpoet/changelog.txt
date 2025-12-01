@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.17.2 - 2025-12-01 =
+* Added: New prompt asking users for review;
+* Improved: Allow removing opt-in block when opt-in on checkout is disabled;
+* Fixed: Fixed React warnings in settings page caused by useSelect hook.
+
 = 5.17.1 - 2025-11-25 =
 * Improved: Accessibility to the new newsletter editor;
 * Improved: Screenreader access in the onboarding flow;
