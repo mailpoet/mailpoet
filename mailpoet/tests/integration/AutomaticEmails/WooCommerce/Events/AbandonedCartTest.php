@@ -112,7 +112,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $wp = new WPFunctions();
     $wcHelper = new WooCommerceHelper($wp);
     $cookies = new Cookies();
-    $subscriberCookie = new SubscriberCookie($cookies, new TrackingConfig($settings));
+    $subscriberCookie = new SubscriberCookie($cookies, new TrackingConfig($settings, $wp));
     $event = new AbandonedCart(
       $wp,
       $wcHelper,
@@ -184,6 +184,10 @@ class AbandonedCartTest extends \MailPoetTest {
         'exists' => false,
       ])
     );
+
+    $this->wp->method('applyFilters')->willReturnCallback(function ($hookName, $value) {
+        return $value;
+    });
 
     $_COOKIE['mailpoet_subscriber'] = json_encode([
       'subscriber_id' => $subscriber->getId(),
@@ -337,7 +341,7 @@ class AbandonedCartTest extends \MailPoetTest {
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
       'wooCommerceHelper' => $this->wooCommerceHelperMock,
-      'subscriberCookie' => new SubscriberCookie(new Cookies(), new TrackingConfig($settings)),
+      'subscriberCookie' => new SubscriberCookie(new Cookies(), new TrackingConfig($settings, $this->wp)),
       'subscriberActivityTracker' => $this->subscriberActivityTrackerMock,
       'scheduler' => $automaticEmailScheduler,
       'subscribersRepository' => $subscribersRepository,
