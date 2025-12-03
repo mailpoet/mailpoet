@@ -1199,7 +1199,7 @@ workflows:
           mysql_image: mysql:5.6
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 6.7.2
+          wordpress_version: 6.8.3
           requires:
             - build
       - performance_tests:
@@ -1237,7 +1237,7 @@ workflows:
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 6.7.2
+          wordpress_version: 6.8.3
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           requires:
@@ -1299,7 +1299,7 @@ workflows:
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 6.7.2
+          wordpress_version: 6.8.3
           requires:
             - build_premium
       - integration_tests:
@@ -1310,7 +1310,7 @@ workflows:
           automate_woo_version: 6.0.33
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 6.7.2
+          wordpress_version: 6.8.3
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           requires:
