@@ -20,6 +20,15 @@ class SubscriberListingRepository extends ListingRepository {
 
   const DEFAULT_SORT_BY = 'createdAt';
 
+  private const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
+  private const ENGAGEMENT_SCORE_LOW = 'low';
+  private const ENGAGEMENT_SCORE_GOOD = 'good';
+  private const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
+  private const ENGAGEMENT_SCORE_LOW_MAX = 20;
+  private const ENGAGEMENT_SCORE_GOOD_MIN = 20;
+  private const ENGAGEMENT_SCORE_GOOD_MAX = 50;
+  private const ENGAGEMENT_SCORE_EXCELLENT_MIN = 50;
+
   private static $supportedStatuses = [
     SubscriberEntity::STATUS_SUBSCRIBED,
     SubscriberEntity::STATUS_UNSUBSCRIBED,
@@ -219,6 +228,69 @@ class SubscriberListingRepository extends ListingRepository {
       $queryBuilder
         ->andWhere('s.createdAt <= :createdAtTo')
         ->setParameter('createdAtTo', $createdAtTo);
+    }
+
+    // Filter by engagement score (include)
+    $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
+    if (!empty($engagementScoreInclude)) {
+      $engagementScoreInclude = is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude];
+      $conditions = [];
+
+      if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $engagementScoreInclude, true)) {
+        $conditions[] = '(s.engagementScore IS NULL)';
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_LOW, $engagementScoreInclude, true)) {
+        $conditions[] = sprintf(
+          '(s.engagementScore < %d)',
+          self::ENGAGEMENT_SCORE_LOW_MAX
+        );
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_GOOD, $engagementScoreInclude, true)) {
+        $conditions[] = sprintf(
+          '(s.engagementScore >= %d AND s.engagementScore < %d)',
+          self::ENGAGEMENT_SCORE_GOOD_MIN,
+          self::ENGAGEMENT_SCORE_GOOD_MAX
+        );
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_EXCELLENT, $engagementScoreInclude, true)) {
+        $conditions[] = sprintf(
+          '(s.engagementScore >= %d)',
+          self::ENGAGEMENT_SCORE_EXCELLENT_MIN
+        );
+      }
+
+      if (!empty($conditions)) {
+        $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
+      }
+    }
+
+    // Filter by engagement score (exclude)
+    $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
+    if (!empty($engagementScoreExclude)) {
+      $engagementScoreExclude = is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude];
+
+      if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $engagementScoreExclude, true)) {
+        $queryBuilder->andWhere('s.engagementScore IS NOT NULL');
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_LOW, $engagementScoreExclude, true)) {
+        $queryBuilder->andWhere(sprintf(
+          '(s.engagementScore >= %d OR s.engagementScore IS NULL)',
+          self::ENGAGEMENT_SCORE_LOW_MAX
+        ));
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_GOOD, $engagementScoreExclude, true)) {
+        $queryBuilder->andWhere(sprintf(
+          '(s.engagementScore < %d OR s.engagementScore >= %d OR s.engagementScore IS NULL)',
+          self::ENGAGEMENT_SCORE_GOOD_MIN,
+          self::ENGAGEMENT_SCORE_GOOD_MAX
+        ));
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_EXCELLENT, $engagementScoreExclude, true)) {
+        $queryBuilder->andWhere(sprintf(
+          '(s.engagementScore < %d OR s.engagementScore IS NULL)',
+          self::ENGAGEMENT_SCORE_EXCELLENT_MIN
+        ));
+      }
     }
   }
 
