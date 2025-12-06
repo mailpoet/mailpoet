@@ -726,7 +726,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   public function testStatusFiltersWorkWithOtherFilters() {
     $list = $this->segmentRepository->createOrUpdate('Segment 8');
-    
+
     $subscribedInList = (new Subscriber())
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$list])
@@ -748,6 +748,371 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $data = $this->repository->getData($this->getListingDefinition());
     verify(count($data))->equals(1);
     verify($data[0]->getEmail())->equals($subscribedInList->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreCategories() {
+    $unknownScore = (new Subscriber())->create(); // No engagement score set (null)
+    $lowScore = (new Subscriber())->withEngagementScore(10)->create();
+    $goodScore = (new Subscriber())->withEngagementScore(35)->create();
+    $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Test unknown category
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'unknown'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+
+    // Test low category
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'low'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($lowScore->getEmail());
+
+    // Test good category
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'good'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($goodScore->getEmail());
+
+    // Test excellent category
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'excellent'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($excellentScore->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreBoundaryValues() {
+    // Test boundary values: low < 20, good >= 20 AND < 50, excellent >= 50
+    $score0 = (new Subscriber())->withEngagementScore(0)->create();
+    $score19 = (new Subscriber())->withEngagementScore(19)->create();
+    $score20 = (new Subscriber())->withEngagementScore(20)->create();
+    $score49 = (new Subscriber())->withEngagementScore(49)->create();
+    $score50 = (new Subscriber())->withEngagementScore(50)->create();
+    $score100 = (new Subscriber())->withEngagementScore(100)->create();
+
+    // Low: < 20 (should include 0, 19)
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'low'];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($score0->getEmail());
+    verify($data[1]->getEmail())->equals($score19->getEmail());
+
+    // Good: >= 20 AND < 50 (should include 20, 49)
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'good'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($score20->getEmail());
+    verify($data[1]->getEmail())->equals($score49->getEmail());
+
+    // Excellent: >= 50 (should include 50, 100)
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'excellent'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($score50->getEmail());
+    verify($data[1]->getEmail())->equals($score100->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByMultipleEngagementScores() {
+    $unknownScore = (new Subscriber())->create();
+    $lowScore = (new Subscriber())->withEngagementScore(10)->create();
+    $goodScore = (new Subscriber())->withEngagementScore(35)->create();
+    $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Filter by unknown and excellent
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['unknown', 'excellent']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($excellentScore->getEmail());
+
+    // Filter by low and good
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['low', 'good']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($lowScore->getEmail());
+    verify($data[1]->getEmail())->equals($goodScore->getEmail());
+
+    // Filter by all categories
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['unknown', 'low', 'good', 'excellent']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreWithInvalidValue() {
+    (new Subscriber())->create();
+    (new Subscriber())->withEngagementScore(10)->create();
+
+    // Invalid value should not match any condition
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['invalid_score']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2); // All subscribers returned, because invalid value is ignored
+
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreCombinedWithOtherFilters() {
+    $list = $this->segmentRepository->createOrUpdate('Segment for engagement test');
+
+    $unknownInList = (new Subscriber())
+      ->withSegments([$list])
+      ->create();
+    $lowInList = (new Subscriber())
+      ->withEngagementScore(10)
+      ->withSegments([$list])
+      ->create();
+    $excellentInList = (new Subscriber())
+      ->withEngagementScore(75)
+      ->withSegments([$list])
+      ->create();
+    $excellentNotInList = (new Subscriber())
+      ->withEngagementScore(80)
+      ->create();
+
+    // Filter by segment AND engagement score
+    $this->listingData['filter'] = [
+      'segment' => $list->getId(),
+      'engagementScoreInclude' => 'excellent',
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($excellentInList->getEmail());
+
+    // Filter by segment AND multiple engagement scores
+    $this->listingData['filter'] = [
+      'segment' => $list->getId(),
+      'engagementScoreInclude' => ['unknown', 'low'],
+    ];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unknownInList->getEmail());
+    verify($data[1]->getEmail())->equals($lowInList->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreCombinedWithStatusFilter() {
+    $subscribedLow = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEngagementScore(10)
+      ->create();
+    $unsubscribedLow = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withEngagementScore(15)
+      ->create();
+    $subscribedExcellent = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEngagementScore(75)
+      ->create();
+
+    // Filter by status AND engagement score
+    $this->listingData['filter'] = [
+      'statusInclude' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'engagementScoreInclude' => 'low',
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($subscribedLow->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreExcludeCategories() {
+    $unknownScore = (new Subscriber())->create(); // No engagement score set (null)
+    $lowScore = (new Subscriber())->withEngagementScore(10)->create();
+    $goodScore = (new Subscriber())->withEngagementScore(35)->create();
+    $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Exclude unknown category - should return low, good, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'unknown'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(3);
+    verify($data[0]->getEmail())->equals($lowScore->getEmail());
+    verify($data[1]->getEmail())->equals($goodScore->getEmail());
+    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude low category - should return unknown, good, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'low'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(3);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($goodScore->getEmail());
+    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude good category - should return unknown, low, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'good'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(3);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($lowScore->getEmail());
+    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude excellent category - should return unknown, low, good
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'excellent'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(3);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($lowScore->getEmail());
+    verify($data[2]->getEmail())->equals($goodScore->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreExcludeBoundaryValues() {
+    // Test boundary values: low < 20, good >= 20 AND < 50, excellent >= 50
+    $score0 = (new Subscriber())->withEngagementScore(0)->create();
+    $score19 = (new Subscriber())->withEngagementScore(19)->create();
+    $score20 = (new Subscriber())->withEngagementScore(20)->create();
+    $score49 = (new Subscriber())->withEngagementScore(49)->create();
+    $score50 = (new Subscriber())->withEngagementScore(50)->create();
+    $score100 = (new Subscriber())->withEngagementScore(100)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Exclude low (< 20): should exclude 0, 19 -> return 20, 49, 50, 100
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'low'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($score20->getEmail());
+    verify($data[1]->getEmail())->equals($score49->getEmail());
+    verify($data[2]->getEmail())->equals($score50->getEmail());
+    verify($data[3]->getEmail())->equals($score100->getEmail());
+
+    // Exclude good (>= 20 AND < 50): should exclude 20, 49 -> return 0, 19, 50, 100
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'good'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($score0->getEmail());
+    verify($data[1]->getEmail())->equals($score19->getEmail());
+    verify($data[2]->getEmail())->equals($score50->getEmail());
+    verify($data[3]->getEmail())->equals($score100->getEmail());
+
+    // Exclude excellent (>= 50): should exclude 50, 100 -> return 0, 19, 20, 49
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'excellent'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($score0->getEmail());
+    verify($data[1]->getEmail())->equals($score19->getEmail());
+    verify($data[2]->getEmail())->equals($score20->getEmail());
+    verify($data[3]->getEmail())->equals($score49->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByMultipleEngagementScoreExcludes() {
+    $unknownScore = (new Subscriber())->create();
+    $lowScore = (new Subscriber())->withEngagementScore(10)->create();
+    $goodScore = (new Subscriber())->withEngagementScore(35)->create();
+    $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Exclude unknown and low - should return good, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => ['unknown', 'low']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($goodScore->getEmail());
+    verify($data[1]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude good and excellent - should return unknown, low
+    $this->listingData['filter'] = ['engagementScoreExclude' => ['good', 'excellent']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($lowScore->getEmail());
+
+    // Exclude all categories - should return nothing
+    $this->listingData['filter'] = ['engagementScoreExclude' => ['unknown', 'low', 'good', 'excellent']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(0);
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByBothEngagementScoreIncludeAndExclude() {
+    $unknownScore = (new Subscriber())->create();
+    $lowScore = (new Subscriber())->withEngagementScore(10)->create();
+    $goodScore = (new Subscriber())->withEngagementScore(35)->create();
+    $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
+
+    $this->listingData['sort_by'] = 'id';
+
+    // Include low and good, but exclude low - should return only good
+    $this->listingData['filter'] = [
+      'engagementScoreInclude' => ['low', 'good'],
+      'engagementScoreExclude' => 'low',
+    ];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($goodScore->getEmail());
+
+    // Include all, exclude unknown and excellent - should return low, good
+    $this->listingData['filter'] = [
+      'engagementScoreInclude' => ['unknown', 'low', 'good', 'excellent'],
+      'engagementScoreExclude' => ['unknown', 'excellent'],
+    ];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($lowScore->getEmail());
+    verify($data[1]->getEmail())->equals($goodScore->getEmail());
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testFilterSubscribersByEngagementScoreExcludeCombinedWithOtherFilters() {
+    $list = $this->segmentRepository->createOrUpdate('Segment for exclude test');
+
+    $unknownInList = (new Subscriber())
+      ->withSegments([$list])
+      ->create();
+    $lowInList = (new Subscriber())
+      ->withEngagementScore(10)
+      ->withSegments([$list])
+      ->create();
+    $excellentInList = (new Subscriber())
+      ->withEngagementScore(75)
+      ->withSegments([$list])
+      ->create();
+    $excellentNotInList = (new Subscriber())
+      ->withEngagementScore(80)
+      ->create();
+
+    // Filter by segment AND exclude excellent engagement score
+    $this->listingData['filter'] = [
+      'segment' => $list->getId(),
+      'engagementScoreExclude' => 'excellent',
+    ];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($unknownInList->getEmail());
+    verify($data[1]->getEmail())->equals($lowInList->getEmail());
+
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
   }
