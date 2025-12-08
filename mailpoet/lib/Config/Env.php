@@ -105,4 +105,18 @@ class Env {
     self::$plugin_name = self::$pluginName; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     self::$temp_path = self::$tempPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
+
+  /**
+   * @deprecated Calculate timezone offset from WordPress gmt_offset option directly if needed
+   */
+  public static function getDbTimezoneOffset($offset = false) {
+    $offset = ($offset) ? $offset : WPFunctions::get()->getOption('gmt_offset');
+    $offset = (float)($offset);
+    $mins = $offset * 60;
+    $sgn = ($mins < 0 ? -1 : 1);
+    $mins = abs($mins);
+    $hrs = floor($mins / 60);
+    $mins -= $hrs * 60;
+    return sprintf('%+03d:%02d', $hrs * $sgn, $mins);
+  }
 }

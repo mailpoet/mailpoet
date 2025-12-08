@@ -37,6 +37,13 @@ class EnvTest extends \MailPoetTest {
     verify(Env::$dbTimezoneOffset)->equals('');
   }
 
+  public function testDeprecatedGetDbTimezoneOffset() {
+    verify(Env::getDbTimezoneOffset('+1.5'))->equals('+01:30');
+    verify(Env::getDbTimezoneOffset('+11'))->equals('+11:00');
+    verify(Env::getDbTimezoneOffset('-5.5'))->equals('-05:30');
+    verify(Env::getDbTimezoneOffset('xyz'))->equals('+00:00');
+  }
+
   public function _after() {
     parent::_after();
     // Restore the original environment
