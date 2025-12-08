@@ -25,6 +25,54 @@ class Env {
   public static $pluginPrefix;
   /** @var string WP DB prefix + plugin prefix */
   public static $dbPrefix;
+  /**
+   * @deprecated Use global $wpdb->prefix instead
+   */
+  public static $wpDbPrefix = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbHost = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbIsIpv6 = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbSocket = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbPort = '';
+  /**
+   * @deprecated Use global $wpdb->dbname instead
+   */
+  public static $dbName = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbUsername = '';
+  /**
+   * @deprecated Database connection is handled by WordPress $wpdb
+   */
+  public static $dbPassword = '';
+  /**
+   * @deprecated Use global $wpdb->charset instead
+   */
+  public static $dbCharset = '';
+  /**
+   * @deprecated Use global $wpdb->collate instead
+   */
+  public static $dbCollation = '';
+  /**
+   * @deprecated Use global $wpdb->get_charset_collate() instead
+   */
+  public static $dbCharsetCollate = '';
+  /**
+   * @deprecated Calculate timezone offset from WordPress gmt_offset option if needed
+   */
+  public static $dbTimezoneOffset = '';
 
   // back compatibility for older Premium plugin with underscore naming
   // (we need to allow it to activate so it can render an update notice)

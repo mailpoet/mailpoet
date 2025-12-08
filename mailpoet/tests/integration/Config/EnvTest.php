@@ -26,6 +26,17 @@ class EnvTest extends \MailPoetTest {
     verify(Env::$dbPrefix)->equals($dbPrefix);
   }
 
+  public function testDeprecatedPropertiesExistAsEmptyStrings() {
+    // Deprecated properties should exist (to prevent fatal errors) but be empty strings
+    verify(Env::$wpDbPrefix)->equals('');
+    verify(Env::$dbName)->equals('');
+    verify(Env::$dbCharset)->equals('');
+    verify(Env::$dbCollation)->equals('');
+    verify(Env::$dbCharsetCollate)->equals('');
+    verify(Env::$dbHost)->equals('');
+    verify(Env::$dbTimezoneOffset)->equals('');
+  }
+
   public function _after() {
     parent::_after();
     // Restore the original environment
