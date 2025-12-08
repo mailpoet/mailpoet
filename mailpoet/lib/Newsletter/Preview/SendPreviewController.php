@@ -160,21 +160,24 @@ class SendPreviewController {
     }
 
     try {
-      // Access WooCommerce EmailPreview singleton
       $emailPreview = \Automattic\WooCommerce\Internal\Admin\EmailPreview\EmailPreview::instance();
 
-      // Use reflection to call the private get_dummy_order() method
+      // Check if get_dummy_order() is public (WooCommerce 9.8+)
       $reflectionClass = new \ReflectionClass($emailPreview);
       $method = $reflectionClass->getMethod('get_dummy_order');
-      $method->setAccessible(true);
 
-      $dummyOrder = $method->invoke($emailPreview);
+      if ($method->isPublic()) {
+        // Method is public, call it directly
+        $dummyOrder = $emailPreview->get_dummy_order();
+      } else {
+        // Backward compatibility: method is private in older WooCommerce versions
+        $method->setAccessible(true);
+        $dummyOrder = $method->invoke($emailPreview);
+      }
 
       return $dummyOrder instanceof \WC_Order ? $dummyOrder : null;
     } catch (\Throwable $e) {
-      // If reflection fails, try the filter as fallback
-      $dummyOrder = $this->wp->applyFilters('woocommerce_email_preview_dummy_order', null, null);
-      return $dummyOrder instanceof \WC_Order ? $dummyOrder : null;
+      return null;
     }
   }
 

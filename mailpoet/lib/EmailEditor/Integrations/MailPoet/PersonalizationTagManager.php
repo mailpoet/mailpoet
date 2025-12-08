@@ -67,7 +67,7 @@ class PersonalizationTagManager {
    * @return void
    */
   public function maybeExtendTagsForRestRequest(): void {
-    $this->wp->addFilter('rest_pre_dispatch', function($result, $server, $request) {
+    $this->wp->addFilter('rest_pre_dispatch', function($result, $_server, $request) {
       $route = $request->get_route();
 
       // Only process personalization tags endpoints
@@ -79,7 +79,7 @@ class PersonalizationTagManager {
       $postId = null;
       if (isset($_SERVER['HTTP_REFERER'])) {
         $referer = sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER']));
-        $queryString = parse_url($referer, PHP_URL_QUERY);
+        $queryString = $this->wp->wpParseUrl($referer, PHP_URL_QUERY);
         if ($queryString) {
           parse_str($queryString, $params);
           if (isset($params['post'])) {

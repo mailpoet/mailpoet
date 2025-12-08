@@ -301,10 +301,7 @@ class Newsletter {
       ];
 
       $queueMeta = $queue->getMeta();
-      if (
-        is_array($queueMeta)
-        && isset($queueMeta['automation']['run_id'])
-      ) {
+      if (isset($queueMeta['automation']['run_id'])) {
         $runId = (int)$queueMeta['automation']['run_id'];
         $automationRun = $this->automationRunStorage->getAutomationRun($runId);
 
