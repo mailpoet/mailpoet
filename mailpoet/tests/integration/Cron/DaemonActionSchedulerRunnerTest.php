@@ -24,6 +24,7 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     $this->actionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
     $this->actionScheduler = $this->diContainer->get(ActionScheduler::class);
     $this->cleanup();
+    $this->actionSchedulerRunner->clearDeactivationFlag();
     $this->actionSchedulerHelper = new ActionSchedulerTestHelper();
   }
 
@@ -59,6 +60,24 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
 
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     verify($actions)->arrayCount(0);
+  }
+
+  public function testDeactivateSetsDeactivationFlag(): void {
+    verify($this->actionSchedulerRunner->isDeactivating())->false();
+
+    $this->actionSchedulerRunner->deactivate();
+    verify($this->actionSchedulerRunner->isDeactivating())->true();
+
+    // Cleanup
+    $this->actionSchedulerRunner->clearDeactivationFlag();
+  }
+
+  public function testClearDeactivationFlagRemovesFlag(): void {
+    $this->actionSchedulerRunner->deactivate();
+    verify($this->actionSchedulerRunner->isDeactivating())->true();
+
+    $this->actionSchedulerRunner->clearDeactivationFlag();
+    verify($this->actionSchedulerRunner->isDeactivating())->false();
   }
 
   private function cleanup(): void {

@@ -11,6 +11,7 @@ use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
@@ -34,7 +35,8 @@ class SetupTest extends \MailPoetTest {
     $captchaRenderer = $this->diContainer->get(CaptchaRenderer::class);
     $migrator = $this->diContainer->get(Migrator::class);
     $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler), $settings);
+    $daemonActionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
+    $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler, $daemonActionSchedulerRunner), $settings);
     $response = $router->reset();
     verify($response->status)->equals(APIResponse::STATUS_OK);
 

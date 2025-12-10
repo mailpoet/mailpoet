@@ -4,6 +4,7 @@ namespace MailPoet\Cron\ActionScheduler\Actions;
 
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\ActionScheduler\RemoteExecutorHandler;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -37,6 +38,12 @@ class DaemonTrigger {
 
   public function init() {
     $this->wp->addAction(self::NAME, [$this, 'process']);
+
+    // Don't schedule if plugin is being deactivated (prevents race condition)
+    if ($this->wp->getOption(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, false)) {
+      return;
+    }
+
     if (!$this->actionScheduler->hasScheduledAction(self::NAME)) {
       $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true), self::TRIGGER_RUN_INTERVAL, self::NAME);
     }

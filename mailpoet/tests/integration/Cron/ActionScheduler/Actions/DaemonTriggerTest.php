@@ -6,6 +6,7 @@ use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\ActionScheduler\ActionSchedulerTestHelper;
 use MailPoet\Cron\ActionScheduler\RemoteExecutorHandler;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Settings\SettingsController;
@@ -28,6 +29,8 @@ class DaemonTriggerTest extends \MailPoetTest {
   public function _before(): void {
     $this->daemonTrigger = $this->diContainer->get(DaemonTrigger::class);
     $this->cleanup();
+    // Clear deactivation flag to ensure clean state for each test
+    $this->diContainer->get(DaemonActionSchedulerRunner::class)->clearDeactivationFlag();
     $this->scheduledTaskFactory = new ScheduledTask();
     $this->scheduledTaskFactory->withDefaultTasks();
     $this->actionSchedulerHelper = new ActionSchedulerTestHelper();
@@ -42,6 +45,24 @@ class DaemonTriggerTest extends \MailPoetTest {
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     verify($action->get_hook())->equals(DaemonTrigger::NAME);
+  }
+
+  public function testItDoesNotScheduleTriggerActionWhenDeactivating(): void {
+    $actionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
+
+    // Set the deactivation flag (simulating mid-deactivation)
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, true);
+
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    verify($actions)->arrayCount(0);
+
+    $this->daemonTrigger->init();
+
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    verify($actions)->arrayCount(0); // Should still be 0 because deactivation flag is set
+
+    // Cleanup
+    $actionSchedulerRunner->clearDeactivationFlag();
   }
 
   public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
