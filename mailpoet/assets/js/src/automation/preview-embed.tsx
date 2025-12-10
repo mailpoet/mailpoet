@@ -5,13 +5,14 @@
  * in an iframe.
  */
 import { createRoot } from 'react-dom/client';
+import { __ } from '@wordpress/i18n';
 import { registerTranslations } from 'common';
 import { initializeApi } from './api';
 import { TemplatePreview } from './templates/components/template-preview';
 
 declare global {
   interface Window {
-    mailpoet_template_slug: string;
+    mailpoet_template_slug?: string;
   }
 }
 
@@ -19,7 +20,11 @@ function PreviewEmbed(): JSX.Element {
   const templateSlug = window.mailpoet_template_slug;
 
   if (!templateSlug) {
-    return <div className="preview-error">No template specified</div>;
+    return (
+      <div className="preview-error">
+        {__('No template specified', 'mailpoet')}
+      </div>
+    );
   }
 
   return (

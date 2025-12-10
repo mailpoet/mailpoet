@@ -54,7 +54,8 @@ class AutomationPreviewEmbed {
   }
 
   public function render(): void {
-    $templateSlug = isset($_GET['template']) ? sanitize_key($_GET['template']) : '';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    $templateSlug = isset($_GET['template']) ? sanitize_key(wp_unslash($_GET['template'])) : '';
 
     // Disable admin bar for embed preview (intentional for iframe display)
     // phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected
