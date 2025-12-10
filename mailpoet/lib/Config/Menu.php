@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\AdminPages\Pages\Automation;
 use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
+use MailPoet\AdminPages\Pages\AutomationPreviewEmbed;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\DynamicSegments;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
@@ -56,6 +57,7 @@ class Menu {
   const AUTOMATION_EDITOR_PAGE_SLUG = 'mailpoet-automation-editor';
   const AUTOMATION_ANALYTICS_PAGE_SLUG = 'mailpoet-automation-analytics';
   const AUTOMATION_TEMPLATES_PAGE_SLUG = 'mailpoet-automation-templates';
+  const AUTOMATION_PREVIEW_EMBED_PAGE_SLUG = 'mailpoet-automation-preview-embed';
 
   const LANDINGPAGE_PAGE_SLUG = 'mailpoet-landingpage';
 
@@ -109,6 +111,8 @@ class Menu {
 
   public function init() {
     $this->checkPremiumKey();
+
+    $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationPreviewEmbed'], 1);
 
     $this->wp->addAction(
       'admin_menu',
@@ -535,6 +539,16 @@ class Menu {
       [$this, 'automationTemplates']
     );
 
+    // Automation preview embed (hidden from menu, used for iframe embedding)
+    $this->wp->addSubmenuPage(
+      self::NO_PARENT_PAGE_SLUG,
+      $this->setPageTitle(__('Automation Preview', 'mailpoet')),
+      '',
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      self::AUTOMATION_PREVIEW_EMBED_PAGE_SLUG,
+      [$this, 'automationPreviewEmbed']
+    );
+
     // add body class for automation editor page
     $this->wp->addAction('load-' . $automationPage, function() {
       $this->wp->addFilter('admin_body_class', function ($classes) {
@@ -595,6 +609,27 @@ class Menu {
 
   public function automationAnalytics() {
     $this->container->get(AutomationAnalytics::class)->render();
+  }
+
+  public function automationPreviewEmbed() {
+    $this->container->get(AutomationPreviewEmbed::class)->render();
+  }
+
+  /**
+   * Render automation preview embed page early, before WordPress outputs admin chrome.
+   * This allows the embed page to be a clean, standalone HTML page without menus/sidebars.
+   */
+  public function maybeRenderAutomationPreviewEmbed(): void {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    if (!isset($_GET['page']) || $_GET['page'] !== self::AUTOMATION_PREVIEW_EMBED_PAGE_SLUG) {
+      return;
+    }
+
+    if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) {
+      return;
+    }
+
+    $this->container->get(AutomationPreviewEmbed::class)->render();
   }
 
   public function experimentalFeatures() {

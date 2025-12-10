@@ -69,6 +69,11 @@ class AssetsController {
     $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'));
   }
 
+  public function setupAutomationPreviewEmbedDependencies(): void {
+    $this->enqueueJsEntrypoint('automation_preview_embed');
+    $this->wp->wpEnqueueStyle('mailpoet_automation_templates', $this->getCssUrl('mailpoet-automation-templates.css'));
+  }
+
   private function enqueueJsEntrypoint(string $asset, array $dependencies = []): void {
     $this->registerAdminDeps();
 

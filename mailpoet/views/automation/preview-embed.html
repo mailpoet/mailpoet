@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automation Preview</title>
+  <style>
+    html, body {
+      margin: 20px;
+      padding: 0;
+      background: #fbfbfb;
+      font-size: 12px;
+    }
+    #mailpoet_automation_preview {
+      zoom: 0.7;
+      background: #fbfbfb;
+      text-align: center;
+    }
+  </style>
+  <script type="text/javascript">
+    // Global config needed by admin bundle
+    var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
+    // Premium-related variables needed for step type registration
+    var mailpoet_has_valid_premium_key = <%= json_encode(has_valid_premium_key) %>;
+    var mailpoet_subscribers_limit_reached = <%= json_encode(subscribers_limit_reached) %>;
+    var mailpoet_premium_active = <%= json_encode(premium_active) %>;
+    var mailpoet_capabilities = <%= json_encode(capabilities) %>;
+    // WooCommerce-related variables needed for WooCommerce step types
+    var mailpoet_woocommerce_active = <%= json_encode(woocommerce_active) %>;
+    var mailpoet_woocommerce_subscriptions_active = <%= json_encode(woocommerce_subscriptions_active) %>;
+    var mailpoet_woocommerce_bookings_active = <%= json_encode(woocommerce_bookings_active) %>;
+    // Preview-specific variables
+    var mailpoet_template_slug = <%= json_encode(template_slug) %>;
+    var mailpoet_automation_api = <%= json_encode(api) %>;
+    var mailpoet_automation_registry = <%= json_encode(registry) %>;
+    var mailpoet_automation_context = <%= json_encode(context) %>;
+  </script>
+  <%= head_content | raw %>
+</head>
+<body>
+  <div id="mailpoet_automation_preview"></div>
+  <%= footer_content | raw %>
+</body>
+</html>

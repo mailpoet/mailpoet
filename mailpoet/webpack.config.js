@@ -239,6 +239,7 @@ const adminConfig = {
     automation_analytics:
       'automation/integrations/mailpoet/analytics/index.tsx',
     automation_templates: 'automation/templates/index.tsx',
+    automation_preview_embed: 'automation/preview-embed.tsx',
     newsletter_editor: 'newsletter-editor/webpack-index.jsx',
     form_editor: 'form-editor/form-editor.jsx',
     settings: 'settings/index.tsx',
