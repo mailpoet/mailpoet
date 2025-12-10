@@ -58,6 +58,14 @@ class CleanupExtension extends Extension {
       ON DUPLICATE KEY UPDATE value = '$version';
     ";
 
+    // Set woocommerce_allow_tracking to 'yes' to prevent WooCommerce 10.4+ from calling
+    // as_unschedule_all_actions before Action Scheduler is initialized (WooCommerce bug)
+    $sql .= "
+      INSERT INTO mp_options (option_name, option_value, autoload)
+      VALUES ('woocommerce_allow_tracking', 'yes', 'yes')
+      ON DUPLICATE KEY UPDATE option_value = 'yes';
+    ";
+
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)
     $sql = "
       SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;
