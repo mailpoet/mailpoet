@@ -56,6 +56,10 @@ function Edit({ attributes, setAttributes }) {
           href={formEditUrl}
           target="_blank"
           className="mailpoet-block-create-new-link"
+          onClick={(e) => {
+            e.preventDefault();
+            window.top.open(formEditUrl, '_blank');
+          }}
         >
           {window.locale.createForm}
         </a>
