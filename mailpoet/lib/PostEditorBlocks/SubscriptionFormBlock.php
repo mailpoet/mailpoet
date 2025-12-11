@@ -55,6 +55,7 @@ class SubscriptionFormBlock {
       ?>
       <script type="text/javascript">
         window.mailpoet_forms = <?php echo $form_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+        window.mailpoet_form_edit_url = '<?php echo esc_js($this->wp->adminUrl('admin.php?page=mailpoet-form-editor-template-selection')); ?>';
         window.locale = {
           selectForm: '<?php echo esc_js(__('Select a MailPoet form', 'mailpoet')) ?>',
           createForm: '<?php echo esc_js(__('Create a new form', 'mailpoet')) ?>',

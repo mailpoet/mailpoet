@@ -8,6 +8,7 @@ const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 
 const allForms = window.mailpoet_forms;
+const formEditUrl = window.mailpoet_form_edit_url;
 
 function Edit({ attributes, setAttributes }) {
   const blockProps = useBlockProps();
@@ -52,7 +53,7 @@ function Edit({ attributes, setAttributes }) {
     return (
       <div className="mailpoet-block-create-new-content">
         <a
-          href="admin.php?page=mailpoet-form-editor-template-selection"
+          href={formEditUrl}
           target="_blank"
           className="mailpoet-block-create-new-link"
         >
