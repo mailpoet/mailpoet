@@ -24,7 +24,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('mailpoet/3-column-content', $threeColumnContent['name']);
     $this->assertStringContainsString('A three-column layout organizes information into sections', $threeColumnContent['content']);
     $this->assertEquals('3 Columns', $threeColumnContent['title']);
-    $this->assertEquals(['email-contents'], $threeColumnContent['categories']);
+    $this->assertEquals(['basic'], $threeColumnContent['categories']);
 
     $twoColumnContent = array_pop($blockPatterns);
     $this->assertIsArray($twoColumnContent);
@@ -35,7 +35,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('mailpoet/2-column-content', $twoColumnContent['name']);
     $this->assertStringContainsString('A two-column layout organizes information into sections', $twoColumnContent['content']);
     $this->assertEquals('2 Columns', $twoColumnContent['title']);
-    $this->assertEquals(['email-contents'], $twoColumnContent['categories']);
+    $this->assertEquals(['basic'], $twoColumnContent['categories']);
 
     $oneColumnContent = array_pop($blockPatterns);
     $this->assertIsArray($oneColumnContent);
@@ -46,7 +46,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('mailpoet/1-column-content', $oneColumnContent['name']);
     $this->assertStringContainsString('A one-column layout is great for simplified and concise content', $oneColumnContent['content']);
     $this->assertEquals('1 Column', $oneColumnContent['title']);
-    $this->assertEquals(['email-contents'], $oneColumnContent['categories']);
+    $this->assertEquals(['basic'], $oneColumnContent['categories']);
   }
 
   private function cleanupPatterns() {

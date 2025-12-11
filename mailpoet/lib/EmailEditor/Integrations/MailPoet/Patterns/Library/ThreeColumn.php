@@ -9,7 +9,7 @@ class ThreeColumn extends Pattern {
   protected $name = '3-column-content';
   protected $block_types = []; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-  protected $categories = ['email-contents'];
+  protected $categories = ['basic'];
   protected $post_types = [EmailEditor::MAILPOET_EMAIL_POST_TYPE]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
@@ -19,7 +19,7 @@ class ThreeColumn extends Pattern {
       <!-- /wp:heading --></div>
       <!-- /wp:group -->
 
-      <!-- wp:columns {"style":{"spacing":{"padding":{"right":"var:preset|spacing|10","left":"var:preset|spacing|10"}}},"metadata":{"categories":["email-contents"],"patternName":"mailpoet/1-column-content"}} -->
+      <!-- wp:columns {"style":{"spacing":{"padding":{"right":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
       <div class="wp-block-columns" style="padding-right:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10)"><!-- wp:column {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
       <div class="wp-block-column" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:image {"scale":"cover"} -->
       <figure class="wp-block-image"><img alt="" style="object-fit:cover"/></figure>
