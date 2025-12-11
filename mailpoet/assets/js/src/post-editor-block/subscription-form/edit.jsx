@@ -8,7 +8,7 @@ const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 
 const allForms = window.mailpoet_forms;
-const formEditUrl = window.mailpoet_form_edit_url;
+const formEditUrl = window.mailpoet_form_edit_url || '';
 
 function Edit({ attributes, setAttributes }) {
   const blockProps = useBlockProps();
@@ -52,17 +52,19 @@ function Edit({ attributes, setAttributes }) {
   function selectFormSettings() {
     return (
       <div className="mailpoet-block-create-new-content">
-        <a
-          href={formEditUrl}
-          rel="noopener noreferrer"
-          className="mailpoet-block-create-new-link"
-          onClick={(e) => {
-            e.preventDefault();
-            window.top.open(formEditUrl, '_blank', 'noopener noreferrer');
-          }}
-        >
-          {window.locale.createForm}
-        </a>
+        {formEditUrl && (
+          <a
+            href={formEditUrl}
+            rel="noopener noreferrer"
+            className="mailpoet-block-create-new-link"
+            onClick={(e) => {
+              e.preventDefault();
+              window.top.open(formEditUrl, '_blank', 'noopener noreferrer');
+            }}
+          >
+            {window.locale.createForm}
+          </a>
+        )}
         {displayFormsSelect()}
       </div>
     );
