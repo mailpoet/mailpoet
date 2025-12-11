@@ -54,11 +54,11 @@ function Edit({ attributes, setAttributes }) {
       <div className="mailpoet-block-create-new-content">
         <a
           href={formEditUrl}
-          target="_blank"
+          rel="noopener noreferrer"
           className="mailpoet-block-create-new-link"
           onClick={(e) => {
             e.preventDefault();
-            window.top.open(formEditUrl, '_blank');
+            window.top.open(formEditUrl, '_blank', 'noopener noreferrer');
           }}
         >
           {window.locale.createForm}
