@@ -57,9 +57,9 @@ class EmailEditor {
     $this->wp->addFilter('woocommerce_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
-    // Skip classic patterns and templates in Garden environment.
+    $this->patternsController->registerPatterns();
+    // Skip classic templates in Garden environment.
     if (!$this->dotcomHelperFunctions->isGarden()) {
-      $this->patternsController->registerPatterns();
       $this->templatesController->initialize();
     }
     $this->extendEmailPostApi();
