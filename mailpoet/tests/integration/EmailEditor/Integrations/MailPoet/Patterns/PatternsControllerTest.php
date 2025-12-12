@@ -15,38 +15,38 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->patterns->registerPatterns();
     $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
-    $threeColumnContent = array_pop($blockPatterns);
-    $this->assertIsArray($threeColumnContent);
-    $this->assertArrayHasKey('name', $threeColumnContent);
-    $this->assertArrayHasKey('content', $threeColumnContent);
-    $this->assertArrayHasKey('title', $threeColumnContent);
-    $this->assertArrayHasKey('categories', $threeColumnContent);
-    $this->assertEquals('mailpoet/3-column-content', $threeColumnContent['name']);
-    $this->assertStringContainsString('A three-column layout organizes information into sections', $threeColumnContent['content']);
-    $this->assertEquals('3 Columns', $threeColumnContent['title']);
-    $this->assertEquals(['basic'], $threeColumnContent['categories']);
+    $abandonedCart = array_pop($blockPatterns);
+    $this->assertIsArray($abandonedCart);
+    $this->assertArrayHasKey('name', $abandonedCart);
+    $this->assertArrayHasKey('content', $abandonedCart);
+    $this->assertArrayHasKey('title', $abandonedCart);
+    $this->assertArrayHasKey('categories', $abandonedCart);
+    $this->assertEquals('mailpoet/abandoned-cart-content', $abandonedCart['name']);
+    $this->assertStringContainsString('Don‘t let this gem slip away', $abandonedCart['content']);
+    $this->assertEquals('Abandoned Cart', $abandonedCart['title']);
+    $this->assertEquals(['abandoned-cart'], $abandonedCart['categories']);
 
-    $twoColumnContent = array_pop($blockPatterns);
-    $this->assertIsArray($twoColumnContent);
-    $this->assertArrayHasKey('name', $twoColumnContent);
-    $this->assertArrayHasKey('content', $twoColumnContent);
-    $this->assertArrayHasKey('title', $twoColumnContent);
-    $this->assertArrayHasKey('categories', $twoColumnContent);
-    $this->assertEquals('mailpoet/2-column-content', $twoColumnContent['name']);
-    $this->assertStringContainsString('A two-column layout organizes information into sections', $twoColumnContent['content']);
-    $this->assertEquals('2 Columns', $twoColumnContent['title']);
-    $this->assertEquals(['basic'], $twoColumnContent['categories']);
+    $welcomeEmail = array_pop($blockPatterns);
+    $this->assertIsArray($welcomeEmail);
+    $this->assertArrayHasKey('name', $welcomeEmail);
+    $this->assertArrayHasKey('content', $welcomeEmail);
+    $this->assertArrayHasKey('title', $welcomeEmail);
+    $this->assertArrayHasKey('categories', $welcomeEmail);
+    $this->assertEquals('mailpoet/welcome-email-content', $welcomeEmail['name']);
+    $this->assertStringContainsString('Welcome to', $welcomeEmail['content']);
+    $this->assertEquals('Welcome Email', $welcomeEmail['title']);
+    $this->assertEquals(['welcome'], $welcomeEmail['categories']);
 
-    $oneColumnContent = array_pop($blockPatterns);
-    $this->assertIsArray($oneColumnContent);
-    $this->assertArrayHasKey('name', $oneColumnContent);
-    $this->assertArrayHasKey('content', $oneColumnContent);
-    $this->assertArrayHasKey('title', $oneColumnContent);
-    $this->assertArrayHasKey('categories', $oneColumnContent);
-    $this->assertEquals('mailpoet/1-column-content', $oneColumnContent['name']);
-    $this->assertStringContainsString('A one-column layout is great for simplified and concise content', $oneColumnContent['content']);
-    $this->assertEquals('1 Column', $oneColumnContent['title']);
-    $this->assertEquals(['basic'], $oneColumnContent['categories']);
+    $newsletter = array_pop($blockPatterns);
+    $this->assertIsArray($newsletter);
+    $this->assertArrayHasKey('name', $newsletter);
+    $this->assertArrayHasKey('content', $newsletter);
+    $this->assertArrayHasKey('title', $newsletter);
+    $this->assertArrayHasKey('categories', $newsletter);
+    $this->assertEquals('mailpoet/newsletter-content', $newsletter['name']);
+    $this->assertStringContainsString('Weekly Newsletter', $newsletter['content']);
+    $this->assertEquals('Newsletter', $newsletter['title']);
+    $this->assertEquals(['newsletter'], $newsletter['categories']);
   }
 
   private function cleanupPatterns() {

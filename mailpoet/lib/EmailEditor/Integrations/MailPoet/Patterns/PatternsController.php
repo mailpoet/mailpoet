@@ -4,9 +4,6 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewsletterPattern;
-use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\OneColumn;
-use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ThreeColumn;
-use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\TwoColumn;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -21,12 +18,9 @@ class PatternsController {
 
   public function registerPatterns(): void {
     $patterns = [];
-    $patterns[] = new OneColumn($this->cdnAssetUrl);
-    $patterns[] = new TwoColumn($this->cdnAssetUrl);
-    $patterns[] = new ThreeColumn($this->cdnAssetUrl);
-    $patterns[] = new AbandonedCartPattern($this->cdnAssetUrl);
     $patterns[] = new NewsletterPattern($this->cdnAssetUrl);
     $patterns[] = new WelcomeEmailPattern($this->cdnAssetUrl);
+    $patterns[] = new AbandonedCartPattern($this->cdnAssetUrl);
     foreach ($patterns as $pattern) {
       register_block_pattern($pattern->get_namespace() . '/' . $pattern->get_name(), $pattern->get_properties());
     }
