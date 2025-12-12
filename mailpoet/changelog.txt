@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.17.4 - 2025-12-12 =
+* Fixed: Rendering of Wide width blocks when WooCommerce 10.4.0 is active.
+
 = 5.17.3 - 2025-12-08 =
 * Added: Ability to cancel an automation run for a single subscriber;
 * Updated: Bump the minimum required WordPress version to 6.8 and tested up to version to 6.9.
