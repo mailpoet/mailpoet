@@ -565,9 +565,23 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
     ...wpScriptConfig.resolve,
     modules: ['node_modules', 'assets/js/src'],
   },
-  plugins: PRODUCTION_ENV
-    ? wpScriptConfig.plugins
-    : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
+  plugins: [
+    // Filter out the default DependencyExtractionWebpackPlugin
+    ...wpScriptConfig.plugins.filter(
+      (plugin) =>
+        plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
+    ),
+    // Add our custom DependencyExtractionWebpackPlugin that forces bundling of @wordpress/global-styles-engine
+    new DependencyExtractionWebpackPlugin({
+      requestToExternal: (request) => {
+        if (request === '@wordpress/global-styles-engine') {
+          return false;
+        }
+        return;
+      },
+    }),
+    ...(PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()]),
+  ],
 });
 
 const configs = [
