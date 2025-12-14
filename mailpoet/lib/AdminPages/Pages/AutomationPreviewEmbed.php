@@ -3,6 +3,9 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\AssetsController;
+use MailPoet\Automation\Engine\Control\SubjectTransformerHandler;
+use MailPoet\Automation\Engine\Data\Field;
+use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
@@ -26,6 +29,7 @@ class AutomationPreviewEmbed {
   private WooCommerceHelper $wooCommerceHelper;
   private WooCommerceSubscriptionsHelper $wooCommerceSubscriptionsHelper;
   private WooCommerceBookingsHelper $wooCommerceBookingsHelper;
+  private SubjectTransformerHandler $subjectTransformerHandler;
 
   public function __construct(
     AssetsController $assetsController,
@@ -38,7 +42,8 @@ class AutomationPreviewEmbed {
     ServicesChecker $servicesChecker,
     WooCommerceHelper $wooCommerceHelper,
     WooCommerceSubscriptionsHelper $wooCommerceSubscriptionsHelper,
-    WooCommerceBookingsHelper $wooCommerceBookingsHelper
+    WooCommerceBookingsHelper $wooCommerceBookingsHelper,
+    SubjectTransformerHandler $subjectTransformerHandler
   ) {
     $this->assetsController = $assetsController;
     $this->registry = $registry;
@@ -51,6 +56,7 @@ class AutomationPreviewEmbed {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->wooCommerceSubscriptionsHelper = $wooCommerceSubscriptionsHelper;
     $this->wooCommerceBookingsHelper = $wooCommerceBookingsHelper;
+    $this->subjectTransformerHandler = $subjectTransformerHandler;
   }
 
   public function render(): void {
@@ -112,25 +118,58 @@ class AutomationPreviewEmbed {
       $steps[$key] = [
         'key' => $step->getKey(),
         'name' => $step->getName(),
+        'subject_keys' => $step instanceof Trigger ? $this->subjectTransformerHandler->getSubjectKeysForTrigger($step) : $step->getSubjectKeys(),
         'args_schema' => $step->getArgsSchema()->toArray(),
       ];
     }
 
     $subjects = [];
     foreach ($this->registry->getSubjects() as $key => $subject) {
+      $subjectFields = $subject->getFields();
+      usort($subjectFields, function (Field $a, Field $b) {
+        return $a->getName() <=> $b->getName();
+      });
+
       $subjects[$key] = [
         'key' => $subject->getKey(),
         'name' => $subject->getName(),
         'args_schema' => $subject->getArgsSchema()->toArray(),
         'field_keys' => array_map(function ($field) {
           return $field->getKey();
-        }, $subject->getFields()),
+        }, $subjectFields),
+      ];
+    }
+
+    $fields = [];
+    foreach ($this->registry->getFields() as $key => $field) {
+      $fields[$key] = [
+        'key' => $field->getKey(),
+        'type' => $field->getType(),
+        'name' => $field->getName(),
+        'args' => $field->getArgs(),
+      ];
+    }
+
+    $filters = [];
+    foreach ($this->registry->getFilters() as $fieldType => $filter) {
+      $conditions = [];
+      foreach ($filter->getConditions() as $key => $label) {
+        $conditions[] = [
+          'key' => $key,
+          'label' => $label,
+        ];
+      }
+      $filters[$fieldType] = [
+        'field_type' => $filter->getFieldType(),
+        'conditions' => $conditions,
       ];
     }
 
     return [
       'steps' => $steps,
       'subjects' => $subjects,
+      'fields' => $fields,
+      'filters' => $filters,
     ];
   }
 
