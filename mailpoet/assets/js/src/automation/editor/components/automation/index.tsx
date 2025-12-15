@@ -72,7 +72,9 @@ export function Automation({
                 <div className="mailpoet-automation-editor-automation-flow">
                   <Flow stepData={automationData.steps.root} row={0} />
                 </div>
-                <div />
+                {/* Spacer element used to balance the grid layout columns; */}
+                {/* purely presentational and ignored by assistive technologies. */}
+                <div aria-hidden="true" />
                 {/* Render popovers within the automation, so they work in modals and other contexts. */}
                 {/* @ts-expect-error Slot is not currently typed on Popover */}
                 <Popover.Slot />
