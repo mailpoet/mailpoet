@@ -9,6 +9,7 @@ class PatternsControllerTest extends \MailPoetTest {
     parent::_before();
     $this->patterns = $this->diContainer->get(PatternsController::class);
     $this->cleanupPatterns();
+    $this->cleanupPatternCategories();
   }
 
   public function testItRegistersPatterns(): void {
@@ -49,11 +50,39 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals(['newsletter'], $newsletter['categories']);
   }
 
-  private function cleanupPatterns() {
+  public function testItRegistersPatternCategories(): void {
+    $this->patterns->registerPatterns();
+    $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
+
+    $newsletterCategory = $registry->get_registered('newsletter');
+    $this->assertIsArray($newsletterCategory);
+    $this->assertEquals('newsletter', $newsletterCategory['name']);
+    $this->assertNotEmpty($newsletterCategory['label']);
+
+    $welcomeCategory = $registry->get_registered('welcome');
+    $this->assertIsArray($welcomeCategory);
+    $this->assertEquals('welcome', $welcomeCategory['name']);
+    $this->assertNotEmpty($welcomeCategory['label']);
+
+    $abandonedCartCategory = $registry->get_registered('abandoned-cart');
+    $this->assertIsArray($abandonedCartCategory);
+    $this->assertEquals('abandoned-cart', $abandonedCartCategory['name']);
+    $this->assertNotEmpty($abandonedCartCategory['label']);
+  }
+
+  private function cleanupPatterns(): void {
     $registry = \WP_Block_Patterns_Registry::get_instance();
     $blockPatterns = $registry->get_all_registered();
     foreach ($blockPatterns as $pattern) {
       $registry->unregister($pattern['name']);
+    }
+  }
+
+  private function cleanupPatternCategories(): void {
+    $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
+    $categories = $registry->get_all_registered();
+    foreach ($categories as $category) {
+      $registry->unregister($category['name']);
     }
   }
 }
