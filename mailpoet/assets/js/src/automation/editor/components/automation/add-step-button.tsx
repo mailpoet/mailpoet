@@ -23,13 +23,24 @@ export function AddStepButton({
       focusable
       data-previous-step-id={previousStepId}
       data-index={index}
-      onClick={(event) => {
-        event.stopPropagation();
-        const button = (event.target as HTMLElement).closest('button');
-        onClick(button);
-      }}
     >
-      <Icon icon={plus} size={16} />
+      {(htmlProps) => {
+        const propsWithTabIndex = {
+          ...htmlProps,
+          tabIndex: 0,
+          onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.stopPropagation();
+            if (onClick) {
+              onClick(event.currentTarget);
+            }
+          },
+        };
+        return (
+          <button {...propsWithTabIndex} type="button">
+            <Icon icon={plus} size={16} />
+          </button>
+        );
+      }}
     </CompositeItem>
   );
 }
