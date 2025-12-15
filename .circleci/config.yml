@@ -1008,159 +1008,30 @@ workflows:
           <<: *only_release
           requires:
             - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_tests
-          requires:
-            - build
-      - static_analysis:
-          <<: *slack-fail-post-step
-          name: static_analysis_php7
-          php_version: 70400
-          requires:
-            - build
-      - static_analysis:
-          <<: *slack-fail-post-step
-          name: static_analysis_php8
-          php_version: 80300
-          requires:
-            - build
-      - security_analysis:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_js:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_oldest:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_max_wporg:
-          <<: *slack-fail-post-step
-          requires:
-            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests_base_and_woo
-          enable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_woo_hpos_sync_on
-          group: woo
-          enable_hpos_sync: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_woo_hpos_off
-          group: woo
-          disable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_blockbased_theme
-          group: frontend
-          blockbased_theme: 1
-          requires:
-            - build
-      - js_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          enable_hpos_sync: 1
-          name: integration_test_woo_hpos_sync_on
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          name: integration_test_woo_hpos_on
-          enable_hpos: 1
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          disable_hpos: 1
-          name: integration_test_woo_hpos_off
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          skip_group: woo
-          skip_plugins: 1
-          name: integration_test_base
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *multisite_acceptance_config
-          name: acceptance_tests_multisite
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          multisite: 1
-          name: integration_tests_multisite
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *only_release
-          name: acceptance_with_premium_latest
-          requires:
-            - build_premium
-      - unit_tests:
-          <<: *slack-fail-post-step
-          <<: *only_release
-          name: unit_with_premium_latest
+          name: acceptance_with_premium_oldest
+          woo_core_version: 10.3.6
+          woo_subscriptions_version: 8.1.0
+          automate_woo_version: 6.1.3
+          codeception_image_version: 7.4-cli_20220605.0
+          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
+          wordpress_version: 6.8.3
           requires:
             - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
-          <<: *only_release
-          name: integration_with_premium_latest
+          name: integration_with_premium_oldest
+          woo_core_version: 10.3.6
+          woo_subscriptions_version: 8.1.0
+          automate_woo_version: 6.1.3
+          codeception_image_version: 7.4-cli_20220605.0
+          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
+          wordpress_version: 6.8.3
+          mysql_command: --max_allowed_packet=100M
+          mysql_image: mysql:5.6
           requires:
             - build_premium
-      - build_release_zip:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-            - acceptance_tests_base_and_woo
-            - js_tests
-            - integration_test_base
-            - integration_test_woo_hpos_on
-            - integration_test_woo_hpos_off
-            - integration_test_woo_hpos_sync_on
-            - integration_with_premium_latest
-            - acceptance_tests_woo_hpos_sync_on
-            - acceptance_tests_woo_hpos_off
-            - acceptance_tests_blockbased_theme
-            - static_analysis_php8
-            - static_analysis_php7
-            - unit_tests
-            - qa_js
-            - qa_php
-            - qa_php_oldest
-            - security_analysis
-            - qa_php_max_wporg
-      - qit_security_scan:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
 
   nightly:
     triggers:
@@ -1315,6 +1186,13 @@ workflows:
           mysql_image: mysql:5.6
           requires:
             - build_premium
+
+      - build_release_zip_nightly:
+          <<: *slack-fail-post-step
+          requires:
+            - build
+            - integration_with_premium_oldest
+            - acceptance_with_premium_oldest
 
   nightly_qit:
     triggers:
