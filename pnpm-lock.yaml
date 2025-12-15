@@ -106,8 +106,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(lodash@4.17.21)
       '@woocommerce/email-editor':
-        specifier: 1.4.3
-        version: 1.4.3(@types/react-dom@18.3.0)(@types/react@18.3.3)
+        specifier: 1.5.0
+        version: 1.5.0(@types/react-dom@18.3.0)(@types/react@18.3.3)
       '@wordpress/a11y':
         specifier: ^4.0.0
         version: 4.0.0
@@ -5464,8 +5464,8 @@ packages:
       qs: 6.12.1
     dev: false
 
-  /@woocommerce/email-editor@1.4.3(@types/react-dom@18.3.0)(@types/react@18.3.3):
-    resolution: {integrity: sha512-ZvLeR0YPQZsYQr5DekZVX/WnK7GIlDYbvinp0ZR52Xp7PgJD0mi8YF3RBbkjVryaeJ76rfQ9hOdJqzUuK63hlw==}
+  /@woocommerce/email-editor@1.5.0(@types/react-dom@18.3.0)(@types/react@18.3.3):
+    resolution: {integrity: sha512-z4D7iS4YrriSaWBULhyzNIerF6DW1yjj80rGD9YqRx6xmtFodK8ZsArmqaJnRzKWZLfPp/9tA7Y/PKNyGWJ4Vg==}
     dependencies:
       '@wordpress/api-fetch': 7.0.0
       '@wordpress/base-styles': 5.23.0
