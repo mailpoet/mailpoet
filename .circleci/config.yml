@@ -1005,7 +1005,6 @@ workflows:
           <<: *slack-fail-post-step
       - build_premium:
           <<: *slack-fail-post-step
-          <<: *only_release
           requires:
             - build
       - acceptance_tests:
@@ -1019,6 +1018,19 @@ workflows:
           wordpress_version: 6.8.3
           requires:
             - build_premium
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_oldest
+          woo_core_version: 10.3.6
+          woo_subscriptions_version: 8.1.0
+          automate_woo_version: 6.1.3
+          mysql_command: --max_allowed_packet=100M
+          mysql_image: mysql:5.6
+          codeception_image_version: 7.4-cli_20220605.0
+          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
+          wordpress_version: 6.8.3
+          requires:
+            - build
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
@@ -1032,6 +1044,19 @@ workflows:
           mysql_image: mysql:5.6
           requires:
             - build_premium
+      - integration_tests:
+          <<: *slack-fail-post-step
+          name: integration_oldest
+          woo_core_version: 10.3.6
+          woo_subscriptions_version: 8.1.0
+          automate_woo_version: 6.1.3
+          codeception_image_version: 7.4-cli_20220605.0
+          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
+          wordpress_version: 6.8.3
+          mysql_command: --max_allowed_packet=100M
+          mysql_image: mysql:5.6
+          requires:
+            - build
 
   nightly:
     triggers:
@@ -1186,13 +1211,6 @@ workflows:
           mysql_image: mysql:5.6
           requires:
             - build_premium
-
-      - build_release_zip_nightly:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-            - integration_with_premium_oldest
-            - acceptance_with_premium_oldest
 
   nightly_qit:
     triggers:
