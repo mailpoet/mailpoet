@@ -97,50 +97,72 @@ export function Step({ step, isSelected }: Props): JSX.Element {
         id={compositeItemId}
         key={step.id}
         focusable
-        onClick={
-          context === 'edit'
-            ? () =>
-                batch(() => {
-                  void openSidebar(stepSidebarKey);
-                  void selectStep(step);
-                })
-            : undefined
-        }
       >
-        <div className="mailpoet-automation-editor-step-icon">
-          <ColoredIcon
-            icon={stepTypeData.icon}
-            foreground={stepTypeData.foreground}
-            background={stepTypeData.background}
-            width="32px"
-            height="32px"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor={compositeItemId}
-            className="mailpoet-automation-editor-step-title"
-          >
-            {step.type !== 'trigger'
-              ? stepTypeData.title(step, 'automation')
-              : _x('Trigger', 'noun', 'mailpoet')}
-          </label>
-          <div className="mailpoet-automation-editor-step-subtitle">
-            {step.type !== 'trigger'
-              ? stepTypeData.subtitle(step, 'automation')
-              : stepTypeData.title(step, 'automation')}
-          </div>
-        </div>
-        {
-          Hooks.applyFilters(
-            'mailpoet.automation.step.more',
-            null,
-            step,
-            context,
-            isSelected,
-          ) as StepMoreType
-        }
-        {footer}
+        {(htmlProps) => {
+          const propsWithTabIndex = {
+            ...htmlProps,
+            tabIndex: 0,
+            onClick:
+              context === 'edit'
+                ? () => {
+                    if (typeof htmlProps.onClick === 'function') {
+                      // Preserve CompositeItem's internal click behavior.
+                      htmlProps.onClick();
+                    }
+                    batch(() => {
+                      void openSidebar(stepSidebarKey);
+                      void selectStep(step);
+                    });
+                  }
+                : htmlProps.onClick,
+            onFocus: (event: React.FocusEvent<HTMLButtonElement>) => {
+              if (typeof htmlProps.onFocus === 'function') {
+                htmlProps.onFocus(event);
+              }
+              if (context === 'edit') {
+                void selectStep(step);
+              }
+            },
+          };
+          return (
+            <button {...propsWithTabIndex} type="button">
+              <div className="mailpoet-automation-editor-step-icon">
+                <ColoredIcon
+                  icon={stepTypeData.icon}
+                  foreground={stepTypeData.foreground}
+                  background={stepTypeData.background}
+                  width="32px"
+                  height="32px"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor={compositeItemId}
+                  className="mailpoet-automation-editor-step-title"
+                >
+                  {step.type !== 'trigger'
+                    ? stepTypeData.title(step, 'automation')
+                    : _x('Trigger', 'noun', 'mailpoet')}
+                </label>
+                <div className="mailpoet-automation-editor-step-subtitle">
+                  {step.type !== 'trigger'
+                    ? stepTypeData.subtitle(step, 'automation')
+                    : stepTypeData.title(step, 'automation')}
+                </div>
+              </div>
+              {
+                Hooks.applyFilters(
+                  'mailpoet.automation.step.more',
+                  null,
+                  step,
+                  context,
+                  isSelected,
+                ) as StepMoreType
+              }
+              {footer}
+            </button>
+          );
+        }}
       </CompositeItem>
     </div>
   );
