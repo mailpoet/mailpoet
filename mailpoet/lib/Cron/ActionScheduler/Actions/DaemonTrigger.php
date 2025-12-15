@@ -39,12 +39,13 @@ class DaemonTrigger {
   public function init() {
     $this->wp->addAction(self::NAME, [$this, 'process']);
 
-    // Don't schedule if plugin is being deactivated (prevents race condition)
-    if ($this->wp->getOption(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, false)) {
-      return;
-    }
-
     if (!$this->actionScheduler->hasScheduledAction(self::NAME)) {
+      // Don't schedule if plugin is being deactivated (prevents race condition with parallel requests)
+      // Note: We check the option directly instead of using DaemonActionSchedulerRunner::isDeactivating()
+      // to avoid a circular dependency (DaemonActionSchedulerRunner depends on DaemonTrigger)
+      if ($this->wp->getOption(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, false)) {
+        return;
+      }
       $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true), self::TRIGGER_RUN_INTERVAL, self::NAME);
     }
   }
