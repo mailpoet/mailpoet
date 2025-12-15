@@ -57,26 +57,29 @@ export function Automation({
     <AutomationContext.Provider value={automationContext}>
       <AutomationCompositeContext.Provider value={compositeState}>
         <SlotFillProvider>
-          <Composite
+          <div
             ref={automationRef}
-            state={compositeState}
-            role="tree"
-            aria-label={__('Automation', 'mailpoet')}
-            aria-orientation="vertical"
             className="mailpoet-automation-editor-automation"
           >
-            {showStatistics && <Statistics />}
-            <div className="mailpoet-automation-editor-automation-wrapper">
-              <div className="mailpoet-automation-editor-automation-flow">
-                <Flow stepData={automationData.steps.root} row={0} />
+            <Composite
+              state={compositeState}
+              role="tree"
+              aria-label={__('Automation', 'mailpoet')}
+              aria-orientation="vertical"
+            >
+              {showStatistics && <Statistics />}
+              <div className="mailpoet-automation-editor-automation-wrapper">
+                <div className="mailpoet-automation-editor-automation-flow">
+                  <Flow stepData={automationData.steps.root} row={0} />
+                </div>
+                <div />
+                {/* Render popovers within the automation, so they work in modals and other contexts. */}
+                {/* @ts-expect-error Slot is not currently typed on Popover */}
+                <Popover.Slot />
               </div>
-              <div />
-              {/* Render popovers within the automation, so they work in modals and other contexts. */}
-              {/* @ts-expect-error Slot is not currently typed on Popover */}
-              <Popover.Slot />
-            </div>
-            <InserterPopover />
-          </Composite>
+              <InserterPopover />
+            </Composite>
+          </div>
         </SlotFillProvider>
       </AutomationCompositeContext.Provider>
     </AutomationContext.Provider>

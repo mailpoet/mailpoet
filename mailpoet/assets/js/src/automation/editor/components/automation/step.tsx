@@ -97,8 +97,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
         id={compositeItemId}
         key={step.id}
         focusable
-      >
-        {(htmlProps) => {
+        render={(htmlProps) => {
           const propsWithTabIndex = {
             ...htmlProps,
             tabIndex: 0,
@@ -163,7 +162,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
             </button>
           );
         }}
-      </CompositeItem>
+      />
     </div>
   );
 }

@@ -27,8 +27,7 @@ export function AddStepButton({
       focusable
       data-previous-step-id={previousStepId}
       data-index={index}
-    >
-      {(htmlProps) => {
+      render={(htmlProps) => {
         const propsWithTabIndex = {
           ...htmlProps,
           tabIndex: 0,
@@ -51,6 +50,6 @@ export function AddStepButton({
           </button>
         );
       }}
-    </CompositeItem>
+    />
   );
 }
