@@ -29,7 +29,7 @@ class WelcomeEmailPattern extends Pattern {
       <!-- /wp:heading -->
 
       <!-- wp:paragraph -->
-      <p>' . __('Hi <!--[woocommerce/customer-full-name]-->, we are so glad to have you onboard..', 'mailpoet') . '</p>
+      <p>' . __('Hi <!--[woocommerce/customer-full-name]-->, we are so glad to have you onboard.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:image -->
