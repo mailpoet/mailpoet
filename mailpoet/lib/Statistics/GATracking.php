@@ -160,6 +160,11 @@ class GATracking {
         $this->processParamsForShortcodes($value, $urlWithPlaceholders, $shortcodeMap, $index);
       } elseif (is_string($value)) {
         // Find shortcodes in string values
+        // Pattern matches MailPoet shortcodes in the format [name:value|option:value]
+        // - \[ matches opening bracket
+        // - [^\]]+ matches one or more characters that are not a closing bracket
+        // - \] matches closing bracket
+        // Examples: [subscriber:email], [subscriber:firstname|default:Guest]
         $pattern = '/\[([^\]]+)\]/';
         if (preg_match_all($pattern, $value, $matches)) {
           foreach ($matches[0] as $shortcode) {
