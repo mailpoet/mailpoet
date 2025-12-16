@@ -185,4 +185,48 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['text'])->stringContainsString('regular=value');
     verify($result['html'])->stringContainsString('regular=value');
   }
+
+  public function testItHandlesEdgeCasesInShortcodes() {
+    // Test 1: Very long strings between brackets (ReDoS protection test)
+    $longText = str_repeat('a', 500); // Exceeds 400 char limit
+    $internalLink = 'http://newsletters.mailpoet.com/?param=[' . $longText . ']';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $internalLink . '">Click here</a></p>',
+      'text' => '[Click here](' . $internalLink . ')',
+    ];
+    // Should complete without hanging (ReDoS protection)
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString('utm_source=mailpoet');
+
+    // Test 2: Nested brackets (inner bracket gets protected but final ] may be URL-encoded)
+    $internalLink = 'http://newsletters.mailpoet.com/?param=[outer[inner]text]';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $internalLink . '">Click here</a></p>',
+      'text' => '[Click here](' . $internalLink . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    // Both [inner] and [outer[inner]text] are valid patterns, inner gets matched first
+    // The behavior depends on regex matching order
+    verify($result['text'])->stringContainsString('[inner]');
+
+    // Test 3: Multiple shortcodes in one parameter
+    $internalLink = 'http://newsletters.mailpoet.com/?greeting=Hello [subscriber:firstname] [subscriber:lastname]';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $internalLink . '">Click here</a></p>',
+      'text' => '[Click here](' . $internalLink . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString('[subscriber:firstname]');
+    verify($result['text'])->stringContainsString('[subscriber:lastname]');
+
+    // Test 4: Non-shortcode bracketed text (should still be preserved)
+    $internalLink = 'http://newsletters.mailpoet.com/?note=[random text]&email=[subscriber:email]';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $internalLink . '">Click here</a></p>',
+      'text' => '[Click here](' . $internalLink . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString('note=[random text]');
+    verify($result['text'])->stringContainsString('email=[subscriber:email]');
+  }
 }
