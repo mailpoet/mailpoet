@@ -25,11 +25,15 @@ class WelcomeEmailPattern extends Pattern {
     <!-- wp:group {"layout":{"type":"constrained"}} -->
     <div class="wp-block-group">
       <!-- wp:heading {"level":1} -->
-      <h1 class="wp-block-heading ">' . __('Welcome to <!--[woocommerce/store-name]-->!', 'mailpoet') . '</h1>
+      <h1 class="wp-block-heading ">' .
+      /* translators: %s: Store name personalization tag */
+      sprintf(__('Welcome to %s!', 'mailpoet'), '<!--[woocommerce/store-name]-->') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph -->
-      <p>' . __('Hi <!--[woocommerce/customer-full-name]-->, we are so glad to have you onboard.', 'mailpoet') . '</p>
+      <p>' .
+      /* translators: %s: Customer full name personalization tag */
+      sprintf(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'), '<!--[woocommerce/customer-full-name]-->') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:image -->
@@ -37,7 +41,9 @@ class WelcomeEmailPattern extends Pattern {
       <!-- /wp:image -->
 
       <!-- wp:paragraph -->
-      <p>' . __('We‘re absolutely thrilled to have you join us. Get ready to discover a world of <!--[mailpoet/site-description]--> that we know you‘ll love.', 'mailpoet') . '</p>
+      <p>' .
+      /* translators: %s: Site description personalization tag */
+      sprintf(__('We‘re absolutely thrilled to have you join us. Get ready to discover a world of %s that we know you‘ll love.', 'mailpoet'), '<!--[mailpoet/site-description]-->') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
