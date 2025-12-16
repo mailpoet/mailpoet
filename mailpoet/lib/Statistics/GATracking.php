@@ -138,23 +138,41 @@ class GATracking {
     $urlWithPlaceholders = $url;
     $index = 0;
 
-    // Process each parameter value
+    // Process each parameter value (recursively for arrays)
+    $this->processParamsForShortcodes($params, $urlWithPlaceholders, $shortcodeMap, $index);
+
+    return [$urlWithPlaceholders, $shortcodeMap];
+  }
+
+  /**
+   * Process parameter values recursively to find and replace shortcodes.
+   * Handles both string values and nested arrays.
+   *
+   * @param array $params Parameter values to process
+   * @param string $urlWithPlaceholders URL being modified (passed by reference)
+   * @param array $shortcodeMap Map of placeholders to shortcodes (passed by reference)
+   * @param int $index Current placeholder index (passed by reference)
+   */
+  private function processParamsForShortcodes(array $params, string &$urlWithPlaceholders, array &$shortcodeMap, int &$index): void {
     foreach ($params as $value) {
-      // Find shortcodes in this parameter's value
-      $pattern = '/\[([^\]]+)\]/';
-      if (preg_match_all($pattern, $value, $matches)) {
-        foreach ($matches[0] as $shortcode) {
-          // Create a unique placeholder
-          $placeholder = 'MPSHORTCODE' . $index . 'MPEND';
-          $shortcodeMap[$placeholder] = $shortcode;
-          // Replace shortcode with placeholder directly in the URL
-          $urlWithPlaceholders = str_replace($shortcode, $placeholder, $urlWithPlaceholders);
-          $index++;
+      if (is_array($value)) {
+        // Recursively process array values
+        $this->processParamsForShortcodes($value, $urlWithPlaceholders, $shortcodeMap, $index);
+      } elseif (is_string($value)) {
+        // Find shortcodes in string values
+        $pattern = '/\[([^\]]+)\]/';
+        if (preg_match_all($pattern, $value, $matches)) {
+          foreach ($matches[0] as $shortcode) {
+            // Create a unique placeholder
+            $placeholder = 'MPSHORTCODE' . $index . 'MPEND';
+            $shortcodeMap[$placeholder] = $shortcode;
+            // Replace shortcode with placeholder directly in the URL
+            $urlWithPlaceholders = str_replace($shortcode, $placeholder, $urlWithPlaceholders);
+            $index++;
+          }
         }
       }
     }
-
-    return [$urlWithPlaceholders, $shortcodeMap];
   }
 
   /**

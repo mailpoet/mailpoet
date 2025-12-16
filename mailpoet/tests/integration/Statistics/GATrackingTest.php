@@ -163,4 +163,26 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['text'])->stringContainsString('custom=[subscriber:cf_1:custom field|default:N/A]');
     verify($result['html'])->stringContainsString('custom=[subscriber:cf_1:custom field|default:N/A]');
   }
+
+  public function testItPreservesShortcodesInArrayParameters() {
+    // Test with array parameters (e.g., filters[email]=[subscriber:email])
+    $internalLink = 'http://newsletters.mailpoet.com/?filters[email]=[subscriber:email]&filters[name]=[subscriber:firstname]&regular=value';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $internalLink . '">Click here</a></p>',
+      'text' => '[Click here](' . $internalLink . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    // Should contain GA tracking parameters
+    verify($result['text'])->stringContainsString('utm_source=mailpoet');
+    verify($result['html'])->stringContainsString('utm_source=mailpoet');
+    // Should preserve shortcodes in array parameters (brackets will be URL-encoded by add_query_arg)
+    // WordPress encodes [ as %5B and ] as %5D, but shortcodes should remain unencoded
+    verify($result['text'])->stringContainsString('filters%5Bemail%5D=[subscriber:email]');
+    verify($result['html'])->stringContainsString('filters%5Bemail%5D=[subscriber:email]');
+    verify($result['text'])->stringContainsString('filters%5Bname%5D=[subscriber:firstname]');
+    verify($result['html'])->stringContainsString('filters%5Bname%5D=[subscriber:firstname]');
+    // Should preserve regular parameters
+    verify($result['text'])->stringContainsString('regular=value');
+    verify($result['html'])->stringContainsString('regular=value');
+  }
 }
