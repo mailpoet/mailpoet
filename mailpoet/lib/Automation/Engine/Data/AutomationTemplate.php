@@ -28,6 +28,15 @@ class AutomationTemplate {
   /** @var string */
   private $type;
 
+  /** @var string|null */
+  private $icon;
+
+  /** @var string */
+  private $iconType;
+
+  /** @var bool */
+  private $isRecommended;
+
   /**
    * @param callable(bool $preview=): Automation $automationFactory
    * @param array<string, int|bool> $requiredCapabilities
@@ -39,7 +48,10 @@ class AutomationTemplate {
     string $description,
     callable $automationFactory,
     array $requiredCapabilities = [],
-    string $type = self::TYPE_DEFAULT
+    string $type = self::TYPE_DEFAULT,
+    ?string $icon = null,
+    string $iconType = 'wordpress',
+    bool $isRecommended = false
   ) {
     $this->slug = $slug;
     $this->category = $category;
@@ -48,6 +60,9 @@ class AutomationTemplate {
     $this->automationFactory = $automationFactory;
     $this->requiredCapabilities = $requiredCapabilities;
     $this->type = $type;
+    $this->icon = $icon;
+    $this->iconType = $iconType;
+    $this->isRecommended = $isRecommended;
   }
 
   public function getSlug(): string {
@@ -75,6 +90,18 @@ class AutomationTemplate {
     return $this->requiredCapabilities;
   }
 
+  public function getIcon(): ?string {
+    return $this->icon;
+  }
+
+  public function getIconType(): string {
+    return $this->iconType;
+  }
+
+  public function isRecommended(): bool {
+    return $this->isRecommended;
+  }
+
   public function createAutomation(bool $preview = false): Automation {
     return ($this->automationFactory)($preview);
   }
@@ -87,6 +114,9 @@ class AutomationTemplate {
       'type' => $this->getType(),
       'required_capabilities' => $this->getRequiredCapabilities(),
       'description' => $this->getDescription(),
+      'icon' => $this->getIcon(),
+      'icon_type' => $this->getIconType(),
+      'is_recommended' => $this->isRecommended(),
     ];
   }
 }
