@@ -762,6 +762,18 @@ class AcceptanceTester extends \Codeception\Actor {
     return $postData['url'];
   }
 
+  /**
+   * Creates a password-protected post or page and returns its URL
+   */
+  public function createPasswordProtectedPost(string $title, string $body, string $password, string $type = 'post'): string {
+    $post = $this->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=' . $type, '--post_title="' . $title . '"', '--post_content="' . $body . '"', '--post_password="' . $password . '"']);
+    $postData = $this->cliToString(['post', 'get', $post, '--format=json']);
+    $postData = json_decode($postData, true);
+    Assert::assertIsArray($postData);
+    Assert::assertIsString($postData['url']);
+    return $postData['url'];
+  }
+
   public function addFromBlockInEditor($name, $context = null) {
     $i = $this;
     $appender = '[data-automation-id="form_inserter_open"]';
