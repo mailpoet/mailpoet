@@ -349,11 +349,6 @@ class Helper {
     if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
       return false;
     }
-    // By this point, the feature should be enabled by default for everyone
-    $wcVersion = $this->getWooCommerceVersion();
-    if (version_compare($wcVersion, '10.0.0', '>')) {
-      return true;
-    }
     return \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled('email_improvements');
   }
 
