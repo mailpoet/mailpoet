@@ -119,23 +119,38 @@ class GATracking {
   }
 
   /**
-   * Extract shortcodes from URL and replace them with placeholders.
+   * Extract shortcodes from URL query parameter values and replace them with placeholders.
    * Shortcodes use the format [shortcode:value|option:value] and should not be URL-encoded.
+   * Only shortcodes that are actual parameter values (or part of them) are extracted.
    *
    * @return array [$urlWithPlaceholders, $shortcodeMap]
    */
   private function extractShortcodes(string $url): array {
+    $parsedUrl = parse_url($url);
+    if (!isset($parsedUrl['query'])) {
+      return [$url, []];
+    }
+
+    // Parse the query string into parameters to validate shortcodes are in parameter values
+    parse_str($parsedUrl['query'], $params);
+
     $shortcodeMap = [];
     $urlWithPlaceholders = $url;
+    $index = 0;
 
-    // Find all shortcodes in the URL (matches [anything])
-    $pattern = '/\[([^\]]+)\]/';
-    if (preg_match_all($pattern, $url, $matches)) {
-      foreach ($matches[0] as $index => $shortcode) {
-        // Create a unique placeholder that won't be URL-encoded
-        $placeholder = 'MPSHORTCODE' . $index . 'MPEND';
-        $shortcodeMap[$placeholder] = $shortcode;
-        $urlWithPlaceholders = str_replace($shortcode, $placeholder, $urlWithPlaceholders);
+    // Process each parameter value
+    foreach ($params as $value) {
+      // Find shortcodes in this parameter's value
+      $pattern = '/\[([^\]]+)\]/';
+      if (preg_match_all($pattern, $value, $matches)) {
+        foreach ($matches[0] as $shortcode) {
+          // Create a unique placeholder
+          $placeholder = 'MPSHORTCODE' . $index . 'MPEND';
+          $shortcodeMap[$placeholder] = $shortcode;
+          // Replace shortcode with placeholder directly in the URL
+          $urlWithPlaceholders = str_replace($shortcode, $placeholder, $urlWithPlaceholders);
+          $index++;
+        }
       }
     }
 
