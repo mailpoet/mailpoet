@@ -162,10 +162,11 @@ class GATracking {
         // Find shortcodes in string values
         // Pattern matches MailPoet shortcodes in the format [name:value|option:value]
         // - \[ matches opening bracket
-        // - [^\]]+ matches one or more characters that are not a closing bracket
+        // - [^\]]{1,400} matches 1-400 characters that are not a closing bracket
+        //   (limit prevents ReDoS attacks from catastrophic backtracking)
         // - \] matches closing bracket
         // Examples: [subscriber:email], [subscriber:firstname|default:Guest]
-        $pattern = '/\[([^\]]+)\]/';
+        $pattern = '/\[[^\]]{1,400}\]/';
         if (preg_match_all($pattern, $value, $matches)) {
           foreach ($matches[0] as $shortcode) {
             // Create a unique placeholder
