@@ -93,9 +93,18 @@ class GATracking {
         }
       }
 
+      // Extract shortcodes from query parameters to preserve them
+      list($linkWithPlaceholders, $shortcodeMap) = $this->extractShortcodes($link);
+
+      // Add GA parameters to the link with placeholders
+      $linkWithGAParams = $this->wp->addQueryArg($linkParams, $linkWithPlaceholders);
+
+      // Restore the original shortcodes
+      $linkWithGAParams = $this->restoreShortcodes($linkWithGAParams, $shortcodeMap);
+
       $processedLink = $this->wp->applyFilters(
         'mailpoet_ga_tracking_link',
-        $this->wp->addQueryArg($linkParams, $link),
+        $linkWithGAParams,
         $extractedLink['link'],
         $linkParams,
         $extractedLink['type']
@@ -107,5 +116,44 @@ class GATracking {
       ];
     }
     return $processedLinks;
+  }
+
+  /**
+   * Extract shortcodes from URL and replace them with placeholders.
+   * Shortcodes use the format [shortcode:value|option:value] and should not be URL-encoded.
+   *
+   * @return array [$urlWithPlaceholders, $shortcodeMap]
+   */
+  private function extractShortcodes(string $url): array {
+    $shortcodeMap = [];
+    $urlWithPlaceholders = $url;
+
+    // Find all shortcodes in the URL (matches [anything])
+    $pattern = '/\[([^\]]+)\]/';
+    if (preg_match_all($pattern, $url, $matches)) {
+      foreach ($matches[0] as $index => $shortcode) {
+        // Create a unique placeholder that won't be URL-encoded
+        $placeholder = 'MPSHORTCODE' . $index . 'MPEND';
+        $shortcodeMap[$placeholder] = $shortcode;
+        $urlWithPlaceholders = str_replace($shortcode, $placeholder, $urlWithPlaceholders);
+      }
+    }
+
+    return [$urlWithPlaceholders, $shortcodeMap];
+  }
+
+  /**
+   * Restore shortcodes in the URL by replacing placeholders with original shortcodes.
+   */
+  private function restoreShortcodes(string $url, array $shortcodeMap): string {
+    if (empty($shortcodeMap)) {
+      return $url;
+    }
+
+    foreach ($shortcodeMap as $placeholder => $shortcode) {
+      $url = str_replace($placeholder, $shortcode, $url);
+    }
+
+    return $url;
   }
 }
