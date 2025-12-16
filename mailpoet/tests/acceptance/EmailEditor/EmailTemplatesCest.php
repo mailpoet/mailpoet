@@ -17,7 +17,7 @@ class EmailTemplatesCest {
     $i->waitForText('Take a first look at our new email editor. It introduces a more flexible, modern way to design your emails.');
     $i->click('//button[text()="Try it now"]');
 
-    $this->selectTemplate($i, 'Newsletter');
+    $this->selectTemplate($i, 'Newsletter - Newsletter');
 
     $i->wantTo('Verify settings panel is visible');
     $i->waitForText('Settings', 10, '.woocommerce-email-editor__settings-panel');
@@ -71,6 +71,7 @@ class EmailTemplatesCest {
   private function selectTemplate(\AcceptanceTester $i, string $template): void {
     $i->wantTo("Select template $template");
     $i->waitForElementClickable('.email-editor-start_from_scratch_button');
+    $i->waitForText($template);
     $i->click('[aria-label="Newsletter"]');
     $i->waitForElement('.block-editor-block-patterns-list__item-title');
     $i->waitForText($template, 5);

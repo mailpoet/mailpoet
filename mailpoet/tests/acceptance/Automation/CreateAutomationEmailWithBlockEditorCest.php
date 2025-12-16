@@ -153,7 +153,8 @@ class CreateAutomationEmailWithBlockEditorCest {
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
     $i->wantTo('Close template selector');
     $i->waitForElementClickable('.email-editor-start_from_scratch_button');
-    $i->click('[aria-label="Basic"]');
+    $i->waitForText('Newsletter - Newsletter');
+    $i->click('[aria-label="Newsletter"]');
     $i->waitForElementVisible('.block-editor-block-preview__container');
     $i->click('[aria-label="Close"]');
   }
