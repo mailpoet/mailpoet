@@ -178,7 +178,7 @@ class TranslationUpdater {
     });
   }
 
-  private function logError(string $message): void {
+  protected function logError(string $message): void {
     if (class_exists(Debugger::class)) {
       Debugger::log($message, ILogger::ERROR);
     }

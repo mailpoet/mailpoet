@@ -415,6 +415,207 @@ class TranslationUpdaterTest extends \MailPoetTest {
     verify($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
   }
 
+  public function testItReturnsEmptyArrayWhenResponseMissingDataKey(): void {
+    $responseBody = json_encode([
+      'success' => true,
+      // Missing 'data' key
+    ]);
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() use ($responseBody) {
+          return [
+            'response' => [
+              'code' => 200,
+              'message' => 'OK',
+            ],
+            'body' => $responseBody,
+          ];
+        },
+        'wpRemoteRetrieveResponseCode' => function() {
+          return 200;
+        },
+        'wpRemoteRetrieveBody' => function() use ($responseBody) {
+          return $responseBody;
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR'];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ],
+      [
+        'logError' => Expected::once(),
+      ],
+      $this
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    verify($result->translations)->empty();
+  }
+
+  public function testItReturnsEmptyArrayWhenResponseDataIsNotArray(): void {
+    $responseBody = json_encode([
+      'success' => true,
+      'data' => 'not an array',
+    ]);
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() use ($responseBody) {
+          return [
+            'response' => [
+              'code' => 200,
+              'message' => 'OK',
+            ],
+            'body' => $responseBody,
+          ];
+        },
+        'wpRemoteRetrieveResponseCode' => function() {
+          return 200;
+        },
+        'wpRemoteRetrieveBody' => function() use ($responseBody) {
+          return $responseBody;
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR'];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ],
+      [
+        'logError' => Expected::once(),
+      ],
+      $this
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    verify($result->translations)->empty();
+  }
+
+  public function testItReturnsEmptyArrayWhenResponseIsNotArray(): void {
+    $responseBody = json_encode('not an array');
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() use ($responseBody) {
+          return [
+            'response' => [
+              'code' => 200,
+              'message' => 'OK',
+            ],
+            'body' => $responseBody,
+          ];
+        },
+        'wpRemoteRetrieveResponseCode' => function() {
+          return 200;
+        },
+        'wpRemoteRetrieveBody' => function() use ($responseBody) {
+          return $responseBody;
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR'];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ],
+      [
+        'logError' => Expected::once(),
+      ],
+      $this
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    verify($result->translations)->empty();
+  }
+
+  public function testItReturnsEmptyArrayWhenResponseSuccessIsFalse(): void {
+    $responseBody = json_encode([
+      'success' => false,
+      'data' => $this->getResponseData(),
+    ]);
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() use ($responseBody) {
+          return [
+            'response' => [
+              'code' => 200,
+              'message' => 'OK',
+            ],
+            'body' => $responseBody,
+          ];
+        },
+        'wpRemoteRetrieveResponseCode' => function() {
+          return 200;
+        },
+        'wpRemoteRetrieveBody' => function() use ($responseBody) {
+          return $responseBody;
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR'];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ],
+      [
+        'logError' => Expected::once(),
+      ],
+      $this
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    verify($result->translations)->empty();
+  }
+
   private function getResponseData(): array {
     return [
       $this->freeSlug => [
