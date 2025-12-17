@@ -30,14 +30,14 @@ class Newsletter {
     $footerText = __('You received this email because you are subscribed to the <!--[mailpoet/site-title]-->', 'mailpoet');
     return '<!-- wp:group {"backgroundColor":"white","layout":{"type":"constrained"},"lock":{"move":false,"remove":true}} -->
       <div class="wp-block-group has-white-background-color has-background">
-        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
+        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|10","left":"var:preset|spacing|40","right":"var:preset|spacing|20"}}}} -->
         <div
           class="wp-block-group"
           style="
             padding-top: var(--wp--preset--spacing--30);
             padding-right: var(--wp--preset--spacing--20);
             padding-bottom: var(--wp--preset--spacing--10);
-            padding-left: var(--wp--preset--spacing--20);
+            padding-left: var(--wp--preset--spacing--40);
           "
             >
           <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
@@ -52,14 +52,14 @@ class Newsletter {
         </div>
         <!-- /wp:group -->
         <!-- wp:post-content {"lock":{"move":false,"remove":true},"layout":{"type":"default"}} /-->
-        <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20","top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
+        <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40","top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
         <div
           class="wp-block-group"
           style="
             padding-top: var(--wp--preset--spacing--10);
-            padding-right: var(--wp--preset--spacing--20);
+            padding-right: var(--wp--preset--spacing--40);
             padding-bottom: var(--wp--preset--spacing--10);
-            padding-left: var(--wp--preset--spacing--20);
+            padding-left: var(--wp--preset--spacing--40);
           "
             >
           <!-- wp:paragraph {"align":"center","fontSize":"small","style":{"border":{"top":{"color":"var:preset|color|cyan-bluish-gray","width":"1px","style":"solid"},"right":{},"bottom":{},"left":{}},"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}},"color":{"text":"#787c82"},"elements":{"link":{"color":{"text":"#787c82"}}}}} -->
