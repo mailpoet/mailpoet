@@ -11,6 +11,10 @@ class PasswordProtectedPagesCest {
   private const PASSWORD = 'testpassword123';
   private const PROTECTED_CONTENT = 'This is secret protected content that should not be visible without password.';
 
+  public function _after(\AcceptanceTester $i) {
+    $i->deactivateWooCommerce();
+  }
+
   public function passwordProtectedPostContentIsNotExposed(\AcceptanceTester $i) {
     $i->wantTo('Test that password-protected post content is not exposed');
 
@@ -91,9 +95,6 @@ class PasswordProtectedPagesCest {
     $i->click('input[type="submit"]');
     $i->waitForText($protectedContent, 10);
     $i->see($protectedContent);
-
-    $i->wantTo('Deactivate WooCommerce plugin');
-    $i->deactivateWooCommerce();
   }
 
   public function multiplePasswordProtectedPostsDontLeakContent(\AcceptanceTester $i) {
