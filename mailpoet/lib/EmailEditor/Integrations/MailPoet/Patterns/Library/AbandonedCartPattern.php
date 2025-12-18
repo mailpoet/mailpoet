@@ -31,14 +31,20 @@ class AbandonedCartPattern extends Pattern {
       <figure class="wp-block-image"><img alt=""/></figure>
       <!-- /wp:image -->
 
-      <!-- wp:heading {"level":2} -->
-      <h2 class="wp-block-heading ">TODO Abandoned Cart Block</h2>
+      <!-- wp:heading {"textAlign":"center"} -->
+      <h2 class="wp-block-heading has-text-align-center">' . __('Product name', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
+      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"16px"}}} -->
+      <p class="has-text-align-center" style="font-size:16px">$99.90</p>
+      <!-- /wp:paragraph -->
+
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-      <div class="wp-block-buttons"><!-- wp:button -->
-      <div class="wp-block-button"><a href="[mailpoet/site-homepage-url]" class="wp-block-button__link wp-element-button">' . __('Finish checkout', 'mailpoet') . '</a></div>
-      <!-- /wp:button --></div>
+      <div class="wp-block-buttons">
+      <!-- wp:button -->
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="[mailpoet/site-homepage-url]">' . __('Finish checkout', 'mailpoet') . '</a></div>
+      <!-- /wp:button -->
+      </div>
       <!-- /wp:buttons -->
     </div>
     <!-- /wp:group -->
