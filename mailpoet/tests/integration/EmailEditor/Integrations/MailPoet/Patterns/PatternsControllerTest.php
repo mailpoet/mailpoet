@@ -38,6 +38,17 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('Welcome Email', $welcomeEmail['title']);
     $this->assertEquals(['welcome'], $welcomeEmail['categories']);
 
+    $newArrivalsAnnouncement = array_pop($blockPatterns);
+    $this->assertIsArray($newArrivalsAnnouncement);
+    $this->assertArrayHasKey('name', $newArrivalsAnnouncement);
+    $this->assertArrayHasKey('content', $newArrivalsAnnouncement);
+    $this->assertArrayHasKey('title', $newArrivalsAnnouncement);
+    $this->assertArrayHasKey('categories', $newArrivalsAnnouncement);
+    $this->assertEquals('mailpoet/new-arrivals-announcement', $newArrivalsAnnouncement['name']);
+    $this->assertStringContainsString('New arrivals are here', $newArrivalsAnnouncement['content']);
+    $this->assertEquals('New Arrivals Announcement', $newArrivalsAnnouncement['title']);
+    $this->assertEquals(['newsletter'], $newArrivalsAnnouncement['categories']);
+
     $productRestockNotification = array_pop($blockPatterns);
     $this->assertIsArray($productRestockNotification);
     $this->assertArrayHasKey('name', $productRestockNotification);
