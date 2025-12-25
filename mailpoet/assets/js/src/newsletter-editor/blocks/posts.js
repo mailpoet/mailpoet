@@ -404,9 +404,12 @@ PostsSelectionCollectionView = Marionette.CollectionView.extend({
   },
   onPostsScroll: function (event) {
     var $postsBox = jQuery(event.target);
+
+    // The 1px tolerance accounts for potential decimal inaccuracies in DOM's
+    // `scrollTop` after the browser zooms the page.
     if (
       $postsBox.scrollTop() + $postsBox.innerHeight() >=
-      $postsBox[0].scrollHeight
+      $postsBox[0].scrollHeight - 1
     ) {
       // Load more posts if scrolled to bottom
       this.blockModel.trigger('loadMorePosts');
