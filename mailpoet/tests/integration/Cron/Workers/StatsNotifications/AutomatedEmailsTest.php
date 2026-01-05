@@ -214,4 +214,39 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->createClicks($newsletter, 5);
     $this->createOpens($newsletter, 2);
   }
+
+  public function testItGeneratesRandomNextRunDate() {
+    $time = time();
+    Carbon::setTestNow(Carbon::createFromTimestamp($time));
+
+    $result = $this->statsNotifications->getNextRunDate();
+
+
+    verify($result)->instanceOf(Carbon::class);
+
+    // Verify it's the first Monday of next month
+    $expectedDate = Carbon::createFromTimestamp($time)
+      ->endOfMonth()
+      ->next(Carbon::MONDAY);
+    verify($result->format('Y-m-d'))->equals($expectedDate->format('Y-m-d'));
+    verify($result->format('N'))->equals(Carbon::MONDAY);
+
+    // Verify time is between 09:00 and 15:00
+    $hour = (int)$result->format('H');
+    verify($hour)->greaterThanOrEqual(9);
+    verify($hour)->lessThan(15);
+
+    // Verify second call returns different time (randomization works)
+    $result2 = $this->statsNotifications->getNextRunDate();
+    verify($result2)->instanceOf(Carbon::class);
+    verify($result2->format('Y-m-d'))->equals($expectedDate->format('Y-m-d'));
+
+    // At least one of hour, minute, or second should be different.
+    // This could be flaky, but the probability of this happening should be 60*60*6-1, so let's
+    // see if it really happens to bother our workflows.
+    $isDifferent = $result->format('H:i:s') !== $result2->format('H:i:s');
+    verify($isDifferent)->true();
+
+    Carbon::setTestNow();
+  }
 }

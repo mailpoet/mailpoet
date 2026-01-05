@@ -163,6 +163,12 @@ class AutomatedEmails extends SimpleWorker {
 
   public function getNextRunDate() {
     $date = Carbon::now()->millisecond(0);
-    return $date->endOfMonth()->next(Carbon::MONDAY)->midDay();
+    // Get first Monday of next month at 09:00
+    $nextMonday = $date->endOfMonth()->next(Carbon::MONDAY)->setTime(9, 0, 0);
+    // Add random time between 0 and 6 hours (09:00 to 14:59:59)
+    return $nextMonday
+      ->addHours(rand(0, 5))
+      ->addMinutes(rand(0, 59))
+      ->addSeconds(rand(0, 59));
   }
 }
