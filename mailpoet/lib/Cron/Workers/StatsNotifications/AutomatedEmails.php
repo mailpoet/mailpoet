@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\WP\DateTime as WpDateTime;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -40,6 +41,9 @@ class AutomatedEmails extends SimpleWorker {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var WpDateTime */
+  private $wpDateTime;
+
   public function __construct(
     MailerFactory $mailerFactory,
     Renderer $renderer,
@@ -57,6 +61,7 @@ class AutomatedEmails extends SimpleWorker {
     $this->repository = $repository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->trackingConfig = $trackingConfig;
+    $this->wpDateTime = new WpDateTime();
   }
 
   public function checkProcessingRequirements() {
@@ -162,12 +167,13 @@ class AutomatedEmails extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    $date = Carbon::now()->millisecond(0);
-    // Get first Monday of next month at 09:00
-    $nextMonday = $date->endOfMonth()->next(Carbon::MONDAY)->setTime(9, 0, 0);
-    // Add random time between 0 and 6 hours (09:00 to 14:59:59)
+    $currentDateTime = $this->wpDateTime->getCurrentDateTime();
+    $date = Carbon::instance($currentDateTime)->millisecond(0);
+    // Get first Monday of next month at midnight
+    $nextMonday = $date->endOfMonth()->next(Carbon::MONDAY)->startOfDay();
+    // Add random time across the entire day (0-23 hours, 0-59 minutes, 0-59 seconds)
     return $nextMonday
-      ->addHours(rand(0, 5))
+      ->addHours(rand(0, 23))
       ->addMinutes(rand(0, 59))
       ->addSeconds(rand(0, 59));
   }

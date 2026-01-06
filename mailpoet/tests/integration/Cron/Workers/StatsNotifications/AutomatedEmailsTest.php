@@ -216,25 +216,22 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItGeneratesRandomNextRunDate() {
-    $time = time();
-    Carbon::setTestNow(Carbon::createFromTimestamp($time));
-
     $result = $this->statsNotifications->getNextRunDate();
-
 
     verify($result)->instanceOf(Carbon::class);
 
     // Verify it's the first Monday of next month
-    $expectedDate = Carbon::createFromTimestamp($time)
+    $currentDateTime = (new \MailPoet\WP\DateTime())->getCurrentDateTime();
+    $expectedDate = Carbon::instance($currentDateTime)
       ->endOfMonth()
       ->next(Carbon::MONDAY);
     verify($result->format('Y-m-d'))->equals($expectedDate->format('Y-m-d'));
     verify($result->format('N'))->equals(Carbon::MONDAY);
 
-    // Verify time is between 09:00 and 15:00
+    // Verify time is within valid range (0-23 hours)
     $hour = (int)$result->format('H');
-    verify($hour)->greaterThanOrEqual(9);
-    verify($hour)->lessThan(15);
+    verify($hour)->greaterThanOrEqual(0);
+    verify($hour)->lessThan(24);
 
     // Verify second call returns different time (randomization works)
     $result2 = $this->statsNotifications->getNextRunDate();
@@ -242,11 +239,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
     verify($result2->format('Y-m-d'))->equals($expectedDate->format('Y-m-d'));
 
     // At least one of hour, minute, or second should be different.
-    // This could be flaky, but the probability of this happening should be 60*60*6-1, so let's
+    // This could be flaky, but the probability of this happening should be 60*60*24-1, so let's
     // see if it really happens to bother our workflows.
     $isDifferent = $result->format('H:i:s') !== $result2->format('H:i:s');
     verify($isDifferent)->true();
-
-    Carbon::setTestNow();
   }
 }
