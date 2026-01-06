@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.17.4
+Stable tag: 5.17.5
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,19 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.17.4 - 2025-12-12 =
-* Fixed: Rendering of Wide width blocks when WooCommerce 10.4.0 is active.
+= 5.17.5 - 2026-01-06 =
+* Added: Icon, icon type, and recommended flag to Automation Templates REST API;
+* Added: New pre-built email patterns to the email editor;
+* Updated: Bump the minimum required WooCommerce version to 10.3 and tested up to version to 10.4;
+* Updated: Replaced deprecated one, two, and three-column patterns with new email-specific patterns;
+* Improved: Block email editor starts supporting the Product collection block variant Cart contents;
+* Improved: Randomize monthly stats email send time to reduce server load spikes;
+* Fixed: Race condition causing cron action to persist after deactivation;
+* Fixed: Link to 'Create a new form' in the MailPoet subscription form block;
+* Fixed: Accessibility issues in the automation editor;
+* Fixed: Shortcodes in URL parameters getting broken when GA tracking is enabled;
+* Fixed: Translations API response validation was not checking data format;
+* Fixed: The scroll-to-bottom detection on zoomed browsers for the Posts block;
+* Removed: Remove unused database-related parameters from Env class after WPDB migration.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
