@@ -65,6 +65,7 @@ class Registry {
       'purchase' => new AutomationTemplateCategory('purchase', _x('Post-purchase', 'automation template category title', 'mailpoet')),
       'review' => new AutomationTemplateCategory('review', _x('Review', 'automation template category title', 'mailpoet')),
       'subscriptions' => new AutomationTemplateCategory('subscriptions', _x('Subscriptions', 'automation template category title', 'mailpoet')),
+      'bookings' => new AutomationTemplateCategory('bookings', _x('Bookings', 'automation template category title', 'mailpoet')),
     ];
   }
 
