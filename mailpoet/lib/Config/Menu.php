@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\AdminPages\Pages\Automation;
 use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
+use MailPoet\AdminPages\Pages\AutomationFlowEmbed;
 use MailPoet\AdminPages\Pages\AutomationPreviewEmbed;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\DynamicSegments;
@@ -58,6 +59,7 @@ class Menu {
   const AUTOMATION_ANALYTICS_PAGE_SLUG = 'mailpoet-automation-analytics';
   const AUTOMATION_TEMPLATES_PAGE_SLUG = 'mailpoet-automation-templates';
   const AUTOMATION_PREVIEW_EMBED_PAGE_SLUG = 'mailpoet-automation-preview-embed';
+  const AUTOMATION_FLOW_EMBED_PAGE_SLUG = 'mailpoet-automation-flow-embed';
 
   const LANDINGPAGE_PAGE_SLUG = 'mailpoet-landingpage';
 
@@ -113,6 +115,7 @@ class Menu {
     $this->checkPremiumKey();
 
     $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationPreviewEmbed'], 1);
+    $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationFlowEmbed'], 1);
 
     $this->wp->addAction(
       'admin_menu',
@@ -549,6 +552,16 @@ class Menu {
       [$this, 'automationPreviewEmbed']
     );
 
+    // Automation flow embed (hidden from menu, used for iframe embedding)
+    $this->wp->addSubmenuPage(
+      self::NO_PARENT_PAGE_SLUG,
+      $this->setPageTitle(__('Automation Flow', 'mailpoet')),
+      '',
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      self::AUTOMATION_FLOW_EMBED_PAGE_SLUG,
+      [$this, 'automationFlowEmbed']
+    );
+
     // add body class for automation editor page
     $this->wp->addAction('load-' . $automationPage, function() {
       $this->wp->addFilter('admin_body_class', function ($classes) {
@@ -615,6 +628,10 @@ class Menu {
     $this->container->get(AutomationPreviewEmbed::class)->render();
   }
 
+  public function automationFlowEmbed() {
+    $this->container->get(AutomationFlowEmbed::class)->render();
+  }
+
   /**
    * Render automation preview embed page early, before WordPress outputs admin chrome.
    * This allows the embed page to be a clean, standalone HTML page without menus/sidebars.
@@ -630,6 +647,23 @@ class Menu {
     }
 
     $this->container->get(AutomationPreviewEmbed::class)->render();
+  }
+
+  /**
+   * Render automation flow embed page early, before WordPress outputs admin chrome.
+   * This allows the embed page to be a clean, standalone HTML page without menus/sidebars.
+   */
+  public function maybeRenderAutomationFlowEmbed(): void {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    if (!isset($_GET['page']) || $_GET['page'] !== self::AUTOMATION_FLOW_EMBED_PAGE_SLUG) {
+      return;
+    }
+
+    if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) {
+      return;
+    }
+
+    $this->container->get(AutomationFlowEmbed::class)->render();
   }
 
   public function experimentalFeatures() {
