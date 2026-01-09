@@ -20,6 +20,17 @@
       text-align: center;
       color: #cc1818;
     }
+    /* Disable clickable links in embed mode */
+    #mailpoet_automation_flow_embed a {
+      pointer-events: none;
+      cursor: default;
+      text-decoration: none;
+      color: inherit;
+    }
+    /* Hide step more menu in embed mode */
+    .mailpoet-automation-step-more-menu {
+      display: none;
+    }
   </style>
   <script type="text/javascript">
     // Global config needed by admin bundle
