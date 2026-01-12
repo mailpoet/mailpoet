@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.17.6 - 2026-01-12 =
+* Improved: Send monthly stats emails throughout the day using site timezone.
+
 = 5.17.5 - 2026-01-06 =
 * Added: Icon, icon type, and recommended flag to Automation Templates REST API;
 * Added: New pre-built email patterns to the email editor;
