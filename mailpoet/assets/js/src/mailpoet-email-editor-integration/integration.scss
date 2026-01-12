@@ -49,6 +49,11 @@
     color: $gray-700;
     font-size: $font-size-small;
   }
+
+  &__recipients-total-count &__recipients-loader {
+    margin: 0;
+    vertical-align: middle;
+  }
 }
 
 .mailpoet-content-settings-panel {

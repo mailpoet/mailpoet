@@ -55,6 +55,8 @@ export function RecipientsRow() {
   const [recipientType, setRecipientType] = useState<
     'all_customers' | 'segment'
   >('segment');
+  const [recipientCount, setRecipientCount] = useState<number | null>(null);
+  const [isLoadingRecipientCount, setIsLoadingRecipientCount] = useState(false);
 
   // Fetch segments on mount.
   useEffect(() => {
@@ -125,6 +127,46 @@ export function RecipientsRow() {
     }
   }, [selectedSegmentIds, segments]);
 
+  // Fetch the subscriber count when selected segments change.
+  useEffect(() => {
+    if (recipientType !== 'segment' || selectedSegmentIds.length === 0) {
+      setRecipientCount(null);
+      setIsLoadingRecipientCount(false);
+      return undefined;
+    }
+
+    let mounted = true;
+    setIsLoadingRecipientCount(true);
+
+    void MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'segments',
+      action: 'subscriberCount',
+      data: {
+        segmentIds: selectedSegmentIds,
+      },
+    })
+      .then((response) => {
+        if (mounted) {
+          setRecipientCount(response?.data?.count as number);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setRecipientCount(null);
+        }
+      })
+      .always(() => {
+        if (mounted) {
+          setIsLoadingRecipientCount(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [recipientType, selectedSegmentIds]);
+
   const updateEmailMailPoetProperty = (name: string, value: unknown) => {
     const postId = select(editorStore).getCurrentPostId();
     const currentPostType = 'mailpoet_email';
@@ -186,7 +228,7 @@ export function RecipientsRow() {
     (segment) => segment.type === 'woocommerce_users',
   );
   const allCustomersSegmentCount = parseInt(
-    allCustomersSegment?.subscribers_count?.all || '0',
+    allCustomersSegment?.subscribers_count?.subscribed || '0',
     10,
   );
 
@@ -197,14 +239,6 @@ export function RecipientsRow() {
       ),
     )
     .filter((segment) => segment !== undefined);
-
-  // Calculate total recipients from selected segments
-  const recipientCount = selectedSegments.reduce((total, segment) => {
-    const countValue =
-      segment.count_all || segment.subscribers_count?.all || '0';
-    const count = parseInt(countValue, 10);
-    return total + (Number.isNaN(count) ? 0 : count);
-  }, 0);
 
   // Filter selected segments to only show default and dynamic type segments
   const selectedAllowedSegments = selectedSegments.filter(
@@ -319,7 +353,11 @@ export function RecipientsRow() {
                         />
                         <div className="mailpoet-status-panel__recipients-total-count">
                           {__('Total recipients: ', 'mailpoet')}{' '}
-                          {recipientCount.toLocaleString()}
+                          {isLoadingRecipientCount ? (
+                            <Spinner className="mailpoet-status-panel__recipients-loader" />
+                          ) : (
+                            (recipientCount ?? 0).toLocaleString()
+                          )}
                         </div>
                       </div>
                     )}
