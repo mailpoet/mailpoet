@@ -69,7 +69,7 @@ jQuery(($) => {
   }
 
   function playCaptcha(e?: Event) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const audioSelector = '.mailpoet_captcha_player';
     const audio = document.querySelector<HTMLAudioElement>(audioSelector);
     if (!audio) {
@@ -97,6 +97,8 @@ jQuery(($) => {
     form: JQuery<HTMLFormElement>,
     e?: Event,
   ): Promise<boolean> {
+    if (e) e.preventDefault();
+
     const captchaSessionId = form
       .find('input[name="data[captcha_session_id]"]')
       .val() as string;
@@ -107,42 +109,55 @@ jQuery(($) => {
       return false;
     }
 
-    const cachebust = `${new Date().getTime()}`;
+    try {
+      const cachebust = `${new Date().getTime()}`;
 
-    // regenerate captcha phrase
-    const url = new URL(window.location.href.split('?')[0]);
-    url.searchParams.set('mailpoet_router', '');
-    url.searchParams.set('mailpoet_page', 'template');
-    url.searchParams.set('endpoint', 'captcha');
-    url.searchParams.set('action', 'refresh');
-    url.searchParams.set(
-      'data',
-      btoa(JSON.stringify({ captcha_session_id: captchaSessionId })),
-    );
-    url.searchParams.set('cachebust', cachebust);
-    await fetch(url);
+      // regenerate captcha phrase
+      const url = new URL(window.location.href.split('?')[0]);
+      url.searchParams.set('mailpoet_router', '');
+      url.searchParams.set('mailpoet_page', 'template');
+      url.searchParams.set('endpoint', 'captcha');
+      url.searchParams.set('action', 'refresh');
+      url.searchParams.set(
+        'data',
+        btoa(JSON.stringify({ captcha_session_id: captchaSessionId })),
+      );
+      url.searchParams.set('cachebust', cachebust);
+      await fetch(url);
 
-    // update image
-    const imageUrl = new URL(image.attr('src'));
-    imageUrl.searchParams.set('cachebust', cachebust);
-    image.attr('src', imageUrl.toString());
+      // update image
+      const imageSrc = image.attr('src');
+      if (imageSrc) {
+        const imageUrl = new URL(imageSrc);
+        imageUrl.searchParams.set('cachebust', cachebust);
+        image.attr('src', imageUrl.toString());
+      }
 
-    // update audio
-    const audioSource = audio.find('source');
-    const audioUrl = new URL(audioSource.attr('src'));
-    audioUrl.searchParams.set('cachebust', cachebust);
-    audioSource.attr('src', audioUrl.toString());
-    (audio[0] as HTMLAudioElement).load();
+      // update audio
+      const audioSource = audio.find('source');
+      const audioSrc = audioSource.attr('src');
+      if (audioSrc) {
+        const audioUrl = new URL(audioSrc);
+        audioUrl.searchParams.set('cachebust', cachebust);
+        audioSource.attr('src', audioUrl.toString());
+        (audio[0] as HTMLAudioElement).load();
+      }
 
-    // clear the captcha input
-    form.find('input[name="data[captcha]"]').val('');
+      // clear the captcha input
+      form.find('input[name="data[captcha]"]').val('');
 
-    if (e) e.preventDefault();
-    return true;
+      return true;
+    } catch (error) {
+      // Log error but don't break the form
+      // eslint-disable-next-line no-console
+      console.error('Failed to refresh captcha:', error);
+      return false;
+    }
   }
 
   /**
    * Shows the inline captcha within the form.
+   * Uses DOM APIs to safely create elements and prevent XSS.
    */
   function showInlineCaptcha(
     form: JQuery<HTMLFormElement>,
@@ -164,27 +179,77 @@ jQuery(($) => {
     const audioTitle =
       window.MailPoetForm.captcha_audio_title || 'Play CAPTCHA';
 
-    const captchaHtml = `
-      <div class="mailpoet_captcha_container mailpoet_paragraph">
-        <input type="hidden" name="data[captcha_session_id]" value="${meta.captcha_session_id}" />
-        <p class="mailpoet_paragraph">
-          <img class="mailpoet_captcha" src="${meta.captcha_image_url}" width="220" height="60" title="CAPTCHA" alt="CAPTCHA" />
-        </p>
-        <button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="${reloadTitle}">
-          <img src="${assetsUrl}/img/icons/image-rotate.svg" alt="" />
-        </button>
-        <button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="${audioTitle}">
-          <img src="${assetsUrl}/img/icons/controls-volumeon.svg" alt="" />
-        </button>
-        <audio class="mailpoet_captcha_player">
-          <source src="${meta.captcha_audio_url}" type="audio/mpeg">
-        </audio>
-        <label class="mailpoet_paragraph mailpoet_captcha_label">
-          <span class="mailpoet_text_label">${inputLabel}</span>
-          <input type="text" class="mailpoet_text" name="data[captcha]" autocomplete="off" />
-        </label>
-      </div>
-    `;
+    // Build captcha container using DOM APIs to prevent XSS
+    const container = $('<div>').addClass(
+      'mailpoet_captcha_container mailpoet_paragraph',
+    );
+
+    // Hidden session ID input
+    $('<input>')
+      .attr('type', 'hidden')
+      .attr('name', 'data[captcha_session_id]')
+      .val(meta.captcha_session_id)
+      .appendTo(container);
+
+    // Captcha image
+    const imageWrapper = $('<p>').addClass('mailpoet_paragraph');
+    $('<img>')
+      .addClass('mailpoet_captcha')
+      .attr('src', meta.captcha_image_url)
+      .attr('width', '220')
+      .attr('height', '60')
+      .attr('title', 'CAPTCHA')
+      .attr('alt', 'CAPTCHA')
+      .appendTo(imageWrapper);
+    imageWrapper.appendTo(container);
+
+    // Reload button
+    const reloadButton = $('<button>')
+      .attr('type', 'button')
+      .addClass('mailpoet_icon_button mailpoet_captcha_update')
+      .attr('title', reloadTitle)
+      .on('click', (e: Event) => void updateCaptchaInForm(form, e));
+    $('<img>')
+      .attr('src', `${assetsUrl}/img/icons/image-rotate.svg`)
+      .attr('alt', '')
+      .appendTo(reloadButton);
+    reloadButton.appendTo(container);
+
+    // Audio button
+    const audioButton = $('<button>')
+      .attr('type', 'button')
+      .addClass('mailpoet_icon_button mailpoet_captcha_audio')
+      .attr('title', audioTitle)
+      .on('click', (e: Event) => playCaptchaInForm(form, e));
+    $('<img>')
+      .attr('src', `${assetsUrl}/img/icons/controls-volumeon.svg`)
+      .attr('alt', '')
+      .appendTo(audioButton);
+    audioButton.appendTo(container);
+
+    // Audio player
+    const audioPlayer = $('<audio>').addClass('mailpoet_captcha_player');
+    $('<source>')
+      .attr('src', meta.captcha_audio_url)
+      .attr('type', 'audio/mpeg')
+      .appendTo(audioPlayer);
+    audioPlayer.appendTo(container);
+
+    // Captcha input label
+    const label = $('<label>').addClass(
+      'mailpoet_paragraph mailpoet_captcha_label',
+    );
+    $('<span>')
+      .addClass('mailpoet_text_label')
+      .text(inputLabel)
+      .appendTo(label);
+    $('<input>')
+      .attr('type', 'text')
+      .addClass('mailpoet_text')
+      .attr('name', 'data[captcha]')
+      .attr('autocomplete', 'off')
+      .appendTo(label);
+    label.appendTo(container);
 
     // Insert before submit button
     const submitButton = form.find(
@@ -194,19 +259,11 @@ jQuery(($) => {
       '.mailpoet_paragraph, .mailpoet_submit',
     );
     if (submitContainer.length) {
-      submitContainer.before(captchaHtml);
+      submitContainer.before(container);
     } else {
       // Fallback: insert before the submit button directly
-      submitButton.before(captchaHtml);
+      submitButton.before(container);
     }
-
-    // Bind event handlers for the newly added elements
-    form
-      .find('.mailpoet_captcha_container .mailpoet_captcha_update')
-      .on('click', (e: Event) => void updateCaptchaInForm(form, e));
-    form
-      .find('.mailpoet_captcha_container .mailpoet_captcha_audio')
-      .on('click', (e: Event) => playCaptchaInForm(form, e));
 
     // Focus on the captcha input
     form.find('input[name="data[captcha]"]').trigger('focus');
