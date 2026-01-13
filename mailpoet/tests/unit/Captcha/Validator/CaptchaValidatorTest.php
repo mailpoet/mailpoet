@@ -207,7 +207,9 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     $captchaController = Stub::make(
       CaptchaUrlFactory::class,
       [
-        'getCaptchaUrl' => $newUrl,
+        'getCaptchaUrlForMPForm' => $newUrl,
+        'getCaptchaImageUrl' => 'https://example.com/image',
+        'getCaptchaAudioUrl' => 'https://example.com/audio',
       ],
       $this
     );
@@ -216,6 +218,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => null,
+        'createPhrase' => 'new_phrase',
       ],
       $this
     );
@@ -249,7 +252,14 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
 
   public function testCaptchaMissmatch() {
     $phrase = 'abc';
-    $urlFactory = Stub::makeEmpty(CaptchaUrlFactory::class);
+    $redirectUrl = 'https://example.com/captcha';
+    $urlFactory = Stub::make(
+      CaptchaUrlFactory::class,
+      [
+        'getCaptchaUrlForMPForm' => $redirectUrl,
+      ],
+      $this
+    );
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -280,6 +290,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     } catch (ValidationError $error) {
       verify($error->getMessage())->equals('The characters entered do not match with the previous CAPTCHA.');
       verify($error->getMeta()['refresh_captcha'])->true();
+      verify($error->getMeta()['redirect_url'])->equals($redirectUrl);
     }
 
     verify($error)->instanceOf(ValidationError::class);
@@ -291,7 +302,9 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     $captchaController = Stub::make(
       CaptchaUrlFactory::class,
       [
-        'getCaptchaUrl' => $newUrl,
+        'getCaptchaUrlForMPForm' => $newUrl,
+        'getCaptchaImageUrl' => 'https://example.com/image',
+        'getCaptchaAudioUrl' => 'https://example.com/audio',
       ],
       $this
     );
@@ -300,6 +313,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => $phrase,
+        'createPhrase' => 'new_phrase',
       ],
       $this
     );

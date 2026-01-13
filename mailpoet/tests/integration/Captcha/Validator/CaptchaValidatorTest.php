@@ -42,6 +42,8 @@ class CaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testWrongCaptchaThrowsError() {
+    $this->diContainer->get(Populator::class)->up();
+
     $sessionId = '123';
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'abc']);
     try {
@@ -49,6 +51,7 @@ class CaptchaValidatorTest extends \MailPoetTest {
     } catch (ValidationError $error) {
       $meta = $error->getMeta();
       $this->assertEquals('The characters entered do not match with the previous CAPTCHA.', $meta['error']);
+      $this->assertTrue(array_key_exists('redirect_url', $meta));
     }
   }
 
