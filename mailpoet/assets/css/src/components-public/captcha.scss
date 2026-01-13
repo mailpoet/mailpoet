@@ -11,6 +11,52 @@
   }
 }
 
+// Inline captcha displayed within MailPoet forms
+.mailpoet_captcha_container {
+  margin-bottom: 20px;
+
+  .mailpoet_captcha {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .mailpoet_icon_button {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 5px;
+    vertical-align: middle;
+
+    img {
+      height: 20px;
+      width: 20px;
+    }
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .mailpoet_captcha_player {
+    display: none;
+  }
+
+  .mailpoet_captcha_label {
+    display: block;
+    margin-top: 10px;
+
+    .mailpoet_text_label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .mailpoet_text {
+      max-width: 220px;
+      width: 100%;
+    }
+  }
+}
+
 // WP registration form
 form#registerform .g-recaptcha:not([data-size='invisible']) {
   scale: 0.9;

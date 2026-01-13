@@ -173,6 +173,11 @@ interface Window {
   MailPoetForm?: {
     ajax_url: string;
     ajax_common_error_message: string;
+    is_rtl?: boolean;
+    captcha_input_label?: string;
+    captcha_reload_title?: string;
+    captcha_audio_title?: string;
+    assets_url?: string;
   };
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];

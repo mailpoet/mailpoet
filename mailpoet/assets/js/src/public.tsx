@@ -8,6 +8,13 @@ import { Response } from './ajax';
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 const startingClassName = 'starting-to-show';
 
+interface InlineCaptchaMeta {
+  show_captcha: boolean;
+  captcha_session_id: string;
+  captcha_image_url: string;
+  captcha_audio_url: string;
+}
+
 jQuery(($) => {
   // Initialize Ajax Error message
   MailPoet.I18n.add(
@@ -69,6 +76,149 @@ jQuery(($) => {
       return;
     }
     audio.play().catch(() => {});
+  }
+
+  /**
+   * Plays the captcha audio within a specific form.
+   */
+  function playCaptchaInForm(form: JQuery<HTMLFormElement>, e?: Event) {
+    if (e) e.preventDefault();
+    const audio = form.find('.mailpoet_captcha_player')[0] as HTMLAudioElement;
+    if (!audio) {
+      return;
+    }
+    audio.play().catch(() => {});
+  }
+
+  /**
+   * Updates/refreshes the captcha within a specific form.
+   */
+  async function updateCaptchaInForm(
+    form: JQuery<HTMLFormElement>,
+    e?: Event,
+  ): Promise<boolean> {
+    const captchaSessionId = form
+      .find('input[name="data[captcha_session_id]"]')
+      .val() as string;
+    const image = form.find('img.mailpoet_captcha');
+    const audio = form.find('.mailpoet_captcha_player');
+
+    if (!captchaSessionId || !image.length || !audio.length) {
+      return false;
+    }
+
+    const cachebust = `${new Date().getTime()}`;
+
+    // regenerate captcha phrase
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('mailpoet_router', '');
+    url.searchParams.set('mailpoet_page', 'template');
+    url.searchParams.set('endpoint', 'captcha');
+    url.searchParams.set('action', 'refresh');
+    url.searchParams.set(
+      'data',
+      btoa(JSON.stringify({ captcha_session_id: captchaSessionId })),
+    );
+    url.searchParams.set('cachebust', cachebust);
+    await fetch(url);
+
+    // update image
+    const imageUrl = new URL(image.attr('src'));
+    imageUrl.searchParams.set('cachebust', cachebust);
+    image.attr('src', imageUrl.toString());
+
+    // update audio
+    const audioSource = audio.find('source');
+    const audioUrl = new URL(audioSource.attr('src'));
+    audioUrl.searchParams.set('cachebust', cachebust);
+    audioSource.attr('src', audioUrl.toString());
+    (audio[0] as HTMLAudioElement).load();
+
+    // clear the captcha input
+    form.find('input[name="data[captcha]"]').val('');
+
+    if (e) e.preventDefault();
+    return true;
+  }
+
+  /**
+   * Shows the inline captcha within the form.
+   */
+  function showInlineCaptcha(
+    form: JQuery<HTMLFormElement>,
+    meta: InlineCaptchaMeta,
+  ) {
+    // Check if captcha already exists in form
+    if (form.find('.mailpoet_captcha_container').length > 0) {
+      // Just update the existing captcha
+      void updateCaptchaInForm(form);
+      return;
+    }
+
+    const assetsUrl = window.MailPoetForm.assets_url || '';
+    const inputLabel =
+      window.MailPoetForm.captcha_input_label ||
+      'Type in the characters you see in the picture above:';
+    const reloadTitle =
+      window.MailPoetForm.captcha_reload_title || 'Reload CAPTCHA';
+    const audioTitle =
+      window.MailPoetForm.captcha_audio_title || 'Play CAPTCHA';
+
+    const captchaHtml = `
+      <div class="mailpoet_captcha_container mailpoet_paragraph">
+        <input type="hidden" name="data[captcha_session_id]" value="${meta.captcha_session_id}" />
+        <p class="mailpoet_paragraph">
+          <img class="mailpoet_captcha" src="${meta.captcha_image_url}" width="220" height="60" title="CAPTCHA" alt="CAPTCHA" />
+        </p>
+        <button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="${reloadTitle}">
+          <img src="${assetsUrl}/img/icons/image-rotate.svg" alt="" />
+        </button>
+        <button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="${audioTitle}">
+          <img src="${assetsUrl}/img/icons/controls-volumeon.svg" alt="" />
+        </button>
+        <audio class="mailpoet_captcha_player">
+          <source src="${meta.captcha_audio_url}" type="audio/mpeg">
+        </audio>
+        <label class="mailpoet_paragraph mailpoet_captcha_label">
+          <span class="mailpoet_text_label">${inputLabel}</span>
+          <input type="text" class="mailpoet_text" name="data[captcha]" autocomplete="off" />
+        </label>
+      </div>
+    `;
+
+    // Insert before submit button
+    const submitButton = form.find(
+      'input[type="submit"], button[type="submit"]',
+    );
+    const submitContainer = submitButton.closest(
+      '.mailpoet_paragraph, .mailpoet_submit',
+    );
+    if (submitContainer.length) {
+      submitContainer.before(captchaHtml);
+    } else {
+      // Fallback: insert before the submit button directly
+      submitButton.before(captchaHtml);
+    }
+
+    // Bind event handlers for the newly added elements
+    form
+      .find('.mailpoet_captcha_container .mailpoet_captcha_update')
+      .on('click', (e: Event) => void updateCaptchaInForm(form, e));
+    form
+      .find('.mailpoet_captcha_container .mailpoet_captcha_audio')
+      .on('click', (e: Event) => playCaptchaInForm(form, e));
+
+    // Focus on the captcha input
+    form.find('input[name="data[captcha]"]').trigger('focus');
+
+    // Resize iframe if needed
+    if (
+      window.frameElement !== null &&
+      MailPoet !== undefined &&
+      MailPoet.Iframe
+    ) {
+      MailPoet.Iframe.autoSize(window.frameElement);
+    }
   }
 
   async function updateCaptcha(e?: Event) {
@@ -135,7 +285,7 @@ jQuery(($) => {
   }
 
   function submitSubscribeForm(
-    form,
+    form: JQuery<HTMLFormElement>,
     formData: ReturnType<JQuery['mailpoetSerializeObject']>,
     parsley,
   ) {
@@ -145,7 +295,10 @@ jQuery(($) => {
     MailPoet.Ajax.post<
       Response,
       {
-        meta: { redirect_url: string; refresh_captcha: boolean };
+        meta: {
+          redirect_url?: string;
+          refresh_captcha?: boolean;
+        } & Partial<InlineCaptchaMeta>;
       } & ErrorResponse
     >({
       url: window.MailPoetForm.ajax_url,
@@ -156,16 +309,35 @@ jQuery(($) => {
       data: formData.data,
     })
       .fail((response) => {
-        if (
+        if (response.meta && response.meta.show_captcha) {
+          // Show captcha inline within the form
+          showInlineCaptcha(form, response.meta as InlineCaptchaMeta);
+          form
+            .find('.mailpoet_validate_error')
+            .html(response.errors.map((error) => error.message).join('<br />'))
+            .show();
+        } else if (response.meta && response.meta.refresh_captcha) {
+          // Wrong captcha answer - refresh and show error inline
+          const captchaContainer = form.find('.mailpoet_captcha_container');
+          if (captchaContainer.length > 0) {
+            void updateCaptchaInForm(form);
+          } else {
+            void updateCaptcha();
+          }
+          if (window.grecaptcha && formData.recaptchaWidgetId) {
+            window.grecaptcha.reset(formData.recaptchaWidgetId);
+          }
+          form
+            .find('.mailpoet_validate_error')
+            .html(response.errors.map((error) => error.message).join('<br />'))
+            .show();
+        } else if (
           response.meta !== undefined &&
           response.meta.redirect_url !== undefined
         ) {
-          // go to page
+          // Fallback: go to captcha page (for non-JS scenarios)
           window.top.location.href = response.meta.redirect_url;
         } else {
-          if (response.meta && response.meta.refresh_captcha) {
-            void updateCaptcha();
-          }
           if (window.grecaptcha && formData.recaptchaWidgetId) {
             window.grecaptcha.reset(formData.recaptchaWidgetId);
           }
@@ -225,7 +397,7 @@ jQuery(($) => {
       return;
     }
     const recaptcha = $(element);
-    const form = $(recaptcha).closest('form');
+    const form = $(recaptcha).closest('form') as JQuery<HTMLFormElement>;
     const sitekey = recaptcha.attr('data-sitekey');
     let size = recaptcha.attr('data-size') as ReCaptchaV2.Size;
 
@@ -434,8 +606,8 @@ jQuery(($) => {
     });
 
     // setup form validation
-    $('form.mailpoet_form').each((_, element) => {
-      const form = $(element);
+    $('form.mailpoet_form').each((_, element: HTMLFormElement) => {
+      const form = $(element) as JQuery<HTMLFormElement>;
 
       form
         .parsley()

@@ -52,21 +52,19 @@ class CaptchaValidator {
     }
 
     if (empty($data['captcha'])) {
+      $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
-        [
-          'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
-        ]
+        $this->getInlineCaptchaData($sessionId)
       );
     }
 
     $captchaHash = $this->captchaPhrase->getPhrase($sessionId);
     if (empty($captchaHash)) {
+      $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
-        [
-          'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
-        ]
+        $this->getInlineCaptchaData($sessionId)
       );
     }
 
@@ -76,6 +74,8 @@ class CaptchaValidator {
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
         [
           'refresh_captcha' => true,
+          // Keep redirect_url for non-JavaScript form submissions
+          'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
         ]
       );
     }
@@ -131,5 +131,20 @@ class CaptchaValidator {
     $user = $this->wp->wpGetCurrentUser();
     $roles = $this->wp->applyFilters('mailpoet_subscription_captcha_exclude_roles', ['administrator', 'editor']);
     return !empty(array_intersect((array)$roles, $user->roles));
+  }
+
+  /**
+   * Returns data needed to display the captcha inline within the form.
+   * Includes redirect_url as a fallback for non-JavaScript submissions.
+   */
+  private function getInlineCaptchaData(string $sessionId): array {
+    return [
+      'show_captcha' => true,
+      'captcha_session_id' => $sessionId,
+      'captcha_image_url' => $this->captchaUrlFactory->getCaptchaImageUrl(220, 60, $sessionId),
+      'captcha_audio_url' => $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId),
+      // Keep redirect_url for non-JavaScript form submissions
+      'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
+    ];
   }
 }
