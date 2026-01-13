@@ -6,6 +6,7 @@ use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
+use PHPUnit\Framework\Assert;
 
 /**
  * @group frontend
@@ -52,22 +53,62 @@ class CaptchaSubscriptionCest {
     ]);
   }
 
-  public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $i) {
-    $i->wantTo('See the built-in captcha after subscribing using form widget');
+  public function checkInlineCaptchaIsShownAfterSubscription(\AcceptanceTester $i) {
+    $i->wantTo('See the built-in captcha inline within the form after subscribing');
     $i->amOnPage('/form-test');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
-    $i->waitForText('Confirm you’re not a robot');
+    $i->waitForElement('.mailpoet_captcha_container', 10);
+    $i->seeElement('.mailpoet_captcha_container img.mailpoet_captcha');
+    $i->seeElement('.mailpoet_captcha_container input[name="data[captcha]"]');
+    $i->seeElement('.mailpoet_captcha_container .mailpoet_captcha_update');
+    $i->seeElement('.mailpoet_captcha_container .mailpoet_captcha_audio');
+    $i->see('Please fill in the CAPTCHA', '.mailpoet_validate_error');
     $i->seeNoJSErrors();
   }
 
-  public function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $i) {
-    $i->wantTo('check that captcha page is not shown to logged in users');
+  public function checkInlineCaptchaRefreshWorks(\AcceptanceTester $i) {
+    $i->wantTo('Verify captcha image can be refreshed');
+    $i->amOnPage('/form-test');
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->click('.mailpoet_submit');
+    $i->waitForElement('.mailpoet_captcha_container', 10);
+
+    // Get the original image src
+    $originalSrc = $i->grabAttributeFrom('.mailpoet_captcha_container img.mailpoet_captcha', 'src');
+
+    // Click refresh button
+    $i->click('.mailpoet_captcha_container .mailpoet_captcha_update');
+    $i->wait(1);
+
+    // Verify image src has changed (cache busting parameter)
+    $newSrc = $i->grabAttributeFrom('.mailpoet_captcha_container img.mailpoet_captcha', 'src');
+    Assert::assertNotEquals($originalSrc, $newSrc, 'Captcha image should have changed after refresh');
+    $i->seeNoJSErrors();
+  }
+
+  public function checkWrongCaptchaShowsError(\AcceptanceTester $i) {
+    $i->wantTo('See error when entering wrong captcha');
+    $i->amOnPage('/form-test');
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->click('.mailpoet_submit');
+    $i->waitForElement('.mailpoet_captcha_container', 10);
+
+    // Enter wrong captcha
+    $i->fillField('.mailpoet_captcha_container input[name="data[captcha]"]', 'wrongcode');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('The characters entered do not match with the previous CAPTCHA.', 10, '.mailpoet_validate_error');
+    $i->seeNoJSErrors();
+  }
+
+  public function checkCaptchaIsNotShownToLoggedInUsers(\AcceptanceTester $i) {
+    $i->wantTo('Check that captcha is not shown to logged in users');
     $i->login();
     $i->amOnPage('/form-test');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
+    $i->dontSeeElement('.mailpoet_captcha_container');
     $i->seeNoJSErrors();
   }
 }
