@@ -93,11 +93,19 @@ class Services extends APIEndpoint {
 
   public function checkMSSKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
+    $meta = [
+      'key' => $key,
+      'home_url' => $this->wp->homeUrl(),
+      'site_url' => $this->wp->siteUrl(),
+    ];
 
     if (!$key) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
-      ]);
+      return $this->badRequest(
+        [
+          APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
+        ],
+        $meta
+      );
     }
 
     $wasPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
@@ -106,9 +114,12 @@ class Services extends APIEndpoint {
       $result = $this->bridge->checkMSSKey($key);
       $this->bridge->storeMSSKeyAndState($key, $result);
     } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+      return $this->errorResponse(
+        [
+          $e->getCode() => $e->getMessage(),
+        ],
+        $meta
+      );
     }
 
     // pause sending when key is pending approval, resume when not pending anymore
@@ -164,25 +175,39 @@ class Services extends APIEndpoint {
         break;
     }
 
-    return $this->errorResponse([APIError::BAD_REQUEST => $error]);
+    return $this->errorResponse(
+      [APIError::BAD_REQUEST => $error],
+      $meta
+    );
   }
 
   public function checkPremiumKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
+    $meta = [
+      'key' => $key,
+      'home_url' => $this->wp->homeUrl(),
+      'site_url' => $this->wp->siteUrl(),
+    ];
 
     if (!$key) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
-      ]);
+      return $this->badRequest(
+        [
+          APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
+        ],
+        $meta
+      );
     }
 
     try {
       $result = $this->bridge->checkPremiumKey($key);
       $this->bridge->storePremiumKeyAndState($key, $result);
     } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+      return $this->errorResponse(
+        [
+          $e->getCode() => $e->getMessage(),
+        ],
+        $meta
+      );
     }
 
     $state = !empty($result['state']) ? $result['state'] : null;
@@ -229,8 +254,13 @@ class Services extends APIEndpoint {
     }
 
     return $this->errorResponse(
-      [APIError::BAD_REQUEST => $error],
-      ['code' => $result['code'] ?? null]
+      [
+        APIError::BAD_REQUEST => $error,
+      ],
+      array_merge(
+        $meta,
+        ['code' => $result['code'] ?? null]
+      )
     );
   }
 
