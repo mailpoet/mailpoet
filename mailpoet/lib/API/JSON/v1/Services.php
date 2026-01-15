@@ -93,18 +93,13 @@ class Services extends APIEndpoint {
 
   public function checkMSSKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
-    $meta = [
-      'key' => $key,
-      'home_url' => $this->wp->homeUrl(),
-      'site_url' => $this->wp->siteUrl(),
-    ];
 
     if (!$key) {
       return $this->badRequest(
         [
           APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
         ],
-        $meta
+        $this->getMetaForLogging($key)
       );
     }
 
@@ -118,7 +113,7 @@ class Services extends APIEndpoint {
         [
           $e->getCode() => $e->getMessage(),
         ],
-        $meta
+        $this->getMetaForLogging($key)
       );
     }
 
@@ -177,24 +172,19 @@ class Services extends APIEndpoint {
 
     return $this->errorResponse(
       [APIError::BAD_REQUEST => $error],
-      $meta
+      $this->getMetaForLogging($key)
     );
   }
 
   public function checkPremiumKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
-    $meta = [
-      'key' => $key,
-      'home_url' => $this->wp->homeUrl(),
-      'site_url' => $this->wp->siteUrl(),
-    ];
 
     if (!$key) {
       return $this->badRequest(
         [
           APIError::BAD_REQUEST => __('Please specify a key.', 'mailpoet'),
         ],
-        $meta
+        $this->getMetaForLogging($key)
       );
     }
 
@@ -206,7 +196,7 @@ class Services extends APIEndpoint {
         [
           $e->getCode() => $e->getMessage(),
         ],
-        $meta
+        $this->getMetaForLogging($key)
       );
     }
 
@@ -258,10 +248,19 @@ class Services extends APIEndpoint {
         APIError::BAD_REQUEST => $error,
       ],
       array_merge(
-        $meta,
+        $this->getMetaForLogging($key),
         ['code' => $result['code'] ?? null]
       )
     );
+  }
+
+  private function getMetaForLogging(?string $key): array {
+    $obfuscatedKey = $key ? substr($key, 0, 4) . str_repeat('*', strlen($key) - 8) . substr($key, -4) : '';
+    return [
+      'key' => $obfuscatedKey,
+      'home_url' => $this->wp->homeUrl(),
+      'site_url' => $this->wp->siteUrl(),
+    ];
   }
 
   public function recheckKeys() {
