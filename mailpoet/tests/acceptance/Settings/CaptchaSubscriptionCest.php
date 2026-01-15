@@ -63,6 +63,7 @@ class CaptchaSubscriptionCest {
     $i->seeElement('.mailpoet_captcha_container input[name="data[captcha]"]');
     $i->seeElement('.mailpoet_captcha_container .mailpoet_captcha_update');
     $i->seeElement('.mailpoet_captcha_container .mailpoet_captcha_audio');
+    $i->seeElement('.mailpoet_captcha_container .mailpoet_captcha_submit');
     $i->see('Please fill in the CAPTCHA', '.mailpoet_validate_error');
     $i->seeNoJSErrors();
   }
@@ -94,9 +95,9 @@ class CaptchaSubscriptionCest {
     $i->click('.mailpoet_submit');
     $i->waitForElement('.mailpoet_captcha_container', 10);
 
-    // Enter wrong captcha
+    // Enter wrong captcha and submit using the button inside captcha container
     $i->fillField('.mailpoet_captcha_container input[name="data[captcha]"]', 'wrongcode');
-    $i->click('.mailpoet_submit');
+    $i->click('.mailpoet_captcha_container .mailpoet_captcha_submit input[type="submit"], .mailpoet_captcha_container .mailpoet_captcha_submit button[type="submit"]');
     $i->waitForText('The characters entered do not match with the previous CAPTCHA.', 10, '.mailpoet_validate_error');
     $i->seeNoJSErrors();
   }
