@@ -158,6 +158,7 @@ jQuery(($) => {
   /**
    * Shows the inline captcha within the form.
    * Uses DOM APIs to safely create elements and prevent XSS.
+   * Hides other form fields to focus on the captcha.
    */
   function showInlineCaptcha(
     form: JQuery<HTMLFormElement>,
@@ -179,10 +180,14 @@ jQuery(($) => {
     const audioTitle =
       window.MailPoetForm.captcha_audio_title || 'Play CAPTCHA';
 
-    // Build captcha container using DOM APIs to prevent XSS
-    const container = $('<div>').addClass(
-      'mailpoet_captcha_container mailpoet_paragraph',
+    // Find submit button - we'll clone it for the captcha container
+    const submitButton = form.find(
+      'input[type="submit"], button[type="submit"]',
     );
+
+    // Build captcha container using DOM APIs to prevent XSS
+    // Note: Don't use mailpoet_paragraph class here to avoid being hidden
+    const container = $('<div>').addClass('mailpoet_captcha_container');
 
     // Hidden session ID input
     $('<input>')
@@ -191,8 +196,8 @@ jQuery(($) => {
       .val(meta.captcha_session_id)
       .appendTo(container);
 
-    // Captcha image
-    const imageWrapper = $('<p>').addClass('mailpoet_paragraph');
+    // Captcha image wrapper (not using mailpoet_paragraph to avoid being hidden)
+    const imageWrapper = $('<div>').addClass('mailpoet_captcha_image_wrapper');
     $('<img>')
       .addClass('mailpoet_captcha')
       .attr('src', meta.captcha_image_url)
@@ -235,10 +240,8 @@ jQuery(($) => {
       .appendTo(audioPlayer);
     audioPlayer.appendTo(container);
 
-    // Captcha input label
-    const label = $('<label>').addClass(
-      'mailpoet_paragraph mailpoet_captcha_label',
-    );
+    // Captcha input label (using mailpoet_captcha_label, not mailpoet_paragraph)
+    const label = $('<label>').addClass('mailpoet_captcha_label');
     $('<span>')
       .addClass('mailpoet_text_label')
       .text(inputLabel)
@@ -251,19 +254,31 @@ jQuery(($) => {
       .appendTo(label);
     label.appendTo(container);
 
-    // Insert before submit button
-    const submitButton = form.find(
-      'input[type="submit"], button[type="submit"]',
-    );
-    const submitContainer = submitButton.closest(
-      '.mailpoet_paragraph, .mailpoet_submit',
-    );
-    if (submitContainer.length) {
-      submitContainer.before(container);
-    } else {
-      // Fallback: insert before the submit button directly
-      submitButton.before(container);
-    }
+    // Clone the submit button and add it to the captcha container
+    const submitClone = submitButton.clone();
+    const submitWrapper = $('<div>').addClass('mailpoet_captcha_submit');
+    submitClone.appendTo(submitWrapper);
+    submitWrapper.appendTo(container);
+
+    // Hide all form elements (paragraphs, columns, images) except message area
+    form
+      .find(
+        '.mailpoet_paragraph, .mailpoet_form_paragraph, .mailpoet_form_image, .mailpoet_form_columns_container',
+      )
+      .each(function hideFormElement() {
+        const $el = $(this);
+        // Don't hide message area
+        if ($el.hasClass('mailpoet_message')) {
+          return;
+        }
+        $el.addClass('mailpoet_captcha_hidden');
+      });
+
+    // Append captcha container directly to the form (centered)
+    form.append(container);
+
+    // Mark the form as having active captcha
+    form.addClass('mailpoet_form_captcha_active');
 
     // Focus on the captcha input
     form.find('input[name="data[captcha]"]').trigger('focus');
@@ -276,6 +291,19 @@ jQuery(($) => {
     ) {
       MailPoet.Iframe.autoSize(window.frameElement);
     }
+  }
+
+  /**
+   * Removes the inline captcha from the form and restores form fields visibility.
+   */
+  function removeInlineCaptcha(form: JQuery<HTMLFormElement>) {
+    form.removeClass('mailpoet_form_captcha_active');
+    // Show all hidden form elements
+    form
+      .find('.mailpoet_captcha_hidden')
+      .removeClass('mailpoet_captcha_hidden');
+    // Remove the captcha container
+    form.find('.mailpoet_captcha_container').remove();
   }
 
   async function updateCaptcha(e?: Event) {
@@ -422,6 +450,9 @@ jQuery(($) => {
         } else {
           displaySuccessMessage(form);
         }
+
+        // Remove inline captcha if present
+        removeInlineCaptcha(form);
 
         // reset form
         form.trigger('reset');
