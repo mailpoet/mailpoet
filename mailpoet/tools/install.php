@@ -4,23 +4,13 @@
 // Tools versions for PHP 7.4+
 $composerVersion = '2.7.7';
 $phpScoperVersion = '0.17.2';
-$tracyVersion = '2.9.4';
-
-// Tools versions for PHP 8.0+
-if (PHP_VERSION_ID >= 80000) {
-  $tracyVersion = '2.9.7'; // Tracy 2.9.4 doesn't support PHP 7.4
-}
-
-// Tools versions for PHP 8.4+
-if (PHP_VERSION_ID >= 80400) {
-  $composerVersion = '2.8.10';
-  $phpScoperVersion = '0.18.17';
-  $tracyVersion = '2.10.9'; // 2.10.10 causes SyntaxError in JS
-}
+$legacyTracyVersion = '2.9.4'; // Tracy 2.9.4 supports PHP 7.4
+$tracyVersion = '2.11.0'; // Tracy 2.11.0 supports PHP 8.4 and 8.5
 
 $tools = [
   "https://github.com/composer/composer/releases/download/$composerVersion/composer.phar" => 'composer.phar',
   "https://github.com/humbug/php-scoper/releases/download/$phpScoperVersion/php-scoper.phar" => 'php-scoper.phar',
+  "https://github.com/nette/tracy/releases/download/v$legacyTracyVersion/tracy.phar" => 'tracy-legacy.phar',
   "https://github.com/nette/tracy/releases/download/v$tracyVersion/tracy.phar" => 'tracy.phar',
 ];
 // ensure installation in dev-mode only
