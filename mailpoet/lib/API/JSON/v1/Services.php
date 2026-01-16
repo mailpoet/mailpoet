@@ -255,7 +255,7 @@ class Services extends APIEndpoint {
   }
 
   private function getMetaForLogging(?string $key): array {
-    $obfuscatedKey = $key ? substr($key, 0, 4) . str_repeat('*', strlen($key) - 8) . substr($key, -4) : '';
+    $obfuscatedKey = $key ? substr($key, 0, 4) . "..." . substr($key, -4) : '';
     return [
       'key' => $obfuscatedKey,
       'home_url' => $this->wp->homeUrl(),
