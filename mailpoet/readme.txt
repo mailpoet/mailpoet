@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.17.6
+Stable tag: 5.18.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.17.6 - 2026-01-12 =
-* Improved: Send monthly stats emails throughout the day using site timezone.
+= 5.18.0 - 2026-01-19 =
+* Improved: Built-in captcha now appears inline within subscription forms;
+* Improved: More information logged when key validation fails;
+* Fixed: Fix the total recipients count in the email editor.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

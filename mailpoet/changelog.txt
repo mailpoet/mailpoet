@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.18.0 - 2026-01-19 =
+* Improved: Built-in captcha now appears inline within subscription forms;
+* Improved: More information logged when key validation fails;
+* Fixed: Fix the total recipients count in the email editor.
+
 = 5.17.6 - 2026-01-12 =
 * Improved: Send monthly stats emails throughout the day using site timezone.
 
