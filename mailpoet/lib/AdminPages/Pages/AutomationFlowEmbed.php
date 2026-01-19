@@ -69,7 +69,9 @@ class AutomationFlowEmbed extends AbstractAutomationEmbed {
 
   protected function getCustomData(): array {
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+    $id = isset($_GET['id']) && is_numeric($_GET['id']) && (int)$_GET['id'] > 0
+      ? (int)$_GET['id']
+      : null;
 
     $automation = $id ? $this->automationStorage->getAutomation($id) : null;
     $automationData = $automation ? $this->automationMapper->buildAutomation($automation) : null;
