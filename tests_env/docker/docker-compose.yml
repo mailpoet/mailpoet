@@ -133,7 +133,7 @@ services:
     environment:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
     tmpfs:
-      - /dev/shm
+      - /dev/shm:rw,nosuid,nodev,exec,size=2g,mode=1777
     image: selenium/standalone-chrome:107.0-20221104
     ports:
       - 4444
