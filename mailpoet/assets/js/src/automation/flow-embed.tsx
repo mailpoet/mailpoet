@@ -87,9 +87,9 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Poll for height changes during initial load
-    const interval = setInterval(sendHeightToParent, 300);
-    setTimeout(() => clearInterval(interval), 5000);
+    // Use ResizeObserver to detect height changes
+    const resizeObserver = new ResizeObserver(sendHeightToParent);
+    resizeObserver.observe(document.body);
 
     // Also send on window load
     window.addEventListener('load', sendHeightToParent);
