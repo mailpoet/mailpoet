@@ -106,6 +106,14 @@ class OverviewStatisticsController {
       }
     }
 
+    // Filter emails by search if provided.
+    $search = $query->getSearch();
+    if ($search) {
+      $data['emails'] = array_filter($data['emails'], function ($email) use ($search) {
+        return stripos($email['name'], $search) !== false;
+      });
+    }
+
     usort($data['emails'], function ($a, $b) {
       return $a['order'] <=> $b['order'];
     });
