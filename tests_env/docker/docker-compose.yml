@@ -91,7 +91,8 @@ services:
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
     tmpfs:
-      - /var/www/html/wp-content/uploads/mailpoet/
+      - /var/www/html/wp-content/uploads/mailpoet/:rw,nosuid,nodev,noexec,mode=1777
+      - /var/www/html/wp-content/languages/plugins/:rw,nosuid,nodev,noexec,mode=1777
     environment:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_USER: wordpress
