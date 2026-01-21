@@ -753,6 +753,9 @@ class DomNode implements IQuery {
 	 * @return DomNode Null if not found
 	 */
 	function getSibling($offset = 1) {
+		if (!$this->parent) {
+			return null;
+		}
 		$index = $this->index() + $offset;
 		if (($index >= 0) && ($index < $this->parent->childCount())) {
 			return $this->parent->getChild($index);

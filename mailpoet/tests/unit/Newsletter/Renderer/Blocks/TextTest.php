@@ -220,4 +220,22 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text())->render($this->block);
     verify($output)->stringContainsString('<a href="https://example.com">Link</a>');
   }
+
+  public function testGetSiblingReturnsNullForRemovedNode(): void {
+    $html = '<p>First</p><p>Second</p>';
+    $dom = $this->parser->parseStr($html);
+    $paragraphs = $dom->query('p');
+    $this->assertInstanceOf(pQuery::class, $paragraphs);
+    $firstParagraph = $paragraphs[0];
+    $this->assertInstanceOf(DomNode::class, $firstParagraph);
+
+    // Remove the node (this sets parent to null)
+    $firstParagraph->remove();
+
+    // Without the fix in gan_node_html.php, this would crash:
+    // "Call to a member function childCount() on null"
+    $result = $firstParagraph->getNextSibling();
+
+    verify($result)->null();
+  }
 }
