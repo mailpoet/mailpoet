@@ -684,6 +684,47 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
+  public function testItSynchronizesCustomersWithMixedNullAndZeroCustomerIds(): void {
+    global $wpdb;
+
+    $guest1 = $this->insertGuestCustomer();
+    $guest2 = $this->insertGuestCustomer();
+    $this->insertGuestCustomer(); // Guest with customer_id = 0 (not modified)
+    $user = $this->insertRegisteredCustomerWithOrder();
+
+    // Set some orders to have NULL customer_id to simulate the real-world scenario
+    // where guest orders can have either 0 or NULL as customer_id
+    $ordersTable = $wpdb->prefix . 'wc_orders';
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
+      ['orderId' => $guest1['order_id']]
+    );
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
+      ['orderId' => $guest2['order_id']]
+    );
+
+    $this->synchronizeAllCustomers();
+
+    $subscribersCount = $this->getSubscribersCount();
+    verify($subscribersCount)->equals(4);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $user->ID]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getIsWoocommerceUser())->equals(true);
+
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $subscriberSegments = $subscriber->getSubscriberSegments();
+    $inWooCommerceSegment = false;
+    foreach ($subscriberSegments as $subscriberSegment) {
+      if ($subscriberSegment->getSegment() && $subscriberSegment->getSegment()->getId() === $wooCommerceSegment->getId()) {
+        $inWooCommerceSegment = true;
+        break;
+      }
+    }
+    verify($inWooCommerceSegment)->equals(true);
+  }
+
   public function _after(): void {
     parent::_after();
     $this->cleanData();

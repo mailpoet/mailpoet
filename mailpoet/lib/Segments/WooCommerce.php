@@ -518,12 +518,14 @@ class WooCommerce {
     // Registered users with orders
     if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
       $ordersTable = $this->woocommerceHelper->getOrdersTableName();
-      $registeredCustomersSubQuery = "SELECT DISTINCT customer_id AS id FROM `{$ordersTable}` WHERE type = 'shop_order'";
+      // Exclude guest orders (customer_id = 0) as they are not registered users
+      $registeredCustomersSubQuery = "SELECT DISTINCT customer_id AS id FROM `{$ordersTable}` WHERE type = 'shop_order' AND customer_id > 0";
     } else {
+      // Exclude guest orders (meta_value = 0 or empty) as they are not registered users
       $registeredCustomersSubQuery = "SELECT DISTINCT wppm.meta_value AS id FROM {$wpdb->postmeta} wppm
         JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
         AND wpp.post_type = 'shop_order'
-        WHERE wppm.meta_key = '_customer_user'";
+        WHERE wppm.meta_key = '_customer_user' AND wppm.meta_value > 0";
     }
 
     $this->connection->executeQuery("
