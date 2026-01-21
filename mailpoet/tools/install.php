@@ -2,7 +2,7 @@
 
 
 // Tools versions for PHP 7.4+
-$composerVersion = '2.7.7';
+$composerVersion = '2.9.3';
 $phpScoperVersion = '0.17.2';
 $legacyTracyVersion = '2.9.4'; // Tracy 2.9.4 supports PHP 7.4
 $tracyVersion = '2.11.0'; // Tracy 2.11.0 supports PHP 8.4 and 8.5
