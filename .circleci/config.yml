@@ -491,6 +491,11 @@ jobs:
                   cd ../tests_env/docker
                   docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
       - run:
+          name: Report PHP version used for WordPress test site
+          command: |
+            cd ../tests_env/docker
+            docker compose run wordpress php --version
+      - run:
           name: Group acceptance tests
           command: |
             # Convert test result filename values to be relative paths because the circleci CLI's split command requires exact matches
