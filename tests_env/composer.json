@@ -22,11 +22,13 @@
     "post-install-cmd": [
       "php ./tasks/fix-php82-codeception.php",
       "php ./tasks/fix-php83-codeception.php",
+      "php ./tasks/fix-php84-e-strict-codeception.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ],
     "post-update-cmd": [
       "php ./tasks/fix-php82-codeception.php",
       "php ./tasks/fix-php83-codeception.php",
+      "php ./tasks/fix-php84-e-strict-codeception.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ]
   }
