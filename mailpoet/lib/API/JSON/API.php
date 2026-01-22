@@ -297,7 +297,9 @@ class API {
   private function logError(Throwable $e): void {
     // logging to the php log
     if (function_exists('error_log')) {
+      // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
       error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+      // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
     }
     // logging to the MailPoet table
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning($e->getMessage(), [

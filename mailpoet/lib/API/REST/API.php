@@ -84,7 +84,9 @@ class API {
       : new ErrorResponse(500, __('An unknown error occurred.', 'mailpoet'), 'mailpoet_automation_unknown_error');
 
     if ($response->get_status() >= 500 && function_exists('error_log')) {
+      // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
       error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+      // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
     }
     return $response;
   }

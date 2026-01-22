@@ -1311,6 +1311,7 @@ class DomNode implements IQuery {
 			} elseif ($compare === 'name') {
 				return ((isset($t[$attr])) ? $t[$attr] : false);
 			} else {
+				// phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 				trigger_error('Unknown comparison mode');
 			}
 		}
@@ -1741,6 +1742,7 @@ class DomNode implements IQuery {
 								if ($res) break 1; else break 2;
 
 							default:
+								// phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 								trigger_error('Unknown operator "'.esc_html($match['operator_value']).'" to match attributes!');
 								return false;
 						}
@@ -1775,6 +1777,7 @@ class DomNode implements IQuery {
 					return false;
 				}
 			} else {
+				// phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 				trigger_error('Unknown filter "'.esc_html($c['filter']).'"!');
 				return false;
 			}

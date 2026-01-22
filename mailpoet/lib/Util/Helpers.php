@@ -133,7 +133,9 @@ class Helpers {
       );
       // logging to the php log
       if (function_exists('error_log')) {
+        // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
         error_log($customErrorMessage); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+        // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
       }
 
       return $customErrorMessage;

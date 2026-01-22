@@ -20,7 +20,7 @@ class DataGenerator {
 
   public function run($generatorName) {
     if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
-    ini_set('memory_limit', '1024M');
+    ini_set('memory_limit', '1024M'); // phpcs:ignore QITStandard.PHP.DebugCode.DangerousIniSet
     $timer = time();
     try {
       $generator = $this->createGenerator($generatorName);

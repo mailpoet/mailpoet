@@ -183,7 +183,9 @@ class TranslationUpdater {
       Debugger::log($message, ILogger::ERROR);
     }
     if (function_exists('error_log')) {
+      // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
       error_log($message); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+      // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
     }
   }
 

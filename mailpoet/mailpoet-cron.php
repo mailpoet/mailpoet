@@ -8,9 +8,11 @@
  * prevents MailPoet from functioning. To work around this problem, this script loads only MailPoet and WordPress,
  * without any other plugins. That is why it needs to require wp-load.php directly.
  */
+// phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
+ini_set("display_errors", "1"); // phpcs:ignore QITStandard.PHP.DebugCode.DangerousIniSet
+error_reporting(E_ALL); // phpcs:ignore QITStandard.PHP.DebugCode.ErrorReportingMaximum
+// phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
 
-ini_set("display_errors", "1");
-error_reporting(E_ALL);
 
 if (!isset($argv[1]) || !$argv[1]) {
   echo 'You need to pass a WordPress root as an argument.';

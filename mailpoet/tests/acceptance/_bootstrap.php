@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-ini_set('max_execution_time', '900');
+ini_set('max_execution_time', '900'); // phpcs:ignore QITStandard.PHP.DebugCode.DangerousIniSet
 
 $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . '/../..');
 $dotenv->load();

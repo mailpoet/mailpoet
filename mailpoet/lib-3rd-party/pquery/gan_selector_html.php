@@ -389,6 +389,7 @@ class HtmlSelector {
 			$error
 		), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 
+		// phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		trigger_error(esc_html($error));
 	}
 

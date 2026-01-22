@@ -33,8 +33,10 @@ function file_get_dom($file, $return_root = true, $use_include_path = false, $co
 	if (version_compare(PHP_VERSION, '5.0.0', '>='))
 		$f = file_get_contents($file, $use_include_path, $context);
 	else {
-		if ($context !== null)
+		if ($context !== null) {
+			// phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 			trigger_error('Context parameter not supported in this PHP version');
+		}
 		$f = file_get_contents($file, $use_include_path);
 	}
 
