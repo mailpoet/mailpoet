@@ -18,6 +18,9 @@ class PatternsController {
   private CdnAssetUrl $cdnAssetUrl;
   private WPFunctions $wp;
 
+  /** @var Pattern[] */
+  private array $patterns = [];
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     WPFunctions $wp
@@ -26,21 +29,48 @@ class PatternsController {
     $this->wp = $wp;
   }
 
+  /**
+   * Get the content of a pattern by name.
+   *
+   * @param string $patternName The pattern name (e.g., 'welcome-email-content')
+   * @return string|null The pattern content or null if not found
+   */
+  public function getPatternContent(string $patternName): ?string {
+    $this->ensurePatternsInitialized();
+
+    foreach ($this->patterns as $pattern) {
+      if ($pattern->get_name() === $patternName) {
+        $properties = $pattern->get_properties();
+        return $properties['content'] ?? null;
+      }
+    }
+
+    return null;
+  }
+
+  private function ensurePatternsInitialized(): void {
+    if (!empty($this->patterns)) {
+      return;
+    }
+
+    $this->patterns = [
+      new NewsletterPattern($this->cdnAssetUrl),
+      new SaleAnnouncementPattern($this->cdnAssetUrl),
+      new NewProductsAnnouncementPattern($this->cdnAssetUrl),
+      new EducationalCampaignPattern($this->cdnAssetUrl),
+      new EventInvitationPattern($this->cdnAssetUrl),
+      new ProductRestockNotificationPattern($this->cdnAssetUrl),
+      new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
+      new WelcomeEmailPattern($this->cdnAssetUrl),
+      new AbandonedCartPattern($this->cdnAssetUrl),
+    ];
+  }
+
   public function registerPatterns(): void {
     $this->registerPatternCategories();
+    $this->ensurePatternsInitialized();
 
-    $patterns = [];
-    $patterns[] = new NewsletterPattern($this->cdnAssetUrl);
-    $patterns[] = new SaleAnnouncementPattern($this->cdnAssetUrl);
-    $patterns[] = new NewProductsAnnouncementPattern($this->cdnAssetUrl);
-    $patterns[] = new EducationalCampaignPattern($this->cdnAssetUrl);
-    $patterns[] = new EventInvitationPattern($this->cdnAssetUrl);
-    $patterns[] = new ProductRestockNotificationPattern($this->cdnAssetUrl);
-    $patterns[] = new NewArrivalsAnnouncementPattern($this->cdnAssetUrl);
-    $patterns[] = new WelcomeEmailPattern($this->cdnAssetUrl);
-    $patterns[] = new AbandonedCartPattern($this->cdnAssetUrl);
-
-    foreach ($patterns as $pattern) {
+    foreach ($this->patterns as $pattern) {
       $patternName = $pattern->get_namespace() . '/' . $pattern->get_name();
       $patternProperties = $pattern->get_properties();
 

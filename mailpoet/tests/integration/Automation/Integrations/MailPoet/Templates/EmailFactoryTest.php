@@ -8,12 +8,15 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
+use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetTest;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -36,6 +39,15 @@ class EmailFactoryTest extends MailPoetTest {
   /** @var NewsletterOptionFieldsRepository */
   private $newsletterOptionFieldsRepository;
 
+  /** @var PatternsController */
+  private $patternsController;
+
+  /** @var TemplatesController */
+  private $templatesController;
+
+  /** @var WPFunctions */
+  private $wpFunctions;
+
   /** @var string */
   private $tempDir;
 
@@ -55,13 +67,20 @@ class EmailFactoryTest extends MailPoetTest {
 
     $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
     $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->patternsController = $this->diContainer->get(PatternsController::class);
+    $this->templatesController = $this->diContainer->get(TemplatesController::class);
+    $this->wpFunctions = $this->diContainer->get(WPFunctions::class);
     $this->wp = new WordPress();
     $this->emailFactory = new EmailFactory(
       $this->newslettersRepository,
       $this->settings,
       $this->wp,
       $this->newsletterOptionsRepository,
-      $this->newsletterOptionFieldsRepository
+      $this->newsletterOptionFieldsRepository,
+      $this->patternsController,
+      $this->templatesController,
+      $this->wpFunctions,
+      $this->entityManager
     );
 
     // Create a temporary directory for test templates
@@ -483,5 +502,64 @@ class EmailFactoryTest extends MailPoetTest {
     $automationIdOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_AUTOMATION_ID);
     $this->assertNotNull($automationIdOption);
     $this->assertEquals('456', $automationIdOption->getValue());
+  }
+
+  public function testItCreatesBlockEditorEmailWithPattern(): void {
+    $result = $this->emailFactory->createBlockEditorEmail([
+      'pattern' => 'welcome-email-content',
+      'subject' => 'Welcome!',
+      'preheader' => 'Thanks for subscribing',
+    ]);
+
+    // Should return email_id and email_wp_post_id
+    $this->assertIsArray($result);
+    $this->assertArrayHasKey('email_id', $result);
+    $this->assertArrayHasKey('email_wp_post_id', $result);
+
+    $emailId = $result['email_id'];
+    $wpPostId = $result['email_wp_post_id'];
+
+    $this->assertIsInt($emailId);
+    $this->assertGreaterThan(0, $emailId);
+    $this->assertIsInt($wpPostId);
+    $this->assertGreaterThan(0, $wpPostId);
+
+    // Verify the newsletter was created correctly
+    $newsletter = $this->newslettersRepository->findOneById($emailId);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertEquals(NewsletterEntity::TYPE_AUTOMATION, $newsletter->getType());
+    $this->assertEquals('Welcome!', $newsletter->getSubject());
+    $this->assertEquals('Thanks for subscribing', $newsletter->getPreheader());
+    $this->assertEquals('Default Sender', $newsletter->getSenderName());
+    $this->assertEquals('default@example.com', $newsletter->getSenderAddress());
+
+    // Verify the WP post association
+    $this->assertEquals($wpPostId, $newsletter->getWpPostId());
+
+    // Verify the WP post was created with content
+    $wpPost = get_post($wpPostId);
+    $this->assertNotNull($wpPost);
+    $this->assertNotEmpty($wpPost->post_content); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    // Verify the email template is set
+    $templateSlug = get_post_meta($wpPostId, '_wp_page_template', true);
+    $this->assertEquals('newsletter', $templateSlug);
+  }
+
+  public function testItReturnsNullForMissingPatternName(): void {
+    $result = $this->emailFactory->createBlockEditorEmail([
+      'subject' => 'Test',
+    ]);
+
+    $this->assertNull($result);
+  }
+
+  public function testItReturnsNullForNonExistentPattern(): void {
+    $result = $this->emailFactory->createBlockEditorEmail([
+      'pattern' => 'non-existent-pattern',
+      'subject' => 'Test',
+    ]);
+
+    $this->assertNull($result);
   }
 }

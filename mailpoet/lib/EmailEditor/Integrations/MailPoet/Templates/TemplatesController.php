@@ -11,6 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class TemplatesController {
   private string $templatePrefix = 'mailpoet';
+  private ?string $defaultTemplateSlug = null;
   private WPFunctions $wp;
   private CdnAssetUrl $cdnAssetUrl;
 
@@ -39,6 +40,25 @@ class TemplatesController {
     );
     $templatesRegistry->register($template);
 
+    // Store the first registered template as the default
+    if ($this->defaultTemplateSlug === null) {
+      $this->defaultTemplateSlug = $newsletter->getSlug();
+    }
+
     return $templatesRegistry;
+  }
+
+  /**
+   * Get the default template slug for new emails.
+   *
+   * @return string The template slug (e.g., 'newsletter')
+   */
+  public function getDefaultTemplateSlug(): string {
+    // If templates haven't been registered yet, create the Newsletter to get its slug
+    if ($this->defaultTemplateSlug === null) {
+      $newsletter = new Newsletter($this->cdnAssetUrl);
+      $this->defaultTemplateSlug = $newsletter->getSlug();
+    }
+    return $this->defaultTemplateSlug;
   }
 }
