@@ -11,6 +11,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewsletterPatter
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductRestockNotificationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SaleAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeWithDiscountEmailPattern;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -62,6 +63,7 @@ class PatternsController {
       new ProductRestockNotificationPattern($this->cdnAssetUrl),
       new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
       new WelcomeEmailPattern($this->cdnAssetUrl),
+      new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
       new AbandonedCartPattern($this->cdnAssetUrl),
     ];
   }

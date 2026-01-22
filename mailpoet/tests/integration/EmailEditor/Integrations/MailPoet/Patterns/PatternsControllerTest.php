@@ -27,6 +27,17 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('Abandoned Cart', $abandonedCart['title']);
     $this->assertEquals(['abandoned-cart'], $abandonedCart['categories']);
 
+    $welcomeWithDiscountEmail = array_pop($blockPatterns);
+    $this->assertIsArray($welcomeWithDiscountEmail);
+    $this->assertArrayHasKey('name', $welcomeWithDiscountEmail);
+    $this->assertArrayHasKey('content', $welcomeWithDiscountEmail);
+    $this->assertArrayHasKey('title', $welcomeWithDiscountEmail);
+    $this->assertArrayHasKey('categories', $welcomeWithDiscountEmail);
+    $this->assertEquals('mailpoet/welcome-with-discount-email-content', $welcomeWithDiscountEmail['name']);
+    $this->assertStringContainsString('Welcome to', $welcomeWithDiscountEmail['content']);
+    $this->assertEquals('Welcome with Discount', $welcomeWithDiscountEmail['title']);
+    $this->assertEquals(['welcome'], $welcomeWithDiscountEmail['categories']);
+
     $welcomeEmail = array_pop($blockPatterns);
     $this->assertIsArray($welcomeEmail);
     $this->assertArrayHasKey('name', $welcomeEmail);
