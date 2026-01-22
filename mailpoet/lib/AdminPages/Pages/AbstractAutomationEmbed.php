@@ -129,6 +129,7 @@ abstract class AbstractAutomationEmbed {
       'woocommerce_active' => $this->wooCommerceHelper->isWooCommerceActive(),
       'woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'woocommerce_bookings_active' => $this->wooCommerceBookingsHelper->isWooCommerceBookingsActive(),
+      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->wooCommerceHelper->getWoocommerceStoreConfig() : null,
     ];
   }
 

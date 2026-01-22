@@ -313,6 +313,19 @@ class Helper {
     return wc_get_attribute_taxonomies();
   }
 
+  public function getWoocommerceStoreConfig(): array {
+    return [
+      'precision' => $this->wcGetPriceDecimals(),
+      'decimalSeparator' => $this->wcGetPriceDecimalSeperator(),
+      'thousandSeparator' => $this->wcGetPriceThousandSeparator(),
+      'code' => $this->getWoocommerceCurrency(),
+      'symbol' => html_entity_decode($this->getWoocommerceCurrencySymbol(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
+      'symbolPosition' => $this->wp->getOption('woocommerce_currency_pos'),
+      'priceFormat' => $this->getWoocommercePriceFormat(),
+
+    ];
+  }
+
   protected function formatShippingMethods(array $shippingMethods, string $shippingZoneName): array {
     $formattedShippingMethods = [];
 

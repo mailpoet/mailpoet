@@ -201,7 +201,7 @@ class PageRenderer {
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
         'automationAnalytics' => admin_url('admin.php?page=mailpoet-automation-analytics'),
       ],
-      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->getWoocommerceStoreConfig() : null,
+      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->wooCommerceHelper->getWoocommerceStoreConfig() : null,
       'tags' => array_map(function (TagEntity $tag): array {
         return [
         'id' => $tag->getId(),
@@ -242,20 +242,6 @@ class PageRenderer {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
-  }
-
-  private function getWoocommerceStoreConfig() {
-
-    return [
-      'precision' => $this->wooCommerceHelper->wcGetPriceDecimals(),
-      'decimalSeparator' => $this->wooCommerceHelper->wcGetPriceDecimalSeperator(),
-      'thousandSeparator' => $this->wooCommerceHelper->wcGetPriceThousandSeparator(),
-      'code' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-      'symbol' => html_entity_decode($this->wooCommerceHelper->getWoocommerceCurrencySymbol(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
-      'symbolPosition' => $this->wp->getOption('woocommerce_currency_pos'),
-      'priceFormat' => $this->wooCommerceHelper->getWoocommercePriceFormat(),
-
-    ];
   }
 
   public function displayChatBotWidget(): bool {
