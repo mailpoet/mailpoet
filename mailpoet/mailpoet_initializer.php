@@ -9,7 +9,7 @@ if (empty($mailpoetPlugin)) exit;
 
 require_once($mailpoetPlugin['autoloader']);
 
-if (PHP_VERSION_ID >= 80400) {
+if (PHP_VERSION_ID >= 80200) {
   $tracyPath = __DIR__ . '/tools/vendor/tracy.phar';
 } else {
   $tracyPath = __DIR__ . '/tools/vendor/tracy-legacy.phar';
