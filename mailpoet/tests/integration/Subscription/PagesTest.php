@@ -294,6 +294,24 @@ class PagesTest extends \MailPoetTest {
     verify($clickStat)->arrayCount(1);
   }
 
+  public function testWindowTitleCanBeCalledWithSingleArgument() {
+    $pages = $this->getPages();
+
+    $result = $pages->setWindowTitle('MailPoet Page');
+
+    $this->assertIsString($result);
+    $this->assertNotSame('', $result);
+  }
+
+  public function testWindowTitleStillWorksWithThreeArguments() {
+    $pages = $this->getPages();
+
+    $result = $pages->setWindowTitle('MailPoet Page | Example', '|', 'right');
+
+    $this->assertIsString($result);
+    $this->assertStringContainsString('MailPoet', $result);
+  }
+
   private function getPages(
     ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
     ?Unsubscribes $unsubscribesMock = null

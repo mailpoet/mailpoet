@@ -33,7 +33,11 @@ class PageRenderer {
     $this->wp->addFilter('the_content', [$this, 'setPageContent']);
   }
 
-  public function setWindowTitle($title, $separator, $separatorLocation = 'right') {
+  public function setWindowTitle($title, $separator = '', $separatorLocation = 'right') {
+    // If no separator is provided, just modify the entire title
+    if (empty($separator)) {
+      return $this->getPageTitle();
+    }
     $titleParts = explode(" $separator ", $title);
     if (!is_array($titleParts)) {
       return $title;
