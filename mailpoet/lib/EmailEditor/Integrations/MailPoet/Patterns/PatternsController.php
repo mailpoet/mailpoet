@@ -41,8 +41,16 @@ class PatternsController {
 
     foreach ($this->patterns as $pattern) {
       if ($pattern->get_name() === $patternName) {
-        $properties = $pattern->get_properties();
-        return $properties['content'] ?? null;
+        // Apply the same filter used in registerPatterns for consistency
+        $patternData = $this->wp->applyFilters('mailpoet_email_editor_register_pattern', [
+          'name' => $pattern->get_namespace() . '/' . $pattern->get_name(),
+          'properties' => $pattern->get_properties(),
+        ], $pattern);
+
+        if (!is_array($patternData) || !isset($patternData['properties'])) {
+          return null;
+        }
+        return $patternData['properties']['content'] ?? null;
       }
     }
 

@@ -150,21 +150,27 @@ class EmailFactory {
     $this->wpFunctions->updatePostMeta($postId, '_wp_page_template', $templateSlug);
 
     // Create a new newsletter entity
-    $newsletter = new NewsletterEntity();
-    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
-    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
-    $newsletter->setSubject($data['subject'] ?? '');
-    $newsletter->setPreheader($data['preheader'] ?? '');
-    $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
-    $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
-    $newsletter->setHash(Security::generateHash());
-    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
+    try {
+      $newsletter = new NewsletterEntity();
+      $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+      $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+      $newsletter->setSubject($data['subject'] ?? '');
+      $newsletter->setPreheader($data['preheader'] ?? '');
+      $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
+      $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
+      $newsletter->setHash(Security::generateHash());
+      $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
 
-    $this->newslettersRepository->persist($newsletter);
-    $this->newslettersRepository->flush();
+      $this->newslettersRepository->persist($newsletter);
+      $this->newslettersRepository->flush();
+    } catch (\Throwable $e) {
+      $this->wpFunctions->wpDeletePost($postId, true);
+      throw $e;
+    }
 
     $emailId = $newsletter->getId();
     if ($emailId === null) {
+      $this->wpFunctions->wpDeletePost($postId, true);
       return null;
     }
 
