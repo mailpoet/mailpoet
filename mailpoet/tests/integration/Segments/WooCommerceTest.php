@@ -694,15 +694,28 @@ class WooCommerceTest extends \MailPoetTest {
 
     // Set some orders to have NULL customer_id to simulate the real-world scenario
     // where guest orders can have either 0 or NULL as customer_id
-    $ordersTable = $wpdb->prefix . 'wc_orders';
-    $this->entityManager->getConnection()->executeStatement(
-      "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
-      ['orderId' => $guest1['order_id']]
-    );
-    $this->entityManager->getConnection()->executeStatement(
-      "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
-      ['orderId' => $guest2['order_id']]
-    );
+    $wooHelper = $this->diContainer->get(\MailPoet\WooCommerce\Helper::class);
+    if ($wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $ordersTable = $wooHelper->getOrdersTableName();
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
+        ['orderId' => $guest1['order_id']]
+      );
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$ordersTable} SET customer_id = NULL WHERE id = :orderId",
+        ['orderId' => $guest2['order_id']]
+      );
+    } else {
+      // Legacy storage: update _customer_user post meta
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$wpdb->postmeta} SET meta_value = NULL WHERE post_id = :orderId AND meta_key = '_customer_user'",
+        ['orderId' => $guest1['order_id']]
+      );
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$wpdb->postmeta} SET meta_value = NULL WHERE post_id = :orderId AND meta_key = '_customer_user'",
+        ['orderId' => $guest2['order_id']]
+      );
+    }
 
     $this->synchronizeAllCustomers();
 
