@@ -16,6 +16,17 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->patterns->registerPatterns();
     $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
+    $abandonedCartWithDiscount = array_pop($blockPatterns);
+    $this->assertIsArray($abandonedCartWithDiscount);
+    $this->assertArrayHasKey('name', $abandonedCartWithDiscount);
+    $this->assertArrayHasKey('content', $abandonedCartWithDiscount);
+    $this->assertArrayHasKey('title', $abandonedCartWithDiscount);
+    $this->assertArrayHasKey('categories', $abandonedCartWithDiscount);
+    $this->assertEquals('mailpoet/abandoned-cart-with-discount-content', $abandonedCartWithDiscount['name']);
+    $this->assertStringContainsString('We Saved Your Cart + Little Surprise', $abandonedCartWithDiscount['content']);
+    $this->assertEquals('Abandoned Cart with Discount', $abandonedCartWithDiscount['title']);
+    $this->assertEquals(['abandoned-cart'], $abandonedCartWithDiscount['categories']);
+
     $abandonedCart = array_pop($blockPatterns);
     $this->assertIsArray($abandonedCart);
     $this->assertArrayHasKey('name', $abandonedCart);

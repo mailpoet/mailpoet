@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EducationalCampaignPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EventInvitationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewArrivalsAnnouncementPattern;
@@ -73,6 +74,7 @@ class PatternsController {
       new WelcomeEmailPattern($this->cdnAssetUrl),
       new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
       new AbandonedCartPattern($this->cdnAssetUrl),
+      new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
     ];
   }
 
