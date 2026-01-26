@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.19.0 - 2026-01-26 =
+* Fixed: Exclude guest orders from registered customers sync query;
+* Fixed: Fix wp_title fatal error when confirming subscription.
+
 = 5.18.0 - 2026-01-19 =
 * Improved: Built-in captcha now appears inline within subscription forms;
 * Improved: More information logged when key validation fails;
