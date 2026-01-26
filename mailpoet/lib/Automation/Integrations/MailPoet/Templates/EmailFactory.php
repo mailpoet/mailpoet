@@ -77,15 +77,7 @@ class EmailFactory {
    * @return int|null The ID of the created email or null if the email couldn't be created
    */
   public function createEmail(array $data = []): ?int {
-    // Create a new newsletter entity
-    $newsletter = new NewsletterEntity();
-    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
-    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
-    $newsletter->setSubject($data['subject'] ?? '');
-    $newsletter->setPreheader($data['preheader'] ?? '');
-    $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
-    $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
-    $newsletter->setHash(Security::generateHash());
+    $newsletter = $this->createNewsletterEntity($data);
 
     // Set content if provided
     if (isset($data['content'])) {
@@ -151,15 +143,8 @@ class EmailFactory {
 
     // Create a new newsletter entity
     try {
-      $newsletter = new NewsletterEntity();
-      $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
-      $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
-      $newsletter->setSubject($data['subject'] ?? '');
-      $newsletter->setPreheader($data['preheader'] ?? '');
-      $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
-      $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
-      $newsletter->setHash(Security::generateHash());
-      $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
+      $wpPost = $this->entityManager->getReference(WpPostEntity::class, $postId);
+      $newsletter = $this->createNewsletterEntity($data, $wpPost);
 
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
@@ -271,6 +256,30 @@ class EmailFactory {
     $option->setValue($optionValue);
     $this->newsletterOptionsRepository->persist($option);
     $newsletter->getOptions()->add($option);
+  }
+
+  /**
+   * Create a NewsletterEntity with common automation email properties.
+   *
+   * @param array $data Email data including subject, preheader, sender_name, sender_address
+   * @param WpPostEntity|null $wpPost Optional WP post to associate with the newsletter
+   * @return NewsletterEntity The created newsletter entity (not persisted)
+   */
+  private function createNewsletterEntity(array $data, ?WpPostEntity $wpPost = null): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $newsletter->setSubject($data['subject'] ?? '');
+    $newsletter->setPreheader($data['preheader'] ?? '');
+    $newsletter->setSenderName($data['sender_name'] ?? $this->getDefaultSenderName());
+    $newsletter->setSenderAddress($data['sender_address'] ?? $this->getDefaultSenderAddress());
+    $newsletter->setHash(Security::generateHash());
+
+    if ($wpPost !== null) {
+      $newsletter->setWpPost($wpPost);
+    }
+
+    return $newsletter;
   }
 
   /**

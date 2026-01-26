@@ -42,7 +42,7 @@ class PatternsController {
     foreach ($this->patterns as $pattern) {
       if ($pattern->get_name() === $patternName) {
         // Apply the same filter used in registerPatterns for consistency
-        $patternData = $this->wp->applyFilters('mailpoet_email_editor_register_pattern', [
+        $patternData = $this->wp->applyFilters('mailpoet_email_editor_integration_register_pattern', [
           'name' => $pattern->get_namespace() . '/' . $pattern->get_name(),
           'properties' => $pattern->get_properties(),
         ], $pattern);
@@ -91,7 +91,7 @@ class PatternsController {
        * @param Pattern $pattern The original Pattern object.
        * @return array|null Return modified data or null/false to skip registration.
        */
-      $patternData = $this->wp->applyFilters('mailpoet_email_editor_register_pattern', [
+      $patternData = $this->wp->applyFilters('mailpoet_email_editor_integration_register_pattern', [
         'name' => $patternName,
         'properties' => $patternProperties,
       ], $pattern);
