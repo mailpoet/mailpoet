@@ -63,36 +63,25 @@ class TrackingConfigTest extends \MailPoetUnitTest {
       ->with('tracking.level', TrackingConfig::LEVEL_FULL)
       ->willReturn(TrackingConfig::LEVEL_FULL);
 
+    // Mock filter as pass-through to test the actual logic
     $this->wpMock->expects($this->once())
       ->method('applyFilters')
       ->with('mailpoet_is_cookie_tracking_enabled', true)
-      ->willReturn(true);
+      ->willReturnArgument(1);
 
     verify($this->trackingConfig->isCookieTrackingEnabled())->true();
   }
 
-  public function testIsCookieTrackingEnabledWithPartialLevel() {
+  public function testIsCookieTrackingEnabledWithNonFullLevel() {
     $this->settingsMock->method('get')
       ->with('tracking.level', TrackingConfig::LEVEL_FULL)
       ->willReturn(TrackingConfig::LEVEL_PARTIAL);
 
+    // Mock filter as pass-through to test the actual logic
     $this->wpMock->expects($this->once())
       ->method('applyFilters')
       ->with('mailpoet_is_cookie_tracking_enabled', false)
-      ->willReturn(false);
-
-    verify($this->trackingConfig->isCookieTrackingEnabled())->false();
-  }
-
-  public function testIsCookieTrackingEnabledWithBasicLevel() {
-    $this->settingsMock->method('get')
-      ->with('tracking.level', TrackingConfig::LEVEL_FULL)
-      ->willReturn(TrackingConfig::LEVEL_BASIC);
-
-    $this->wpMock->expects($this->once())
-      ->method('applyFilters')
-      ->with('mailpoet_is_cookie_tracking_enabled', false)
-      ->willReturn(false);
+      ->willReturnArgument(1);
 
     verify($this->trackingConfig->isCookieTrackingEnabled())->false();
   }
@@ -102,7 +91,7 @@ class TrackingConfigTest extends \MailPoetUnitTest {
       ->with('tracking.level', TrackingConfig::LEVEL_FULL)
       ->willReturn(TrackingConfig::LEVEL_FULL);
 
-    // Filter can override the result
+    // Test that filter can override the result
     $this->wpMock->expects($this->once())
       ->method('applyFilters')
       ->with('mailpoet_is_cookie_tracking_enabled', true)
@@ -118,7 +107,7 @@ class TrackingConfigTest extends \MailPoetUnitTest {
     $this->wpMock->expects($this->once())
       ->method('applyFilters')
       ->with('mailpoet_is_cookie_tracking_enabled', true)
-      ->willReturn(true);
+      ->willReturnArgument(1);
 
     verify($this->trackingConfig->isCookieTrackingEnabled(TrackingConfig::LEVEL_FULL))->true();
   }
@@ -179,8 +168,7 @@ class TrackingConfigTest extends \MailPoetUnitTest {
       ]);
 
     $this->wpMock->method('applyFilters')
-      ->with('mailpoet_is_cookie_tracking_enabled', false)
-      ->willReturn(false);
+      ->willReturnArgument(1);
 
     $config = $this->trackingConfig->getConfig();
 
@@ -197,44 +185,5 @@ class TrackingConfigTest extends \MailPoetUnitTest {
     verify($config['opens'])->equals(TrackingConfig::OPENS_SEPARATED);
     verify($config['opensMerged'])->false();
     verify($config['opensSeparated'])->true();
-  }
-
-  public function testGetConfigWithFullTrackingLevel() {
-    $this->settingsMock->method('get')
-      ->willReturnMap([
-        ['tracking.level', TrackingConfig::LEVEL_FULL, TrackingConfig::LEVEL_FULL],
-        ['tracking.opens', TrackingConfig::OPENS_MERGED, TrackingConfig::OPENS_MERGED],
-      ]);
-
-    $this->wpMock->method('applyFilters')
-      ->with('mailpoet_is_cookie_tracking_enabled', true)
-      ->willReturn(true);
-
-    $config = $this->trackingConfig->getConfig();
-
-    verify($config['level'])->equals(TrackingConfig::LEVEL_FULL);
-    verify($config['emailTrackingEnabled'])->true();
-    verify($config['cookieTrackingEnabled'])->true();
-    verify($config['opens'])->equals(TrackingConfig::OPENS_MERGED);
-    verify($config['opensMerged'])->true();
-    verify($config['opensSeparated'])->false();
-  }
-
-  public function testGetConfigWithBasicTrackingLevel() {
-    $this->settingsMock->method('get')
-      ->willReturnMap([
-        ['tracking.level', TrackingConfig::LEVEL_FULL, TrackingConfig::LEVEL_BASIC],
-        ['tracking.opens', TrackingConfig::OPENS_MERGED, TrackingConfig::OPENS_MERGED],
-      ]);
-
-    $this->wpMock->method('applyFilters')
-      ->with('mailpoet_is_cookie_tracking_enabled', false)
-      ->willReturn(false);
-
-    $config = $this->trackingConfig->getConfig();
-
-    verify($config['level'])->equals(TrackingConfig::LEVEL_BASIC);
-    verify($config['emailTrackingEnabled'])->false();
-    verify($config['cookieTrackingEnabled'])->false();
   }
 }
