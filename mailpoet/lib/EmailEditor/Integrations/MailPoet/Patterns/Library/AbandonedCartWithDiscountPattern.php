@@ -2,18 +2,11 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
-use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
-use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
-
 /**
- * Abandoned cart email pattern for cart recovery.
+ * Abandoned cart with discount email pattern for cart recovery.
  */
-class AbandonedCartWithDiscountPattern extends Pattern {
+class AbandonedCartWithDiscountPattern extends AbstractAbandonedCartPattern {
   protected $name = 'abandoned-cart-with-discount-content';
-  protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-  protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-  protected $categories = ['abandoned-cart'];
-  protected $post_types = [EmailEditor::MAILPOET_EMAIL_POST_TYPE]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return '
@@ -47,25 +40,7 @@ class AbandonedCartWithDiscountPattern extends Pattern {
       <h3 class="wp-block-heading has-text-align-left" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);border-top-width:1px;padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30)">' . __('These items are waiting in your cart', 'mailpoet') . '</h3>
       <!-- /wp:heading -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"textAlign":"center"} -->
-      <h2 class="wp-block-heading has-text-align-center">' . __('Product name', 'mailpoet') . '</h2>
-      <!-- /wp:heading -->
-
-      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"16px"}}} -->
-      <p class="has-text-align-center" style="font-size:16px">$99.90</p>
-      <!-- /wp:paragraph -->
-
-      <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Buy now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
+      ' . $this->getProductCollectionBlock() . '
     </div>
     <!-- /wp:group -->
     ';
