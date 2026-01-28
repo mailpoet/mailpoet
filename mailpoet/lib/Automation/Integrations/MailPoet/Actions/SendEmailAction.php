@@ -82,6 +82,8 @@ class SendEmailAction implements Action {
     'woocommerce:buys-from-a-tag',
     'woocommerce:buys-from-a-category',
     'woocommerce:buys-a-product',
+    'woocommerce-bookings:booking-created',
+    'woocommerce-bookings:booking-status-changed',
   ];
 
   private AutomationController $automationController;
