@@ -28,7 +28,7 @@ RUN printf "account default\nhost smtp\nport 1025" > /etc/msmtprc
 # xdebug build an config
 ENV XDEBUGINI_PATH=/usr/local/etc/php/conf.d/xdebug.ini
 RUN git clone -b "3.3.1" --depth 1 https://github.com/xdebug/xdebug.git /usr/src/php/ext/xdebug \
-    && docker-php-ext-configure xdebug --enable-xdebug-dev \
+    && docker-php-ext-configure xdebug --enable-xdebug \
     && docker-php-ext-install xdebug \
     && mkdir /tmp/debug
 COPY dev/xdebug.ini /tmp/xdebug.ini
