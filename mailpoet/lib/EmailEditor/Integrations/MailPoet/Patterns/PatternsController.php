@@ -6,13 +6,16 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPat
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EducationalCampaignPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EventInvitationPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\FirstPurchaseThankYouPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewArrivalsAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewProductsAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewsletterPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\PostPurchaseThankYouPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductRestockNotificationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SaleAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeWithDiscountEmailPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WinBackCustomerPattern;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -73,6 +76,9 @@ class PatternsController {
       new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
       new WelcomeEmailPattern($this->cdnAssetUrl),
       new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
+      new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
+      new PostPurchaseThankYouPattern($this->cdnAssetUrl),
+      new WinBackCustomerPattern($this->cdnAssetUrl),
       new AbandonedCartPattern($this->cdnAssetUrl),
       new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
     ];
@@ -115,6 +121,11 @@ class PatternsController {
         'name' => 'welcome',
         'label' => _x('Welcome', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of welcome email layouts.', 'mailpoet'),
+      ],
+      [
+        'name' => 'purchase',
+        'label' => _x('Post-purchase', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of post-purchase email layouts.', 'mailpoet'),
       ],
       [
         'name' => 'abandoned-cart',

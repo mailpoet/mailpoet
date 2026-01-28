@@ -38,6 +38,39 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('Abandoned Cart', $abandonedCart['title']);
     $this->assertEquals(['abandoned-cart'], $abandonedCart['categories']);
 
+    $winBackCustomer = array_pop($blockPatterns);
+    $this->assertIsArray($winBackCustomer);
+    $this->assertArrayHasKey('name', $winBackCustomer);
+    $this->assertArrayHasKey('content', $winBackCustomer);
+    $this->assertArrayHasKey('title', $winBackCustomer);
+    $this->assertArrayHasKey('categories', $winBackCustomer);
+    $this->assertEquals('mailpoet/win-back-customer', $winBackCustomer['name']);
+    $this->assertStringContainsString('We Miss You', $winBackCustomer['content']);
+    $this->assertEquals('Win Back Customer', $winBackCustomer['title']);
+    $this->assertEquals(['purchase'], $winBackCustomer['categories']);
+
+    $postPurchaseThankYou = array_pop($blockPatterns);
+    $this->assertIsArray($postPurchaseThankYou);
+    $this->assertArrayHasKey('name', $postPurchaseThankYou);
+    $this->assertArrayHasKey('content', $postPurchaseThankYou);
+    $this->assertArrayHasKey('title', $postPurchaseThankYou);
+    $this->assertArrayHasKey('categories', $postPurchaseThankYou);
+    $this->assertEquals('mailpoet/post-purchase-thank-you', $postPurchaseThankYou['name']);
+    $this->assertStringContainsString('thank you for your order', $postPurchaseThankYou['content']);
+    $this->assertEquals('Post Purchase Thank You', $postPurchaseThankYou['title']);
+    $this->assertEquals(['purchase'], $postPurchaseThankYou['categories']);
+
+    $firstPurchaseThankYou = array_pop($blockPatterns);
+    $this->assertIsArray($firstPurchaseThankYou);
+    $this->assertArrayHasKey('name', $firstPurchaseThankYou);
+    $this->assertArrayHasKey('content', $firstPurchaseThankYou);
+    $this->assertArrayHasKey('title', $firstPurchaseThankYou);
+    $this->assertArrayHasKey('categories', $firstPurchaseThankYou);
+    $this->assertEquals('mailpoet/first-purchase-thank-you', $firstPurchaseThankYou['name']);
+    $this->assertStringContainsString('Thank You for Your First Order', $firstPurchaseThankYou['content']);
+    $this->assertEquals('First Purchase Thank You', $firstPurchaseThankYou['title']);
+    $this->assertEquals(['purchase'], $firstPurchaseThankYou['categories']);
+
     $welcomeWithDiscountEmail = array_pop($blockPatterns);
     $this->assertIsArray($welcomeWithDiscountEmail);
     $this->assertArrayHasKey('name', $welcomeWithDiscountEmail);
@@ -151,6 +184,11 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsArray($welcomeCategory);
     $this->assertEquals('welcome', $welcomeCategory['name']);
     $this->assertNotEmpty($welcomeCategory['label']);
+
+    $purchaseCategory = $registry->get_registered('purchase');
+    $this->assertIsArray($purchaseCategory);
+    $this->assertEquals('purchase', $purchaseCategory['name']);
+    $this->assertNotEmpty($purchaseCategory['label']);
 
     $abandonedCartCategory = $registry->get_registered('abandoned-cart');
     $this->assertIsArray($abandonedCartCategory);
