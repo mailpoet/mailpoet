@@ -5,6 +5,24 @@ set_error_handler(function ($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+$replacements = [
+  [
+    'file' => __DIR__ . '/../vendor-prefixed/symfony/validator/Mapping/PropertyMetadata.php',
+    'find' => [
+      '$member->setAccessible(\true);',
+    ],
+    'replace' => [
+      'if (PHP_VERSION_ID < 80100) { $member->setAccessible( \true ); }', // Add spaces in bracket to avoid multiple replacements
+    ],
+  ],
+];
+
+foreach ($replacements as $singleFile) {
+  $data = file_get_contents($singleFile['file']);
+  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
+  file_put_contents($singleFile['file'], $data);
+}
+
 // cleanup unused Validator paths
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/validator/DataCollector');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/validator/DependencyInjection');
