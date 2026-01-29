@@ -49,6 +49,17 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('Win Back Customer', $winBackCustomer['title']);
     $this->assertEquals(['purchase'], $winBackCustomer['categories']);
 
+    $productPurchaseFollowUp = array_pop($blockPatterns);
+    $this->assertIsArray($productPurchaseFollowUp);
+    $this->assertArrayHasKey('name', $productPurchaseFollowUp);
+    $this->assertArrayHasKey('content', $productPurchaseFollowUp);
+    $this->assertArrayHasKey('title', $productPurchaseFollowUp);
+    $this->assertArrayHasKey('categories', $productPurchaseFollowUp);
+    $this->assertEquals('mailpoet/product-purchase-follow-up', $productPurchaseFollowUp['name']);
+    $this->assertStringContainsString('Loving your [Product]', $productPurchaseFollowUp['content']);
+    $this->assertEquals('Product Purchase Follow-Up', $productPurchaseFollowUp['title']);
+    $this->assertEquals(['purchase'], $productPurchaseFollowUp['categories']);
+
     $postPurchaseThankYou = array_pop($blockPatterns);
     $this->assertIsArray($postPurchaseThankYou);
     $this->assertArrayHasKey('name', $postPurchaseThankYou);

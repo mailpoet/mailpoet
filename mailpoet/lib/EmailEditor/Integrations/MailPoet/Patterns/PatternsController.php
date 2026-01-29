@@ -11,6 +11,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewArrivalsAnnou
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewProductsAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\NewsletterPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\PostPurchaseThankYouPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductRestockNotificationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SaleAnnouncementPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
@@ -78,6 +79,7 @@ class PatternsController {
       new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
       new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
       new PostPurchaseThankYouPattern($this->cdnAssetUrl),
+      new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
       new WinBackCustomerPattern($this->cdnAssetUrl),
       new AbandonedCartPattern($this->cdnAssetUrl),
       new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
