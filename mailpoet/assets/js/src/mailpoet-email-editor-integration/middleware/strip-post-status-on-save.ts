@@ -26,6 +26,11 @@ const INTERCEPTED_ACTIONS: Record<string, string[]> = {
 /**
  * Handles logic of processing and dispatching the stripped post status.
  *
+ * This is needed because when we use 'draft' status for newsletters,
+ * the editor in some circumstances allow to publish the newsletter via UI, which we want to prevent.
+ *
+ * TODO: We need to investigate a better solution for preventing the UI for publishing the newsletter.
+ *
  * @param args           The arguments passed to the original action.
  * @param registry       The data registry for use during processing.
  * @param originalAction The original action to call if the conditions are not met.
