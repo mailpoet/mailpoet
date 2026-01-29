@@ -15,10 +15,10 @@ type EmailEditorSelectors = {
   getCurrentTemplate(): EmailTemplate;
 };
 
-const contentLink = `<a data-link-href='[mailpoet/subscription-unsubscribe-url]' contenteditable='false' style='text-decoration: underline;' class='mailpoet-email-editor__personalization-tags-link'>${__(
+const contentLink = `<a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">${__(
   'Unsubscribe',
   'mailpoet',
-)}</a> | <a data-link-href='[mailpoet/subscription-manage-url]' contenteditable='false' style='text-decoration: underline;' class='mailpoet-email-editor__personalization-tags-link'>${__(
+)}</a> | <a data-link-href="[mailpoet/subscription-manage-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">${__(
   'Manage subscription',
   'mailpoet',
 )}</a>`;
@@ -89,7 +89,7 @@ export const emailValidationRule: EmailContentValidationRule = {
               content: `
                 ${editedTemplateContent}
                 <!-- wp:paragraph {"align":"center","fontSize":"small"} -->
-                ${contentLink}
+                <p class="has-text-align-center has-small-font-size">${contentLink}</p>
                 <!-- /wp:paragraph -->
               `,
             },
