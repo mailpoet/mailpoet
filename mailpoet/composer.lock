@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b73cbe6e754dab9edefc9b33aeb0870",
+    "content-hash": "1e18c3080579a155f8fc71886feef435",
     "packages": [
         {
             "name": "automattic/jetpack-autoloader",
@@ -285,16 +285,16 @@
         },
         {
             "name": "woocommerce/email-editor",
-            "version": "2.2.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/email-editor.git",
-                "reference": "02dd391e4a07c4ca4f94ea00757549f61536628b"
+                "reference": "87d530f3befffb8807a9c505eb4d324dec07a6b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/woocommerce/email-editor/zipball/02dd391e4a07c4ca4f94ea00757549f61536628b",
-                "reference": "02dd391e4a07c4ca4f94ea00757549f61536628b",
+                "url": "https://api.github.com/repos/woocommerce/email-editor/zipball/87d530f3befffb8807a9c505eb4d324dec07a6b3",
+                "reference": "87d530f3befffb8807a9c505eb4d324dec07a6b3",
                 "shasum": ""
             },
             "require": {
@@ -336,9 +336,9 @@
             ],
             "description": "Email editor based on WordPress Gutenberg package.",
             "support": {
-                "source": "https://github.com/woocommerce/email-editor/tree/2.2.0"
+                "source": "https://github.com/woocommerce/email-editor/tree/2.5.0"
             },
-            "time": "2025-12-15T22:30:20+00:00"
+            "time": "2026-01-29T08:06:11+00:00"
         }
     ],
     "packages-dev": [
@@ -8425,7 +8425,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

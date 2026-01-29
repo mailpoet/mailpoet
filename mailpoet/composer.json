@@ -6,7 +6,7 @@
     "dragonmantank/cron-expression": "^3.3",
     "mixpanel/mixpanel-php": "2.*",
     "woocommerce/action-scheduler": "3.9.2",
-    "woocommerce/email-editor": "2.2.0"
+    "woocommerce/email-editor": "2.5.0"
   },
   "require-dev": {
     "ext-gd": "*",
