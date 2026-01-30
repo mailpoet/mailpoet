@@ -6,7 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\DBCollationChecker;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceNumberOfReviews implements Filter {
@@ -57,7 +56,7 @@ class WooCommerceNumberOfReviews implements Filter {
       AND comments.comment_type = 'review'";
 
     if (!$isAllTime) {
-      $date = Carbon::now()->subDays($days);
+      $date = $this->filterHelper->getDateNDaysAgo($days);
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $joinCondition .= " AND comments.comment_date >= :$dateParam";
       $queryBuilder->setParameter($dateParam, $date->toDateTimeString());

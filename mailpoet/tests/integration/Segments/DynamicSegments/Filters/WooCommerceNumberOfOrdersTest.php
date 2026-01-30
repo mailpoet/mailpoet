@@ -137,6 +137,16 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['customer-with-coupon-order@example.com'], $emails);
   }
 
+  public function testItWorksWithVeryLargeDaysValue(): void {
+    $customerId = $this->tester->createCustomer('customer@example.com');
+    $this->createOrder($customerId, Carbon::now()->subDays(5));
+
+    $segmentFilterData = $this->getSegmentFilterData('>', 0, 999999999);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+
+    $this->assertEqualsCanonicalizing(['customer@example.com'], $emails);
+  }
+
   private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days, $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, $action = WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, $action, [
       'number_of_orders_type' => $comparisonType,

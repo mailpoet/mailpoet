@@ -6,7 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -68,7 +67,7 @@ class WooCommerceUsedCouponCode implements Filter {
     if (!$isAllTime) {
       /** @var int $days */
       $days = $filterData->getParam('days');
-      $date = Carbon::now()->subDays($days);
+      $date = $this->filterHelper->getDateNDaysAgo(intval($days));
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
         ->setParameter($dateParam, $date->toDateTimeString());

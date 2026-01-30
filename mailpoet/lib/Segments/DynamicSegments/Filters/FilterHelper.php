@@ -6,10 +6,18 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\Security;
+use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class FilterHelper {
+  /**
+   * Minimum valid year for MySQL DATE/DATETIME fields.
+   * Used to clamp dates when subtracting large day values to prevent negative dates.
+   */
+  private const MIN_DATE_YEAR = 1000;
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -80,5 +88,29 @@ class FilterHelper {
     if ($days < 1) {
       throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
     }
+  }
+
+  /**
+   * Get a date by subtracting days from now, clamped to a minimum valid date.
+   * This prevents negative dates when users set very large day values,
+   * which can cause errors on some database engines like MySQL.
+   *
+   * @param int $days Number of days to subtract from current date
+   * @return Carbon The calculated date, clamped to minimum 1000-01-01
+   */
+  public function getDateNDaysAgo(int $days): Carbon {
+    return Carbon::now()->subDays($days)->max(Carbon::createFromDate(self::MIN_DATE_YEAR, 1, 1));
+  }
+
+  /**
+   * Get an immutable date by subtracting days from now, clamped to a minimum valid date.
+   * This prevents negative dates when users set very large day values,
+   * which can cause errors on some database engines like MySQL.
+   *
+   * @param int $days Number of days to subtract from current date
+   * @return CarbonImmutable The calculated date, clamped to minimum 1000-01-01
+   */
+  public function getDateNDaysAgoImmutable(int $days): CarbonImmutable {
+    return CarbonImmutable::now()->subDays($days)->max(CarbonImmutable::createFromDate(self::MIN_DATE_YEAR, 1, 1));
   }
 }

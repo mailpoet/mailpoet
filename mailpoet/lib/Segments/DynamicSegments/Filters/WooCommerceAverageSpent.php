@@ -4,7 +4,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceAverageSpent implements Filter {
@@ -36,7 +35,7 @@ class WooCommerceAverageSpent implements Filter {
       /** @var int $days */
       $days = $filterData->getParam('days');
       $days = intval($days);
-      $date = Carbon::now()->subDays($days);
+      $date = $this->filterHelper->getDateNDaysAgo($days);
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder
         ->andWhere("$orderStatsAlias.date_created >= :$dateParam")

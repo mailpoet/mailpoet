@@ -8,7 +8,6 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Util\Security;
-use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -19,14 +18,20 @@ class EmailOpensAbsoluteCountAction implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var FilterHelper */
+  private $filterHelper;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    FilterHelper $filterHelper
   ) {
     $this->entityManager = $entityManager;
+    $this->filterHelper = $filterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
+    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
     $days = $filterData->getParam('days');
     $operator = $filterData->getParam('operator');
     $action = $filterData->getAction();
@@ -49,7 +54,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
         'opens',
         "{$subscribersTable}.id = opens.subscriber_id AND opens.created_at > :newer{$parameterSuffix} AND opens.user_agent_type = :userAgentType{$parameterSuffix}"
       );
-      $queryBuilder->setParameter('newer' . $parameterSuffix, CarbonImmutable::now()->subDays($days)->startOfDay());
+      $queryBuilder->setParameter('newer' . $parameterSuffix, $this->filterHelper->getDateNDaysAgoImmutable(intval($days))->startOfDay());
     }
 
     $queryBuilder->groupBy("$subscribersTable.id");

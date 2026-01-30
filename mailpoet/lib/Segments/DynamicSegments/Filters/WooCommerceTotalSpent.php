@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Util\Security;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceTotalSpent implements Filter {
@@ -14,10 +13,15 @@ class WooCommerceTotalSpent implements Filter {
   /** @var WooFilterHelper */
   private $wooFilterHelper;
 
+  /** @var FilterHelper */
+  private $filterHelper;
+
   public function __construct(
-    WooFilterHelper $wooFilterHelper
+    WooFilterHelper $wooFilterHelper,
+    FilterHelper $filterHelper
   ) {
     $this->wooFilterHelper = $wooFilterHelper;
+    $this->filterHelper = $filterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -30,8 +34,9 @@ class WooCommerceTotalSpent implements Filter {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
 
     if (!$isAllTime) {
+      /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
       $days = $filterData->getParam('days');
-      $date = Carbon::now()->subDays($days);
+      $date = $this->filterHelper->getDateNDaysAgo(intval($days));
       $dateParam = "date_$parameterSuffix";
       $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
         ->setParameter($dateParam, $date->toDateTimeString());

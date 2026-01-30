@@ -58,7 +58,7 @@ class WooCommerceUsedShippingMethod implements Filter {
     $this->filterHelper->validateDaysPeriodData((array)$data);
 
     $excludedStatuses = $this->wooFilterHelper->defaultExcludedStatuses();
-    $date = is_int($days) ? Carbon::now()->subDays($days) : Carbon::now();
+    $date = is_int($days) ? $this->filterHelper->getDateNDaysAgo($days) : Carbon::now();
 
     switch ($operator) {
       case DynamicSegmentFilterData::OPERATOR_ANY:

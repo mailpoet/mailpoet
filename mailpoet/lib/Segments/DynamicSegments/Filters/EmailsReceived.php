@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
-use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -40,7 +39,7 @@ class EmailsReceived implements Filter {
       $days = $filterData->getIntParam('days');
       $dateParam = $this->filterHelper->getUniqueParameterName('days');
       $queryBuilder->leftJoin($subscribersTable, $statsTable, 'emails', "{$subscribersTable}.id = emails.subscriber_id AND emails.sent_at >= :$dateParam");
-      $queryBuilder->setParameter($dateParam, CarbonImmutable::now()->subDays($days)->startOfDay());
+      $queryBuilder->setParameter($dateParam, $this->filterHelper->getDateNDaysAgoImmutable($days)->startOfDay());
     }
 
     $queryBuilder->groupBy("$subscribersTable.id");

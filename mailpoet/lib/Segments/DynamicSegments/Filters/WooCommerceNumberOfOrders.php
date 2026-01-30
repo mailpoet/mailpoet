@@ -7,7 +7,6 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -30,14 +29,19 @@ class WooCommerceNumberOfOrders implements Filter {
   /** @var WooFilterHelper */
   private $wooFilterHelper;
 
+  /** @var FilterHelper */
+  private $filterHelper;
+
   public function __construct(
     EntityManager $entityManager,
     DBCollationChecker $collationChecker,
-    WooFilterHelper $wooFilterHelper
+    WooFilterHelper $wooFilterHelper,
+    FilterHelper $filterHelper
   ) {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
     $this->wooFilterHelper = $wooFilterHelper;
+    $this->filterHelper = $filterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -59,8 +63,9 @@ class WooCommerceNumberOfOrders implements Filter {
       'email'
     );
 
+    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
     $days = $filterData->getParam('days');
-    $date = Carbon::now()->subDays($days);
+    $date = $this->filterHelper->getDateNDaysAgo(intval($days));
 
     $joinCondition = $isAllTime
       ? 'customer.customer_id = orderStats.customer_id AND orderStats.status NOT IN (:excludedStatuses' . $parameterSuffix . ')'

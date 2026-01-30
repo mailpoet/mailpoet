@@ -16,6 +16,15 @@ class DateFilterHelper {
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
+  /** @var FilterHelper */
+  private $filterHelper;
+
+  public function __construct(
+    FilterHelper $filterHelper
+  ) {
+    $this->filterHelper = $filterHelper;
+  }
+
   public function getValidOperators(): array {
     return array_merge(
       $this->getAbsoluteDateOperators(),
@@ -48,7 +57,7 @@ class DateFilterHelper {
         throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
       }
     } else if (in_array($operator, self::getRelativeDateOperators())) {
-      $carbon = CarbonImmutable::now()->subDays(intval($value) - 1);
+      $carbon = $this->filterHelper->getDateNDaysAgoImmutable(intval($value) - 1);
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
