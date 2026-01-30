@@ -34,7 +34,7 @@ class WinBackCustomerPattern extends Pattern {
       sprintf(__('Hi %s, come see what’s new — we’ve added fresh arrivals and exclusive deals just for you.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:paragraph -->
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
       /* translators: %s: Site description personalization tag */
       __('Use this code at checkout to redeem your discount:', 'mailpoet') . '</p>
@@ -47,7 +47,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:buttons {"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
       <div class="wp-block-buttons" style="padding-bottom:var(--wp--preset--spacing--30)">
       <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Start shopping', 'mailpoet') . '</a></div>
+      <div class="wp-block-button"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Start shopping', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
@@ -79,7 +79,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100 has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
@@ -102,7 +102,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100 has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
@@ -129,7 +129,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100 has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
@@ -152,7 +152,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100 has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
