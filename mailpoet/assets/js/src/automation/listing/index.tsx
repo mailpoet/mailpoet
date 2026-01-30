@@ -100,7 +100,7 @@ export function AutomationListing(): JSX.Element {
       },
       {
         name: AutomationStatus.DRAFT,
-        title: _x('Draft', 'noun', 'mailpoet'),
+        title: _x('Inactive', 'noun', 'mailpoet'),
         className: 'mailpoet-tab-draft',
       },
       {

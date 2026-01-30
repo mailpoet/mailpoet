@@ -38,7 +38,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
 
@@ -80,7 +80,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('[aria-label="Close Settings"]', '.editor-sidebar__panel-tabs'); // Close the side panel as it obstructs the view of the save and continue button.
     $i->see('Save and continue');
     $i->click('[data-automation-id="email_editor_send_button"]'); // Save and continue button.
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
 
     $i->wantTo('Activate the automation');
     $i->click('Activate');
@@ -129,7 +129,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
 

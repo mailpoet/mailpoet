@@ -35,7 +35,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
@@ -54,7 +54,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->waitForText('Design');
     $i->click('Save and continue');
 
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
 
     $i->click('Send email');
     $i->click('Reply to');

@@ -33,7 +33,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
@@ -51,7 +51,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->amOnMailpoetPage('Automation');
     $i->waitForText('Automations');
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-automation-editor&id=' . $automationId);
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->waitForText('Move to Trash');
     $i->waitForText('New email subscriber added');
     $i->waitForText('Wait for 5 minutes');

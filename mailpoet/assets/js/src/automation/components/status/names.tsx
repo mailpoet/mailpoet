@@ -8,7 +8,7 @@ type NamesProps = {
 export const automationStatusNames: NamesProps = {
   [AutomationStatus.ACTIVE]: __('Active', 'mailpoet'),
   [AutomationStatus.DEACTIVATING]: __('Deactivating', 'mailpoet'),
-  [AutomationStatus.DRAFT]: __('Draft', 'mailpoet'),
+  [AutomationStatus.DRAFT]: __('Inactive', 'mailpoet'),
   [AutomationStatus.TRASH]: __('In trash', 'mailpoet'),
 };
 

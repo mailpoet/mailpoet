@@ -42,7 +42,7 @@ class AutomationListingCest {
     $i->waitForText('Automations');
     $i->waitForText('All');
     $i->waitForText('Active');
-    $i->waitForText('Draft');
+    $i->waitForText('Inactive');
     $i->waitForText('Trash');
     $i->waitForText('Test Automation 1');
     $i->waitForText('Test Automation 2');
@@ -56,7 +56,7 @@ class AutomationListingCest {
     $i->see('Entered 0', $automation1row);
     $i->see('Processing 0', $automation1row);
     $i->see('Exited 0', $automation1row);
-    $i->see('Draft', $automation1row);
+    $i->see('Inactive', $automation1row);
     $i->see('Analytics', $automation1row);
     $i->see('Edit', $automation1row);
 
