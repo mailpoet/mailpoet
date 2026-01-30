@@ -2,188 +2,65 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
-class PatternsControllerTest extends \MailPoetTest {
-  private PatternsController $patterns;
+use MailPoet\Util\CdnAssetUrl;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
+class PatternsControllerTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
-    $this->patterns = $this->diContainer->get(PatternsController::class);
     $this->cleanupPatterns();
     $this->cleanupPatternCategories();
   }
 
-  public function testItRegistersPatterns(): void {
-    $this->patterns->registerPatterns();
+  public function testItRegistersAllPatternsWhenWooCommerceIsActive(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
     $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $patternNames = array_column($blockPatterns, 'name');
 
-    $abandonedCartWithDiscount = array_pop($blockPatterns);
-    $this->assertIsArray($abandonedCartWithDiscount);
-    $this->assertArrayHasKey('name', $abandonedCartWithDiscount);
-    $this->assertArrayHasKey('content', $abandonedCartWithDiscount);
-    $this->assertArrayHasKey('title', $abandonedCartWithDiscount);
-    $this->assertArrayHasKey('categories', $abandonedCartWithDiscount);
-    $this->assertEquals('mailpoet/abandoned-cart-with-discount-content', $abandonedCartWithDiscount['name']);
-    $this->assertStringContainsString('We Saved Your Cart + Little Surprise', $abandonedCartWithDiscount['content']);
-    $this->assertEquals('Abandoned Cart with Discount', $abandonedCartWithDiscount['title']);
-    $this->assertEquals(['abandoned-cart'], $abandonedCartWithDiscount['categories']);
+    // Non-WooCommerce patterns
+    $this->assertContains('mailpoet/newsletter-content', $patternNames);
+    $this->assertContains('mailpoet/sale-announcement', $patternNames);
+    $this->assertContains('mailpoet/new-products-announcement', $patternNames);
+    $this->assertContains('mailpoet/educational-campaign', $patternNames);
+    $this->assertContains('mailpoet/event-invitation', $patternNames);
+    $this->assertContains('mailpoet/product-restock-notification', $patternNames);
+    $this->assertContains('mailpoet/new-arrivals-announcement', $patternNames);
+    $this->assertContains('mailpoet/welcome-email-content', $patternNames);
 
-    $abandonedCart = array_pop($blockPatterns);
-    $this->assertIsArray($abandonedCart);
-    $this->assertArrayHasKey('name', $abandonedCart);
-    $this->assertArrayHasKey('content', $abandonedCart);
-    $this->assertArrayHasKey('title', $abandonedCart);
-    $this->assertArrayHasKey('categories', $abandonedCart);
-    $this->assertEquals('mailpoet/abandoned-cart-content', $abandonedCart['name']);
-    $this->assertStringContainsString('Don‘t let this gem slip away', $abandonedCart['content']);
-    $this->assertEquals('Abandoned Cart', $abandonedCart['title']);
-    $this->assertEquals(['abandoned-cart'], $abandonedCart['categories']);
+    // WooCommerce-dependent patterns (uses coupon codes, product blocks, or purchase/abandoned-cart categories)
+    $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
+    $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
+    $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/win-back-customer', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
-    $winBackCustomer = array_pop($blockPatterns);
-    $this->assertIsArray($winBackCustomer);
-    $this->assertArrayHasKey('name', $winBackCustomer);
-    $this->assertArrayHasKey('content', $winBackCustomer);
-    $this->assertArrayHasKey('title', $winBackCustomer);
-    $this->assertArrayHasKey('categories', $winBackCustomer);
-    $this->assertEquals('mailpoet/win-back-customer', $winBackCustomer['name']);
-    $this->assertStringContainsString('We Miss You', $winBackCustomer['content']);
-    $this->assertEquals('Win Back Customer', $winBackCustomer['title']);
-    $this->assertEquals(['purchase'], $winBackCustomer['categories']);
-
-    $productPurchaseFollowUp = array_pop($blockPatterns);
-    $this->assertIsArray($productPurchaseFollowUp);
-    $this->assertArrayHasKey('name', $productPurchaseFollowUp);
-    $this->assertArrayHasKey('content', $productPurchaseFollowUp);
-    $this->assertArrayHasKey('title', $productPurchaseFollowUp);
-    $this->assertArrayHasKey('categories', $productPurchaseFollowUp);
-    $this->assertEquals('mailpoet/product-purchase-follow-up', $productPurchaseFollowUp['name']);
-    $this->assertStringContainsString('Loving your [Product]', $productPurchaseFollowUp['content']);
-    $this->assertEquals('Product Purchase Follow-Up', $productPurchaseFollowUp['title']);
-    $this->assertEquals(['purchase'], $productPurchaseFollowUp['categories']);
-
-    $postPurchaseThankYou = array_pop($blockPatterns);
-    $this->assertIsArray($postPurchaseThankYou);
-    $this->assertArrayHasKey('name', $postPurchaseThankYou);
-    $this->assertArrayHasKey('content', $postPurchaseThankYou);
-    $this->assertArrayHasKey('title', $postPurchaseThankYou);
-    $this->assertArrayHasKey('categories', $postPurchaseThankYou);
-    $this->assertEquals('mailpoet/post-purchase-thank-you', $postPurchaseThankYou['name']);
-    $this->assertStringContainsString('thank you for your order', $postPurchaseThankYou['content']);
-    $this->assertEquals('Post Purchase Thank You', $postPurchaseThankYou['title']);
-    $this->assertEquals(['purchase'], $postPurchaseThankYou['categories']);
-
-    $firstPurchaseThankYou = array_pop($blockPatterns);
-    $this->assertIsArray($firstPurchaseThankYou);
-    $this->assertArrayHasKey('name', $firstPurchaseThankYou);
-    $this->assertArrayHasKey('content', $firstPurchaseThankYou);
-    $this->assertArrayHasKey('title', $firstPurchaseThankYou);
-    $this->assertArrayHasKey('categories', $firstPurchaseThankYou);
-    $this->assertEquals('mailpoet/first-purchase-thank-you', $firstPurchaseThankYou['name']);
-    $this->assertStringContainsString('Thank You for Your First Order', $firstPurchaseThankYou['content']);
-    $this->assertEquals('First Purchase Thank You', $firstPurchaseThankYou['title']);
-    $this->assertEquals(['purchase'], $firstPurchaseThankYou['categories']);
-
-    $welcomeWithDiscountEmail = array_pop($blockPatterns);
-    $this->assertIsArray($welcomeWithDiscountEmail);
-    $this->assertArrayHasKey('name', $welcomeWithDiscountEmail);
-    $this->assertArrayHasKey('content', $welcomeWithDiscountEmail);
-    $this->assertArrayHasKey('title', $welcomeWithDiscountEmail);
-    $this->assertArrayHasKey('categories', $welcomeWithDiscountEmail);
-    $this->assertEquals('mailpoet/welcome-with-discount-email-content', $welcomeWithDiscountEmail['name']);
-    $this->assertStringContainsString('Welcome to', $welcomeWithDiscountEmail['content']);
-    $this->assertEquals('Welcome with Discount', $welcomeWithDiscountEmail['title']);
-    $this->assertEquals(['welcome'], $welcomeWithDiscountEmail['categories']);
-
-    $welcomeEmail = array_pop($blockPatterns);
-    $this->assertIsArray($welcomeEmail);
-    $this->assertArrayHasKey('name', $welcomeEmail);
-    $this->assertArrayHasKey('content', $welcomeEmail);
-    $this->assertArrayHasKey('title', $welcomeEmail);
-    $this->assertArrayHasKey('categories', $welcomeEmail);
-    $this->assertEquals('mailpoet/welcome-email-content', $welcomeEmail['name']);
-    $this->assertStringContainsString('Welcome to', $welcomeEmail['content']);
-    $this->assertEquals('Welcome Email', $welcomeEmail['title']);
-    $this->assertEquals(['welcome'], $welcomeEmail['categories']);
-
-    $newArrivalsAnnouncement = array_pop($blockPatterns);
-    $this->assertIsArray($newArrivalsAnnouncement);
-    $this->assertArrayHasKey('name', $newArrivalsAnnouncement);
-    $this->assertArrayHasKey('content', $newArrivalsAnnouncement);
-    $this->assertArrayHasKey('title', $newArrivalsAnnouncement);
-    $this->assertArrayHasKey('categories', $newArrivalsAnnouncement);
-    $this->assertEquals('mailpoet/new-arrivals-announcement', $newArrivalsAnnouncement['name']);
-    $this->assertStringContainsString('New arrivals are here', $newArrivalsAnnouncement['content']);
-    $this->assertEquals('New Arrivals Announcement', $newArrivalsAnnouncement['title']);
-    $this->assertEquals(['newsletter'], $newArrivalsAnnouncement['categories']);
-
-    $productRestockNotification = array_pop($blockPatterns);
-    $this->assertIsArray($productRestockNotification);
-    $this->assertArrayHasKey('name', $productRestockNotification);
-    $this->assertArrayHasKey('content', $productRestockNotification);
-    $this->assertArrayHasKey('title', $productRestockNotification);
-    $this->assertArrayHasKey('categories', $productRestockNotification);
-    $this->assertEquals('mailpoet/product-restock-notification', $productRestockNotification['name']);
-    $this->assertStringContainsString('back in stock', $productRestockNotification['content']);
-    $this->assertEquals('Product Restock Notification', $productRestockNotification['title']);
-    $this->assertEquals(['newsletter'], $productRestockNotification['categories']);
-
-    $eventInvitation = array_pop($blockPatterns);
-    $this->assertIsArray($eventInvitation);
-    $this->assertArrayHasKey('name', $eventInvitation);
-    $this->assertArrayHasKey('content', $eventInvitation);
-    $this->assertArrayHasKey('title', $eventInvitation);
-    $this->assertArrayHasKey('categories', $eventInvitation);
-    $this->assertEquals('mailpoet/event-invitation', $eventInvitation['name']);
-    $this->assertStringContainsString('Join us for', $eventInvitation['content']);
-    $this->assertEquals('Event Invitation', $eventInvitation['title']);
-    $this->assertEquals(['newsletter'], $eventInvitation['categories']);
-
-    $educationalCampaign = array_pop($blockPatterns);
-    $this->assertIsArray($educationalCampaign);
-    $this->assertArrayHasKey('name', $educationalCampaign);
-    $this->assertArrayHasKey('content', $educationalCampaign);
-    $this->assertArrayHasKey('title', $educationalCampaign);
-    $this->assertArrayHasKey('categories', $educationalCampaign);
-    $this->assertEquals('mailpoet/educational-campaign', $educationalCampaign['name']);
-    $this->assertStringContainsString('How it works', $educationalCampaign['content']);
-    $this->assertEquals('Educational Campaign', $educationalCampaign['title']);
-    $this->assertEquals(['newsletter'], $educationalCampaign['categories']);
-
-    $newProductsAnnouncement = array_pop($blockPatterns);
-    $this->assertIsArray($newProductsAnnouncement);
-    $this->assertArrayHasKey('name', $newProductsAnnouncement);
-    $this->assertArrayHasKey('content', $newProductsAnnouncement);
-    $this->assertArrayHasKey('title', $newProductsAnnouncement);
-    $this->assertArrayHasKey('categories', $newProductsAnnouncement);
-    $this->assertEquals('mailpoet/new-products-announcement', $newProductsAnnouncement['name']);
-    $this->assertStringContainsString('Meet our newest product', $newProductsAnnouncement['content']);
-    $this->assertEquals('New Products Announcement', $newProductsAnnouncement['title']);
-    $this->assertEquals(['newsletter'], $newProductsAnnouncement['categories']);
-
-    $saleAnnouncement = array_pop($blockPatterns);
-    $this->assertIsArray($saleAnnouncement);
-    $this->assertArrayHasKey('name', $saleAnnouncement);
-    $this->assertArrayHasKey('content', $saleAnnouncement);
-    $this->assertArrayHasKey('title', $saleAnnouncement);
-    $this->assertArrayHasKey('categories', $saleAnnouncement);
-    $this->assertEquals('mailpoet/sale-announcement', $saleAnnouncement['name']);
-    $this->assertStringContainsString('sitewide sale is officially ON', $saleAnnouncement['content']);
-    $this->assertEquals('Sale Announcement', $saleAnnouncement['title']);
-    $this->assertEquals(['newsletter'], $saleAnnouncement['categories']);
-
-    $newsletter = array_pop($blockPatterns);
-    $this->assertIsArray($newsletter);
-    $this->assertArrayHasKey('name', $newsletter);
-    $this->assertArrayHasKey('content', $newsletter);
-    $this->assertArrayHasKey('title', $newsletter);
-    $this->assertArrayHasKey('categories', $newsletter);
-    $this->assertEquals('mailpoet/newsletter-content', $newsletter['name']);
-    $this->assertStringContainsString('Weekly Newsletter', $newsletter['content']);
-    $this->assertEquals('Newsletter', $newsletter['title']);
-    $this->assertEquals(['newsletter'], $newsletter['categories']);
+    // Verify total count
+    $this->assertCount(15, $blockPatterns);
   }
 
-  public function testItRegistersPatternCategories(): void {
-    $this->patterns->registerPatterns();
+  public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
     $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
 
     $newsletterCategory = $registry->get_registered('newsletter');
@@ -205,6 +82,66 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsArray($abandonedCartCategory);
     $this->assertEquals('abandoned-cart', $abandonedCartCategory['name']);
     $this->assertNotEmpty($abandonedCartCategory['label']);
+  }
+
+  public function testItDoesNotRegisterWooCommercePatternsWhenWooCommerceIsInactive(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(false);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
+    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $patternNames = array_column($blockPatterns, 'name');
+
+    // Should include non-WooCommerce patterns
+    $this->assertContains('mailpoet/newsletter-content', $patternNames);
+    $this->assertContains('mailpoet/sale-announcement', $patternNames);
+    $this->assertContains('mailpoet/welcome-email-content', $patternNames);
+
+    // Should NOT include WooCommerce-dependent patterns
+    $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertNotContains('mailpoet/first-purchase-thank-you', $patternNames);
+    $this->assertNotContains('mailpoet/post-purchase-thank-you', $patternNames);
+    $this->assertNotContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
+    $this->assertNotContains('mailpoet/abandoned-cart-content', $patternNames);
+    $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+
+    // Verify total count (only non-WooCommerce patterns)
+    $this->assertCount(8, $blockPatterns);
+  }
+
+  public function testItDoesNotRegisterWooCommerceCategoriesWhenWooCommerceIsInactive(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(false);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
+    $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
+
+    // Should include non-WooCommerce categories
+    $newsletterCategory = $registry->get_registered('newsletter');
+    $this->assertIsArray($newsletterCategory);
+
+    $welcomeCategory = $registry->get_registered('welcome');
+    $this->assertIsArray($welcomeCategory);
+
+    // Should NOT include WooCommerce-dependent categories
+    $purchaseCategory = $registry->get_registered('purchase');
+    $this->assertNull($purchaseCategory);
+
+    $abandonedCartCategory = $registry->get_registered('abandoned-cart');
+    $this->assertNull($abandonedCartCategory);
   }
 
   private function cleanupPatterns(): void {

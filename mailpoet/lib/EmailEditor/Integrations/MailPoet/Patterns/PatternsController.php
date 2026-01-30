@@ -18,21 +18,25 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPatt
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeWithDiscountEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WinBackCustomerPattern;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PatternsController {
   private CdnAssetUrl $cdnAssetUrl;
   private WPFunctions $wp;
+  private WooCommerceHelper $wooCommerceHelper;
 
   /** @var Pattern[] */
   private array $patterns = [];
 
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
-    WPFunctions $wp
+    WPFunctions $wp,
+    WooCommerceHelper $wooCommerceHelper
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->wp = $wp;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   /**
@@ -76,14 +80,20 @@ class PatternsController {
       new ProductRestockNotificationPattern($this->cdnAssetUrl),
       new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
       new WelcomeEmailPattern($this->cdnAssetUrl),
-      new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
-      new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
-      new PostPurchaseThankYouPattern($this->cdnAssetUrl),
-      new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
-      new WinBackCustomerPattern($this->cdnAssetUrl),
-      new AbandonedCartPattern($this->cdnAssetUrl),
-      new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
     ];
+
+    // WooCommerce-dependent patterns (uses coupon codes, product blocks, or purchase/abandoned-cart categories)
+    if ($this->wooCommerceHelper->isWooCommerceActive()) {
+      $this->patterns = array_merge($this->patterns, [
+        new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
+        new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
+        new PostPurchaseThankYouPattern($this->cdnAssetUrl),
+        new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
+        new WinBackCustomerPattern($this->cdnAssetUrl),
+        new AbandonedCartPattern($this->cdnAssetUrl),
+        new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
+      ]);
+    }
   }
 
   public function registerPatterns(): void {
@@ -124,17 +134,21 @@ class PatternsController {
         'label' => _x('Welcome', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of welcome email layouts.', 'mailpoet'),
       ],
-      [
+    ];
+
+    // WooCommerce-dependent categories
+    if ($this->wooCommerceHelper->isWooCommerceActive()) {
+      $categories[] = [
         'name' => 'purchase',
         'label' => _x('Post-purchase', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of post-purchase email layouts.', 'mailpoet'),
-      ],
-      [
+      ];
+      $categories[] = [
         'name' => 'abandoned-cart',
         'label' => _x('Abandoned cart', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of abandoned cart email layouts.', 'mailpoet'),
-      ],
-    ];
+      ];
+    }
 
     foreach ($categories as $category) {
       register_block_pattern_category($category['name'], [
