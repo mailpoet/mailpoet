@@ -16,6 +16,7 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testItRegistersAllPatternsWhenWooCommerceIsActive(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.5.0');
 
     $patterns = new PatternsController(
       $this->diContainer->get(CdnAssetUrl::class),
@@ -37,13 +38,15 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/new-arrivals-announcement', $patternNames);
     $this->assertContains('mailpoet/welcome-email-content', $patternNames);
 
-    // WooCommerce-dependent patterns (uses coupon codes, product blocks, or purchase/abandoned-cart categories)
-    $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    // WooCommerce-dependent patterns (uses product blocks or purchase/abandoned-cart categories)
     $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
-    $this->assertContains('mailpoet/win-back-customer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
+
+    // WooCommerce 10.5.0+ patterns (uses coupon block)
+    $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertContains('mailpoet/win-back-customer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
@@ -82,6 +85,76 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsArray($abandonedCartCategory);
     $this->assertEquals('abandoned-cart', $abandonedCartCategory['name']);
     $this->assertNotEmpty($abandonedCartCategory['label']);
+  }
+
+  public function testItDoesNotRegisterCouponPatternsWhenWooCommerceVersionIsBelowMinimum(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.4.0');
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
+    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $patternNames = array_column($blockPatterns, 'name');
+
+    // Should include non-WooCommerce patterns
+    $this->assertContains('mailpoet/newsletter-content', $patternNames);
+    $this->assertContains('mailpoet/welcome-email-content', $patternNames);
+
+    // Should include WooCommerce patterns that don't require coupon block
+    $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
+    $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
+    $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
+
+    // Should NOT include coupon block patterns (require WooCommerce 10.5.0+)
+    $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
+    $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+
+    // Verify total count (all patterns except 3 coupon patterns)
+    $this->assertCount(12, $blockPatterns);
+  }
+
+  /**
+   * @dataProvider dataProviderForWooCommerceVersionsWithCouponSupport
+   */
+  public function testItRegistersCouponPatternsForWooCommerceVersionsWithCouponSupport(string $version): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn($version);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $patterns->registerPatterns();
+    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $patternNames = array_column($blockPatterns, 'name');
+
+    // Coupon block patterns should be registered for WooCommerce 10.5.0+ (including RC/beta)
+    $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertContains('mailpoet/win-back-customer', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+  }
+
+  public function dataProviderForWooCommerceVersionsWithCouponSupport(): array {
+    return [
+      'release version' => ['10.5.0'],
+      'patch version' => ['10.5.1'],
+      'minor version' => ['10.6.0'],
+      'major version' => ['11.0.0'],
+      'rc version' => ['10.5.0-rc.1'],
+      'beta version' => ['10.5.0-beta.1'],
+      'dev version' => ['10.5.0-dev'],
+    ];
   }
 
   public function testItDoesNotRegisterWooCommercePatternsWhenWooCommerceIsInactive(): void {

@@ -22,6 +22,8 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PatternsController {
+  private const MIN_WOOCOMMERCE_VERSION_FOR_COUPON_BLOCK = '10.5.0';
+
   private CdnAssetUrl $cdnAssetUrl;
   private WPFunctions $wp;
   private WooCommerceHelper $wooCommerceHelper;
@@ -82,17 +84,26 @@ class PatternsController {
       new WelcomeEmailPattern($this->cdnAssetUrl),
     ];
 
-    // WooCommerce-dependent patterns (uses coupon codes, product blocks, or purchase/abandoned-cart categories)
+    // WooCommerce-dependent patterns (uses product blocks or purchase/abandoned-cart categories)
     if ($this->wooCommerceHelper->isWooCommerceActive()) {
       $this->patterns = array_merge($this->patterns, [
-        new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
         new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
         new PostPurchaseThankYouPattern($this->cdnAssetUrl),
         new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
-        new WinBackCustomerPattern($this->cdnAssetUrl),
         new AbandonedCartPattern($this->cdnAssetUrl),
-        new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
       ]);
+
+      // Patterns using the coupon block require WooCommerce 10.5.0+
+      $wooCommerceVersion = $this->wooCommerceHelper->getWooCommerceVersion();
+      // Strip pre-release suffixes (e.g., -rc1, -beta1) to ensure RC/beta versions pass the check
+      $wooCommerceVersion = $wooCommerceVersion ? preg_replace('/[^0-9.].*/', '', $wooCommerceVersion) : null;
+      if ($wooCommerceVersion && version_compare($wooCommerceVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_COUPON_BLOCK, '>=')) {
+        $this->patterns = array_merge($this->patterns, [
+          new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
+          new WinBackCustomerPattern($this->cdnAssetUrl),
+          new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
+        ]);
+      }
     }
   }
 
