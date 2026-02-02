@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.20.0 - 2026-02-02 =
+* Added: Filter mailpoet_is_cookie_tracking_enabled allowing control of cookie tracking;
+* Added: Add Welcome with Discount email pattern;
+* Added: "Abandoned Cart" and "Abandoned Cart with Discount" email patterns using WooCommerce Product Collection block;
+* Updated: Block email editor version;
+* Changed: Rename automation status "Draft" to "Inactive" in UI.
+
 = 5.19.0 - 2026-01-26 =
 * Fixed: Exclude guest orders from registered customers sync query;
 * Fixed: Fix wp_title fatal error when confirming subscription.
