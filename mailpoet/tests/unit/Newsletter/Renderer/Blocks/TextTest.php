@@ -238,4 +238,24 @@ class TextTest extends \MailPoetUnitTest {
 
     verify($result)->null();
   }
+
+  public function testInsertLineBreakHandlesElementWithoutParent(): void {
+    $html = '<p>Test paragraph</p>';
+    $dom = $this->parser->parseStr($html);
+    $paragraphs = $dom->query('p');
+    $this->assertInstanceOf(pQuery::class, $paragraphs);
+    $paragraph = $paragraphs[0];
+    $this->assertInstanceOf(DomNode::class, $paragraph);
+
+    // Remove the node (this sets parent to null)
+    $paragraph->remove();
+
+    // "Call to a member function insertChild() on null"
+    $textRenderer = new Text();
+    $result = $textRenderer->insertLineBreak($paragraph);
+
+    // Should return the element unchanged without crashing
+    verify($result)->equals($paragraph);
+    verify($result->parent)->null();
+  }
 }

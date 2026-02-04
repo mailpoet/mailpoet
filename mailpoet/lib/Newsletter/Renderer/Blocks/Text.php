@@ -173,6 +173,7 @@ class Text {
   }
 
   public function insertLineBreak($element) {
+    if (!$element->parent) return $element;
     $element->parent->insertChild(
       [
         'tag_name' => 'br',
