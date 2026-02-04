@@ -25,13 +25,13 @@ class EventInvitationPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Event Name] is a placeholder for the event name */
+      /* translators: [Event Name] is the event name placeholder to translate */
       __('Join us for [Event Name]', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [brief description] is a placeholder for the event description */
+      /* translators: [brief description] is the event description placeholder to translate */
       __("You're invited 🎉 Join us for [brief description] and be part of our exclusive event series.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 

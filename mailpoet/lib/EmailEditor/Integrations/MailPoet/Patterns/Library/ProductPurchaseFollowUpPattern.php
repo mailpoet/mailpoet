@@ -26,7 +26,7 @@ class ProductPurchaseFollowUpPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Product] is a placeholder for the product category */
+      /* translators: [Product] is the product category placeholder to translate */
       __('Loving your [Product]? Make it even better', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 

@@ -26,13 +26,13 @@ class EducationalCampaignPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Product Name] is a placeholder for the product name */
+      /* translators: [Product Name] is the product name placeholder to translate */
       __('How to Get the Most from [Product Name]', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [product] is a placeholder for the product name */
+      /* translators: [product] is the product name placeholder to translate */
       __('Our latest guide walks you through expert tips to make the most out of your [product].', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
@@ -58,7 +58,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
+      /* translators: [Brief description] is the step description placeholder to translate */
       __('[Brief description]', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
@@ -80,7 +80,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
+      /* translators: [Brief description] is the step description placeholder to translate */
       __('[Brief description]', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
@@ -117,7 +117,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
+      /* translators: [Brief description] is the step description placeholder to translate */
       __('[Brief description]', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>

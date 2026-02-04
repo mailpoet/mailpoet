@@ -30,7 +30,7 @@ class NewArrivalsAnnouncementPattern extends Pattern {
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [product category] is a placeholder for the product category */
+      /* translators: [product category] is the product category placeholder to translate */
       __("Explore our latest collection featuring [product category]. It's designed to inspire and elevate.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 

@@ -25,7 +25,7 @@ class ProductRestockNotificationPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Product Name] is a placeholder for the product name */
+      /* translators: [Product Name] is the product name placeholder to translate */
       __('[Product Name] Is back in stock!', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
