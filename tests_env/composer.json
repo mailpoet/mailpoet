@@ -9,7 +9,7 @@
     "codeception/verify": "^2.1",
     "hoa/console": "3.17.05.02",
     "lucatume/wp-browser": "3.2.1",
-    "phpunit/phpunit": "9.6.19",
+    "phpunit/phpunit": "9.6.33",
     "vlucas/phpdotenv": "v5.6.0"
   },
   "config": {
