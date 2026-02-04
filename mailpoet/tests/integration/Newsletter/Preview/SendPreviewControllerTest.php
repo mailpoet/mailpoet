@@ -92,7 +92,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
       $shortcodes,
-      $this->diContainer->get(PersonalizationTagManager::class)
+      $this->diContainer->get(PersonalizationTagManager::class),
+      $this->diContainer->get(WooCommerceDummyData::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -124,7 +125,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(PersonalizationTagManager::class)
+      $this->diContainer->get(PersonalizationTagManager::class),
+      $this->diContainer->get(WooCommerceDummyData::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
