@@ -45,9 +45,29 @@ class PersonalizationTagManager {
   }
 
   /**
-   * Re-extend WooCommerce tags with current automation context.
+   * Extend personalization tags for a specific post.
+   * Called via woocommerce_email_editor_personalization_tags_for_post action.
    *
-   * @return void
+   * @param int|string $postId The WordPress post ID
+   */
+  public function extendPersonalizationTagsForPost($postId): void {
+    $postId = (int)$postId;
+
+    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
+    if (!$newsletter || (!$newsletter->isAutomation() && !$newsletter->isAutomationTransactional())) {
+      return;
+    }
+
+    $automationId = $newsletter->getOptionValue('automationId');
+    if ($automationId) {
+      $this->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
+    }
+  }
+
+  /**
+   * Extend WooCommerce tags with current automation context.
+   *
+   * @param int $automationId The automation ID
    */
   public function extendPersonalizationTagsByAutomationSubjects(int $automationId): void {
     $registry = Email_Editor_Container::container()->get(
@@ -60,55 +80,9 @@ class PersonalizationTagManager {
     $this->wp->applyFilters('mailpoet_automation_email_extend_personalization_tags', $registry, $availableSubjects);
   }
 
-  /**
-   * Extend tags for REST API requests to personalization tags endpoint.
-   * This is necessary because the registry is initialized early and preloading fetches from it immediately.
-   *
-   * @return void
-   */
-  public function maybeExtendTagsForRestRequest(): void {
-    $this->wp->addFilter('rest_pre_dispatch', function($result, $_server, $request) {
-      $route = $request->get_route();
-
-      // Only process personalization tags endpoints
-      if (strpos($route, '/woocommerce-email-editor/v1/personalization_tags') === false) {
-        return $result;
-      }
-
-      // Try to get post ID from referer
-      $postId = null;
-      if (isset($_SERVER['HTTP_REFERER'])) {
-        $referer = sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER']));
-        $queryString = $this->wp->wpParseUrl($referer, PHP_URL_QUERY);
-        if ($queryString) {
-          parse_str($queryString, $params);
-          if (isset($params['post'])) {
-            $postId = (int)$params['post'];
-          }
-        }
-      }
-
-      if (!$postId) {
-        return $result;
-      }
-
-      $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
-      if (!$newsletter || (!$newsletter->isAutomation() && !$newsletter->isAutomationTransactional())) {
-        return $result;
-      }
-
-      $automationId = $newsletter->getOptionValue('automationId');
-      if ($automationId) {
-        $this->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
-      }
-
-      return $result;
-    }, 10, 3);
-  }
-
   public function initialize() {
-    // Extend tags for REST API requests (needed for preloading and dynamic fetching)
-    $this->wp->addAction('rest_api_init', [$this, 'maybeExtendTagsForRestRequest']);
+    // Extend tags when WooCommerce Email Editor requests personalization tags for a specific post
+    $this->wp->addAction('woocommerce_email_editor_personalization_tags_for_post', [$this, 'extendPersonalizationTagsForPost']);
 
     $this->wp->addFilter('woocommerce_email_editor_register_personalization_tags', function( Personalization_Tags_Registry $registry ): Personalization_Tags_Registry {
       // Subscriber Personalization Tags
@@ -266,32 +240,44 @@ class PersonalizationTagManager {
   }
 
   /**
+   * Get the category to subjects mapping for filtering tags.
+   * This mapping defines which automation subjects are required for each tag category.
+   *
+   * @return array<string, string[]> Map of category names to required subject keys
+   */
+  private function getCategoryToSubjectsMapping(): array {
+    $mapping = [
+      'Order' => ['woocommerce:order'],
+      'Customer' => ['woocommerce:customer'],
+      'Store' => [], // Always available (no subjects required)
+    ];
+
+    /**
+     * Filter the category to subjects mapping for personalization tag filtering.
+     * This allows extensions (like MailPoet Premium) to add their own category mappings.
+     *
+     * @param array<string, string[]> $mapping Map of category names to required subject keys
+     */
+    $filtered = $this->wp->applyFilters('mailpoet_personalization_tags_category_subjects_mapping', $mapping);
+    return is_array($filtered) ? $filtered : $mapping;
+  }
+
+  /**
    * Determine if a tag category should be extended to MailPoet emails.
    * This checks if the required subjects are available for the current automation.
    *
    * @param string $category The tag category (e.g., 'Order', 'Customer', 'Site')
-   * @param string[]|null $availableSubjects Available subject keys, or null if no automation context
+   * @param string[] $availableSubjects Available subject keys
    * @return bool Whether to extend tags in this category
    */
-  private function shouldExtendTagCategory(string $category, ?array $availableSubjects): bool {
-    // Map categories to required subjects
-    /** @var array<string, string[]> $categoryToSubjects */
-    $categoryToSubjects = [
-      'Order' => ['woocommerce:order'],
-      'Customer' => ['woocommerce:customer'],
-      'Store' => [], // Always available
-    ];
+  private function shouldExtendTagCategory(string $category, array $availableSubjects): bool {
+    $categoryToSubjects = $this->getCategoryToSubjectsMapping();
 
     $requiredSubjects = $categoryToSubjects[$category] ?? [];
 
     // If no subjects required (e.g., Store), always extend
     if (empty($requiredSubjects)) {
       return true;
-    }
-
-    // If no automation context (not in automation email), don't extend subject-dependent tags
-    if ($availableSubjects === null) {
-      return false;
     }
 
     // Check if at least one required subject is available

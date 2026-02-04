@@ -44,8 +44,6 @@ class EditorPageRenderer {
 
   private Analytics $analytics;
 
-  private PersonalizationTagManager $personalizationTagManager;
-
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -55,8 +53,7 @@ class EditorPageRenderer {
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository,
     UserFlagsController $userFlagsController,
-    Analytics $analytics,
-    PersonalizationTagManager $personalizationTagManager
+    Analytics $analytics
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -70,7 +67,6 @@ class EditorPageRenderer {
     $this->newslettersRepository = $newslettersRepository;
     $this->userFlagsController = $userFlagsController;
     $this->analytics = $analytics;
-    $this->personalizationTagManager = $personalizationTagManager;
   }
 
   public function render() {
@@ -150,10 +146,6 @@ class EditorPageRenderer {
 
     $isAutomationNewsletter = $newsletter->isAutomation() || $newsletter->isAutomationTransactional();
     $automationId = $newsletter->getOptionValue('automationId');
-
-    if ($isAutomationNewsletter && $automationId) {
-      $this->personalizationTagManager->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
-    }
 
     $listingUrl = 'page=mailpoet-newsletters';
     $sendUrl = 'page=mailpoet-newsletters#/send/' . $newsletter->getId();
@@ -253,6 +245,14 @@ class EditorPageRenderer {
       $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
     } else {
       $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent';
+    }
+
+    // Preload personalization tags for automation emails
+    // Note: The registry is already extended in render() before preloading.
+    // We include post_id to match the WooCommerce Email Editor's request URL.
+    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $post->ID]);
+    if ($newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional())) {
+      $routes[] = '/woocommerce-email-editor/v1/personalization_tags?context=view&per_page=-1&post_id=' . intval($post->ID);
     }
 
     // Preload the data for the specified routes
