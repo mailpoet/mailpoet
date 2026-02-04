@@ -273,7 +273,12 @@ class PersonalizationTagManager {
   private function shouldExtendTagCategory(string $category, array $availableSubjects): bool {
     $categoryToSubjects = $this->getCategoryToSubjectsMapping();
 
-    $requiredSubjects = $categoryToSubjects[$category] ?? [];
+    // Unknown categories should not be extended
+    if (!array_key_exists($category, $categoryToSubjects)) {
+      return false;
+    }
+
+    $requiredSubjects = $categoryToSubjects[$category];
 
     // If no subjects required (e.g., Store), always extend
     if (empty($requiredSubjects)) {
