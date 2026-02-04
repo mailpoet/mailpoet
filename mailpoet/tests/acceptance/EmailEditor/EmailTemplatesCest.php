@@ -62,9 +62,9 @@ class EmailTemplatesCest {
     $i->click('.editor-all-actions-button');
     $i->waitForElementVisible('//div[@role="menuitem"]//span[normalize-space(.)="Reset"]');
     $i->click('//div[@role="menuitem"][.//span[normalize-space(.)="Reset"]]');
-    $i->waitForText('Reset to default and clear all customizations?', 10, '.components-modal__content');
+    $i->waitForText('Are you sure you want to reset "Newsletter" to default', 10, '.components-modal__content');
     $i->click('.components-modal__content .components-button.is-primary');
-    $i->waitForText('"Newsletter" reset.');
+    $i->waitForText('"Newsletter" reset to default.');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
   }
 
