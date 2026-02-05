@@ -13,6 +13,7 @@ use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
@@ -492,8 +493,8 @@ class SendEmailAction implements Action {
     $triggers = $automation->getTriggers();
     $transactionalTriggers = array_filter(
       $triggers,
-      function(Step $step): bool {
-        return in_array($step->getKey(), self::TRANSACTIONAL_TRIGGERS, true);
+      function(Step $triggerStep): bool {
+        return in_array($triggerStep->getKey(), self::TRANSACTIONAL_TRIGGERS, true);
       }
     );
 
@@ -502,11 +503,53 @@ class SendEmailAction implements Action {
     }
 
     foreach ($transactionalTriggers as $trigger) {
-      if (!in_array($step->getId(), $trigger->getNextStepIds(), true)) {
+      if (!$this->hasDelayFreePathToStep($trigger, $step, $automation)) {
         return false;
       }
     }
     return true;
+  }
+
+  /**
+   * Checks if there exists at least one path from $from step to $to step
+   * that doesn't contain a delay action.
+   */
+  private function hasDelayFreePathToStep(Step $from, Step $to, Automation $automation): bool {
+    $steps = $automation->getSteps();
+    $stack = [[$from, false]]; // [step, hasDelayOnPath]
+    $visited = [];
+
+    while (!empty($stack)) {
+      [$current, $hasDelayOnPath] = array_pop($stack);
+
+      $stateKey = $current->getId() . ':' . ($hasDelayOnPath ? '1' : '0');
+      if (isset($visited[$stateKey])) {
+        continue;
+      }
+      $visited[$stateKey] = true;
+
+      // Only delay actions convert transactional emails to marketing, as they introduce
+      // a significant time gap between the trigger event and email delivery.
+      // If new delay-like actions are added (e.g., "wait until date"), they should also be checked here.
+      if ($current->getKey() === DelayAction::KEY) {
+        $hasDelayOnPath = true;
+      }
+
+      if ($current->getId() === $to->getId()) {
+        if (!$hasDelayOnPath) {
+          return true;
+        }
+        continue;
+      }
+
+      foreach ($current->getNextStepIds() as $nextStepId) {
+        $nextStep = $steps[$nextStepId] ?? null;
+        if ($nextStep !== null) {
+          $stack[] = [$nextStep, $hasDelayOnPath];
+        }
+      }
+    }
+    return false;
   }
 
   private function automationHasWooCommerceTrigger(Automation $automation): bool {

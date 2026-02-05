@@ -628,17 +628,74 @@ class SendEmailActionTest extends \MailPoetTest {
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
     ];
 
-    $positionTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('action')]);
-    $someAction = new Step('action', Step::TYPE_ACTION, 'some-action', [], [new NextStep('emailstep')]);
+    // Non-delay actions (like add-tag) should NOT make email marketing
+    $triggerWithNonDelayAction = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('action')]);
+    $nonDelayAction = new Step('action', Step::TYPE_ACTION, 'mailpoet:add-tag', [], [new NextStep('emailstep')]);
 
-    $isNotTransactionalBecauseOfPosition = [
-      'steps' => [$root, $positionTrigger, $someAction, $emailStep],
+    $isTransactionalWithNonDelayAction = [
+      'steps' => [$root, $triggerWithNonDelayAction, $nonDelayAction, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
+    // Delay action SHOULD make email marketing
+    $triggerWithDelay = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('delay')]);
+    $delayAction = new Step('delay', Step::TYPE_ACTION, 'core:delay', ['delay' => 1, 'delay_type' => 'HOURS'], [new NextStep('emailstep')]);
+
+    $isMarketingBecauseOfDelay = [
+      'steps' => [$root, $triggerWithDelay, $delayAction, $emailStep],
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
     ];
+
+    // Multiple non-delay actions should still be transactional
+    $triggerWithMultipleActions = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('action1')]);
+    $action1 = new Step('action1', Step::TYPE_ACTION, 'mailpoet:add-tag', [], [new NextStep('action2')]);
+    $action2 = new Step('action2', Step::TYPE_ACTION, 'mailpoet:add-subscriber-to-list', [], [new NextStep('emailstep')]);
+
+    $isTransactionalWithMultipleNonDelayActions = [
+      'steps' => [$root, $triggerWithMultipleActions, $action1, $action2, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
+    // Non-delay action followed by delay should be marketing
+    $triggerWithActionAndDelay = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('action')]);
+    $actionBeforeDelay = new Step('action', Step::TYPE_ACTION, 'mailpoet:add-tag', [], [new NextStep('delay')]);
+    $delayAfterAction = new Step('delay', Step::TYPE_ACTION, 'core:delay', ['delay' => 1, 'delay_type' => 'HOURS'], [new NextStep('emailstep')]);
+
+    $isMarketingWithNonDelayThenDelay = [
+      'steps' => [$root, $triggerWithActionAndDelay, $actionBeforeDelay, $delayAfterAction, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
+    ];
+
+    // If/Else action should not affect transactional status (both branches lead to email)
+    $triggerWithIfElse = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('ifelse')]);
+    $ifElseStep = new Step('ifelse', Step::TYPE_ACTION, 'core:if-else', [], [new NextStep('emailstep')]);
+
+    $isTransactionalWithIfElse = [
+      'steps' => [$root, $triggerWithIfElse, $ifElseStep, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
+    // If/Else with one branch having delay - the email after delay should be marketing
+    $rootForDelayedBranch = new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]);
+    $triggerForDelayedBranch = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('ifelse')]);
+    $ifElseWithDelayBranch = new Step('ifelse', Step::TYPE_ACTION, 'core:if-else', [], [new NextStep('delay')]);
+    $delayInBranch = new Step('delay', Step::TYPE_ACTION, 'core:delay', ['delay' => 1, 'delay_type' => 'HOURS'], [new NextStep('emailstep')]);
+
+    // The email after delay should be marketing
+    $isMarketingWithDelayInBranch = [
+      'steps' => [$rootForDelayedBranch, $triggerForDelayedBranch, $ifElseWithDelayBranch, $delayInBranch, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
+    ];
+
     return [
       'is_transactional' => $isTransactional,
       'is_not_transactional_because_of_trigger' => $isNotTransactionalBecauseOfTrigger,
-      'is_not_transactional_because_of_position' => $isNotTransactionalBecauseOfPosition,
+      'is_transactional_with_non_delay_action' => $isTransactionalWithNonDelayAction,
+      'is_marketing_because_of_delay' => $isMarketingBecauseOfDelay,
+      'is_transactional_with_multiple_non_delay_actions' => $isTransactionalWithMultipleNonDelayActions,
+      'is_marketing_with_non_delay_then_delay' => $isMarketingWithNonDelayThenDelay,
+      'is_transactional_with_if_else' => $isTransactionalWithIfElse,
+      'is_marketing_with_delay_in_branch' => $isMarketingWithDelayInBranch,
     ];
   }
 
