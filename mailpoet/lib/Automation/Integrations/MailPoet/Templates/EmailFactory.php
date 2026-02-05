@@ -126,10 +126,11 @@ class EmailFactory {
 
     // Create a WordPress post with the pattern content
     // The meta_input flag prevents other plugins from creating duplicate newsletters
+    // Automation emails use 'private' status to prevent them from appearing in public queries
     $postId = $this->wpFunctions->wpInsertPost([
       'post_content' => $patternContent,
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
-      'post_status' => 'draft',
+      'post_status' => 'private',
       'post_author' => $this->wpFunctions->getCurrentUserId(),
       'post_title' => $data['subject'] ?? __('New Email', 'mailpoet'),
       'meta_input' => ['_mailpoet_is_automation_email' => '1'],

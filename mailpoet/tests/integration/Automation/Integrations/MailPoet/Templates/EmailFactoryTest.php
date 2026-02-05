@@ -541,6 +541,9 @@ class EmailFactoryTest extends MailPoetTest {
     $this->assertNotNull($wpPost);
     $this->assertNotEmpty($wpPost->post_content); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
+    // Verify the automation email post status is 'private'
+    $this->assertEquals('private', $wpPost->post_status); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
     // Verify the email template is set
     $templateSlug = get_post_meta($wpPostId, '_wp_page_template', true);
     $this->assertEquals('newsletter', $templateSlug);
