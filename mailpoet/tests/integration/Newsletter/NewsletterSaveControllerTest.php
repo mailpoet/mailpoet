@@ -352,6 +352,20 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($postMeta)->equals(['some_meta' => 'value']);
   }
 
+  public function testItDuplicatesAutomationNewsletterWithPrivatePostStatus() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $postId = $wp->wpInsertPost(['post_content' => 'automation email content', 'post_title' => 'Automation Email', 'post_status' => 'private']);
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
+    $this->entityManager->flush();
+    $duplicate = $this->saveController->duplicate($newsletter);
+    verify($duplicate->getWpPostId())->notEquals($postId);
+    $post = $wp->getPost($duplicate->getWpPostId());
+    verify($duplicate->getCampaignName())->equals('Copy of Automation Email');
+    verify($post->post_content)->equals('automation email content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($post->post_status)->equals('private'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
   public function testItCreatesNewNewsletter() {
     $data = [
       'subject' => 'My First Newsletter',
@@ -387,6 +401,28 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->assertEmpty($wpPost->post_content); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($wpPost->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($wpPost->post_status)->equals('draft'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testItCreatesAutomationNewsletterForBlockEditorWithPrivateStatus() {
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $data = [
+      'subject' => 'My Automation Email',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+      'new_editor' => true,
+    ];
+
+    $newsletter = $this->saveController->save($data);
+    verify($newsletter->getSubject())->equals($data['subject']);
+    verify($newsletter->getType())->equals($data['type']);
+    verify($newsletter->getHash())->notNull();
+    verify($newsletter->getId())->notNull();
+    verify($newsletter->getWpPostId())->notNull();
+    $postEntity = $newsletter->getWpPost();
+    $this->assertInstanceOf(WpPostEntity::class, $postEntity);
+    $wpPost = $postEntity->getWpPostInstance();
+    $this->assertInstanceOf(\WP_Post::class, $wpPost);
+    verify($wpPost->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($wpPost->post_status)->equals('private'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItCreatesNewsletterWithDefaultSender() {

@@ -26,7 +26,6 @@ use MailPoet\UnexpectedValueException;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -79,8 +78,6 @@ class NewsletterSaveController {
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
 
-  private DotcomHelperFunctions $dotcomHelperFunctions;
-
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -97,8 +94,7 @@ class NewsletterSaveController {
     WPFunctions $wp,
     ApiDataSanitizer $dataSanitizer,
     Scheduler $scheduler,
-    NewsletterCoupon $newsletterCoupon,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    NewsletterCoupon $newsletterCoupon
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -116,7 +112,6 @@ class NewsletterSaveController {
     $this->dataSanitizer = $dataSanitizer;
     $this->scheduler = $scheduler;
     $this->newsletterCoupon = $newsletterCoupon;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -219,8 +214,10 @@ class NewsletterSaveController {
     // duplicate wp post data
     $post = !is_null($newsletter->getWpPostId()) ? $this->wp->getPost($newsletter->getWpPostId()) : null;
     if ($post instanceof \WP_Post) {
+      // Automation emails use 'private' status to prevent them from appearing in public queries
+      $postStatus = $duplicate->getType() === NewsletterEntity::TYPE_AUTOMATION ? 'private' : NewsletterEntity::STATUS_DRAFT;
       $newPostId = $this->wp->wpInsertPost([
-        'post_status' => NewsletterEntity::STATUS_DRAFT,
+        'post_status' => $postStatus,
         'post_author' => $this->wp->getCurrentUserId(),
         'post_content' => $post->post_content, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'post_type' => $post->post_type, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -480,14 +477,8 @@ class NewsletterSaveController {
       return;
     }
 
-    $postStatus = 'draft';
-    // The automation emails need to be private in the Garden environment for the correct display in the email editor.
-    if (
-      $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION
-      && $this->dotcomHelperFunctions->isGarden()
-    ) {
-      $postStatus = 'private';
-    }
+    // Automation emails use 'private' status to prevent them from appearing in public queries
+    $postStatus = $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION ? 'private' : 'draft';
 
     $newPostId = $this->wp->wpInsertPost([
       'post_content' => '',
