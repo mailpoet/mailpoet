@@ -22,6 +22,14 @@ _N/A_
 
 _N/A_
 
+## Screenshots or screencast <!-- if applicable -->
+
+<!-- If you would like to upload screenshots, feel free to use the table below when it is useful to show the difference between before and after the change. -->
+
+| Before                          | After                          |
+| ------------------------------- | ------------------------------ |
+| <!-- Before screenshot here --> | <!-- After screenshot here --> |
+
 ## Tasks
 
 - [ ] I have added a changelog entry (`./do changelog:add --type=<type> --description=<description>`)
