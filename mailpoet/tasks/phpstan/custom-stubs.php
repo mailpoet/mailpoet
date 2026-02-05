@@ -181,6 +181,12 @@ namespace {
 
       public function set_date_modified($date) {
       }
+
+      /**
+       * @param int|array<int, int> $persons
+       */
+      public function set_persons($persons) {
+      }
     }
   }
 
