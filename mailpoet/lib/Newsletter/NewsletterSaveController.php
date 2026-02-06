@@ -215,15 +215,23 @@ class NewsletterSaveController {
     $post = !is_null($newsletter->getWpPostId()) ? $this->wp->getPost($newsletter->getWpPostId()) : null;
     if ($post instanceof \WP_Post) {
       // Automation emails use 'private' status to prevent them from appearing in public queries
-      $postStatus = $duplicate->getType() === NewsletterEntity::TYPE_AUTOMATION ? 'private' : NewsletterEntity::STATUS_DRAFT;
-      $newPostId = $this->wp->wpInsertPost([
+      $isAutomation = $duplicate->getType() === NewsletterEntity::TYPE_AUTOMATION;
+      $postStatus = $isAutomation ? 'private' : NewsletterEntity::STATUS_DRAFT;
+      $postData = [
         'post_status' => $postStatus,
         'post_author' => $this->wp->getCurrentUserId(),
         'post_content' => $post->post_content, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'post_type' => $post->post_type, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         // translators: %s is the campaign name of the mail which has been copied.
         'post_title' => sprintf(__('Copy of %s', 'mailpoet'), $post->post_title), // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ]);
+      ];
+
+      // Set meta flag for automation emails to prevent other plugins from creating duplicate newsletters
+      if ($isAutomation) {
+        $postData['meta_input'] = ['_mailpoet_is_automation_email' => '1'];
+      }
+
+      $newPostId = $this->wp->wpInsertPost($postData);
       // Post meta duplication
       $originalPostMeta = $this->wp->getPostMeta($post->ID);
       foreach ($originalPostMeta as $key => $values) {
@@ -478,15 +486,23 @@ class NewsletterSaveController {
     }
 
     // Automation emails use 'private' status to prevent them from appearing in public queries
-    $postStatus = $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION ? 'private' : 'draft';
+    $isAutomation = $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION;
+    $postStatus = $isAutomation ? 'private' : 'draft';
 
-    $newPostId = $this->wp->wpInsertPost([
+    $postData = [
       'post_content' => '',
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => $postStatus,
       'post_author' => $this->wp->getCurrentUserId(),
       'post_title' => __('New Email', 'mailpoet'),
-    ]);
+    ];
+
+    // Set meta flag for automation emails to prevent other plugins from creating duplicate newsletters
+    if ($isAutomation) {
+      $postData['meta_input'] = ['_mailpoet_is_automation_email' => '1'];
+    }
+
+    $newPostId = $this->wp->wpInsertPost($postData);
     $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $newPostId));
     $this->entityManager->flush();
   }
