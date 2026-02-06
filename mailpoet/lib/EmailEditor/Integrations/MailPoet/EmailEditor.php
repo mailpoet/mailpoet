@@ -63,6 +63,7 @@ class EmailEditor {
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email_personalizer_context', [$this, 'extendPreviewPersonalizerContext'], 10, 1);
+    $this->wp->addFilter('rest_pre_insert_mailpoet_email', [$this, 'preserveAutomationEmailStatus'], 10, 2);
     $this->patternsController->registerPatterns();
     // Skip classic templates in Garden environment.
     if (!$this->dotcomHelperFunctions->isGarden()) {
@@ -146,5 +147,26 @@ class EmailEditor {
     // Context is populated via woocommerce_email_editor_send_preview_email_personalizer_context filter
     // which extensions can hook into to add their sample data
     return $context;
+  }
+
+  /**
+   * Preserve the 'private' status for automation emails when updating via REST API.
+   * This prevents the block editor from changing the status to 'draft' during autosave.
+   *
+   * @param \stdClass $preparedPost The prepared post data for insertion.
+   * @param \WP_REST_Request $request The REST request object.
+   * @return \stdClass The modified post data.
+   */
+  public function preserveAutomationEmailStatus($preparedPost, $request) {
+    if (empty($preparedPost->ID)) {
+      return $preparedPost;
+    }
+
+    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $preparedPost->ID]);
+    if ($newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional())) {
+      $preparedPost->post_status = 'private'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+
+    return $preparedPost;
   }
 }
