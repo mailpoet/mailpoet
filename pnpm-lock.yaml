@@ -38,7 +38,6 @@ overrides:
   tar-fs@>=3.0.0 <3.0.8: '>=3.0.9'
   form-data@<=4.0.0: '>=4.0.4'
   on-headers@<1.0.2: '>=1.1.0'
-  locutus@<2.0.39: '>=2.0.39'
 
 patchedDependencies:
   '@woocommerce/components@13.1.0':
