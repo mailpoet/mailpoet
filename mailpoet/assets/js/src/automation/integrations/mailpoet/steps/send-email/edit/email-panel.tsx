@@ -34,13 +34,14 @@ function SingleLineTextareaControl(
 }
 
 export function EmailPanel(): JSX.Element {
-  const { selectedStep, errors } = useSelect(
+  const { selectedStep, errors, isGarden } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       selectedStepType: select(storeName).getSelectedStepType(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
       ),
+      isGarden: select(storeName).getContext('is_garden') === true,
     }),
     [],
   );
@@ -49,6 +50,8 @@ export function EmailPanel(): JSX.Element {
   const senderNameErrorMessage = errorFields?.sender_name ?? '';
   const senderAddressErrorMessage = errorFields?.sender_address ?? '';
   const subjectErrorMessage = errorFields?.subject ?? '';
+  const showSenderDetailsFields = !isGarden;
+
   return (
     <PanelBody opened>
       <StepName
@@ -62,55 +65,63 @@ export function EmailPanel(): JSX.Element {
           );
         }}
       />
-      <TextControl
-        className={
-          senderNameErrorMessage ? 'mailpoet-automation-field__error' : ''
-        }
-        help={senderNameErrorMessage}
-        label={__('"From" name', 'mailpoet')}
-        placeholder={
-          // translators: A placeholder for a person's name
-          __('John Doe', 'mailpoet')
-        }
-        value={(selectedStep.args.sender_name as string) ?? ''}
-        onChange={(value) =>
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'sender_name',
-            value,
-          )
-        }
-      />
-      <TextControl
-        className={
-          senderAddressErrorMessage ? 'mailpoet-automation-field__error' : ''
-        }
-        help={
-          <>
-            {senderAddressErrorMessage}
-            {window.mailpoet_mss_active &&
-              isEmail((selectedStep.args.sender_address as string) ?? '') && (
-                <SenderDomainNotice
-                  email={(selectedStep.args.sender_address as string) ?? ''}
-                />
-              )}
-          </>
-        }
-        type="email"
-        label={__('"From" email address', 'mailpoet')}
-        placeholder={
-          // translators: A placeholder for an email
-          __('you@domain.com', 'mailpoet')
-        }
-        value={(selectedStep.args.sender_address as string) ?? ''}
-        onChange={(value) =>
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'sender_address',
-            value,
-          )
-        }
-      />
+      {showSenderDetailsFields && (
+        <>
+          <TextControl
+            className={
+              senderNameErrorMessage ? 'mailpoet-automation-field__error' : ''
+            }
+            help={senderNameErrorMessage}
+            label={__('"From" name', 'mailpoet')}
+            placeholder={
+              // translators: A placeholder for a person's name
+              __('John Doe', 'mailpoet')
+            }
+            value={(selectedStep.args.sender_name as string) ?? ''}
+            onChange={(value) =>
+              dispatch(storeName).updateStepArgs(
+                selectedStep.id,
+                'sender_name',
+                value,
+              )
+            }
+          />
+          <TextControl
+            className={
+              senderAddressErrorMessage
+                ? 'mailpoet-automation-field__error'
+                : ''
+            }
+            help={
+              <>
+                {senderAddressErrorMessage}
+                {window.mailpoet_mss_active &&
+                  isEmail(
+                    (selectedStep.args.sender_address as string) ?? '',
+                  ) && (
+                    <SenderDomainNotice
+                      email={(selectedStep.args.sender_address as string) ?? ''}
+                    />
+                  )}
+              </>
+            }
+            type="email"
+            label={__('"From" email address', 'mailpoet')}
+            placeholder={
+              // translators: A placeholder for an email
+              __('you@domain.com', 'mailpoet')
+            }
+            value={(selectedStep.args.sender_address as string) ?? ''}
+            onChange={(value) =>
+              dispatch(storeName).updateStepArgs(
+                selectedStep.id,
+                'sender_address',
+                value,
+              )
+            }
+          />
+        </>
+      )}
       <SingleLineTextareaControl
         className={
           subjectErrorMessage ? 'mailpoet-automation-field__error' : ''
@@ -141,7 +152,6 @@ export function EmailPanel(): JSX.Element {
         }
         help={<ShortcodeHelpText />}
       />
-
       <div className="mailpoet-automation-email-content-separator" />
       <PlainBodyTitle title={__('Email', 'mailpoet')} />
       <EditNewsletter />
