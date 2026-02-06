@@ -7,6 +7,8 @@ use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\Core\Actions\IfElseAction;
+use MailPoet\Automation\Integrations\Core\Triggers\ScheduledDateTimeHooks;
+use MailPoet\Automation\Integrations\Core\Triggers\ScheduledDateTimeTrigger;
 
 class CoreIntegration implements Integration {
   /** @var DelayAction */
@@ -18,19 +20,32 @@ class CoreIntegration implements Integration {
   /** @var IfElseAction */
   private $ifElseAction;
 
+  /** @var ScheduledDateTimeTrigger */
+  private $scheduledDateTimeTrigger;
+
+  /** @var ScheduledDateTimeHooks */
+  private $scheduledDateTimeHooks;
+
   public function __construct(
     DelayAction $delayAction,
     IfElseAction $ifElseAction,
+    ScheduledDateTimeTrigger $scheduledDateTimeTrigger,
+    ScheduledDateTimeHooks $scheduledDateTimeHooks,
     WordPress $wordPress
   ) {
     $this->delayAction = $delayAction;
     $this->ifElseAction = $ifElseAction;
+    $this->scheduledDateTimeTrigger = $scheduledDateTimeTrigger;
+    $this->scheduledDateTimeHooks = $scheduledDateTimeHooks;
     $this->wordPress = $wordPress;
   }
 
   public function register(Registry $registry): void {
     $registry->addAction($this->delayAction);
     $registry->addAction($this->ifElseAction);
+
+    $registry->addTrigger($this->scheduledDateTimeTrigger);
+    $this->scheduledDateTimeHooks->init();
 
     $registry->addFilter(new Filters\BooleanFilter());
     $registry->addFilter(new Filters\NumberFilter());
