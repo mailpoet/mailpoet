@@ -13,6 +13,7 @@ import { initializeEditor } from '@woocommerce/email-editor';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
 import { withSatismeterSurvey } from './satismeter-survey';
 import { EmailSidebarExtension } from './email-sidebar-extension';
+import { AutomationSaveButton } from './components/automation-save-button';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { initStripPostStatusOnSaveMiddleware } from './middleware/strip-post-status-on-save';
@@ -105,6 +106,16 @@ addFilter(
 if (!isAutomationNewsletter) {
   registerPlugin('mailpoet-settings-sidebar', {
     render: EmailSidebarExtension,
+    scope: 'woocommerce-email-editor',
+  });
+}
+
+// Register save button for automation emails
+// Automation emails use 'private' post status, which WordPress treats as published.
+// The standard "Save Draft" button is not shown for published posts, so we add our own.
+if (isAutomationNewsletter) {
+  registerPlugin('mailpoet-automation-save-button', {
+    render: AutomationSaveButton,
     scope: 'woocommerce-email-editor',
   });
 }
