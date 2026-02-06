@@ -122,7 +122,7 @@ executors:
 jobs:
   build:
     executor: wpcli_php_latest
-    resource_class: medium+
+    resource_class: large
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - checkout:
