@@ -29,4 +29,8 @@ class ActionScheduler {
   public function unscheduleAction(string $hook, array $args = []): ?int {
     return as_unschedule_action($hook, $args, self::GROUP_ID);
   }
+
+  public function unscheduleAllActions(string $hook, array $args = []): void {
+    as_unschedule_all_actions($hook, $args, self::GROUP_ID);
+  }
 }
