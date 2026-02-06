@@ -1,10 +1,10 @@
 diff --git a/build-module/advanced-filters/number-filter.js b/build-module/advanced-filters/number-filter.js
-index 171847fe8c2c321ded37fbd92a94b04de977041b..61c41758a316cb59316cc2bbfc5522a5545fc4ca 100644
+index 78994fb763dcd7cf665e481f825fb322e233bd58..21709001564a8bb77ec52abe92097a8205d09ed1 100644
 --- a/build-module/advanced-filters/number-filter.js
 +++ b/build-module/advanced-filters/number-filter.js
 @@ -6,7 +6,7 @@ import { SelectControl, TextControl } from '@wordpress/components';
  import { get, find, isArray } from 'lodash';
- import classnames from 'classnames';
+ import clsx from 'clsx';
  import { sprintf, __, _x } from '@wordpress/i18n';
 -import { CurrencyFactory } from '@woocommerce/currency';
 +import CurrencyFactory from '@woocommerce/currency';
@@ -41,7 +41,7 @@ index d69a26f916b1ef064ed1141b699406c69eeec5e1..6a6f8f027b952d748ba0616417ed1be0
   * Internal dependencies
   */
 diff --git a/build-style/style.css b/build-style/style.css
-index 3db807f278a470f83f0ab65f033bc6a9596af81a..7f11ceae63d0e9fe2d1aac59c550f42712ade727 100644
+index 6395671d5750c0cb1bb87a0da866c5e0b9a81ae9..e1ee71f2cceaf55e5d7d3c0656a47ebc8b226232 100644
 --- a/build-style/style.css
 +++ b/build-style/style.css
 @@ -157,7 +157,7 @@

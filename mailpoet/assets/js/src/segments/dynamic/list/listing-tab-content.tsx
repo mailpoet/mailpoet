@@ -136,7 +136,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const tableQueryParams = {
     orderby: segmentsQuery.sort_by,
     order: segmentsQuery.sort_order,
-    page: segmentsQuery.offset / segmentsQuery.limit + 1,
+    page: String(segmentsQuery.offset / segmentsQuery.limit + 1),
     per_page: segmentsQuery.limit,
     paged: segmentsQuery.offset / segmentsQuery.limit + 1,
   };

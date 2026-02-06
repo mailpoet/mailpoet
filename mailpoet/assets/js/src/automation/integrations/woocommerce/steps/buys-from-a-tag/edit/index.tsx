@@ -11,8 +11,8 @@ import { OrderStatusPanel } from '../../order-status-changed/edit/order-status-p
 import autocompleter from './tag-autocompleter';
 
 type Tag = {
-  key: string | number;
-  label?: string;
+  key: string;
+  label: string;
 };
 
 async function fetchTags(include: number[], callback: (tags: Tag[]) => void) {
@@ -21,7 +21,7 @@ async function fetchTags(include: number[], callback: (tags: Tag[]) => void) {
     path,
     method: 'GET',
   });
-  callback(data.map((item) => ({ key: item?.id, label: item?.name })));
+  callback(data.map((item) => ({ key: String(item?.id), label: item?.name })));
 }
 
 export function Edit(): JSX.Element {
@@ -60,7 +60,7 @@ export function Edit(): JSX.Element {
             void dispatch(storeName).updateStepArgs(
               selectedStep.id,
               'tag_ids',
-              items.map((item) => item.key),
+              items.map((item) => Number(item.key)),
             );
           }}
           multiple

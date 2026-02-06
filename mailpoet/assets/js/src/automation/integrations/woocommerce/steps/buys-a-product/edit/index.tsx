@@ -10,8 +10,8 @@ import { storeName } from '../../../../../editor/store';
 import { OrderStatusPanel } from '../../order-status-changed/edit/order-status-panel';
 
 type Product = {
-  key: string | number;
-  label?: string;
+  key: string;
+  label: string;
 };
 
 async function fetchProducts(
@@ -23,7 +23,7 @@ async function fetchProducts(
     path,
     method: 'GET',
   });
-  callback(data.map((item) => ({ key: item?.id, label: item?.name })));
+  callback(data.map((item) => ({ key: String(item?.id), label: item?.name })));
 }
 
 export function Edit(): JSX.Element {
@@ -61,7 +61,7 @@ export function Edit(): JSX.Element {
             void dispatch(storeName).updateStepArgs(
               selectedStep.id,
               'product_ids',
-              items.map((item) => item.key),
+              items.map((item) => Number(item.key)),
             );
           }}
           multiple

@@ -57,7 +57,7 @@ const tagAutoCompleter: AutoCompleter = {
   // of replace/insertion, so we can just return the value.
   getOptionCompletion(tag) {
     const value = {
-      key: tag.id,
+      key: String(tag.id),
       label: tag.name,
     };
     return value;
