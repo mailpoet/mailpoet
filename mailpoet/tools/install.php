@@ -5,7 +5,7 @@
 $composerVersion = '2.9.3';
 $phpScoperVersion = '0.17.2';
 $legacyTracyVersion = '2.9.4'; // Tracy 2.9.4 supports PHP 7.4
-$tracyVersion = '2.11.0'; // Tracy 2.11.0 supports PHP 8.4 and 8.5
+$tracyVersion = '2.11.1'; // Tracy 2.11.0+ supports PHP 8.4 and 8.5
 
 $tools = [
   "https://github.com/composer/composer/releases/download/$composerVersion/composer.phar" => 'composer.phar',
