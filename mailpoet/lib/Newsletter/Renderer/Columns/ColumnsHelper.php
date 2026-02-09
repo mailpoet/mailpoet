@@ -25,7 +25,7 @@ class ColumnsHelper {
 
   /** @return int[] */
   public static function columnWidth($columnsCount, $columnsLayout) {
-    if (isset(self::$columnsWidth[$columnsLayout])) {
+    if ($columnsLayout && isset(self::$columnsWidth[$columnsLayout])) {
       return self::$columnsWidth[$columnsLayout];
     }
     return self::$columnsWidth[$columnsCount];
