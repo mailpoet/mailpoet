@@ -59,10 +59,14 @@ class DIPanel implements IBarPanel {
   private function getServicesFromContainer($name) {
     $containerWrapper = ContainerWrapper::getInstance();
     $reflection = new \ReflectionProperty(ContainerWrapper::class, $name);
-    $reflection->setAccessible(true);
+    if (PHP_VERSION_ID <= 80100) {
+      $reflection->setAccessible(true);
+    }
     $container = $reflection->getValue($containerWrapper);
     $reflection = new \ReflectionProperty(get_class($container), 'services');
-    $reflection->setAccessible(true);
+    if (PHP_VERSION_ID <= 80100) {
+      $reflection->setAccessible(true);
+    }
     return [$reflection->getValue($container), $container->getDefinitions()];
   }
 
