@@ -687,6 +687,21 @@ class SendEmailActionTest extends \MailPoetTest {
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
     ];
 
+    // Booking triggers should be transactional
+    $bookingCreatedTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce-bookings:booking-created', [], [new NextStep('emailstep')]);
+
+    $isTransactionalWithBookingCreated = [
+      'steps' => [$root, $bookingCreatedTrigger, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
+    $bookingStatusChangedTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce-bookings:booking-status-changed', [], [new NextStep('emailstep')]);
+
+    $isTransactionalWithBookingStatusChanged = [
+      'steps' => [$root, $bookingStatusChangedTrigger, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
     return [
       'is_transactional' => $isTransactional,
       'is_not_transactional_because_of_trigger' => $isNotTransactionalBecauseOfTrigger,
@@ -696,6 +711,8 @@ class SendEmailActionTest extends \MailPoetTest {
       'is_marketing_with_non_delay_then_delay' => $isMarketingWithNonDelayThenDelay,
       'is_transactional_with_if_else' => $isTransactionalWithIfElse,
       'is_marketing_with_delay_in_branch' => $isMarketingWithDelayInBranch,
+      'is_transactional_with_booking_created' => $isTransactionalWithBookingCreated,
+      'is_transactional_with_booking_status_changed' => $isTransactionalWithBookingStatusChanged,
     ];
   }
 
