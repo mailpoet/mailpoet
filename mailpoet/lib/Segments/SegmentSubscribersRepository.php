@@ -47,62 +47,6 @@ class SegmentSubscribersRepository {
     return $this->loadSubscriberIdsInSegment($segmentId);
   }
 
-  /**
-   * Fetch a batch of unique subscriber IDs across multiple segments using cursor-based pagination.
-   * Uses SQL-level DISTINCT, ORDER BY, and LIMIT to avoid loading all IDs into memory.
-   *
-   * @param int[] $segmentIds
-   * @param int   $afterId  Cursor: only return subscribers with ID > this value
-   * @param int   $limit    Maximum number of IDs to return
-   * @return int[]
-   */
-  public function getSubscriberIdsInSegments(array $segmentIds, int $afterId = 0, int $limit = 100): array {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-
-    $segments = $this->segmentsRepository->findByIds($segmentIds);
-    if (empty($segments)) {
-      return [];
-    }
-
-    // Build a UNION of subscriber queries per segment, each filtered by status and segment membership.
-    // UNION deduplicates across segments at the SQL level.
-    $unionParts = [];
-    $parameters = [];
-    $parameterTypes = [];
-    $i = 0;
-
-    foreach ($segments as $segment) {
-      $qb = $this->entityManager
-        ->getConnection()
-        ->createQueryBuilder()
-        ->select("DISTINCT $subscribersTable.id")
-        ->from($subscribersTable);
-
-      if ($segment->isStatic()) {
-        $qb = $this->filterSubscribersInStaticSegment($qb, $segment, SubscriberEntity::STATUS_SUBSCRIBED);
-      } else {
-        $qb = $this->filterSubscribersInDynamicSegment($qb, $segment, SubscriberEntity::STATUS_SUBSCRIBED);
-      }
-
-      $cursorParam = "cursor_$i";
-      $qb->andWhere("$subscribersTable.id > :$cursorParam");
-      $qb->setParameter($cursorParam, $afterId);
-
-      $unionParts[] = $qb->getSQL();
-      $parameters = array_merge($parameters, $qb->getParameters());
-      $parameterTypes = array_merge($parameterTypes, $qb->getParameterTypes());
-      $i++;
-    }
-
-    $unionSql = implode(' UNION ', $unionParts);
-    $wrappedSql = "SELECT id FROM ($unionSql) AS combined ORDER BY id ASC LIMIT $limit";
-
-    $result = $this->entityManager->getConnection()->executeQuery($wrappedSql, $parameters, $parameterTypes);
-    /** @var list<string|int> $ids */
-    $ids = $result->fetchFirstColumn();
-    return array_map('intval', $ids);
-  }
-
   public function getSubscribersCount(int $segmentId, ?string $status = null): int {
     $segment = $this->getSegment($segmentId);
     $result = $this->getSubscribersStatisticsCount($segment);
