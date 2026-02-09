@@ -13,7 +13,6 @@ use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
-use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Validator\Builder;
@@ -96,7 +95,6 @@ class ScheduledDateTimeTrigger implements Trigger {
   public function getSubjectKeys(): array {
     return [
       SubscriberSubject::KEY,
-      SegmentSubject::KEY,
     ];
   }
 
@@ -138,11 +136,9 @@ class ScheduledDateTimeTrigger implements Trigger {
     try {
       $batch = $this->getSubscriberIdsBatch($segmentIds, $lastProcessedId);
 
-      $firstSegmentId = $segmentIds[0];
       foreach ($batch as $subscriberId) {
         $this->wp->doAction(Hooks::TRIGGER, $this, [
           new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriberId]),
-          new Subject(SegmentSubject::KEY, ['segment_id' => $firstSegmentId]),
         ]);
       }
 
@@ -181,7 +177,12 @@ class ScheduledDateTimeTrigger implements Trigger {
         ->withMessage(__('Scheduled date/time is required.', 'mailpoet'));
     }
 
-    $scheduledDate = new DateTimeImmutable($scheduledAt);
+    try {
+      $scheduledDate = new DateTimeImmutable($scheduledAt);
+    } catch (\Exception $e) {
+      throw ValidationException::create()
+        ->withMessage(__('Invalid date/time format.', 'mailpoet'));
+    }
     $now = new DateTimeImmutable();
     if ($scheduledDate <= $now) {
       throw ValidationException::create()

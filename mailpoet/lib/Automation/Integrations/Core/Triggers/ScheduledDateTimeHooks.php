@@ -6,7 +6,6 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
 
 /**
@@ -28,46 +27,30 @@ class ScheduledDateTimeHooks {
   /** @var ActionScheduler */
   private $actionScheduler;
 
-  /** @var AutomationStorage */
-  private $automationStorage;
-
   public function __construct(
     WordPress $wp,
-    ActionScheduler $actionScheduler,
-    AutomationStorage $automationStorage
+    ActionScheduler $actionScheduler
   ) {
     $this->wp = $wp;
     $this->actionScheduler = $actionScheduler;
-    $this->automationStorage = $automationStorage;
   }
 
   public function init(): void {
     $this->wp->addAction(Hooks::AUTOMATION_BEFORE_SAVE, [$this, 'handleBeforeSave']);
   }
 
-  /**
-   * Detect automation status transitions and schedule/cancel AS jobs accordingly.
-   *
-   * This hook fires before the automation is persisted, so we compare the incoming
-   * status with the previously stored version to detect transitions:
-   * - draft → active: schedule the AS job
-   * - active → draft/trash: cancel the AS job
-   * - active → active (no change): do nothing
-   */
   public function handleBeforeSave(Automation $automation): void {
     $trigger = $automation->getTrigger(ScheduledDateTimeTrigger::KEY);
     if (!$trigger) {
       return;
     }
 
-    $previousAutomation = $this->getPreviousAutomation($automation);
-    $wasActive = $previousAutomation && $previousAutomation->getStatus() === Automation::STATUS_ACTIVE;
-    $isActive = $automation->getStatus() === Automation::STATUS_ACTIVE;
+    // Always cancel existing jobs first to prevent duplicates
+    $this->cancelJob($automation);
 
-    if ($isActive && !$wasActive) {
+    // Schedule new job only if the automation is active
+    if ($automation->getStatus() === Automation::STATUS_ACTIVE) {
       $this->scheduleJob($automation);
-    } elseif ($wasActive && !$isActive) {
-      $this->cancelJob($automation);
     }
   }
 
@@ -83,7 +66,11 @@ class ScheduledDateTimeHooks {
       return;
     }
 
-    $scheduledDate = new DateTimeImmutable($scheduledAt);
+    try {
+      $scheduledDate = new DateTimeImmutable($scheduledAt);
+    } catch (\Exception $e) {
+      return;
+    }
     $args = [$automation->getId(), 0];
     $this->actionScheduler->schedule(
       $scheduledDate->getTimestamp(),
@@ -104,7 +91,7 @@ class ScheduledDateTimeHooks {
       'status' => 'pending',
     ]);
 
-    foreach ($actions as $actionId => $action) {
+    foreach ($actions as $action) {
       $args = $action->get_args();
       if (isset($args[0]) && (int)$args[0] === $automationId) {
         $this->actionScheduler->unscheduleAction(
@@ -112,19 +99,6 @@ class ScheduledDateTimeHooks {
           $args
         );
       }
-    }
-  }
-
-  /**
-   * Load the previously persisted version of the automation from storage.
-   * Returns null for new automations (getId() throws) or if not found in DB.
-   * We catch Throwable because getId() throws InvalidStateException when unset.
-   */
-  private function getPreviousAutomation(Automation $automation): ?Automation {
-    try {
-      return $this->automationStorage->getAutomation($automation->getId());
-    } catch (\Throwable $e) {
-      return null;
     }
   }
 }

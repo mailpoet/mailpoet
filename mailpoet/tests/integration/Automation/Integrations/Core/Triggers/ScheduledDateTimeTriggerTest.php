@@ -36,13 +36,13 @@ class ScheduledDateTimeTriggerTest extends \MailPoetTest {
     $segment = (new SegmentFactory())->withName('Test Segment')->create();
     $segmentId = (int)$segment->getId();
 
-    $subscriber1 = (new SubscriberFactory())
+    (new SubscriberFactory())
       ->withEmail('sub1@test.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
 
-    $subscriber2 = (new SubscriberFactory())
+    (new SubscriberFactory())
       ->withEmail('sub2@test.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])

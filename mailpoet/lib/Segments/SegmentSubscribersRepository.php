@@ -58,7 +58,6 @@ class SegmentSubscribersRepository {
    */
   public function getSubscriberIdsInSegments(array $segmentIds, int $afterId = 0, int $limit = 100): array {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
 
     $segments = $this->segmentsRepository->findByIds($segmentIds);
     if (empty($segments)) {
