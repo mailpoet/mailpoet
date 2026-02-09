@@ -239,10 +239,10 @@ class LinksTest extends \MailPoetTest {
 
   public function testItMatchesHashedLinks() {
     $regex = $this->links->getLinkRegex();
-    verify((boolean)preg_match($regex, '[some_tag]-123'))->false();
-    verify((boolean)preg_match($regex, '[some_tag]'))->false();
-    verify((boolean)preg_match($regex, '[mailpoet_click_data]-123'))->true();
-    verify((boolean)preg_match($regex, '[mailpoet_open_data]'))->true();
+    verify((bool)preg_match($regex, '[some_tag]-123'))->false();
+    verify((bool)preg_match($regex, '[some_tag]'))->false();
+    verify((bool)preg_match($regex, '[mailpoet_click_data]-123'))->true();
+    verify((bool)preg_match($regex, '[mailpoet_open_data]'))->true();
   }
 
   public function testItCanConvertOnlyHashedLinkShortcodes() {

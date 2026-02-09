@@ -16,7 +16,7 @@ use MailPoetVendor\Doctrine\Persistence\Mapping\ClassMetadata;
 
 // Load Composer autoload - we need to load it explicitly because we run the tests from the root of the project via /tests_env/vendor/bin/codecept
 require_once(__DIR__ . '/../../vendor/autoload.php');
-if ((boolean)getenv('MULTISITE') === true) {
+if ((bool)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
   $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
   $wpLoadFile = getenv('WP_ROOT_MULTISITE') . '/wp-load.php';

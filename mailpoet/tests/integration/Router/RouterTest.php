@@ -274,7 +274,7 @@ class RouterTest extends \MailPoetTest {
 
   public function testItExecutesUrlParameterConflictResolverAction() {
     $this->router->init();
-    verify((boolean)did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
+    verify((bool)did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
   }
 
   public function testItCanEncodeRequestData() {

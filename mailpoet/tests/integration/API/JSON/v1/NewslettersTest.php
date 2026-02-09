@@ -717,7 +717,7 @@ class NewslettersTest extends \MailPoetTest {
     verify($previewLinkData['newsletter_hash'])->notEmpty();
     verify($previewLinkData['subscriber_id'])->false();
     verify($previewLinkData['subscriber_token'])->false();
-    verify((boolean)$previewLinkData['preview'])->true();
+    verify((bool)$previewLinkData['preview'])->true();
   }
 
   private function createNewsletterSegment(
