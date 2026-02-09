@@ -153,6 +153,34 @@ namespace {
       }
 
       /**
+       * Get product ID.
+       *
+       * @param string $context What the value is for. Default 'view'.
+       * @return int
+       */
+      public function get_product_id( $context = 'view' ) {
+        return 0;
+      }
+
+      /**
+       * Get all meta data.
+       *
+       * @return array
+       */
+      public function get_meta_data() {
+        return [];
+      }
+
+      /**
+       * Delete meta data.
+       *
+       * @param string $key Meta key.
+       * @return void
+       */
+      public function delete_meta_data( $key ) {
+      }
+
+      /**
        * Save the booking.
        *
        * @return int The booking ID.
