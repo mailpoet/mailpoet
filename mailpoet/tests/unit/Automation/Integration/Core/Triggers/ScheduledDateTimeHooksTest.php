@@ -7,7 +7,6 @@ use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\Core\Triggers\ScheduledDateTimeHooks;
 use MailPoet\Automation\Integrations\Core\Triggers\ScheduledDateTimeTrigger;
@@ -23,18 +22,13 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
   /** @var ActionScheduler&\PHPUnit\Framework\MockObject\MockObject */
   private $actionScheduler;
 
-  /** @var AutomationStorage&\PHPUnit\Framework\MockObject\MockObject */
-  private $automationStorage;
-
   public function _before() {
     $this->wp = $this->createMock(WordPress::class);
     $this->actionScheduler = $this->createMock(ActionScheduler::class);
-    $this->automationStorage = $this->createMock(AutomationStorage::class);
 
     $this->hooks = new ScheduledDateTimeHooks(
       $this->wp,
-      $this->actionScheduler,
-      $this->automationStorage
+      $this->actionScheduler
     );
   }
 
@@ -58,10 +52,8 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
     $automation->method('getStatus')->willReturn(Automation::STATUS_ACTIVE);
     $automation->method('getTrigger')->with(ScheduledDateTimeTrigger::KEY)->willReturn($trigger);
 
-    // Previous automation was draft
-    $previousAutomation = $this->createMock(Automation::class);
-    $previousAutomation->method('getStatus')->willReturn(Automation::STATUS_DRAFT);
-    $this->automationStorage->method('getAutomation')->with(5)->willReturn($previousAutomation);
+    // Cancel is called first (noop since no pending actions)
+    $this->actionScheduler->method('getScheduledActions')->willReturn([]);
 
     $this->actionScheduler->expects($this->once())
       ->method('schedule')
@@ -84,11 +76,6 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
     $automation->method('getId')->willReturn(5);
     $automation->method('getStatus')->willReturn(Automation::STATUS_DRAFT);
     $automation->method('getTrigger')->with(ScheduledDateTimeTrigger::KEY)->willReturn($trigger);
-
-    // Previous automation was active
-    $previousAutomation = $this->createMock(Automation::class);
-    $previousAutomation->method('getStatus')->willReturn(Automation::STATUS_ACTIVE);
-    $this->automationStorage->method('getAutomation')->with(5)->willReturn($previousAutomation);
 
     // Two pending actions: initial (offset 0) and in-flight batch (cursor 500)
     // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- matching ActionScheduler_Action API
@@ -126,10 +113,53 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
         [ScheduledDateTimeTrigger::SCHEDULED_HOOK, [5, 500]]
       );
 
+    // Should not schedule since automation is draft
+    $this->actionScheduler->expects($this->never())->method('schedule');
+
     $this->hooks->handleBeforeSave($automation);
   }
 
-  public function testDoesNothingWhenStatusUnchanged(): void {
+  public function testCancelsAndReschedulesOnActiveEdit(): void {
+    $futureDate = (new DateTimeImmutable())->modify('+2 hours');
+    $trigger = new Step('t1', Step::TYPE_TRIGGER, ScheduledDateTimeTrigger::KEY, [
+      'scheduled_at' => $futureDate->format(DateTimeImmutable::W3C),
+      'segment_ids' => [1],
+    ], []);
+
+    $automation = $this->createMock(Automation::class);
+    $automation->method('getId')->willReturn(5);
+    $automation->method('getStatus')->willReturn(Automation::STATUS_ACTIVE);
+    $automation->method('getTrigger')->with(ScheduledDateTimeTrigger::KEY)->willReturn($trigger);
+
+    // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- matching ActionScheduler_Action API
+    $existingAction = new class {
+      /** @return int[] */
+      public function get_args(): array {
+        return [5, 0];
+      }
+    };
+    // phpcs:enable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+
+    $this->actionScheduler->method('getScheduledActions')->willReturn([
+      1 => $existingAction,
+    ]);
+
+    $this->actionScheduler->expects($this->once())
+      ->method('unscheduleAction')
+      ->with(ScheduledDateTimeTrigger::SCHEDULED_HOOK, [5, 0]);
+
+    $this->actionScheduler->expects($this->once())
+      ->method('schedule')
+      ->with(
+        $futureDate->getTimestamp(),
+        ScheduledDateTimeTrigger::SCHEDULED_HOOK,
+        [5, 0]
+      );
+
+    $this->hooks->handleBeforeSave($automation);
+  }
+
+  public function testDoesNothingWhenDraftSavedAsDraft(): void {
     $trigger = new Step('t1', Step::TYPE_TRIGGER, ScheduledDateTimeTrigger::KEY, [
       'scheduled_at' => '2030-01-01T00:00:00+00:00',
       'segment_ids' => [1],
@@ -140,10 +170,8 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
     $automation->method('getStatus')->willReturn(Automation::STATUS_DRAFT);
     $automation->method('getTrigger')->with(ScheduledDateTimeTrigger::KEY)->willReturn($trigger);
 
-    // Previous was also draft
-    $previousAutomation = $this->createMock(Automation::class);
-    $previousAutomation->method('getStatus')->willReturn(Automation::STATUS_DRAFT);
-    $this->automationStorage->method('getAutomation')->with(5)->willReturn($previousAutomation);
+    // Cancel is called but no pending actions exist
+    $this->actionScheduler->method('getScheduledActions')->willReturn([]);
 
     $this->actionScheduler->expects($this->never())->method('schedule');
     $this->actionScheduler->expects($this->never())->method('unscheduleAction');
@@ -157,32 +185,6 @@ class ScheduledDateTimeHooksTest extends MailPoetUnitTest {
 
     $this->actionScheduler->expects($this->never())->method('schedule');
     $this->actionScheduler->expects($this->never())->method('unscheduleAction');
-
-    $this->hooks->handleBeforeSave($automation);
-  }
-
-  public function testSchedulesJobForNewAutomationWithNoPreviousVersion(): void {
-    $futureDate = (new DateTimeImmutable())->modify('+1 hour');
-    $trigger = new Step('t1', Step::TYPE_TRIGGER, ScheduledDateTimeTrigger::KEY, [
-      'scheduled_at' => $futureDate->format(DateTimeImmutable::W3C),
-      'segment_ids' => [1],
-    ], []);
-
-    $automation = $this->createMock(Automation::class);
-    $automation->method('getId')->willReturn(99);
-    $automation->method('getStatus')->willReturn(Automation::STATUS_ACTIVE);
-    $automation->method('getTrigger')->with(ScheduledDateTimeTrigger::KEY)->willReturn($trigger);
-
-    // No previous version in storage
-    $this->automationStorage->method('getAutomation')->with(99)->willReturn(null);
-
-    $this->actionScheduler->expects($this->once())
-      ->method('schedule')
-      ->with(
-        $futureDate->getTimestamp(),
-        ScheduledDateTimeTrigger::SCHEDULED_HOOK,
-        [99, 0]
-      );
 
     $this->hooks->handleBeforeSave($automation);
   }

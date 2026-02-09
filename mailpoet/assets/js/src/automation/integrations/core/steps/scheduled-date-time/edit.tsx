@@ -60,10 +60,12 @@ export function Edit(): JSX.Element {
       .join(''),
   );
 
-  // Use WordPress site timezone for past-date check (not browser timezone).
-  // dateI18n with 'U' format returns a Unix timestamp in the site's timezone.
-  const siteNow = Number(dateI18n('U', new Date(), settings.timezone.string));
-  const siteTodayMidnight = siteNow - (siteNow % 86400);
+  // Get today's date in the site timezone and derive a midnight timestamp
+  // for the isInvalidDate check. Using dateI18n('Y-m-d') gives us the local
+  // date string, then we create a Date at midnight in the site timezone.
+  const siteDateStr = dateI18n('Y-m-d', new Date(), settings.timezone.string);
+  const siteTodayMidnight =
+    new Date(`${siteDateStr}T00:00:00`).getTime() / 1000;
 
   const getFormattedDate = () => {
     if (!scheduledAt) {
@@ -105,6 +107,7 @@ export function Edit(): JSX.Element {
             <DateTimePicker
               currentDate={scheduledAt || undefined}
               onChange={(date) => {
+                if (!date) return;
                 void dispatch(storeName).updateStepArgs(
                   selectedStep.id,
                   'scheduled_at',
@@ -118,6 +121,13 @@ export function Edit(): JSX.Element {
             />
           )}
         />
+        <p style={{ color: '#757575', fontSize: '12px', margin: '4px 0 0' }}>
+          {`${__('Server time', 'mailpoet')}: ${dateI18n(
+            settings.formats.time,
+            new Date(),
+            settings.timezone.string,
+          )} (${settings.timezone.string})`}
+        </p>
       </BaseControl>
 
       <FormTokenField
