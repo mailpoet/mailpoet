@@ -19,6 +19,8 @@ export type Context = {
   segments?: Segment[];
   userRoles?: FormTokenItem[];
   senderDomainsConfig?: SenderDomainsConfig;
+  transactional_triggers?: string[];
+  delay_action_key?: string;
 };
 
 export const getContext = (): Context =>

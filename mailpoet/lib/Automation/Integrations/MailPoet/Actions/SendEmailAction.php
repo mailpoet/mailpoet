@@ -66,7 +66,7 @@ class SendEmailAction implements Action {
   private const WAIT_OPTIN = 'wait_optin';
   private const OPTIN_RETRIES = 'optin_retries';
 
-  private const TRANSACTIONAL_TRIGGERS = [
+  public const TRANSACTIONAL_TRIGGERS = [
     'mailpoet:custom-trigger',
     'woocommerce:order-status-changed',
     'woocommerce:order-created',
