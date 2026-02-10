@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.20.0
+Stable tag: 5.21.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,11 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.20.0 - 2026-02-02 =
-* Added: Filter mailpoet_is_cookie_tracking_enabled allowing control of cookie tracking;
-* Added: Add Welcome with Discount email pattern;
-* Added: "Abandoned Cart" and "Abandoned Cart with Discount" email patterns using WooCommerce Product Collection block;
-* Updated: Block email editor version;
-* Changed: Rename automation status "Draft" to "Inactive" in UI.
+= 5.21.0 - 2026-02-10 =
+* Added: Provide automation subject fields as tags in email block editor;
+* Added: New email patterns for post-purchase automations: First Purchase Thank You, Post Purchase Thank You, Product Purchase Follow-Up, and Win Back Customer;
+* Fixed: Fix negative date errors when using large days values in segment filters;
+* Fixed: Rare fatal error in rendering text blocks in emails.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
