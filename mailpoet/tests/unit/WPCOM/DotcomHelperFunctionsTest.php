@@ -177,4 +177,76 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
 
     verify($dotcomHelper->gardenPartner())->equals('Partner Name');
   }
+
+  public function testIsDotcomReturnsFalseWhenNeitherPlatform() {
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isAtomicPlatform', 'isGarden'])
+      ->getMock();
+    $dotcomHelper->method('isAtomicPlatform')->willReturn(false);
+    verify($dotcomHelper->isDotcom())->false();
+  }
+
+  public function testGetDotcomPlanReturnsPlanTypeFromGarden() {
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getWpcloudConfig'])
+      ->getMock();
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getWpcloudConfig')->willReturn(json_encode(['plan_type' => 'trial']));
+    verify($dotcomHelper->getDotcomPlan())->equals('trial');
+  }
+
+  public function testGetDotcomPlanReturnsEmptyWhenGardenHasNoPlanType() {
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getWpcloudConfig'])
+      ->getMock();
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getWpcloudConfig')->willReturn(null);
+    verify($dotcomHelper->getDotcomPlan())->equals('');
+  }
+
+  public function testGetDotcomPlanReturnsEmptyWhenGardenHasInvalidJson() {
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isGarden', 'getWpcloudConfig'])
+      ->getMock();
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getWpcloudConfig')->willReturn('not valid json');
+    verify($dotcomHelper->getDotcomPlan())->equals('');
+  }
+
+  public function testGetDotcomPlanPrefersWcCalypsoBridgeOverGarden() {
+    $dotcomHelper = $this->getMockBuilder(DotcomHelperFunctions::class)
+      ->setConstructorArgs([$this->wp])
+      ->onlyMethods(['isWooExpressPerformance', 'isGarden', 'getWpcloudConfig'])
+      ->getMock();
+    $dotcomHelper->method('isWooExpressPerformance')->willReturn(true);
+    $dotcomHelper->method('isGarden')->willReturn(true);
+    $dotcomHelper->method('getWpcloudConfig')->willReturn(json_encode(['plan_type' => 'paid']));
+    verify($dotcomHelper->getDotcomPlan())->equals('performance');
+  }
+
+  public function testGetSiteMetaValueFallsBackToWpcloudConfigForGarden() {
+    $dotcomHelper = new class($this->wp) extends DotcomHelperFunctions {
+      public function publicGetSiteMetaValue(string $key): ?string {
+        return $this->getSiteMetaValue($key);
+      }
+
+      public function isGarden(): bool {
+        return true;
+      }
+
+      protected function getWpcloudConfig(string $key): ?string {
+        if ($key === 'test_key') {
+          return 'test_value';
+        }
+        return null;
+      }
+    };
+
+    verify($dotcomHelper->publicGetSiteMetaValue('test_key'))->equals('test_value');
+    verify($dotcomHelper->publicGetSiteMetaValue('nonexistent_key'))->null();
+  }
 }
