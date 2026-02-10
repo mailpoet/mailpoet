@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\ActionScheduler\ActionScheduler as CronActionScheduler;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
@@ -78,11 +79,9 @@ class Activator {
   }
 
   private function processActivate(): void {
-    // Clear deactivation flag in case it was left over from a previous deactivation
-    $this->daemonActionSchedulerRunner->clearDeactivationFlag();
-
     $this->migrator->run();
     $this->deactivateCronActions();
+    $this->reactivateCronActions();
     $this->populator->up();
     $this->updateDbVersion();
 
@@ -117,6 +116,22 @@ class Activator {
       return;
     }
     $this->cronActionSchedulerRunner->unscheduleAllCronActions();
+  }
+
+  private function reactivateCronActions(): void {
+    $currentMethod = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
+    if ($currentMethod !== CronTrigger::METHOD_ACTION_SCHEDULER) {
+      $this->daemonActionSchedulerRunner->clearDeactivationFlag();
+      return;
+    }
+    $this->daemonActionSchedulerRunner->clearDeactivationFlag();
+    if (!$this->cronActionSchedulerRunner->hasScheduledAction(DaemonTrigger::NAME)) {
+      $this->cronActionSchedulerRunner->scheduleRecurringAction(
+        $this->wp->currentTime('timestamp', true),
+        DaemonTrigger::TRIGGER_RUN_INTERVAL,
+        DaemonTrigger::NAME
+      );
+    }
   }
 
   public function updateDbVersion() {
