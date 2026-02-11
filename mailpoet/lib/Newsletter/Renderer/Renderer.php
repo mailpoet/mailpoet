@@ -115,6 +115,11 @@ class Renderer {
       if ($filterCallback) {
         $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
       }
+
+      $renderedNewsletter['html'] = $this->wp->applyFilters(
+        self::FILTER_POST_PROCESS,
+        $renderedNewsletter['html']
+      );
     } else {
       $body = (is_array($newsletter->getBody()))
         ? $newsletter->getBody()

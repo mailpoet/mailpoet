@@ -4,7 +4,9 @@ namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewsletterHtmlSanitizer;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
@@ -17,6 +19,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Spacer;
 use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\BodyRenderer;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
+use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -817,6 +820,34 @@ class RendererTest extends \MailPoetTest {
     wp_update_attachment_metadata($id, $metadata);
 
     return $id;
+  }
+
+  public function testItAddsOpenTrackingPixelToGutenbergRenderedEmails() {
+    $wpPostId = wp_insert_post([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'publish',
+      'post_title' => 'Test Email',
+      'post_content' => '<!-- wp:paragraph --><p>Hello world</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($wpPostId);
+    $this->assertGreaterThan(0, $wpPostId);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Test Subject');
+    $newsletter->setPreheader('Test Preheader');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus('active');
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $wpPostId));
+
+    OpenTracking::addTrackingImage();
+
+    $result = $this->renderer->renderAsPreview($newsletter);
+    $this->assertArrayHasKey('html', $result);
+    $this->assertStringContainsString('Hello world', $result['html']);
+    $this->assertStringContainsString(Links::DATA_TAG_OPEN, $result['html']);
+
+    WPFunctions::get()->removeAllFilters(Renderer::FILTER_POST_PROCESS);
+    wp_delete_post($wpPostId, true);
   }
 
   public function testItRendersDynamicProductsBlock() {
