@@ -51,8 +51,8 @@ export async function automationCreateWooCommerce() {
       fullPage: fullPageSet,
     });
 
-    // Click on the WooCommerce tab and then choose the first template
-    await page.locator('#tab-panel-0-woocommerce').click();
+    // Click on the Post-purchase tab and then choose the first template
+    await page.locator('#tab-panel-0-purchase').click();
     await page.waitForLoadState('networkidle');
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
