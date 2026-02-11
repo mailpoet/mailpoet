@@ -1166,6 +1166,14 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - build_release_zip
+      - performance_tests:
+          name: performance_latest
+          url: https://mpperftesting.com
+          us: $WP_TEST_PERFORMANCE_US
+          pw: $WP_TEST_PERFORMANCE_PW
+          scenario: nightlytests
+          requires:
+            - build
 
   nightly:
     triggers:
