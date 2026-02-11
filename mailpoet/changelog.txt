@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.21.1 - 2026-02-11 =
+* Improved: minor changes and fixes.
+
 = 5.21.0 - 2026-02-10 =
 * Added: Provide automation subject fields as tags in email block editor;
 * Added: New email patterns for post-purchase automations: First Purchase Thank You, Post Purchase Thank You, Product Purchase Follow-Up, and Win Back Customer;
