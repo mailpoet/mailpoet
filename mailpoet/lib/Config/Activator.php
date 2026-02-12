@@ -119,12 +119,11 @@ class Activator {
   }
 
   private function reactivateCronActions(): void {
+    $this->daemonActionSchedulerRunner->clearDeactivationFlag();
     $currentMethod = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
     if ($currentMethod !== CronTrigger::METHOD_ACTION_SCHEDULER) {
-      $this->daemonActionSchedulerRunner->clearDeactivationFlag();
       return;
     }
-    $this->daemonActionSchedulerRunner->clearDeactivationFlag();
     if (!$this->cronActionSchedulerRunner->hasScheduledAction(DaemonTrigger::NAME)) {
       $this->cronActionSchedulerRunner->scheduleRecurringAction(
         $this->wp->currentTime('timestamp', true),
