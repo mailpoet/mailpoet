@@ -7,6 +7,10 @@ import { DomainKeyComponent } from './domain-key-component';
 import { DomainHostInfo, DomainValueInfo } from './domain-key-info';
 import { ErrorIcon } from './icons';
 
+const isGarden =
+  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
+    .mailpoet_automation_context?.is_garden === true;
+
 type Props = {
   rows: Array<SenderDomainEntity>;
   loadingButton: boolean;
@@ -54,13 +58,15 @@ function ManageSenderDomain({
                 'Please add the following DNS records to your domain’s DNS settings.',
               )}{' '}
             </strong>
-            <a
-              href="https://kb.mailpoet.com/article/295-spf-dkim-dmarc#authenticating"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {__('Read the guide', 'mailpoet')}
-            </a>
+            {!isGarden && (
+              <a
+                href="https://kb.mailpoet.com/article/295-spf-dkim-dmarc#authenticating"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {__('Read the guide', 'mailpoet')}
+              </a>
+            )}
           </div>
 
           {error && (
@@ -70,22 +76,27 @@ function ManageSenderDomain({
                 <strong>
                   {__('Error authenticating your sender domain.', 'mailpoet')}
                 </strong>{' '}
-                {createInterpolateElement(
-                  __(
-                    'We detected different records from your domain. Please fix them by following the error messages below and reauthenticate your domain. For more help, <link>read our guide</link>.',
-                    'mailpoet',
-                  ),
-                  {
-                    link: (
-                      // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
-                      <a
-                        href="https://kb.mailpoet.com/article/295-spf-dkim-dmarc#authenticating"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      />
-                    ),
-                  },
-                )}
+                {isGarden
+                  ? __(
+                      'We detected different records from your domain. Please fix them by following the error messages below and reauthenticate your domain.',
+                      'mailpoet',
+                    )
+                  : createInterpolateElement(
+                      __(
+                        'We detected different records from your domain. Please fix them by following the error messages below and reauthenticate your domain. For more help, <link>read our guide</link>.',
+                        'mailpoet',
+                      ),
+                      {
+                        link: (
+                          // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                          <a
+                            href="https://kb.mailpoet.com/article/295-spf-dkim-dmarc#authenticating"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          />
+                        ),
+                      },
+                    )}
               </div>
             </div>
           )}
@@ -142,10 +153,15 @@ function ManageSenderDomain({
                 'mailpoet',
               )}
             </strong>{' '}
-            {__(
-              'MailPoet will verify your DNS records to ensure it matches. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change.',
-              'mailpoet',
-            )}
+            {isGarden
+              ? __(
+                  'Your DNS records will be verified to ensure they match. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change.',
+                  'mailpoet',
+                )
+              : __(
+                  'MailPoet will verify your DNS records to ensure it matches. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change.',
+                  'mailpoet',
+                )}
           </div>
           <Button
             variant="primary"

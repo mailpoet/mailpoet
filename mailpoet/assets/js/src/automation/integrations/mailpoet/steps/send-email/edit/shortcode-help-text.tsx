@@ -1,6 +1,17 @@
 import { __ } from '@wordpress/i18n';
 
+const isGarden =
+  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
+    .mailpoet_automation_context?.is_garden === true;
+
 export function ShortcodeHelpText(): JSX.Element {
+  if (isGarden) {
+    return (
+      <span className="mailpoet-shortcode-selector">
+        {__('You can use shortcodes.', 'mailpoet')}
+      </span>
+    );
+  }
   return (
     <span className="mailpoet-shortcode-selector">
       <a

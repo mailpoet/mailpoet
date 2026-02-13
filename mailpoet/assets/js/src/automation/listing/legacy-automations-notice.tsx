@@ -4,6 +4,10 @@ import { __ } from '@wordpress/i18n';
 import { Notice } from 'notices/notice';
 import { legacyApiFetch } from './store/legacy-api';
 
+const isGarden =
+  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
+    .mailpoet_automation_context?.is_garden === true;
+
 export function LegacyAutomationsNotice(): JSX.Element {
   const saveNoticeDismissed = useCallback(() => {
     void legacyApiFetch({
@@ -22,22 +26,27 @@ export function LegacyAutomationsNotice(): JSX.Element {
       onClose={saveNoticeDismissed}
     >
       <p>
-        {createInterpolateElement(
-          __(
-            'Your existing automations are now listed here. You can also create new, more powerful automations with our new Automations editor. <link>Learn more</link>',
-            'mailpoet',
-          ),
-          {
-            link: (
-              // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
-              <a
-                href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            ),
-          },
-        )}
+        {isGarden
+          ? __(
+              'Your existing automations are now listed here. You can also create new, more powerful automations with our new Automations editor.',
+              'mailpoet',
+            )
+          : createInterpolateElement(
+              __(
+                'Your existing automations are now listed here. You can also create new, more powerful automations with our new Automations editor. <link>Learn more</link>',
+                'mailpoet',
+              ),
+              {
+                link: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                  <a
+                    href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+              },
+            )}
       </p>
     </Notice>
   );

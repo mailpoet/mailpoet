@@ -11,6 +11,7 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WordPress\Payloads\UserPayload;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use WP_User;
 
 /**
@@ -22,13 +23,22 @@ class UserSubject implements Subject {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var DotcomHelperFunctions */
+  private $dotcomHelperFunctions;
+
   public function __construct(
-    WordPress $wordPress
+    WordPress $wordPress,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->wordPress = $wordPress;
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function getName(): string {
+    if ($this->dotcomHelperFunctions->isGarden()) {
+      // translators: automation subject (entity entering automation) title
+      return __('User', 'mailpoet');
+    }
     // translators: automation subject (entity entering automation) title
     return __('WordPress user', 'mailpoet');
   }

@@ -1,6 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
+const isGarden =
+  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
+    .mailpoet_automation_context?.is_garden === true;
+
 function SenderActions({
   showAuthorizeButton,
   authorizeAction,
@@ -23,14 +27,16 @@ function SenderActions({
           {authorizeButtonLabel}
         </Button>
       )}
-      <Button
-        variant="link"
-        target="_blank"
-        href={readMoreLink}
-        rel="noopener noreferrer"
-      >
-        {__('Learn more', 'mailpoet')}
-      </Button>
+      {!isGarden && (
+        <Button
+          variant="link"
+          target="_blank"
+          href={readMoreLink}
+          rel="noopener noreferrer"
+        >
+          {__('Learn more', 'mailpoet')}
+        </Button>
+      )}
     </>
   );
 }

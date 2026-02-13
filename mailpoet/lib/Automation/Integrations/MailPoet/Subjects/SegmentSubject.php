@@ -11,6 +11,7 @@ use MailPoet\NotFoundException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 
 /**
  * @implements Subject<SegmentPayload>
@@ -21,10 +22,15 @@ class SegmentSubject implements Subject {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var DotcomHelperFunctions */
+  private $dotcomHelperFunctions;
+
   public function __construct(
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->segmentsRepository = $segmentsRepository;
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function getKey(): string {
@@ -32,6 +38,10 @@ class SegmentSubject implements Subject {
   }
 
   public function getName(): string {
+    if ($this->dotcomHelperFunctions->isGarden()) {
+      // translators: automation subject (entity entering automation) title
+      return __('Segment', 'mailpoet');
+    }
     // translators: automation subject (entity entering automation) title
     return __('MailPoet segment', 'mailpoet');
   }
