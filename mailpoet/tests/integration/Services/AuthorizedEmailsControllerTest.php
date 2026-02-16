@@ -41,6 +41,44 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
+  public function testItResetsErrorForBundledSmallSenders() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'invalid@email.com']);
+    $this->setMailPoetSendingMethod();
+
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'shouldSkipAuthorization' => Expected::once(true),
+    ]);
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $controller->checkAuthorizedEmailAddresses();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+  }
+
+  public function testItResetsMailerLogErrorForBundledSmallSenders() {
+    $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
+    MailerLog::updateMailerLog($log);
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->setMailPoetSendingMethod();
+
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'shouldSkipAuthorization' => Expected::once(true),
+    ]);
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $controller->checkAuthorizedEmailAddresses();
+    $error = MailerLog::getError();
+    verify($error)->null();
+  }
+
   public function testItSetsProperErrorForOldUsers() {
     $this->settings->set('installed_at', '2018-03-04');
     $this->settings->set('sender.address', 'invalid@email.com');
@@ -80,6 +118,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
       'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+      'shouldSkipAuthorization' => false,
     ]);
 
     $mocks = [
@@ -151,6 +190,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
       'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+      'shouldSkipAuthorization' => false,
     ]);
 
     $mocks = [

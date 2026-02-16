@@ -54,6 +54,7 @@ class SenderDomainAuthenticationNotices {
     if (
       !$shouldDisplay
       || !$this->bridge->isMailpoetSendingServiceEnabled()
+      || $this->authorizedSenderDomainController->shouldSkipAuthorization()
       || in_array($this->getDefaultFromDomain(), $this->authorizedSenderDomainController->getFullyVerifiedSenderDomains(true))
       || $this->authorizedSenderDomainController->isNewUser()
       || $this->isFreeMailUser() && $this->subscribersFeatures->getSubscribersCount() <= AuthorizedSenderDomainController::LOWER_LIMIT

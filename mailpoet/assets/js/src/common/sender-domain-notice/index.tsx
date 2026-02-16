@@ -11,6 +11,7 @@ export type SenderRestrictionsType = {
   isAuthorizedDomainRequiredForNewCampaigns?: boolean;
   campaignTypes?: string[];
   alwaysRewrite?: boolean;
+  skipAuthorization?: boolean;
 };
 
 type SenderDomainInlineNoticeProps = {

@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -18,17 +19,25 @@ class UnauthorizedEmailNotice {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var AuthorizedSenderDomainController|null */
+  private $senderDomainController;
+
   public function __construct(
     WPFunctions $wp,
-    ?SettingsController $settings = null
+    ?SettingsController $settings = null,
+    ?AuthorizedSenderDomainController $senderDomainController = null
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function init($shouldDisplay) {
     if (!$this->settings instanceof SettingsController) {
       throw new \Exception('This method can only be called if SettingsController is provided');
+    }
+    if ($this->senderDomainController && $this->senderDomainController->shouldSkipAuthorization()) {
+      return null;
     }
     $validationError = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     if ($shouldDisplay && isset($validationError['invalid_sender_address'])) {

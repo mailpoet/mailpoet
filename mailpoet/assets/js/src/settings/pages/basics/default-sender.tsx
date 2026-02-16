@@ -66,7 +66,9 @@ export function DefaultSender({ showModal }) {
     void setErrorFlag(
       invalidSenderEmail ||
         invalidReplyToEmail ||
-        (!isAuthorized && isMssActive),
+        (!isAuthorized &&
+          isMssActive &&
+          !window.mailpoet_sender_restrictions?.skipAuthorization),
     );
   }, [
     invalidReplyToEmail,

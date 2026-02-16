@@ -99,6 +99,7 @@ class SenderField extends Component {
 
   validateEmailAddress() {
     if (!window.mailpoet_mss_active) return;
+    if (window.mailpoet_sender_restrictions?.skipAuthorization) return;
 
     const emailAddress = this.state.emailAddress;
 

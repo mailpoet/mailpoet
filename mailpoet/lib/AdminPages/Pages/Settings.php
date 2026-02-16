@@ -112,6 +112,7 @@ class Settings {
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
       $data['sender_restrictions'] = [
         'lowerLimit' => AuthorizedSenderDomainController::LOWER_LIMIT,
+        'skipAuthorization' => $this->senderDomainController->shouldSkipAuthorization(),
       ];
     }
 

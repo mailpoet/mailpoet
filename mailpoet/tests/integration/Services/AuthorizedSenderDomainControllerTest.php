@@ -489,7 +489,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once($this->lowerLimit + 1),
+      'getSubscribersCount' => $this->lowerLimit + 1,
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
@@ -502,7 +502,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is Big Sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once($this->upperLimit + 1),
+      'getSubscribersCount' => $this->upperLimit + 1,
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForExistingCampaigns());
@@ -531,7 +531,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once($this->lowerLimit + 1),
+      'getSubscribersCount' => $this->lowerLimit + 1,
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
@@ -565,5 +565,68 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     ]);
 
     $this->assertFalse($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
+  }
+
+  public function testIsBundledSubscription(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $this->assertTrue($this->getController()->isBundledSubscription());
+  }
+
+  public function testIsNotBundledSubscriptionForOtherTypes(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, 'MANUAL');
+    $this->assertFalse($this->getController()->isBundledSubscription());
+  }
+
+  public function testShouldSkipAuthorizationForBundledSmallSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->lowerLimit,
+    ]);
+    $this->assertTrue($this->getController(null, $subscribersMock)->shouldSkipAuthorization());
+  }
+
+  public function testShouldNotSkipAuthorizationForBundledBigSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->upperLimit + 1,
+    ]);
+    $this->assertFalse($this->getController(null, $subscribersMock)->shouldSkipAuthorization());
+  }
+
+  public function testShouldNotSkipAuthorizationForNonBundledSmallSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, 'MANUAL');
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->lowerLimit,
+    ]);
+    $this->assertFalse($this->getController(null, $subscribersMock)->shouldSkipAuthorization());
+  }
+
+  public function testNotIsAuthorizedDomainRequiredForNewCampaignsForBundledSmallSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->lowerLimit,
+    ]);
+    $this->assertFalse($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
+  }
+
+  public function testNotIsAuthorizedDomainRequiredForExistingCampaignsForBundledSmallSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->lowerLimit,
+    ]);
+    $this->assertFalse($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForExistingCampaigns());
+  }
+
+  public function testIsAuthorizedDomainRequiredForBundledBigSender(): void {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE);
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->upperLimit + 1,
+    ]);
+    $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
+    // Need a fresh mock since count is called again
+    $subscribersMock2 = $this->make(Subscribers::class, [
+      'getSubscribersCount' => $this->upperLimit + 1,
+    ]);
+    $this->assertTrue($this->getController(null, $subscribersMock2)->isAuthorizedDomainRequiredForExistingCampaigns());
   }
 }

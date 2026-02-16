@@ -56,7 +56,11 @@ function SenderEmailAddressWarning({
     MailPoet.freeMailDomains.indexOf(emailAddressDomain) > -1;
 
   if (mssActive) {
-    if (!isEmailAuthorized && emailAddress) {
+    if (
+      !isEmailAuthorized &&
+      emailAddress &&
+      !senderRestrictions?.skipAuthorization
+    ) {
       displayElements.push(
         <div key="authorizeMyEmail">
           <p className="sender_email_address_warning">
@@ -83,7 +87,11 @@ function SenderEmailAddressWarning({
         </div>,
       );
     }
-    if (showSenderDomainWarning && isEmailAuthorized) {
+    if (
+      showSenderDomainWarning &&
+      isEmailAuthorized &&
+      !senderRestrictions?.skipAuthorization
+    ) {
       displayElements.push(
         <div key="authorizeSenderDomain">
           <SenderDomainInlineNotice
@@ -106,8 +114,14 @@ function SenderEmailAddressWarning({
             onRequestClose={() => {
               setShowAuthorizedEmailModal(null);
             }}
-            showSenderEmailTab={!isEmailAuthorized}
-            showSenderDomainTab={showSenderDomainWarning && isEmailAuthorized}
+            showSenderEmailTab={
+              !isEmailAuthorized && !senderRestrictions?.skipAuthorization
+            }
+            showSenderDomainTab={
+              showSenderDomainWarning &&
+              isEmailAuthorized &&
+              !senderRestrictions?.skipAuthorization
+            }
             initialTab={showAuthorizedEmailModal}
             onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
             autoSwitchTab={switchToNewTab}

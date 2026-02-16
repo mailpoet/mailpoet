@@ -6,6 +6,7 @@ use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -82,13 +83,14 @@ class PermanentNotices {
     SubscribersFeature $subscribersFeature,
     ServicesChecker $serviceChecker,
     MailerFactory $mailerFactory,
-    SenderDomainAuthenticationNotices $senderDomainAuthenticationNotices
+    SenderDomainAuthenticationNotices $senderDomainAuthenticationNotices,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
     $this->afterMigrationNotice = new AfterMigrationNotice();
-    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings);
-    $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp);
+    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings, $senderDomainController);
+    $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp, $senderDomainController);
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $subscribersRepository, $wp);
     $this->blackFridayNotice = new BlackFridayNotice($serviceChecker, $subscribersFeature);
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice($settings, $trackingConfig, $wp);

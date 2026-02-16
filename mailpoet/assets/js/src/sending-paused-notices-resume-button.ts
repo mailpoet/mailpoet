@@ -31,6 +31,9 @@ const isValidFromAddress = async (fromAddress: string | null) => {
   if (MailPoet.mtaMethod !== 'MailPoet') {
     return true;
   }
+  if (window.mailpoet_sender_restrictions?.skipAuthorization) {
+    return true;
+  }
   const verifiedDomains = await loadVerifiedSenderDomains();
   const senderDomain = extractEmailDomain(fromAddress);
   if (verifiedDomains.indexOf(senderDomain) !== -1) {

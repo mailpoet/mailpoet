@@ -254,6 +254,9 @@ class NewsletterSendComponent extends Component<
     if (window.mailpoet_mta_method !== 'MailPoet') {
       return true;
     }
+    if (window.mailpoet_sender_restrictions?.skipAuthorization) {
+      return true;
+    }
     const verifiedDomains = await this.loadVerifiedSenderDomains();
     const senderDomain = extractEmailDomain(this.state.item.sender_address);
     if (verifiedDomains.indexOf(senderDomain) !== -1) {

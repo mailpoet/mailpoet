@@ -186,6 +186,7 @@ interface Window {
     lowerLimit: number;
     isAuthorizedDomainRequiredForNewCampaigns?: boolean;
     campaignTypes?: string[];
+    skipAuthorization?: boolean;
   };
   mailpoet_all_sender_domains?: string[];
   mailpoet_mss_active: boolean;

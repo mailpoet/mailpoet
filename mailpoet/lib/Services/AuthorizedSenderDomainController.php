@@ -291,11 +291,29 @@ class AuthorizedSenderDomainController {
     return $this->subscribers->getSubscribersCount() > self::UPPER_LIMIT;
   }
 
+  public function isBundledSubscription(): bool {
+    return $this->settingsController->get(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME) === Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE;
+  }
+
+  /**
+   * Bundled subscription users who are small senders
+   * can skip email/domain authorization requirements.
+   */
+  public function shouldSkipAuthorization(): bool {
+    return $this->isBundledSubscription() && $this->isSmallSender();
+  }
+
   public function isAuthorizedDomainRequiredForNewCampaigns(): bool {
+    if ($this->shouldSkipAuthorization()) {
+      return false;
+    }
     return $this->settingsController->get('mta.method') === Mailer::METHOD_MAILPOET && !$this->isSmallSender();
   }
 
   public function isAuthorizedDomainRequiredForExistingCampaigns(): bool {
+    if ($this->shouldSkipAuthorization()) {
+      return false;
+    }
     return $this->settingsController->get('mta.method') === Mailer::METHOD_MAILPOET && $this->isBigSender();
   }
 
@@ -307,6 +325,7 @@ class AuthorizedSenderDomainController {
       'senderRestrictions' => [
         'lowerLimit' => self::LOWER_LIMIT,
         'alwaysRewrite' => false,
+        'skipAuthorization' => $this->shouldSkipAuthorization(),
       ],
     ];
   }

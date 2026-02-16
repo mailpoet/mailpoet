@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -21,15 +22,23 @@ class UnauthorizedEmailInNewslettersNotice {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var AuthorizedSenderDomainController|null */
+  private $senderDomainController;
+
   public function __construct(
     SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    ?AuthorizedSenderDomainController $senderDomainController = null
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function init($shouldDisplay) {
+    if ($this->senderDomainController && $this->senderDomainController->shouldSkipAuthorization()) {
+      return null;
+    }
     $validationError = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     if ($shouldDisplay && isset($validationError['invalid_senders_in_newsletters'])) {
       return $this->display($validationError);

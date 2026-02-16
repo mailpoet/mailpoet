@@ -135,6 +135,13 @@ class AuthorizedEmailsController {
       return null;
     }
 
+    // Bundled subscription users who are small senders skip authorization
+    if ($this->senderDomainController->shouldSkipAuthorization()) {
+      $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
+      $this->updateMailerLog();
+      return null;
+    }
+
     $authorizedEmails = $this->getAuthorizedEmailAddresses();
     // Keep previous check result for an invalid response from API
     if (!$authorizedEmails) {
