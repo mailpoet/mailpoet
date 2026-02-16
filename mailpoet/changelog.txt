@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.21.2 - 2026-02-16 =
+* Changed: Automation emails after non-delay actions (add tag, if/else, add to list) are now treated as transactional when using transactional triggers. Only the delay action converts emails to marketing;
+* Fixed: Ensure automation emails consistently use 'private' post status and prevent duplicate newsletter records;
+* Fixed: Cron heartbeat action not being rescheduled after plugin updates;
+* Fixed: Fix open tracking for emails created with the new email editor (Alpha).
+
 = 5.21.1 - 2026-02-11 =
 * Improved: minor changes and fixes.
 
