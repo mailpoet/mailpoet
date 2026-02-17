@@ -1,12 +1,11 @@
 import { useCallback } from 'react';
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { getIsGarden } from 'common/functions';
 import { Notice } from 'notices/notice';
 import { legacyApiFetch } from './store/legacy-api';
 
-const isGarden =
-  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-    .mailpoet_automation_context?.is_garden === true;
+const isGarden = getIsGarden();
 
 export function LegacyAutomationsNotice(): JSX.Element {
   const saveNoticeDismissed = useCallback(() => {

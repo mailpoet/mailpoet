@@ -1,3 +1,4 @@
+import { getIsGarden } from 'common/functions';
 import { registerStepType } from '../../editor/store';
 import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
@@ -20,9 +21,7 @@ import { step as WpUserRoleChangedTrigger } from './steps/wp-user-role-changed';
 // Insert new imports here
 
 export const initialize = (): void => {
-  const isGarden =
-    (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-      .mailpoet_automation_context?.is_garden === true;
+  const isGarden = getIsGarden();
 
   registerStepType(SendEmailStep);
   registerStepType(WpUserRegisteredTrigger);

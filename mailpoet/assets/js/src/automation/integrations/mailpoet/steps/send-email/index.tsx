@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import ReactStringReplace from 'react-string-replace';
+import { getIsGarden } from 'common/functions';
 import { Edit } from './edit';
 import { State, StepType } from '../../../../editor/store';
 import { Step } from '../../../../editor/components/automation/types';
@@ -9,9 +10,7 @@ import { SendMailIcon } from './icons/send-mail';
 import { TransactionalIcon } from './icons/transactional';
 import { MarketingIcon } from './icons/marketing';
 
-const isGarden =
-  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-    .mailpoet_automation_context?.is_garden === true;
+const isGarden = getIsGarden();
 
 const keywords = [
   // translators: noun, used as a search keyword for "Send email" automation action

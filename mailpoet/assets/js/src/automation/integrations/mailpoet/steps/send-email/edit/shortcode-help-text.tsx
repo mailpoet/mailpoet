@@ -1,8 +1,7 @@
 import { __ } from '@wordpress/i18n';
+import { getIsGarden } from 'common/functions';
 
-const isGarden =
-  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-    .mailpoet_automation_context?.is_garden === true;
+const isGarden = getIsGarden();
 
 export function ShortcodeHelpText(): JSX.Element {
   if (isGarden) {

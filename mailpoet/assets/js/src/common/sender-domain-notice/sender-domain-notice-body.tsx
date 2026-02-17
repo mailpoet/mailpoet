@@ -1,10 +1,9 @@
 import { createInterpolateElement } from '@wordpress/element';
 import { escapeHTML } from '@wordpress/escape-html';
 import { __ } from '@wordpress/i18n';
+import { getIsGarden } from 'common/functions';
 
-const isGarden =
-  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-    .mailpoet_automation_context?.is_garden === true;
+const isGarden = getIsGarden();
 
 function SenderDomainNoticeBody({
   emailAddressDomain,

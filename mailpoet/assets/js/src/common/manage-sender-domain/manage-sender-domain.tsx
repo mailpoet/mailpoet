@@ -1,15 +1,14 @@
 import { Button, Spinner } from '@wordpress/components';
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { getIsGarden } from 'common/functions';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
 import { DomainKeyComponent } from './domain-key-component';
 import { DomainHostInfo, DomainValueInfo } from './domain-key-info';
 import { ErrorIcon } from './icons';
 
-const isGarden =
-  (window as { mailpoet_automation_context?: { is_garden?: boolean } })
-    .mailpoet_automation_context?.is_garden === true;
+const isGarden = getIsGarden();
 
 type Props = {
   rows: Array<SenderDomainEntity>;
