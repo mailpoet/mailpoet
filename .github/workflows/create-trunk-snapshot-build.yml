@@ -153,15 +153,6 @@ jobs:
               core.info(`Created new release: ${release.html_url}`);
             }
 
-            // Remove existing assets to keep only the latest snapshot
-            for (const asset of release.assets) {
-              core.info(`Deleting old asset: ${asset.name}`);
-              await github.rest.repos.deleteReleaseAsset({
-                ...context.repo,
-                asset_id: asset.id,
-              });
-            }
-
             // Upload the new snapshot zip
             const fileContent = fs.readFileSync(assetPath);
             const uploadResponse = await github.rest.repos.uploadReleaseAsset({
