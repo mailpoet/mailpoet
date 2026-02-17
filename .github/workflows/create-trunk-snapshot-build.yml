@@ -1,0 +1,179 @@
+name: 'Create Trunk Snapshot Build'
+
+on:
+  workflow_dispatch:
+
+env:
+  SOURCE_REF: trunk
+  TARGET_REF: trunk-snapshot
+
+permissions: {}
+
+jobs:
+  build:
+    if: github.repository_owner == 'mailpoet'
+    name: 'Create Trunk Snapshot Build'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 'Update trunk-snapshot tag'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const sourceRef = process.env.SOURCE_REF;
+            const targetRef = process.env.TARGET_REF;
+
+            const branchData = await github.rest.repos.getBranch({
+              ...context.repo,
+              branch: sourceRef,
+            });
+
+            try {
+              await github.rest.git.updateRef({
+                ...context.repo,
+                ref: `tags/${targetRef}`,
+                sha: branchData.data.commit.sha,
+              });
+              core.info(`Updated tag '${targetRef}' to ${branchData.data.commit.sha}`);
+            } catch (e) {
+              await github.rest.git.createRef({
+                ...context.repo,
+                ref: `refs/tags/${targetRef}`,
+                sha: branchData.data.commit.sha,
+              });
+              core.info(`Created tag '${targetRef}' at ${branchData.data.commit.sha}`);
+            }
+
+      - name: 'Checkout ref'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_REF }}
+
+      - name: 'Setup PHP'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, mysql, gd, zip, intl
+          tools: wp-cli
+
+      - name: 'Setup pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.9
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: 'Install system dependencies'
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: 'Setup WordPress'
+        run: |
+          wp core download --path=wordpress
+          wp config create \
+            --dbname=wordpress \
+            --dbuser=root \
+            --dbpass=root \
+            --dbhost=127.0.0.1 \
+            --dbprefix=mp_ \
+            --path=wordpress
+          wp core install \
+            --admin_name=admin \
+            --admin_password=admin \
+            --admin_email=admin@example.com \
+            --url=http://localhost \
+            --title="WordPress" \
+            --path=wordpress \
+            --skip-email
+
+      - name: 'Configure build environment'
+        working-directory: mailpoet
+        run: echo "WP_ROOT=${{ github.workspace }}/wordpress" > .env
+
+      - name: 'Build zip'
+        working-directory: mailpoet
+        run: bash build.sh
+
+      - name: 'Set build variables'
+        id: build_vars
+        shell: bash
+        run: |
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%d")" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: 'Upload trunk snapshot build'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const targetRef = process.env.TARGET_REF;
+            const buildDate = '${{ steps.build_vars.outputs.BUILD_DATE }}';
+            const shortSha = '${{ steps.build_vars.outputs.SHORT_SHA }}';
+            const assetName = `mailpoet-${buildDate}-${shortSha}-trunk-snapshot.zip`;
+            const assetPath = `${{ github.workspace }}/mailpoet/mailpoet.zip`;
+
+            let release;
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                ...context.repo,
+                tag: targetRef,
+              });
+              release = data;
+              core.info(`Found existing release: ${release.html_url}`);
+            } catch (e) {
+              const { data } = await github.rest.repos.createRelease({
+                ...context.repo,
+                tag_name: targetRef,
+                name: 'Trunk Snapshot Build',
+                body: 'Latest trunk snapshot build of the MailPoet plugin. This release is automatically updated on each workflow run.',
+                prerelease: true,
+              });
+              release = data;
+              core.info(`Created new release: ${release.html_url}`);
+            }
+
+            // Remove existing assets to keep only the latest snapshot
+            for (const asset of release.assets) {
+              core.info(`Deleting old asset: ${asset.name}`);
+              await github.rest.repos.deleteReleaseAsset({
+                ...context.repo,
+                asset_id: asset.id,
+              });
+            }
+
+            // Upload the new snapshot zip
+            const fileContent = fs.readFileSync(assetPath);
+            const uploadResponse = await github.rest.repos.uploadReleaseAsset({
+              ...context.repo,
+              release_id: release.id,
+              name: assetName,
+              data: fileContent,
+              headers: {
+                'content-type': 'application/zip',
+                'content-length': fileContent.length,
+              },
+            });
+
+            core.info(`Uploaded ${assetName} to ${release.html_url}`);
+            core.info(`Direct download: ${uploadResponse.data.browser_download_url}`);
