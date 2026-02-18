@@ -272,6 +272,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
       'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+      'shouldSkipAuthorization' => false,
     ]);
 
     $mocks = [
@@ -464,6 +465,24 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     // refresh from DB and check again
     $this->entityManager->refresh($newsletter);
     verify($newsletter->getSenderAddress())->same('invalid@email.com');
+  }
+
+  public function testItSetsFromAddressForBundledSmallSenders() {
+    $this->settings->set('sender.address', 'old@email.com');
+    $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'old@email.com']);
+    $this->setMailPoetSendingMethod();
+
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'shouldSkipAuthorization' => Expected::once(true),
+    ]);
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $controller->setFromEmailAddress('any@unauthorized-domain.com');
+    verify($this->settings->get('sender.address'))->same('any@unauthorized-domain.com');
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
   public function testSetsFromAddressThrowsForUnauthorizedEmail() {

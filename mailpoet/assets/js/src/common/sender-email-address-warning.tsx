@@ -36,7 +36,10 @@ function SenderEmailAddressWarning({
   onSuccessfulEmailOrDomainAuthorization = () => {},
 }: Props) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] = useState(
-    showModal === 'authorizedEmailModal' ? ('sender_domain' as TabProps) : null,
+    showModal === 'authorizedEmailModal' &&
+      !senderRestrictions?.skipAuthorization
+      ? ('sender_domain' as TabProps)
+      : null,
   );
 
   const loadModal = (event, tab: TabProps) => {

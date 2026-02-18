@@ -19,6 +19,7 @@ class SenderField extends Component {
     this.state = {
       emailAddress: props.item.sender_address,
       showSenderDomainWarning:
+        !window.mailpoet_sender_restrictions?.skipAuthorization &&
         !window.mailpoet_verified_sender_domains.includes(emailDomain),
       isPartiallyVerifiedDomain:
         window.mailpoet_partially_verified_sender_domains.includes(emailDomain),

@@ -59,6 +59,13 @@ class AuthorizedEmailsController {
   }
 
   public function setFromEmailAddress(string $address) {
+    // Bundled subscription users who are small senders skip authorization
+    if ($this->senderDomainController->shouldSkipAuthorization()) {
+      $this->settings->set('sender.address', $address);
+      $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
+      return;
+    }
+
     $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);

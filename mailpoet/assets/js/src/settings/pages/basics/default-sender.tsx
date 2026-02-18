@@ -62,13 +62,14 @@ export function DefaultSender({ showModal }) {
     setSenderEmail(email);
   };
 
+  const skipAuthorization =
+    window.mailpoet_sender_restrictions?.skipAuthorization;
+
   useEffect(() => {
     void setErrorFlag(
       invalidSenderEmail ||
         invalidReplyToEmail ||
-        (!isAuthorized &&
-          isMssActive &&
-          !window.mailpoet_sender_restrictions?.skipAuthorization),
+        (!isAuthorized && isMssActive && !skipAuthorization),
     );
   }, [
     invalidReplyToEmail,
@@ -76,6 +77,7 @@ export function DefaultSender({ showModal }) {
     setErrorFlag,
     isAuthorized,
     isMssActive,
+    skipAuthorization,
   ]);
   return (
     <>
