@@ -34,7 +34,11 @@ export function RunAutomationOnce(): JSX.Element {
   return (
     <ToggleControl
       className="mailpoet-automation-run-only-once"
-      label={__('Run this automation only once per subscriber.', 'mailpoet')}
+      label={__('Run automation once per subscriber', 'mailpoet')}
+      help={__(
+        'Use this for automations that should only run once, like a welcome email. Turn it off for automations that should run every time, like abandoned cart reminders.',
+        'mailpoet',
+      )}
       checked={checked}
       onChange={(value) => {
         void dispatch(storeName).updateAutomationMeta(

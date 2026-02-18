@@ -69,7 +69,8 @@ class RunAutomationOnlyOnceSettingCest {
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->click($this->automation->getName());
     $i->waitForText('Automation settings');
-    $i->waitForText('Run this automation only once per subscriber.');
+    $i->waitForText('Run automation once per subscriber');
+    $i->see('Use this for automations that should only run once, like a welcome email. Turn it off for automations that should run every time, like abandoned cart reminders.');
     $i->click('.mailpoet-automation-run-only-once label');
 
     $i->click('Trigger');
@@ -127,9 +128,9 @@ class RunAutomationOnlyOnceSettingCest {
     $i->dontSee('Entered 2');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->click($this->automation->getName());
-    $i->waitForText('Run this automation only once per subscriber.');
-    $i->click('.mailpoet-automation-run-only-once'); //yes
-    $i->click('.mailpoet-automation-run-only-once'); //no
+    $i->waitForText('Run automation once per subscriber');
+    $i->click('.mailpoet-automation-run-only-once label'); //yes
+    $i->click('.mailpoet-automation-run-only-once label'); //no
 
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', $this->segment->getName());
