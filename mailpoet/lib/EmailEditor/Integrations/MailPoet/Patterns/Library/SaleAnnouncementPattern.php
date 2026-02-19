@@ -25,8 +25,7 @@ class SaleAnnouncementPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [X]% is the discount percentage placeholder to translate */
-      __('[X]% off sitewide!', 'mailpoet') . '</h1>
+      __('XX% off sitewide!', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -39,8 +38,7 @@ class SaleAnnouncementPattern extends Pattern {
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [X]% is the discount percentage placeholder to translate */
-      __('Get [X]% OFF EVERYTHING in the store for a limited time.', 'mailpoet') . '</p>
+      __('Get XX% OFF EVERYTHING in the store for a limited time.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -57,8 +55,7 @@ class SaleAnnouncementPattern extends Pattern {
 
       <!-- wp:paragraph {"fontSize":"medium"} -->
       <p class="has-medium-font-size">' .
-      /* translators: [End Date] is the sale end date placeholder to translate */
-      __("Don't wait too long – this offer ends on [End Date].", 'mailpoet') . '</p>
+      __("Don't wait too long – this offer ends on MONTH DAY.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:group -->
