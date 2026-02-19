@@ -26,11 +26,13 @@ class EducationalCampaignPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
+      /* translators: PRODUCT NAME is placeholder text that merchants replace with their own content. */
       __('How to Get the Most from PRODUCT NAME', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
+      /* translators: PRODUCT NAME is placeholder text that merchants replace with their own content. */
       __('Our latest guide walks you through expert tips to make the most out of your PRODUCT NAME.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
@@ -56,6 +58,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
+      /* translators: Placeholder text that merchants replace with their own content. */
       __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
@@ -77,6 +80,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
+      /* translators: Placeholder text that merchants replace with their own content. */
       __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
@@ -113,6 +117,7 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
+      /* translators: Placeholder text that merchants replace with their own content. */
       __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>

@@ -26,6 +26,7 @@ class ProductPurchaseFollowUpPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
+      /* translators: PRODUCT NAME is placeholder text that merchants replace with their own content. */
       __('Loving your PRODUCT NAME? Make it even better', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 

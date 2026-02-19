@@ -25,11 +25,13 @@ class EventInvitationPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
+      /* translators: EVENT NAME is placeholder text that merchants replace with their own content. */
       __('Join us for EVENT NAME', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
+      /* translators: A BRIEF DESCRIPTION OF THE EVENT is placeholder text that merchants replace with their own content. */
       __("You're invited 🎉 Join us for A BRIEF DESCRIPTION OF THE EVENT and be part of our exclusive event series.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
@@ -38,11 +40,15 @@ class EventInvitationPattern extends Pattern {
       <!-- /wp:image -->
 
       <!-- wp:heading {"textAlign":"center","fontSize":"large"} -->
-      <h2 class="wp-block-heading has-text-align-center has-large-font-size">' . __('MONTH DAY, at TIME', 'mailpoet') . '</h2>
+      <h2 class="wp-block-heading has-text-align-center has-large-font-size">' .
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('MONTH DAY, at TIME', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"16px"}}} -->
-      <p class="has-text-align-center" style="font-size:16px">' . __('BUILDING STREET, CITY', 'mailpoet') . '</p>
+      <p class="has-text-align-center" style="font-size:16px">' .
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('BUILDING STREET, CITY', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
