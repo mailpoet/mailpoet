@@ -258,10 +258,6 @@ const adminConfig = {
           from: 'node_modules/@woocommerce/email-editor/build-style',
           to: 'email-editor/style',
         },
-        {
-          from: 'node_modules/@woocommerce/email-editor/assets',
-          to: 'email-editor/assets',
-        },
       ],
     }),
     new DirectCopyPlugin({

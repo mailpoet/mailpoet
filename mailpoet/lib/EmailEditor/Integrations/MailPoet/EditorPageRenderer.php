@@ -104,7 +104,6 @@ class EditorPageRenderer {
       $editorIntegrationAssetsParams['version']
     );
 
-    // End of replacing Rich Text package.
     $styleParams = require Env::$assetsPath . '/dist/js/email-editor/style/style.asset.php';
     $this->wp->wpEnqueueStyle(
       'mailpoet_email_editor',
