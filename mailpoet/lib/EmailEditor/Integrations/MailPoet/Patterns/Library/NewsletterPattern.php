@@ -32,8 +32,8 @@ class NewsletterPattern extends Pattern {
       <p>' . __('Welcome to our weekly newsletter! Stay updated with the latest trends in hair care, styling tips, and exclusive offers.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/newsletter.jpg')) . '" alt="' . esc_attr__('Newsletter image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
 
       <!-- wp:paragraph -->

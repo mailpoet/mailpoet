@@ -33,8 +33,8 @@ class SaleAnnouncementPattern extends Pattern {
       <p style="font-size:16px">' . __('Big news! Our sitewide sale is officially ON!', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/sale-announcement.jpg')) . '" alt="' . esc_attr__('Sale announcement image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->

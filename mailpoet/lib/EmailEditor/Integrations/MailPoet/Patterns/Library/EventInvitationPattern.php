@@ -35,8 +35,8 @@ class EventInvitationPattern extends Pattern {
       __("You're invited 🎉 Join us for A BRIEF DESCRIPTION OF THE EVENT and be part of our exclusive event series.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/event-invitation.jpg')) . '" alt="' . esc_attr__('Event invitation image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
 
       <!-- wp:heading {"textAlign":"center","fontSize":"large"} -->

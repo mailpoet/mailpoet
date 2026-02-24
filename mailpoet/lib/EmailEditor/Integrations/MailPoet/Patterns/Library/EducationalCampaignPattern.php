@@ -44,8 +44,8 @@ class EducationalCampaignPattern extends Pattern {
       <div class="wp-block-columns">
       <!-- wp:column {"style":{"spacing":{"padding":{"right":"0","left":"0"}}}} -->
       <div class="wp-block-column" style="padding-right:0;padding-left:0">
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/educational-step-1.jpg')) . '" alt="' . esc_attr__('Step 1 image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
       </div>
       <!-- /wp:column -->
@@ -88,8 +88,8 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:column {"style":{"spacing":{"padding":{"right":"0","left":"0"}}}} -->
       <div class="wp-block-column" style="padding-right:0;padding-left:0">
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/educational-step-2.jpg')) . '" alt="' . esc_attr__('Step 2 image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
       </div>
       <!-- /wp:column -->
@@ -104,8 +104,8 @@ class EducationalCampaignPattern extends Pattern {
       <div class="wp-block-columns">
       <!-- wp:column {"style":{"spacing":{"padding":{"right":"0","left":"0"}}}} -->
       <div class="wp-block-column" style="padding-right:0;padding-left:0">
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/educational-step-3.jpg')) . '" alt="' . esc_attr__('Step 3 image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
       </div>
       <!-- /wp:column -->
