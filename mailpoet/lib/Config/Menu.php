@@ -31,6 +31,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 
 class Menu {
   const MAIN_PAGE_SLUG = self::HOMEPAGE_PAGE_SLUG;
@@ -91,6 +92,8 @@ class Menu {
 
   private CapabilitiesManager $capabilitiesManager;
 
+  private DotcomHelperFunctions $dotcomHelperFunctions;
+
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
@@ -99,7 +102,8 @@ class Menu {
     Router $router,
     CustomFonts $customFonts,
     CapabilitiesManager $capabilitiesManager,
-    EmailEditor $emailEditor
+    EmailEditor $emailEditor,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -109,6 +113,7 @@ class Menu {
     $this->customFonts = $customFonts;
     $this->capabilitiesManager = $capabilitiesManager;
     $this->emailEditor = $emailEditor;
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function init() {
@@ -570,7 +575,11 @@ class Menu {
     });
     $this->wp->addAction('load-' . $automationEditorPage, function() {
       $this->wp->addFilter('admin_body_class', function ($classes) {
-        return ltrim($classes . ' site-editor-php');
+        $classes .= ' site-editor-php';
+        if ($this->dotcomHelperFunctions->isGarden()) {
+          $classes .= ' admin-color-modern';
+        }
+        return ltrim($classes);
       });
     });
   }
