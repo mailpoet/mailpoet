@@ -279,7 +279,7 @@ class GitHubController {
   public function getLastReleasedVersion(): ?string {
     $response = $this->httpClient->get('releases', [
       'query' => [
-        'per_page' => 1,
+        'per_page' => 20,
       ],
     ]);
     $releases = json_decode($response->getBody()->getContents(), true);
@@ -289,14 +289,14 @@ class GitHubController {
     }
 
     $validReleases = array_filter($releases, function ($release) {
-      return VersionHelper::validateVersion($release['tag_name']);
+      return !$release['prerelease'] && VersionHelper::validateVersion($release['tag_name']);
     });
     if (empty($validReleases)) {
       throw new \Exception('No released versions matching MailPoet version format found');
     }
 
-    // Get the first release (most recent) and return its tag name
-    $latestRelease = reset($releases);
+    // Get the first valid release (most recent) and return its tag name
+    $latestRelease = reset($validReleases);
     return $latestRelease['tag_name'];
   }
 }
