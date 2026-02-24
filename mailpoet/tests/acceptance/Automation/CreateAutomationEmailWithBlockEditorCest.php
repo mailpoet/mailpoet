@@ -98,6 +98,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->see('Active');
 
     $i->wantTo('Test editing existing automation email with block editor');
+    $i->waitForText('Edit', 10, '.mailpoet-automation-listing');
     $i->click('Edit', '.mailpoet-automation-listing');
     $i->waitForText('Active');
     $i->click('Send email');
