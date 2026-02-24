@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.21.2
+Stable tag: 5.21.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.21.2 - 2026-02-16 =
-* Changed: Automation emails after non-delay actions (add tag, if/else, add to list) are now treated as transactional when using transactional triggers. Only the delay action converts emails to marketing;
-* Fixed: Ensure automation emails consistently use 'private' post status and prevent duplicate newsletter records;
-* Fixed: Cron heartbeat action not being rescheduled after plugin updates;
-* Fixed: Fix open tracking for emails created with the new email editor (Alpha).
+= 5.21.3 - 2026-02-24 =
+* Updated: Bump the minimum required WooCommerce version to 10.4 and tested up to version to 10.5;
+* Updated: Merged settings panels in the block email editor;
+* Updated: Replace bracket placeholders with uppercase text in email patterns.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
