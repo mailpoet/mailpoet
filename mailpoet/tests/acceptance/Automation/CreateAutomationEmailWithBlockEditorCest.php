@@ -60,7 +60,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
-    $i->waitForElementVisible('[aria-label="Block: Heading"]');
+    $i->waitForElementVisible('[aria-label^="Block: Heading"]');
 
     $i->wantTo('Add content to the email using block editor');
     $i->click('[aria-label="Block: Paragraph"]');

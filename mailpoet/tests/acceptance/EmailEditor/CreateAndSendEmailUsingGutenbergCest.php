@@ -31,7 +31,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
-    $i->waitForElementVisible('[aria-label="Block: Heading"]');
+    $i->waitForElementVisible('[aria-label^="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
     $i->switchToIFrame();
@@ -104,7 +104,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
-    $i->waitForElementVisible('[aria-label="Block: Heading"]');
+    $i->waitForElementVisible('[aria-label^="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
     $i->switchToIFrame();
