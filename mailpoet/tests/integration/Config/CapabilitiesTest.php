@@ -26,11 +26,23 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->accessControl = new AccessControl();
   }
 
+  public function _after() {
+    // Guarantee cleanup even if assertions fail
+    delete_transient(Capabilities::TRANSIENT_CAPS_VERIFIED);
+    $this->caps->setupWPCapabilities();
+    set_current_screen('front');
+    parent::_after();
+  }
+
   public function testItInitializes() {
     $caps = Stub::makeEmptyExcept(
       $this->caps,
       'init',
-      ['setupMembersCapabilities' => Expected::once()],
+      [
+        'setupMembersCapabilities' => Expected::once(),
+        'wp' => new WPFunctions(),
+        'accessControl' => new AccessControl(),
+      ],
       $this
     );
     $caps->init();
@@ -66,6 +78,73 @@ class CapabilitiesTest extends \MailPoetTest {
     verify($checked)->true();
     // Restore capabilities
     $this->caps->setupWPCapabilities();
+  }
+
+  public function testItRestoresMissingCapabilitiesOnInit() {
+    // Simulate admin context
+    set_current_screen('dashboard');
+
+    // Remove a capability to simulate it being lost
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    $adminRole->remove_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+    verify($adminRole->has_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS))->false();
+
+    // Clear any cached transient
+    delete_transient(Capabilities::TRANSIENT_CAPS_VERIFIED);
+
+    // init() should restore the missing capability
+    $this->caps->init();
+
+    // Verify capability was restored
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    verify($adminRole->has_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS))->true();
+
+    // Verify transient was set
+    verify(get_transient(Capabilities::TRANSIENT_CAPS_VERIFIED))->notEmpty();
+  }
+
+  public function testItSkipsCapabilityCheckWhenTransientIsSet() {
+    // Simulate admin context
+    set_current_screen('dashboard');
+
+    // Set the transient to simulate a recent successful check
+    set_transient(Capabilities::TRANSIENT_CAPS_VERIFIED, '1', HOUR_IN_SECONDS);
+
+    // Remove a capability
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    $adminRole->remove_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+
+    // init() should NOT restore it because transient is set
+    $this->caps->init();
+
+    // Capability should still be missing
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    verify($adminRole->has_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS))->false();
+  }
+
+  public function testItSkipsCapabilityCheckOnNonAdminRequests() {
+    // Ensure we're NOT in admin context
+    set_current_screen('front');
+
+    // Clear transient
+    delete_transient(Capabilities::TRANSIENT_CAPS_VERIFIED);
+
+    // Remove a capability
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    $adminRole->remove_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+
+    // init() should NOT restore it because we're not in admin
+    $this->caps->init();
+
+    // Capability should still be missing
+    $adminRole = get_role('administrator');
+    $this->assertInstanceOf(WP_Role::class, $adminRole);
+    verify($adminRole->has_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS))->false();
   }
 
   public function testItDoesNotSetupCapabilitiesForNonexistentRoles() {
