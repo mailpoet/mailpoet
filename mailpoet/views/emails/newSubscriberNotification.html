@@ -7,7 +7,7 @@
 <p><%= __('Cheers,') %>
 
 <% if is_garden() %>
-<p><%= get_option('blogname') %>
+<p><%= get_option('blogname')|e('html') %>
 <% else %>
 <p><%= __('The MailPoet Plugin') %>
 <% endif %>
