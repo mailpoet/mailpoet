@@ -17,6 +17,7 @@ This is a **monorepo** containing:
 / (repo root)
 ├── mailpoet/                    # Free plugin (primary development area)
 │   ├── lib/                     # PHP backend (PSR-4, namespace: MailPoet\)
+│   ├── lib-3rd-party/           # Vendored third-party libraries (DO NOT EDIT)
 │   ├── assets/js/src/           # React/TypeScript frontend
 │   ├── assets/css/src/          # SCSS stylesheets
 │   ├── tests/                   # Unit, integration, acceptance tests
@@ -29,7 +30,9 @@ This is a **monorepo** containing:
 ├── packages/js/                 # Shared JS packages (pnpm workspaces)
 │   ├── components/              # @mailpoet/components
 │   └── eslint-config/           # @mailpoet/eslint-config
+├── doc/                         # API documentation and usage examples
 ├── dev/                         # Docker dev configuration
+├── tools/                       # Build tooling (Webpack config)
 ├── tests_env/                   # Test environment (Docker + Codeception)
 ├── templates/                   # Email templates
 ├── do                           # Root CLI script (Docker wrapper)
@@ -305,7 +308,7 @@ Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
 ## Common Pitfalls
 
 - **NEVER** modify WordPress core files in `wordpress/`. This directory is for the local dev environment only.
-- **NEVER** edit files in `vendor/`, `vendor-prefixed/`, or `generated/`. These are managed by Composer, the prefixer, and build tools respectively.
+- **NEVER** edit files in `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, or `generated/`. These are managed by Composer, the prefixer, and build tools respectively.
 - **NEVER** edit compiled assets in `assets/dist/`. Run `./do compile:all` to regenerate them.
 - **MUST** run `./do compile:all` (or `compile:js` / `compile:css`) after making JS/CSS/SCSS changes before testing in the browser.
 - **MUST** use the `--skip-deps` flag for integration and acceptance tests during development to avoid slow dependency reinstallation.
@@ -330,7 +333,7 @@ Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
 ### Never Do
 
 - Commit secrets, `.env` files, or API keys
-- Modify WordPress core files, `vendor/`, `vendor-prefixed/`, or `generated/` files
+- Modify WordPress core files, `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, or `generated/` files
 - Use `extract()`, `eval()`, or `create_function()`
 - Hardcode URLs -- use `home_url()`, `plugin_dir_url()`, `plugin_dir_path()`
 - Commit directly to `trunk`
