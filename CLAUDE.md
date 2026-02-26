@@ -359,6 +359,7 @@ Skills are progressively-revealed instructions loaded on demand.
 - **`mailpoet-dev-cycle`** -- Linting and code quality workflows. Use when fixing code style or following the development workflow.
   - `code-quality.md` -- ESLint, Stylelint, Prettier commands and conventions
   - `php-coding-standards.md` -- PHP lint, PHPCS, PHPStan commands, ruleset details, naming conventions
+- **`writing-changelog`** -- Use when adding a changelog entry for user-facing changes. Guides through analyzing branch changes, picking the right type, and writing a user-friendly description.
 
 ## Additional Resources
 
