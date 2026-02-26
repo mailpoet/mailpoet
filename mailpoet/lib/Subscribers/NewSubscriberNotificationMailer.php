@@ -87,7 +87,10 @@ class NewSubscriberNotificationMailer {
     $context = [
       'subscriber_email' => $subscriber->getEmail(),
       'segments_names' => $segmentNames,
-      'link_settings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings'),
+      'link_settings' => WPFunctions::get()->applyFilters(
+        'mailpoet_new_subscriber_notification_link_settings',
+        WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings')
+      ),
       'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade'),
     ];
     return [

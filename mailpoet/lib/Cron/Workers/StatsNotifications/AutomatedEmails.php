@@ -142,7 +142,10 @@ class AutomatedEmails extends SimpleWorker {
    */
   private function prepareContext(array $newsletters): array {
     $context = [
-      'linkSettings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
+      'linkSettings' => WPFunctions::get()->applyFilters(
+        'mailpoet_stats_notification_link_settings',
+        WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics')
+      ),
       'newsletters' => [],
     ];
     foreach ($newsletters as $row) {
@@ -154,7 +157,11 @@ class AutomatedEmails extends SimpleWorker {
       $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
       $bounced = ($statistics->getBounceCount() * 100) / $statistics->getTotalSentCount();
       $context['newsletters'][] = [
-        'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
+        'linkStats' => WPFunctions::get()->applyFilters(
+          'mailpoet_stats_notification_link_stats',
+          WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
+          $newsletter->getId()
+        ),
         'clicked' => $clicked,
         'opened' => $opened,
         'machineOpened' => $machineOpened,

@@ -162,8 +162,15 @@ class Worker {
         number_format($unsubscribed, 2)
       ),
       'topLinkClicks' => 0,
-      'linkSettings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
-      'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters&stats=' . $newsletter->getId()),
+      'linkSettings' => WPFunctions::get()->applyFilters(
+        'mailpoet_stats_notification_link_settings',
+        WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics')
+      ),
+      'linkStats' => WPFunctions::get()->applyFilters(
+        'mailpoet_stats_notification_link_stats',
+        WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters&stats=' . $newsletter->getId()),
+        $newsletter->getId()
+      ),
       'clicked' => $clicked,
       'opened' => $opened,
       'machineOpened' => $machineOpened,

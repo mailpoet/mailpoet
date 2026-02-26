@@ -6,11 +6,21 @@
 
 <p><%= __('Cheers,') %>
 
+<% if is_garden() %>
+<p><%= get_option('blogname') %>
+<% else %>
 <p><%= __('The MailPoet Plugin') %>
+<% endif %>
 
+<% if is_garden() %>
+<p><small><%= __('You can disable these emails in your [link]Email settings.[/link]'
+  |replaceLinkTags(link_settings)
+  ) %></small>
+<% else %>
 <p><small><%= __('You can disable these emails in your [link]MailPoet Settings.[/link]'
   |replaceLinkTags(link_settings)
   ) %></small>
+<% endif %>
 
 <% if 'now'|date('Y-m-d') < '2018-11-30'|date('Y-m-d') %>
   <p>
