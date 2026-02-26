@@ -356,10 +356,9 @@ Skills are progressively-revealed instructions loaded on demand.
 
 ### `.ai/skills/`
 
-- **`mailpoet-dev-cycle`** -- Testing, linting, and code quality workflows. Use when running tests, fixing code style, or following the development workflow.
+- **`mailpoet-dev-cycle`** -- Linting and code quality workflows. Use when fixing code style or following the development workflow.
   - `code-quality.md` -- ESLint, Stylelint, Prettier commands and conventions
   - `php-coding-standards.md` -- PHP lint, PHPCS, PHPStan commands, ruleset details, naming conventions
-  - `running-tests.md` -- Unit, integration, acceptance, JS tests, Docker workflow, debugging tips
 
 ## Additional Resources
 

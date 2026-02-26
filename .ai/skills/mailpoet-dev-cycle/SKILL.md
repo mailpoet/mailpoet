@@ -1,11 +1,11 @@
 ---
 name: mailpoet-dev-cycle
-description: Testing, linting, and code quality workflows for MailPoet development (PHP, JS/TS, CSS/SCSS). Use when running tests, fixing code style, or following the development workflow.
+description: Linting and code quality workflows for MailPoet development (PHP, JS/TS, CSS/SCSS). Use when fixing code style or following the development workflow.
 ---
 
 # MailPoet Development Cycle
 
-This skill covers running tests, linting, and building assets for MailPoet development.
+This skill covers linting, code quality, and building assets for MailPoet development. For testing, see the separate `writing-tests` skill.
 
 ## Working Directory
 
@@ -20,10 +20,10 @@ Unless you are explicitly working on the premium plugin, always default to the f
 ## When to Use This Skill
 
 - Before committing code changes
-- When running tests or linting
+- When running linting or code quality checks
 - When setting up the development environment
 - When building frontend assets
-- When fixing CI failures related to code quality or tests
+- When fixing CI failures related to code quality
 
 ## Skill Contents
 
@@ -31,7 +31,6 @@ Unless you are explicitly working on the premium plugin, always default to the f
 | -------------------------------------------------- | ------------------------------------------------------------------------- |
 | [code-quality.md](code-quality.md)                 | JS/TS linting (ESLint), CSS/SCSS linting (Stylelint), Prettier formatting |
 | [php-coding-standards.md](php-coding-standards.md) | PHP lint, PHPCS, PHPStan static analysis                                  |
-| [running-tests.md](running-tests.md)               | Unit, integration, acceptance, JS tests and Docker workflow               |
 
 ## Quick Reference
 
@@ -60,18 +59,6 @@ cd mailpoet && ./do qa:prettier-write
 # Fix a single file (PHPCS or ESLint based on extension)
 cd mailpoet && ./do qa:fix-file path/to/file.php
 cd mailpoet && ./do qa:fix-file path/to/file.tsx
-
-# Unit tests (from repo root, uses isolated test DB)
-./do --test test:unit --file=tests/unit/Path/To/SomeTest.php
-
-# Integration tests (from repo root, uses isolated test DB)
-./do --test test:integration --skip-deps --file=tests/integration/Path/To/SomeTest.php
-
-# Acceptance tests (from repo root, uses isolated test DB)
-./do --test test:acceptance --skip-deps --file=tests/acceptance/Path/To/SomeCest.php
-
-# JavaScript tests (no DB, run from mailpoet/)
-cd mailpoet && ./do test:javascript
 ```
 
 ## Development Workflow
@@ -99,9 +86,7 @@ Before committing, run these from the repo root:
 
 - [ ] `cd mailpoet && ./do qa` -- all PHP and frontend QA checks pass
 - [ ] `cd mailpoet && ./do qa:prettier-write` -- formatting is clean
-- [ ] `./do --test test:unit` -- unit tests pass (if PHP changed)
-- [ ] `./do --test test:integration --skip-deps` -- integration tests pass (if backend changed)
-- [ ] `cd mailpoet && ./do test:javascript` -- JS tests pass (if JS/TS changed)
+- [ ] Run relevant tests (see the `writing-tests` skill for commands)
 
 ## Premium Plugin
 

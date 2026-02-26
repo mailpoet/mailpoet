@@ -8,4 +8,4 @@ This directory contains Claude-specific configuration:
 
 Additional AI skills are available in the repo-wide `.ai/skills/` directory:
 
-- `mailpoet-dev-cycle/` -- Testing, linting, and code quality workflows (PHP, JS/TS, CSS/SCSS)
+- `mailpoet-dev-cycle/` -- Linting and code quality workflows (PHP, JS/TS, CSS/SCSS)
