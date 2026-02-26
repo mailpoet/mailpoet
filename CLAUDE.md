@@ -152,7 +152,7 @@ Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugi
 ### PHP
 
 - Two spaces indentation
-- `CamelCase` for classes, `camelCase` for methods, `snake_case` for variables and properties
+- `CamelCase` for classes, `camelCase` for methods and variables/properties
 - Composition over inheritance
 - Guard clauses over nested conditionals
 - Use as few comments as possible — convey your intent through clear coding instead.
@@ -348,9 +348,18 @@ Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
 
 ## Available Skills
 
-Skills are progressively-revealed instructions loaded on demand. Located in `.claude/skills/`:
+Skills are progressively-revealed instructions loaded on demand.
+
+### `.claude/skills/`
 
 - **`creating-pull-requests`** -- MUST use when creating PRs. Enforces draft PR creation and template compliance. Never run `gh pr create` directly.
+
+### `.ai/skills/`
+
+- **`mailpoet-dev-cycle`** -- Testing, linting, and code quality workflows. Use when running tests, fixing code style, or following the development workflow.
+  - `code-quality.md` -- ESLint, Stylelint, Prettier commands and conventions
+  - `php-coding-standards.md` -- PHP lint, PHPCS, PHPStan commands, ruleset details, naming conventions
+  - `running-tests.md` -- Unit, integration, acceptance, JS tests, Docker workflow, debugging tips
 
 ## Additional Resources
 
