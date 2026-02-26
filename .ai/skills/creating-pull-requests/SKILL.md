@@ -17,9 +17,10 @@ Always create pull requests as **drafts** and follow the repository's PR templat
 
 1. **Read the PR template first** refer .github/pull_request_template.md
 2. **Gather context**
-3. **Create as draft**
-4. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
-5. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
+3. **Check for changelog** — if the branch has user-facing changes and no changelog entry exists yet, use the `writing-changelog` skill to create one before proceeding
+4. **Create as draft**
+5. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
+6. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
 
 ## Code Review Notes Section
 
@@ -50,3 +51,4 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Missing sections                   | Include all template sections, use `_N/A_` if not applicable                        |
 | Skipping template read             | ALWAYS read the template first, it may have changed                                 |
 | Narrating the diff in review notes | Only write what the reviewer can't see from the code. Use `_N/A_` if nothing to add |
+| Missing changelog entry            | Check for changelog before creating the PR. Use the `writing-changelog` skill       |
