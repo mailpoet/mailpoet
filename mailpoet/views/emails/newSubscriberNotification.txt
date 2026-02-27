@@ -5,9 +5,17 @@
 %>
 
 <%= __('Cheers,') %>
+<% if is_garden() %>
+<%= get_option('blogname') %>
+<% else %>
 <%= __('The MailPoet Plugin') %>
+<% endif %>
 
+<% if is_garden() %>
+<%= __('You can disable these emails in your Email settings.') %>
+<% else %>
 <%= __('You can disable these emails in your MailPoet Settings.') %>
+<% endif %>
 <%= link_settings %>
 
 <% if 'now'|date('Y-m-d') < '2018-11-30'|date('Y-m-d') %>
