@@ -12,7 +12,7 @@
 <% endif %>
 
 <% if is_garden() %>
-<%= __('You can disable these emails in your Email settings.') %>
+<%= __('You can disable these emails in your email settings.') %>
 <% else %>
 <%= __('You can disable these emails in your MailPoet Settings.') %>
 <% endif %>
