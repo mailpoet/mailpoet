@@ -29,8 +29,10 @@
   },
   "autoload": {
     "classmap": [
+      "lib",
       "lib-3rd-party",
-      "vendor-prefixed"
+      "vendor-prefixed",
+      "generated"
     ],
     "files": [
       "lib/exceptions.php",
@@ -41,12 +43,7 @@
       "vendor-prefixed/symfony/polyfill-php81/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-intl-idn/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-intl-normalizer/bootstrap.php"
-    ],
-    "psr-4": {
-      "MailPoet\\": "lib/",
-      "MailPoetVendor\\": "vendor-prefixed/",
-      "MailPoetGenerated\\": "generated/"
-    }
+    ]
   },
   "autoload-dev": {
     "psr-4": {
