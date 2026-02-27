@@ -16,7 +16,7 @@
 <%= __('You need to upgrade now to be able to continue using MailPoet.') %>
 
 <%= __('Upgrade Now') %>
-  <%= upgradeNowLink %>
+  <%= upgradeNowLink|raw %>
 <% endif %>
 
 <%= stats_number_format_i18n(clicked) %>% <%= __('clicked') %>
@@ -38,6 +38,6 @@
 <% endif %>
 
 <%= __('View all stats') %>
-  <%= linkStats %>
+  <%= linkStats|raw %>
 
 <% endblock %>

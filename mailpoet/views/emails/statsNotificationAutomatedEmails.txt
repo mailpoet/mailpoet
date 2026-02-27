@@ -13,7 +13,7 @@
   <%= stats_number_format_i18n(newsletter.unsubscribed) %>% <%= __('unsubscribed') %>
   <%= stats_number_format_i18n(newsletter.bounced) %>% <%= __('bounced') %>
   <%= __('View all stats') %>
-    <%= newsletter.linkStats %>
+    <%= newsletter.linkStats|raw %>
 <% endfor %>
 ------------------------------------------
 <% endblock %>
