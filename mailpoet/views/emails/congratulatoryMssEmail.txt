@@ -1,5 +1,11 @@
 <%= __('Congrats!') %>
 
+<% if is_garden() %>
+<%= __('Your emails are now being sent') %>
+
+<%= __('This email was sent automatically after you activated your email sending key in your settings.') %>
+<% else %>
 <%= __('MailPoet is now sending your emails') %>
 
 <%= __('This email was sent automatically with the MailPoet Sending Service after you activated your key in your MailPoet settings.') %>
+<% endif %>
