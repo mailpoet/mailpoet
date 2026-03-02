@@ -38,11 +38,6 @@ class SettingsRepository extends Repository {
       'value' => is_array($value) ? serialize($value) : $value,
       'now' => $now,
     ]);
-
-    // Ensure entity data is up-to-date in memory.
-    //  - We can't use "refresh()"; we don't have the entity instance, and it can be a new record.
-    //  - We can't use "findOneBy()"; it could return a cached entity instance.
-    $this->findOneByName($name);
   }
 
   protected function getEntityClassName() {

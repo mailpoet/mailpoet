@@ -32,18 +32,4 @@ class SettingsRepositoryTest extends MailPoetTest {
     $this->assertSame('new value', $setting->getValue());
     $this->assertSame('new value', $newSetting->getValue());
   }
-
-  public function testUpdateRefreshesExistingData(): void {
-    $repository = $this->diContainer->get(SettingsRepository::class);
-
-    $setting = new SettingEntity();
-    $setting->setName('name');
-    $setting->setValue('value');
-    $this->entityManager->persist($setting);
-    $this->entityManager->flush();
-
-    $this->assertSame('value', $setting->getValue());
-    $repository->createOrUpdateByName('name', 'new value');
-    $this->assertSame('new value', $setting->getValue());
-  }
 }
