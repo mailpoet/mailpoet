@@ -12,6 +12,7 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
@@ -97,6 +98,30 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
+  }
+
+  public function testItAppliesFilterToSettingsLink() {
+    $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
+
+    $wp = WPFunctions::get();
+    $wp->addFilter('mailpoet_new_subscriber_notification_link_settings', function () {
+      return 'https://example.com/custom-settings';
+    });
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' =>
+        Expected::once(function($newsletter) {
+          verify($newsletter['body']['html'])->stringContainsString('https://example.com/custom-settings');
+          verify($newsletter['body']['text'])->stringContainsString('https://example.com/custom-settings');
+        }),
+    ], $this);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
+    $service->send($this->subscriber, $this->segments);
+
+    $wp->removeAllFilters('mailpoet_new_subscriber_notification_link_settings');
   }
 
   public function testItSendsWithSubscriberEntity() {

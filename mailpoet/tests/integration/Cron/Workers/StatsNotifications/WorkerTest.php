@@ -26,6 +26,7 @@ use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -274,6 +275,46 @@ class WorkerTest extends \MailPoetTest {
       ->method('send');
 
     $this->statsNotifications->process();
+  }
+
+  public function testItAppliesFilterToLinkSettings() {
+    $wp = WPFunctions::get();
+    $wp->addFilter('mailpoet_stats_notification_link_settings', function () {
+      return 'https://example.com/custom-settings';
+    });
+
+    $this->renderer->expects($this->exactly(2))
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function ($context) {
+          return $context['linkSettings'] === 'https://example.com/custom-settings';
+        })
+      );
+
+    $this->statsNotifications->process();
+
+    $wp->removeAllFilters('mailpoet_stats_notification_link_settings');
+  }
+
+  public function testItAppliesFilterToLinkStats() {
+    $wp = WPFunctions::get();
+    $wp->addFilter('mailpoet_stats_notification_link_stats', function ($url, $newsletterId) {
+      return 'https://example.com/stats/' . $newsletterId;
+    }, 10, 2);
+
+    $this->renderer->expects($this->exactly(2))
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function ($context) {
+          return strpos($context['linkStats'], 'https://example.com/stats/') === 0;
+        })
+      );
+
+    $this->statsNotifications->process();
+
+    $wp->removeAllFilters('mailpoet_stats_notification_link_stats');
   }
 
   private function createStatisticsUnsubscribe($data): StatisticsUnsubscribeEntity {
