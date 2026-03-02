@@ -154,6 +154,8 @@ class SettingsController {
     $this->ensureLoaded();
     $keyParts = explode('.', $key);
     $mainKey = $keyParts[0];
+    $hadKey = array_key_exists($mainKey, $this->settings);
+    $previousValue = $hadKey ? $this->settings[$mainKey] : null;
     $lastKey = array_pop($keyParts);
     $setting =& $this->settings;
     foreach ($keyParts as $keyPart) {
@@ -163,7 +165,9 @@ class SettingsController {
       }
     }
     $setting[$lastKey] = $value;
-    $this->settingsRepository->createOrUpdateByName($mainKey, $this->settings[$mainKey]);
+    if (!$hadKey || $this->settings[$mainKey] !== $previousValue) {
+      $this->settingsRepository->createOrUpdateByName($mainKey, $this->settings[$mainKey]);
+    }
   }
 
   public function delete($key) {
