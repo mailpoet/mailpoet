@@ -108,20 +108,22 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
       return 'https://example.com/custom-settings';
     });
 
-    $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' =>
-        Expected::once(function($newsletter) {
-          verify($newsletter['body']['html'])->stringContainsString('https://example.com/custom-settings');
-          verify($newsletter['body']['text'])->stringContainsString('https://example.com/custom-settings');
-        }),
-    ], $this);
+    try {
+      $mailer = Stub::makeEmpty(Mailer::class, [
+        'send' =>
+          Expected::once(function($newsletter) {
+            verify($newsletter['body']['html'])->stringContainsString('https://example.com/custom-settings');
+            verify($newsletter['body']['text'])->stringContainsString('https://example.com/custom-settings');
+          }),
+      ], $this);
 
-    $mailerFactory = $this->createMock(MailerFactory::class);
-    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
-    $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
-    $service->send($this->subscriber, $this->segments);
-
-    $wp->removeAllFilters('mailpoet_new_subscriber_notification_link_settings');
+      $mailerFactory = $this->createMock(MailerFactory::class);
+      $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+      $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
+      $service->send($this->subscriber, $this->segments);
+    } finally {
+      $wp->removeAllFilters('mailpoet_new_subscriber_notification_link_settings');
+    }
   }
 
   public function testItSendsWithSubscriberEntity() {

@@ -283,18 +283,20 @@ class WorkerTest extends \MailPoetTest {
       return 'https://example.com/custom-settings';
     });
 
-    $this->renderer->expects($this->exactly(2))
-      ->method('render')
-      ->with(
-        $this->anything(),
-        $this->callback(function ($context) {
-          return $context['linkSettings'] === 'https://example.com/custom-settings';
-        })
-      );
+    try {
+      $this->renderer->expects($this->exactly(2))
+        ->method('render')
+        ->with(
+          $this->anything(),
+          $this->callback(function ($context) {
+            return $context['linkSettings'] === 'https://example.com/custom-settings';
+          })
+        );
 
-    $this->statsNotifications->process();
-
-    $wp->removeAllFilters('mailpoet_stats_notification_link_settings');
+      $this->statsNotifications->process();
+    } finally {
+      $wp->removeAllFilters('mailpoet_stats_notification_link_settings');
+    }
   }
 
   public function testItAppliesFilterToLinkStats() {
@@ -303,18 +305,20 @@ class WorkerTest extends \MailPoetTest {
       return 'https://example.com/stats/' . $newsletterId;
     }, 10, 2);
 
-    $this->renderer->expects($this->exactly(2))
-      ->method('render')
-      ->with(
-        $this->anything(),
-        $this->callback(function ($context) {
-          return strpos($context['linkStats'], 'https://example.com/stats/') === 0;
-        })
-      );
+    try {
+      $this->renderer->expects($this->exactly(2))
+        ->method('render')
+        ->with(
+          $this->anything(),
+          $this->callback(function ($context) {
+            return strpos($context['linkStats'], 'https://example.com/stats/') === 0;
+          })
+        );
 
-    $this->statsNotifications->process();
-
-    $wp->removeAllFilters('mailpoet_stats_notification_link_stats');
+      $this->statsNotifications->process();
+    } finally {
+      $wp->removeAllFilters('mailpoet_stats_notification_link_stats');
+    }
   }
 
   private function createStatisticsUnsubscribe($data): StatisticsUnsubscribeEntity {
