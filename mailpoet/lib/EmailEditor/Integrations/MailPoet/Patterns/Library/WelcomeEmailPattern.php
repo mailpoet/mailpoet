@@ -36,8 +36,8 @@ class WelcomeEmailPattern extends Pattern {
       sprintf(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'), '<!--[woocommerce/customer-full-name]-->') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full"} -->
+      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/welcome-email.jpg')) . '" alt="' . esc_attr__('Welcome email image', 'mailpoet') . '"/></figure>
       <!-- /wp:image -->
 
       <!-- wp:paragraph -->
