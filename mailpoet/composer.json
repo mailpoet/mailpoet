@@ -16,7 +16,7 @@
     "ext-pcre": "*",
     "ext-xml": "*",
     "ext-zip": "*",
-    "composer/composer": "^2.2",
+    "composer/composer": "^2.9.3",
     "composer/xdebug-handler": "^3.0.3",
     "consolidation/robo": "^4.0",
     "guzzlehttp/guzzle": "^7.8",
