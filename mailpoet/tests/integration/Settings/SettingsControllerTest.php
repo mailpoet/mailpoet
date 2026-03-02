@@ -139,7 +139,8 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->controller->set('nested_test.sub', 'val');
     $this->createOrUpdateSetting('nested_test', serialize(['sub' => 'modified_behind_back']));
     $this->controller->set('nested_test.sub', 'val');
-    $dbValue = unserialize($this->getSettingValue('nested_test'));
+    $dbValue = unserialize((string)$this->getSettingValue('nested_test'));
+    $this->assertIsArray($dbValue);
     $this->assertEquals('modified_behind_back', $dbValue['sub']);
 
     // Different value — must always write
