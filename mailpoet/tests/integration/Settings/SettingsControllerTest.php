@@ -127,6 +127,44 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertTrue($this->controller->hasSavedValue('test_key'));
   }
 
+  public function testItSkipsDbWriteWhenValueUnchanged() {
+    // Same scalar value — second set() should skip DB write
+    $this->controller->set('skip_test', 1);
+    $this->createOrUpdateSetting('skip_test', 999);
+    $this->controller->set('skip_test', 1);
+    $this->assertEquals(999, $this->getSettingValue('skip_test'));
+
+    // Same nested value — second set() should skip DB write
+    $this->controller->resetCache();
+    $this->controller->set('nested_test.sub', 'val');
+    $this->createOrUpdateSetting('nested_test', serialize(['sub' => 'modified_behind_back']));
+    $this->controller->set('nested_test.sub', 'val');
+    $dbValue = unserialize($this->getSettingValue('nested_test'));
+    $this->assertEquals('modified_behind_back', $dbValue['sub']);
+
+    // Different value — must always write
+    $this->controller->resetCache();
+    $this->controller->set('diff_test', 1);
+    $this->createOrUpdateSetting('diff_test', 999);
+    $this->controller->set('diff_test', 2);
+    $this->assertEquals(2, $this->getSettingValue('diff_test'));
+
+    // First write of new key — must always write
+    $this->controller->resetCache();
+    $this->controller->set('brand_new_key', 'value');
+    $this->assertEquals('value', $this->getSettingValue('brand_new_key'));
+
+    // Setting new key to null — must write (not skip)
+    $this->controller->resetCache();
+    $this->controller->set('null_key', null);
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
+    $exists = $this->connection->executeQuery(
+      "SELECT COUNT(*) FROM $tableName WHERE name = ?",
+      ['null_key']
+    )->fetchOne();
+    $this->assertEquals(1, $exists);
+  }
+
   private function createOrUpdateSetting($name, $value) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeStatement("

@@ -304,6 +304,7 @@ class Bridge {
     }
 
     $previousKey = $this->settings->get($keySettingName);
+    $previousState = null;
     // If the key remain the same and the new state is not valid we want to preserve the data from the previous state.
     // The data contain information about state limits. We need those to display the correct information to users.
     if (empty($state['data']) && $previousKey === $key) {
@@ -321,15 +322,23 @@ class Bridge {
       );
     }
 
-    // store the key state
-    $this->settings->set(
-      $keyStateSettingName,
-      $state
-    );
+    // store the key state only if changed
+    if ($previousState === null) {
+      $previousState = $this->settings->get($keyStateSettingName);
+    }
+    if ($state !== $previousState) {
+      $this->settings->set(
+        $keyStateSettingName,
+        $state
+      );
+    }
 
-    // store the subscription type
-    if (!empty($state['data']) && !empty($state['data']['subscription_type'])) {
-      $this->storeSubscriptionType($state['data']['subscription_type']);
+    // store the subscription type only if changed
+    if (!empty($state['data']['subscription_type'])) {
+      $currentType = $this->settings->get(self::SUBSCRIPTION_TYPE_SETTING_NAME);
+      if ($state['data']['subscription_type'] !== $currentType) {
+        $this->storeSubscriptionType($state['data']['subscription_type']);
+      }
     }
   }
 
