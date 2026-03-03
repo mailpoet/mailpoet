@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.22.0 - 2026-03-03 =
+* Improved: Switched to classmap-only autoloading to improve performance by eliminating redundant PSR-4 lookups in the Jetpack autoloader;
+* Improved: Neutralize MailPoet branding in stats and subscriber notification emails for Garden environments;
+* Improved: Reduce unnecessary database queries on every page load;
+* Fixed: Fix subscription confirmation email not using store email template in Garden environment.
+
 = 5.21.3 - 2026-02-24 =
 * Updated: Bump the minimum required WooCommerce version to 10.4 and tested up to version to 10.5;
 * Updated: Merged settings panels in the block email editor;
