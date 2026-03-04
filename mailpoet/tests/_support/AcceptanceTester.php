@@ -366,7 +366,7 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   public function click($link, $context = null) {
-    // retry click in case of "element click intercepted... Other element would receive the click" error
+    // retry click in case of transient WebDriver errors (intercepted click, not interactable, stale element)
     $retries = 3;
     while (true) {
       try {
@@ -374,7 +374,7 @@ class AcceptanceTester extends \Codeception\Actor {
         $this->_click($link, $context);
         break;
       } catch (WebDriverException $e) {
-        if ($retries > 0 && preg_match('(element click intercepted|element not interactable)', $e->getMessage()) === 1) {
+        if ($retries > 0 && preg_match('(element click intercepted|element not interactable|stale element reference)', $e->getMessage()) === 1) {
           $this->wait(0.2);
           continue;
         }
