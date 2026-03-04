@@ -374,7 +374,11 @@ class AcceptanceTester extends \Codeception\Actor {
         $this->_click($link, $context);
         break;
       } catch (WebDriverException $e) {
-        if ($retries > 0 && preg_match('(element click intercepted|element not interactable|stale element reference)', $e->getMessage()) === 1) {
+        $message = $e->getMessage();
+        $isTransient = strpos($message, 'element click intercepted') !== false
+          || strpos($message, 'element not interactable') !== false
+          || strpos($message, 'stale element reference') !== false;
+        if ($retries > 0 && $isTransient) {
           $this->wait(0.2);
           continue;
         }
