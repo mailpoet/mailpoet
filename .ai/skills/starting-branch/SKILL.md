@@ -26,6 +26,7 @@ If the user provides a Linear issue ID (e.g. `STOMAIL-1234`):
 ### Without a Linear Issue
 
 If no Linear issue is provided:
+
 1. Suggest a branch name based on what the user described
 2. Ask the user to confirm or provide their own name
 

@@ -40,6 +40,7 @@ This skill handles two review modes:
 ### Both Modes
 
 5. **Find the Linear ticket** -- look for a Linear ticket ID in:
+
    - PR description (PR mode)
    - Commit messages (`git log trunk..HEAD --oneline`)
    - Branch name
@@ -47,6 +48,7 @@ This skill handles two review modes:
    If found, fetch the Linear ticket using the Linear MCP tool (`get_issue`). **Always load the ticket's comments and attachments.** Verify the changes actually address the ticket requirements. If no Linear ticket is found, skip this step but note it in the output.
 
 6. **Identify the change type** -- classify what the diff primarily touches:
+
    - PHP backend changes
    - React/TypeScript frontend changes
    - SCSS/CSS styling changes
@@ -101,6 +103,7 @@ Launch multiple sub-agents in parallel using the Agent tool. Each agent receives
 ### Decide Whether to Test
 
 Skip manual testing if ALL of the following are true:
+
 - Changes are test-only, documentation-only, or CI/build configuration only
 - No user-facing behavior was changed
 - No UI components were modified
@@ -135,19 +138,20 @@ Do NOT post the review to GitHub automatically. Print it for the user to review 
 ### Local Review Mode
 
 Ask the user what they want to do with the findings:
+
 - Fix the issues now
 - Get a summary to review later
 - Proceed to create a PR (invoke the `creating-pull-requests` skill)
 
 ## Common Mistakes
 
-| Mistake                                    | Fix                                                                                  |
-| ------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Reviewing only the diff, not full files    | Always read the complete changed files for context                                   |
-| Skipping the Linear ticket                 | The ticket has acceptance criteria that may not be in the PR description             |
-| Not loading ticket comments/attachments    | Comments and attachments often contain clarifications and design mockups             |
-| Generic security review                    | Tailor findings to the actual code -- do not list OWASP items with no code evidence  |
-| Posting review to GitHub automatically     | Always print for the user to post themselves                                         |
-| Skipping linked PRs                        | Linked PRs need to be reviewed together                                              |
-| Not reading PR CI status                   | CI failures are important context for the review                                     |
-| Missing regression test for bug fix        | Bug fixes without a test that reproduces the bug are incomplete -- always flag       |
+| Mistake                                 | Fix                                                                                 |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| Reviewing only the diff, not full files | Always read the complete changed files for context                                  |
+| Skipping the Linear ticket              | The ticket has acceptance criteria that may not be in the PR description            |
+| Not loading ticket comments/attachments | Comments and attachments often contain clarifications and design mockups            |
+| Generic security review                 | Tailor findings to the actual code -- do not list OWASP items with no code evidence |
+| Posting review to GitHub automatically  | Always print for the user to post themselves                                        |
+| Skipping linked PRs                     | Linked PRs need to be reviewed together                                             |
+| Not reading PR CI status                | CI failures are important context for the review                                    |
+| Missing regression test for bug fix     | Bug fixes without a test that reproduces the bug are incomplete -- always flag      |
