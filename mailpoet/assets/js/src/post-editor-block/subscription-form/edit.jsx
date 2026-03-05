@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon } from './icon.jsx';
 
 const wp = window.wp;
-const { Placeholder, PanelBody } = wp.components;
+const { Placeholder, PanelBody, Disabled } = wp.components;
 const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 
@@ -42,10 +42,12 @@ function Edit({ attributes, setAttributes }) {
 
   function renderForm() {
     return (
-      <ServerSideRender
-        block="mailpoet/subscription-form-block-render"
-        attributes={{ formId: attributes.formId }}
-      />
+      <Disabled>
+        <ServerSideRender
+          block="mailpoet/subscription-form-block-render"
+          attributes={{ formId: attributes.formId }}
+        />
+      </Disabled>
     );
   }
 
