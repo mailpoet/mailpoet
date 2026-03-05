@@ -359,6 +359,8 @@ Skills are progressively-revealed instructions loaded on demand.
 - `mailpoet-dev-cycle` -- Linting and code quality workflows. Use when fixing code style or following the development workflow.
 - `code-quality.md` -- ESLint, Stylelint, Prettier commands and conventions
 - `php-coding-standards.md` -- PHP lint, PHPCS, PHPStan commands, ruleset details, naming conventions
+- **`starting-branch`** -- MUST use when creating any new branch. Handles branch naming, Linear lookup, and branch creation. Never run `git switch -c` or `git checkout -b` directly.
+- `reviewing-code.md` -- Reviewing pull requests or local code changes. Use when asked to review a PR, review code, test changes, verify implementation quality, or do a code review.
 - `writing-changelog` -- Use when adding a changelog entry for user-facing changes. Guides through analyzing branch changes, picking the right type, and writing a user-friendly description.
 
 ## Additional Resources
