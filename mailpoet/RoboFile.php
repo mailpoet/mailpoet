@@ -291,8 +291,7 @@ class RoboFile extends \Robo\Tasks {
     $potFilePath = 'lang/mailpoet.pot';
 
     if (!is_file(self::ZIP_BUILD_PATH)) {
-      $this->yell('mailpoet.zip file is missing. You must first download it using `./do release:download-zip`.', 40, 'red');
-      exit(1);
+      throw new \Exception('mailpoet.zip file is missing. You must first download it using `./do release:download-zip`.');
     }
 
     if (!file_exists(__DIR__ . '/lang')) {
@@ -307,12 +306,10 @@ class RoboFile extends \Robo\Tasks {
         file_put_contents($potFilePath, $potFileContent);
         $this->say('mailpoet.pot extracted from the zip file to ' . $potFilePath);
       } else {
-        $this->yell('Unable to find mailpoet.pot inside the zip file.', 40, 'red');
-        exit(1);
+        throw new \Exception('Unable to find mailpoet.pot inside the zip file.');
       }
     } else {
-      $this->yell('Unable to open the zip file.', 40, 'red');
-      exit(1);
+      throw new \Exception('Unable to open the zip file.');
     }
   }
 
@@ -990,28 +987,39 @@ class RoboFile extends \Robo\Tasks {
     return $result;
   }
 
+  private function withErrorOutput(callable $callback): \Closure {
+    return function () use ($callback) {
+      try {
+        return $callback();
+      } catch (\Exception $e) {
+        $this->yell($e->getMessage(), 40, 'red');
+        throw $e;
+      }
+    };
+  }
+
   public function releasePrepare($version = null) {
     $version = $this->releaseVersionGetNext($version);
 
     return $this->collectionBuilder()
-      ->addCode(function () {
+      ->addCode($this->withErrorOutput(function () {
         $this->releasePrepareGit();
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseVersionWrite($version);
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseChangelogWrite($version);
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseCreatePullRequest($version);
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         $this->releaseRerunCircleWorkflowForPremium();
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->translationsPrepareLanguagePacks($version);
-      })
+      }))
       ->run();
   }
 
@@ -1022,8 +1030,7 @@ class RoboFile extends \Robo\Tasks {
       ->exec('git status --porcelain')
       ->run();
     if (strlen(trim($gitStatus->getMessage())) > 0) {
-      $this->yell('Please make sure your working directory is clean before running release.', 40, 'red');
-      exit(1);
+      throw new \Exception('Please make sure your working directory is clean before running release.');
     }
     // checkout trunk and pull from remote
     $this->taskGitStack()
@@ -1037,8 +1044,7 @@ class RoboFile extends \Robo\Tasks {
       ->exec('git ls-remote --heads git@github.com:mailpoet/mailpoet.git release')
       ->run();
     if (strlen(trim($releaseBranchStatus->getMessage())) > 0) {
-      $this->yell('Delete old release branch before running release.', 40, 'red');
-      exit(1);
+      throw new \Exception('Delete old release branch before running release.');
     }
     // check if local branch with name "release" exists
     $gitStatus = $this->taskGitStack()
@@ -1078,8 +1084,7 @@ class RoboFile extends \Robo\Tasks {
     $translations = new \MailPoetTasks\Release\TranslationsController();
     $result = $translations->importTransifex($version);
     if (!$result['success']) {
-      $this->yell($result['data'], 40, 'red');
-      exit(1);
+      throw new \Exception($result['data']);
     }
     $this->say('Translations ' . $result['data']);
   }
@@ -1092,62 +1097,57 @@ class RoboFile extends \Robo\Tasks {
     $translations = new \MailPoetTasks\Release\TranslationsController();
     $result = $translations->checkIfTranslationsAreReady($version);
     if (!$result['success']) {
-      $this->yell('Translations are not ready yet on WordPress.com. ' . $result['data'], 40, 'red');
-      exit(1);
+      throw new \Exception('Translations are not ready yet on WordPress.com. ' . $result['data']);
     }
     $this->say('Translations check passed');
   }
 
   public function releasePublish($version = null) {
     $version = $this->releaseVersionGetNext($version);
+
     return $this->collectionBuilder()
-      ->addCode(function () use ($version) {
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseCheckPullRequest($version);
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->translationsCheckLanguagePacks($version);
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         $this->releaseDownloadZip();
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseVerifyDownloadedZip($version);
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         $this->translationsGetPotFileFromBuild();
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         return $this->translationsPush();
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         return $this->svnCheckout();
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         return $this->svnPublish($version);
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releasePublishGithub($version);
-      })
-      ->addCode(function () use ($version) {
+      }))
+      ->addCode($this->withErrorOutput(function () use ($version) {
         $this->releasePublishSlack($version);
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
-      })
-      ->addCode(function () {
+      }))
+      ->addCode($this->withErrorOutput(function () {
         $this->releaseDeleteDownloadedZip();
-      })
+      }))
       ->run();
   }
 
   public function releaseMergePullRequest(string $branch) {
-    try {
-      $this->createGitHubController()
-        ->mergePullRequest(\MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET, $branch);
-    } catch (\Exception $e) {
-      $this->yell($e->getMessage(), 40, 'red');
-      exit(1);
-    }
+    $this->createGitHubController()
+      ->mergePullRequest(\MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET, $branch);
     $this->say("Pull request for branch: '{$branch}' was successfully merged");
   }
 
@@ -1250,13 +1250,11 @@ class RoboFile extends \Robo\Tasks {
       }
       $zip->close();
     } else {
-      $this->yell('ZIP file could not be opened!', 40, 'red');
-      exit(1);
+      throw new \Exception('ZIP file could not be opened!');
     }
 
     if (!$versionFound) {
-      $this->yell('ZIP file does not contain required version: "' . $version . '" in readme.txt! ', 40, 'red');
-      exit(1);
+      throw new \Exception('ZIP file does not contain required version: "' . $version . '" in readme.txt!');
     }
     $this->say('ZIP file contains required version: "' . $version . '" in readme.txt.');
   }
