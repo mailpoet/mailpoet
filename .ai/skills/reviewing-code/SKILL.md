@@ -63,6 +63,15 @@ Launch multiple sub-agents in parallel using the Agent tool. Each agent receives
 
 **IMPORTANT:** Tailor each agent's prompt based on the change type identified in Step 2. For PHP-heavy changes, emphasize PHP patterns, Doctrine, WordPress conventions. For frontend changes, emphasize React patterns, TypeScript, accessibility. For mixed changes, cover both.
 
+### Important rules
+
+- Only report issues you are CERTAIN about after reading the actual code. If you are unsure, say so explicitly rather than presenting speculation as fact.
+- Do NOT flag standard WordPress/WooCommerce patterns as issues (e.g. $wpdb->posts interpolation, get_posts() with posts_per_page => -1 for bounded queries).
+- Focus on real bugs, logic errors, security vulnerabilities, and missing edge cases — not stylistic preferences.
+- If you find no real issues, say "No issues found" — do not invent problems to fill the review.
+- Keep it concise. No filler praise or emoji headers.
+- Categorize findings as: Bug, Security, Performance, or Suggestion.
+
 ### What should be verified
 
 - Scope & Completeness - Do the changes fully address the Linear ticket requirements? List any gaps.
