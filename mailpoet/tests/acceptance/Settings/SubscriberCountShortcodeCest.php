@@ -66,7 +66,8 @@ class SubscriberCountShortcodeCest {
     $i->click('[data-automation-id="action-trash"]');
     $i->waitForListingItemsToLoad();
     $i->waitForNoticeAndClose('11 subscribers were moved to the trash.');
-    $i->waitForText('No items found.');
+    $i->selectOption('[data-automation-id="listing_filter_segment"]', '');
+    $i->waitForListingItemsToLoad();
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForListingItemsToLoad();
