@@ -993,7 +993,7 @@ class RoboFile extends \Robo\Tasks {
         return $callback();
       } catch (\Exception $e) {
         $this->yell($e->getMessage(), 40, 'red');
-        throw $e;
+        return \Robo\Result::error($this, $e->getMessage(), ['exception' => $e]);
       }
     };
   }
@@ -1102,13 +1102,19 @@ class RoboFile extends \Robo\Tasks {
     $this->say('Translations check passed');
   }
 
-  public function releasePublish($version = null) {
+  public function releasePublish($version = null, $opts = ['force' => false]) {
     $version = $this->releaseVersionGetNext($version);
+    $collection = $this->collectionBuilder();
 
-    return $this->collectionBuilder()
-      ->addCode($this->withErrorOutput(function () use ($version) {
+    if ($opts['force']) {
+      $this->yell('Skipping pull request check (--force)', 40, 'yellow');
+    } else {
+      $collection->addCode($this->withErrorOutput(function () use ($version) {
         $this->releaseCheckPullRequest($version);
-      }))
+      }));
+    }
+
+    return $collection
       ->addCode($this->withErrorOutput(function () use ($version) {
         $this->translationsCheckLanguagePacks($version);
       }))
@@ -1474,8 +1480,7 @@ class RoboFile extends \Robo\Tasks {
 
   protected function validateVersion($version) {
     if (!\MailPoetTasks\Release\VersionHelper::validateVersion($version)) {
-      $this->yell('Incorrect version format', 40, 'red');
-      exit(1);
+      throw new \Exception('Incorrect version format');
     }
   }
 
@@ -1521,12 +1526,11 @@ class RoboFile extends \Robo\Tasks {
   protected function getEnv($name, $help = null) {
     $env = getenv($name);
     if ($env === false || $env === '') {
-      $this->yell("Environment variable '$name' was not set.", 40, 'red');
+      $message = "Environment variable '$name' was not set.";
       if ($help !== null) {
-        $this->say('');
-        $this->say($help);
+        $message .= "\n\n" . $help;
       }
-      exit(1);
+      throw new \Exception($message);
     }
     return $env;
   }
