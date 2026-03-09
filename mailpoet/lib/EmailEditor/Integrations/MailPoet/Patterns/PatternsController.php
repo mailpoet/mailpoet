@@ -31,6 +31,9 @@ class PatternsController {
   /** @var Pattern[] */
   private array $patterns = [];
 
+  /** @var array<string, string> Pattern name → email content for patterns with split content */
+  private array $emailContentRegistry = [];
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     WPFunctions $wp,
@@ -118,19 +121,79 @@ class PatternsController {
       /**
        * Filters pattern data before it is registered as a block pattern.
        *
-       * @param array{name: string, properties: array} $patternData Pattern name and properties.
+       * @param array{name: string, properties: array, email_content?: string} $patternData Pattern name, properties, and optional email content.
        * @param Pattern $pattern The original Pattern object.
        * @return array|null Return modified data or null/false to skip registration.
        */
       $patternData = $this->wp->applyFilters('mailpoet_email_editor_integration_register_pattern', [
         'name' => $patternName,
         'properties' => $patternProperties,
+        'email_content' => $pattern->get_email_content(),
       ], $pattern);
 
-      if (is_array($patternData) && isset($patternData['name']) && isset($patternData['properties'])) {
-        register_block_pattern($patternData['name'], $patternData['properties']);
+      if (!is_array($patternData) || !isset($patternData['name']) || !isset($patternData['properties'])) {
+        continue;
+      }
+
+      register_block_pattern($patternData['name'], $patternData['properties']);
+
+      // Build email content registry: store email_content when it differs from preview content
+      $previewContent = $patternData['properties']['content'] ?? '';
+      $emailContent = $patternData['email_content'] ?? $previewContent;
+      if ($emailContent !== $previewContent) {
+        $this->emailContentRegistry[$patternData['name']] = $emailContent;
       }
     }
+
+    $this->wp->addFilter(
+      'rest_request_after_callbacks',
+      [$this, 'addEmailContentToRestResponse'],
+      10,
+      3
+    );
+  }
+
+  /**
+   * Inject email_content into the block patterns REST API response for patterns
+   * that have different content for preview vs insertion.
+   *
+   * @param \WP_REST_Response|\WP_Error $response
+   * @param array $handler
+   * @param \WP_REST_Request $request
+   * @return \WP_REST_Response|\WP_Error
+   */
+  public function addEmailContentToRestResponse($response, array $handler, \WP_REST_Request $request) {
+    if ($request->get_route() !== '/wp/v2/block-patterns/patterns') {
+      return $response;
+    }
+
+    if (!($response instanceof \WP_REST_Response)) {
+      return $response;
+    }
+
+    if (empty($this->emailContentRegistry)) {
+      return $response;
+    }
+
+    $data = $response->get_data();
+    if (!is_array($data)) {
+      return $response;
+    }
+
+    $modified = false;
+    foreach ($data as $index => $pattern) {
+      $patternName = $pattern['name'] ?? '';
+      if (isset($this->emailContentRegistry[$patternName])) {
+        $data[$index]['email_content'] = $this->emailContentRegistry[$patternName];
+        $modified = true;
+      }
+    }
+
+    if ($modified) {
+      $response->set_data($data);
+    }
+
+    return $response;
   }
 
   private function registerPatternCategories(): void {
