@@ -217,6 +217,114 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNull($abandonedCartCategory);
   }
 
+  public function testItAddsEmailContentToRestResponseForSplitPatterns(): void {
+    $controller = $this->createControllerWithWooCommerce();
+    $controller->registerPatterns();
+
+    // Build a mock REST response containing pattern data (as the patterns REST endpoint would)
+    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $responseData = [];
+    foreach ($blockPatterns as $pattern) {
+      $responseData[] = [
+        'name' => $pattern['name'],
+        'content' => $pattern['content'],
+      ];
+    }
+
+    $response = new \WP_REST_Response($responseData);
+    $request = new \WP_REST_Request('GET', '/wp/v2/block-patterns/patterns');
+
+    $result = $controller->addEmailContentToRestResponse($response, [], $request);
+    $this->assertInstanceOf(\WP_REST_Response::class, $result);
+    /** @var array<int, array<string, string>> $data */
+    $data = $result->get_data();
+    $this->assertIsArray($data);
+
+    // Patterns with split content should have email_content
+    $splitPatternNames = [
+      'mailpoet/first-purchase-thank-you',
+      'mailpoet/post-purchase-thank-you',
+      'mailpoet/product-purchase-follow-up',
+      'mailpoet/win-back-customer',
+      'mailpoet/abandoned-cart-content',
+      'mailpoet/abandoned-cart-with-discount-content',
+    ];
+
+    foreach ($data as $pattern) {
+      $this->assertIsArray($pattern);
+      $name = (string)$pattern['name'];
+      if (in_array($name, $splitPatternNames, true)) {
+        $this->assertArrayHasKey('email_content', $pattern, "Pattern $name should have email_content");
+        $this->assertNotEquals($pattern['content'], $pattern['email_content'], "Pattern $name email_content should differ from content");
+        $this->assertStringContainsString('woocommerce/product-collection', (string)$pattern['email_content'], "Pattern $name email_content should contain product-collection block");
+      } else {
+        $this->assertArrayNotHasKey('email_content', $pattern, "Pattern $name should NOT have email_content");
+      }
+    }
+  }
+
+  public function testItDoesNotAddEmailContentForNonPatternRoutes(): void {
+    $controller = $this->createControllerWithWooCommerce();
+    $controller->registerPatterns();
+
+    $response = new \WP_REST_Response(['some' => 'data']);
+    $request = new \WP_REST_Request('GET', '/wp/v2/posts');
+
+    $result = $controller->addEmailContentToRestResponse($response, [], $request);
+    $this->assertInstanceOf(\WP_REST_Response::class, $result);
+    $data = $result->get_data();
+
+    $this->assertEquals(['some' => 'data'], $data);
+  }
+
+  public function testItDoesNotAddEmailContentWhenNoSplitPatterns(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(false);
+
+    $controller = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+    $controller->registerPatterns();
+
+    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    $responseData = [];
+    foreach ($blockPatterns as $pattern) {
+      $responseData[] = [
+        'name' => $pattern['name'],
+        'content' => $pattern['content'],
+      ];
+    }
+
+    $response = new \WP_REST_Response($responseData);
+    $request = new \WP_REST_Request('GET', '/wp/v2/block-patterns/patterns');
+
+    $result = $controller->addEmailContentToRestResponse($response, [], $request);
+    $this->assertInstanceOf(\WP_REST_Response::class, $result);
+    /** @var array<int, array<string, string>> $data */
+    $data = $result->get_data();
+    $this->assertIsArray($data);
+
+    // No WooCommerce = no split patterns = no email_content
+    foreach ($data as $pattern) {
+      $this->assertIsArray($pattern);
+      $this->assertArrayNotHasKey('email_content', $pattern, 'Pattern ' . (string)$pattern['name'] . ' should NOT have email_content');
+    }
+  }
+
+  private function createControllerWithWooCommerce(): PatternsController {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.5.0');
+
+    return new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+  }
+
   private function cleanupPatterns(): void {
     $registry = \WP_Block_Patterns_Registry::get_instance();
     $blockPatterns = $registry->get_all_registered();
