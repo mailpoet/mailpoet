@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.22.1 - 2026-03-09 =
+* Improved: Add placeholder image to Welcome Email starter pattern;
+* Fixed: Fix subscription form block breaking the Site Editor when submit button is clicked.
+
 = 5.22.0 - 2026-03-03 =
 * Improved: Switched to classmap-only autoloading to improve performance by eliminating redundant PSR-4 lookups in the Jetpack autoloader;
 * Improved: Neutralize MailPoet branding in stats and subscriber notification emails for Garden environments;

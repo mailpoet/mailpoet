@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.22.0
+Stable tag: 5.22.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.22.0 - 2026-03-03 =
-* Improved: Switched to classmap-only autoloading to improve performance by eliminating redundant PSR-4 lookups in the Jetpack autoloader;
-* Improved: Neutralize MailPoet branding in stats and subscriber notification emails for Garden environments;
-* Improved: Reduce unnecessary database queries on every page load;
-* Fixed: Fix subscription confirmation email not using store email template in Garden environment.
+= 5.22.1 - 2026-03-09 =
+* Improved: Add placeholder image to Welcome Email starter pattern;
+* Fixed: Fix subscription form block breaking the Site Editor when submit button is clicked.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
