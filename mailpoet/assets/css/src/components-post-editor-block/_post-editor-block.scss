@@ -1,5 +1,10 @@
 .mailpoet-block-div {
   padding: 20px;
+
+  .mailpoet_form_image img {
+    height: auto;
+    max-width: 100%;
+  }
 }
 
 .mailpoet-block-create-new-content {
