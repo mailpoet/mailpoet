@@ -9,6 +9,17 @@ class AbandonedCartWithDiscountPattern extends AbstractAbandonedCartPattern {
   protected $name = 'abandoned-cart-with-discount-content';
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getProductPlaceholderBlocks([
+      'bottle-placeholder.jpg',
+      'sunglasses-purple-placeholder.jpg',
+    ]));
+  }
+
+  public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getProductCollectionBlock());
+  }
+
+  private function buildContent(string $productSection): string {
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -40,7 +51,7 @@ class AbandonedCartWithDiscountPattern extends AbstractAbandonedCartPattern {
       <h3 class="wp-block-heading has-text-align-left" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);border-top-width:1px;padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30)">' . __('These items are waiting in your cart', 'mailpoet') . '</h3>
       <!-- /wp:heading -->
 
-      ' . $this->getProductCollectionBlock() . '
+      ' . $productSection . '
     </div>
     <!-- /wp:group -->
     ';

@@ -21,6 +21,22 @@ class ProductPurchaseFollowUpPattern extends Pattern {
    * @return string Pattern HTML content.
    */
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getProductPlaceholderColumns([
+      'placeholder-03.jpg',
+      'placeholder-05.jpg',
+      'placeholder-04.jpg',
+      'placeholder-06.jpg',
+    ]));
+  }
+
+  public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getRecommendedProductCollectionBlock('best-sellers', 'popularity'));
+  }
+
+  private function buildContent(string $productSection): string {
+    $mainProductImage = esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/welcome-email.jpg'));
+    $mainProductAlt = esc_attr__('Product placeholder', 'mailpoet');
+
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -35,16 +51,16 @@ class ProductPurchaseFollowUpPattern extends Pattern {
       __('Here are a few essentials that pair perfectly.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
+      <!-- wp:image {"sizeSlug":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
+      <figure class="wp-block-image size-full" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"><img src="' . $mainProductImage . '" alt="' . $mainProductAlt . '"/></figure>
       <!-- /wp:image -->
 
-      <!-- wp:heading {"textAlign":"center"} -->
-      <h2 class="wp-block-heading has-text-align-center">' . __('Product name', 'mailpoet') . '</h2>
+      <!-- wp:heading {"textAlign":"center","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}},"typography":{"fontSize":"24px"}}} -->
+      <h2 class="wp-block-heading has-text-align-center" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:24px">' . __('Product name', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
-      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"16px"}}} -->
-      <p class="has-text-align-center" style="font-size:16px">$99.90</p>
+      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
+      <p class="has-text-align-center" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:14px">$99.90</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
@@ -59,105 +75,7 @@ class ProductPurchaseFollowUpPattern extends Pattern {
       <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('You might also like', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
-      <!-- wp:columns -->
-      <div class="wp-block-columns">
-      <!-- wp:column {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"0"}}}} -->
-      <div class="wp-block-column" style="padding-right:var(--wp--preset--spacing--20);padding-left:0"><!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"level":3} -->
-      <h3 class="wp-block-heading">' . __('Product', 'mailpoet') . '</h3>
-      <!-- /wp:heading -->
-
-      <!-- wp:heading {"level":4} -->
-      <h4 class="wp-block-heading">$99.90</h4>
-      <!-- /wp:heading -->
-
-      <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-      </div>
-      <!-- /wp:column -->
-
-      <!-- wp:column {"style":{"spacing":{"padding":{"right":"0","left":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-column" style="padding-right:0;padding-left:var(--wp--preset--spacing--20)"><!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"level":3} -->
-      <h3 class="wp-block-heading">' . __('Product', 'mailpoet') . '</h3>
-      <!-- /wp:heading -->
-
-      <!-- wp:heading {"level":4} -->
-      <h4 class="wp-block-heading">$99.90</h4>
-      <!-- /wp:heading -->
-
-      <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-      </div>
-      <!-- /wp:column -->
-      </div>
-      <!-- /wp:columns -->
-
-      <!-- wp:columns -->
-      <div class="wp-block-columns">
-      <!-- wp:column {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"0"}}}} -->
-      <div class="wp-block-column" style="padding-right:var(--wp--preset--spacing--20);padding-left:0"><!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"level":3} -->
-      <h3 class="wp-block-heading">' . __('Product', 'mailpoet') . '</h3>
-      <!-- /wp:heading -->
-
-      <!-- wp:heading {"level":4} -->
-      <h4 class="wp-block-heading">$99.90</h4>
-      <!-- /wp:heading -->
-
-      <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-      </div>
-      <!-- /wp:column -->
-
-      <!-- wp:column {"style":{"spacing":{"padding":{"right":"0","left":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-column" style="padding-right:0;padding-left:var(--wp--preset--spacing--20)"><!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"level":3} -->
-      <h3 class="wp-block-heading">' . __('Product', 'mailpoet') . '</h3>
-      <!-- /wp:heading -->
-
-      <!-- wp:heading {"level":4} -->
-      <h4 class="wp-block-heading">$99.90</h4>
-      <!-- /wp:heading -->
-
-      <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"width":100,"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-      </div>
-      <!-- /wp:column -->
-      </div>
-      <!-- /wp:columns -->
+      ' . $productSection . '
 
       <!-- wp:spacer {"height":"30px"} -->
       <div style="height:30px" aria-hidden="true" class="wp-block-spacer"></div>

@@ -9,6 +9,14 @@ class AbandonedCartPattern extends AbstractAbandonedCartPattern {
   protected $name = 'abandoned-cart-content';
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getProductPlaceholderBlocks(['newsletter.jpg']));
+  }
+
+  public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    return $this->buildContent($this->getProductCollectionBlock());
+  }
+
+  private function buildContent(string $productSection): string {
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -20,7 +28,7 @@ class AbandonedCartPattern extends AbstractAbandonedCartPattern {
       <p>' . __('You’ve already done the hard part: finding something great. Now’s the time to make it yours.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      ' . $this->getProductCollectionBlock() . '
+      ' . $productSection . '
     </div>
     <!-- /wp:group -->
     ';
