@@ -22,10 +22,10 @@ class ProductPurchaseFollowUpPattern extends Pattern {
    */
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return $this->buildContent($this->getProductPlaceholderColumns([
-      'placeholder-03.jpg',
-      'placeholder-05.jpg',
-      'placeholder-04.jpg',
-      'placeholder-06.jpg',
+      'product-small-03.jpg',
+      'product-small-05.jpg',
+      'product-small-04.jpg',
+      'product-small-06.jpg',
     ]));
   }
 

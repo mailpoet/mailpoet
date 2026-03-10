@@ -10,8 +10,8 @@ class AbandonedCartWithDiscountPattern extends AbstractAbandonedCartPattern {
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return $this->buildContent($this->getProductPlaceholderBlocks([
-      'bottle-placeholder.jpg',
-      'sunglasses-purple-placeholder.jpg',
+      'product-large-01.jpg',
+      'product-large-02.jpg',
     ]));
   }
 
