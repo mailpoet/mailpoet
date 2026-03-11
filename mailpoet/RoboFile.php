@@ -1320,37 +1320,48 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceMembershipsZip(): void {
-    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
-    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
-      $this->yell("Skipping download of WooCommerce Memberships", 40, 'red');
-      exit(0); // Exit with 0 since it is a valid state for some environments
+    $downloader = $this->createGhDownloader();
+    if (!$downloader) {
+      $this->yell("Skipping download of WooCommerce Memberships (not authenticated — run 'gh auth login' or set GH_TOKEN)", 40, 'red');
+      exit(0);
     }
     $this->say('Downloading WooCommerce Memberships plugin');
-    $this->createGithubClient('woocommerce/all-plugins', $token)
-      ->downloadRawFile('https://api.github.com/repos/woocommerce/all-plugins/contents/product-packages/woocommerce-memberships/woocommerce-memberships.zip?ref=master', 'woocommerce-memberships.zip', __DIR__ . '/tests/plugins/');
+    $downloader->downloadRawFile(
+      'woocommerce/all-plugins',
+      'product-packages/woocommerce-memberships/woocommerce-memberships.zip',
+      'master',
+      __DIR__ . '/tests/plugins/woocommerce-memberships.zip'
+    );
   }
 
   public function downloadWooCommerceSubscriptionsZip($tag = null) {
-    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
-    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
-      $this->yell("Skipping download of WooCommerce Subscriptions", 40, 'red');
-      exit(0); // Exit with 0 since it is a valid state for some environments
+    $downloader = $this->createGhDownloader();
+    if (!$downloader) {
+      $this->yell("Skipping download of WooCommerce Subscriptions (not authenticated — run 'gh auth login' or set GH_TOKEN)", 40, 'red');
+      exit(0);
     }
-
     $this->say('Downloading WooCommerce Subscriptions plugin with tag: ' . $tag);
-    $this->createGithubClient('woocommerce/woocommerce-subscriptions', $token)
-      ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tests/plugins/', $tag);
+    $downloader->downloadReleaseAsset(
+      'woocommerce/woocommerce-subscriptions',
+      'woocommerce-subscriptions*.zip',
+      __DIR__ . '/tests/plugins/woocommerce-subscriptions.zip',
+      $tag
+    );
   }
 
   public function downloadAutomateWooZip($tag = null) {
-    $token = getenv('WP_GITHUB_WOOCOMMERCE_TOKEN');
-    if (!getenv('WP_GITHUB_USERNAME') && !$token) {
-      $this->yell("Skipping download of Automate Woo", 40, 'red');
-      exit(0); // Exit with 0 since it is a valid state for some environments
+    $downloader = $this->createGhDownloader();
+    if (!$downloader) {
+      $this->yell("Skipping download of Automate Woo (not authenticated — run 'gh auth login' or set GH_TOKEN)", 40, 'red');
+      exit(0);
     }
     $this->say('Downloading Automate Woo plugin with tag: ' . $tag);
-    $this->createGithubClient('woocommerce/automatewoo', $token)
-      ->downloadReleaseZip('automatewoo.zip', __DIR__ . '/tests/plugins/', $tag);
+    $downloader->downloadReleaseAsset(
+      'woocommerce/automatewoo',
+      'automatewoo*.zip',
+      __DIR__ . '/tests/plugins/automatewoo.zip',
+      $tag
+    );
   }
 
   public function downloadWooCommerceZip($tag = null) {
@@ -1546,14 +1557,13 @@ class RoboFile extends \Robo\Tasks {
     return $exitCode;
   }
 
-  private function createGithubClient($repositoryName, $token = null) {
-    require_once __DIR__ . '/tasks/GithubClient.php';
-    $token = $token ?: $this->getEnv('WP_GITHUB_TOKEN');
-    return new \MailPoetTasks\GithubClient(
-      $repositoryName,
-      getenv('WP_GITHUB_USERNAME') ?: null,
-      $token
-    );
+  private function createGhDownloader(): ?\MailPoetTasks\GhDownloader {
+    require_once __DIR__ . '/tasks/GhDownloader.php';
+    $downloader = new \MailPoetTasks\GhDownloader();
+    if (!$downloader->isAuthenticated()) {
+      return null;
+    }
+    return $downloader;
   }
 
   private function createWpOrgDownloader($pluginSlug) {
