@@ -8,17 +8,15 @@ LAST_VERSION=$(echo "$RSS_FEED" | grep -o '<title>WordPress [^<]*</title>' | sed
 
 # Check if a beta or RC version is found
 if [[ $LAST_VERSION == *'beta'* ]]; then
-  # Extract titles containing beta versions from the feed
-  VERSION_LINE=$(echo "$RSS_FEED" | grep -o '<code>wp core update [^<]*</code>' | sed -E 's/<\/?code>//g' | head -n 1 | grep 'beta')
-  LATEST_BETA=$(echo "$VERSION_LINE" | sed -E 's/.*--version=([0-9\.]+-beta[0-9]+).*/\1/')
+  # Extract version from the direct download zip link (e.g. wordpress-7.0-beta3.zip)
+  LATEST_BETA=$(echo "$RSS_FEED" | grep -o 'wordpress-[0-9\.]*-beta[0-9]*\.zip' | head -n 1 | sed -E 's/wordpress-([0-9\.]+-beta[0-9]*)\.zip/\1/')
 
   echo "Latest WordPress beta version: $LATEST_BETA"
   echo "LATEST_BETA=$LATEST_BETA"
 
 elif [[ $LAST_VERSION == *'release candidate'* ]]; then
-  # Extract titles containing RC versions from the feed
-  VERSION_LINE=$(echo "$RSS_FEED" | grep -o '<code>wp core update [^<]*</code>' | sed -E 's/<\/?code>//g' | head -n 1 | grep 'RC')
-  LATEST_BETA=$(echo "$VERSION_LINE" | sed -E 's/.*--version=([0-9\.]+-RC[0-9]+).*/\1/')
+  # Extract version from the direct download zip link (e.g. wordpress-7.0-RC3.zip)
+  LATEST_BETA=$(echo "$RSS_FEED" | grep -o 'wordpress-[0-9\.]*-RC[0-9]*\.zip' | head -n 1 | sed -E 's/wordpress-([0-9\.]+-RC[0-9]*)\.zip/\1/')
 
   echo "Latest WordPress RC version: $LATEST_BETA"
   echo "LATEST_BETA=$LATEST_BETA"
