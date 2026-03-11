@@ -472,7 +472,7 @@ jobs:
                   else
                     cd ../tests_env/docker
                     echo "Downloading WooCommerce Core with tag: '${WOOCOMMERCE_VERSION}'"
-                    docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
+                    docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
                   fi
       - when:
           condition: << parameters.woo_subscriptions_version >>
@@ -481,7 +481,7 @@ jobs:
                 name: Download WooCommerce Subscriptions
                 command: |
                   cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -489,7 +489,7 @@ jobs:
                 name: Download AutomateWoo
                 command: |
                   cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_acceptance
       - run:
           name: Report PHP version used for WordPress test site
           command: |
@@ -767,7 +767,7 @@ jobs:
                   else
                     cd ../tests_env/docker
                     echo "Downloading WooCommerce Core with tag: '${WOOCOMMERCE_VERSION}'"
-                    docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
+                    docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
                   fi
       - when:
           condition: << parameters.woo_subscriptions_version >>
@@ -776,7 +776,7 @@ jobs:
                 name: Download WooCommerce Subscriptions
                 command: |
                   cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -784,7 +784,7 @@ jobs:
                 name: Download AutomateWoo
                 command: |
                   cd ../tests_env/docker
-                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_WOOCOMMERCE_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} codeception_integration
       - run:
           name: 'PHP Integration tests'
           command: |
