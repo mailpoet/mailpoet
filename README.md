@@ -43,6 +43,7 @@ the following tools are recommended:
 1. **PHP** as per `composer.json` requirements.
 2. **Node.js**, as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
 3. **pnpm**, as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
+4. **[GitHub CLI (`gh`)](https://cli.github.com/)** for downloading private WooCommerce test plugins. Run `gh auth login` to authenticate — no personal access token needed.
 
 ## Xdebug
 

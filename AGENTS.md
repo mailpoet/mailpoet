@@ -84,7 +84,9 @@ This is a **monorepo** containing:
 # Visit http://localhost:8002
 ```
 
-Additional local tools recommended: PHP (per `composer.json`), Node.js (per `.nvmrc`), pnpm (via Corepack).
+Additional local tools recommended: PHP (per `composer.json`), Node.js (per `.nvmrc`), pnpm (via Corepack), [GitHub CLI (`gh`)](https://cli.github.com/).
+
+**GitHub CLI (`gh`) is required** for downloading private WooCommerce test plugins (Subscriptions, AutomateWoo, Memberships). Authenticate with `gh auth login` — no personal access token needed. In CI, the `GH_TOKEN` env var is used instead.
 
 ### Root-Level Commands
 

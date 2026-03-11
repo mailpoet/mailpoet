@@ -56,30 +56,28 @@ function getMinorMajorVersion(string $version): string {
 }
 
 /**
- * Function to fetch tags from a GitHub repository.
+ * Function to fetch tags from a GitHub repository using the gh CLI.
  */
-function fetchGitHubTags(string $repo, string $token, int $page = 1, int $limit = 50): array {
-  $url = "https://api.github.com/repos/$repo/tags?per_page=$limit&page=$page";
-  $ch = curl_init($url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');  // GitHub API requires a user agent
-  curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Authorization: token $token"
-  ]);
-  $response = curl_exec($ch);
-  curl_close($ch);
+function fetchGitHubTags(string $repo, int $page = 1, int $limit = 50): array {
+  $apiPath = sprintf('repos/%s/tags', $repo);
+  $command = sprintf(
+    'gh api %s -F per_page=%d -F page=%d --jq %s 2>&1',
+    escapeshellarg($apiPath),
+    $limit,
+    $page,
+    escapeshellarg('.[].name')
+  );
+  $output = [];
+  $exitCode = 0;
+  exec($command, $output, $exitCode);
 
-  if ($response === false) {
-    die("Failed to fetch tags from GitHub.");
+  if ($exitCode !== 0) {
+    die("Failed to fetch tags from GitHub: " . implode("\n", $output));
   }
 
-  $data = json_decode($response, true);
-
-  if (isset($data['message']) && $data['message'] == 'Not Found') {
-    die("Repository not found or access denied.");
-  }
-
-  return array_column($data, 'name');
+  return array_filter($output, function ($line) {
+    return $line !== '';
+  });
 }
 
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
@@ -109,18 +107,12 @@ function replacePrivatePluginVersion(
   string $configParameterName,
   string $versionsFilename
 ): void {
-  // Read the GitHub token from environment variable. Set at https://github.com/mailpoet/mailpoet/settings/secrets/actions.
-  $token = getenv('GH_TOKEN');
-  if (!$token) {
-    die("GitHub token not found. Make sure it's set in the environment variable 'GH_TOKEN'.");
-  }
-
   $page = 1;
   $latestVersion = null;
   $previousVersion = null;
   $allVersions = [];
   while (($latestVersion === null || $previousVersion === null) && $page < 10) {
-    $allVersions = array_merge($allVersions, fetchGitHubTags($repository, $token, $page));
+    $allVersions = array_merge($allVersions, fetchGitHubTags($repository, $page));
     $stableVersions = filterStableVersions($allVersions);
     [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
     $page++;
