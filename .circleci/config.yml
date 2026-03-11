@@ -526,6 +526,7 @@ jobs:
             docker compose run -e SKIP_DEPS=1 \
             -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
             -e CIRCLE_JOB=${CIRCLE_JOB} \
+            -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} \
             -e MULTISITE=<< parameters.multisite >> \
             -e BLOCKBASED_THEME=<< parameters.blockbased_theme >> \
             -e ENABLE_HPOS=<< parameters.enable_hpos >> \
@@ -806,6 +807,7 @@ jobs:
             docker compose run -e SKIP_DEPS=1 \
               -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
               -e CIRCLE_JOB=${CIRCLE_JOB} \
+              -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} \
               -e SKIP_PLUGINS=<< parameters.skip_plugins >> \
               -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
               -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
