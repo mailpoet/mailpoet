@@ -53,7 +53,14 @@ class GhDownloader {
     $url = self::API_BASE_URI . "/$repo/contents/$filePath?ref=$ref";
 
     if ($this->hasGh) {
-      $this->exec("gh api 'repos/$repo/contents/$filePath?ref=$ref' -H 'Accept: application/vnd.github.v3.raw' > " . escapeshellarg($destPath));
+      $apiPath = sprintf('repos/%s/contents/%s?ref=%s', $repo, $filePath, $ref);
+      $cmd = sprintf(
+        'gh api %s -H %s > %s',
+        escapeshellarg($apiPath),
+        escapeshellarg('Accept: application/vnd.github.v3.raw'),
+        escapeshellarg($destPath)
+      );
+      $this->exec($cmd);
     } else {
       $this->curlDownload($url, $destPath, 'application/vnd.github.v3.raw');
     }
@@ -80,7 +87,6 @@ class GhDownloader {
     }
 
     rename($files[0], $destPath);
-    file_put_contents($destPath . '-info', basename($files[0]));
     $this->cleanup($tmpDir);
   }
 
@@ -119,7 +125,6 @@ class GhDownloader {
     }
 
     $this->curlDownload($assetUrl, $destPath, 'application/octet-stream');
-    file_put_contents($destPath . '-info', $assetInfo);
   }
 
   private function curlGetJson(string $url): ?array {
@@ -139,6 +144,10 @@ class GhDownloader {
 
       if ($httpCode >= 200 && $httpCode < 300 && $response !== false) {
         return json_decode($response, true);
+      }
+
+      if ($httpCode === 401 || $httpCode === 403) {
+        throw new \Exception("Authentication failed for $url (HTTP $httpCode). Check your GH_TOKEN.");
       }
 
       if ($httpCode >= 500 && $retries++ < self::RETRIES_COUNT) {
@@ -176,6 +185,7 @@ class GhDownloader {
         continue;
       }
 
+      @unlink($destPath);
       throw new \Exception("Failed to download $url (HTTP $httpCode)");
     }
   }
