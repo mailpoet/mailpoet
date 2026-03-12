@@ -32,12 +32,14 @@ function StepNameContent({
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
+      if (event.button !== 0) return;
+
       const target = event.target as Node;
-      const popoverEl = contentRef.current?.closest('.components-popover');
+      const contentEl = contentRef.current;
       const dropdownEl = dropdownRef.current;
 
       if (
-        (!popoverEl || !popoverEl.contains(target)) &&
+        (!contentEl || !contentEl.contains(target)) &&
         (!dropdownEl || !dropdownEl.contains(target))
       ) {
         onClose();
