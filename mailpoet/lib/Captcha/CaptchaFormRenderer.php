@@ -2,7 +2,6 @@
 
 namespace MailPoet\Captcha;
 
-use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
