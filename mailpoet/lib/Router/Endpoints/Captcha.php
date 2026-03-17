@@ -40,14 +40,12 @@ class Captcha {
   }
 
   public function image($data) {
-    $width = !empty($data['width']) ? (int)$data['width'] : null;
-    $height = !empty($data['height']) ? (int)$data['height'] : null;
     $sessionId = $data['captcha_session_id'] ?? null;
     if (!$sessionId) {
       return;
     }
 
-    $this->captchaRenderer->renderImage($sessionId, $width, $height);
+    $this->captchaRenderer->renderImage($sessionId);
     exit;
   }
 

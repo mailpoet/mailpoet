@@ -141,7 +141,7 @@ class CaptchaValidator {
     return [
       'show_captcha' => true,
       'captcha_session_id' => $sessionId,
-      'captcha_image_url' => $this->captchaUrlFactory->getCaptchaImageUrl(220, 60, $sessionId),
+      'captcha_image_url' => $this->captchaUrlFactory->getCaptchaImageUrl($sessionId),
       'captcha_audio_url' => $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId),
       // Keep redirect_url for non-JavaScript form submissions
       'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),

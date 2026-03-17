@@ -33,7 +33,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
   }
 
   public function testItReturnsCaptchaImageUrl() {
-    $url = $this->urlFactory->getCaptchaImageUrl(100, 200, 'abc');
+    $url = $this->urlFactory->getCaptchaImageUrl('abc');
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);

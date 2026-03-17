@@ -36,12 +36,10 @@ class CaptchaUrlFactory {
     return $this->getCaptchaUrl($data);
   }
 
-  public function getCaptchaImageUrl(int $width, int $height, string $sessionId) {
+  public function getCaptchaImageUrl(string $sessionId) {
     return $this->getUrl(
       CaptchaEndpoint::ACTION_IMAGE,
       [
-        'width' => $width,
-        'height' => $height,
         'captcha_session_id' => $sessionId,
       ]
     );

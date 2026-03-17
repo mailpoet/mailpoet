@@ -42,13 +42,13 @@ class CaptchaRenderer {
     }
   }
 
-  public function renderImage(string $sessionId, $width = null, $height = null): void {
+  public function renderImage(string $sessionId): void {
     if (!$this->isSupported()) {
       return;
     }
 
-    $width = (isset($width) && $width > 0) ? intval($width) : self::DEFAULT_WIDTH;
-    $height = (isset($height) && $height > 0) ? intval($height) : self::DEFAULT_HEIGHT;
+    $width = self::DEFAULT_WIDTH;
+    $height = self::DEFAULT_HEIGHT;
 
     $fontNumbers = array_merge(range(0, 3), [5]); // skip font #4
     $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Captcha;
 
+use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
@@ -187,9 +188,9 @@ class CaptchaFormRenderer {
     $formHtml = '<form method="POST" action="' . $this->wp->escUrl($actionUrl) . '" class="' . $this->wp->escAttr($classes) . '" id="mailpoet_captcha_form" novalidate>';
     $formHtml .= $hiddenFields;
 
-    $width = 220;
-    $height = 60;
-    $captchaUrl = $this->captchaUrlFactory->getCaptchaImageUrl($width, $height, $sessionId);
+    $width = CaptchaRenderer::DEFAULT_WIDTH;
+    $height = CaptchaRenderer::DEFAULT_HEIGHT;
+    $captchaUrl = $this->captchaUrlFactory->getCaptchaImageUrl($sessionId);
     $mp3CaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
