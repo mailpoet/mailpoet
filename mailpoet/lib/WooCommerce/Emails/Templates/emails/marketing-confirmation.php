@@ -28,8 +28,12 @@ do_action('woocommerce_email_header', $email_heading, $email); ?>
 
 <p>
 <?php
+if ($subscriber_firstname) {
   /* translators: %s: Subscriber first name */
-  echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname ?: _x('there', 'subscriber name placeholder', 'mailpoet')));
+  echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname));
+} else {
+  echo esc_html(__('Hello there,', 'mailpoet'));
+}
 ?>
 </p>
 
