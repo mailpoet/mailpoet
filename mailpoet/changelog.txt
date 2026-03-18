@@ -4,7 +4,8 @@
 * Added: Add placeholder product images and dynamic product collection blocks to email patterns for stores with no products;
 * Updated: Update email editor packages;
 * Updated: Bump the minimum required WooCommerce version to 10.5 and tested up to version to 10.6;
-* Fixed: Fix automation step name popover not closing when clicking outside.
+* Fixed: Fix automation step name popover not closing when clicking outside;
+* Fixed: Captcha image now uses fixed dimensions for captcha image rendering.
 
 = 5.22.1 - 2026-03-09 =
 * Improved: Add placeholder image to Welcome Email starter pattern;

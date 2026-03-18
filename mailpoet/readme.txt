@@ -231,6 +231,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Added: Add placeholder product images and dynamic product collection blocks to email patterns for stores with no products;
 * Updated: Update email editor packages;
 * Updated: Bump the minimum required WooCommerce version to 10.5 and tested up to version to 10.6;
-* Fixed: Fix automation step name popover not closing when clicking outside.
+* Fixed: Fix automation step name popover not closing when clicking outside;
+* Fixed: Captcha image now uses fixed dimensions for captcha image rendering.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
