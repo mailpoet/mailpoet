@@ -131,6 +131,16 @@ addFilter(
   },
 );
 
+/**
+ * Disables real-time collaboration by removing all sync providers.
+ * This forces the editor to fall back to traditional single-user post locking.
+ */
+addFilter(
+  'sync.providers',
+  'mailpoet/email-editor-integration-disable-rtc',
+  () => [],
+);
+
 initStripPostStatusOnSaveMiddleware();
 
 initializeEditor('mailpoet-email-editor');
