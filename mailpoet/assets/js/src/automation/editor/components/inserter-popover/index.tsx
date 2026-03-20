@@ -8,27 +8,37 @@ import { Inserter } from '../inserter';
 import { Item } from '../inserter/item';
 import { storeName } from '../../store';
 import { AddStepCallbackType } from '../../../types/filters';
+import { sendTelemetryEvent } from '../../telemetry';
 
 export function InserterPopover(): JSX.Element | null {
   const popoverRef = useRef<HTMLDivElement>();
   const [showModal, setShowModal] = useState(false);
-  const { inserterPopover } = useSelect(
+  const { inserterPopover, automationId } = useSelect(
     (select) => ({
       inserterPopover: select(storeName).getInserterPopover(),
+      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
   const { setInserterPopover } = useDispatch(storeName);
 
-  const onInsert = useCallback((item: Item) => {
-    const addStepCallback: AddStepCallbackType = Hooks.applyFilters(
-      'mailpoet.automation.add_step_callback',
-      () => {
-        setShowModal(true);
-      },
-    );
-    addStepCallback(item);
-  }, []);
+  const onInsert = useCallback(
+    (item: Item) => {
+      const isTrigger = inserterPopover?.type === 'triggers';
+      sendTelemetryEvent(isTrigger ? 'trigger_select' : 'step_select', {
+        [isTrigger ? 'trigger_type' : 'step_type']: item.key,
+        automation_id: automationId,
+      });
+      const addStepCallback: AddStepCallbackType = Hooks.applyFilters(
+        'mailpoet.automation.add_step_callback',
+        () => {
+          setShowModal(true);
+        },
+      );
+      addStepCallback(item);
+    },
+    [automationId, inserterPopover?.type],
+  );
 
   if (!inserterPopover) {
     return null;

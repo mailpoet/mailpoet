@@ -1,4 +1,4 @@
-import { forwardRef, Fragment, useCallback, useMemo } from 'react';
+import { forwardRef, Fragment, useCallback, useEffect, useMemo } from 'react';
 import { SearchControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useRef, useImperativeHandle, useState } from '@wordpress/element';
@@ -10,6 +10,7 @@ import { StepInfoPanel } from './step-info-panel';
 import { StepList } from './step-list';
 import { InserterListbox } from '../inserter-listbox';
 import { storeName } from '../../store';
+import { sendTelemetryEvent } from '../../telemetry';
 
 // See: https://github.com/WordPress/gutenberg/blob/628ae68152f572d0b395bb15c0f71b8821e7f130/packages/block-editor/src/components/inserter/menu.js
 
@@ -85,6 +86,23 @@ export const Inserter = forwardRef(
         searchRef.current?.focus();
       },
     }));
+
+    const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+    useEffect(() => {
+      if (!filterValue.trim()) return undefined;
+      searchTimerRef.current = setTimeout(() => {
+        const resultCount = groups.reduce(
+          (sum, group) => sum + filterItems(filterValue, group.items).length,
+          0,
+        );
+        sendTelemetryEvent('picker_search_submit', {
+          picker_type: type,
+          result_count: resultCount,
+          automation_id: null,
+        });
+      }, 300);
+      return () => clearTimeout(searchTimerRef.current);
+    }, [filterValue, groups, type]);
 
     const filteredGroups = useMemo(
       () =>
