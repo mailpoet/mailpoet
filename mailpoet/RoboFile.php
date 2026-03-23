@@ -1557,6 +1557,21 @@ class RoboFile extends \Robo\Tasks {
     return $exitCode;
   }
 
+  private function ensureTestPlugins(): void {
+    $pluginsDir = __DIR__ . '/tests/plugins';
+    $downloads = [
+      'woocommerce.zip' => 'download:woo-commerce-zip latest',
+      'woocommerce-subscriptions.zip' => 'download:woo-commerce-subscriptions-zip latest',
+      'woocommerce-memberships.zip' => 'download:woo-commerce-memberships-zip',
+      'automatewoo.zip' => 'download:automate-woo-zip latest',
+    ];
+    foreach ($downloads as $zip => $command) {
+      if (!file_exists("$pluginsDir/$zip")) {
+        $this->taskExec("./do $command")->dir(__DIR__)->run();
+      }
+    }
+  }
+
   private function createGhDownloader(): ?\MailPoetTasks\GhDownloader {
     require_once __DIR__ . '/tasks/GhDownloader.php';
     $downloader = new \MailPoetTasks\GhDownloader();
@@ -1593,6 +1608,9 @@ class RoboFile extends \Robo\Tasks {
   private function runTestsInContainer(array $opts) {
     $testType = $opts['test_type'] ?? 'acceptance';
     $this->doctrineGenerateCache();
+    if (empty($opts['skip-plugins'])) {
+      $this->ensureTestPlugins();
+    }
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker compose run ' .
       (isset($opts['wordpress-version']) && $opts['wordpress-version'] ? '-e WORDPRESS_VERSION=' . $opts['wordpress-version'] . ' ' : '') .
