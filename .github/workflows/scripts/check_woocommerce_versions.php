@@ -15,7 +15,8 @@ function getWooCommerceVersions(): array {
   $data = json_decode($response, true);
 
   if (!isset($data['versions'])) {
-    die("Failed to fetch WooCommerce versions.");
+    fwrite(STDERR, "Failed to fetch WooCommerce versions.\n");
+    exit(1);
   }
 
   return array_keys($data['versions']);

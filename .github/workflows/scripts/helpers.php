@@ -7,7 +7,8 @@ function replaceVersionInFile(string $filePath, string $pattern, string $replace
   $content = file_get_contents($filePath);
 
   if ($content === false) {
-    die("Failed to read the file at $filePath.");
+    fwrite(STDERR, "Failed to read the file at $filePath.\n");
+    exit(1);
   }
 
   $updatedContent = preg_replace($pattern, $replacement, $content);
@@ -18,7 +19,8 @@ function replaceVersionInFile(string $filePath, string $pattern, string $replace
   }
 
   if (file_put_contents($filePath, $updatedContent) === false) {
-    die("Failed to write the updated file at $filePath.");
+    fwrite(STDERR, "Failed to write the updated file at $filePath.\n");
+    exit(1);
   }
 }
 
@@ -60,11 +62,14 @@ function getMinorMajorVersion(string $version): string {
  */
 function fetchGitHubTags(string $repo, int $page = 1, int $limit = 50): array {
   $apiPath = sprintf('repos/%s/tags', $repo);
+  $ghToken = getenv('GH_TOKEN');
+  if ($ghToken) {
+    putenv('GH_TOKEN=' . $ghToken); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- needed to authenticate gh CLI for private repos
+  }
+  $url = sprintf('%s?per_page=%d&page=%d', $apiPath, $limit, $page);
   $command = sprintf(
-    'gh api %s -F per_page=%d -F page=%d --jq %s 2>&1',
-    escapeshellarg($apiPath),
-    $limit,
-    $page,
+    'gh api %s --jq %s 2>&1',
+    escapeshellarg($url),
     escapeshellarg('.[].name')
   );
   $output = [];
@@ -72,7 +77,8 @@ function fetchGitHubTags(string $repo, int $page = 1, int $limit = 50): array {
   exec($command, $output, $exitCode);
 
   if ($exitCode !== 0) {
-    die("Failed to fetch tags from GitHub: " . implode("\n", $output));
+    fwrite(STDERR, "Failed to fetch tags for '$repo' (page $page): " . implode("\n", $output) . "\n");
+    exit(1);
   }
 
   return array_filter($output, function ($line) {
