@@ -65,7 +65,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
           title: __('Delete step', 'mailpoet'),
           icon: trash,
           onClick: () => {
-            sendTelemetryEvent('step_delete', {
+            sendTelemetryEvent('step_delete_click', {
               step_type: step.type === 'trigger' ? 'trigger' : step.key,
               automation_id: automationId,
             });

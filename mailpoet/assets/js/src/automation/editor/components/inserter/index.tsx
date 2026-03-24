@@ -32,10 +32,11 @@ export const Inserter = forwardRef(
     const [filterValue, setFilterValue] = useState('');
     const [hoveredItem, setHoveredItem] = useState(null);
 
-    const { steps, type } = useSelect(
+    const { steps, type, automationId } = useSelect(
       (select) => ({
         steps: select(storeName).getSteps(),
         type: select(storeName).getInserterPopover().type,
+        automationId: select(storeName).getAutomationData().id,
       }),
       [],
     );
@@ -98,11 +99,11 @@ export const Inserter = forwardRef(
         sendTelemetryEvent('picker_search_submit', {
           picker_type: type,
           result_count: resultCount,
-          automation_id: null,
+          automation_id: automationId,
         });
       }, 300);
       return () => clearTimeout(searchTimerRef.current);
-    }, [filterValue, groups, type]);
+    }, [filterValue, groups, type, automationId]);
 
     const filteredGroups = useMemo(
       () =>
