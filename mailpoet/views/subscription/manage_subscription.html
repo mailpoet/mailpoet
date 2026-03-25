@@ -6,7 +6,7 @@
   <input type="hidden" name="data[email]" value="<%= email|escape %>" />
   <input type="hidden" name="token" value="<%= token %>" />
   <p class="mailpoet_paragraph">
-    <label> <%= __('Email', 'mailpoet') %>*<br /><strong><%= email|escape %></strong></label>
+    <label> <%= __('Email', 'mailpoet') %><br /><strong><%= email|escape %></strong></label>
     <br />
     <span class="mailpoet-change-email-info">
       <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
