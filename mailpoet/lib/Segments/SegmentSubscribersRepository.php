@@ -55,40 +55,40 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersCountBySegmentIds(array $segmentIds, ?string $status = null, ?int $filterSegmentId = null): int {
-    try {
-      $segments = $this->segmentsRepository->findByIds($segmentIds);
-      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $queryBuilder = $this->createCountQueryBuilder();
+    $segments = $this->segmentsRepository->findByIds($segmentIds);
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->createCountQueryBuilder();
 
-      $subQueries = [];
-      foreach ($segments as $segment) {
-        $segmentQb = $this->createCountQueryBuilder();
-        $segmentQb->select("{$subscribersTable}.id AS inner_id");
+    $subQueries = [];
+    foreach ($segments as $segment) {
+      $segmentQb = $this->createCountQueryBuilder();
+      $segmentQb->select("{$subscribersTable}.id AS inner_id");
 
-        if ($segment->isStatic()) {
-          $segmentQb = $this->filterSubscribersInStaticSegment($segmentQb, $segment, $status);
-        } else {
-          $segmentQb = $this->filterSubscribersInDynamicSegment($segmentQb, $segment, $status);
-        }
-
-        // inner parameters and types have to be merged to outer queryBuilder
-        $queryBuilder->setParameters(array_merge(
-          $segmentQb->getParameters(),
-          $queryBuilder->getParameters()
-        ), array_merge(
-          $segmentQb->getParameterTypes(),
-          $queryBuilder->getParameterTypes()
-        ));
-        $subQueries[] = $segmentQb->getSQL();
+      if ($segment->isStatic()) {
+        $segmentQb = $this->filterSubscribersInStaticSegment($segmentQb, $segment, $status);
+      } else {
+        $segmentQb = $this->filterSubscribersInDynamicSegment($segmentQb, $segment, $status);
       }
 
-      $queryBuilder->innerJoin(
-        $subscribersTable,
-        sprintf('(%s)', join(' UNION ', $subQueries)),
-        'inner_subscribers',
-        "inner_subscribers.inner_id = {$subscribersTable}.id"
-      );
+      // inner parameters and types have to be merged to outer queryBuilder
+      $queryBuilder->setParameters(array_merge(
+        $segmentQb->getParameters(),
+        $queryBuilder->getParameters()
+      ), array_merge(
+        $segmentQb->getParameterTypes(),
+        $queryBuilder->getParameterTypes()
+      ));
+      $subQueries[] = $segmentQb->getSQL();
+    }
 
+    $queryBuilder->innerJoin(
+      $subscribersTable,
+      sprintf('(%s)', join(' UNION ', $subQueries)),
+      'inner_subscribers',
+      "inner_subscribers.inner_id = {$subscribersTable}.id"
+    );
+
+    try {
       if (is_int($filterSegmentId)) {
         $filterSegment = $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
         $filterSegmentQb = $this->createCountQueryBuilder();
@@ -102,7 +102,11 @@ class SegmentSubscribersRepository {
           "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id"
         );
       }
+    } catch (InvalidStateException $exception) {
+      return 0;
+    }
 
+    try {
       $statement = $this->executeQuery($queryBuilder);
       /** @var string $result */
       $result = $statement->fetchOne();
