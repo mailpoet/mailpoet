@@ -18,6 +18,7 @@ use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
+use Throwable;
 
 class SegmentSubscribersRepository {
   /** @var EntityManager */
@@ -467,6 +468,11 @@ class SegmentSubscribersRepository {
   }
 
   private function executeQuery(QueryBuilder $queryBuilder): Result {
+    try {
+      $this->entityManager->getConnection()->executeStatement('SET SESSION SQL_BIG_SELECTS=1');
+    } catch (Throwable $e) {
+      // Best-effort: some hosts may not allow SET SESSION, continue without it
+    }
     $result = $queryBuilder->execute();
     // Execute for select always returns statement but PHP Stan doesn't know that :(
     if (!$result instanceof Result) {
@@ -523,6 +529,18 @@ class SegmentSubscribersRepository {
       'query' => $queryBuilder->getSQL(),
     ]);
 
+    return $this->emptyStatisticsResult();
+  }
+
+  private function logQueryException(?SegmentEntity $segment, Throwable $e): void {
+    $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
+    $logger->error('Failed to execute segment subscribers query: ' . $e->getMessage(), [
+      'segment_id' => $segment ? $segment->getId() : null,
+      'error' => $e->getMessage(),
+    ]);
+  }
+
+  private function emptyStatisticsResult(): array {
     return [
       'all' => 0,
       'trash' => 0,
