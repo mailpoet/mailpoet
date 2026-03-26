@@ -6,6 +6,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
+import { sendTelemetryEvent } from '../../../../../editor/telemetry';
 
 type HandleDuplicatedStepType = {
   newEmailId: number;
@@ -253,7 +254,13 @@ export function EditNewsletter(): JSX.Element {
       <Button
         variant="sidebar-primary"
         centered
-        onClick={handleEditContent}
+        onClick={() => {
+          sendTelemetryEvent('button_click', {
+            button_label: 'edit_content',
+            automation_id: automationId,
+          });
+          void handleEditContent();
+        }}
         isBusy={isHandlingDuplicatedStep}
         disabled={isHandlingDuplicatedStep}
       >

@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { createRoot } from 'react-dom/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Icon, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
@@ -31,6 +31,7 @@ import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
 import { AutomationStatus } from '../listing/automation';
 import { initializeIntegrations } from './integrations';
+import { sendTelemetryEvent } from './telemetry';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -68,6 +69,11 @@ function updatingActiveAutomationNotPossible() {
 
 function onUnload(event) {
   if (globalSelect(storeName).getSavedState() !== 'saved') {
+    const automation = globalSelect(storeName).getAutomationData();
+    sendTelemetryEvent('page_abandon', {
+      automation_id: automation.id,
+      automation_status: automation.status,
+    });
     // eslint-disable-next-line no-param-reassign
     event.returnValue = __(
       'There are unsaved changes that will be lost. Do you want to continue?',
@@ -105,6 +111,7 @@ function Editor(): JSX.Element {
     [],
   );
   const [isBooting, setIsBooting] = useState(true);
+  const pageViewFiredRef = useRef(false);
 
   useConfirmUnsaved();
 
@@ -119,8 +126,22 @@ function Editor(): JSX.Element {
       });
     }
     updatingActiveAutomationNotPossible();
+    if (!pageViewFiredRef.current) {
+      pageViewFiredRef.current = true;
+      sendTelemetryEvent('page_view', {
+        automation_id: automation.id,
+        automation_status: automation.status,
+        is_new: automation.status === 'draft' && !automation.activated_at,
+      });
+    }
     setIsBooting(false);
-  }, [automation.name, automation.status, isBooting]);
+  }, [
+    automation.name,
+    automation.status,
+    automation.id,
+    automation.activated_at,
+    isBooting,
+  ]);
 
   if (automation.status === 'trash') {
     return null;

@@ -10,6 +10,7 @@ import { Feature, State } from './types';
 import { LISTING_NOTICES } from '../../listing/automation-listing-notices';
 import { MailPoet } from '../../../mailpoet';
 import { AutomationStatus } from '../../listing/automation';
+import { sendTelemetryEvent } from '../telemetry';
 
 const trackErrors = (errors) => {
   if (!errors?.steps) {
@@ -28,6 +29,13 @@ const trackErrors = (errors) => {
 
   MailPoet.trackEvent('Automations > Automation validation error', {
     errors: payload,
+  });
+  sendTelemetryEvent('validation_error', {
+    error_type:
+      Array.isArray(payload) && payload.length > 0
+        ? String(payload[0])
+        : 'unknown',
+    automation_id: select(storeName).getAutomationData()?.id ?? null,
   });
 };
 
@@ -119,14 +127,23 @@ export function* save() {
 
 export function* activate() {
   const automation = select(storeName).getAutomationData();
-  const data = yield apiFetch({
-    path: `/automations/${automation.id}`,
-    method: 'PUT',
-    data: {
-      ...automation,
-      status: AutomationStatus.ACTIVE,
-    },
-  });
+  let data;
+  try {
+    data = yield apiFetch({
+      path: `/automations/${automation.id}`,
+      method: 'PUT',
+      data: {
+        ...automation,
+        status: AutomationStatus.ACTIVE,
+      },
+    });
+  } catch {
+    sendTelemetryEvent('button_error', {
+      button_label: 'activate',
+      automation_id: automation.id,
+    });
+    throw new Error(__('Failed to activate automation.', 'mailpoet'));
+  }
 
   const { createNotice } = dispatch(noticesStore);
   if (data?.data.status === AutomationStatus.ACTIVE) {
@@ -138,6 +155,10 @@ export function* activate() {
       },
     );
     MailPoet.trackEvent('Automations > Automation activated');
+    sendTelemetryEvent('button_success', {
+      button_label: 'activate',
+      automation_id: automation.id,
+    });
   }
 
   return {
@@ -147,18 +168,52 @@ export function* activate() {
   } as const;
 }
 
-export function* deactivate(deactivateAutomationRuns = true) {
+export function* deactivate(
+  deactivateAutomationRuns = true,
+  telemetryContext?: { source: 'header' | 'modal'; selected_option?: string },
+) {
   const automation = select(storeName).getAutomationData();
-  const data = yield apiFetch({
-    path: `/automations/${automation.id}`,
-    method: 'PUT',
-    data: {
-      ...automation,
-      status: deactivateAutomationRuns
-        ? AutomationStatus.DRAFT
-        : AutomationStatus.DEACTIVATING,
-    },
-  });
+  let data;
+  try {
+    data = yield apiFetch({
+      path: `/automations/${automation.id}`,
+      method: 'PUT',
+      data: {
+        ...automation,
+        status: deactivateAutomationRuns
+          ? AutomationStatus.DRAFT
+          : AutomationStatus.DEACTIVATING,
+      },
+    });
+  } catch {
+    if (telemetryContext) {
+      sendTelemetryEvent('button_error', {
+        button_label: 'deactivate',
+        automation_id: automation.id,
+        ...(telemetryContext.source === 'modal' && {
+          modal_title: 'deactivate_automation',
+          selected_option: telemetryContext.selected_option ?? null,
+        }),
+      });
+    }
+    throw new Error(__('Failed to deactivate automation.', 'mailpoet'));
+  }
+
+  const emitSuccess = () => {
+    if (!telemetryContext) return;
+    const eventSuffix =
+      telemetryContext.source === 'modal'
+        ? 'modal_button_success'
+        : 'button_success';
+    sendTelemetryEvent(eventSuffix, {
+      button_label: 'deactivate',
+      automation_id: automation.id,
+      ...(telemetryContext.source === 'modal' && {
+        modal_title: 'deactivate_automation',
+        selected_option: telemetryContext.selected_option ?? null,
+      }),
+    });
+  };
 
   const { createNotice } = dispatch(noticesStore);
   if (
@@ -176,6 +231,7 @@ export function* deactivate(deactivateAutomationRuns = true) {
     MailPoet.trackEvent('Automations > Automation deactivated', {
       type: 'immediate',
     });
+    emitSuccess();
   }
   if (
     !deactivateAutomationRuns &&
@@ -194,6 +250,7 @@ export function* deactivate(deactivateAutomationRuns = true) {
     MailPoet.trackEvent('Automations > Automation deactivated', {
       type: 'continuous',
     });
+    emitSuccess();
   }
 
   return {
@@ -204,18 +261,31 @@ export function* deactivate(deactivateAutomationRuns = true) {
 
 export function* trash(onTrashed: () => void = undefined) {
   const automation = select(storeName).getAutomationData();
-  const data = yield apiFetch({
-    path: `/automations/${automation.id}`,
-    method: 'PUT',
-    data: {
-      ...automation,
-      status: AutomationStatus.TRASH,
-    },
-  });
+  let data;
+  try {
+    data = yield apiFetch({
+      path: `/automations/${automation.id}`,
+      method: 'PUT',
+      data: {
+        ...automation,
+        status: AutomationStatus.TRASH,
+      },
+    });
+  } catch {
+    sendTelemetryEvent('button_error', {
+      button_label: 'move_to_trash',
+      automation_id: automation.id,
+    });
+    throw new Error(__('Failed to move automation to trash.', 'mailpoet'));
+  }
 
   onTrashed?.();
 
   if (data?.data?.status === AutomationStatus.TRASH) {
+    sendTelemetryEvent('button_success', {
+      button_label: 'move_to_trash',
+      automation_id: automation.id,
+    });
     if (window.parent && window.parent !== window) {
       window.parent.postMessage(
         {

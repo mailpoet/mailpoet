@@ -2,6 +2,7 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { AddStepButton } from './add-step-button';
 import { Step } from './types';
 import { storeName } from '../../store';
+import { sendTelemetryEvent } from '../../telemetry';
 
 type Props = {
   previousStep: Step;
@@ -10,8 +11,11 @@ type Props = {
 
 export function Separator({ previousStep, index }: Props): JSX.Element {
   const { setInserterPopover } = dispatch(storeName);
-  const stepType = useSelect(
-    (select) => select(storeName).getStepType(previousStep.key),
+  const { stepType, automationId } = useSelect(
+    (select) => ({
+      stepType: select(storeName).getStepType(previousStep.key),
+      automationId: select(storeName).getAutomationData().id,
+    }),
     [],
   );
 
@@ -26,9 +30,13 @@ export function Separator({ previousStep, index }: Props): JSX.Element {
       )}
       <div className="mailpoet-automation-editor-separator">
         <AddStepButton
-          onClick={(button) =>
-            setInserterPopover({ anchor: button, type: 'steps' })
-          }
+          onClick={(button) => {
+            sendTelemetryEvent('button_click', {
+              button_label: 'add_step',
+              automation_id: automationId,
+            });
+            void setInserterPopover({ anchor: button, type: 'steps' });
+          }}
           previousStepId={previousStep.id}
           index={index}
         />

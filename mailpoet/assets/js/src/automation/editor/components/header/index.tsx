@@ -22,18 +22,20 @@ import {
   DeactivateImmediatelyModal,
   DeactivateModal,
 } from '../modals/deactivate-modal';
+import { sendTelemetryEvent } from '../../telemetry';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 export function ActivateButton({ label }): JSX.Element {
-  const { errors, isDeactivating } = useSelect(
+  const { errors, isDeactivating, automationId } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
       isDeactivating:
         select(storeName).getAutomationData().status ===
         AutomationStatus.DEACTIVATING,
+      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
@@ -43,7 +45,13 @@ export function ActivateButton({ label }): JSX.Element {
     <Button
       variant="primary"
       className="editor-post-publish-button"
-      onClick={openActivationPanel}
+      onClick={() => {
+        sendTelemetryEvent('button_click', {
+          button_label: 'activate',
+          automation_id: automationId,
+        });
+        void openActivationPanel();
+      }}
       disabled={isDeactivating || !!errors}
     >
       {label}
@@ -169,28 +177,38 @@ function SaveDraftButton(): JSX.Element {
 export function DeactivateButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const { hasUsersInProgress } = useSelect(
+  const { hasUsersInProgress, automationId } = useSelect(
     (select) => ({
       hasUsersInProgress:
         select(storeName).getAutomationData().stats.totals.in_progress > 0,
+      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
 
   const deactivateOrShowModal = () => {
+    sendTelemetryEvent('button_click', {
+      button_label: 'deactivate',
+      automation_id: automationId,
+    });
     if (hasUsersInProgress) {
       setShowDeactivateModal(true);
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate();
+    void dispatch(storeName).deactivate(true, { source: 'header' });
   };
 
   return (
     <>
       {showDeactivateModal && (
         <DeactivateModal
-          onClose={() => {
+          onClose={() => setShowDeactivateModal(false)}
+          onRequestClose={() => {
+            sendTelemetryEvent('modal_close', {
+              modal_title: 'deactivate_automation',
+              automation_id: automationId,
+            });
             setShowDeactivateModal(false);
           }}
         />
@@ -209,28 +227,38 @@ export function DeactivateButton(): JSX.Element {
 export function DeactivateNowButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const { hasUsersInProgress } = useSelect(
+  const { hasUsersInProgress, automationId } = useSelect(
     (select) => ({
       hasUsersInProgress:
         select(storeName).getAutomationData().stats.totals.in_progress > 0,
+      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
 
   const deactivateOrShowModal = () => {
+    sendTelemetryEvent('button_click', {
+      button_label: 'deactivate_now',
+      automation_id: automationId,
+    });
     if (hasUsersInProgress) {
       setShowDeactivateModal(true);
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate();
+    void dispatch(storeName).deactivate(true, { source: 'header' });
   };
 
   return (
     <>
       {showDeactivateModal && (
         <DeactivateImmediatelyModal
-          onClose={() => {
+          onClose={() => setShowDeactivateModal(false)}
+          onRequestClose={() => {
+            sendTelemetryEvent('modal_close', {
+              modal_title: 'deactivate_automation',
+              automation_id: automationId,
+            });
             setShowDeactivateModal(false);
           }}
         />
