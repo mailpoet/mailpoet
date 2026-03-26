@@ -4,6 +4,7 @@ namespace MailPoet\Test\SystemReport;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -118,6 +119,16 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($this->systemInfoData['Sending Method'])->equals($mta['method']);
     verify($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['emails'] . ' emails');
     verify($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['interval'] . ' minutes');
+  }
+
+  public function testItReturnsManagedLabelForSendingFrequencyWhenMssIsEnabled() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $bridge = $this->createMock(Bridge::class);
+    $bridge->method('pingBridge')->willReturn(new \WP_Error('error', 'test'));
+    $bridge->method('validateBridgePingResponse')->willReturn(false);
+    $systemReporter = $this->createSystemReporterWithMockedBridge($bridge);
+    $systemInfoData = $systemReporter->getData();
+    verify($systemInfoData['Sending Frequency'])->equals('Managed by MailPoet Sending Service');
   }
 
   public function testItReturnsSomeSettings() {
