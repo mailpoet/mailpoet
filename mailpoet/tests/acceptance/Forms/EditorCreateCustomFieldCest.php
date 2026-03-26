@@ -214,7 +214,7 @@ class EditorCreateCustomFieldCest {
     $i->amOnUrl($postUrl);
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
-    $i->waitForText($customFieldName . ' updated *');
+    $i->waitForText($customFieldName . ' updated*');
     $i->waitForText('New option');
     $i->waitForText('Option 2');
     $i->waitForText('Option 3');
@@ -260,7 +260,7 @@ class EditorCreateCustomFieldCest {
     $i->amOnUrl($postUrl);
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
-    $i->waitForText($customFieldName . ' updated *');
+    $i->waitForText($customFieldName . ' updated*');
     $i->waitForText('New option');
     $i->click('.mailpoet_submit');
     $i->waitForText('This field is required.');
@@ -310,7 +310,7 @@ class EditorCreateCustomFieldCest {
     $i->amOnUrl($postUrl);
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
-    $i->waitForText($customFieldName . ' updated *');
+    $i->waitForText($customFieldName . ' updated*');
     $i->assertAttributeContains('[data-automation-id="form_date_year"]', 'placeholder', 'Year');
     $i->assertAttributeContains('[data-automation-id="form_date_month"]', 'placeholder', 'Month');
     $i->click('.mailpoet_submit');
