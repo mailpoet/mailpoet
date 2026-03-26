@@ -255,10 +255,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $result = $this->repository->getSubscribersStatisticsCount($segment);
-    $this->assertSame(0, $result['all']);
-    $this->assertSame(0, $result['subscribed']);
-    $this->assertSame(0, $result['unsubscribed']);
-    $this->assertSame(0, $result['trash']);
+    $this->assertEquals(0, $result['all']);
+    $this->assertEquals(0, $result['subscribed']);
+    $this->assertEquals(0, $result['unsubscribed']);
+    $this->assertEquals(0, $result['trash']);
   }
 
   public function testSubscriberCountIsZeroIfItHasAnInvalidFilter(): void {
