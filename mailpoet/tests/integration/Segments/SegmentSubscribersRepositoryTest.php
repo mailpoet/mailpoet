@@ -229,6 +229,38 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     verify($countWithFilter)->equals(2);
   }
 
+  public function testSqlBigSelectsIsSetBeforeSegmentQuery(): void {
+    global $wpdb;
+    $wpdb->query('SET SESSION SQL_BIG_SELECTS=0');
+
+    $segment = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
+    $this->entityManager->flush();
+
+    $this->repository->getSubscribersStatisticsCount($segment);
+
+    $result = $wpdb->get_var('SELECT @@SESSION.SQL_BIG_SELECTS');
+    $this->assertSame('1', $result);
+  }
+
+  public function testStatisticsCountReturnsZerosOnQueryError(): void {
+    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
+    $filterData = new DynamicSegmentFilterData(
+      'typeThatDefinitelyDoesNotExist',
+      'theActionDoesNotExistEither'
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, $filterData);
+    $segment->getDynamicFilters()->add($dynamicFilter);
+    $this->entityManager->persist($segment);
+    $this->entityManager->persist($dynamicFilter);
+    $this->entityManager->flush();
+
+    $result = $this->repository->getSubscribersStatisticsCount($segment);
+    $this->assertSame(0, $result['all']);
+    $this->assertSame(0, $result['subscribed']);
+    $this->assertSame(0, $result['unsubscribed']);
+    $this->assertSame(0, $result['trash']);
+  }
+
   public function testSubscriberCountIsZeroIfItHasAnInvalidFilter(): void {
     $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
     $filterData = new DynamicSegmentFilterData(
