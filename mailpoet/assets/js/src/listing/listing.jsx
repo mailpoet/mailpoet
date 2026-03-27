@@ -617,7 +617,12 @@ class ListingComponent extends Component {
         }),
       )
       .filter(
-        (category) => !(category.name === 'trash' && category.count === 0),
+        (category) =>
+          !(
+            category.name === 'trash' &&
+            category.count === 0 &&
+            this.state.group !== 'trash'
+          ),
       );
 
     // groups
