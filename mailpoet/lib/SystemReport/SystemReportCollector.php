@@ -3,6 +3,7 @@
 namespace MailPoet\SystemReport;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
@@ -141,11 +142,13 @@ class SystemReportCollector {
         'API key state' => $ApiKeyState ?? 'Unset',
         'Premium key state' => $premiumKeyState ?? 'Unset',
       ]),
-      'Sending Frequency' => sprintf(
-        '%d emails every %d minutes',
-        $mta['frequency']['emails'],
-        $mta['frequency']['interval']
-      ),
+      'Sending Frequency' => ($mta['method'] === Mailer::METHOD_MAILPOET)
+        ? __('Managed by MailPoet Sending Service', 'mailpoet')
+        : sprintf(
+          '%d emails every %d minutes',
+          $mta['frequency']['emails'],
+          $mta['frequency']['interval']
+        ),
       'MailPoet sending info' => $this->formatCompositeField([
         "Send all site's emails with" => ($this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method'),
         'Task Scheduler method' => $this->settings->get('cron_trigger.method'),

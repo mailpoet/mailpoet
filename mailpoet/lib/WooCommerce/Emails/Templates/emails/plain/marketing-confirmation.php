@@ -23,8 +23,12 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 echo esc_html($email_heading);
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
-/* translators: %s: Subscriber first name */
-echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname ?: __('there', 'mailpoet')));
+if ($subscriber_firstname) {
+  /* translators: %s: Subscriber first name */
+  echo esc_html(sprintf(__('Hello %s,', 'mailpoet'), $subscriber_firstname));
+} else {
+  echo esc_html(__('Hello there,', 'mailpoet'));
+}
 echo "\n\n";
 
 /* translators: %s: Site name */

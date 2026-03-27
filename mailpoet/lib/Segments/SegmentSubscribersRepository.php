@@ -18,6 +18,7 @@ use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
+use Throwable;
 
 class SegmentSubscribersRepository {
   /** @var EntityManager */
@@ -105,10 +106,15 @@ class SegmentSubscribersRepository {
       return 0;
     }
 
-    $statement = $this->executeQuery($queryBuilder);
-    /** @var string $result */
-    $result = $statement->fetchOne();
-    return (int)$result;
+    try {
+      $statement = $this->executeQuery($queryBuilder);
+      /** @var string $result */
+      $result = $statement->fetchOne();
+      return (int)$result;
+    } catch (Throwable $e) {
+      $this->logQueryException(null, $e);
+      return 0;
+    }
   }
 
   /**
@@ -117,20 +123,25 @@ class SegmentSubscribersRepository {
    * @throws InvalidStateException
    */
   public function getDynamicSubscribersCount(array $filters): int {
-    $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, '');
-    foreach ($filters as $filter) {
-      $segment->addDynamicFilter(new DynamicSegmentFilterEntity($segment, $filter));
-    }
-    $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-    $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, null);
-    $statement = $this->executeQuery($queryBuilder);
-    $result = $statement->fetch();
+    try {
+      $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, '');
+      foreach ($filters as $filter) {
+        $segment->addDynamicFilter(new DynamicSegmentFilterEntity($segment, $filter));
+      }
+      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, null);
+      $statement = $this->executeQuery($queryBuilder);
+      $result = $statement->fetch();
 
-    if (!is_array($result)) {
-      $result = $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
-    }
+      if (!is_array($result)) {
+        $result = $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
+      }
 
-    return (int)$result['all'];
+      return (int)$result['all'];
+    } catch (Throwable $e) {
+      $this->logQueryException(null, $e);
+      return 0;
+    }
   }
 
   private function createCountQueryBuilder(): QueryBuilder {
@@ -283,55 +294,60 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersWithoutSegmentStatisticsCount(): array {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $queryBuilder = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder();
-    $queryBuilder
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN s.deleted_at IS NULL
+    try {
+      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $queryBuilder = $this->entityManager
+        ->getConnection()
+        ->createQueryBuilder();
+      $queryBuilder
+        ->addSelect('IFNULL(SUM(
+            CASE WHEN s.deleted_at IS NULL
+              THEN 1 ELSE 0 END
+        ), 0) as `all`')
+        ->addSelect('IFNULL(SUM(
+            CASE WHEN s.deleted_at IS NOT NULL
+              THEN 1 ELSE 0 END
+        ), 0) as trash')
+        ->addSelect('IFNULL(SUM(
+            CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
+              THEN 1 ELSE 0 END
+        ), 0) as :status_subscribed')
+        ->addSelect('IFNULL(SUM(
+          CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-      ), 0) as `all`')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN s.deleted_at IS NOT NULL
+        ), 0) as :status_unsubscribed')
+        ->addSelect('IFNULL(SUM(
+          CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-      ), 0) as trash')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
+        ), 0) as :status_inactive')
+        ->addSelect('IFNULL(SUM(
+          CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-      ), 0) as :status_subscribed')
-      ->addSelect('IFNULL(SUM(
-        CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
-          THEN 1 ELSE 0 END
-      ), 0) as :status_unsubscribed')
-      ->addSelect('IFNULL(SUM(
-        CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
-          THEN 1 ELSE 0 END
-      ), 0) as :status_inactive')
-      ->addSelect('IFNULL(SUM(
-        CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
-          THEN 1 ELSE 0 END
-      ), 0) as :status_unconfirmed')
-      ->addSelect('IFNULL(SUM(
-        CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
-          THEN 1 ELSE 0 END
-      ), 0) as :status_bounced')
-      ->from($subscribersTable, 's')
-      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
-      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
-      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
-      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+        ), 0) as :status_unconfirmed')
+        ->addSelect('IFNULL(SUM(
+          CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+        ), 0) as :status_bounced')
+        ->from($subscribersTable, 's')
+        ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+        ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
+        ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
+        ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
+        ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
 
-    $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
-    $statement = $this->executeQuery($queryBuilder);
-    $result = $statement->fetch();
+      $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
+      $statement = $this->executeQuery($queryBuilder);
+      $result = $statement->fetch();
 
-    if (is_array($result)) {
-      return $result;
+      if (is_array($result)) {
+        return $result;
+      }
+
+      return $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
+    } catch (Throwable $e) {
+      $this->logQueryException(null, $e);
+      return $this->emptyStatisticsResult();
     }
-
-    return $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
   }
 
   public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {
@@ -467,6 +483,11 @@ class SegmentSubscribersRepository {
   }
 
   private function executeQuery(QueryBuilder $queryBuilder): Result {
+    try {
+      $this->entityManager->getConnection()->executeStatement('SET SESSION SQL_BIG_SELECTS=1');
+    } catch (Throwable $e) {
+      // Best-effort: some hosts may not allow SET SESSION, continue without it
+    }
     $result = $queryBuilder->execute();
     // Execute for select always returns statement but PHP Stan doesn't know that :(
     if (!$result instanceof Result) {
@@ -476,37 +497,47 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersGlobalStatusStatisticsCount(SegmentEntity $segment): array {
-    if ($segment->isStatic()) {
-      $queryBuilder = $this->createStaticGlobalStatusStatisticsQueryBuilder($segment);
-    } else {
-      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-    }
+    try {
+      if ($segment->isStatic()) {
+        $queryBuilder = $this->createStaticGlobalStatusStatisticsQueryBuilder($segment);
+      } else {
+        $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+        $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+      }
 
-    $statement = $this->executeQuery($queryBuilder);
-    $result = $statement->fetch();
-    if (is_array($result)) {
-      return $result;
-    }
+      $statement = $this->executeQuery($queryBuilder);
+      $result = $statement->fetch();
+      if (is_array($result)) {
+        return $result;
+      }
 
-    return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
+      return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
+    } catch (Throwable $e) {
+      $this->logQueryException($segment, $e);
+      return $this->emptyStatisticsResult();
+    }
   }
 
   public function getSubscribersStatisticsCount(SegmentEntity $segment): array {
-    if ($segment->isStatic()) {
-      $queryBuilder = $this->createStaticStatisticsQueryBuilder($segment);
-    } else {
-      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-    }
+    try {
+      if ($segment->isStatic()) {
+        $queryBuilder = $this->createStaticStatisticsQueryBuilder($segment);
+      } else {
+        $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+        $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+      }
 
-    $statement = $this->executeQuery($queryBuilder);
-    $result = $statement->fetch();
-    if (is_array($result)) {
-      return $result;
-    }
+      $statement = $this->executeQuery($queryBuilder);
+      $result = $statement->fetch();
+      if (is_array($result)) {
+        return $result;
+      }
 
-    return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
+      return $this->logErrorAndReturnEmptyResult($segment, $queryBuilder, $result);
+    } catch (Throwable $e) {
+      $this->logQueryException($segment, $e);
+      return $this->emptyStatisticsResult();
+    }
   }
 
   /**
@@ -523,6 +554,18 @@ class SegmentSubscribersRepository {
       'query' => $queryBuilder->getSQL(),
     ]);
 
+    return $this->emptyStatisticsResult();
+  }
+
+  private function logQueryException(?SegmentEntity $segment, Throwable $e): void {
+    $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
+    $logger->error('Failed to execute segment subscribers query: ' . $e->getMessage(), [
+      'segment_id' => $segment ? $segment->getId() : null,
+      'error' => $e->getMessage(),
+    ]);
+  }
+
+  private function emptyStatisticsResult(): array {
     return [
       'all' => 0,
       'trash' => 0,
