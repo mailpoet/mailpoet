@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Tag;
+use DateTime;
 
 class SubscribersListingCest {
   public function subscribersListing(\AcceptanceTester $i) {
@@ -134,5 +135,29 @@ class SubscribersListingCest {
     $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_{$subscriber4->getId()}']");
     $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber3->getId()}']");
     $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber4->getId()}']");
+  }
+
+  public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
+    $i->wantTo('Verify that searching in Trash with no results does not redirect to All');
+
+    // Create a trashed subscriber
+    (new Subscriber())
+      ->withEmail('trashed@example.com')
+      ->withDeletedAt(new DateTime())
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+
+    // Navigate to the Trash group
+    $i->changeGroupInListingFilter('trash');
+    $i->waitForText('trashed@example.com');
+
+    // Search for something that won't match any trashed subscriber
+    $i->searchFor('noresultsexpected_xyz');
+
+    // Should stay in trash — not redirect to All
+    $i->waitForText('No items found.');
+    $i->seeInCurrentURL(urlencode('group[trash]'));
   }
 }

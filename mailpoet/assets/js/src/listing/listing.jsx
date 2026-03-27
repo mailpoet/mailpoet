@@ -196,8 +196,13 @@ class ListingComponent extends Component {
             meta: _.omit(response.meta, ['filters', 'groups', 'count']),
           },
           () => {
-            // if viewing an empty trash
-            if (this.state.group === 'trash' && response.meta.count === 0) {
+            // if viewing an empty trash (not just a search/filter with no results)
+            if (
+              this.state.group === 'trash' &&
+              response.meta.count === 0 &&
+              !this.state.search &&
+              Object.keys(this.state.filter).length === 0
+            ) {
               // redirect to default group
               this.handleGroup('all');
             }
