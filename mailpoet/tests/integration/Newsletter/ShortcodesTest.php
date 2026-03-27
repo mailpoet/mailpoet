@@ -239,7 +239,7 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals($this->subscriber->getLastName());
     $result =
       $shortcodesObject->process(['[subscriber:displayname]']);
-    verify($result[0])->equals($this->wPUser->user_login);
+    verify($result[0])->equals($this->wPUser->display_name);
 
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriberCount = $subscribersRepository->countBy(
