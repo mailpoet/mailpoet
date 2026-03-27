@@ -54,7 +54,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $block['params']['required'] = '1';
     $block['styles'] = [];
     $label = $this->rendererHelper->renderLabel($block, []);
-    verify($label)->equals('<label class="mailpoet_text_label" >Input label<span class="mailpoet_required" aria-hidden="true">*</span></label>');
+    verify($label)->equals('<label class="mailpoet_text_label" >Input label&nbsp;<span class="mailpoet_required" aria-hidden="true">*</span></label>');
 
     $block['params']['hide_label'] = '1';
     $label = $this->rendererHelper->renderLabel($block, []);
@@ -79,7 +79,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $block['params']['required'] = '1';
     $block['styles'] = [];
     $label = $this->rendererHelper->renderLegend($block, []);
-    verify($label)->equals('<legend class="mailpoet_text_label" >Input label<span class="mailpoet_required" aria-hidden="true">*</span></legend>');
+    verify($label)->equals('<legend class="mailpoet_text_label" >Input label&nbsp;<span class="mailpoet_required" aria-hidden="true">*</span></legend>');
 
     $block['params']['hide_label'] = '1';
     $label = $this->rendererHelper->renderLegend($block, []);
