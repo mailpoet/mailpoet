@@ -281,6 +281,41 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals($subscriberCustomField->getValue());
   }
 
+  public function testItCanProcessCheckboxCustomFieldShortcodes() {
+    $shortcodesObject = $this->shortcodesObject;
+    $subscriber = $this->subscriber;
+
+    $customField = new CustomFieldEntity();
+    $customField->setName('terms_agreement');
+    $customField->setType(CustomFieldEntity::TYPE_CHECKBOX);
+    $customField->setParams(['values' => [['value' => 'I agree to the terms']]]);
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+
+    // No value set — should return empty string
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ']']
+    );
+    verify($result[0])->equals('');
+
+    // Checked (value = '1') — should return the checkbox label, not '1'
+    $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, '1');
+    $this->entityManager->persist($subscriberCustomField);
+    $this->entityManager->flush();
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ']']
+    );
+    verify($result[0])->equals('I agree to the terms');
+
+    // Unchecked (value = '') — should return empty string
+    $subscriberCustomField->setValue('');
+    $this->entityManager->flush();
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ']']
+    );
+    verify($result[0])->equals('');
+  }
+
   public function testItCanProcessLinkShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $result =
