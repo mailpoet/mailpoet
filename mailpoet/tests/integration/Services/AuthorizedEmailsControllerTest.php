@@ -146,6 +146,14 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::STATUS_ACTIVE);
   }
 
+  public function testItSetErrorForAutomationEmailUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+  }
+
+  public function testItSetErrorForAutomationTransactionalEmailUnauthorizedSender() {
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_ACTIVE);
+  }
+
   public function testItResetErrorWhenAllSendersAreCorrect() {
     $this->newsletterFactory
       ->withSenderAddress('auth@email.com')

@@ -42,6 +42,8 @@ class AuthorizedEmailsController {
     NewsletterEntity::TYPE_WELCOME,
     NewsletterEntity::TYPE_NOTIFICATION,
     NewsletterEntity::TYPE_AUTOMATIC,
+    NewsletterEntity::TYPE_AUTOMATION,
+    NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
   ];
 
   public function __construct(
