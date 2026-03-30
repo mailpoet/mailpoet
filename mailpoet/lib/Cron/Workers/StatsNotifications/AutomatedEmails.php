@@ -2,6 +2,9 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\NewsletterEntity;
@@ -48,6 +51,9 @@ class AutomatedEmails extends SimpleWorker {
   /** @var DotcomHelperFunctions */
   private $dotcomHelperFunctions;
 
+  /** @var AutomationStorage */
+  private $automationStorage;
+
   public function __construct(
     MailerFactory $mailerFactory,
     Renderer $renderer,
@@ -56,7 +62,8 @@ class AutomatedEmails extends SimpleWorker {
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     MetaInfo $mailerMetaInfo,
     TrackingConfig $trackingConfig,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    DotcomHelperFunctions $dotcomHelperFunctions,
+    AutomationStorage $automationStorage
   ) {
     parent::__construct();
     $this->mailerFactory = $mailerFactory;
@@ -67,6 +74,7 @@ class AutomatedEmails extends SimpleWorker {
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->trackingConfig = $trackingConfig;
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
+    $this->automationStorage = $automationStorage;
     $this->wpDateTime = new WpDateTime();
   }
 
@@ -135,7 +143,14 @@ class AutomatedEmails extends SimpleWorker {
     $newsletters = $this->repository->findActiveByTypes(
       [NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATION]
     );
+    $activeAutomationNewsletterIds = $this->getActiveAutomationNewsletterIds();
     foreach ($newsletters as $newsletter) {
+      if (
+        $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION
+        && !in_array($newsletter->getId(), $activeAutomationNewsletterIds, true)
+      ) {
+        continue;
+      }
       $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
       if ($statistics->getTotalSentCount()) {
         $result[] = [
@@ -145,6 +160,23 @@ class AutomatedEmails extends SimpleWorker {
       }
     }
     return $result;
+  }
+
+  /** @return int[] */
+  private function getActiveAutomationNewsletterIds(): array {
+    $ids = [];
+    $automations = $this->automationStorage->getAutomations([Automation::STATUS_ACTIVE]);
+    foreach ($automations as $automation) {
+      foreach ($automation->getSteps() as $step) {
+        if ($step->getKey() === SendEmailAction::KEY) {
+          $args = $step->getArgs();
+          if (isset($args['email_id'])) {
+            $ids[] = (int)$args['email_id'];
+          }
+        }
+      }
+    }
+    return $ids;
   }
 
   /**
