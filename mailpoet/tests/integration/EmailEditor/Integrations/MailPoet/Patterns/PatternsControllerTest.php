@@ -66,6 +66,21 @@ class PatternsControllerTest extends \MailPoetTest {
     $patterns->registerPatterns();
     $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
 
+    $salesAnnouncementCategory = $registry->get_registered('sales-announcement');
+    $this->assertIsArray($salesAnnouncementCategory);
+    $this->assertEquals('sales-announcement', $salesAnnouncementCategory['name']);
+    $this->assertNotEmpty($salesAnnouncementCategory['label']);
+
+    $educationalCampaignCategory = $registry->get_registered('educational-campaign');
+    $this->assertIsArray($educationalCampaignCategory);
+    $this->assertEquals('educational-campaign', $educationalCampaignCategory['name']);
+    $this->assertNotEmpty($educationalCampaignCategory['label']);
+
+    $eventCategory = $registry->get_registered('event');
+    $this->assertIsArray($eventCategory);
+    $this->assertEquals('event', $eventCategory['name']);
+    $this->assertNotEmpty($eventCategory['label']);
+
     $newsletterCategory = $registry->get_registered('newsletter');
     $this->assertIsArray($newsletterCategory);
     $this->assertEquals('newsletter', $newsletterCategory['name']);
@@ -203,11 +218,11 @@ class PatternsControllerTest extends \MailPoetTest {
     $registry = \WP_Block_Pattern_Categories_Registry::get_instance();
 
     // Should include non-WooCommerce categories
-    $newsletterCategory = $registry->get_registered('newsletter');
-    $this->assertIsArray($newsletterCategory);
-
-    $welcomeCategory = $registry->get_registered('welcome');
-    $this->assertIsArray($welcomeCategory);
+    $this->assertIsArray($registry->get_registered('sales-announcement'));
+    $this->assertIsArray($registry->get_registered('educational-campaign'));
+    $this->assertIsArray($registry->get_registered('event'));
+    $this->assertIsArray($registry->get_registered('newsletter'));
+    $this->assertIsArray($registry->get_registered('welcome'));
 
     // Should NOT include WooCommerce-dependent categories
     $purchaseCategory = $registry->get_registered('purchase');

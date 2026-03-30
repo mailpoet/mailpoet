@@ -12,7 +12,7 @@ class EventInvitationPattern extends Pattern {
   protected $name = 'event-invitation';
   protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-  protected $categories = ['newsletter'];
+  protected $categories = ['event'];
   protected $post_types = [EmailEditor::MAILPOET_EMAIL_POST_TYPE]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
   /**

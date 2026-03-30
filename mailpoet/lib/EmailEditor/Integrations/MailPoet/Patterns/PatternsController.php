@@ -199,6 +199,21 @@ class PatternsController {
   private function registerPatternCategories(): void {
     $categories = [
       [
+        'name' => 'sales-announcement',
+        'label' => _x('Sales announcements', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of sales announcement email layouts.', 'mailpoet'),
+      ],
+      [
+        'name' => 'educational-campaign',
+        'label' => _x('Educational campaign', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of educational campaign email layouts.', 'mailpoet'),
+      ],
+      [
+        'name' => 'event',
+        'label' => _x('Events', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of event email layouts.', 'mailpoet'),
+      ],
+      [
         'name' => 'newsletter',
         'label' => _x('Newsletter', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of newsletter email layouts.', 'mailpoet'),
