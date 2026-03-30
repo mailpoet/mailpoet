@@ -13,7 +13,8 @@ import { Field } from 'form/types';
 import { SendToFieldWithCount } from './send-to-field';
 
 const tomorrowLocalDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
-const tomorrowDateTime = MailPoet.Date.toGmtDatetimeString(tomorrowLocalDateTime);
+const tomorrowDateTime =
+  MailPoet.Date.toGmtDatetimeString(tomorrowLocalDateTime);
 const timeOfDayItems = window.mailpoet_schedule_time_of_day as unknown as {
   [key: string]: string;
 };
