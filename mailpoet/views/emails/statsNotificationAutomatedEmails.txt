@@ -1,7 +1,31 @@
 <% extends 'emails/statsNotificationLayout.txt' %>
 
 <% block content %>
+<% if is_garden() %>
+<%= blogName %>
 
+<%= __('Your monthly automation stats') %>
+
+<% if recipientFirstName %><%= __('Hi %s,')|replace({'%s': recipientFirstName}) %>
+
+<% endif %>
+<%= __('Here\'s a summary of how your active automations performed this month.') %>
+
+<% for newsletter in newsletters %>
+------------------------------------------
+<%= newsletter.subject %>
+
+<%= __('Clicked') %>: <%= stats_number_format_i18n(newsletter.clicked) %>% (<%= clicked_stats_text_garden(newsletter.clicked) %>)
+<%= __('Opened') %>: <%= stats_number_format_i18n(newsletter.opened) %>%
+<%= __('Machine-opened') %>: <%= stats_number_format_i18n(newsletter.machineOpened) %>%
+<%= __('Unsubscribed') %>: <%= stats_number_format_i18n(newsletter.unsubscribed) %>%
+<%= __('Bounced') %>: <%= stats_number_format_i18n(newsletter.bounced) %>%
+
+<%= __('View automation report') %>
+  <%= newsletter.linkStats|raw %>
+<% endfor %>
+------------------------------------------
+<% else %>
 <%= __('Your monthly stats are in!') %>
 
 <% for newsletter in newsletters %>
@@ -16,4 +40,5 @@
     <%= newsletter.linkStats|raw %>
 <% endfor %>
 ------------------------------------------
+<% endif %>
 <% endblock %>
