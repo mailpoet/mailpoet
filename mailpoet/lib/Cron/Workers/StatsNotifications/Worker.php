@@ -17,6 +17,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -62,6 +63,9 @@ class Worker {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var DotcomHelperFunctions */
+  private $dotcomHelperFunctions;
+
   public function __construct(
     MailerFactory $mailerFactory,
     Renderer $renderer,
@@ -74,7 +78,8 @@ class Worker {
     EntityManager $entityManager,
     SubscribersFeature $subscribersFeature,
     SubscribersRepository $subscribersRepository,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->renderer = $renderer;
     $this->mailerFactory = $mailerFactory;
@@ -88,6 +93,7 @@ class Worker {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersRepository = $subscribersRepository;
     $this->servicesChecker = $servicesChecker;
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   /** @throws \Exception */
@@ -101,7 +107,7 @@ class Worker {
         $extraParams = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($statsNotificationEntity), $settings['address'], $extraParams);
+        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($statsNotificationEntity, $settings), $settings['address'], $extraParams);
       } catch (\Exception $e) {
         if (WP_DEBUG) {
           throw $e;
@@ -116,7 +122,7 @@ class Worker {
     }
   }
 
-  private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity) {
+  private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity, array $settings) {
     $newsletter = $statsNotificationEntity->getNewsletter();
     if (!$newsletter instanceof NewsletterEntity) {
       throw new \RuntimeException('Missing newsletter entity for statistic notification.');
@@ -126,11 +132,17 @@ class Worker {
     if (!$sendingQueue instanceof SendingQueueEntity) {
       throw new \RuntimeException('Missing sending queue entity for statistic notification.');
     }
-    $context = $this->prepareContext($newsletter, $sendingQueue, $link);
+    $context = $this->prepareContext($newsletter, $sendingQueue, $link, $settings);
     $subject = $sendingQueue->getNewsletterRenderedSubject();
-    return [
+    if ($this->dotcomHelperFunctions->isGarden()) {
+      // translators: %s is the name of the email campaign.
+      $emailSubject = sprintf(__('Campaign performance summary: %s', 'mailpoet'), $subject);
+    } else {
       // translators: %s is the subject of the email.
-      'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject),
+      $emailSubject = sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject);
+    }
+    return [
+      'subject' => $emailSubject,
       'body' => [
         'html' => $this->renderer->render('emails/statsNotification.html', $context),
         'text' => $this->renderer->render('emails/statsNotification.txt', $context),
@@ -138,13 +150,14 @@ class Worker {
     ];
   }
 
-  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null) {
+  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null, array $settings = []) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
-    $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
-    $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
-    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $statistics->getTotalSentCount();
-    $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
-    $bounced = ($statistics->getBounceCount() * 100) / $statistics->getTotalSentCount();
+    $totalSentCount = $statistics->getTotalSentCount() ?: 1;
+    $clicked = ($statistics->getClickCount() * 100) / $totalSentCount;
+    $opened = ($statistics->getOpenCount() * 100) / $totalSentCount;
+    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $totalSentCount;
+    $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
+    $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
     $subject = $sendingQueue->getNewsletterRenderedSubject();
     $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
     $hasValidApiKey = $this->subscribersFeature->hasValidApiKey();
@@ -188,7 +201,25 @@ class Worker {
       $mappings = self::getShortcodeLinksMapping();
       $context['topLink'] = isset($mappings[$link->getUrl()]) ? $mappings[$link->getUrl()] : $link->getUrl();
     }
+    $context['blogName'] = WPFunctions::get()->getBloginfo('name');
+    $context['recipientFirstName'] = $this->getRecipientFirstName($settings['address'] ?? '');
     return $context;
+  }
+
+  private function getRecipientFirstName(string $email): string {
+    if (empty($email)) {
+      return '';
+    }
+    $user = WPFunctions::get()->getUserBy('email', $email);
+    if (!$user) {
+      return '';
+    }
+    $firstName = $user->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!empty($firstName)) {
+      return $firstName;
+    }
+    $displayName = $user->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return !empty($displayName) ? $displayName : '';
   }
 
   private function markTaskAsFinished(ScheduledTaskEntity $task) {

@@ -1,7 +1,10 @@
 <% block content %><% endblock %>
 
-<% if not is_garden() %>
+<% if is_garden() %>
+&copy; <%= blogName %>. <%= __('All Rights Reserved.') %>
+<%= __('Manage email preference') %> <%= linkSettings|raw %>
+<% else %>
 <%= __('How to improve my open rate?') %> https://www.mailpoet.com/how-to-improve-open-rates/
 <%= __('And my click rate?') %> https://www.mailpoet.com/how-to-improve-click-rates/
-<% endif %>
 <%= __('Disable these emails') %> <%= linkSettings|raw %>
+<% endif %>

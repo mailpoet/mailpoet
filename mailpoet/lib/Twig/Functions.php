@@ -198,6 +198,16 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
+        'clicked_stats_text_garden',
+        [$this, 'clickedStatsTextGarden'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'clicked_stats_badge_color',
+        [$this, 'clickedStatsBadgeColor'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
         'add_referral_id',
         [$this, 'addReferralId'],
         ['is_safe' => ['all']]
@@ -357,6 +367,30 @@ class Functions extends AbstractExtension {
       return __('Good', 'mailpoet');
     } else {
       return __('Average', 'mailpoet');
+    }
+  }
+
+  public function clickedStatsTextGarden($clicked) {
+    if ($clicked > 3) {
+      return __('Excellent', 'mailpoet');
+    } elseif ($clicked > 1) {
+      return __('Good', 'mailpoet');
+    } elseif ($clicked > 0) {
+      return __('Average', 'mailpoet');
+    } else {
+      return __('Poor', 'mailpoet');
+    }
+  }
+
+  public function clickedStatsBadgeColor($clicked) {
+    if ($clicked > 3) {
+      return '#C6E1C6'; // Stable (green) — Excellent
+    } elseif ($clicked > 1) {
+      return '#B5D4EF'; // Informational (blue) — Good
+    } elseif ($clicked > 0) {
+      return '#DCDCDE'; // Draft (gray) — Average
+    } else {
+      return '#F5E6AB'; // Medium (yellow) — Poor
     }
   }
 
