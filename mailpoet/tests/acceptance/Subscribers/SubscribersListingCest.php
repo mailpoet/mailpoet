@@ -2,10 +2,10 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use DateTime;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Tag;
-use DateTime;
 
 class SubscribersListingCest {
   public function subscribersListing(\AcceptanceTester $i) {
