@@ -27,6 +27,7 @@ use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -100,7 +101,8 @@ class WorkerTest extends \MailPoetTest {
       $this->entityManager,
       $this->diContainer->get(SubscribersFeature::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(DotcomHelperFunctions::class)
     );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,

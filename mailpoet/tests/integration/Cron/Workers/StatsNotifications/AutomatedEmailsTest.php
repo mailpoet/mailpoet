@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use Codeception\Stub;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Entities\NewsletterEntity;
@@ -19,6 +20,7 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -65,7 +67,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(NewsletterStatisticsRepository::class),
       new MetaInfo,
-      $this->diContainer->get(TrackingConfig::class)
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(DotcomHelperFunctions::class),
+      $this->diContainer->get(AutomationStorage::class)
     );
     $this->cronWorkerRunner = Stub::copy($this->diContainer->get(CronWorkerRunner::class), [
       'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
