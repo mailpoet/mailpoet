@@ -14,6 +14,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -217,6 +218,56 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
     $this->createClicks($newsletter, 5);
     $this->createOpens($newsletter, 2);
+  }
+
+  public function testItIncludesAutomationNewsletterLinkedToActiveAutomation() {
+    $newsletter = $this->newsletterFactory
+      ->withSubject('Automation Email')
+      ->withAutomationType()
+      ->withActiveStatus()
+      ->withSendingQueue(['count_processed' => 10])
+      ->create();
+
+    (new AutomationFactory())
+      ->withStatusActive()
+      ->withSendEmailStep($newsletter)
+      ->create();
+
+    $this->createClicks($newsletter, 3);
+    $this->createOpens($newsletter, 2);
+
+    $this->renderer->expects($this->exactly(2))
+      ->method('render');
+
+    $this->mailer->expects($this->once())
+      ->method('send');
+
+    $result = $this->cronWorkerRunner->run($this->statsNotifications);
+
+    verify($result)->equals(true);
+  }
+
+  public function testItExcludesOrphanedAutomationNewsletter() {
+    // TYPE_AUTOMATION newsletter that is not referenced by any active automation
+    $newsletter = $this->newsletterFactory
+      ->withSubject('Orphaned Automation Email')
+      ->withAutomationType()
+      ->withActiveStatus()
+      ->withSendingQueue(['count_processed' => 10])
+      ->create();
+
+    $this->createClicks($newsletter, 3);
+    $this->createOpens($newsletter, 2);
+
+    $this->renderer->expects($this->never())
+      ->method('render');
+
+    $this->mailer->expects($this->never())
+      ->method('send');
+
+    $result = $this->cronWorkerRunner->run($this->statsNotifications);
+
+    verify($result)->equals(true);
   }
 
   public function testItGeneratesRandomNextRunDate() {
