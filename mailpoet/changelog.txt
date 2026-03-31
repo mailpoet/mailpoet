@@ -1,5 +1,13 @@
 == Changelog ==
 
+= 5.22.3 - 2026-03-31 =
+* Changed: Register new email pattern categories (Sales announcements, Educational campaign, Events) and reassign patterns;
+* Fixed: Fix incorrect asterisk on email label and spacing before required asterisk on Manage Subscription page;
+* Fixed: Fix Bluesky social icon not loading in the newsletter editor;
+* Fixed: Prevent fatal error on hosts with strict MAX_JOIN_SIZE database limits when loading pages with segment subscriber counts;
+* Fixed: Sending frequency in System Info showing misleading values when using MailPoet Sending Service;
+* Fixed: Searching in Subscribers Trash with no results no longer redirects to the All tab or hides the Trash tab.
+
 = 5.22.2 - 2026-03-16 =
 * Added: Add placeholder product images and dynamic product collection blocks to email patterns for stores with no products;
 * Updated: Update email editor packages;

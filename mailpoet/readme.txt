@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.22.2
+Stable tag: 5.22.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,11 +227,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.22.2 - 2026-03-16 =
-* Added: Add placeholder product images and dynamic product collection blocks to email patterns for stores with no products;
-* Updated: Update email editor packages;
-* Updated: Bump the minimum required WooCommerce version to 10.5 and tested up to version to 10.6;
-* Fixed: Fix automation step name popover not closing when clicking outside;
-* Fixed: Captcha image now uses fixed dimensions for captcha image rendering.
+= 5.22.3 - 2026-03-31 =
+* Changed: Register new email pattern categories (Sales announcements, Educational campaign, Events) and reassign patterns;
+* Fixed: Fix incorrect asterisk on email label and spacing before required asterisk on Manage Subscription page;
+* Fixed: Fix Bluesky social icon not loading in the newsletter editor;
+* Fixed: Prevent fatal error on hosts with strict MAX_JOIN_SIZE database limits when loading pages with segment subscriber counts;
+* Fixed: Sending frequency in System Info showing misleading values when using MailPoet Sending Service;
+* Fixed: Searching in Subscribers Trash with no results no longer redirects to the All tab or hides the Trash tab.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
