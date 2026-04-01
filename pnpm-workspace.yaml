@@ -50,6 +50,7 @@ overrides:
   'axios@>=1.0.0 <1.13.5': '>=1.13.5'
   'diff@>=5.0.0 <5.2.2': '>=5.2.2 <6.0.0'
   'qs@<6.14.1': '>=6.14.1'
+  '@wordpress/block-library': '9.0.0'
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
