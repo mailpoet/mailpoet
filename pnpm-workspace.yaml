@@ -57,6 +57,15 @@ onlyBuiltDependencies:
   - 'core-js'
   - 'core-js-pure'
 
+packageExtensions:
+  '@wordpress/block-editor@*':
+    dependencies:
+      'diff': '*'
+  '@wordpress/sync@*':
+    dependencies:
+      'fast-deep-equal': '*'
+
+shamefullyHoist: true
 autoInstallPeers: false
 strictPeerDependencies: false
 

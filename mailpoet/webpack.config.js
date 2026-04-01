@@ -107,7 +107,12 @@ const baseConfig = {
     chunkFilename: '[name].chunk.js',
   },
   resolve: {
-    modules: ['node_modules', 'assets/js/src'],
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, '..', 'node_modules'),
+      'assets/js/src',
+    ],
+    symlinks: false,
     fallback: {
       fs: false,
       path: false, // path is used in css module, but we don't use the functionality which requires it
@@ -134,6 +139,12 @@ const baseConfig = {
       '@automattic/tour-kit': path.resolve(
         __dirname,
         'assets/js/src/mock-empty-module.js',
+      ),
+      'fast-deep-equal': path.resolve(
+        __dirname,
+        '..',
+        'node_modules',
+        'fast-deep-equal',
       ),
     },
   },

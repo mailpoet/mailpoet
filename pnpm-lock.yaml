@@ -48,6 +48,8 @@ overrides:
   qs@<6.14.1: '>=6.14.1'
   '@wordpress/block-library': 9.0.0
 
+packageExtensionsChecksum: sha256-uHqb4LlC2bd55GfTJKDpOtp0jFU+ZoCqve7QoOTSf0E=
+
 pnpmfileChecksum: sha256-b2fyo48/TKYPF6LJtK6nZ3ILK4XxFVSEMTtYyjFAnkk=
 
 patchedDependencies:
@@ -16033,6 +16035,7 @@ snapshots:
       '@babel/runtime': 7.29.2
       '@types/simple-peer': 9.11.9
       '@wordpress/url': 3.59.0
+      fast-deep-equal: 3.1.3
       import-locals: 2.0.0
       lib0: 0.2.117
       simple-peer: 9.11.1
