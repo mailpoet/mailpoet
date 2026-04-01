@@ -40,4 +40,18 @@ class HandlerTest extends \MailPoetUnitTest {
     ]);
     verify($definition->getSelection())->equals([1, 2]);
   }
+
+  public function testItFallbacksSortByToIdForDisallowedValue() {
+    $listingData = $this->listingData;
+    $listingData['sort_by'] = "id, extractvalue(1, concat('a'))";
+    $definition = $this->handler->getListingDefinition($listingData);
+    verify($definition->getSortBy())->equals('id');
+  }
+
+  public function testItKeepsValidUnderscoreSortByValue() {
+    $listingData = $this->listingData;
+    $listingData['sort_by'] = 'last_subscribed_at';
+    $definition = $this->handler->getListingDefinition($listingData);
+    verify($definition->getSortBy())->equals('last_subscribed_at');
+  }
 }
