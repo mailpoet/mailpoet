@@ -43,6 +43,15 @@ class SubscriberSegmentRepository extends Repository {
       ->getResult();
   }
 
+  public function deleteAllBySubscriber(SubscriberEntity $subscriber): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(SubscriberSegmentEntity::class, 'ss')
+      ->where('ss.subscriber = :subscriber')
+      ->setParameter('subscriber', $subscriber)
+      ->getQuery()
+      ->execute();
+  }
+
   /**
    * @param SegmentEntity[] $segments
    */

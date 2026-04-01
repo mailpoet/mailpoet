@@ -38,6 +38,7 @@ class WP {
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
+  /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
   /** @var Validator */
@@ -104,6 +105,7 @@ class WP {
   }
 
   private function deleteSubscriber(SubscriberEntity $subscriber): void {
+    $this->subscriberSegmentRepository->deleteAllBySubscriber($subscriber);
     $this->subscribersRepository->remove($subscriber);
     $this->subscribersRepository->flush();
   }

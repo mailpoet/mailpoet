@@ -346,6 +346,44 @@ class WPTest extends \MailPoetTest {
     verify($subscribersCount)->equals(1);
   }
 
+  public function testItDeletesSubscriberSegmentEntriesWhenWPUserIsDeleted(): void {
+    // Insert a user directly (no hooks) and sync to MailPoet tables.
+    $id = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    // Confirm the subscriber and its segment entry were created.
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    $subscriberSegmentTable = $this->entityManager
+      ->getClassMetadata(SubscriberSegmentEntity::class)
+      ->getTableName();
+    $segmentCount = (int)$this->entityManager->getConnection()
+      ->executeQuery(
+        "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
+        ['id' => $subscriberId]
+      )->fetchOne();
+    $this->assertEquals(1, $segmentCount);
+
+    // Delete the WP user — this fires delete_user → synchronizeUser → deleteSubscriber.
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    // The subscriber row must be gone.
+    $deletedSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertNull($deletedSubscriber);
+
+    // The subscriber_segment row must also be gone (this is what the bug was about).
+    $orphanedCount = (int)$this->entityManager->getConnection()
+      ->executeQuery(
+        "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
+        ['id' => $subscriberId]
+      )->fetchOne();
+    $this->assertEquals(0, $orphanedCount, 'wp_mailpoet_subscriber_segment row was not deleted when WP user was deleted');
+  }
+
   public function testItSynchronizesNewUsersToDisabledWPSegmentAsUnconfirmedAndTrashed(): void {
     $this->disableWpSegment();
     $this->settings->set('signup_confirmation.enabled', '1');
