@@ -169,9 +169,7 @@ const SidebarView = Marionette.View.extend({
       .parent()
       .on('sticky_kit:unbottom', this.updateHorizontalScroll.bind(this));
   },
-}) as typeof Marionette.View & {
-  updateHorizontalScroll: () => void;
-};
+});
 
 /**
  * Draggable widget collection view
