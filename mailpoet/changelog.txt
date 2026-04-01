@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.22.4 - 2026-04-01 =
+* Fixed: Automation stats notification email not including automation-type newsletters.
+
 = 5.22.3 - 2026-03-31 =
 * Changed: Register new email pattern categories (Sales announcements, Educational campaign, Events) and reassign patterns;
 * Fixed: Fix incorrect asterisk on email label and spacing before required asterisk on Manage Subscription page;
