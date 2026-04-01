@@ -51,6 +51,11 @@ overrides:
   'diff@>=5.0.0 <5.2.2': '>=5.2.2 <6.0.0'
   'qs@<6.14.1': '>=6.14.1'
 
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - 'core-js'
+  - 'core-js-pure'
+
 autoInstallPeers: false
 strictPeerDependencies: false
 
