@@ -105,9 +105,11 @@ class WP {
   }
 
   private function deleteSubscriber(SubscriberEntity $subscriber): void {
-    $this->subscriberSegmentRepository->deleteAllBySubscriber($subscriber);
-    $this->subscribersRepository->remove($subscriber);
-    $this->subscribersRepository->flush();
+    $this->entityManager->wrapInTransaction(function() use ($subscriber): void {
+      $this->subscriberSegmentRepository->deleteAllBySubscriber($subscriber);
+      $this->subscribersRepository->remove($subscriber);
+      $this->subscribersRepository->flush();
+    });
   }
 
   /**

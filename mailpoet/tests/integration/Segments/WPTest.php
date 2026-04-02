@@ -381,7 +381,7 @@ class WPTest extends \MailPoetTest {
         "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
         ['id' => $subscriberId]
       )->fetchOne();
-    $this->assertEquals(0, $orphanedCount, 'wp_mailpoet_subscriber_segment row was not deleted when WP user was deleted');
+    $this->assertEquals(0, $orphanedCount, $subscriberSegmentTable . ' row was not deleted when WP user was deleted');
   }
 
   public function testItSynchronizesNewUsersToDisabledWPSegmentAsUnconfirmedAndTrashed(): void {
