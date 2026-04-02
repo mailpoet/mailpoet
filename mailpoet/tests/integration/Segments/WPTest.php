@@ -140,6 +140,41 @@ class WPTest extends \MailPoetTest {
     verify($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
+  public function testSynchronizeUserRemovesDuplicateSubscriberOnEmailChange(): void {
+    $randomNumber = rand();
+    // Create a WP user with email A
+    $id = $this->insertUser($randomNumber);
+    $emailA = 'user-sync-test' . $randomNumber . '@example.com';
+
+    // Synchronize to create subscriber A linked to the WP user
+    $this->wpSegment->synchronizeUser($id);
+    $subscriberA = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberA);
+    $this->assertSame($emailA, $subscriberA->getEmail());
+
+    // Create a second subscriber with email B (simulates WooCommerce guest checkout)
+    $emailB = 'user-sync-test-duplicate' . $randomNumber . '@example.com';
+    $this->subscriberFactory->withEmail($emailB)->create();
+    $subscriberB = $this->subscribersRepository->findOneBy(['email' => $emailB]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberB);
+
+    // Change the WP user's email from A to B
+    $this->updateWPUserEmail($id, $emailB);
+
+    // Synchronize should succeed without a unique constraint violation
+    $this->wpSegment->synchronizeUser($id);
+
+    // The original subscriber should now have email B
+    $this->entityManager->clear();
+    $updatedSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    $this->assertSame($emailB, $updatedSubscriber->getEmail());
+
+    // The duplicate subscriber should have been removed
+    $remainingSubscribers = $this->subscribersRepository->findBy(['email' => $emailB]);
+    $this->assertCount(1, $remainingSubscribers);
+  }
+
   public function testItSendsConfirmationEmailWhenSignupConfirmationAndSubscribeOnRegisterEnabled(): void {
     $registration = $this->diContainer->get(Registration::class);
     $confirmationEmailMailer = $this->diContainer->get(ConfirmationEmailMailer::class);
