@@ -45,6 +45,7 @@ overrides:
   ajv@<6.14.0: '>=6.14.0 <7.0.0'
   ajv@>=7.0.0-alpha.0 <8.18.0: '>=8.18.0 <9.0.0'
   svgo@>=3.0.0 <3.3.3: '>=3.3.3 <4.0.0'
+  immutable@>=4.0.0-rc.1 <4.3.8: '>=4.3.8 <5.0.0'
   serialize-javascript@<7.0.5: '>=7.0.5'
   minimatch@<3.1.5: 3.1.5
   minimatch@>=5.0.0 <5.1.8: 5.1.8
@@ -6328,8 +6329,8 @@ packages:
   image-ssim@0.2.0:
     resolution: {integrity: sha512-W7+sO6/yhxy83L0G7xR8YAc5Z5QFtYEXXRV6EaE8tuYBZJnA3gVgp3q7X7muhLZVodeb9UfvjSbwt9VJwjIYAg==}
 
-  immutable@4.3.6:
-    resolution: {integrity: sha512-Ju0+lEMyzMVZarkTn/gqRpdqd5dOPaz1mCZ0SH3JV6iFw81PldE/PEB1hWVEA288HPt4WXW8O7AWxB10M+03QQ==}
+  immutable@4.3.8:
+    resolution: {integrity: sha512-d/Ld9aLbKpNwyl0KiM2CT1WYvkitQ1TSvmRtkcV8FKStiDoA7Slzgjmb/1G2yhKM1p0XeNOieaTbFZmU1d3Xuw==}
 
   import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -18476,7 +18477,7 @@ snapshots:
 
   image-ssim@0.2.0: {}
 
-  immutable@4.3.6: {}
+  immutable@4.3.8: {}
 
   import-fresh@3.3.0:
     dependencies:
@@ -21211,7 +21212,7 @@ snapshots:
   sass@1.77.5:
     dependencies:
       chokidar: 3.6.0
-      immutable: 4.3.6
+      immutable: 4.3.8
       source-map-js: 1.2.0
 
   satismeter-loader@1.1.0: {}
