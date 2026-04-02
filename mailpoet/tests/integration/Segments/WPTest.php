@@ -360,12 +360,12 @@ class WPTest extends \MailPoetTest {
     $subscriberSegmentTable = $this->entityManager
       ->getClassMetadata(SubscriberSegmentEntity::class)
       ->getTableName();
-    $segmentCount = (int)$this->entityManager->getConnection()
+    $segmentCountRaw = $this->entityManager->getConnection()
       ->executeQuery(
         "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
         ['id' => $subscriberId]
       )->fetchOne();
-    $this->assertEquals(1, $segmentCount);
+    $this->assertEquals(1, is_numeric($segmentCountRaw) ? (int)$segmentCountRaw : 0);
 
     // Delete the WP user — this fires delete_user → synchronizeUser → deleteSubscriber.
     wp_delete_user((int)$id);
@@ -376,12 +376,12 @@ class WPTest extends \MailPoetTest {
     $this->assertNull($deletedSubscriber);
 
     // The subscriber_segment row must also be gone (this is what the bug was about).
-    $orphanedCount = (int)$this->entityManager->getConnection()
+    $orphanedCountRaw = $this->entityManager->getConnection()
       ->executeQuery(
         "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
         ['id' => $subscriberId]
       )->fetchOne();
-    $this->assertEquals(0, $orphanedCount, $subscriberSegmentTable . ' row was not deleted when WP user was deleted');
+    $this->assertEquals(0, is_numeric($orphanedCountRaw) ? (int)$orphanedCountRaw : 0, $subscriberSegmentTable . ' row was not deleted when WP user was deleted');
   }
 
   public function testItSynchronizesNewUsersToDisabledWPSegmentAsUnconfirmedAndTrashed(): void {
