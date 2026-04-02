@@ -186,6 +186,19 @@ class WP {
       return;
     }
 
+    // When updating an existing subscriber's email, check if another subscriber
+    // already holds the new email to avoid a unique constraint violation.
+    // This can happen when a WP user registers with email A, checks out with
+    // email B (creating a second subscriber), then changes their account email
+    // from A to B.
+    if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
+      $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
+      if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
+        $this->subscribersRepository->remove($existingSubscriber);
+        $this->subscribersRepository->flush();
+      }
+    }
+
     try {
       $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
     } catch (\Exception $e) {
