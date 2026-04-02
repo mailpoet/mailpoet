@@ -1,22 +1,22 @@
-import classnames from 'classnames';
-import jQuery from 'jquery';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import { __ } from '@wordpress/i18n';
+import classnames from "classnames";
+import jQuery from "jquery";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { __ } from "@wordpress/i18n";
 
-import { Button, SegmentTags, SubscriberTags } from 'common';
-import { Listing } from 'listing/listing.jsx';
-import { MailPoet } from 'mailpoet';
-import { Modal } from 'common/modal/modal';
-import { Selection } from 'form/fields/selection.jsx';
-import { MssAccessNotices } from 'notices/mss-access-notices';
-import { ListingsEngagementScore } from './listings-engagement-score';
-import { SubscribersHeading } from './heading';
+import { Button, SegmentTags, SubscriberTags } from "common";
+import { Listing } from "listing/listing.jsx";
+import { MailPoet } from "mailpoet";
+import { Modal } from "common/modal/modal";
+import { Selection } from "form/fields/selection.jsx";
+import { MssAccessNotices } from "notices/mss-access-notices";
+import { ListingsEngagementScore } from "./listings-engagement-score";
+import { SubscribersHeading } from "./heading";
 
 type Segment = {
   id: string;
   name: string;
   subscribers: string;
-  type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
+  type: "default" | "wp_users" | "woocommerce_users" | "dynamic";
 };
 
 type Subscriber = {
@@ -56,36 +56,36 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const getColumns = () => [
   {
-    name: 'email',
-    label: __('Subscriber', 'mailpoet'),
+    name: "email",
+    label: __("Subscriber", "mailpoet"),
     sortable: true,
   },
   {
-    name: 'status',
-    label: __('Status', 'mailpoet'),
+    name: "status",
+    label: __("Status", "mailpoet"),
     sortable: true,
   },
   {
-    name: 'segments',
-    label: __('Lists', 'mailpoet'),
+    name: "segments",
+    label: __("Lists", "mailpoet"),
   },
   {
-    name: 'tags',
-    label: __('Tags', 'mailpoet'),
+    name: "tags",
+    label: __("Tags", "mailpoet"),
   },
   {
-    name: 'statistics',
-    label: __('Score', 'mailpoet'),
+    name: "statistics",
+    label: __("Score", "mailpoet"),
     display: mailpoetTrackingEnabled,
   },
   {
-    name: 'last_subscribed_at',
-    label: __('Subscribed on', 'mailpoet'),
+    name: "last_subscribed_at",
+    label: __("Subscribed on", "mailpoet"),
     sortable: true,
   },
   {
-    name: 'created_at',
-    label: __('Created on', 'mailpoet'),
+    name: "created_at",
+    label: __("Created on", "mailpoet"),
     sortable: true,
   },
 ];
@@ -96,12 +96,12 @@ const getMessages = () => ({
     let message = null;
 
     if (count === 1) {
-      message = __('1 subscriber was moved to the trash.', 'mailpoet');
+      message = __("1 subscriber was moved to the trash.", "mailpoet");
     } else {
       message = __(
-        '%1$d subscribers were moved to the trash.',
-        'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
+        "%1$d subscribers were moved to the trash.",
+        "mailpoet"
+      ).replace("%1$d", count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -110,12 +110,12 @@ const getMessages = () => ({
     let message = null;
 
     if (count === 1) {
-      message = __('1 subscriber was permanently deleted.', 'mailpoet');
+      message = __("1 subscriber was permanently deleted.", "mailpoet");
     } else {
       message = __(
-        '%1$d subscribers were permanently deleted.',
-        'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
+        "%1$d subscribers were permanently deleted.",
+        "mailpoet"
+      ).replace("%1$d", count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -125,20 +125,20 @@ const getMessages = () => ({
 
     if (count === 1) {
       message = __(
-        '1 subscriber has been restored from the trash.',
-        'mailpoet',
+        "1 subscriber has been restored from the trash.",
+        "mailpoet"
       );
     } else {
       message = __(
-        '%1$d subscribers have been restored from the trash.',
-        'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
+        "%1$d subscribers have been restored from the trash.",
+        "mailpoet"
+      ).replace("%1$d", count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onNoItemsFound: (group) => {
+  onNoItemsFound: (group: string, search: string) => {
     if (
-      group === 'bounced' &&
+      group === "bounced" &&
       !window.mailpoet_premium_active &&
       !window.mailpoet_mss_active
     ) {
@@ -147,7 +147,7 @@ const getMessages = () => ({
           <p>
             {__(
               "Email addresses that are invalid or don't exist anymore are called \"bounced addresses\". It's a good practice not to send emails to bounced addresses to keep a good reputation with spam filters. Send your emails with MailPoet and we'll automatically ensure to keep a list of bounced addresses without any setup.",
-              'mailpoet',
+              "mailpoet"
             )}
           </p>
           <p>
@@ -155,10 +155,23 @@ const getMessages = () => ({
               href="admin.php?page=mailpoet-upgrade"
               className="button-primary"
             >
-              {__('Get premium version!', 'mailpoet')}
+              {__("Get premium version!", "mailpoet")}
             </a>
           </p>
         </div>
+      );
+    }
+    if (group !== "trash" && search) {
+      return (
+        <p>
+          {__("No items found.", "mailpoet")}{" "}
+          <a
+            href={`#/group[trash]/search[${search}]`}
+            style={{ color: "#c04020" }}
+          >
+            {__("Have you checked the Trash?", "mailpoet")}
+          </a>
+        </p>
       );
     }
     // use default message
@@ -171,7 +184,7 @@ const createModal = (submitModal, closeModal, field, title) => (
     <Selection field={field} />
     <span className="mailpoet-gap-half" />
     <Button onClick={submitModal} dimension="small" variant="secondary">
-      {__('Apply', 'mailpoet')}
+      {__("Apply", "mailpoet")}
     </Button>
   </Modal>
 );
@@ -179,15 +192,15 @@ const createModal = (submitModal, closeModal, field, title) => (
 const getBulkActions = () => {
   const bulkActions = [
     {
-      name: 'moveToList',
-      label: __('Move to list...', 'mailpoet'),
+      name: "moveToList",
+      label: __("Move to list...", "mailpoet"),
       onSelect: function onSelect(submitModal, closeModal) {
         const field = {
-          id: 'move_to_segment',
-          name: 'move_to_segment',
-          endpoint: 'segments',
+          id: "move_to_segment",
+          name: "move_to_segment",
+          endpoint: "segments",
           filter: function filter(segment) {
-            return !!(!segment.deleted_at && segment.type === 'default');
+            return !!(!segment.deleted_at && segment.type === "default");
           },
         };
 
@@ -195,35 +208,35 @@ const getBulkActions = () => {
           submitModal,
           closeModal,
           field,
-          __('Move to list...', 'mailpoet'),
+          __("Move to list...", "mailpoet")
         );
       },
       getData: function getData() {
         return {
-          segment_id: Number(jQuery('#move_to_segment').val()),
+          segment_id: Number(jQuery("#move_to_segment").val()),
         };
       },
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            '%1$d subscribers were moved to list <strong>%2$s</strong>.',
-            'mailpoet',
+            "%1$d subscribers were moved to list <strong>%2$s</strong>.",
+            "mailpoet"
           )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
+            .replace("%1$d", Number(response.meta.count).toLocaleString())
+            .replace("%2$s", response.meta.segment)
         );
       },
     },
     {
-      name: 'addToList',
-      label: __('Add to list...', 'mailpoet'),
+      name: "addToList",
+      label: __("Add to list...", "mailpoet"),
       onSelect: function onSelect(submitModal, closeModal) {
         const field = {
-          id: 'add_to_segment',
-          name: 'add_to_segment',
-          endpoint: 'segments',
+          id: "add_to_segment",
+          name: "add_to_segment",
+          endpoint: "segments",
           filter: function filter(segment) {
-            return !!(!segment.deleted_at && segment.type === 'default');
+            return !!(!segment.deleted_at && segment.type === "default");
           },
         };
 
@@ -231,35 +244,35 @@ const getBulkActions = () => {
           submitModal,
           closeModal,
           field,
-          __('Add to list...', 'mailpoet'),
+          __("Add to list...", "mailpoet")
         );
       },
       getData: function getData() {
         return {
-          segment_id: Number(jQuery('#add_to_segment').val()),
+          segment_id: Number(jQuery("#add_to_segment").val()),
         };
       },
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            '%1$d subscribers were added to list <strong>%2$s</strong>.',
-            'mailpoet',
+            "%1$d subscribers were added to list <strong>%2$s</strong>.",
+            "mailpoet"
           )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
+            .replace("%1$d", Number(response.meta.count).toLocaleString())
+            .replace("%2$s", response.meta.segment)
         );
       },
     },
     {
-      name: 'removeFromList',
-      label: __('Remove from list...', 'mailpoet'),
+      name: "removeFromList",
+      label: __("Remove from list...", "mailpoet"),
       onSelect: function onSelect(submitModal, closeModal) {
         const field = {
-          id: 'remove_from_segment',
-          name: 'remove_from_segment',
-          endpoint: 'segments',
+          id: "remove_from_segment",
+          name: "remove_from_segment",
+          endpoint: "segments",
           filter: function filter(segment) {
-            return segment.type === 'default';
+            return segment.type === "default";
           },
         };
 
@@ -267,61 +280,61 @@ const getBulkActions = () => {
           submitModal,
           closeModal,
           field,
-          __('Remove from list...', 'mailpoet'),
+          __("Remove from list...", "mailpoet")
         );
       },
       getData: function getData() {
         return {
-          segment_id: Number(jQuery('#remove_from_segment').val()),
+          segment_id: Number(jQuery("#remove_from_segment").val()),
         };
       },
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            '%1$d subscribers were removed from list <strong>%2$s</strong>.',
-            'mailpoet',
+            "%1$d subscribers were removed from list <strong>%2$s</strong>.",
+            "mailpoet"
           )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
+            .replace("%1$d", Number(response.meta.count).toLocaleString())
+            .replace("%2$s", response.meta.segment)
         );
       },
     },
     {
-      name: 'removeFromAllLists',
-      label: __('Remove from all lists', 'mailpoet'),
+      name: "removeFromAllLists",
+      label: __("Remove from all lists", "mailpoet"),
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            '%1$d subscribers were removed from all lists.',
-            'mailpoet',
-          ).replace('%1$d', Number(response.meta.count).toLocaleString()),
+            "%1$d subscribers were removed from all lists.",
+            "mailpoet"
+          ).replace("%1$d", Number(response.meta.count).toLocaleString())
         );
       },
     },
     {
-      name: 'trash',
-      label: __('Move to trash', 'mailpoet'),
+      name: "trash",
+      label: __("Move to trash", "mailpoet"),
       onSuccess: getMessages().onTrash,
     },
     {
-      name: 'unsubscribe',
-      label: __('Unsubscribe', 'mailpoet'),
+      name: "unsubscribe",
+      label: __("Unsubscribe", "mailpoet"),
       onSelect: (submitModal, closeModal, bulkActionProps) => {
         const count =
-          bulkActionProps.selection !== 'all'
+          bulkActionProps.selection !== "all"
             ? bulkActionProps.selected_ids.length
             : bulkActionProps.count;
         return (
           <Modal
-            title={__('Unsubscribe', 'mailpoet')}
+            title={__("Unsubscribe", "mailpoet")}
             onRequestClose={closeModal}
             isDismissible
           >
             <p>
               {__(
-                'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
-                'mailpoet',
-              ).replace('%s', Number(count).toLocaleString())}
+                "This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?",
+                "mailpoet"
+              ).replace("%s", Number(count).toLocaleString())}
             </p>
             <span className="mailpoet-gap-half" />
             <Button
@@ -330,75 +343,75 @@ const getBulkActions = () => {
               variant="secondary"
               automationId="bulk-unsubscribe-confirm"
             >
-              {__('Apply', 'mailpoet')}
+              {__("Apply", "mailpoet")}
             </Button>
           </Modal>
         );
       },
     },
     {
-      name: 'addTag',
-      label: __('Add tag...', 'mailpoet'),
+      name: "addTag",
+      label: __("Add tag...", "mailpoet"),
       onSelect: function onSelect(submitModal, closeModal) {
         const field = {
-          id: 'add_tag',
-          name: 'add_tag',
-          endpoint: 'tags',
+          id: "add_tag",
+          name: "add_tag",
+          endpoint: "tags",
         };
 
         return createModal(
           submitModal,
           closeModal,
           field,
-          __('Add tag...', 'mailpoet'),
+          __("Add tag...", "mailpoet")
         );
       },
       getData: function getData() {
         return {
-          tag_id: Number(jQuery('#add_tag').val()),
+          tag_id: Number(jQuery("#add_tag").val()),
         };
       },
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            'Tag <strong>%1$s</strong> was added to %2$d subscribers.',
-            'mailpoet',
+            "Tag <strong>%1$s</strong> was added to %2$d subscribers.",
+            "mailpoet"
           )
-            .replace('%1$s', response.meta.tag)
-            .replace('%2$d', Number(response.meta.count).toLocaleString()),
+            .replace("%1$s", response.meta.tag)
+            .replace("%2$d", Number(response.meta.count).toLocaleString())
         );
       },
     },
     {
-      name: 'removeTag',
-      label: __('Remove tag...', 'mailpoet'),
+      name: "removeTag",
+      label: __("Remove tag...", "mailpoet"),
       onSelect: function onSelect(submitModal, closeModal) {
         const field = {
-          id: 'remove_tag',
-          name: 'remove_tag',
-          endpoint: 'tags',
+          id: "remove_tag",
+          name: "remove_tag",
+          endpoint: "tags",
         };
 
         return createModal(
           submitModal,
           closeModal,
           field,
-          __('Remove tag...', 'mailpoet'),
+          __("Remove tag...", "mailpoet")
         );
       },
       getData: function getData() {
         return {
-          tag_id: Number(jQuery('#remove_tag').val()),
+          tag_id: Number(jQuery("#remove_tag").val()),
         };
       },
       onSuccess: function onSuccess(response: Response) {
         MailPoet.Notice.success(
           __(
-            'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
-            'mailpoet',
+            "Tag <strong>%1$s</strong> was removed from %2$d subscribers.",
+            "mailpoet"
           )
-            .replace('%1$s', response.meta.tag)
-            .replace('%2$d', Number(response.meta.count).toLocaleString()),
+            .replace("%1$s", response.meta.tag)
+            .replace("%2$d", Number(response.meta.count).toLocaleString())
         );
       },
     },
@@ -409,8 +422,8 @@ const getBulkActions = () => {
   const match = url.match(/group\[(.*?)\]/);
   const group = match ? match[1] : null;
 
-  if (group === 'unsubscribed') {
-    return bulkActions.filter((action) => action.name !== 'unsubscribe');
+  if (group === "unsubscribed") {
+    return bulkActions.filter((action) => action.name !== "unsubscribe");
   }
 
   return bulkActions;
@@ -418,8 +431,8 @@ const getBulkActions = () => {
 
 const getItemActions = () => [
   {
-    name: 'statistics',
-    label: __('Statistics', 'mailpoet'),
+    name: "statistics",
+    label: __("Statistics", "mailpoet"),
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
@@ -428,14 +441,14 @@ const getItemActions = () => [
             backUrl: location?.pathname,
           }}
         >
-          {__('Statistics', 'mailpoet')}
+          {__("Statistics", "mailpoet")}
         </Link>
       );
     },
   },
   {
-    name: 'edit',
-    label: __('Edit', 'mailpoet'),
+    name: "edit",
+    label: __("Edit", "mailpoet"),
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
@@ -444,38 +457,38 @@ const getItemActions = () => [
             backUrl: location?.pathname,
           }}
         >
-          {__('Edit', 'mailpoet')}
+          {__("Edit", "mailpoet")}
         </Link>
       );
     },
   },
   {
-    name: 'sendConfirmationEmail',
-    className: 'mailpoet-hide-on-mobile',
-    label: __('Resend confirmation email', 'mailpoet'),
+    name: "sendConfirmationEmail",
+    className: "mailpoet-hide-on-mobile",
+    label: __("Resend confirmation email", "mailpoet"),
     display: function display(subscriber: Subscriber) {
-      return subscriber.status === 'unconfirmed';
+      return subscriber.status === "unconfirmed";
     },
     onClick: function onClick(subscriber) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
-        endpoint: 'subscribers',
-        action: 'sendConfirmationEmail',
+        endpoint: "subscribers",
+        action: "sendConfirmationEmail",
         data: {
           id: subscriber.id,
         },
       })
         .done(() =>
           MailPoet.Notice.success(
-            __('1 confirmation email has been sent.', 'mailpoet'),
-          ),
+            __("1 confirmation email has been sent.", "mailpoet")
+          )
         )
         .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
     },
   },
   {
-    name: 'trash',
-    className: 'mailpoet-hide-on-mobile',
+    name: "trash",
+    className: "mailpoet-hide-on-mobile",
   },
 ];
 
@@ -499,37 +512,37 @@ function SubscriberList() {
 
   const renderItem = (subscriber: Subscriber, actions) => {
     const rowClasses = classnames(
-      'manage-column',
-      'column-primary',
-      'has-row-actions',
-      'column-username',
+      "manage-column",
+      "column-primary",
+      "has-row-actions",
+      "column-username"
     );
 
-    let status = '';
+    let status = "";
 
     switch (subscriber.status) {
-      case 'subscribed':
-        status = __('Subscribed', 'mailpoet');
+      case "subscribed":
+        status = __("Subscribed", "mailpoet");
         break;
 
-      case 'unconfirmed':
-        status = __('Unconfirmed', 'mailpoet');
+      case "unconfirmed":
+        status = __("Unconfirmed", "mailpoet");
         break;
 
-      case 'unsubscribed':
-        status = __('Unsubscribed', 'mailpoet');
+      case "unsubscribed":
+        status = __("Unsubscribed", "mailpoet");
         break;
 
-      case 'inactive':
-        status = __('Inactive', 'mailpoet');
+      case "inactive":
+        status = __("Inactive", "mailpoet");
         break;
 
-      case 'bounced':
-        status = __('Bounced', 'mailpoet');
+      case "bounced":
+        status = __("Bounced", "mailpoet");
         break;
 
       default:
-        status = 'Invalid';
+        status = "Invalid";
         break;
     }
 
@@ -540,7 +553,7 @@ function SubscriberList() {
       subscriber.subscriptions.forEach((subscription) => {
         const segment = getSegmentFromId(subscription.segment_id);
         if (segment === null) return;
-        if (subscription.status === 'subscribed') {
+        if (subscription.status === "subscribed") {
           subscribedSegments.push(segment);
         }
       });
@@ -563,13 +576,13 @@ function SubscriberList() {
           </div>
           {actions}
         </td>
-        <td className="column" data-colname={__('Status', 'mailpoet')}>
+        <td className="column" data-colname={__("Status", "mailpoet")}>
           {status}
         </td>
-        <td className="column" data-colname={__('Lists', 'mailpoet')}>
+        <td className="column" data-colname={__("Lists", "mailpoet")}>
           <SegmentTags segments={subscribedSegments} dimension="large" />
         </td>
-        <td className="column" data-colname={__('Tags', 'mailpoet')}>
+        <td className="column" data-colname={__("Tags", "mailpoet")}>
           <SubscriberTags
             subscribers={subscriber.tags}
             variant="wordpress"
@@ -579,7 +592,7 @@ function SubscriberList() {
         {mailpoetTrackingEnabled === true ? (
           <td
             className="column mailpoet-listing-stats-column"
-            data-colname={__('Score', 'mailpoet')}
+            data-colname={__("Score", "mailpoet")}
           >
             <div className="mailpoet-listing-stats">
               <a
@@ -596,7 +609,7 @@ function SubscriberList() {
         ) : null}
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={__('Confirmed on', 'mailpoet')}
+          data-colname={__("Confirmed on", "mailpoet")}
         >
           {subscriber.last_subscribed_at ? (
             <>
@@ -608,7 +621,7 @@ function SubscriberList() {
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={__('Subscribed on', 'mailpoet')}
+          data-colname={__("Subscribed on", "mailpoet")}
         >
           {subscriber.created_at ? (
             <>
@@ -646,5 +659,5 @@ function SubscriberList() {
   );
 }
 
-SubscriberList.displayName = 'SubscriberList';
+SubscriberList.displayName = "SubscriberList";
 export { SubscriberList };
