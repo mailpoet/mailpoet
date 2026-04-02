@@ -18,13 +18,18 @@ class Handler {
     );
   }
 
-  /**
-   * Polyfill for deprecated FILTER_SANITIZE_STRING which was used to sanitize
-   * $data['sort_by'].
-   */
-  private function filterString(string $string): string {
-    $str = (string)preg_replace('/\x00|<[^>]*>?/', '', $string);
-    return str_replace(["'", '"'], ['&#39;', '&#34;'], $str);
+  private function sanitizeSortBy(string $sortBy): string {
+    $sortBy = trim($sortBy);
+    if ($sortBy === '') {
+      return 'id';
+    }
+
+    // Fallback to `id` when there is at least one non-identifier character.
+    if (strspn($sortBy, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_') !== strlen($sortBy)) {
+      return 'id';
+    }
+
+    return $sortBy;
   }
 
   private function processData(array $data) {
@@ -35,7 +40,7 @@ class Handler {
 
     // sanitize sort by
     $sortBy = (!empty($data['sort_by']))
-      ? $this->filterString($data['sort_by'])
+      ? $this->sanitizeSortBy((string)$data['sort_by'])
       : '';
 
     if (empty($sortBy)) {
