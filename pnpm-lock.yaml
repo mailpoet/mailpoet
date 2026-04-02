@@ -49,6 +49,7 @@ overrides:
   immutable@>=4.0.0-rc.1 <4.3.8: '>=4.3.8 <5.0.0'
   flatted@<3.4.2: '>=3.4.2 <4.0.0'
   dompurify@<3.3.3: '>=3.3.3 <4.0.0'
+  lodash@<4.18.1: '>=4.18.1 <5.0.0'
   picomatch@<2.3.2: '>=2.3.2 <3.0.0'
   yaml@>=1.0.0 <1.10.3: '>=1.10.3 <2.0.0'
   yaml@>=2.0.0 <2.8.3: '>=2.8.3 <3.0.0'
@@ -2878,7 +2879,7 @@ packages:
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
       '@wordpress/data': wp-6.6
-      lodash: ^4.17.0
+      lodash: '>=4.18.1 <5.0.0'
       react: 18.3.1
       react-dom: 18.3.1
 
@@ -2908,7 +2909,7 @@ packages:
     resolution: {integrity: sha512-yDCyd9jl2GLpaZLww23IJWQW5EhSu2teZyIyWw5W8l37qUacznookUqyAj0lcSCN0ArD6l6frCqoRphrZuF82w==}
     engines: {node: ^20.11.1, pnpm: ^9.1.0}
     peerDependencies:
-      lodash: ^4.17.0
+      lodash: '>=4.18.1 <5.0.0'
 
   '@woocommerce/email-editor@1.9.0':
     resolution: {integrity: sha512-8DIrSAyVq6MSGK3ucQ3fBchl+duwQilGcIe4jxHdZyISgjBnNqHebNwHQa1yJJTTs3Bf7dVx3RERuFX6zoLA/w==}
@@ -2917,7 +2918,7 @@ packages:
     resolution: {integrity: sha512-joAbrzdhrnWf91kEwuNO3hzT0IiUuh8SNOs0Qbth/heZaN+SixA5yJ98UqEHNa2Mitjm5BTC4M0Qk7X+I8uUvQ==}
     engines: {node: ^20.11.1, pnpm: ^9.1.0}
     peerDependencies:
-      lodash: ^4.17.0
+      lodash: '>=4.18.1 <5.0.0'
 
   '@woocommerce/number@2.5.0':
     resolution: {integrity: sha512-fcCIsJCr6S5MjCFzXOUuMw6BiUIb4Xn9iYTrm5caNGKk7c01KLikqt9o5YmDzeI+SLxMb25cpPMDb4Hw1TUQgA==}
@@ -7142,9 +7143,6 @@ packages:
 
   lodash.uniq@4.5.0:
     resolution: {integrity: sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==}
-
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -17362,7 +17360,7 @@ snapshots:
       interpret: 1.4.0
       is-core-module: 2.13.1
       is-regex: 1.1.4
-      lodash: 4.17.21
+      lodash: 4.18.1
       resolve: 1.22.8
       semver: 5.7.2
       webpack: 5.105.4(webpack-cli@5.1.4)
@@ -19531,8 +19529,6 @@ snapshots:
   lodash.truncate@4.4.2: {}
 
   lodash.uniq@4.5.0: {}
-
-  lodash@4.17.21: {}
 
   lodash@4.18.1: {}
 
