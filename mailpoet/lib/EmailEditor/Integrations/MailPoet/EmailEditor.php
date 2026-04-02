@@ -70,6 +70,7 @@ class EmailEditor {
       $this->templatesController->initialize();
     }
     $this->extendEmailPostApi();
+    $this->wp->addFilter('woocommerce_email_editor_theme_json', [$this, 'adjustButtonBorderRadius']);
     $this->personalizationTagManager->initialize();
   }
 
@@ -168,5 +169,31 @@ class EmailEditor {
     }
 
     return $preparedPost;
+  }
+
+  /**
+   * Override the default button border-radius to match the rendered email output.
+   * WordPress core theme.json sets border-radius to 9999px for buttons, but the
+   * email renderer does not apply any border-radius by default (effectively 0).
+   */
+  public function adjustButtonBorderRadius(\WP_Theme_JSON $themeJson): \WP_Theme_JSON {
+    $themeJson->merge(
+      new \WP_Theme_JSON(
+        [
+          'version' => 3,
+          'styles' => [
+            'elements' => [
+              'button' => [
+                'border' => [
+                  'radius' => '0px',
+                ],
+              ],
+            ],
+          ],
+        ],
+        'custom'
+      )
+    );
+    return $themeJson;
   }
 }

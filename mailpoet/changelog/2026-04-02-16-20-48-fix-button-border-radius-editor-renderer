@@ -1,0 +1,5 @@
+# Type: Fixed
+
+# Description
+
+Fix button border radius mismatch between email editor and rendered email output.
