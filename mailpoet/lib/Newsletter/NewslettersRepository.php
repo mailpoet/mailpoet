@@ -456,6 +456,25 @@ class NewslettersRepository extends Repository {
   }
 
   /**
+   * Returns standard and automation newsletters ordered by sentAt
+   * @return NewsletterEntity[]
+   */
+  public function getStandardAndAutomationNewsletterList(): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL n.{id,subject,sentAt}, PARTIAL wpPost.{id, postTitle}')
+      ->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END as HIDDEN sent_at_is_null')
+      ->from(NewsletterEntity::class, 'n')
+      ->leftJoin('n.wpPost', 'wpPost')
+      ->where('n.type IN (:types)')
+      ->andWhere('n.deletedAt IS NULL')
+      ->orderBy('sent_at_is_null', 'DESC')
+      ->addOrderBy('n.sentAt', 'DESC')
+      ->setParameter('types', [NewsletterEntity::TYPE_STANDARD, NewsletterEntity::TYPE_AUTOMATION])
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
    * Returns standard newsletters ordered by sentAt
    * filter by status STATUS_SCHEDULED, STATUS_SENDING, STATUS_SENT
    * @return NewsletterEntity[]
