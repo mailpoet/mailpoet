@@ -194,7 +194,8 @@ class WP {
     // Both the duplicate removal and the subscriber update are wrapped in a
     // transaction so the delete is rolled back if the update fails.
     try {
-      $this->entityManager->wrapInTransaction(function () use (&$subscriber, $data) {
+      /** @var SubscriberEntity $subscriber */
+      $subscriber = $this->entityManager->wrapInTransaction(function () use ($subscriber, $data) {
         if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
           $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
           if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
@@ -202,7 +203,7 @@ class WP {
             $this->subscribersRepository->flush();
           }
         }
-        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+        return $this->createOrUpdateSubscriber($data, $subscriber);
       });
     } catch (\Exception $e) {
       return; // fails silently as this was the behavior of this methods before the Doctrine refactor.
