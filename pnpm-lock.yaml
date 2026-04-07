@@ -46,6 +46,8 @@ overrides:
   compression@<1.8.1: '>=1.8.1 <2.0.0'
   ajv@<6.14.0: '>=6.14.0 <7.0.0'
   ajv@>=7.0.0-alpha.0 <8.18.0: '>=8.18.0 <9.0.0'
+  schema-utils@3.3.0>ajv: 6.14.0
+  schema-utils@2.7.1>ajv: 6.14.0
   svgo@>=3.0.0 <3.3.3: '>=3.3.3 <4.0.0'
   immutable@>=4.0.0-rc.1 <4.3.8: '>=4.3.8 <5.0.0'
   flatted@<3.4.2: '>=3.4.2 <4.0.0'
@@ -134,8 +136,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(lodash@4.18.1)
       '@woocommerce/email-editor':
-        specifier: 1.9.0
-        version: 1.9.0(@emotion/is-prop-valid@1.2.2)(@preact/signals-core@1.5.1)(@types/react-dom@18.3.0)(@types/react@18.3.3)
+        specifier: 1.10.1
+        version: 1.10.1(@emotion/is-prop-valid@1.2.2)(@preact/signals-core@1.5.1)(@types/react-dom@18.3.0)(@types/react@18.3.3)
       '@wordpress/a11y':
         specifier: ^4.0.0
         version: 4.0.0
@@ -3069,8 +3071,8 @@ packages:
     peerDependencies:
       lodash: '>=4.18.1 <5.0.0'
 
-  '@woocommerce/email-editor@1.9.0':
-    resolution: {integrity: sha512-8DIrSAyVq6MSGK3ucQ3fBchl+duwQilGcIe4jxHdZyISgjBnNqHebNwHQa1yJJTTs3Bf7dVx3RERuFX6zoLA/w==}
+  '@woocommerce/email-editor@1.10.1':
+    resolution: {integrity: sha512-4bMgD72FH885IvTakiNhX5jiAbGqqm5+OOcNXrz4NB06UU8GdYGtFO+GOE9XjPXrnD4IJAyasxdbShcJvv/OLA==}
 
   '@woocommerce/navigation@8.2.0':
     resolution: {integrity: sha512-joAbrzdhrnWf91kEwuNO3hzT0IiUuh8SNOs0Qbth/heZaN+SixA5yJ98UqEHNa2Mitjm5BTC4M0Qk7X+I8uUvQ==}
@@ -4043,7 +4045,7 @@ packages:
   ajv-keywords@3.5.2:
     resolution: {integrity: sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ==}
     peerDependencies:
-      ajv: '>=6.14.0 <7.0.0'
+      ajv: '>=8.18.0 <9.0.0'
 
   ajv-keywords@5.1.0:
     resolution: {integrity: sha512-YCS/JNFAUyr5vAuhk1DWm1CBxRHW9LbJ2ozWeemrIqpbsqKjHVxYPyi5GC0rjZIT5JxJ3virVTS8wk4i/Z+krw==}
@@ -13718,7 +13720,7 @@ snapshots:
       moment-timezone: 0.5.45
       qs: 6.15.0
 
-  '@woocommerce/email-editor@1.9.0(@emotion/is-prop-valid@1.2.2)(@preact/signals-core@1.5.1)(@types/react-dom@18.3.0)(@types/react@18.3.3)':
+  '@woocommerce/email-editor@1.10.1(@emotion/is-prop-valid@1.2.2)(@preact/signals-core@1.5.1)(@types/react-dom@18.3.0)(@types/react@18.3.3)':
     dependencies:
       '@wordpress/api-fetch': 7.0.0
       '@wordpress/base-styles': 5.23.0
@@ -14378,7 +14380,7 @@ snapshots:
   '@wordpress/components@28.13.0(@emotion/is-prop-valid@1.2.2)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@ariakit/react': 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@babel/runtime': 7.26.10
+      '@babel/runtime': 7.28.6
       '@emotion/cache': 11.14.0
       '@emotion/css': 11.13.5
       '@emotion/react': 11.11.4(@types/react@18.3.3)(react@18.3.1)
@@ -14389,23 +14391,23 @@ snapshots:
       '@types/gradient-parser': 0.1.3
       '@types/highlight-words-core': 1.2.1
       '@use-gesture/react': 10.3.1(react@18.3.1)
-      '@wordpress/a11y': 4.0.0
+      '@wordpress/a11y': 4.39.0
       '@wordpress/compose': 7.39.0(react@18.3.1)
-      '@wordpress/date': 5.0.0
-      '@wordpress/deprecated': 4.30.0
-      '@wordpress/dom': 4.0.0
-      '@wordpress/element': 6.0.0
-      '@wordpress/escape-html': 3.0.0
-      '@wordpress/hooks': 4.0.0
-      '@wordpress/html-entities': 4.0.0
-      '@wordpress/i18n': 5.0.0
-      '@wordpress/icons': 10.0.0
-      '@wordpress/is-shallow-equal': 5.0.0
-      '@wordpress/keycodes': 4.0.0
+      '@wordpress/date': 5.39.0
+      '@wordpress/deprecated': 4.39.0
+      '@wordpress/dom': 4.39.0
+      '@wordpress/element': 6.39.0
+      '@wordpress/escape-html': 3.39.0
+      '@wordpress/hooks': 4.39.0
+      '@wordpress/html-entities': 4.39.0
+      '@wordpress/i18n': 5.26.0
+      '@wordpress/icons': 10.32.0(react@18.3.1)
+      '@wordpress/is-shallow-equal': 5.39.0
+      '@wordpress/keycodes': 4.39.0
       '@wordpress/primitives': 4.39.0(react@18.3.1)
-      '@wordpress/private-apis': 1.0.0
-      '@wordpress/rich-text': 7.0.0(react@18.3.1)
-      '@wordpress/warning': 3.0.0
+      '@wordpress/private-apis': 1.39.0
+      '@wordpress/rich-text': 7.39.0(react@18.3.1)
+      '@wordpress/warning': 3.39.0
       change-case: 4.1.2
       clsx: 2.1.1
       colord: 2.9.3
@@ -14416,7 +14418,7 @@ snapshots:
       gradient-parser: 0.1.5
       highlight-words-core: 1.2.3
       is-plain-object: 5.0.0
-      memize: 2.1.0
+      memize: 2.1.1
       path-to-regexp: 6.3.0
       re-resizable: 6.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
