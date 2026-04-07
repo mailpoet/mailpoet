@@ -162,12 +162,13 @@ const getMessages = () => ({
       );
     }
     if (group !== 'trash' && search) {
+      const encodedSearch = encodeURIComponent(search);
       return (
         <p>
           {__('No items found.', 'mailpoet')}{' '}
           <a
-            href={`#/group[trash]/search[${search}]`}
-            style={{ color: '#c04020' }}
+            href={`#/group[trash]/search[${encodedSearch}]`}
+            className="button button-link"
           >
             {__('Have you checked the Trash?', 'mailpoet')}
           </a>
