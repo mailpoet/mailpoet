@@ -82,9 +82,9 @@ export function PitchMss(props: Props): JSX.Element {
             )}
           </Heading>
           <p>
-            {props.subscribersCount < 1000
+            {props.subscribersCount < 500
               ? _x(
-                  'Did you know? Users with 1,000 subscribers or less get the Starter plan for free.',
+                  'Did you know? Users with 500 subscribers or less get the Starter plan for free.',
                   'Promotion for our email sending service: Paragraph',
                   'mailpoet',
                 )

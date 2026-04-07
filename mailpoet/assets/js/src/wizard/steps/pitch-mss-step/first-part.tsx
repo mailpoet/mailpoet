@@ -42,7 +42,7 @@ function MSSStepFirstPart(): JSX.Element {
         <List>
           <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
           <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
-          {MailPoet.subscribersCount < 1000 ? (
+          {MailPoet.subscribersCount < 500 ? (
             <li>{MailPoet.I18n.t('welcomeWizardMSSList3Free')}</li>
           ) : (
             <li>{MailPoet.I18n.t('welcomeWizardMSSList3Paid')}</li>
