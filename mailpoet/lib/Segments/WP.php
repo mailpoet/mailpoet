@@ -186,27 +186,35 @@ class WP {
       return;
     }
 
-    // When updating an existing subscriber's email, check if another subscriber
-    // already holds the new email to avoid a unique constraint violation.
+    // When updating an existing subscriber's email, remove any other subscriber
+    // that already holds the new email to avoid a unique constraint violation.
     // This can happen when a WP user registers with email A, checks out with
     // email B (creating a second subscriber), then changes their account email
     // from A to B.
-    // Both the duplicate removal and the subscriber update are wrapped in a
-    // transaction so the delete is rolled back if the update fails.
-    try {
-      /** @var SubscriberEntity $subscriber */
-      $subscriber = $this->entityManager->wrapInTransaction(function () use ($subscriber, $data) {
-        if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
-          $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
-          if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
-            $this->subscribersRepository->remove($existingSubscriber);
-            $this->subscribersRepository->flush();
-          }
+    // Uses a DBAL-level transaction (not EntityManager::wrapInTransaction) to
+    // keep the delete and update atomic without risking a permanently closed
+    // EntityManager or premature postRemove lifecycle events.
+    if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
+      $this->databaseConnection->beginTransaction();
+      try {
+        $this->databaseConnection->executeStatement(
+          "DELETE FROM {$this->subscribersTable} WHERE email = ? AND id != ?",
+          [$data['email'], $subscriber->getId()]
+        );
+        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+        $this->databaseConnection->commit();
+      } catch (\Exception $e) {
+        if ($this->databaseConnection->isTransactionActive()) {
+          $this->databaseConnection->rollBack();
         }
-        return $this->createOrUpdateSubscriber($data, $subscriber);
-      });
-    } catch (\Exception $e) {
-      return; // fails silently as this was the behavior of this methods before the Doctrine refactor.
+        return; // fails silently as this was the behavior before the Doctrine refactor.
+      }
+    } else {
+      try {
+        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+      } catch (\Exception $e) {
+        return; // fails silently as this was the behavior before the Doctrine refactor.
+      }
     }
 
     // add subscriber to the WP Users segment
