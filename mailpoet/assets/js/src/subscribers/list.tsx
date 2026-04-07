@@ -136,7 +136,7 @@ const getMessages = () => ({
     }
     MailPoet.Notice.success(message);
   },
-  onNoItemsFound: (group) => {
+  onNoItemsFound: (group: string, search: string) => {
     if (
       group === 'bounced' &&
       !window.mailpoet_premium_active &&
@@ -159,6 +159,20 @@ const getMessages = () => ({
             </a>
           </p>
         </div>
+      );
+    }
+    if (group !== 'trash' && search) {
+      const encodedSearch = encodeURIComponent(search);
+      return (
+        <p>
+          {__('No items found.', 'mailpoet')}{' '}
+          <a
+            href={`#/group[trash]/search[${encodedSearch}]`}
+            className="button button-link"
+          >
+            {__('Have you checked the Trash?', 'mailpoet')}
+          </a>
+        </p>
       );
     }
     // use default message
