@@ -194,7 +194,7 @@ class WP {
     // Both the duplicate removal and the subscriber update are wrapped in a
     // transaction so the delete is rolled back if the update fails.
     try {
-      $this->entityManager->wrapInTransaction(function () use ($subscriber, $data, &$subscriber) {
+      $this->entityManager->wrapInTransaction(function () use (&$subscriber, $data) {
         if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
           $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
           if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
