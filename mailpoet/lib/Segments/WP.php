@@ -191,16 +191,19 @@ class WP {
     // This can happen when a WP user registers with email A, checks out with
     // email B (creating a second subscriber), then changes their account email
     // from A to B.
-    if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
-      $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
-      if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
-        $this->subscribersRepository->remove($existingSubscriber);
-        $this->subscribersRepository->flush();
-      }
-    }
-
+    // Both the duplicate removal and the subscriber update are wrapped in a
+    // transaction so the delete is rolled back if the update fails.
     try {
-      $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+      $this->entityManager->wrapInTransaction(function () use ($subscriber, $data, &$subscriber) {
+        if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
+          $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
+          if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
+            $this->subscribersRepository->remove($existingSubscriber);
+            $this->subscribersRepository->flush();
+          }
+        }
+        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+      });
     } catch (\Exception $e) {
       return; // fails silently as this was the behavior of this methods before the Doctrine refactor.
     }

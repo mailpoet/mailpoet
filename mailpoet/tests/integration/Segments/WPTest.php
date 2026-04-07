@@ -160,6 +160,7 @@ class WPTest extends \MailPoetTest {
 
     // Change the WP user's email from A to B
     $this->updateWPUserEmail($id, $emailB);
+    clean_user_cache($id);
 
     // Synchronize should succeed without a unique constraint violation
     $this->wpSegment->synchronizeUser($id);
