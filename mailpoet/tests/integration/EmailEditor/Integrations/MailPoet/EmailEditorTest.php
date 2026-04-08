@@ -21,28 +21,9 @@ class EmailEditorTest extends \MailPoetTest {
     $this->assertArrayHasKey('mailpoet_email', $postTypes);
   }
 
-  public function testItSetsButtonBorderRadiusToZero() {
-    $themeJson = new \WP_Theme_JSON([
-      'version' => 3,
-      'styles' => [
-        'elements' => [
-          'button' => [
-            'border' => [
-              'radius' => '9999px',
-            ],
-          ],
-        ],
-      ],
-    ], 'default');
-    $result = $this->emailEditor->adjustButtonBorderRadius($themeJson);
-    $data = $result->get_data();
-    $this->assertSame('0px', $data['styles']['elements']['button']['border']['radius']);
-  }
-
   public function _after() {
     parent::_after();
     remove_filter('woocommerce_email_editor_post_types', [$this->emailEditor, 'addEmailPostType']);
-    remove_filter('woocommerce_email_editor_theme_json', [$this->emailEditor, 'adjustButtonBorderRadius']);
     $this->truncateEntity(NewsletterEntity::class);
   }
 }
