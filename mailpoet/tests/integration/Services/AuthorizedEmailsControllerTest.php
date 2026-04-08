@@ -150,6 +150,9 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
   }
 
+  /**
+   * @group woo
+   */
   public function testItSetErrorForAutomationTransactionalEmailUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_ACTIVE);
   }
