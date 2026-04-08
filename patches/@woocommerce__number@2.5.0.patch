@@ -1,0 +1,26 @@
+diff --git a/build/index.js b/build/index.js
+index e7212335ad59514756936474eac6c70c4452ff68..09ed6f7decd38ad5ba240dfaece6f42712142e82 100644
+--- a/build/index.js
++++ b/build/index.js
+@@ -7,7 +7,7 @@ exports.parseNumber = exports.calculateDelta = exports.formatValue = exports.num
+ /**
+  * External dependencies
+  */
+-const number_format_1 = __importDefault(require("locutus/php/strings/number_format"));
++const number_format_1 = { default: require("locutus/php/strings/number_format").number_format };
+ /**
+  * Formats a number using site's current locale
+  *
+diff --git a/build-module/index.js b/build-module/index.js
+index dfd612f20cdd8bfc5ad322822bc469e6d3a8df2d..a56a416d23db7d7ff12de12c8d0d72d2c4eb3d0b 100644
+--- a/build-module/index.js
++++ b/build-module/index.js
+@@ -1,7 +1,7 @@
+ /**
+  * External dependencies
+  */
+-import numberFormatter from 'locutus/php/strings/number_format';
++import { number_format as numberFormatter } from 'locutus/php/strings/number_format';
+ /**
+  * Formats a number using site's current locale
+  *

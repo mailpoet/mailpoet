@@ -158,7 +158,6 @@
     "grunt-cli": "^1.4.3",
     "husky": "^9.0.11",
     "imports-loader": "^5.0.0",
-    "inject-loader": "^4.0.1",
     "install": "^0.13.0",
     "js-yaml": "^4.1.1",
     "jsdom": "^24.1.0",

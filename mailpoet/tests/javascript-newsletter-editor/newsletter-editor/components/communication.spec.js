@@ -1,32 +1,33 @@
-import CommunicationInjector from 'inject-loader!newsletter-editor/components/communication';
+import { CommunicationComponent } from 'newsletter-editor/components/communication';
+import { MailPoet } from 'mailpoet';
 
 const expect = global.expect;
 const jQuery = global.jQuery;
 const sinon = global.sinon;
 
 describe('getPostTypes', function () {
+  var originalPost;
+
+  beforeEach(function () {
+    CommunicationComponent._cachedQuery.cache = {};
+  });
+
   it('fetches post types from the server', function () {
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: function () {
-              var deferred = jQuery.Deferred();
-              deferred.resolve({
-                data: {
-                  post: 'val1',
-                  page: 'val2',
-                },
-              });
-              return deferred;
-            },
-          },
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = function () {
+      var deferred = jQuery.Deferred();
+      deferred.resolve({
+        data: {
+          post: 'val1',
+          page: 'val2',
         },
-      },
-    }).CommunicationComponent;
-    module.getPostTypes().done(function (types) {
+      });
+      return deferred;
+    };
+    CommunicationComponent.getPostTypes().done(function (types) {
       expect(types).to.eql(['val1', 'val2']);
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('caches results', function () {
@@ -36,27 +37,27 @@ describe('getPostTypes', function () {
       .expects('post')
       .once()
       .returns(deferred);
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: mock,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = mock;
     deferred.resolve({
       post: 'val1',
       page: 'val2',
     });
-    module.getPostTypes();
-    module.getPostTypes();
+    CommunicationComponent.getPostTypes();
+    CommunicationComponent.getPostTypes();
 
     mock.verify();
+    MailPoet.Ajax.post = originalPost;
   });
 });
 
 describe('getTaxonomies', function () {
+  var originalPost;
+
+  beforeEach(function () {
+    CommunicationComponent._cachedQuery.cache = {};
+  });
+
   it('sends post type to endpoint', function () {
     var spy;
     var post = function () {
@@ -67,43 +68,30 @@ describe('getTaxonomies', function () {
       });
       return deferred;
     };
-    var module;
     spy = sinon.spy(post);
-    module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: spy,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = spy;
 
-    module.getTaxonomies('post');
+    CommunicationComponent.getTaxonomies('post');
     expect(spy.args[0][0].data.postType).to.equal('post');
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('fetches taxonomies from the server', function () {
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: function () {
-              var deferred = jQuery.Deferred();
-              deferred.resolve({
-                data: {
-                  category: 'val1',
-                },
-              });
-              return deferred;
-            },
-          },
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = function () {
+      var deferred = jQuery.Deferred();
+      deferred.resolve({
+        data: {
+          category: 'val1',
         },
-      },
-    }).CommunicationComponent;
-    module.getTaxonomies('page').done(function (types) {
+      });
+      return deferred;
+    };
+    CommunicationComponent.getTaxonomies('page').done(function (types) {
       expect(types).to.eql({ category: 'val1' });
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('caches results', function () {
@@ -113,24 +101,24 @@ describe('getTaxonomies', function () {
       .expects('post')
       .once()
       .returns(deferred);
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: mock,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = mock;
     deferred.resolve({ category: 'val1' });
-    module.getTaxonomies('page');
-    module.getTaxonomies('page');
+    CommunicationComponent.getTaxonomies('page');
+    CommunicationComponent.getTaxonomies('page');
 
     mock.verify();
+    MailPoet.Ajax.post = originalPost;
   });
 });
 
 describe('getTerms', function () {
+  var originalPost;
+
+  beforeEach(function () {
+    CommunicationComponent._cachedQuery.cache = {};
+  });
+
   it('sends terms to endpoint', function () {
     var spy;
     var post = function () {
@@ -138,46 +126,35 @@ describe('getTerms', function () {
       deferred.resolve({});
       return deferred;
     };
-    var module;
     spy = sinon.spy(post);
-    module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: spy,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = spy;
 
-    module.getTerms({
+    CommunicationComponent.getTerms({
       taxonomies: ['category', 'post_tag'],
     });
     expect(spy.args[0][0].data.taxonomies).to.eql(['category', 'post_tag']);
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('fetches terms from the server', function () {
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: function () {
-              var deferred = jQuery.Deferred();
-              deferred.resolve({
-                data: {
-                  term1: 'term1val1',
-                  term2: 'term2val2',
-                },
-              });
-              return deferred;
-            },
-          },
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = function () {
+      var deferred = jQuery.Deferred();
+      deferred.resolve({
+        data: {
+          term1: 'term1val1',
+          term2: 'term2val2',
         },
+      });
+      return deferred;
+    };
+    CommunicationComponent.getTerms({ taxonomies: ['category'] }).done(
+      function (types) {
+        expect(types).to.eql({ term1: 'term1val1', term2: 'term2val2' });
       },
-    }).CommunicationComponent;
-    module.getTerms({ taxonomies: ['category'] }).done(function (types) {
-      expect(types).to.eql({ term1: 'term1val1', term2: 'term2val2' });
-    });
+    );
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('caches results', function () {
@@ -187,24 +164,24 @@ describe('getTerms', function () {
       .expects('post')
       .once()
       .returns(deferred);
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: mock,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = mock;
     deferred.resolve({ term1: 'term1val1', term2: 'term2val2' });
-    module.getTerms({ taxonomies: ['category'] });
-    module.getTerms({ taxonomies: ['category'] });
+    CommunicationComponent.getTerms({ taxonomies: ['category'] });
+    CommunicationComponent.getTerms({ taxonomies: ['category'] });
 
     mock.verify();
+    MailPoet.Ajax.post = originalPost;
   });
 });
 
 describe('getPosts', function () {
+  var originalPost;
+
+  beforeEach(function () {
+    CommunicationComponent._cachedQuery.cache = {};
+  });
+
   it('sends options to endpoint', function () {
     var spy;
     var post = function () {
@@ -212,19 +189,11 @@ describe('getPosts', function () {
       deferred.resolve({});
       return deferred;
     };
-    var module;
     spy = sinon.spy(post);
-    module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: spy,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = spy;
 
-    module.getPosts({
+    CommunicationComponent.getPosts({
       type: 'posts',
       search: 'some search term',
     });
@@ -232,33 +201,25 @@ describe('getPosts', function () {
       type: 'posts',
       search: 'some search term',
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('fetches posts from the server', function () {
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: function () {
-              var deferred = jQuery.Deferred();
-              deferred.resolve({
-                data: [
-                  { post_title: 'title 1' },
-                  { post_title: 'post title 2' },
-                ],
-              });
-              return deferred;
-            },
-          },
-        },
-      },
-    }).CommunicationComponent;
-    module.getPosts().done(function (posts) {
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = function () {
+      var deferred = jQuery.Deferred();
+      deferred.resolve({
+        data: [{ post_title: 'title 1' }, { post_title: 'post title 2' }],
+      });
+      return deferred;
+    };
+    CommunicationComponent.getPosts().done(function (posts) {
       expect(posts).to.eql([
         { post_title: 'title 1' },
         { post_title: 'post title 2' },
       ]);
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('caches results', function () {
@@ -268,27 +229,27 @@ describe('getPosts', function () {
       .expects('post')
       .once()
       .returns(deferred);
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: mock,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = mock;
     deferred.resolve({
       type: 'posts',
       search: 'some search term',
     });
-    module.getPosts({});
-    module.getPosts({});
+    CommunicationComponent.getPosts({});
+    CommunicationComponent.getPosts({});
 
     mock.verify();
+    MailPoet.Ajax.post = originalPost;
   });
 });
 
 describe('getTransformedPosts', function () {
+  var originalPost;
+
+  beforeEach(function () {
+    CommunicationComponent._cachedQuery.cache = {};
+  });
+
   it('sends options to endpoint', function () {
     var spy;
     var post = function () {
@@ -296,19 +257,11 @@ describe('getTransformedPosts', function () {
       deferred.resolve({});
       return deferred;
     };
-    var module;
     spy = sinon.spy(post);
-    module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: spy,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = spy;
 
-    module.getTransformedPosts({
+    CommunicationComponent.getTransformedPosts({
       type: 'posts',
       posts: [1, 2],
     });
@@ -316,33 +269,28 @@ describe('getTransformedPosts', function () {
       type: 'posts',
       posts: [1, 2],
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('fetches transformed posts from the server', function () {
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: function () {
-              var deferred = jQuery.Deferred();
-              deferred.resolve({
-                data: [
-                  { type: 'text', text: 'something' },
-                  { type: 'text', text: 'something else' },
-                ],
-              });
-              return deferred;
-            },
-          },
-        },
-      },
-    }).CommunicationComponent;
-    module.getTransformedPosts().done(function (posts) {
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = function () {
+      var deferred = jQuery.Deferred();
+      deferred.resolve({
+        data: [
+          { type: 'text', text: 'something' },
+          { type: 'text', text: 'something else' },
+        ],
+      });
+      return deferred;
+    };
+    CommunicationComponent.getTransformedPosts().done(function (posts) {
       expect(posts).to.eql([
         { type: 'text', text: 'something' },
         { type: 'text', text: 'something else' },
       ]);
     });
+    MailPoet.Ajax.post = originalPost;
   });
 
   it('caches results', function () {
@@ -352,22 +300,16 @@ describe('getTransformedPosts', function () {
       .expects('post')
       .once()
       .returns(deferred);
-    var module = CommunicationInjector({
-      mailpoet: {
-        MailPoet: {
-          Ajax: {
-            post: mock,
-          },
-        },
-      },
-    }).CommunicationComponent;
+    originalPost = MailPoet.Ajax.post;
+    MailPoet.Ajax.post = mock;
     deferred.resolve({
       type: 'posts',
       posts: [1, 3],
     });
-    module.getTransformedPosts({});
-    module.getTransformedPosts({});
+    CommunicationComponent.getTransformedPosts({});
+    CommunicationComponent.getTransformedPosts({});
 
     mock.verify();
+    MailPoet.Ajax.post = originalPost;
   });
 });

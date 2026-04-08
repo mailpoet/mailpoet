@@ -2,7 +2,6 @@ import { App } from 'newsletter-editor/app';
 import { AutomatedLatestContentBlock } from 'newsletter-editor/blocks/automated-latest-content-layout';
 import { ContainerBlock } from 'newsletter-editor/blocks/container';
 import { CommunicationComponent } from 'newsletter-editor/components/communication';
-import AutomatedLatestContentInjector from 'inject-loader!newsletter-editor/blocks/automated-latest-content-layout';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -14,7 +13,6 @@ var EditorApplication = App;
 describe('Automated Latest Content Layout Supervisor', function () {
   var model;
   var mock;
-  var module;
   beforeEach(function () {
     model = new AutomatedLatestContentBlock.ALCLayoutSupervisor();
   });
@@ -26,23 +24,14 @@ describe('Automated Latest Content Layout Supervisor', function () {
       .returns([new Backbone.SuperModel()]);
 
     mock = sinon
-      .mock({ getBulkTransformedPosts: function () {} })
-      .expects('getBulkTransformedPosts')
-      .once()
+      .stub(CommunicationComponent, 'getBulkTransformedPosts')
       .returns(jQuery.Deferred());
 
-    module = AutomatedLatestContentInjector({
-      'newsletter-editor/components/communication': {
-        CommunicationComponent: {
-          getBulkTransformedPosts: mock,
-        },
-      },
-    }).AutomatedLatestContentBlock;
-
-    model = new module.ALCLayoutSupervisor();
+    model = new AutomatedLatestContentBlock.ALCLayoutSupervisor();
     model.refresh();
 
-    mock.verify();
+    expect(mock.calledOnce).to.be.true; // eslint-disable-line no-unused-expressions
+    mock.restore();
   });
 
   it('refreshes posts for given blocks', function () {
@@ -66,12 +55,7 @@ describe('Automated Latest Content Layout Supervisor', function () {
 describe('Automated latest content layout', function () {
   describe('model', function () {
     var model;
-    var module;
     var sandbox;
-
-    before(function () {
-      module = AutomatedLatestContentBlock;
-    });
 
     beforeEach(function () {
       global.stubChannel(EditorApplication);
@@ -79,7 +63,8 @@ describe('Automated latest content layout', function () {
       EditorApplication.getBlockTypeModel = sinon
         .stub()
         .returns(Backbone.SuperModel);
-      model = new module.AutomatedLatestContentLayoutBlockModel();
+      model =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -230,7 +215,8 @@ describe('Automated latest content layout', function () {
           },
         },
       });
-      model = new module.AutomatedLatestContentLayoutBlockModel();
+      model =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
 
       expect(model.get('amount')).to.equal('17');
       expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -286,7 +272,8 @@ describe('Automated latest content layout', function () {
       EditorApplication.getBlockTypeModel = sinon
         .stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new module.AutomatedLatestContentLayoutBlockModel();
+      model =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
 
       model.updatePosts([
         {
@@ -343,7 +330,8 @@ describe('Automated latest content layout', function () {
         .stub()
         .returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new module.AutomatedLatestContentLayoutBlockModel();
+      model =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
       view = new module.AutomatedLatestContentLayoutBlockView({ model: model });
     });
 
@@ -403,45 +391,35 @@ describe('Automated latest content layout', function () {
   describe('block settings view', function () {
     var model;
     var view;
-    var module;
+    var getPostTypesStub;
 
     before(function () {
-      module = AutomatedLatestContentInjector({
-        'newsletter-editor/components/communication': {
-          CommunicationComponent: {
-            getPostTypes: function () {
-              return jQuery.Deferred();
+      getPostTypesStub = sinon
+        .stub(CommunicationComponent, 'getPostTypes')
+        .callsFake(function () {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([
+            {
+              name: 'post',
+              labels: {
+                singular_name: 'Post',
+              },
             },
-          },
-        },
-      }).AutomatedLatestContentBlock;
-    });
-
-    before(function () {
-      CommunicationComponent.getPostTypes = function () {
-        var deferred = jQuery.Deferred();
-        deferred.resolve([
-          {
-            name: 'post',
-            labels: {
-              singular_name: 'Post',
+            {
+              name: 'page',
+              labels: {
+                singular_name: 'Page',
+              },
             },
-          },
-          {
-            name: 'page',
-            labels: {
-              singular_name: 'Page',
+            {
+              name: 'mailpoet_page',
+              labels: {
+                singular_name: 'Mailpoet page',
+              },
             },
-          },
-          {
-            name: 'mailpoet_page',
-            labels: {
-              singular_name: 'Mailpoet page',
-            },
-          },
-        ]);
-        return deferred;
-      };
+          ]);
+          return deferred;
+        });
 
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
@@ -453,11 +431,19 @@ describe('Automated latest content layout', function () {
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
     });
 
+    after(function () {
+      getPostTypesStub.restore();
+    });
+
     beforeEach(function () {
-      model = new module.AutomatedLatestContentLayoutBlockModel();
-      view = new module.AutomatedLatestContentLayoutBlockSettingsView({
-        model: model,
-      });
+      model =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
+      view =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockSettingsView(
+          {
+            model: model,
+          },
+        );
     });
 
     after(function () {
@@ -470,10 +456,14 @@ describe('Automated latest content layout', function () {
 
     describe('once rendered', function () {
       beforeEach(function () {
-        model = new module.AutomatedLatestContentLayoutBlockModel();
-        view = new module.AutomatedLatestContentLayoutBlockSettingsView({
-          model: model,
-        });
+        model =
+          new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
+        view =
+          new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockSettingsView(
+            {
+              model: model,
+            },
+          );
         view.render();
       });
 
@@ -654,10 +644,14 @@ describe('Automated latest content layout', function () {
 
       describe('when "title only" display type is selected', function () {
         beforeEach(function () {
-          model = new module.AutomatedLatestContentLayoutBlockModel();
-          view = new module.AutomatedLatestContentLayoutBlockSettingsView({
-            model: model,
-          });
+          model =
+            new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
+          view =
+            new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockSettingsView(
+              {
+                model: model,
+              },
+            );
           view.render();
           view
             .$('.mailpoet_automated_latest_content_display_type')
@@ -673,10 +667,14 @@ describe('Automated latest content layout', function () {
 
         describe('when "title as list" is selected', function () {
           beforeEach(function () {
-            model = new module.AutomatedLatestContentLayoutBlockModel();
-            view = new module.AutomatedLatestContentLayoutBlockSettingsView({
-              model: model,
-            });
+            model =
+              new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockModel();
+            view =
+              new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockSettingsView(
+                {
+                  model: model,
+                },
+              );
             view.render();
             view
               .$('.mailpoet_automated_latest_content_display_type')

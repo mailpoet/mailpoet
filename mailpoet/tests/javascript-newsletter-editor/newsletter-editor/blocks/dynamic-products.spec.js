@@ -2,7 +2,6 @@ import { App } from 'newsletter-editor/app';
 import { DynamicProductsBlock } from 'newsletter-editor/blocks/dynamic-products';
 import { ContainerBlock } from 'newsletter-editor/blocks/container';
 import { CommunicationComponent } from 'newsletter-editor/components/communication';
-import DynamicProductsInjector from 'inject-loader!newsletter-editor/blocks/dynamic-products';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -14,7 +13,6 @@ var EditorApplication = App;
 describe('Dynamic Products Supervisor', function () {
   var model;
   var mock;
-  var module;
   beforeEach(function () {
     model = new DynamicProductsBlock.DynamicProductsSupervisor();
   });
@@ -26,23 +24,14 @@ describe('Dynamic Products Supervisor', function () {
       .returns([new Backbone.SuperModel()]);
 
     mock = sinon
-      .mock({ getBulkTransformedProducts: function () {} })
-      .expects('getBulkTransformedProducts')
-      .once()
+      .stub(CommunicationComponent, 'getBulkTransformedProducts')
       .returns(jQuery.Deferred());
 
-    module = DynamicProductsInjector({
-      'newsletter-editor/components/communication': {
-        CommunicationComponent: {
-          getBulkTransformedProducts: mock,
-        },
-      },
-    }).DynamicProductsBlock;
-
-    model = new module.DynamicProductsSupervisor();
+    model = new DynamicProductsBlock.DynamicProductsSupervisor();
     model.refresh();
 
-    mock.verify();
+    expect(mock.calledOnce).to.be.true; // eslint-disable-line no-unused-expressions
+    mock.restore();
   });
 
   it('refreshes products for given blocks', function () {
@@ -66,12 +55,7 @@ describe('Dynamic Products Supervisor', function () {
 describe('Dynamic Products', function () {
   describe('model', function () {
     var model;
-    var module;
     var sandbox;
-
-    before(function () {
-      module = DynamicProductsBlock;
-    });
 
     beforeEach(function () {
       global.stubChannel(EditorApplication);
@@ -79,7 +63,7 @@ describe('Dynamic Products', function () {
       EditorApplication.getBlockTypeModel = sinon
         .stub()
         .returns(Backbone.SuperModel);
-      model = new module.DynamicProductsBlockModel();
+      model = new DynamicProductsBlock.DynamicProductsBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -220,7 +204,7 @@ describe('Dynamic Products', function () {
           },
         },
       });
-      model = new module.DynamicProductsBlockModel();
+      model = new DynamicProductsBlock.DynamicProductsBlockModel();
 
       expect(model.get('amount')).to.equal('17');
       expect(model.get('contentType')).to.equal('product');
@@ -270,7 +254,7 @@ describe('Dynamic Products', function () {
       EditorApplication.getBlockTypeModel = sinon
         .stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new module.DynamicProductsBlockModel();
+      model = new DynamicProductsBlock.DynamicProductsBlockModel();
 
       model.updatePosts([
         {
@@ -321,7 +305,7 @@ describe('Dynamic Products', function () {
         .stub()
         .returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new module.DynamicProductsBlockModel();
+      model = new DynamicProductsBlock.DynamicProductsBlockModel();
       view = new module.DynamicProductsBlockView({ model: model });
     });
 
@@ -380,33 +364,23 @@ describe('Dynamic Products', function () {
   describe('block settings view', function () {
     var model;
     var view;
-    var module;
+    var getPostTypesStub;
 
     before(function () {
-      module = DynamicProductsInjector({
-        'newsletter-editor/components/communication': {
-          CommunicationComponent: {
-            getPostTypes: function () {
-              return jQuery.Deferred();
+      getPostTypesStub = sinon
+        .stub(CommunicationComponent, 'getPostTypes')
+        .callsFake(function () {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([
+            {
+              name: 'product',
+              labels: {
+                singular_name: 'Product',
+              },
             },
-          },
-        },
-      }).DynamicProductsBlock;
-    });
-
-    before(function () {
-      CommunicationComponent.getPostTypes = function () {
-        var deferred = jQuery.Deferred();
-        deferred.resolve([
-          {
-            name: 'product',
-            labels: {
-              singular_name: 'Product',
-            },
-          },
-        ]);
-        return deferred;
-      };
+          ]);
+          return deferred;
+        });
 
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication, {
@@ -418,9 +392,13 @@ describe('Dynamic Products', function () {
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
     });
 
+    after(function () {
+      getPostTypesStub.restore();
+    });
+
     beforeEach(function () {
-      model = new module.DynamicProductsBlockModel();
-      view = new module.DynamicProductsBlockSettingsView({
+      model = new DynamicProductsBlock.DynamicProductsBlockModel();
+      view = new DynamicProductsBlock.DynamicProductsBlockSettingsView({
         model: model,
       });
     });
@@ -435,8 +413,8 @@ describe('Dynamic Products', function () {
 
     describe('once rendered', function () {
       beforeEach(function () {
-        model = new module.DynamicProductsBlockModel();
-        view = new module.DynamicProductsBlockSettingsView({
+        model = new DynamicProductsBlock.DynamicProductsBlockModel();
+        view = new DynamicProductsBlock.DynamicProductsBlockSettingsView({
           model: model,
         });
         view.render();
@@ -572,8 +550,8 @@ describe('Dynamic Products', function () {
 
       describe('when "title only" display type is selected', function () {
         beforeEach(function () {
-          model = new module.DynamicProductsBlockModel();
-          view = new module.DynamicProductsBlockSettingsView({
+          model = new DynamicProductsBlock.DynamicProductsBlockModel();
+          view = new DynamicProductsBlock.DynamicProductsBlockSettingsView({
             model: model,
           });
           view.render();
@@ -591,8 +569,8 @@ describe('Dynamic Products', function () {
 
         describe('when "title as list" is selected', function () {
           beforeEach(function () {
-            model = new module.DynamicProductsBlockModel();
-            view = new module.DynamicProductsBlockSettingsView({
+            model = new DynamicProductsBlock.DynamicProductsBlockModel();
+            view = new DynamicProductsBlock.DynamicProductsBlockSettingsView({
               model: model,
             });
             view.render();
