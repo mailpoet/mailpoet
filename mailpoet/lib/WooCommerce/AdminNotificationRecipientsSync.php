@@ -31,6 +31,23 @@ class AdminNotificationRecipientsSync {
     $this->wp->addAction( 'user_register', [ $this, 'onUserRegistered' ], 10, 1 );
     $this->wp->addAction( 'set_user_role', [ $this, 'onUserRoleChanged' ], 10, 3 );
     $this->wp->addAction( 'delete_user', [ $this, 'onUserDeleted' ], 10, 1 );
+    $this->wp->addAction( 'init', [ $this, 'maybeRunInitialSync' ], 10 );
+  }
+
+  /**
+   * Run the initial admin recipients sync once after MailPoet is activated.
+   *
+   * Uses a persistent option as a one-time guard so the full sync only
+   * executes on the first `init` after a fresh activation or reactivation.
+   *
+   * @return void
+   */
+  public function maybeRunInitialSync(): void {
+    if ( $this->wp->getOption( 'mailpoet_admin_recipients_synced' ) ) {
+      return;
+    }
+    $this->syncAllAdmins();
+    $this->wp->updateOption( 'mailpoet_admin_recipients_synced', true );
   }
 
   /**
