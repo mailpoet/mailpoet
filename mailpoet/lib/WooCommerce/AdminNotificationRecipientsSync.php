@@ -1,5 +1,4 @@
-<?php
-declare( strict_types=1 );
+<?php declare( strict_types = 1 );
 
 namespace MailPoet\WooCommerce;
 
@@ -28,10 +27,10 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function setupHooks(): void {
-    $this->wp->addAction( 'user_register', [ $this, 'onUserRegistered' ], 10, 1 );
-    $this->wp->addAction( 'set_user_role', [ $this, 'onUserRoleChanged' ], 10, 3 );
-    $this->wp->addAction( 'delete_user', [ $this, 'onUserDeleted' ], 10, 1 );
-    $this->wp->addAction( 'init', [ $this, 'maybeRunInitialSync' ], 10 );
+    $this->wp->addAction('user_register', [$this, 'onUserRegistered'], 10, 1);
+    $this->wp->addAction('set_user_role', [$this, 'onUserRoleChanged'], 10, 3);
+    $this->wp->addAction('delete_user', [$this, 'onUserDeleted'], 10, 1);
+    $this->wp->addAction('init', [$this, 'maybeRunInitialSync'], 10);
   }
 
   /**
@@ -43,11 +42,11 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function maybeRunInitialSync(): void {
-    if ( $this->wp->getOption( 'mailpoet_admin_recipients_synced' ) ) {
+    if ($this->wp->getOption('mailpoet_admin_recipients_synced')) {
       return;
     }
     $this->syncAllAdmins();
-    $this->wp->updateOption( 'mailpoet_admin_recipients_synced', true );
+    $this->wp->updateOption('mailpoet_admin_recipients_synced', true);
   }
 
   /**
@@ -57,8 +56,8 @@ class AdminNotificationRecipientsSync {
    */
   public function syncAllAdmins(): void {
     $emails = $this->getAdminEmails();
-    foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
-      $this->setRecipients( $emailId, $emails );
+    foreach (self::ADMIN_EMAIL_IDS as $emailId) {
+      $this->setRecipients($emailId, $emails);
     }
   }
 
@@ -69,14 +68,15 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function onUserRegistered( int $userId ): void {
-    $user = $this->wp->getUserdata( $userId );
-    if ( ! $user || ! in_array( 'administrator', (array) $user->roles, true ) ) {
+    $user = $this->wp->getUserdata($userId);
+    if (!$user || !in_array('administrator', (array)$user->roles, true)) {
       return;
     }
-    if ( $user->user_email === '' ) {
+    $userEmail = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($userEmail === '') {
       return;
     }
-    $this->addEmailToRecipients( $user->user_email );
+    $this->addEmailToRecipients($userEmail);
   }
 
   /**
@@ -88,20 +88,21 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function onUserRoleChanged( int $userId, string $newRole, array $oldRoles ): void {
-    $user = $this->wp->getUserdata( $userId );
-    if ( ! $user ) {
+    $user = $this->wp->getUserdata($userId);
+    if (!$user) {
       return;
     }
-    if ( $user->user_email === '' ) {
+    $userEmail = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($userEmail === '') {
       return;
     }
-    $wasAdmin = in_array( 'administrator', $oldRoles, true );
-    $isAdmin  = $newRole === 'administrator';
+    $wasAdmin = in_array('administrator', $oldRoles, true);
+    $isAdmin = $newRole === 'administrator';
 
-    if ( $isAdmin && ! $wasAdmin ) {
-      $this->addEmailToRecipients( $user->user_email );
-    } elseif ( ! $isAdmin && $wasAdmin ) {
-      $this->removeEmailFromRecipients( $user->user_email );
+    if ($isAdmin && !$wasAdmin) {
+      $this->addEmailToRecipients($userEmail);
+    } elseif (!$isAdmin && $wasAdmin) {
+      $this->removeEmailFromRecipients($userEmail);
     }
   }
 
@@ -112,14 +113,15 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function onUserDeleted( int $userId ): void {
-    $user = $this->wp->getUserdata( $userId );
-    if ( ! $user ) {
+    $user = $this->wp->getUserdata($userId);
+    if (!$user) {
       return;
     }
-    if ( $user->user_email === '' ) {
+    $userEmail = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($userEmail === '') {
       return;
     }
-    $this->removeEmailFromRecipients( $user->user_email );
+    $this->removeEmailFromRecipients($userEmail);
   }
 
   /**
@@ -129,11 +131,11 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function addEmailToRecipients( string $email ): void {
-    foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
-      $recipients = $this->getRecipients( $emailId );
-      if ( ! in_array( $email, $recipients, true ) ) {
+    foreach (self::ADMIN_EMAIL_IDS as $emailId) {
+      $recipients = $this->getRecipients($emailId);
+      if (!in_array($email, $recipients, true)) {
         $recipients[] = $email;
-        $this->setRecipients( $emailId, $recipients );
+        $this->setRecipients($emailId, $recipients);
       }
     }
   }
@@ -145,11 +147,11 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function removeEmailFromRecipients( string $email ): void {
-    foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
-      $recipients = $this->getRecipients( $emailId );
-      $updated    = array_values( array_filter( $recipients, fn( $r ) => $r !== $email ) );
-      if ( count( $updated ) !== count( $recipients ) ) {
-        $this->setRecipients( $emailId, $updated );
+    foreach (self::ADMIN_EMAIL_IDS as $emailId) {
+      $recipients = $this->getRecipients($emailId);
+      $updated = array_values(array_filter($recipients, fn($r) => $r !== $email));
+      if (count($updated) !== count($recipients)) {
+        $this->setRecipients($emailId, $updated);
       }
     }
   }
@@ -161,15 +163,15 @@ class AdminNotificationRecipientsSync {
    * @return array<string> List of recipient email addresses.
    */
   public function getRecipients( string $emailId ): array {
-    $settings = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
-    if ( ! is_array( $settings ) ) {
+    $settings = $this->wp->getOption("woocommerce_{$emailId}_settings", []);
+    if (!is_array($settings)) {
       return [];
     }
     $recipient = $settings['recipient'] ?? '';
-    if ( $recipient === '' ) {
+    if ($recipient === '') {
       return [];
     }
-    return array_map( 'trim', explode( ',', $recipient ) );
+    return array_map('trim', explode(',', $recipient));
   }
 
   /**
@@ -180,12 +182,12 @@ class AdminNotificationRecipientsSync {
    * @return void
    */
   public function setRecipients( string $emailId, array $emails ): void {
-    $settings = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
-    if ( ! is_array( $settings ) ) {
+    $settings = $this->wp->getOption("woocommerce_{$emailId}_settings", []);
+    if (!is_array($settings)) {
       $settings = [];
     }
-    $settings['recipient'] = implode( ', ', array_unique( array_filter( $emails ) ) );
-    $this->wp->updateOption( "woocommerce_{$emailId}_settings", $settings );
+    $settings['recipient'] = implode(', ', array_unique(array_filter($emails)));
+    $this->wp->updateOption("woocommerce_{$emailId}_settings", $settings);
   }
 
   /**
@@ -194,7 +196,7 @@ class AdminNotificationRecipientsSync {
    * @return array<string> List of administrator email addresses.
    */
   public function getAdminEmails(): array {
-    $users = $this->wp->getUsers( [ 'role' => 'administrator', 'fields' => [ 'user_email' ] ] );
-    return array_column( $users, 'user_email' );
+    $users = $this->wp->getUsers(['role' => 'administrator', 'fields' => ['user_email']]);
+    return array_column($users, 'user_email'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 }
