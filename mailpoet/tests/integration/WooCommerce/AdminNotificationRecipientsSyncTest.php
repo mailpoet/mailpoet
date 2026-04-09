@@ -69,7 +69,7 @@ class AdminNotificationRecipientsSyncTest extends \MailPoetTest {
 
   public function testRemoveEmailFromRecipientsUpdatesAllAdminEmailIds(): void {
     $emailToRemove = 'remove@example.com';
-    $emailToKeep   = 'keep@example.com';
+    $emailToKeep = 'keep@example.com';
     $this->service->addEmailToRecipients($emailToRemove);
     $this->service->addEmailToRecipients($emailToKeep);
     $this->service->removeEmailFromRecipients($emailToRemove);
