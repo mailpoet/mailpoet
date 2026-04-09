@@ -1,0 +1,5 @@
+# Type: Added
+
+# Description
+
+Automatically add all WordPress administrator users as recipients of WooCommerce admin notification emails (New Order, Cancelled Order, Failed Order), and keep the list in sync as admins are added, removed, or have their roles changed.
