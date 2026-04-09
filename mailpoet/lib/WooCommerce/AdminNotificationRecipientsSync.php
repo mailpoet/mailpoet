@@ -22,12 +22,22 @@ class AdminNotificationRecipientsSync {
     $this->wp = $wp;
   }
 
+  /**
+   * Register WordPress hooks for user lifecycle events.
+   *
+   * @return void
+   */
   public function setupHooks(): void {
     $this->wp->addAction( 'user_register', [ $this, 'onUserRegistered' ], 10, 1 );
     $this->wp->addAction( 'set_user_role', [ $this, 'onUserRoleChanged' ], 10, 3 );
     $this->wp->addAction( 'delete_user', [ $this, 'onUserDeleted' ], 10, 1 );
   }
 
+  /**
+   * Sync all current administrator emails into WooCommerce admin notification settings.
+   *
+   * @return void
+   */
   public function syncAllAdmins(): void {
     $emails = $this->getAdminEmails();
     foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
@@ -35,17 +45,37 @@ class AdminNotificationRecipientsSync {
     }
   }
 
+  /**
+   * Add a newly registered administrator to WooCommerce admin notification recipients.
+   *
+   * @param int $userId The ID of the newly registered user.
+   * @return void
+   */
   public function onUserRegistered( int $userId ): void {
     $user = $this->wp->getUserdata( $userId );
     if ( ! $user || ! in_array( 'administrator', (array) $user->roles, true ) ) {
       return;
     }
+    if ( $user->user_email === '' ) {
+      return;
+    }
     $this->addEmailToRecipients( $user->user_email );
   }
 
+  /**
+   * Update WooCommerce admin notification recipients when a user's role changes.
+   *
+   * @param int    $userId   The ID of the user whose role changed.
+   * @param string $newRole  The new role assigned to the user.
+   * @param array  $oldRoles The previous roles the user held.
+   * @return void
+   */
   public function onUserRoleChanged( int $userId, string $newRole, array $oldRoles ): void {
     $user = $this->wp->getUserdata( $userId );
     if ( ! $user ) {
+      return;
+    }
+    if ( $user->user_email === '' ) {
       return;
     }
     $wasAdmin = in_array( 'administrator', $oldRoles, true );
@@ -58,14 +88,29 @@ class AdminNotificationRecipientsSync {
     }
   }
 
+  /**
+   * Remove a deleted user's email from WooCommerce admin notification recipients.
+   *
+   * @param int $userId The ID of the user being deleted.
+   * @return void
+   */
   public function onUserDeleted( int $userId ): void {
     $user = $this->wp->getUserdata( $userId );
     if ( ! $user ) {
       return;
     }
+    if ( $user->user_email === '' ) {
+      return;
+    }
     $this->removeEmailFromRecipients( $user->user_email );
   }
 
+  /**
+   * Add an email address to all WooCommerce admin notification recipient lists.
+   *
+   * @param string $email The email address to add.
+   * @return void
+   */
   public function addEmailToRecipients( string $email ): void {
     foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
       $recipients = $this->getRecipients( $emailId );
@@ -76,6 +121,12 @@ class AdminNotificationRecipientsSync {
     }
   }
 
+  /**
+   * Remove an email address from all WooCommerce admin notification recipient lists.
+   *
+   * @param string $email The email address to remove.
+   * @return void
+   */
   public function removeEmailFromRecipients( string $email ): void {
     foreach ( self::ADMIN_EMAIL_IDS as $emailId ) {
       $recipients = $this->getRecipients( $emailId );
@@ -86,8 +137,17 @@ class AdminNotificationRecipientsSync {
     }
   }
 
+  /**
+   * Get the current recipient email addresses for a WooCommerce email notification type.
+   *
+   * @param string $emailId The WooCommerce email identifier (e.g. 'new_order').
+   * @return array<string> List of recipient email addresses.
+   */
   public function getRecipients( string $emailId ): array {
-    $settings  = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
+    $settings = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
+    if ( ! is_array( $settings ) ) {
+      return [];
+    }
     $recipient = $settings['recipient'] ?? '';
     if ( $recipient === '' ) {
       return [];
@@ -95,12 +155,27 @@ class AdminNotificationRecipientsSync {
     return array_map( 'trim', explode( ',', $recipient ) );
   }
 
+  /**
+   * Persist a list of recipient email addresses for a WooCommerce email notification type.
+   *
+   * @param string        $emailId The WooCommerce email identifier (e.g. 'new_order').
+   * @param array<string> $emails  List of email addresses to store as recipients.
+   * @return void
+   */
   public function setRecipients( string $emailId, array $emails ): void {
-    $settings              = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
+    $settings = $this->wp->getOption( "woocommerce_{$emailId}_settings", [] );
+    if ( ! is_array( $settings ) ) {
+      $settings = [];
+    }
     $settings['recipient'] = implode( ', ', array_unique( array_filter( $emails ) ) );
     $this->wp->updateOption( "woocommerce_{$emailId}_settings", $settings );
   }
 
+  /**
+   * Retrieve all administrator user email addresses from WordPress.
+   *
+   * @return array<string> List of administrator email addresses.
+   */
   public function getAdminEmails(): array {
     $users = $this->wp->getUsers( [ 'role' => 'administrator', 'fields' => [ 'user_email' ] ] );
     return array_column( $users, 'user_email' );
