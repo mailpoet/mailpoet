@@ -18,6 +18,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-webpack": "^0.13.2",
+    "eslint-plugin-check-file": "^2.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-no-only-tests": "^3.1.0",
