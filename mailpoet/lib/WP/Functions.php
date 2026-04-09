@@ -356,6 +356,10 @@ class Functions {
     return get_userdata($userId);
   }
 
+  public function getUsers($args = []) {
+    return get_users($args);
+  }
+
   public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }
