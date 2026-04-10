@@ -414,7 +414,8 @@ class Pages {
   public function getManageContent() {
     if ($this->isPreview()) {
       $subscriber = new SubscriberEntity();
-      $subscriber->setEmail(self::DEMO_EMAIL);
+      $previewEmail = $this->wp->applyFilters('mailpoet_manage_subscription_preview_subscriber_email', self::DEMO_EMAIL);
+      $subscriber->setEmail(is_string($previewEmail) ? $previewEmail : self::DEMO_EMAIL);
       $subscriber->setFirstName('John');
       $subscriber->setLastName('Doe');
       $subscriber->setLinkToken('bfd0889dbc7f081e171fa0cee7401df2');
