@@ -44,14 +44,14 @@ class SendingStatusCest {
   }
 
   private function checkSubscriber(\AcceptanceTester $i, $taskId, $subscriber, $status, $error = false) {
-    $nameSelector = '[data-automation-id="name_' . $taskId . '_' . $subscriber->id . '"]';
-    $statusSelector = '[data-automation-id="status_' . $taskId . '_' . $subscriber->id . '"]';
-    $fullName = $subscriber->firstName . ' ' . $subscriber->lastName;
-    $i->waitForText($subscriber->email, 10, $nameSelector);
+    $nameSelector = '[data-automation-id="name_' . $taskId . '_' . $subscriber->getId() . '"]';
+    $statusSelector = '[data-automation-id="status_' . $taskId . '_' . $subscriber->getId() . '"]';
+    $fullName = $subscriber->getFirstName() . ' ' . $subscriber->getLastName();
+    $i->waitForText($subscriber->getEmail(), 10, $nameSelector);
     $i->waitForText($fullName, 10, $nameSelector);
     $i->waitForText($status, 10, $statusSelector);
     if ($error) {
-      $errorSelector = '[data-automation-id="error_' . $taskId . '_' . $subscriber->id . '"]';
+      $errorSelector = '[data-automation-id="error_' . $taskId . '_' . $subscriber->getId() . '"]';
       $i->waitForText($error, 10, $errorSelector);
     }
   }
