@@ -165,7 +165,9 @@ export function StepResults({
           <Button
             variant="secondary"
             type="button"
-            onClick={() => navigate('/step_method_selection')}
+            onClick={() => {
+              window.location.href = `${window.location.pathname}${window.location.search}#/step_method_selection`;
+            }}
           >
             {MailPoet.I18n.t('importAgain')}
           </Button>
