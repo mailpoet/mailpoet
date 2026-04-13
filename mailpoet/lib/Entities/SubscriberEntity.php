@@ -8,7 +8,6 @@ use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\ValidationGroupsTrait;
-use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
@@ -228,26 +227,6 @@ class SubscriberEntity {
     $this->subscriberCustomFields = new ArrayCollection();
     $this->subscriberTags = new ArrayCollection();
     $this->scheduledTaskSubscribers = new ArrayCollection();
-  }
-
-  /**
-   * @deprecated This is here only for backward compatibility with custom shortcodes https://kb.mailpoet.com/article/160-create-a-custom-shortcode
-   * This can be removed after 2026-01-01
-   */
-  public function __get($key) {
-    $getterName = 'get' . Helpers::underscoreToCamelCase($key, $capitaliseFirstChar = true);
-    $callable = [$this, $getterName];
-    if (is_callable($callable)) {
-      // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Intended for deprecation warnings
-      // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
-      trigger_error(
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- if the function is callable, it's safe to output
-        "Direct access to \$subscriber->{$key} is deprecated and will be removed after 2026-01-01. Use \$subscriber->{$getterName}() instead.",
-        E_USER_DEPRECATED
-      );
-      // phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
-      return call_user_func($callable);
-    }
   }
 
   /**
