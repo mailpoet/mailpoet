@@ -191,30 +191,22 @@ class WP {
     // This can happen when a WP user registers with email A, checks out with
     // email B (creating a second subscriber), then changes their account email
     // from A to B.
-    // Uses a DBAL-level transaction (not EntityManager::wrapInTransaction) to
-    // keep the delete and update atomic without risking a permanently closed
-    // EntityManager or premature postRemove lifecycle events.
+    // Uses bulkDelete() to properly clean up related data (segments, tags,
+    // custom fields) and to restrict deletion to safe duplicates (non-WP,
+    // non-WooCommerce subscribers).
     if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
-      $this->databaseConnection->beginTransaction();
-      try {
-        $this->databaseConnection->executeStatement(
-          "DELETE FROM {$this->subscribersTable} WHERE email = ? AND id != ?",
-          [$data['email'], $subscriber->getId()]
-        );
-        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
-        $this->databaseConnection->commit();
-      } catch (\Exception $e) {
-        if ($this->databaseConnection->isTransactionActive()) {
-          $this->databaseConnection->rollBack();
-        }
-        return; // fails silently as this was the behavior before the Doctrine refactor.
+      $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
+      if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
+        $duplicateId = $existingSubscriber->getId();
+        $this->entityManager->detach($existingSubscriber);
+        $this->subscribersRepository->bulkDelete([$duplicateId]);
       }
-    } else {
-      try {
-        $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
-      } catch (\Exception $e) {
-        return; // fails silently as this was the behavior before the Doctrine refactor.
-      }
+    }
+
+    try {
+      $subscriber = $this->createOrUpdateSubscriber($data, $subscriber);
+    } catch (\Exception $e) {
+      return; // fails silently as this was the behavior before the Doctrine refactor.
     }
 
     // add subscriber to the WP Users segment
