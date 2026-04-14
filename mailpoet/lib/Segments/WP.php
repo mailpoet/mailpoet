@@ -199,7 +199,17 @@ class WP {
       if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
         $duplicateId = $existingSubscriber->getId();
         $this->entityManager->detach($existingSubscriber);
-        $this->subscribersRepository->bulkDelete([$duplicateId]);
+        $deletedCount = $this->subscribersRepository->bulkDelete([$duplicateId]);
+        if ($deletedCount === 0) {
+          // The duplicate is a WP user or WooCommerce customer and cannot be
+          // safely removed. Skip the email update to avoid a constraint violation.
+          $logger = LoggerFactory::getInstance()->getLogger();
+          $logger->warning(
+            'Cannot update subscriber email: duplicate subscriber is a WP user or WooCommerce customer',
+            ['subscriber_id' => $subscriber->getId(), 'duplicate_id' => $duplicateId, 'email' => $data['email']]
+          );
+          return;
+        }
       }
     }
 
