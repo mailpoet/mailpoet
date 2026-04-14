@@ -176,6 +176,40 @@ class WPTest extends \MailPoetTest {
     $this->assertCount(1, $remainingSubscribers);
   }
 
+  public function testSynchronizeUserSkipsEmailChangeWhenDuplicateIsWooCommerceCustomer(): void {
+    $randomNumber = rand();
+    // Create a WP user with email A
+    $id = $this->insertUser($randomNumber);
+    $emailA = 'user-sync-test' . $randomNumber . '@example.com';
+
+    // Synchronize to create subscriber A linked to the WP user
+    $this->wpSegment->synchronizeUser($id);
+    $subscriberA = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberA);
+    $this->assertSame($emailA, $subscriberA->getEmail());
+
+    // Create a WooCommerce customer subscriber with email B (should not be deleted)
+    $emailB = 'user-sync-test-woo' . $randomNumber . '@example.com';
+    $this->subscriberFactory->withEmail($emailB)->withIsWooCommerceUser()->create();
+
+    // Change the WP user's email from A to B
+    $this->updateWPUserEmail($id, $emailB);
+    clean_user_cache($id);
+
+    // Synchronize should not throw, but should skip the email update
+    $this->wpSegment->synchronizeUser($id);
+
+    // The WP subscriber should still have email A (update was skipped)
+    $this->entityManager->clear();
+    $updatedSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    $this->assertSame($emailA, $updatedSubscriber->getEmail());
+
+    // The WooCommerce subscriber should still exist
+    $wooSubscriber = $this->subscribersRepository->findOneBy(['email' => $emailB]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wooSubscriber);
+  }
+
   public function testItSendsConfirmationEmailWhenSignupConfirmationAndSubscribeOnRegisterEnabled(): void {
     $registration = $this->diContainer->get(Registration::class);
     $confirmationEmailMailer = $this->diContainer->get(ConfirmationEmailMailer::class);
