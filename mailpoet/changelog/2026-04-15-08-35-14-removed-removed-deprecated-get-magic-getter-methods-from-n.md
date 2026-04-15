@@ -2,4 +2,4 @@
 
 # Description
 
-Removed deprecated __get magic getter methods from NewsletterEntity, SendingQueueEntity, and SubscriberEntity
+Removed deprecated \_\_get magic getter methods from NewsletterEntity, SendingQueueEntity, and SubscriberEntity
