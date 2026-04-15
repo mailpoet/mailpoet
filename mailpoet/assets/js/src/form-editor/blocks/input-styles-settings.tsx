@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import {
   Button,
@@ -30,32 +30,39 @@ type InputStylesSettingsProps = {
 };
 
 function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
-  const localStylesRef = useRef(styles);
-  const localStyles = localStylesRef.current;
+  const [localStyles, setLocalStyles] = useState(styles);
+  const prevStylesRef = useRef(styles);
+
+  // Sync state from prop when it changes externally (e.g., undo/redo)
+  if (styles !== prevStylesRef.current) {
+    prevStylesRef.current = styles;
+    setLocalStyles(styles);
+  }
 
   const { applyStylesToAllTextInputs } = useDispatch(storeName);
 
-  const updateStyles = (property, value) => {
-    const updated = { ...localStylesRef.current };
-    updated[property] = value;
+  const updateStyles = (property: string, value: unknown) => {
+    const updated = { ...localStyles, [property]: value };
+    setLocalStyles(updated);
     void onChange(updated);
-    localStylesRef.current = updated;
   };
 
-  const updateInheritFromTheme = (newValue) => {
+  const updateInheritFromTheme = (newValue: boolean) => {
     if (newValue) {
       updateStyles('inheritFromTheme', newValue);
       return;
     }
-    const updated = { ...localStylesRef.current };
-    updated.backgroundColor = '#ffffff';
-    updated.bold = false;
-    updated.borderRadius = 0;
-    updated.borderSize = 1;
-    updated.borderColor = '#313131';
-    updated.inheritFromTheme = newValue;
+    const updated: InputStyles = {
+      ...localStyles,
+      backgroundColor: '#ffffff',
+      bold: false,
+      borderRadius: 0,
+      borderSize: 1,
+      borderColor: '#313131',
+      inheritFromTheme: newValue,
+    };
+    setLocalStyles(updated);
     onChange(updated);
-    localStylesRef.current = updated;
   };
 
   return (
@@ -109,28 +116,26 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
-                value={
-                  localStyles.borderSize === undefined
-                    ? 1
-                    : localStyles.borderSize
-                }
+                value={localStyles.borderSize ?? 1}
                 min={0}
                 max={10}
                 allowReset
-                onChange={partial(updateStyles, 'borderSize')}
+                resetFallbackValue={1}
+                onChange={(value: number | undefined) =>
+                  updateStyles('borderSize', value ?? 1)
+                }
                 className="mailpoet-automation-styles-border-size"
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={
-                  localStyles.borderRadius === undefined
-                    ? 1
-                    : localStyles.borderRadius
-                }
+                value={localStyles.borderRadius ?? 0}
                 min={0}
                 max={40}
                 allowReset
-                onChange={partial(updateStyles, 'borderRadius')}
+                resetFallbackValue={0}
+                onChange={(value: number | undefined) =>
+                  updateStyles('borderRadius', value ?? 0)
+                }
                 className="mailpoet-automation-styles-border-radius-size"
               />
             </>

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import {
   Panel,
@@ -26,14 +26,19 @@ function StylesSettings({
   formInputPadding,
   formFontFamily,
 }: Props): JSX.Element {
-  const localStylesRef = useRef(styles);
-  const localStyles = localStylesRef.current;
+  const [localStyles, setLocalStyles] = useState(styles);
+  const prevStylesRef = useRef(styles);
 
-  const updateStyles = (property, value): void => {
-    const updated = { ...localStylesRef.current };
-    updated[property] = value;
+  // Sync state from prop when it changes externally (e.g., undo/redo)
+  if (styles !== prevStylesRef.current) {
+    prevStylesRef.current = styles;
+    setLocalStyles(styles);
+  }
+
+  const updateStyles = (property: string, value: unknown): void => {
+    const updated = { ...localStyles, [property]: value };
+    setLocalStyles(updated);
     onChange(updated);
-    localStylesRef.current = updated;
   };
 
   const updateInheritFromTheme = (newValue: boolean): void => {
@@ -41,18 +46,20 @@ function StylesSettings({
       updateStyles('inheritFromTheme', newValue);
       return;
     }
-    const updated = { ...localStylesRef.current };
-    updated.backgroundColor = '#eeeeee';
-    updated.bold = false;
-    updated.borderRadius = 0;
-    updated.borderSize = 1;
-    updated.borderColor = '#313131';
-    updated.fontColor = '#313131';
-    updated.fontSize = undefined;
-    updated.padding = formInputPadding;
-    updated.inheritFromTheme = newValue;
+    const updated: InputBlockStyles = {
+      ...localStyles,
+      backgroundColor: '#eeeeee',
+      bold: false,
+      borderRadius: 0,
+      borderSize: 1,
+      borderColor: '#313131',
+      fontColor: '#313131',
+      fontSize: undefined,
+      padding: formInputPadding,
+      inheritFromTheme: newValue,
+    };
+    setLocalStyles(updated);
     onChange(updated);
-    localStylesRef.current = updated;
   };
 
   return (
@@ -117,40 +124,37 @@ function StylesSettings({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsInputPadding')}
-                value={
-                  localStyles.padding !== undefined
-                    ? localStyles.padding
-                    : formInputPadding
-                }
+                value={localStyles.padding ?? formInputPadding}
                 min={0}
                 max={30}
                 allowReset
-                onChange={partial(updateStyles, 'padding')}
+                resetFallbackValue={formInputPadding}
+                onChange={(value: number | undefined) =>
+                  updateStyles('padding', value ?? formInputPadding)
+                }
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
-                value={
-                  localStyles.borderSize !== undefined
-                    ? localStyles.borderSize
-                    : 1
-                }
+                value={localStyles.borderSize ?? 1}
                 min={0}
                 max={10}
                 allowReset
-                onChange={partial(updateStyles, 'borderSize')}
+                resetFallbackValue={1}
+                onChange={(value: number | undefined) =>
+                  updateStyles('borderSize', value ?? 1)
+                }
                 className="mailpoet-automation-styles-border-size"
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={
-                  localStyles.borderRadius !== undefined
-                    ? localStyles.borderRadius
-                    : 0
-                }
+                value={localStyles.borderRadius ?? 0}
                 min={0}
                 max={40}
                 allowReset
-                onChange={partial(updateStyles, 'borderRadius')}
+                resetFallbackValue={0}
+                onChange={(value: number | undefined) =>
+                  updateStyles('borderRadius', value ?? 0)
+                }
               />
             </>
           ) : null}
