@@ -48,10 +48,15 @@ class EditorTextInputStylesCest {
 
     $i->wantTo('Check that reset button resets the value');
     $i->scrollTo('.mailpoet-automation-styles-border-size');
-    $i->click('Reset');
-    $i->wait(1); // Wait for React state update after reset
+    $i->click('.mailpoet-automation-styles-border-size .components-range-control__reset');
+    $i->waitForElementChange(
+      '.mailpoet-automation-styles-border-size input[type="number"]',
+      function(\Facebook\WebDriver\WebDriverElement $el) {
+        return $el->getAttribute('value') === '1';
+      },
+      10
+    );
     $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-width', '1px');
-    $i->seeInField('.mailpoet-automation-styles-border-size input[type="number"]', '1');
     $i->clearFormField('.mailpoet-automation-styles-border-size input[type="number"]');
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border width size
 
