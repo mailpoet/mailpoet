@@ -1,5 +1,5 @@
 import '@wordpress/core-data';
-import * as image from '@wordpress/block-library/build-module/image/index.js';
+import * as image from '@wordpress/block-library/build-module/image';
 
 export const name = 'core/image';
 

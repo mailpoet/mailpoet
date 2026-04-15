@@ -31,7 +31,7 @@ export const useTrashButton = (
         title={__('Trash automation', 'mailpoet')}
         confirmButtonText={__('Yes, move to trash', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => trash(automation)}
+        onConfirm={() => void (trash(automation) as Promise<void>)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(

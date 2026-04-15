@@ -138,7 +138,9 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
           <div>
             <Button
               variant="primary"
-              onClick={() => applyStylesToAllTextInputs(localStyles)}
+              onClick={() =>
+                void (applyStylesToAllTextInputs(localStyles) as Promise<void>)
+              }
               data-automation-id="styles_apply_to_all"
             >
               {MailPoet.I18n.t('formSettingsApplyToAll')}

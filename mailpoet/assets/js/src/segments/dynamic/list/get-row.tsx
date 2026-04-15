@@ -198,7 +198,9 @@ export function getRow(
             className="mailpoet-listing-more-button"
             label={__('More', 'mailpoet')}
             icon={moreVertical}
-            controls={menuItems.map(({ control }) => control)}
+            controls={menuItems.map(
+              ({ control }: typeof menuItems[number]) => control,
+            )}
             popoverProps={{ position: 'bottom left' }}
           />
         </div>

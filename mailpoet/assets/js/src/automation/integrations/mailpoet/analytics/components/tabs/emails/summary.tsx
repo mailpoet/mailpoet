@@ -31,7 +31,7 @@ export function calculateSummary(rows: EmailStats[]) {
   const compactFormatter = Intl.NumberFormat(locale.toString(), {
     notation: 'compact',
   });
-  const summary = [
+  const summary: { label: string; value: string }[] = [
     {
       label: __('sent', 'mailpoet'),
       value: compactFormatter.format(data.sent),

@@ -1,5 +1,8 @@
-import PanelColorGradientSettings from '@wordpress/block-editor/build-module/components/colors-gradients/panel-color-gradient-settings';
-import { useSettings } from '@wordpress/block-editor';
+import {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- WordPress experimental API naming convention
+  __experimentalPanelColorGradientSettings as PanelColorGradientSettings,
+  useSettings,
+} from '@wordpress/block-editor';
 import { withBoundary } from 'common';
 
 type Setting = {

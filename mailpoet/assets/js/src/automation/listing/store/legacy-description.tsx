@@ -100,8 +100,8 @@ const getAutomaticInfo = (item: ListingItem): ReactNode => {
       : (event.listingScheduleDisplayText as string);
 
   return sprintf(
-    text.endsWith('.') ? text : `${text}.`,
-    metaOptionValues.join(', '),
+    (text.endsWith('.') ? text : `${text}.`) as '%s',
+    metaOptionValues.join(', ') as string,
   );
 };
 

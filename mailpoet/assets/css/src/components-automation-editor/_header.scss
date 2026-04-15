@@ -7,3 +7,25 @@
 .interface-interface-skeleton__html-container.wp-toolbar {
   padding-top: 0;
 }
+
+// The editor-header has 2 direct children (toolbar, settings).
+// Use flexbox to split them evenly and center the name within the toolbar.
+#mailpoet_automation_editor .editor-header {
+  align-items: center;
+  display: flex;
+}
+
+#mailpoet_automation_editor .editor-header .editor-header__toolbar {
+  align-items: center;
+  display: flex;
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+}
+
+#mailpoet_automation_editor .editor-header .editor-header__settings {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  grid-column: auto;
+}

@@ -15,7 +15,7 @@ export function useAutomationListingNotices(): void {
   useEffect(() => {
     const notice = getQueryArg(window.location.href, 'notice');
     const args = getQueryArg(window.location.href, 'notice-args') ?? [];
-    const automationName = args[0] ?? 'Unknown';
+    const automationName = (args[0] as string) ?? 'Unknown';
     if (notice === LISTING_NOTICES.automationDeleted) {
       void createNotice(
         'success',

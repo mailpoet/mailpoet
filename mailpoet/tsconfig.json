@@ -8,6 +8,8 @@
   ],
   "compilerOptions": {
     "baseUrl": "./assets/js/src",
-    "noEmit": true
+    "noEmit": true,
+    "composite": false,
+    "declaration": false
   }
 }

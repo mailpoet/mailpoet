@@ -15,7 +15,6 @@ export function InboxPreviewPanel() {
   );
 
   const siteData = useSelect((select) => {
-    // @ts-expect-error getSite is not typed
     const site = select('core').getSite();
     return {
       title: (site?.title as string) || '',

@@ -18,7 +18,9 @@ export function UndoTrashButton({
   return (
     <Button
       variant="link"
-      onClick={() => restoreAutomation(automation, previousStatus)}
+      onClick={() =>
+        void (restoreAutomation(automation, previousStatus) as Promise<void>)
+      }
     >
       {__('Undo', 'mailpoet')}
     </Button>

@@ -245,7 +245,7 @@ export function RecipientsRow() {
     (segment) => segment.type === 'default' || segment.type === 'dynamic',
   );
 
-  let buttonLabel = __('Select recipients', 'mailpoet');
+  let buttonLabel: string = __('Select recipients', 'mailpoet');
   if (recipientType === 'all_customers') {
     buttonLabel = __('All customers', 'mailpoet');
   } else if (selectedAllowedSegments.length > 0) {
@@ -285,7 +285,6 @@ export function RecipientsRow() {
                   spacing={4}
                 >
                   <HStack alignment="center">
-                    {/* @ts-expect-error size prop is available in the external @wordpress/components package */}
                     <Heading
                       className="block-editor-inspector-popover-header__heading"
                       level={2}
@@ -313,7 +312,6 @@ export function RecipientsRow() {
                         {
                           label: __('Send to all customers', 'mailpoet'),
                           value: 'all_customers',
-                          /* @ts-expect-error description prop is available in the external @wordpress/components package */
                           description: sprintf(
                             _n(
                               '%s recipient',
@@ -321,7 +319,7 @@ export function RecipientsRow() {
                               allCustomersSegmentCount,
                               'mailpoet',
                             ),
-                            allCustomersSegmentCount,
+                            allCustomersSegmentCount.toString(),
                           ),
                         },
                         {

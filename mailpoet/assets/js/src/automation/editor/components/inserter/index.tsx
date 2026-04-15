@@ -115,7 +115,7 @@ export const Inserter = forwardRef(
     );
 
     return (
-      <div className="block-editor-inserter__menu">
+      <div className="block-editor-inserter__menu mailpoet-automation-inserter">
         <div className="block-editor-inserter__main-area">
           <div className="block-editor-inserter__content">
             <SearchControl

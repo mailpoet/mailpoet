@@ -23,28 +23,22 @@ const { Tabs } = unlock(componentsPrivateApis);
 
 const sidebarActiveByDefault = Platform.select({
   web: true,
-  native: false,
 });
 
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 function SidebarContent(props: Props): JSX.Element {
-  const { keyboardShortcut, sidebarKey, showIconLabels, automationName } =
-    useSelect(
-      (select) => ({
-        keyboardShortcut: select(
-          keyboardShortcutsStore,
-        ).getShortcutRepresentation(
-          'mailpoet/automation-editor/toggle-sidebar',
-        ),
-        sidebarKey:
-          select(interfaceStore).getActiveComplementaryArea(storeName) ??
-          automationSidebarKey,
-        showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
-        automationName: select(storeName).getAutomationData().name,
-      }),
-      [],
-    );
+  const { keyboardShortcut, sidebarKey } = useSelect(
+    (select) => ({
+      keyboardShortcut: select(
+        keyboardShortcutsStore,
+      ).getShortcutRepresentation('mailpoet/automation-editor/toggle-sidebar'),
+      sidebarKey:
+        select(interfaceStore).getActiveComplementaryArea(storeName) ??
+        automationSidebarKey,
+    }),
+    [],
+  );
 
   const tabListRef = useRef(null);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -64,11 +58,9 @@ function SidebarContent(props: Props): JSX.Element {
       icon={drawerRight}
       className="edit-site-sidebar mailpoet-automation-sidebar"
       panelClassName="edit-site-sidebar"
-      smallScreenTitle={automationName || __('(no title)', 'mailpoet')}
       scope={storeName}
       toggleShortcut={keyboardShortcut}
       isActiveByDefault={sidebarActiveByDefault}
-      showIconLabels={showIconLabels}
       {...props}
     >
       <Tabs.Context.Provider value={tabsContextValue}>

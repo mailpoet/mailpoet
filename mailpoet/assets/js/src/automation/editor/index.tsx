@@ -1,18 +1,19 @@
 import classnames from 'classnames';
 import { createRoot } from 'react-dom/client';
 import { useEffect, useRef, useState } from 'react';
-import { Button, Icon, SlotFillProvider } from '@wordpress/components';
+import { SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
 import { getSettings, setSettings } from '@wordpress/date';
 import { Platform } from '@wordpress/element';
-import { wordpress } from '@wordpress/icons';
 import {
   store as interfaceStore,
   ComplementaryArea,
   FullscreenMode,
   InterfaceSkeleton,
 } from '@wordpress/interface';
+// Required by @wordpress/interface@9.x ComplementaryArea for viewport matching
+import '@wordpress/viewport';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { __, setLocaleData } from '@wordpress/i18n';
 import { addQueryArgs, getQueryArg } from '@wordpress/url';
@@ -160,18 +161,6 @@ function Editor(): JSX.Element {
         <Sidebar />
         <InterfaceSkeleton
           className={className}
-          drawer={
-            isFullscreenActive && (
-              <div className="edit-site-navigation-toggle">
-                <Button
-                  className="edit-site-navigation-toggle__button has-icon"
-                  href="admin.php?page=mailpoet-automation"
-                >
-                  <Icon size={36} icon={wordpress} />
-                </Button>
-              </div>
-            )
-          }
           header={<Header showInserterToggle={showInserterSidebar} />}
           content={
             <>
@@ -212,7 +201,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // so that the layout is computed early enough to center the automation scroll.
   const sidebarActiveByDefault = Platform.select({
     web: true,
-    native: false,
   });
   dispatch(interfaceStore).enableComplementaryArea(
     storeName,
@@ -224,6 +212,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const isFullscreenForced =
     fullscreenParam === 'true' || fullscreenParam === '1';
   if (isFullscreenForced) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- string-based dispatch returns any
     void dispatch('core/preferences').set(storeName, 'fullscreenMode', true);
     void dispatch(storeName).setFullscreenForced(true);
   }

@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import React, { useState } from 'react';
-import { Icon, copy, check, warning } from '@wordpress/icons';
+import { Icon, copy, check, caution } from '@wordpress/icons';
 import { Button } from './button';
 import { copyToClipboard } from '../../utils';
 
@@ -18,7 +18,7 @@ export function CopyToClipboardButton({
   ...restProps
 }: Props) {
   const [isDisabled, setIsDisabled] = useState(false);
-  const [buttonText, setButtonText] = useState(defaultButtonText);
+  const [buttonText, setButtonText] = useState<string>(defaultButtonText);
   const [iconStart, setIconStart] = useState(defaultIcon);
 
   const handleCopy = (wasSuccessful: boolean) => {
@@ -35,7 +35,7 @@ export function CopyToClipboardButton({
     } else {
       setIsDisabled(true);
       setButtonText(__('Could not copy to clipboard', 'mailpoet'));
-      setIconStart(<Icon icon={warning} />);
+      setIconStart(<Icon icon={caution} />);
     }
   };
 

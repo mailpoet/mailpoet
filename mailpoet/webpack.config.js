@@ -99,6 +99,10 @@ const baseConfig = {
         parallel: false,
       }),
     ],
+    // Disable chunk splitting — MailPoet bundles all vendor code and serves it
+    // from a fixed path that doesn't match the page URL, so dynamically loaded
+    // chunks (e.g. @wordpress/latex-to-mathml) would 404.
+    splitChunks: false,
   },
   output: {
     publicPath: '', // This is needed to have correct names in WebpackManifestPlugin
@@ -112,7 +116,7 @@ const baseConfig = {
       fs: false,
       path: false, // path is used in css module, but we don't use the functionality which requires it
     },
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     alias: {
       handlebars: 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
@@ -127,6 +131,11 @@ const baseConfig = {
       papaparse: 'papaparse/papaparse.min.js',
       html2canvas: 'html2canvas/dist/html2canvas.js',
       asyncqueue: 'vendor/jquery.asyncqueue.js',
+      // Deep import blocked by @wordpress/core-data exports field (used by @woocommerce/data)
+      '@wordpress/core-data/build/locks/actions': path.resolve(
+        __dirname,
+        'node_modules/@wordpress/core-data/build/locks/actions.cjs',
+      ),
       '@woocommerce/settings': path.resolve(
         __dirname,
         'assets/js/src/mock-woocommerce-settings.ts',
@@ -137,10 +146,22 @@ const baseConfig = {
       ),
     },
   },
-  plugins: PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
+  plugins: [
+    // Merge async chunks back into their parent to prevent 404s from
+    // dynamically loaded modules (e.g. @wordpress/latex-to-mathml)
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    ...(PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()]),
+  ],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
+      // Disable fullySpecified for .mjs files in node_modules (ESM compat)
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
       {
         test: /\.(j|t)sx?$/,
         exclude: /(node_modules|src\/vendor)/,
@@ -372,7 +393,7 @@ const testConfig = {
       'assets/js/src',
       'tests/javascript-newsletter-editor/newsletter-editor',
     ],
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     alias: {
       handlebars: 'handlebars/dist/handlebars.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
@@ -470,7 +491,7 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
     ],
   }),
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
   },
   // use only needed plugins from wpScriptConfig and add the custom ones
   plugins: [
@@ -525,7 +546,7 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
     alias: {
       mailpoet: path.resolve(__dirname, 'assets/js/src/mailpoet.ts'),
     },
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
   },
   // use only needed plugins from wpScriptConfig and add the custom ones
   plugins: [

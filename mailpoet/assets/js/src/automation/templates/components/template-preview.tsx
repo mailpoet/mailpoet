@@ -4,7 +4,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { Spinner } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { Icon, warning } from '@wordpress/icons';
+import { Icon, caution } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
 import { createStore, storeName } from '../../editor/store';
 import { AutomationTemplate } from '../config';
@@ -107,7 +107,7 @@ export function TemplatePreview({ template }: Props): JSX.Element {
     return (
       <div className="mailpoet-automation-template-detail-preview-error">
         <div>
-          <Icon icon={warning} size={20} />
+          <Icon icon={caution} size={20} />
         </div>
         <div>{__('There was an error loading the preview.', 'mailpoet')}</div>
         <div>{__('Please, try again.')}</div>

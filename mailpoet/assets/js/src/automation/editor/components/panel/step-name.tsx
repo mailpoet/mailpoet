@@ -1,7 +1,7 @@
 import { Dropdown, TextControl } from '@wordpress/components';
 import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { edit, Icon } from '@wordpress/icons';
+import { pencil, Icon } from '@wordpress/icons';
 import { PlainBodyTitle } from './plain-body-title';
 import { TitleActionButton } from './title-action-button';
 
@@ -94,7 +94,7 @@ export function StepName({
               aria-expanded={isOpen}
               aria-label={__('Edit step name', 'mailpoet')}
             >
-              <Icon icon={edit} size={16} />
+              <Icon icon={pencil} size={16} />
             </TitleActionButton>
           </PlainBodyTitle>
         )}

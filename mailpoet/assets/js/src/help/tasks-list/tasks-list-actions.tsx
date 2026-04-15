@@ -90,7 +90,7 @@ function TaskButton({ task, type }: Props): JSX.Element {
               'Are you sure you want to cancel the task with ID %1$s for the email "%2$s"? Once cancelled, the email will not be sent.',
               'mailpoet',
             ),
-            task.id,
+            task.id.toString(),
             // translators: used when the email subject is empty
             task.newsletter.subject || __('(no subject)', 'mailpoet'),
           )}
@@ -98,10 +98,10 @@ function TaskButton({ task, type }: Props): JSX.Element {
           sprintf(
             // translators: %1$s is a number, %2$s is the email subject (when empty, "(no subject)" is used)
             __(
-              'Are you sure you want to reschedule the task with ID %s for the email "%2$s"?',
+              'Are you sure you want to reschedule the task with ID %1$s for the email "%2$s"?',
               'mailpoet',
             ),
-            task.id,
+            task.id.toString(),
             // translators: used when the email subject is empty
             task.newsletter.subject || __('(no subject)', 'mailpoet'),
           )}{' '}

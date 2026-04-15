@@ -1,4 +1,4 @@
-import * as columns from '@wordpress/block-library/build-module/columns/index.js';
+import * as columns from '@wordpress/block-library/build-module/columns';
 
 export const name = 'core/columns';
 

@@ -1,13 +1,22 @@
+// In @wordpress/components v32+, the className prop on FormTokenField is
+// applied to the __input-container (Flex), not the root. The suggestions
+// list is a sibling in the root .components-form-token-field div.
+// We style both the input container and ensure the root wraps correctly.
+.components-form-token-field:has(.mailpoet-form-token-field) {
+  max-width: 100%;
+  position: relative;
+  width: $grid-column;
+}
+
 .mailpoet-form-token-field {
   background: $color-input-background;
   border: 1px solid $color-input-border !important;
   border-radius: $form-control-border-radius !important;
   box-sizing: border-box;
-  display: flex;
   max-width: 100%;
   min-height: $form-control-height;
   min-width: 0;
-  width: $grid-column;
+  width: 100%;
   // To align the left padding with the other inputs
   input[type='text'].components-form-token-field__input {
     line-height: 16px;
@@ -15,12 +24,8 @@
     min-height: 24px;
     padding-left: 8px;
   }
-  // For better fit when the last item is active
-  li:last-child {
-    border-radius: 0 0 $form-control-border-radius $form-control-border-radius;
-  }
   // Resetting is-active because other input doesn't support it
-  &.components-form-token-field__input-container.is-active {
+  &.is-active {
     box-shadow: none;
     outline: 0;
   }

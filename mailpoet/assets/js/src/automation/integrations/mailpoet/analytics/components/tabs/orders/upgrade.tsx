@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Notice } from '@wordpress/components/build';
-import { Button } from '@wordpress/components';
+import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import {
   UpgradeInfo,

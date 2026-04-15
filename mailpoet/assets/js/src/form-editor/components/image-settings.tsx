@@ -40,7 +40,7 @@ export function ImageSettings({
       </div>
       <div className="mailpoet-styles-settings-image-url-display">
         <SelectControl
-          value={imageDisplay}
+          value={imageDisplay as 'scale' | 'fit' | 'tile'}
           options={[
             {
               label: MailPoet.I18n.t('imagePlacementScale'),

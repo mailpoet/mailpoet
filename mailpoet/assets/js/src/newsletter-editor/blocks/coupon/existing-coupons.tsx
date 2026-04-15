@@ -60,7 +60,8 @@ class ExistingCoupons extends Component<Props, State> {
         label: __('All types', 'mailpoet'),
         value: '',
       },
-    ].concat(props.availableDiscountTypes);
+      ...(props.availableDiscountTypes ?? []),
+    ];
 
     this.state = {
       couponSearch: '',

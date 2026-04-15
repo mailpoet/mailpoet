@@ -1,4 +1,4 @@
-import * as heading from '@wordpress/block-library/build-module/heading/index.js';
+import * as heading from '@wordpress/block-library/build-module/heading';
 
 export const name = 'core/heading';
 

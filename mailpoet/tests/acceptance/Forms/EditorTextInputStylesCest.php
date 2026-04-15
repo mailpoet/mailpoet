@@ -34,7 +34,7 @@ class EditorTextInputStylesCest {
     $i->click('Font');
     $i->selectPanelColor('[6]'); // Select Vivid orange
     $i->click('[data-automation-id="editor_first_name_input"]');
-    $i->click('(//button[@class="components-button block-editor-panel-color-gradient-settings__dropdown"])[2]'); // Click Background color
+    $i->click('(//button[contains(@class,"block-editor-panel-color-gradient-settings__dropdown")])[2]'); // Click Background color
     $i->selectPanelColor('[10]'); // Select Cyan blue
     $i->click('[data-automation-id="editor_first_name_input"]');
     $i->click('Border');
@@ -45,9 +45,11 @@ class EditorTextInputStylesCest {
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border width size
     $i->clearFormField('.mailpoet-automation-styles-border-radius-size input[type="number"]');
     $i->fillField('.mailpoet-automation-styles-border-radius-size input[type="number"]', 40); // Set border radius size
-    
+
     $i->wantTo('Check that reset button resets the value');
+    $i->scrollTo('.mailpoet-automation-styles-border-size');
     $i->click('Reset');
+    $i->wait(1); // Wait for React state update after reset
     $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-width', '1px');
     $i->seeInField('.mailpoet-automation-styles-border-size input[type="number"]', '1');
     $i->clearFormField('.mailpoet-automation-styles-border-size input[type="number"]');
@@ -62,7 +64,7 @@ class EditorTextInputStylesCest {
 
     $i->wantTo('Add heading block and write some title');
     $i->addFromBlockInEditor('Heading');
-    $i->fillField('[data-title="Heading"]', 'Heading Lorem');
+    $i->fillField('[data-title="Heading 2"]', 'Heading Lorem'); // Default inserted heading is with level 2
     $i->see('Heading Lorem');
 
     $i->wantTo('Add paragraph block and write some text');

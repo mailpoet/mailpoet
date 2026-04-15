@@ -14,7 +14,7 @@ function dateOrNever(date?: string): string {
 }
 
 export function EngagementSummary({ stats }: PropTypes): JSX.Element {
-  const engagementData = [
+  const engagementData: { label: string; date: string | null }[] = [
     {
       label: __('Last click', 'mailpoet'),
       date: stats.last_click || null,

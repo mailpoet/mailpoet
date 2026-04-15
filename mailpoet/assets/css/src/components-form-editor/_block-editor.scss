@@ -97,13 +97,13 @@ h2 {
 // Adjustments for family-font-select in popover
 .mailpoet_toolbar_item {
   .mailpoet-font-family-select {
-    .components-input-control__container
-      .components-custom-select-control__button {
+    // New CustomSelectControl v2 in @wordpress/components v32+
+    button[role='combobox'] {
       height: 48px;
-      width: 200px;
+      min-width: 200px;
     }
 
-    // Backdrop is displayed over the select button so we need to disable pointer events so that we can click the select
+    // Backdrop and suffix overlay block clicks on the select button
     .components-input-control__backdrop {
       pointer-events: none !important;
     }

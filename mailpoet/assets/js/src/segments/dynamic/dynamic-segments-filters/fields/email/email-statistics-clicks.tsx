@@ -112,9 +112,13 @@ export function EmailClickStatisticsFields({
         isMinWidth
         key="select-operator"
         value={segment.operator}
-        onChange={(e) =>
-          updateSegmentFilterFromEvent('operator', filterIndex, e)
-        }
+        onChange={(e) => {
+          void (updateSegmentFilterFromEvent(
+            'operator',
+            filterIndex,
+            e,
+          ) as Promise<void>);
+        }}
         automationId="select-operator"
       >
         <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>

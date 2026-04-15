@@ -134,7 +134,7 @@ function StylesSettingsPanel({ onToggle, isOpened }: StylesSettingsPanelProps) {
                 label: MailPoet.I18n.t('formSettingsAlignmentRight'),
               },
             ]}
-            value={settings.alignment}
+            value={settings.alignment as HorizontalAlignment}
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsFormPadding')}

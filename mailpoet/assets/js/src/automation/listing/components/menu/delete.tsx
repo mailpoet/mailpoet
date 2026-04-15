@@ -33,7 +33,7 @@ export const useDeleteButton = (
         title={__('Permanently delete automation', 'mailpoet')}
         confirmButtonText={__('Yes, permanently delete', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => permanentlyDelete(automation)}
+        onConfirm={() => void (permanentlyDelete(automation) as Promise<void>)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(

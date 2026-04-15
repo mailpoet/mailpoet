@@ -108,6 +108,10 @@ export function Editor() {
           fontSizes: {
             default: FONT_SIZES,
           },
+          // Disable built-in font family toolbar control — MailPoet uses its own
+          fontFamilies: {
+            default: [],
+          },
         },
       },
     }),

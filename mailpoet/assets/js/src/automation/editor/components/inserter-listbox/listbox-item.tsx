@@ -14,14 +14,15 @@ export const InserterListboxItem = forwardRef<HTMLButtonElement, Props>(
   ({ isFirst, children, ...props }, ref): JSX.Element => {
     const state = useContext(InserterListboxContext);
     return (
-      <CompositeItem ref={ref} state={state} role="option" focusable {...props}>
-        {(htmlProps) => {
-          const propsWithTabIndex = {
-            ...htmlProps,
-            tabIndex: isFirst ? 0 : htmlProps.tabIndex,
-          };
-          return <Button {...propsWithTabIndex}>{children}</Button>;
-        }}
+      <CompositeItem
+        ref={ref}
+        state={state}
+        role="option"
+        focusable
+        render={<Button tabIndex={isFirst ? 0 : -1} />}
+        {...props}
+      >
+        {children}
       </CompositeItem>
     );
   },

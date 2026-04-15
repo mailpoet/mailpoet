@@ -30,16 +30,20 @@
   }
 }
 
-.components-base-control.mailpoet-form-inline-radios__control {
-  .components-flex {
+// Restore spacing between sidebar controls — the old @wordpress/components
+// had margin-bottom: 8px on .components-base-control, v32+ dropped it
+.interface-interface-skeleton__sidebar .components-panel__body > * + * {
+  margin-top: 8px;
+}
+
+// RadioControl in @wordpress/components v32+ uses <fieldset> + VStack
+// instead of BaseControl + .components-flex
+.mailpoet-form-inline-radios__control {
+  // Make options display inline instead of stacked
+  .components-radio-control__group-wrapper {
     flex-direction: row;
     gap: $grid-gap-half;
     justify-content: flex-start;
-    margin-bottom: $grid-gap-half;
-  }
-
-  .components-base-control__label {
-    display: block;
   }
 
   .components-radio-control__option {

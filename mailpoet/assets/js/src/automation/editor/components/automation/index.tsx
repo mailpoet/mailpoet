@@ -76,7 +76,6 @@ export function Automation({
                 {/* purely presentational and ignored by assistive technologies. */}
                 <div aria-hidden="true" />
                 {/* Render popovers within the automation, so they work in modals and other contexts. */}
-                {/* @ts-expect-error Slot is not currently typed on Popover */}
                 <Popover.Slot />
               </div>
               <InserterPopover />

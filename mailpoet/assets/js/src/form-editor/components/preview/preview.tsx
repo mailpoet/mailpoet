@@ -116,7 +116,14 @@ function FormPreview(): JSX.Element {
           <div className="mailpoet_preview_sidebar">
             <SelectControl
               label={MailPoet.I18n.t('formPlacementLabel')}
-              value={previewSettings.formType}
+              value={
+                previewSettings.formType as
+                  | 'popup'
+                  | 'below_posts'
+                  | 'fixed_bar'
+                  | 'slide_in'
+                  | 'others'
+              }
               onChange={setFormType}
               className="mailpoet_preview_form_type_selection"
               data-automation-id="form_type_selection"

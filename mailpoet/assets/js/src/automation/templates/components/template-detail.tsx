@@ -9,7 +9,7 @@ import {
 import apiFetch from '@wordpress/api-fetch';
 import { Button, Modal, Snackbar as WpSnackbar } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { chevronLeft, chevronRight, warning } from '@wordpress/icons';
+import { chevronLeft, chevronRight, caution } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
 import { addQueryArgs } from '@wordpress/url';
 import { TemplatePreview } from './template-preview';
@@ -106,7 +106,7 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
               {error && (
                 <Snackbar
                   className="mailpoet-automation-template-detail-error"
-                  icon={warning}
+                  icon={caution}
                   onRemove={resetError}
                   isDismissible
                   explicitDismiss
