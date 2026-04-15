@@ -1,4 +1,4 @@
-import * as paragraph from '@wordpress/block-library/build-module/paragraph/index.js';
+import * as paragraph from '@wordpress/block-library/build-module/paragraph';
 
 export const name = 'core/paragraph';
 

@@ -54,7 +54,7 @@ export function PremiumBannerWithUpgrade({
   let bannerMessage: ReactNode;
   let ctaButton: ReactNode;
 
-  let title = __('This is a Premium feature', 'mailpoet');
+  let title: string = __('This is a Premium feature', 'mailpoet');
 
   if (hasValidPremiumKey && (!isPremiumPluginInstalled || !premiumActive)) {
     bannerMessage = getBannerMessage(

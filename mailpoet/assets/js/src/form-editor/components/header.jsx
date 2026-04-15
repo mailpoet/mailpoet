@@ -42,6 +42,40 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
 
   return (
     <div className="editor-header edit-post-header">
+      <div className="editor-header__toolbar">
+        <div className="toolbar edit-post-header-toolbar">
+          <div className="editor-document-tools__left">
+            <Button
+              variant="secondary"
+              href="?page=mailpoet-forms#/"
+              className="mailpoet-editor-header-button"
+            >
+              {MailPoet.I18n.t('back')}
+            </Button>
+            <ToolbarItem
+              as={Button}
+              data-automation-id="form_inserter_open"
+              className="edit-post-header-toolbar__inserter-toggle"
+              variant="primary"
+              isPressed={isInserterOpened}
+              onClick={() => setIsInserterOpened(!isInserterOpened)}
+              icon={plus}
+              label={_x('Add block', 'Generic label for block inserter button')}
+            />
+            <HistoryUndo data-automation-id="form_undo_button" />
+            <HistoryRedo data-automation-id="form_redo_button" />
+            <ToolbarItem
+              as={Button}
+              data-automation-id="form_listview_open"
+              isPressed={isListViewOpened}
+              onClick={() => toggleListView()}
+              icon={listView}
+              label={__('List view', 'mailpoet')}
+              showTooltip
+            />
+          </div>
+        </div>
+      </div>
       <div className="editor-header__settings">
         <Button
           variant="secondary"
@@ -92,40 +126,6 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
             </MenuGroup>
           )}
         </DropdownMenu>
-      </div>
-      <div className="editor-header__toolbar">
-        <div className="toolbar edit-post-header-toolbar">
-          <div className="editor-document-tools__left">
-            <Button
-              variant="secondary"
-              href="?page=mailpoet-forms#/"
-              className="mailpoet-editor-header-button"
-            >
-              {MailPoet.I18n.t('back')}
-            </Button>
-            <ToolbarItem
-              as={Button}
-              data-automation-id="form_inserter_open"
-              className="edit-post-header-toolbar__inserter-toggle"
-              variant="primary"
-              isPressed={isInserterOpened}
-              onClick={() => setIsInserterOpened(!isInserterOpened)}
-              icon={plus}
-              label={_x('Add block', 'Generic label for block inserter button')}
-            />
-            <HistoryUndo data-automation-id="form_undo_button" />
-            <HistoryRedo data-automation-id="form_redo_button" />
-            <ToolbarItem
-              as={Button}
-              data-automation-id="form_listview_open"
-              isPressed={isListViewOpened}
-              onClick={() => toggleListView()}
-              icon={listView}
-              label={__('List view', 'mailpoet')}
-              showTooltip
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

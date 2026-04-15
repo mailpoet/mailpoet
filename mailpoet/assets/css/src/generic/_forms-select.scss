@@ -79,7 +79,6 @@
   color: $color-text;
   font-size: 14px;
   line-height: 20px;
-  max-width: calc(100% - 32px);
   padding: 3px 0 3px 6px;
 }
 
@@ -141,7 +140,6 @@
 .mailpoet-form-react-select-option {
   align-items: center;
   display: flex;
-  overflow: auto;
 }
 
 .mailpoet-form-react-select-tag {

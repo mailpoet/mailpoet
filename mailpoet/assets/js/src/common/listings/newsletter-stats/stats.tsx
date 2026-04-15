@@ -16,11 +16,11 @@ const getStats = () => ({
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
       // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      excellent: sprintf(__('above %s%%', 'mailpoet'), 30),
+      excellent: sprintf(__('above %s%%', 'mailpoet'), '30'),
       // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 10, 30),
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), '10', '30'),
       // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      critical: sprintf(__('below %s%%', 'mailpoet'), 10),
+      critical: sprintf(__('below %s%%', 'mailpoet'), '10'),
     },
   },
   clicked: {
@@ -28,11 +28,11 @@ const getStats = () => ({
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
       // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      excellent: sprintf(__('above %s%%', 'mailpoet'), 3),
+      excellent: sprintf(__('above %s%%', 'mailpoet'), '3'),
       // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 1, 3),
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), '1', '3'),
       // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      critical: sprintf(__('below %s%%', 'mailpoet'), 1),
+      critical: sprintf(__('below %s%%', 'mailpoet'), '1'),
     },
   },
   bounced: {
@@ -40,11 +40,11 @@ const getStats = () => ({
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
       // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      excellent: sprintf(__('below %s%%', 'mailpoet'), 0.5),
+      excellent: sprintf(__('below %s%%', 'mailpoet'), '0.5'),
       // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 0.5, 1.5),
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), '0.5', '1.5'),
       // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      critical: sprintf(__('above %s%%', 'mailpoet'), 1.5),
+      critical: sprintf(__('above %s%%', 'mailpoet'), '1.5'),
     },
   },
   unsubscribed: {
@@ -52,11 +52,11 @@ const getStats = () => ({
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
       // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      excellent: sprintf(__('below %s%%', 'mailpoet'), 0.3),
+      excellent: sprintf(__('below %s%%', 'mailpoet'), '0.3'),
       // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 0.3, 0.7),
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), '0.3', '0.7'),
       // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
-      critical: sprintf(__('above %s%%', 'mailpoet'), 0.7),
+      critical: sprintf(__('above %s%%', 'mailpoet'), '0.7'),
     },
   },
 });

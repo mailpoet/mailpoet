@@ -8,6 +8,9 @@ declare module '@wordpress/block-editor' {
 
   export * from '@wordpress/block-editor/index';
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle -- WordPress experimental API naming convention
+  export const __experimentalPanelColorGradientSettings: any;
+
   export const store: { name: 'core/block-editor' } & GenericStoreDescriptor<{
     reducer: () => unknown;
     actions: typeof blockEditorActions;
@@ -75,6 +78,10 @@ declare module '@wordpress/preferences' {
 
   export const store: { name: 'core/preferences' } & StoreDescriptor<{
     reducer: () => unknown;
+    actions: {
+      set: (scope: string, name: string, value: any) => void;
+      toggle: (scope: string, name: string) => void;
+    };
     selectors: {
       get: <T>(state: unknown, scope: string, name: string) => T;
     };
@@ -86,7 +93,7 @@ declare module '@wordpress/preferences' {
 declare module '@wordpress/notices' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';
   import { NoticeProps } from '@wordpress/components/build-types/notice/types';
-  import { WPNotice } from '@wordpress/notices/build-types/store/selectors';
+  import { Notice as WPNotice } from '@wordpress/notices/build-types/store/types';
 
   export * from '@wordpress/notices';
 
@@ -118,6 +125,16 @@ declare module '@wordpress/notices' {
       removeNotice(id: string, context?: string): void;
     };
   }>;
+}
+
+declare module '@wordpress/block-library/build-module/image' {
+  export const metadata: Record<string, any>;
+  export const settings: Record<string, any>;
+}
+
+declare module '@wordpress/block-library/build-module/paragraph' {
+  export const metadata: Record<string, any>;
+  export const settings: Record<string, any>;
 }
 
 declare module '@wordpress/core-data' {

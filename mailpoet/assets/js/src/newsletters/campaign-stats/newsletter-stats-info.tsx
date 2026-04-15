@@ -80,7 +80,7 @@ const duplicateNewsletter = (
           ),
           newsletter.subject,
           editorHref,
-          response.data.subject,
+          (response.data as NewsletterType).subject,
         ),
         { static: true },
       );

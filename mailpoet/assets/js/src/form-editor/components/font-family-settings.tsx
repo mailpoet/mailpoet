@@ -100,7 +100,7 @@ export function FontFamilySettings({
       __nextUnconstrainedWidth
       options={options}
       onChange={(selected): void => {
-        const selectedItem = selected.selectedItem as Option;
+        const selectedItem = selected.selectedItem;
         if (selectedItem.selectable) {
           onChange(selectedItem.value);
         }

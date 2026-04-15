@@ -6,9 +6,9 @@ import { STORE_NAME } from '../store-name';
 type Actions = PromisifiedActionCreators<typeof actions>;
 
 export function useActions(): Actions {
-  return useDispatch(STORE_NAME);
+  return useDispatch(STORE_NAME) as Actions;
 }
 
 export function useAction<Key extends keyof Actions>(key: Key): Actions[Key] {
-  return useDispatch(STORE_NAME)[key];
+  return (useDispatch(STORE_NAME) as Actions)[key];
 }

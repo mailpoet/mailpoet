@@ -37,15 +37,17 @@ export type FontFamily = {
 declare module '@wordpress/data' {
   // Derive typings for select(), dispatch(), useSelect(), and useDispatch()calls
   // by store name. The StoreMap interface can be augmented to add custom stores.
+  // Note: uses top-level imported aliases (GenericStoreDescriptor, etc.) because
+  // import statements are not permitted inside module augmentations.
   interface StoreMap {
-    [key: string]: StoreDescriptor;
+    [key: string]: GenericStoreDescriptor;
   }
 
   type TKey = keyof StoreMap;
   type TStore<T> = T extends keyof StoreMap ? StoreMap[T] : never;
   type TSelectors<T> = CurriedSelectorsOf<TStore<T>>;
   type TActions<T> = ActionCreatorsOf<ConfigOf<TStore<T>>>;
-  type TSelectFunction = <T extends TKey | StoreDescriptor>(
+  type TSelectFunction = <T extends TKey | GenericStoreDescriptor>(
     store: T,
   ) => T extends TKey ? TSelectors<T> : CurriedSelectorsOf<T>;
   type TMapSelect = (select: TSelectFunction, registry: DataRegistry) => any;
@@ -79,7 +81,7 @@ declare module '@wordpress/data' {
   ): ReturnType<T>;
 
   // useSelect(storeDescriptor)
-  export function useSelect<T extends StoreDescriptor>(
+  export function useSelect<T extends GenericStoreDescriptor>(
     store: T,
     deps?: unknown[],
   ): UseSelectReturn<T>;
@@ -89,9 +91,6 @@ declare module '@wordpress/data' {
     store: T,
     deps?: unknown[],
   ): UseSelectReturn<TStore<T>>;
-
-  // useDispatch('store-name')
-  export function useDispatch<T extends string>(store: T): TActions<T>;
 
   // types for "createRegistrySelector" are not correct
   export function createRegistrySelector<

@@ -59,9 +59,13 @@ export function Checkbox({ filterIndex }: FilterProps): JSX.Element {
         <Select
           key="select"
           value={segment.value}
-          onChange={(e) =>
-            updateSegmentFilterFromEvent('value', filterIndex, e)
-          }
+          onChange={(e) => {
+            void (updateSegmentFilterFromEvent(
+              'value',
+              filterIndex,
+              e,
+            ) as Promise<void>);
+          }}
         >
           <option value="1">{__('checked', 'mailpoet')}</option>
           <option value="0">{__('unchecked', 'mailpoet')}</option>

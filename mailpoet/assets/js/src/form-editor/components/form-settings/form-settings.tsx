@@ -9,7 +9,9 @@ import { TagsPanel } from './tags-panel';
 import { storeName } from '../../store';
 
 export function FormSettings(): JSX.Element {
-  const { toggleSidebarPanel } = useDispatch(storeName);
+  const { toggleSidebarPanel } = useDispatch(storeName) as {
+    toggleSidebarPanel: (panel: string) => void;
+  };
   const openedPanels = useSelect(
     (select) => select(storeName).getSidebarOpenedPanels(),
     [],

@@ -42,7 +42,7 @@ export function FiltersChip({ step, strings }: Props): JSX.Element | null {
           onClick={onToggle}
           ariaExpanded={isOpen}
         >
-          {sprintf(strings.countLabel, filterCount)}
+          {sprintf(strings.countLabel as '%s', filterCount.toString())}
         </Chip>
       )}
       renderContent={() => (

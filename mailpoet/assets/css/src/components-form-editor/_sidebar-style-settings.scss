@@ -34,11 +34,11 @@
   }
 
   .mailpoet-font-family-select {
-    .components-flex {
-      height: auto;
-    }
+    width: 100%;
 
-    .components-input-control__container {
+    // New CustomSelectControl v2 in @wordpress/components v32+
+    button[role='combobox'] {
+      height: 36px;
       width: 100%;
     }
   }

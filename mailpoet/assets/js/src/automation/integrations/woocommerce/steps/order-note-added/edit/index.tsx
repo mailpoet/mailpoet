@@ -12,7 +12,8 @@ export function Edit(): JSX.Element {
     [],
   );
 
-  const noteType = (selectedStep.args?.note_type as string) ?? 'all';
+  const noteType =
+    (selectedStep.args?.note_type as 'all' | 'private' | 'customer') ?? 'all';
   const noteContains = (selectedStep.args?.note_contains as string) ?? '';
 
   return (

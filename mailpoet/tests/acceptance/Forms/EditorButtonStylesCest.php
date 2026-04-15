@@ -30,7 +30,7 @@ class EditorButtonStylesCest {
     $i->click('.mailpoet-automation-input-styles-panel');
     $i->waitForElement('[data-automation-id="input_styles_settings"]');
     $i->click('.mailpoet-automation-inherit-theme-toggle input'); // Display custom settings
-    $i->click('(//button[@class="components-button block-editor-panel-color-gradient-settings__dropdown"])[1]'); // Click Background color
+    $i->click('(//button[contains(@class,"block-editor-panel-color-gradient-settings__dropdown")])[1]'); // Click Background color
     $i->selectPanelColor('[6]'); // Select Vivid orange
     $i->click('[data-automation-id="editor_submit_input"]');
     $i->click('Font');

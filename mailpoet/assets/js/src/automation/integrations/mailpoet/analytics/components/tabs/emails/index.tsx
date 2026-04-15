@@ -7,7 +7,12 @@ import { transformEmailsToRows } from './rows';
 import { EmailStats, OverviewSection, storeName } from '../../../store';
 import { MailPoet } from '../../../../../../../mailpoet';
 
-const headers = [
+const headers: {
+  key: string;
+  label: string;
+  isLeftAligned?: boolean;
+  isNumeric?: boolean;
+}[] = [
   {
     key: 'email',
     label: __('Email', 'mailpoet'),
