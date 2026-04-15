@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.23.1
+Stable tag: 5.23.2
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,13 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.23.1 - 2026-04-14 =
-* Added: Add `mailpoet_manage_subscription_preview_subscriber_email` filter to allow overriding the demo email on the manage subscription preview page;
-* Fixed: Subscriber list membership entries are now correctly removed when a WordPress user is deleted;
-* Fixed: Show a 'Have you checked the Trash?' hint when a subscriber search returns no results;
-* Fixed: Fix email editor template selection not showing templates on WordPress 7.0;
-* Fixed: Free plan subscriber limit shown in Settings > Send with now reflects the correct limit of 500 subscribers;
-* Fixed: Fix checkbox custom field shortcode returning raw value (1) instead of the checkbox label;
-* Fixed: Fix subscriber displayname shortcode returning WordPress username instead of display name.
+= 5.23.2 - 2026-04-15 =
+* Updated: Bump the minimum required WooCommerce version to 10.6 and tested up to version to 10.7.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

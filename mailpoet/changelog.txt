@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.23.2 - 2026-04-15 =
+* Updated: Bump the minimum required WooCommerce version to 10.6 and tested up to version to 10.7.
+
 = 5.23.1 - 2026-04-14 =
 * Added: Add `mailpoet_manage_subscription_preview_subscriber_email` filter to allow overriding the demo email on the manage subscription preview page;
 * Fixed: Subscriber list membership entries are now correctly removed when a WordPress user is deleted;
