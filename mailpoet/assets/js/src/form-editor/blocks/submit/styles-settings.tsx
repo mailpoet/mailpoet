@@ -26,10 +26,14 @@ function StylesSettings({
   formInputPadding,
   formFontFamily,
 }: Props): JSX.Element {
+  // useState triggers re-renders (needed for RangeControl value propagation
+  // in @wordpress/components v29+), while useRef provides stale-closure-safe
+  // reads when multiple updates fire in the same event cycle.
   const [localStyles, setLocalStyles] = useState(styles);
-  const prevStylesRef = useRef(styles);
+  const localStylesRef = useRef(localStyles);
+  localStylesRef.current = localStyles;
 
-  // Sync state from prop when it changes externally (e.g., undo/redo)
+  const prevStylesRef = useRef(styles);
   if (styles !== prevStylesRef.current) {
     prevStylesRef.current = styles;
     setLocalStyles(styles);
@@ -37,6 +41,7 @@ function StylesSettings({
 
   const updateStyles = (property: string, value: unknown): void => {
     const updated = { ...localStyles, [property]: value };
+    localStylesRef.current = updated;
     setLocalStyles(updated);
     onChange(updated);
   };
@@ -47,7 +52,7 @@ function StylesSettings({
       return;
     }
     const updated: InputBlockStyles = {
-      ...localStyles,
+      ...localStylesRef.current,
       backgroundColor: '#eeeeee',
       bold: false,
       borderRadius: 0,
@@ -58,6 +63,7 @@ function StylesSettings({
       padding: formInputPadding,
       inheritFromTheme: newValue,
     };
+    localStylesRef.current = updated;
     setLocalStyles(updated);
     onChange(updated);
   };
