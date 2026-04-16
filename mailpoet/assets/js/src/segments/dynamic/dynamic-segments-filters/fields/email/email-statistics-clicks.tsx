@@ -113,11 +113,7 @@ export function EmailClickStatisticsFields({
         key="select-operator"
         value={segment.operator}
         onChange={(e) => {
-          void (updateSegmentFilterFromEvent(
-            'operator',
-            filterIndex,
-            e,
-          ) as Promise<void>);
+          updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
         automationId="select-operator"
       >
