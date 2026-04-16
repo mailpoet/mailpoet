@@ -1,4 +1,4 @@
-import { BlockInstance } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks';
 import { FormData, CustomField } from './form-data-types';
 
 export type BlockInsertionPoint = {
@@ -7,7 +7,7 @@ export type BlockInsertionPoint = {
 };
 
 export type HistoryRecord = {
-  blocks: BlockInstance[];
+  blocks: Block[];
   data: FormData;
   time: number;
 };
@@ -60,7 +60,7 @@ declare let window: FormEditorWindow;
 export type State = {
   editorHistory: HistoryRecord[];
   editorHistoryOffset: number;
-  formBlocks: BlockInstance[];
+  formBlocks: Block[];
   formData: typeof window.mailpoet_form_data;
   dateSettingData: {
     dateTypes: typeof window.mailpoet_date_types;

@@ -1,5 +1,5 @@
 import { has } from 'lodash';
-import { BlockInstance } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks';
 import {
   FontSizeDefinition,
   ColorDefinition,
@@ -14,8 +14,11 @@ import {
   mapGradientSlugToValue,
 } from './mapping/from-blocks/styles-mapper';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- block attributes are dynamically typed
+type FormBlock = Block<Record<string, any>>;
+
 const mapCustomField = (
-  block: BlockInstance,
+  block: FormBlock,
   customFields: CustomField[],
   mappedCommonProperties,
 ) => {
@@ -105,7 +108,7 @@ export const blocksToFormBodyFactory = (
    * @param blocks
    * @returns {*}
    */
-  const mapBlocks = (blocks: BlockInstance[]) => {
+  const mapBlocks = (blocks: FormBlock[]) => {
     if (!Array.isArray(blocks)) {
       throw new Error('Mapper expects blocks to be an array.');
     }

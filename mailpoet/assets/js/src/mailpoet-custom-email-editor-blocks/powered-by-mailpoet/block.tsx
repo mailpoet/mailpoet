@@ -1,4 +1,5 @@
 import { registerBlockType } from '@wordpress/blocks';
+import type { BlockEditProps } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RadioControl, Icon } from '@wordpress/components';
@@ -46,13 +47,12 @@ function LogoImage({
   );
 }
 
+type Attributes = { logo: string };
+
 function Edit({
   attributes,
   setAttributes,
-}: {
-  attributes: { logo: string };
-  setAttributes: (value: { logo: string }) => void;
-}): JSX.Element {
+}: BlockEditProps<Attributes>): JSX.Element {
   const blockProps = useBlockProps();
 
   const cdnUrl = getCdnUrl();
@@ -104,10 +104,9 @@ function Edit({
   );
 }
 
-// @ts-expect-error TS2322 Different types
 registerBlockType(metadata, {
   icon: {
     src: <Icon icon={MailPoetIcon} />,
   },
-  edit: Edit,
+  edit: Edit as React.ComponentType<BlockEditProps<Record<string, unknown>>>,
 });
