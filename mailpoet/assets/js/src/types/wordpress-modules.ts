@@ -138,7 +138,7 @@ declare module '@wordpress/block-library/build-module/paragraph' {
 }
 
 declare module '@wordpress/core-data' {
-  import { BlockInstance } from '@wordpress/blocks';
+  import { Block } from '@wordpress/blocks';
 
   export function useEntityBlockEditor(
     kind: string,
@@ -150,11 +150,7 @@ declare module '@wordpress/core-data' {
     }?: {
       id?: string | undefined;
     },
-  ): [
-    WPBlock[],
-    (blocks: BlockInstance[]) => void,
-    (blocks: BlockInstance[]) => void,
-  ];
+  ): [WPBlock[], (blocks: Block[]) => void, (blocks: Block[]) => void];
   export type WPBlock = any;
 
   export * from '@wordpress/core-data/build-types';

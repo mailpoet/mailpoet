@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { merge } from 'lodash';
 import Cookies from 'js-cookie';
 import {
-  BlockInstance,
+  Block,
   createBlock,
   unregisterBlockType,
   getBlockType,
@@ -33,9 +33,9 @@ const formatApiErrorMessage = (response) => {
 
 // Recursively apply callback on every block in blocks tree
 const mapBlocks = (
-  blocks: Array<BlockInstance>,
-  callback: (block: BlockInstance) => BlockInstance,
-): BlockInstance[] =>
+  blocks: Array<Block>,
+  callback: (block: Block) => Block,
+): Block[] =>
   blocks.map((block) => {
     const result = callback(block);
     if (block.innerBlocks) {
@@ -232,10 +232,10 @@ export const controls = {
 
   /**
    * We want to ensure that email input and submit are always present.
-   * @param actionData {{type: string, blocks: BlockInstance[]}} blocks property contains editor blocks
+   * @param actionData {{type: string, blocks: Block[]}} blocks property contains editor blocks
    */
   BLOCKS_CHANGED_IN_BLOCK_EDITOR(actionData) {
-    const newBlocks = actionData.blocks as Array<BlockInstance>;
+    const newBlocks = actionData.blocks as Array<Block>;
     // Check if both required inputs are present
     const emailInput = findBlock(newBlocks, 'mailpoet-form/email-input');
     const submitInput = findBlock(newBlocks, 'mailpoet-form/submit-button');
