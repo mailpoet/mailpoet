@@ -50,9 +50,9 @@ class EditorTextInputStylesCest {
     $i->scrollTo('.mailpoet-automation-styles-border-size');
     $i->click('.mailpoet-automation-styles-border-size .components-range-control__reset');
     $i->waitForElementChange(
-      '.mailpoet-automation-styles-border-size input[type="number"]',
+      '[data-automation-id="editor_first_name_input"]',
       function(\Facebook\WebDriver\WebDriverElement $el) {
-        return $el->getAttribute('value') === '1';
+        return $el->getCSSValue('border-width') === '1px';
       },
       10
     );

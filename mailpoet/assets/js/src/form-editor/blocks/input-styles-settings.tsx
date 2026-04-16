@@ -30,10 +30,14 @@ type InputStylesSettingsProps = {
 };
 
 function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
+  // useState triggers re-renders (needed for RangeControl value propagation
+  // in @wordpress/components v29+), while useRef provides stale-closure-safe
+  // reads when multiple updates fire in the same event cycle.
   const [localStyles, setLocalStyles] = useState(styles);
-  const prevStylesRef = useRef(styles);
+  const localStylesRef = useRef(localStyles);
+  localStylesRef.current = localStyles;
 
-  // Sync state from prop when it changes externally (e.g., undo/redo)
+  const prevStylesRef = useRef(styles);
   if (styles !== prevStylesRef.current) {
     prevStylesRef.current = styles;
     setLocalStyles(styles);
@@ -42,7 +46,8 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
   const { applyStylesToAllTextInputs } = useDispatch(storeName);
 
   const updateStyles = (property: string, value: unknown) => {
-    const updated = { ...localStyles, [property]: value };
+    const updated = { ...localStylesRef.current, [property]: value };
+    localStylesRef.current = updated;
     setLocalStyles(updated);
     void onChange(updated);
   };
@@ -53,7 +58,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
       return;
     }
     const updated: InputStyles = {
-      ...localStyles,
+      ...localStylesRef.current,
       backgroundColor: '#ffffff',
       bold: false,
       borderRadius: 0,
@@ -61,6 +66,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
       borderColor: '#313131',
       inheritFromTheme: newValue,
     };
+    localStylesRef.current = updated;
     setLocalStyles(updated);
     onChange(updated);
   };
