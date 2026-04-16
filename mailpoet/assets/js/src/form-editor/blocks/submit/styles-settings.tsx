@@ -40,7 +40,7 @@ function StylesSettings({
   }
 
   const updateStyles = (property: string, value: unknown): void => {
-    const updated = { ...localStyles, [property]: value };
+    const updated = { ...localStylesRef.current, [property]: value };
     localStylesRef.current = updated;
     setLocalStyles(updated);
     onChange(updated);
