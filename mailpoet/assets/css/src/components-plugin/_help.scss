@@ -1,0 +1,23 @@
+.mailpoet-system-status-report {
+  margin-bottom: 20px;
+
+  .submit {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .mailpoet-debug-report {
+    margin-top: 12px;
+  }
+
+  textarea {
+    background: #fff;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    height: 240px;
+    margin-top: 8px;
+    white-space: pre;
+    width: 100%;
+  }
+}

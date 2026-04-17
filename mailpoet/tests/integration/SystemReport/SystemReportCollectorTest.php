@@ -114,6 +114,17 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", $activePlugins));
   }
 
+  public function testItReturnsActivePluginsDetails() {
+    $collector = $this->diContainer->get(SystemReportCollector::class);
+    $activePlugins = $collector->getActivePluginsData();
+
+    $this->assertNotEmpty($activePlugins);
+    $this->assertIsString($activePlugins[0]['plugin']);
+    $this->assertIsString($activePlugins[0]['name']);
+    $this->assertIsString($activePlugins[0]['author']);
+    $this->assertIsString($activePlugins[0]['version']);
+  }
+
   public function testItReturnsSendingMethodDetails() {
     $mta = $this->settings->get('mta');
     verify($this->systemInfoData['Sending Method'])->equals($mta['method']);
