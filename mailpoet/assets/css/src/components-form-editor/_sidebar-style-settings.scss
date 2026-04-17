@@ -36,9 +36,8 @@
   .mailpoet-font-family-select {
     width: 100%;
 
-    // New CustomSelectControl v2 in @wordpress/components v32+
+    // New CustomSelectControl v2 in @wordpress/components v32+ renders a combobox button.
     button[role='combobox'] {
-      height: 36px;
       width: 100%;
     }
   }

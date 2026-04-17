@@ -97,7 +97,6 @@ export function FontFamilySettings({
   return (
     // CustomSelectControl generates a warning in the console. See [MAILPOET-3399]
     <CustomSelectControl
-      __nextUnconstrainedWidth
       options={options}
       onChange={(selected): void => {
         const selectedItem = selected.selectedItem;
