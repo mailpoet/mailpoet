@@ -45,7 +45,11 @@ export const initialize = (): void => {
   registerStepType(TagAddedTrigger);
   registerStepType(TagRemovedTrigger);
   registerStepType(ClicksEmailLinkTrigger);
-  if (MailPoet.FeaturesController.isSupported(MailPoet.FeaturesController.FEATURE_BIRTHDAY_EMAILS)) {
+  if (
+    MailPoet.FeaturesController.isSupported(
+      MailPoet.FeaturesController.FEATURE_BIRTHDAY_EMAILS,
+    )
+  ) {
     registerStepType(AnnualDateTrigger);
   }
   // Insert new steps here

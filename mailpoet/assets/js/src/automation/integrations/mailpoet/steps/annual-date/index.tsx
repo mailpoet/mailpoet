@@ -38,10 +38,7 @@ export const step: StepType = {
         utm_campaign: 'create_automation_editor_annual_date',
       }}
     >
-      {__(
-        'The Birthday trigger is a premium feature.',
-        'mailpoet',
-      )}
+      {__('The Birthday trigger is a premium feature.', 'mailpoet')}
     </PremiumModalForStepEdit>
   ),
 } as const;
