@@ -1,4 +1,5 @@
 import { getIsGarden } from 'common/functions';
+import { MailPoet } from 'mailpoet';
 import { registerStepType } from '../../editor/store';
 import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
@@ -18,6 +19,7 @@ import { step as TagAddedTrigger } from './steps/tag-added';
 import { step as TagRemovedTrigger } from './steps/tag-removed';
 import { step as ClicksEmailLinkTrigger } from './steps/clicks-email-link';
 import { step as WpUserRoleChangedTrigger } from './steps/wp-user-role-changed';
+import { step as AnnualDateTrigger } from './steps/annual-date';
 // Insert new imports here
 
 export const initialize = (): void => {
@@ -43,6 +45,9 @@ export const initialize = (): void => {
   registerStepType(TagAddedTrigger);
   registerStepType(TagRemovedTrigger);
   registerStepType(ClicksEmailLinkTrigger);
+  if (MailPoet.FeaturesController.isSupported(MailPoet.FeaturesController.FEATURE_BIRTHDAY_EMAILS)) {
+    registerStepType(AnnualDateTrigger);
+  }
   // Insert new steps here
   registerStepControls();
   registerAutomationSidebar();
