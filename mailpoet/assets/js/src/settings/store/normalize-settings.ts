@@ -125,6 +125,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       ['', '90', '180', '365', '540'],
       '365',
     ),
+    sending_status_retention_days: asEnum(['', '30', '60', '90', '180'], '60'),
     analytics: asObject({ enabled: disabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     use_block_email_editor_for_automation_emails: asObject({
