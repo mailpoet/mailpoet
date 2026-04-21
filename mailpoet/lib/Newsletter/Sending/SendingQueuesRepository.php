@@ -12,6 +12,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\DynamicSegments\FilterFactory;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
@@ -269,6 +270,45 @@ class SendingQueuesRepository extends Repository {
       $queue->setCountTotal($processed + $unprocessed);
     }
     $this->entityManager->flush();
+  }
+
+  public function nullRenderedBodyForOldCompletedQueues(int $retentionDays, int $batchSize): int {
+    $queueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $taskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $cutoff = Carbon::now()->subDays($retentionDays)->toDateTimeString();
+
+    // Double-nested subquery avoids MySQL's "can't specify target table for update in FROM clause" error.
+    $result = $this->entityManager->getConnection()->executeStatement(
+      "
+      UPDATE `{$queueTable}` sq
+      SET sq.newsletter_rendered_body = NULL
+      WHERE sq.id IN (
+        SELECT sq2.id FROM (
+          SELECT sq3.id
+          FROM `{$queueTable}` sq3
+          INNER JOIN `{$taskTable}` t ON t.id = sq3.task_id
+          WHERE t.status = :status
+            AND t.type = 'sending'
+            AND t.processed_at < :cutoff
+            AND sq3.newsletter_rendered_body IS NOT NULL
+            AND sq3.deleted_at IS NULL
+          LIMIT :limit
+        ) sq2
+      )
+      ",
+      [
+        'status' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'cutoff' => $cutoff,
+        'limit' => $batchSize,
+      ],
+      [
+        'status' => ParameterType::STRING,
+        'cutoff' => ParameterType::STRING,
+        'limit' => ParameterType::INTEGER,
+      ]
+    );
+
+    return (int)$result;
   }
 
   /** @param int[] $ids */
