@@ -232,16 +232,16 @@ class ScheduledTaskSubscribersRepository extends Repository {
       return 0;
     }
 
+    $taskIdsList = implode(',', array_map('intval', $taskIds));
+
     $deleted = $this->entityManager->getConnection()->executeStatement(
       "DELETE FROM `{$stsTable}`
-       WHERE `task_id` IN (:taskIds)
+       WHERE `task_id` IN ({$taskIdsList})
        LIMIT :rowLimit",
       [
-        'taskIds' => $taskIds,
         'rowLimit' => $rowLimit,
       ],
       [
-        'taskIds' => ArrayParameterType::INTEGER,
         'rowLimit' => ParameterType::INTEGER,
       ]
     );

@@ -94,6 +94,9 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $scheduledTask = $this->taskFactory->create(
       'sending',
       ScheduledTaskEntity::STATUS_SCHEDULED,
+      $now->copy()->subDays(90),
+      null,
+      null,
       $now->copy()->subDays(90)
     );
     $this->taskSubscriberFactory->createUnprocessed($scheduledTask, $subscriber);
@@ -200,18 +203,15 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     Carbon::setTestNow();
   }
 
-  public function testItDoesNotAffectStatistics() {
+  public function testItDeletesOnlyEligibleTasksInMixedState() {
     $now = Carbon::now();
     Carbon::setTestNow($now);
 
-    $statsTable = $this->entityManager->getClassMetadata(\MailPoet\Entities\StatisticsNewsletterEntity::class)->getTableName();
+    $subscriber1 = $this->subscriberFactory->create();
+    $subscriber2 = $this->subscriberFactory->create();
+    $subscriber3 = $this->subscriberFactory->create();
 
-    $countBefore = (int)$this->entityManager->getConnection()->executeQuery(
-      "SELECT COUNT(*) FROM `{$statsTable}`"
-    )->fetchOne();
-
-    $subscriber = $this->subscriberFactory->create();
-    $oldTask = $this->taskFactory->create(
+    $oldCompletedTask = $this->taskFactory->create(
       'sending',
       ScheduledTaskEntity::STATUS_COMPLETED,
       null,
@@ -219,21 +219,38 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
       null,
       $now->copy()->subDays(90)
     );
-    $this->taskSubscriberFactory->createProcessed($oldTask, $subscriber);
+    $this->taskSubscriberFactory->createProcessed($oldCompletedTask, $subscriber1);
+
+    $recentCompletedTask = $this->taskFactory->create(
+      'sending',
+      ScheduledTaskEntity::STATUS_COMPLETED,
+      null,
+      null,
+      null,
+      $now->copy()->subDays(10)
+    );
+    $this->taskSubscriberFactory->createProcessed($recentCompletedTask, $subscriber2);
+
+    $scheduledTask = $this->taskFactory->create(
+      'sending',
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      $now->copy()->subDays(90),
+      null,
+      null,
+      $now->copy()->subDays(90)
+    );
+    $this->taskSubscriberFactory->createUnprocessed($scheduledTask, $subscriber3);
 
     $task = new ScheduledTaskEntity();
     $this->worker->processTaskStrategy($task, microtime(true));
 
-    $countAfter = (int)$this->entityManager->getConnection()->executeQuery(
-      "SELECT COUNT(*) FROM `{$statsTable}`"
-    )->fetchOne();
-
-    verify($countAfter)->equals($countBefore);
+    $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
+    verify(count($remaining))->equals(2);
 
     Carbon::setTestNow();
   }
 
-  public function testItRespectsExecutionTimeLimit() {
+  public function testItSchedulesInTheFuture() {
     $nextRunDate = $this->worker->getNextRunDate();
     verify($nextRunDate)->notNull();
     verify($nextRunDate->getTimestamp())->greaterThan(Carbon::now()->getTimestamp());
