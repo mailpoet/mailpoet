@@ -7,6 +7,7 @@ import { HumanAndMachineOpens } from './human-and-machine-opens';
 import { Transactional } from './transactional';
 import { InactiveSubscribers } from './inactive-subscribers';
 import { SendingStatusRetention } from './sending-status-retention';
+import { SendingQueueBodyCleanup } from './sending-queue-body-cleanup';
 import { ShareData } from './share-data';
 import { Libs3rdParty } from './libs-3rd-party';
 import { Captcha } from './captcha';
@@ -32,6 +33,7 @@ export function Advanced() {
       <RecalculateSubscriberScore />
       <InactiveSubscribers />
       <SendingStatusRetention />
+      <SendingQueueBodyCleanup />
       <ShareData />
       <Libs3rdParty />
       <Captcha />

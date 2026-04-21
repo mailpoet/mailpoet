@@ -13,6 +13,7 @@ class SettingsController {
   const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
   const DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS = 365;
   const DEFAULT_SENDING_STATUS_RETENTION_DAYS = '';
+  const DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS = 30;
 
   private $loaded = false;
 
@@ -78,6 +79,7 @@ class SettingsController {
         'display_nps_poll' => true,
         'deactivate_subscriber_after_inactive_days' => self::DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS,
         'sending_status_retention_days' => self::DEFAULT_SENDING_STATUS_RETENTION_DAYS,
+        'sending_queue_body_retention_days' => self::DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS,
       ];
     }
 
