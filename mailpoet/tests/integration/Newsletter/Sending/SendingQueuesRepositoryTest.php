@@ -142,6 +142,160 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($taskSubscriber);
   }
 
+  public function testItNullsRenderedBodyForOldCompletedQueues() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setType('sending');
+    $task->setProcessedAt(new \DateTime('-40 days'));
+    $queue = $this->createQueue($task);
+    $queue->setNewsletterRenderedBody(['html' => '<p>hello</p>', 'text' => 'hello']);
+    $queue->setNewsletterRenderedSubject('Subject A');
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(1);
+    $this->entityManager->refresh($queue);
+    verify($queue->getNewsletterRenderedBody())->null();
+  }
+
+  public function testItSkipsQueuesWithinRetentionWindow() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setType('sending');
+    $task->setProcessedAt(new \DateTime('-10 days'));
+    $queue = $this->createQueue($task);
+    $queue->setNewsletterRenderedBody(['html' => '<p>recent</p>', 'text' => 'recent']);
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(0);
+    $this->entityManager->refresh($queue);
+    verify($queue->getNewsletterRenderedBody())->notNull();
+  }
+
+  public function testItRespectsRetentionBoundary() {
+    $insideTask = $this->createTask();
+    $insideTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $insideTask->setType('sending');
+    $insideTask->setProcessedAt(new \DateTime('-29 days'));
+    $insideQueue = $this->createQueue($insideTask);
+    $insideQueue->setNewsletterRenderedBody(['html' => '<p>inside</p>', 'text' => 'inside']);
+
+    $outsideTask = $this->createTask();
+    $outsideTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $outsideTask->setType('sending');
+    $outsideTask->setProcessedAt(new \DateTime('-31 days'));
+    $outsideQueue = $this->createQueue($outsideTask);
+    $outsideQueue->setNewsletterRenderedBody(['html' => '<p>outside</p>', 'text' => 'outside']);
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(1);
+    $this->entityManager->refresh($insideQueue);
+    $this->entityManager->refresh($outsideQueue);
+    verify($insideQueue->getNewsletterRenderedBody())->notNull();
+    verify($outsideQueue->getNewsletterRenderedBody())->null();
+  }
+
+  public function testItSkipsNonCompletedTasks() {
+    foreach ([ScheduledTaskEntity::STATUS_SCHEDULED, ScheduledTaskEntity::STATUS_PAUSED, ScheduledTaskEntity::STATUS_CANCELLED, null] as $status) {
+      $task = $this->createTask();
+      $task->setStatus($status);
+      $task->setType('sending');
+      $task->setProcessedAt(new \DateTime('-40 days'));
+      $queue = $this->createQueue($task);
+      $queue->setNewsletterRenderedBody(['html' => '<p>x</p>', 'text' => 'x']);
+    }
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(0);
+  }
+
+  public function testItReturnsBatchCount() {
+    for ($i = 0; $i < 3; $i++) {
+      $task = $this->createTask();
+      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+      $task->setType('sending');
+      $task->setProcessedAt(new \DateTime('-40 days'));
+      $queue = $this->createQueue($task);
+      $queue->setNewsletterRenderedBody(['html' => '<p>body</p>', 'text' => 'body']);
+    }
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(3);
+  }
+
+  public function testItRespectsBatchSize() {
+    for ($i = 0; $i < 5; $i++) {
+      $task = $this->createTask();
+      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+      $task->setType('sending');
+      $task->setProcessedAt(new \DateTime('-40 days'));
+      $queue = $this->createQueue($task);
+      $queue->setNewsletterRenderedBody(['html' => '<p>body</p>', 'text' => 'body']);
+    }
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 3);
+
+    verify($updated)->equals(3);
+  }
+
+  public function testItSkipsAlreadyNulledRows() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setType('sending');
+    $task->setProcessedAt(new \DateTime('-40 days'));
+    $queue = $this->createQueue($task);
+    // body already null — nothing to clean
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(0);
+  }
+
+  public function testItPreservesNewsletterRenderedSubject() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setType('sending');
+    $task->setProcessedAt(new \DateTime('-40 days'));
+    $queue = $this->createQueue($task);
+    $queue->setNewsletterRenderedBody(['html' => '<p>hello</p>', 'text' => 'hello']);
+    $queue->setNewsletterRenderedSubject('Keep this subject');
+    $this->entityManager->flush();
+
+    $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+    $this->entityManager->refresh($queue);
+
+    verify($queue->getNewsletterRenderedBody())->null();
+    verify($queue->getNewsletterRenderedSubject())->equals('Keep this subject');
+  }
+
+  public function testItSkipsSoftDeletedQueues() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setType('sending');
+    $task->setProcessedAt(new \DateTime('-40 days'));
+    $queue = $this->createQueue($task);
+    $queue->setNewsletterRenderedBody(['html' => '<p>deleted</p>', 'text' => 'deleted']);
+    $queue->setDeletedAt(new \DateTime());
+    $this->entityManager->flush();
+
+    $updated = $this->repository->nullRenderedBodyForOldCompletedQueues(30, 100);
+
+    verify($updated)->equals(0);
+    $this->entityManager->refresh($queue);
+    verify($queue->getNewsletterRenderedBody())->notNull();
+  }
+
   private function createTask(): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
     $this->entityManager->persist($task);
