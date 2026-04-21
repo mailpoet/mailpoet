@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+  "plugins": [
+    "./mailpoet",
+    "./mailpoet-premium",
+    "./mailpoet/tests/plugins/woocommerce",
+    "./mailpoet/tests/plugins/woocommerce-subscriptions",
+    "./mailpoet/tests/plugins/automatewoo",
+    "./mailpoet/tests/plugins/woocommerce-memberships"
+  ],
+  "config": {
+    "WP_SITEURL": "http://mailpoet.local/",
+    "WP_HOME": "http://mailpoet.local/"
+  }
+}

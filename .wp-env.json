@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+  "core": "https://wordpress.org/latest.zip",
+  "phpVersion": "8.4",
+  "plugins": ["./mailpoet"],
+  "themes": [],
+  "port": 8888,
+  "mappings": {
+    "wp-content/mu-plugins/mailpoet-dev-smtp.php": "./.wp-env/mu-plugins/mailpoet-dev-smtp.php",
+    "wp-env-scripts": "./.wp-env/scripts"
+  },
+  "lifecycleScripts": {
+    "afterStart": "wp-env run cli wp eval-file /var/www/html/wp-env-scripts/configure-mailpoet-dev-smtp.php"
+  },
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "WP_DEBUG_DISPLAY": true,
+    "SCRIPT_DEBUG": true,
+    "JETPACK_AUTOLOAD_DEV": true,
+    "MAILPOET_DEV_SMTP_HOST": "host.docker.internal",
+    "MAILPOET_DEV_SMTP_PORT": 1026,
+    "WP_MEMORY_LIMIT": "1024M",
+    "WP_MAX_MEMORY_LIMIT": "1024M"
+  },
+  "env": {
+    "development": {
+      "phpmyadminPort": 8081
+    }
+  }
+}
