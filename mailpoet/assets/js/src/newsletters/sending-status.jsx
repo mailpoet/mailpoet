@@ -2,6 +2,7 @@ import classnames from 'classnames';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { memo, useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 import { Listing } from 'listing/listing.jsx';
@@ -83,14 +84,17 @@ function SendingStatus() {
       <StatsLink newsletter={newsletter} />
       {newsletter.sent && itemCount === 0 && (
         <p className="mailpoet-notice mailpoet-notice-info">
-          {__(
-            'Sending status data is no longer available. Per-subscriber records for this newsletter have been cleaned up. You can adjust the retention period in',
-            'mailpoet',
-          )}{' '}
-          <a href="admin.php?page=mailpoet-settings#/advanced">
-            {__('Advanced settings', 'mailpoet')}
-          </a>
-          {'.'}
+          {createInterpolateElement(
+            __(
+              'Sending status data is no longer available. Per-subscriber records for this newsletter have been cleaned up. You can adjust the retention period in <link>Advanced settings</link>.',
+              'mailpoet',
+            ),
+            {
+              link: (
+                <a href="admin.php?page=mailpoet-settings#/advanced"> </a>
+              ),
+            },
+          )}
         </p>
       )}
       <SendingStatusListing
