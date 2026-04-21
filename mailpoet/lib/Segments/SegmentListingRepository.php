@@ -24,7 +24,7 @@ class SegmentListingRepository extends ListingRepository {
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select("PARTIAL s.{id,name,type,description,createdAt,updatedAt,deletedAt,averageEngagementScore}");
+    $queryBuilder->select("PARTIAL s.{id,name,type,description,createdAt,updatedAt,deletedAt,averageEngagementScore,displayInManageSubscriptionPage}");
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
