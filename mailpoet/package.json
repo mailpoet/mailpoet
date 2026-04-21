@@ -52,7 +52,7 @@
     "@wordpress/hooks": "^4.43.0",
     "@wordpress/html-entities": "^4.43.0",
     "@wordpress/i18n": "^6.16.0",
-    "@wordpress/icons": "^11.8.0",
+    "@wordpress/icons": "^12.2.0",
     "@wordpress/interface": "^9.28.0",
     "@wordpress/keyboard-shortcuts": "^5.43.0",
     "@wordpress/keycodes": "^4.43.0",
