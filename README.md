@@ -2,21 +2,19 @@
 
 1. [MailPoet](#mailpoet)
 2. [Initial setup](#initial-setup)
-   1. [Additional dependencies](#additional-dependencies)
-3. [Xdebug](#xdebug)
+   1. [Required tools](#required-tools)
+3. [Commands](#commands)
+   1. [Environment lifecycle](#environment-lifecycle)
+   2. [Build and watch](#build-and-watch)
+   3. [Quality assurance](#quality-assurance)
+   4. [Tests](#tests)
+   5. [Migrations, templates, wp-cli](#migrations-templates-wp-cli)
+4. [Xdebug](#xdebug)
    1. [PhpStorm setup](#phpstorm-setup)
-   2. [Xdebug develop mode](#xdebug-develop-mode)
+   2. [VS Code setup](#vs-code-setup)
    3. [Xdebug for integration tests](#xdebug-for-integration-tests)
-4. [Local development](#local-development)
-   1. [NFS volume sharing for Mac](#nfs-volume-sharing-for-mac)
-   2. [Husky hooks](#husky-hooks)
-5. [Docker](#docker)
-   1. [Commands](#commands)
-   2. [Available PHP versions](#available-php-versions)
-   3. [Disabling the Tracy panel](#disabling-the-tracy-panel)
-   4. [Running individual tests](#running-individual-tests)
-6. [Code Formatting](#code-formatting)
-7. [TODO](#todo)
+5. [Husky hooks](#husky-hooks)
+6. [Code formatting](#code-formatting)
 
 ## MailPoet
 
@@ -24,208 +22,196 @@ The **MailPoet** plugin monorepo.
 
 If you have **any questions or need help or support**, please see the [Support](SUPPORT.md) document.
 
-To use our Docker-based development environment (recommended), continue with the steps below.
-If you'd like to use the plugin code directly, see details in [the plugin's readme](mailpoet/README.md).
+The development environment is built on [`@wordpress/env`](https://www.npmjs.com/package/@wordpress/env) (wp-env) plus [Mailpit](https://mailpit.axllent.org/) for email capture. Continue with the steps below to set it up. If you'd like to use the plugin code directly without wp-env, see [the plugin's readme](mailpoet/README.md).
 
 ## Initial setup
 
-1. Run `./do setup` to pull everything and install necessary dependencies.
-2. Add secrets to `.env` files in `mailpoet` and `mailpoet-premium` directories. Go to the Secret Store and look for "MailPoet: plugin .env"
-3. Run `./do start` to start the stack.
-4. Go to http://localhost:8888 to see the dashboard of the dev environment.
+1. Run `pnpm bootstrap` to install dependencies, download WooCommerce test plugins, generate the wp-env override, and compile assets.
+2. Add secrets to `.env` files in `mailpoet` and `mailpoet-premium` directories. Go to the Secret Store and look for "MailPoet: plugin .env".
+3. Run `pnpm env:start` to start wp-env and the Mailpit SMTP catcher.
+4. Open the services:
+   - **WordPress** — http://localhost:8888 (admin user: `admin` / `password`)
+   - **phpMyAdmin** — http://localhost:8081
+   - **Mailpit** — http://localhost:8082 (captures all outgoing mail)
 
-### Additional dependencies
+> ✉️ **Mail routing is configured automatically.** Every `pnpm env:start` runs `.wp-env/scripts/configure-mailpoet-dev-smtp.php` via `lifecycleScripts.afterStart`, which points MailPoet's mailer at Mailpit (`host.docker.internal:1026`), seeds a default sender, and skips the MailPoet welcome wizard so it can't overwrite the config. Newsletters land in Mailpit without any wp-admin setup. See [doc/mailpit-setup.md](doc/mailpit-setup.md) for details.
 
-Even though it's possible to run everything using Docker, in the development workflow,
-it may be faster and more convenient to run some tasks outside the container. Therefore,
-the following tools are recommended:
+### Required tools
 
-1. **PHP** as per `composer.json` requirements.
-2. **Node.js**, as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
-3. **pnpm**, as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
-4. **[GitHub CLI (`gh`)](https://cli.github.com/)** for downloading private WooCommerce test plugins. Run `gh auth login` to authenticate — no personal access token needed.
+- **Docker Desktop** (wp-env and `tests_env/` both use Docker).
+- **PHP** as per `composer.json` requirements (used for host-side QA and the prefixer).
+- **Node.js** as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
+- **pnpm** as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
+- **[GitHub CLI (`gh`)](https://cli.github.com/)** for downloading private WooCommerce test plugins. Run `gh auth login` to authenticate — no personal access token needed. External contributors without access can skip the download step; the bootstrap script treats those failures as non-fatal.
+
+## Commands
+
+All commands below run from the repository root. The same scripts are also exposed inside `mailpoet/` and `mailpoet-premium/` so `pnpm <task>` works from either plugin directory too. `pnpm -w <task>` runs the root-level script from anywhere in the workspace.
+
+### Environment lifecycle
+
+```shell
+pnpm env:start      # Start wp-env + Mailpit (boots the dev environment)
+pnpm env:stop       # Stop wp-env + Mailpit (state preserved)
+pnpm env:destroy    # Stop and delete all wp-env data + Mailpit
+pnpm env:restart    # Destroy + start (fresh WordPress install)
+pnpm env:debug      # Start with Xdebug enabled on port 9003
+pnpm env:logs       # Tail logs from all wp-env containers
+pnpm shell          # Bash into the wp-env cli container
+pnpm shell:test     # Bash into the tests_env wordpress container
+pnpm wp <args>      # Run wp-cli inside the wp-env container
+```
+
+### Build and watch
+
+```shell
+pnpm compile        # Compile JS + CSS on host
+pnpm compile:js     # Compile JS only
+pnpm compile:css    # Compile SCSS only
+pnpm watch:js       # Rebuild JS on change
+pnpm watch:css      # Rebuild SCSS on change
+```
+
+### Quality assurance
+
+```shell
+pnpm qa             # All QA checks (PHP + JS + CSS + Prettier)
+pnpm qa:js          # ESLint + TypeScript type-check
+pnpm qa:css         # Stylelint
+pnpm qa:php         # PHP CodeSniffer
+pnpm qa:phpstan     # PHPStan static analysis
+pnpm qa:prettier    # Prettier (check only)
+pnpm qa:fix         # Prettier (write) — auto-format all files
+```
+
+### Tests
+
+```shell
+pnpm test:unit                 # Unit tests (tests_env)
+pnpm test:integration          # Integration tests (tests_env)
+pnpm test:acceptance           # Acceptance tests with Selenium (tests_env)
+pnpm test:javascript           # Mocha JS tests
+
+pnpm test:unit:premium         # Premium unit tests
+pnpm test:integration:premium  # Premium integration tests
+pnpm test:acceptance:premium   # Premium acceptance tests
+
+pnpm test:install-deps         # Re-install composer deps before testing
+                               # (default test:* scripts pass --skip-deps)
+```
+
+Pass any plugin-level `./do` flags directly — they forward through pnpm:
+
+```shell
+pnpm test:integration --file=tests/integration/WP/EmojiTest.php
+pnpm test:acceptance --file=tests/acceptance/Misc/MailpoetMenuCest.php
+```
+
+#### Premium tests from inside the container
+
+```shell
+pnpm shell:test
+cd /wp-core/wp-content/plugins/mailpoet-premium
+./do test:unit --file=tests/unit/Config/EnvTest.php
+```
+
+### Migrations, templates, wp-cli
+
+These need a running WordPress runtime, so they go through the wp-env `cli` container automatically:
+
+```shell
+pnpm migrations:new <db|app>         # Create a new database migration
+pnpm migrations:status               # Show migration status
+pnpm templates                       # Generate email template classes
+pnpm changelog:add --type=<type> --description="..."
+```
 
 ## Xdebug
 
-### PhpStorm setup
-
-In `Languages & Preferences > PHP > Servers` set path mappings:
+Xdebug is off by default (performance). Start the dev environment with Xdebug enabled:
 
 ```shell
-wordpress        -> /var/www/html
-mailpoet         -> /var/www/html/wp-content/plugins/mailpoet
-mailpoet-premium -> /var/www/html/wp-content/plugins/mailpoet-premium
+pnpm env:debug
 ```
 
-For PHP 8 and XDebug 3 we support **browser debugging extension**.
-You can choose extension by your browser in [JetBrains documentation](https://www.jetbrains.com/help/phpstorm/browser-debugging-extensions.html).
+This runs `wp-env start --update --xdebug=develop,debug`. Xdebug listens on port **9003** inside the container.
 
-To use XDebug inside the **cron**, you need to pass a URL argument `&XDEBUG_TRIGGER=yes`
-[in the cron request](https://github.com/mailpoet/mailpoet/blob/bf7bd6d2d9090ed6ec7b8b575bb7d6b08e663a52/lib/Cron/CronHelper.php#L155-L166).
-Alternatively, you can add `XDEBUG_TRIGGER: yes` to the `wordpress` service in `docker-compose.yml` and restart it (which will run XDebug also for all other requests).
+### PhpStorm setup
 
-### Xdebug develop mode
+1. **Settings → PHP → Servers**, click **+** to add:
+   - Name: `wp-env`
+   - Host: `localhost`
+   - Port: `8888`
+   - Debugger: `Xdebug`
+   - Check **Use path mappings**
+2. Add the mappings:
+   ```
+   <repo root>/mailpoet          → /var/www/html/wp-content/plugins/mailpoet
+   <repo root>/mailpoet-premium  → /var/www/html/wp-content/plugins/mailpoet-premium
+   ```
+3. Click the phone icon to **Start Listening for PHP Debug Connections**.
+4. Trigger Xdebug with the [JetBrains browser extension](https://www.jetbrains.com/help/phpstorm/browser-debugging-extensions.html) or append `?XDEBUG_TRIGGER=1` to the URL.
 
-[Xdebug develop mode](https://xdebug.org/docs/develop) is disabled by default because it causes performance issues due to conflicts with the DI container.
+For debugging cron jobs, pass `&XDEBUG_TRIGGER=yes` in the cron request URL.
 
-It can be enabled when needed using the `XDEBUG_MODE` environment variable. For example, it is possible to enable it by adding the following to `docker-compose.override.yml`:
+### VS Code setup
 
-```
-environment:
-    XDEBUG_MODE: debug, develop
+Install the **PHP Debug** extension and add to `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+        "/var/www/html/wp-content/plugins/mailpoet": "${workspaceFolder}/mailpoet",
+        "/var/www/html/wp-content/plugins/mailpoet-premium": "${workspaceFolder}/mailpoet-premium"
+      }
+    }
+  ]
+}
 ```
 
 ### Xdebug for integration tests
 
-- In Languages & Preferences > PHP > Servers create a new sever named `MailPoetTest`, set the host to `localhost` and port to `80` and set following path mappings:
+Integration tests run in `tests_env/` (not wp-env), so they use a separate server config:
 
-```shell
-wordpress        -> /wp-core
-mailpoet         -> /wp-core/wp-content/plugins/mailpoet
-mailpoet-premium -> /wp-core/wp-content/plugins/mailpoet-premium
-mailpoet/vendor/bin/codecept -> /project/vendor/bin/codecept
-mailpoet/vendor/bin/wp -> /usr/local/bin/wp
-```
+1. **Settings → PHP → Servers**, add a new server `MailPoetTest`, host `localhost`, port `80`, with mappings:
 
-- Add `XDEBUG_TRIGGER: 1` environment to `tests_env/docker/docker-compose.yml` -> codeception service to start triggering Xdebug
-- Make PHPStorm listen to connections by clicking on the phone icon
+   ```
+   wordpress                     → /wp-core
+   mailpoet                      → /wp-core/wp-content/plugins/mailpoet
+   mailpoet-premium              → /wp-core/wp-content/plugins/mailpoet-premium
+   mailpoet/vendor/bin/codecept  → /project/vendor/bin/codecept
+   mailpoet/vendor/bin/wp        → /usr/local/bin/wp
+   ```
 
-## Local development
+2. Add `XDEBUG_TRIGGER: 1` to the `codeception_*` service in `tests_env/docker/docker-compose.yml` to trigger Xdebug during tests.
+3. Click the phone icon in PhpStorm to listen for connections.
 
-### NFS volume sharing for Mac
-
-NFS volumes can bring more stability and performance on Docker for Mac. To setup NFS volume sharing run:
-
-```shell
-sudo sh dev/mac-nfs-setup.sh
-```
-
-Then create a Docker Compose override file with NFS settings and restart containers:
-
-```shell
-cp docker-compose.override.macos-sample.yml docker-compose.override.yml
-
-docker compose down -v --remove-orphans
-docker compose up -d
-```
-
-**NOTE:** If you are on MacOS Catalina or newer, make sure to put the repository
-outside your `Documents` folder, otherwise you may run into [file permission issues](https://objekt.click/2019/11/docker-the-problem-with-macos-catalina/).
-
-### Husky hooks
+## Husky hooks
 
 We use [Husky](https://github.com/typicode/husky) to run automated checks in pre-commit hooks.
 
-In case you're using [NVM](https://github.com/nvm-sh/nvm) for Node version management you may
-need to create or update your `~/.huskyrc` file with:
+If you use [NVM](https://github.com/nvm-sh/nvm) for Node version management you may need to create or update `~/.huskyrc`:
 
 ```sh
-# This loads nvm.sh and sets the correct PATH before running the hooks:
+# Loads nvm.sh and sets the correct PATH before running the hooks:
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 ```
 
-Without it, you may experience errors in some Git clients.
+Without it, some Git clients fail on hook execution.
 
-## Docker
+## Code formatting
 
-### Commands
-
-The `./do` script define aliases for most of the commands you will need while working on plugins:
-
-```shell
-./do setup                           Setup the environment.
-./do start                           Start the docker containers.
-./do stop                            Stop the docker containers.
-./do ssh [--test]                    Run an interactive bash shell inside the plugin directory.
-./do run [--test] <command>          Run a custom bash command in the wordpress container.
-./do acceptance [--premium]          Run acceptance tests.
-./do build [--premium]               Builds a .zip for the plugin.
-./do templates                       Generates templates classes and assets.
-./do [--test] [--premium] <command>  Run './do <command>' inside the plugin directory.
-
-Options:
-   --test     Run the command using the 'test_wordpress' service.
-   --premium  Run the command inside the premium plugin.
-```
-
-You can access this help in your command line running `./do` without parameters.
-
-### Available PHP versions
-
-To switch the environment to a different PHP version:
-
-1. Check https://github.com/mailpoet/mailpoet/tree/trunk/dev for a list of available PHP versions. Each directory starting with `php` corresponds to a available version.
-2. Configure the `wordpress` service in `docker-compose.override.yml` to build from the desired PHP version Dockerfile (replace {PHP_VERSION} with the name of the directory that corresponds to the version that you want to use):
-
-   ```yaml
-   wordpress:
-     build:
-       context: .
-       dockerfile: dev/{PHP_VERSION}/Dockerfile
-   ```
-
-3. Run `docker compose build wordpress`.
-4. Start the stack with `./do start`.
-
-To switch back to the default PHP version remove what was added in 2) and, run `docker compose build wordpress` for application container and `docker compose build test_wordpress` for tests container,
-and start the stack using `./do start`.
-
-### Disabling the Tracy panel
-
-To disable the Tracy panel, add the following to `docker-compose.override.yml`:
-
-```yaml
-services:
-  wordpress:
-    environment:
-      MAILPOET_DISABLE_TRACY_PANEL: 1
-```
-
-### Running individual tests
-
-It's recommended to run tests in Docker. Free plugin tests can be run using --test flag (`./do --test`). However, to run a premium test, you need to ssh into test container (`./do ssh --test`) and run tests there.
-
-#### Integration test in the free plugin
-
-```shell
-./do --test test:integration --skip-deps --file=tests/integration/WP/EmojiTest.php
-```
-
-#### Acceptance test in the free plugin
-
-```shell
-./do --test test:acceptance --skip-deps --file=tests/acceptance/Misc/MailpoetMenuCest.php
-```
-
-#### Unit/integration test in the premium plugin
-
-```shell
-./do ssh --test # to enter the container
-cd ../mailpoet-premium # switch to premium plugin directory
-./do test:unit --file=tests/unit/Config/EnvTest.php
-```
-
-#### Acceptance test in the premium plugin
-
-```shell
-cd ./mailpoet-premium # switch to premium plugin directory on your local machine
-./do test:acceptance --skip-deps --file tests/acceptance/PremiumCheckCest.php
-```
-
-## Code Formatting
-
-We use [Prettier](https://prettier.io/) to ensure consistent code formatting across the project.
-
-### Quick Commands
+We use [Prettier](https://prettier.io/) for consistent formatting:
 
 ```bash
-./do qa:prettier-write    # Format all files
-./do qa:prettier-check    # Check if files are properly formatted
+pnpm qa:fix          # Auto-format all files (Prettier write)
+pnpm qa:prettier     # Check formatting (read-only)
 ```
-
-## TODO
-
-- [ ] Install WooCommerce
-- [ ] Install Members
-- [ ] Install other useful plugins by default

@@ -1,6 +1,6 @@
 # Contributing
 
-There is a `./do` command that helps with the development process. See [README](README.md) for more details.
+Development tasks are exposed as `pnpm` scripts at the repo root (`pnpm env:start`, `pnpm qa`, `pnpm test:integration`, …). The plugin-level `./do` runner is still used for host-side Robo tasks inside `mailpoet/`. See [README](README.md) for the full command reference.
 
 ## PHP Code
 
@@ -26,7 +26,7 @@ There is a `./do` command that helps with the development process. See [README](
 - Javascript code should follow the [Airbnb style guide](https://github.com/airbnb/javascript).
 - Prefer named export before default export in JS and TS files
 - Default to TypeScript for new files.
-- Code formatting is handled automatically by Prettier. Run `./do qa:prettier-write` to format your code.
+- Code formatting is handled automatically by Prettier. Run `pnpm qa:fix` to format your code.
 
 ## Disabling linting rules
 
@@ -40,8 +40,8 @@ There is a `./do` command that helps with the development process. See [README](
 - Do not commit to trunk.
 - Open a short-living feature branch.
 - Use good commit messages as explained here https://chris.beams.io/posts/git-commit. Include Linear issue ID in the commit message.
-- Use the `./do qa` command to check your code style before pushing.
-- Run `./do qa:prettier-write` to format your code with Prettier.
+- Use `pnpm qa` to check your code style before pushing.
+- Run `pnpm qa:fix` to format your code with Prettier.
 - Create a pull request when finished.
 - Wait for review from another developer.
 

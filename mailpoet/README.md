@@ -16,8 +16,8 @@
 ## MailPoet
 
 - For help with product, visit [SUPPORT](../SUPPORT.md).
-- To use the Docker-based development environment, see [monorepo README](../README.md).
-- To use plugin code directly, follow instructions below.
+- For the wp-env-based development environment (recommended), see the [monorepo README](../README.md).
+- To use the plugin code directly against your own WordPress install, follow the instructions below.
 
 ## Setup
 
@@ -69,12 +69,15 @@ cp .env.sample .env
 
 ## Workflow Commands
 
-There are two different `./do` commands. One is in the free MailPoet directory and runs the commands on the local computer. The second is in the repository root and runs the commands in a Docker container.
-Running `./do` commands in the repository root will run the command in the Docker container.
+This `./do` script runs plugin-level Robo tasks directly on the host. Use it for compile, lint, and QA — anything that only needs PHP/Node, not WordPress.
 
-It is recommended to run the assets commands directly in the free MailPoet directory. That means installing the dependencies locally. Running the js and css compilation commands within the container is possible, but it is slower.
+At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. See the [monorepo README](../README.md) for the full list.
 
-On the other hand, the tests should be run in the container. The container has all the necessary dependencies installed and configured. And there is a database running. See more details in the README.md in the repository root.
+**Rule of thumb:**
+
+- **On host (via `./do` or `pnpm`)**: compile, watch, lint, PHPStan, PHPCS, Prettier, JS tests (mocha)
+- **In wp-env container (via `pnpm`)**: migrations, templates, wp-cli commands, anything needing WordPress runtime
+- **In `tests_env/` container (via `pnpm test:*` or `./do test:*`)**: integration, unit, acceptance tests
 
 ```bash
 $ ./do install             # install PHP and JS dependencies
