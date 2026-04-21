@@ -72,7 +72,10 @@ class PermanentNotices {
 
   /** @var DatabaseEngineNotice */
   private $databaseEngineNotice;
-  
+
+  /** @var SendingQueueBodyCleanupNotice */
+  private $sendingQueueBodyCleanupNotice;
+
   public function __construct(
     WPFunctions $wp,
     CronHelper $cronHelper,
@@ -104,6 +107,7 @@ class PermanentNotices {
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
     $this->databaseEngineNotice = new DatabaseEngineNotice($wp, $entityManager);
     $this->wordPressPlaygroundNotice = new WordPressPlaygroundNotice();
+    $this->sendingQueueBodyCleanupNotice = new SendingQueueBodyCleanupNotice($settings, $wp);
     $this->senderDomainAuthenticationNotices = $senderDomainAuthenticationNotices;
   }
 
@@ -170,6 +174,9 @@ class PermanentNotices {
     $this->wordPressPlaygroundNotice->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
+    $this->sendingQueueBodyCleanupNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+    );
     $excludeDomainAuthenticationNotices = [
       'mailpoet-settings',
       'mailpoet-newsletter-editor',
@@ -218,6 +225,9 @@ class PermanentNotices {
         break;
       case (PremiumFeaturesAvailableNotice::OPTION_NAME):
         $this->premiumFeaturesAvailableNotice->disable();
+        break;
+      case (SendingQueueBodyCleanupNotice::OPTION_NAME):
+        $this->sendingQueueBodyCleanupNotice->disable();
         break;
     }
   }
