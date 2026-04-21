@@ -207,9 +207,9 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $now = Carbon::now();
     Carbon::setTestNow($now);
 
-    $subscriber1 = $this->subscriberFactory->create();
-    $subscriber2 = $this->subscriberFactory->create();
-    $subscriber3 = $this->subscriberFactory->create();
+    $subscriber1 = (new SubscriberFactory())->create();
+    $subscriber2 = (new SubscriberFactory())->create();
+    $subscriber3 = (new SubscriberFactory())->create();
 
     $oldCompletedTask = $this->taskFactory->create(
       'sending',
