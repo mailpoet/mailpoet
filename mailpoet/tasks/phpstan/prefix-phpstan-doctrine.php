@@ -17,3 +17,42 @@ foreach ($files as $file) {
     file_put_contents($file, $data);
   }
 }
+
+// Inject the Doctrine package entries from the prefixer's installed.php into
+// phpstan's own vendor installed.php. Without this, phpstan-doctrine's calls
+// to `InstalledVersions::getVersion('doctrine/dbal')` (and friends) throw
+// "Package not installed" at analysis time — bootstrap.php's runtime reload
+// only works from the main phpstan process and the merged state doesn't
+// reliably propagate to forked worker processes in every CI environment.
+// Writing the data directly into phpstan's installed.php makes the lookup
+// work via Composer's default vendor-scan path.
+$phpstanInstalledPath = __DIR__ . '/vendor/composer/installed.php';
+$prefixerInstalledPath = __DIR__ . '/../../prefixer/vendor/composer/installed.php';
+if (file_exists($phpstanInstalledPath) && file_exists($prefixerInstalledPath)) {
+  $phpstanData = require $phpstanInstalledPath;
+  $prefixerData = require $prefixerInstalledPath;
+
+  // Copy every `doctrine/*` entry from prefixer into phpstan's versions list.
+  // phpstan-doctrine only reads version metadata via InstalledVersions
+  // (getVersion / getPrettyVersion), never install_path — and prefixer's
+  // stored install_path is already absolute and prefixer-relative, which
+  // wouldn't be valid from phpstan's vendor anyway. Drop it to avoid
+  // leaving a misleading-looking path in phpstan's installed.php.
+  foreach ($prefixerData['versions'] as $packageName => $packageData) {
+    if (strpos($packageName, 'doctrine/') === 0) {
+      unset($packageData['install_path']);
+      $phpstanData['versions'][$packageName] = $packageData;
+    }
+  }
+
+  // Regenerate installed.php with the augmented data.
+  file_put_contents(
+    $phpstanInstalledPath,
+    "<?php return " . var_export($phpstanData, true) . ";\n"
+  );
+  $injectedCount = count(array_filter(array_keys($prefixerData['versions']), function ($p) {
+    return strpos($p, 'doctrine/') === 0;
+  }));
+  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI build script, $injectedCount is a count() result.
+  echo 'Injected ' . $injectedCount . ' doctrine/* package entries into phpstan\'s installed.php' . "\n";
+}
