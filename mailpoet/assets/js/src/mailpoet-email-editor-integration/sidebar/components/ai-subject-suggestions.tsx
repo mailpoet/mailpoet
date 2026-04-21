@@ -34,10 +34,7 @@ type Props = {
 };
 
 export function AiSubjectSuggestions({ onSelect }: Props) {
-  if (!window.mailpoet_ai_text_generation_available) {
-    return null;
-  }
-
+  const isAvailable = Boolean(window.mailpoet_ai_text_generation_available);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,21 +77,29 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
       signal: controller.signal,
     })
       .then((response) => {
+        if (abortControllerRef.current !== controller) return;
         setSuggestions(response.data.suggestions);
       })
       .catch((err: Error & { code?: string }) => {
         if (err.name === 'AbortError') {
           return;
         }
+        if (abortControllerRef.current !== controller) return;
         setError(
           err.message ||
             __('Failed to generate suggestions. Please try again.', 'mailpoet'),
         );
       })
       .finally(() => {
-        setIsLoading(false);
+        if (abortControllerRef.current === controller) {
+          setIsLoading(false);
+        }
       });
   }, []);
+
+  if (!isAvailable) {
+    return null;
+  }
 
   return (
     <div ref={popoverAnchor}>

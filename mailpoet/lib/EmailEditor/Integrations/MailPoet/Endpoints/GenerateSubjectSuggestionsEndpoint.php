@@ -47,6 +47,14 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
       );
     }
 
+    if (!current_user_can('edit_post', $postId)) {
+      return new ErrorResponse(
+        403,
+        __('You are not allowed to generate suggestions for this email.', 'mailpoet'),
+        'mailpoet_ai_forbidden'
+      );
+    }
+
     $html = do_blocks($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $bodyText = $this->wp->wpStripAllTags($html);
     $bodyText = (string)preg_replace('/\s+/', ' ', trim($bodyText));
