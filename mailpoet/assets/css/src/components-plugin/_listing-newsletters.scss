@@ -258,6 +258,16 @@ h1.title.mailpoet-newsletter-listing-heading {
   margin-right: 5px;
 }
 
+.mailpoet-segments-listing {
+  .mailpoet-listing-description-column {
+    max-width: 14vw;
+
+    @include respond-to(small-screen) {
+      max-width: none;
+    }
+  }
+}
+
 .mailpoet-listing-stats-tooltip-title {
   font-size: $font-size-extra-small;
   font-weight: bold;
