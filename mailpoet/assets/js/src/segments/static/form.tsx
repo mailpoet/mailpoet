@@ -20,11 +20,11 @@ const fields = [
     tip: MailPoet.I18n.t('segmentDescriptionTip'),
   },
   {
-    name: 'showInManageSubscriptionPage',
+    name: 'show_in_manage_subscription_page',
     label: MailPoet.I18n.t('showInManageSubscriptionPage'),
     type: 'checkbox',
     values: {
-      showInManageSubscriptionPage: MailPoet.I18n.t(
+      show_in_manage_subscription_page: MailPoet.I18n.t(
         'showInManageSubscriptionPageTip',
       ),
     },
