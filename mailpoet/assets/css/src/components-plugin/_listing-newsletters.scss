@@ -266,6 +266,14 @@ h1.title.mailpoet-newsletter-listing-heading {
       max-width: none;
     }
   }
+
+  .mailpoet-listing-stats-opened-clicked {
+    flex-direction: column;
+  }
+
+  .mailpoet-listing-stats-percentages {
+    margin-right: 0;
+  }
 }
 
 .mailpoet-listing-stats-tooltip-title {
