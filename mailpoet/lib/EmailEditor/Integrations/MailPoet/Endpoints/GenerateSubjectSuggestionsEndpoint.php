@@ -28,7 +28,8 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $postId = intval($request->getParam('post_id'));
+    /** @var int $postId validated by schema */
+    $postId = $request->getParam('post_id');
 
     if (!function_exists('wp_ai_client_prompt')) {
       return new ErrorResponse(
