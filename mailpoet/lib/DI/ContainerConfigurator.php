@@ -327,6 +327,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\WooCommerceSync::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\ExportFilesCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\LogCleanup::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SendingTaskSubscribersCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SubscribersEmailCount::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\InactiveSubscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Mixpanel::class)->setPublic(true);
