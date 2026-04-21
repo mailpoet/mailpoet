@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { memo, useEffect, useState, useRef } from 'react';
+import { memo, useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { __, _x } from '@wordpress/i18n';
 
@@ -44,8 +44,13 @@ function SendingStatus() {
     subject: '',
     sent: false,
   });
+  const [itemCount, setItemCount] = useState(null);
 
   const refreshRef = useRef(null);
+
+  const handleItemCountUpdate = useCallback((count) => {
+    setItemCount(count);
+  }, []);
 
   useEffect(() => {
     MailPoet.Ajax.post({
@@ -76,10 +81,23 @@ function SendingStatus() {
         )}
       </h1>
       <StatsLink newsletter={newsletter} />
+      {newsletter.sent && itemCount === 0 && (
+        <p className="mailpoet-notice mailpoet-notice-info">
+          {__(
+            'Sending status data is no longer available. Per-subscriber records for this newsletter have been cleaned up. You can adjust the retention period in',
+            'mailpoet',
+          )}{' '}
+          <a href="admin.php?page=mailpoet-settings#/advanced">
+            {__('Advanced settings', 'mailpoet')}
+          </a>
+          {'.'}
+        </p>
+      )}
       <SendingStatusListing
         location={location}
         params={params}
         refreshRef={refreshRef}
+        onItemCountUpdate={handleItemCountUpdate}
       />
     </>
   );
@@ -98,7 +116,7 @@ const onRenderItem = (item, refreshRef) => (
 );
 
 const SendingStatusListing = memo(
-  ({ location, params, refreshRef }) => (
+  ({ location, params, refreshRef, onItemCountUpdate }) => (
     <Listing
       limit={window.mailpoet_listing_per_page}
       location={location}
@@ -116,6 +134,9 @@ const SendingStatusListing = memo(
       afterGetItems={(state) => {
         checkMailerStatus(state);
         checkCronStatus(state);
+        if (typeof onItemCountUpdate === 'function') {
+          onItemCountUpdate(state.count);
+        }
       }}
     />
   ),
@@ -129,6 +150,7 @@ SendingStatusListing.propTypes = {
     id: PropTypes.string.isRequired,
   }).isRequired,
   refreshRef: PropTypes.shape({ current: PropTypes.func }),
+  onItemCountUpdate: PropTypes.func,
 };
 
 function StatsLink({
