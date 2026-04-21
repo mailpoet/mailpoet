@@ -196,6 +196,8 @@ class EditorPageRenderer {
       'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
       'mailpoet_automation_id' => $automationId,
+      'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')
+        && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
     ];
     $this->wp->wpAddInlineScript('email_editor_integration', implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key], JSON_HEX_TAG | JSON_UNESCAPED_SLASHES));

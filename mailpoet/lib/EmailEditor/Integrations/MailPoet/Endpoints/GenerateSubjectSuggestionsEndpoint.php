@@ -1,0 +1,200 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\EmailEditor\Integrations\MailPoet\Endpoints;
+
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
+use MailPoet\API\REST\Endpoint;
+use MailPoet\API\REST\ErrorResponse;
+use MailPoet\API\REST\Request;
+use MailPoet\API\REST\Response;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\Validator\Builder;
+use MailPoet\Validator\Schema;
+use MailPoet\WP\Functions as WPFunctions;
+
+class GenerateSubjectSuggestionsEndpoint extends Endpoint {
+  private WPFunctions $wp;
+
+  private const TAG_CATEGORIES_FOR_SUBJECT = ['Subscriber', 'Site', 'Customer', 'Order'];
+
+  private const SUBJECT_MAX_LENGTH = 60;
+  private const PREHEADER_MAX_LENGTH = 150;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
+  public function handle(Request $request): Response {
+    $postId = (int)$request->getParam('post_id');
+
+    if (!function_exists('wp_ai_client_prompt')) {
+      return new ErrorResponse(
+        503,
+        __('AI text generation is not available.', 'mailpoet'),
+        'mailpoet_ai_unavailable'
+      );
+    }
+
+    $post = $this->wp->getPost($postId);
+    if (!$post instanceof \WP_Post || $post->post_type !== 'mailpoet_email') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return new ErrorResponse(
+        404,
+        __('Email not found.', 'mailpoet'),
+        'mailpoet_ai_email_not_found'
+      );
+    }
+
+    $html = do_blocks($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $bodyText = $this->wp->wpStripAllTags($html);
+    $bodyText = (string)preg_replace('/\s+/', ' ', trim($bodyText));
+
+    if ($bodyText === '') {
+      return new ErrorResponse(
+        400,
+        __('Email body is empty. Add content before generating suggestions.', 'mailpoet'),
+        'mailpoet_ai_empty_content'
+      );
+    }
+
+    $personalizationTags = $this->getAvailablePersonalizationTags();
+    $tagsInstruction = '';
+    if (!empty($personalizationTags)) {
+      $tagsList = implode(', ', array_map(function ($tag) {
+        return $tag['token'] . ' (' . $tag['name'] . ')';
+      }, $personalizationTags));
+      $tagsInstruction = 'You may use these personalization tags in the subject lines and preview text to make them more personal: '
+        . $tagsList . '. Use them sparingly — not every suggestion needs a tag. Insert the tag token exactly as shown (e.g. [mailpoet/subscriber-firstname]). ';
+    }
+
+    $systemInstruction = 'You are an expert email marketer. Generate subject lines and preview text for marketing emails. '
+      . 'Match the tone and style of the email body — if it\'s a business email, keep it professional; '
+      . 'if it\'s fun or casual, feel free to use emojis. '
+      . 'IMPORTANT: Generate suggestions in the same language as the email body content. '
+      . $tagsInstruction
+      . 'Subject lines must be under 60 characters. Preview text must be under 150 characters and complement the subject line.';
+
+    $prompt = "Based on the following email body content, generate 4 different subject line and preview text pairs:\n\n" . $bodyText;
+
+    $schema = [
+      'type' => 'object',
+      'additionalProperties' => false,
+      'properties' => [
+        'suggestions' => [
+          'type' => 'array',
+          'items' => [
+            'type' => 'object',
+            'additionalProperties' => false,
+            'properties' => [
+              'subject' => ['type' => 'string'],
+              'preheader' => ['type' => 'string'],
+            ],
+            'required' => ['subject', 'preheader'],
+          ],
+        ],
+      ],
+      'required' => ['suggestions'],
+    ];
+
+    $result = wp_ai_client_prompt($prompt)
+      ->using_system_instruction($systemInstruction)
+      ->as_json_response($schema)
+      ->generate_text();
+
+    if (is_wp_error($result)) {
+      return new ErrorResponse(
+        502,
+        __('Failed to generate suggestions. Please check your AI provider configuration and try again.', 'mailpoet'),
+        'mailpoet_ai_generation_failed'
+      );
+    }
+
+    $decoded = json_decode($result, true);
+    if (!is_array($decoded) || !isset($decoded['suggestions']) || !is_array($decoded['suggestions'])) {
+      return new ErrorResponse(
+        502,
+        __('AI returned an unexpected response.', 'mailpoet'),
+        'mailpoet_ai_invalid_response'
+      );
+    }
+
+    $validSuggestions = [];
+    foreach ($decoded['suggestions'] as $suggestion) {
+      if (
+        !is_array($suggestion)
+        || !isset($suggestion['subject'], $suggestion['preheader'])
+        || !is_string($suggestion['subject'])
+        || !is_string($suggestion['preheader'])
+        || mb_strlen($suggestion['subject']) > self::SUBJECT_MAX_LENGTH
+        || mb_strlen($suggestion['preheader']) > self::PREHEADER_MAX_LENGTH
+      ) {
+        continue;
+      }
+      $validSuggestions[] = [
+        'subject' => $suggestion['subject'],
+        'preheader' => $suggestion['preheader'],
+      ];
+    }
+
+    if (empty($validSuggestions)) {
+      return new ErrorResponse(
+        502,
+        __('AI did not return any valid suggestions. Please try again.', 'mailpoet'),
+        'mailpoet_ai_no_valid_suggestions'
+      );
+    }
+
+    return new Response(['suggestions' => $validSuggestions]);
+  }
+
+  /**
+   * @return array<int, array{name: string, token: string}>
+   */
+  private function getAvailablePersonalizationTags(): array {
+    if (!class_exists(Email_Editor_Container::class)) {
+      return [];
+    }
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $tags = [];
+    $urlKeywords = ['url', 'link'];
+    foreach ($registry->get_all() as $tag) {
+      $postTypes = $tag->get_post_types();
+      if (!empty($postTypes) && !in_array(EmailEditor::MAILPOET_EMAIL_POST_TYPE, $postTypes, true)) {
+        continue;
+      }
+      if (!in_array($tag->get_category(), self::TAG_CATEGORIES_FOR_SUBJECT, true)) {
+        continue;
+      }
+      $token = $tag->get_token();
+      $tokenLower = strtolower($token);
+      $isUrl = false;
+      foreach ($urlKeywords as $keyword) {
+        if (strpos($tokenLower, $keyword) !== false) {
+          $isUrl = true;
+          break;
+        }
+      }
+      if ($isUrl) {
+        continue;
+      }
+      $tags[] = [
+        'name' => $tag->get_name(),
+        'token' => $token,
+      ];
+    }
+    return $tags;
+  }
+
+  public function checkPermissions(): bool {
+    return current_user_can('edit_posts');
+  }
+
+  /** @return array<string, Schema> */
+  public static function getRequestSchema(): array {
+    return [
+      'post_id' => Builder::integer()->required(),
+    ];
+  }
+}
