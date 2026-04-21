@@ -90,9 +90,7 @@ function SendingStatus() {
               'mailpoet',
             ),
             {
-              link: (
-                <a href="admin.php?page=mailpoet-settings#/advanced"> </a>
-              ),
+              link: <a href="admin.php?page=mailpoet-settings#/advanced"> </a>,
             },
           )}
         </p>
