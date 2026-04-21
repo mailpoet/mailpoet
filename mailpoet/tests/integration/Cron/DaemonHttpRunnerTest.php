@@ -307,6 +307,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createExportFilesCleanupWorker' => $worker,
       'createLogCleanupWorker' => $worker,
       'createSendingTaskSubscribersCleanupWorker' => $worker,
+      'createSendingQueueBodyCleanupWorker' => $worker,
       'createSubscribersEmailCountsWorker' => $worker,
       'createInactiveSubscribersWorker' => $worker,
       'createAuthorizedSendingEmailsCheckWorker' => $worker,
