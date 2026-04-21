@@ -309,7 +309,10 @@ class SegmentListComponent extends Component<SegmentListComponentProps> {
           {segmentName}
           {actions}
         </td>
-        <td data-colname={MailPoet.I18n.t('description')}>
+        <td
+          className="mailpoet-listing-description-column"
+          data-colname={MailPoet.I18n.t('description')}
+        >
           <abbr>{segment.description}</abbr>
         </td>
         {mailpoetTrackingEnabled ? (
