@@ -36,7 +36,7 @@ class SendingQueueBodyCleanup extends SimpleWorker {
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $retentionDays = (int)$this->settings->get('sending_queue_body_retention_days');
-    if ($retentionDays === 0) {
+    if ($retentionDays <= 0) {
       return true;
     }
 

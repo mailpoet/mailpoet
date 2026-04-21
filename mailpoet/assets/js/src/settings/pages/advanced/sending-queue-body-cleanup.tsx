@@ -17,6 +17,15 @@ export function SendingQueueBodyCleanup() {
       <Inputs>
         <div className="mailpoet-settings-inputs-row">
           <Radio
+            id="sending-queue-body-cleanup-never"
+            value=""
+            checked={retentionDays === ''}
+            onCheck={setRetentionDays}
+          />
+          <label htmlFor="sending-queue-body-cleanup-never">{t('never')}</label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
             id="sending-queue-body-cleanup-7-days"
             value="7"
             checked={retentionDays === '7'}
@@ -58,15 +67,6 @@ export function SendingQueueBodyCleanup() {
           <label htmlFor="sending-queue-body-cleanup-365-days">
             {t('after365days')}
           </label>
-        </div>
-        <div className="mailpoet-settings-inputs-row">
-          <Radio
-            id="sending-queue-body-cleanup-never"
-            value=""
-            checked={retentionDays === ''}
-            onCheck={setRetentionDays}
-          />
-          <label htmlFor="sending-queue-body-cleanup-never">{t('never')}</label>
         </div>
       </Inputs>
     </>

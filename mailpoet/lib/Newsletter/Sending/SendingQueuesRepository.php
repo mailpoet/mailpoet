@@ -9,6 +9,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\DynamicSegments\FilterFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -288,7 +289,7 @@ class SendingQueuesRepository extends Repository {
           FROM `{$queueTable}` sq3
           INNER JOIN `{$taskTable}` t ON t.id = sq3.task_id
           WHERE t.status = :status
-            AND t.type = 'sending'
+            AND t.type = :taskType
             AND t.processed_at < :cutoff
             AND sq3.newsletter_rendered_body IS NOT NULL
             AND sq3.deleted_at IS NULL
@@ -298,11 +299,13 @@ class SendingQueuesRepository extends Repository {
       ",
       [
         'status' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'taskType' => SendingQueueWorker::TASK_TYPE,
         'cutoff' => $cutoff,
         'limit' => $batchSize,
       ],
       [
         'status' => ParameterType::STRING,
+        'taskType' => ParameterType::STRING,
         'cutoff' => ParameterType::STRING,
         'limit' => ParameterType::INTEGER,
       ]
