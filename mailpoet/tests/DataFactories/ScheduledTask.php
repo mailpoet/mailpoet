@@ -36,7 +36,8 @@ class ScheduledTask {
     ?string $status,
     ?\DateTimeInterface $scheduledAt = null,
     ?\DateTimeInterface $deletedAt = null,
-    ?\DateTimeInterface $updatedAt = null
+    ?\DateTimeInterface $updatedAt = null,
+    ?\DateTimeInterface $processedAt = null
   ) {
     $task = new ScheduledTaskEntity();
     $task->setType($type);
@@ -47,6 +48,10 @@ class ScheduledTask {
 
     if ($deletedAt) {
       $task->setDeletedAt($deletedAt);
+    }
+
+    if ($processedAt) {
+      $task->setProcessedAt($processedAt);
     }
 
     $this->entityManager->persist($task);
