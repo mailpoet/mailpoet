@@ -61,7 +61,7 @@ class SendingTaskSubscribersCleanup extends SimpleWorker {
       );
 
       if (
-        $deleted < self::ROW_BATCH_SIZE ||
+        $deleted === 0 ||
           (microtime(true) - $startTime) > self::MAX_EXECUTION_TIME
       ) {
         break;

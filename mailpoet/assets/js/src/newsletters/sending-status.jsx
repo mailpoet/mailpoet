@@ -136,7 +136,7 @@ const SendingStatusListing = memo(
       afterGetItems={(state) => {
         checkMailerStatus(state);
         checkCronStatus(state);
-        if (typeof onItemCountUpdate === 'function') {
+        if (typeof onItemCountUpdate === 'function' && state.group === 'all') {
           onItemCountUpdate(state.count);
         }
       }}
