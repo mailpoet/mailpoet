@@ -41,11 +41,12 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const popoverAnchor = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       abortControllerRef.current?.abort();
-    };
-  }, []);
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     const container = popoverAnchor.current;
@@ -171,9 +172,9 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
 
             {!isLoading &&
               !error &&
-              suggestions.map((suggestion, index) => (
+              suggestions.map((suggestion) => (
                 <button
-                  key={index}
+                  key={suggestion.subject}
                   type="button"
                   className="mailpoet-ai-suggestions__item"
                   onClick={() => {
