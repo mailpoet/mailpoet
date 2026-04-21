@@ -149,9 +149,7 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
             {isLoading && (
               <div className="mailpoet-ai-suggestions__loading">
                 <Spinner />
-                <span>
-                  {__('Generating suggestions…', 'mailpoet')}
-                </span>
+                <span>{__('Generating suggestions…', 'mailpoet')}</span>
               </div>
             )}
 
