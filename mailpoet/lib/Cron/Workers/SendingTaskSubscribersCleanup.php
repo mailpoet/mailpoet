@@ -7,6 +7,19 @@ use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
+/**
+ * Purges old rows from scheduled_task_subscribers for completed sending tasks.
+ *
+ * Runs 4 times per day in random 6-hour slots (0–5h, 6–11h, 12–17h, 18–23h).
+ * Each run loops in batches: first selects up to TASK_BATCH_SIZE completed tasks
+ * older than the configured retention period that still have subscriber rows,
+ * then deletes up to ROW_BATCH_SIZE rows per iteration. The loop continues until
+ * fewer rows are deleted than the limit or MAX_EXECUTION_TIME is exceeded.
+ * A 100ms pause between iterations throttles I/O on shared hosting.
+ *
+ * Retention is controlled by the 'sending_status_retention_days' setting.
+ * Empty string means "Never" — the worker skips all deletions.
+ */
 class SendingTaskSubscribersCleanup extends SimpleWorker {
   const TASK_TYPE = 'sending_task_subscribers_cleanup';
   const TASK_BATCH_SIZE = 200;
