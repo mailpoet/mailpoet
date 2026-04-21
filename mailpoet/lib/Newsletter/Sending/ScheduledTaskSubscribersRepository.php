@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 /**
@@ -201,6 +202,51 @@ class ScheduledTaskSubscribersRepository extends Repository {
 
   public function countUnprocessed(ScheduledTaskEntity $scheduledTaskEntity): int {
     return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
+  }
+
+  public function purgeOldTaskSubscribers(int $daysToKeep, int $taskBatchSize, int $rowLimit): int {
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $cutoff = Carbon::now()->subDays($daysToKeep)->toDateTimeString();
+
+    $taskIds = $this->entityManager->getConnection()->executeQuery(
+      "SELECT st.`id`
+       FROM `{$stTable}` st
+       WHERE st.`status` = :status
+         AND st.`processed_at` < :cutoff
+         AND st.`deleted_at` IS NULL
+       LIMIT :taskBatchSize",
+      [
+        'status' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'cutoff' => $cutoff,
+        'taskBatchSize' => $taskBatchSize,
+      ],
+      [
+        'status' => ParameterType::STRING,
+        'cutoff' => ParameterType::STRING,
+        'taskBatchSize' => ParameterType::INTEGER,
+      ]
+    )->fetchFirstColumn();
+
+    if (!$taskIds) {
+      return 0;
+    }
+
+    $deleted = $this->entityManager->getConnection()->executeStatement(
+      "DELETE FROM `{$stsTable}`
+       WHERE `task_id` IN (:taskIds)
+       LIMIT :rowLimit",
+      [
+        'taskIds' => $taskIds,
+        'rowLimit' => $rowLimit,
+      ],
+      [
+        'taskIds' => ArrayParameterType::INTEGER,
+        'rowLimit' => ParameterType::INTEGER,
+      ]
+    );
+
+    return (int)$deleted;
   }
 
   private function checkCompleted(ScheduledTaskEntity $task): void {
