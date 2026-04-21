@@ -157,6 +157,12 @@ jobs:
             ./tools/vendor/composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
             touch .env
             ./do install
+            # Reinstall phpstan dependencies so its post-install-cmd re-runs
+            # prefix-phpstan-doctrine.php against the current prefixed Doctrine
+            # version. Needed when the tasks/phpstan/vendor cache was restored
+            # but the prefixer/vendor content (Doctrine package metadata
+            # consumed by phpstan-doctrine) has since changed.
+            ./tools/vendor/composer.phar --working-dir=tasks/phpstan install
             ./do compile:all --env production --skip-tests
             ./do doctrine:generate-cache
             ../tests_env/vendor/bin/codecept build
