@@ -22,6 +22,7 @@ type Segment = {
   name: string;
   description: string;
   average_engagement_score: number;
+  show_in_manage_subscription_page: boolean;
   subscribers_count: {
     subscribed?: number;
     unconfirmed?: number;
@@ -286,16 +287,28 @@ class SegmentListComponent extends Component<SegmentListComponentProps> {
 
     let segmentName;
 
+    const privateLabel =
+      Number(segment.show_in_manage_subscription_page) === 0 ? (
+        <span className="mailpoet-listing-title-private-label">
+          {' '}
+          {MailPoet.I18n.t('privateListLabel')}
+        </span>
+      ) : null;
+
     if (isSpecialSegment(segment)) {
       // the WP users and WooCommerce customers segments
       // are not editable so just display their names
       segmentName = (
-        <span className="mailpoet-listing-title">{segment.name}</span>
+        <span className="mailpoet-listing-title">
+          {segment.name}
+          {privateLabel}
+        </span>
       );
     } else {
       segmentName = (
         <Link className="mailpoet-listing-title" to={`/edit/${segment.id}`}>
           {segment.name}
+          {privateLabel}
         </Link>
       );
     }

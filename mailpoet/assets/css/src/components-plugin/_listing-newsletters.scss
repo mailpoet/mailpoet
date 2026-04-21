@@ -274,6 +274,11 @@ h1.title.mailpoet-newsletter-listing-heading {
   .mailpoet-listing-stats-percentages {
     margin-right: 0;
   }
+
+  .mailpoet-listing-title-private-label {
+    color: $color-primary-inactive;
+    font-weight: normal;
+  }
 }
 
 .mailpoet-listing-stats-tooltip-title {
