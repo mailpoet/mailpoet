@@ -7,6 +7,12 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
+/**
+ * Runs 4x daily in staggered 6-hour slots. Each run NULLs newsletter_rendered_body
+ * for completed sending queues older than the configured retention window (default 30 days).
+ * Processes in batches of 250 rows with a 30s time limit per run.
+ * Setting the retention to '' (Never) disables cleanup entirely.
+ */
 class SendingQueueBodyCleanup extends SimpleWorker {
   const TASK_TYPE = 'sending_queue_body_cleanup';
   const BATCH_SIZE = 250;
