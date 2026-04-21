@@ -76,6 +76,70 @@
   }
 }
 
+.mailpoet-ai-suggestions {
+  min-width: 300px;
+  max-width: 400px;
+  padding: $grid-unit-10;
+
+  &__toggle {
+    margin-bottom: $grid-unit-15;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    gap: $grid-unit-10;
+    padding: $grid-unit-15 0;
+    color: $gray-700;
+  }
+
+  &__error {
+    padding: $grid-unit-10 0;
+
+    p {
+      color: $alert-red;
+      margin: 0 0 $grid-unit-10;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: $grid-unit-10;
+    border: 1px solid $gray-300;
+    border-radius: 2px;
+    margin-bottom: $grid-unit-10;
+    cursor: pointer;
+    text-align: left;
+    background: transparent;
+
+    &:hover {
+      background-color: $gray-100;
+      border-color: var(--wp-admin-theme-color);
+    }
+
+    strong {
+      color: $gray-900;
+      margin-bottom: 4px;
+    }
+
+    span {
+      color: $gray-700;
+      font-size: $font-size-small;
+    }
+  }
+}
+
 .mailpoet-inbox-preview-panel {
   &__card {
     padding: $grid-unit-15;

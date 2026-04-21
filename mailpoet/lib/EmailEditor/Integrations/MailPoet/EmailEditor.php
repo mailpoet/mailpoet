@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\API\REST\API;
+use MailPoet\EmailEditor\Integrations\MailPoet\Endpoints\GenerateSubjectSuggestionsEndpoint;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -70,6 +72,7 @@ class EmailEditor {
       $this->templatesController->initialize();
     }
     $this->extendEmailPostApi();
+    $this->registerApiRoutes();
     $this->personalizationTagManager->initialize();
   }
 
@@ -97,6 +100,15 @@ class EmailEditor {
       return $post && $post->post_type === self::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     return false;
+  }
+
+  private function registerApiRoutes(): void {
+    $this->wp->addAction(API::REST_API_INIT_ACTION, function (API $api) {
+      $api->registerPostRoute(
+        'email/generate-subject-suggestions',
+        GenerateSubjectSuggestionsEndpoint::class
+      );
+    });
   }
 
   public function extendEmailPostApi() {

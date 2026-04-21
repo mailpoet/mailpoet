@@ -11,6 +11,7 @@ import {
 } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
+import { AiSubjectSuggestions } from './components/ai-subject-suggestions';
 
 const subjectMaxLength = 60;
 const previewTextMaxLength = 150;
@@ -97,6 +98,13 @@ export function ContentSettingsPanel() {
       title={__('Content settings', 'mailpoet')}
       className="mailpoet-content-settings-panel"
     >
+      <AiSubjectSuggestions
+        onSelect={(suggestion) => {
+          updateEmailMailPoetProperty('subject', suggestion.subject);
+          updateEmailMailPoetProperty('preheader', suggestion.preheader);
+        }}
+      />
+
       <TextareaControl
         label={__('Subject', 'mailpoet')}
         value={mailpoetEmailData?.subject || ''}
