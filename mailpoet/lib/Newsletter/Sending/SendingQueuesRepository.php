@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
@@ -9,7 +10,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\DynamicSegments\FilterFactory;
 use MailPoetVendor\Carbon\Carbon;
