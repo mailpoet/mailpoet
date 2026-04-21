@@ -210,8 +210,9 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $cutoff = Carbon::now()->subDays($daysToKeep)->toDateTimeString();
 
     $taskIds = $this->entityManager->getConnection()->executeQuery(
-      "SELECT st.`id`
+      "SELECT DISTINCT st.`id`
        FROM `{$stTable}` st
+       INNER JOIN `{$stsTable}` sts ON sts.`task_id` = st.`id`
        WHERE st.`status` = :status
          AND st.`processed_at` < :cutoff
          AND st.`deleted_at` IS NULL
