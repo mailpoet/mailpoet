@@ -233,7 +233,9 @@ class ScheduledTaskSubscribersRepository extends Repository {
       return 0;
     }
 
-    $taskIdsList = implode(',', array_map('intval', $taskIds));
+    $taskIdsList = implode(',', array_map(function ($id) {
+      return (int)$id;
+    }, $taskIds));
 
     $deleted = $this->entityManager->getConnection()->executeStatement(
       "DELETE FROM `{$stsTable}`
