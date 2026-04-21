@@ -38,6 +38,11 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $this->settings->set('sending_status_retention_days', '60');
   }
 
+  public function _after() {
+    Carbon::setTestNow();
+    parent::_after();
+  }
+
   public function testItDeletesOldCompletedTaskSubscribers() {
     $now = Carbon::now();
     Carbon::setTestNow($now);
@@ -59,7 +64,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(0);
 
-    Carbon::setTestNow();
   }
 
   public function testItKeepsRecentCompletedTaskSubscribers() {
@@ -83,7 +87,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(1);
 
-    Carbon::setTestNow();
   }
 
   public function testItKeepsNonCompletedTaskSubscribers() {
@@ -107,7 +110,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(1);
 
-    Carbon::setTestNow();
   }
 
   public function testItSkipsWhenRetentionIsNever() {
@@ -133,7 +135,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(1);
 
-    Carbon::setTestNow();
   }
 
   public function testItRespectsBatchSize() {
@@ -176,7 +177,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
 
     verify($remaining)->equals(5);
 
-    Carbon::setTestNow();
   }
 
   public function testItExcludesSoftDeletedTasks() {
@@ -200,7 +200,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(1);
 
-    Carbon::setTestNow();
   }
 
   public function testItDeletesOnlyEligibleTasksInMixedState() {
@@ -247,7 +246,6 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
     verify(count($remaining))->equals(2);
 
-    Carbon::setTestNow();
   }
 
   public function testItSchedulesInTheFuture() {
