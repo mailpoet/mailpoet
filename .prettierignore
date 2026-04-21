@@ -25,3 +25,7 @@ vendor-prefixed
 /mailpoet/views
 /mailpoet-premium
 /wordpress
+
+# Build outputs from packages/js workspaces
+/packages/js/components/build-module
+/packages/js/components/build-style

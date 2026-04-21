@@ -9,7 +9,7 @@ This is a **monorepo** containing:
 - `mailpoet/` -- The free plugin (main codebase)
 - `mailpoet-premium/` -- The premium plugin (extends the free version)
 
-**Tech Stack:** PHP 7.4+, WordPress, Doctrine ORM, React 18, TypeScript, SCSS, Webpack, Docker, Codeception, pnpm, Action Scheduler
+**Tech Stack:** PHP 7.4+, WordPress, Doctrine ORM, React 18, TypeScript, SCSS, Webpack, `@wordpress/env` (dev), Docker + Codeception (tests), Mailpit (SMTP catcher), pnpm, Action Scheduler
 
 ## Directory Structure
 
@@ -31,12 +31,13 @@ This is a **monorepo** containing:
 │   ├── components/              # @mailpoet/components
 │   └── eslint-config/           # @mailpoet/eslint-config
 ├── doc/                         # API documentation and usage examples
-├── dev/                         # Docker dev configuration
+├── scripts/                     # Dev helper scripts (setup, SMTP catcher, override generator)
 ├── tools/                       # Build tooling (Webpack config)
-├── tests_env/                   # Test environment (Docker + Codeception)
+├── tests_env/                   # Test environment (Docker + Codeception + Selenium)
 ├── templates/                   # Email templates
-├── do                           # Root CLI script (Docker wrapper)
-└── docker-compose.yml           # Docker configuration
+├── .wp-env.json                 # wp-env dev environment config
+├── .wp-env.override.json.sample # Template for local wp-env overrides
+└── .wp-env/                     # wp-env helpers: mu-plugins/ (SMTP router), scripts/ (MailPoet SMTP auto-config)
 ```
 
 ### Key PHP Namespaces (`mailpoet/lib/`)
@@ -78,36 +79,62 @@ This is a **monorepo** containing:
 ### Initial Setup
 
 ```bash
-./do setup                       # Pull images, install dependencies
+pnpm bootstrap                   # Install deps, download WC plugins, generate override, compile
 # Add secrets to .env files in mailpoet/ and mailpoet-premium/
-./do start                       # Start Docker containers
-# Visit http://localhost:8002
+pnpm env:start                   # Start wp-env + Mailpit SMTP catcher
 ```
 
-Additional local tools recommended: PHP (per `composer.json`), Node.js (per `.nvmrc`), pnpm (via Corepack), [GitHub CLI (`gh`)](https://cli.github.com/).
+Open:
+
+- **WordPress**: http://localhost:8888 (admin: `admin` / `password`)
+- **phpMyAdmin**: http://localhost:8081
+- **Mailpit** (captures outgoing mail): http://localhost:8082
+
+Required tools: Docker Desktop, PHP (per `composer.json`), Node.js (per `.nvmrc`), pnpm (via Corepack), [GitHub CLI (`gh`)](https://cli.github.com/).
 
 **GitHub CLI (`gh`) is required** for downloading private WooCommerce test plugins (Subscriptions, AutomateWoo, Memberships). Authenticate with `gh auth login` — no personal access token needed. In CI, the `GH_TOKEN` env var is used instead.
 
 ### Root-Level Commands
 
-The root `./do` script wraps Docker operations. Run from the repo root:
+From the repo root:
 
 ```bash
-./do setup                           # Initial environment setup
-./do start                           # Start Docker (docker compose up -d)
-./do stop                            # Stop Docker (docker compose stop)
-./do ssh [--test] [--premium]        # Shell into plugin directory in container
-./do run [--test] <command>          # Run command in wordpress container
-./do build [--premium]               # Build plugin .zip
-./do templates                       # Generate email template classes
-./do [--test] [--premium] <command>  # Run plugin-level ./do command in Docker
+pnpm env:start                       # Start wp-env + Mailpit
+pnpm env:stop                        # Stop (state preserved)
+pnpm env:destroy                     # Stop + delete all wp-env data
+pnpm env:restart                     # Destroy + start (fresh DB)
+pnpm env:debug                       # Start with Xdebug enabled (port 9003)
+pnpm env:logs                        # Tail container logs
+pnpm shell                           # Bash into the wp-env cli container
+pnpm shell:test                      # Bash into the tests_env wordpress container
+pnpm wp <cmd>                        # wp-cli in the wp-env container
+pnpm bootstrap                       # Re-run setup (idempotent)
 ```
 
-The `--test` flag targets the `test_wordpress` service. The `--premium` flag targets `mailpoet-premium/`.
+Tests route through `tests_env/` (a separate Codeception stack, untouched by wp-env):
+
+```bash
+pnpm test:unit [--file=...]
+pnpm test:integration [--file=...]
+pnpm test:acceptance [--file=...]
+pnpm test:javascript
+pnpm test:unit:premium               # Premium variants
+pnpm test:integration:premium
+pnpm test:acceptance:premium
+pnpm test:install-deps               # Fresh composer install before testing
+```
+
+Migrations / templates / wp-cli shell into the wp-env container (need a live WP runtime):
+
+```bash
+pnpm migrations:new <db|app>
+pnpm migrations:status
+pnpm templates
+```
 
 ### Plugin-Level Commands
 
-Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugin):
+Run inside `mailpoet/` (same scripts are exposed as `pnpm <task>` there too):
 
 **Build:**
 
@@ -118,7 +145,7 @@ Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugi
 ./do install                         # Install PHP + JS dependencies
 ```
 
-**Quality Assurance:**
+**Quality Assurance (runs on host):**
 
 ```bash
 ./do qa                              # Run all PHP + frontend QA checks
@@ -131,23 +158,16 @@ Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugi
 ./do qa:fix-file <path>              # Auto-fix a single file (PHPCS or ESLint)
 ```
 
-**Testing:**
-
-```bash
-./do test:unit --file=tests/unit/Path/To/SomeTest.php
-./do test:integration --skip-deps --file=tests/integration/Path/To/SomeTest.php
-./do test:acceptance --skip-deps --file=tests/acceptance/Path/To/SomeCest.php
-./do test:javascript                 # Mocha JS tests
-./do test:newsletter-editor          # Legacy newsletter editor JS tests
-```
+**Testing:** `./do test:*` on host routes into `tests_env/` via docker compose. Typically better to use the `pnpm test:*` root aliases which default to `--skip-deps`.
 
 **Other:**
 
 ```bash
-./do migrations:new <db|app>         # Create a new database migration
 ./do changelog:add --type=<type> --description="<description>"
 ./do changelog:preview               # Preview compiled changelog
 ```
+
+Migrations and templates require a running WordPress and must be invoked via `pnpm migrations:*` / `pnpm templates` (routes through the wp-env container). Running `./do migrations:*` directly from `mailpoet/` fails — no WordPress on the host.
 
 ## Code Conventions
 
@@ -167,7 +187,7 @@ Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugi
 - Follow the [Airbnb JavaScript style guide](https://github.com/airbnb/javascript)
 - Prefer named exports over default exports
 - MUST default to TypeScript for new files
-- Formatting is handled by Prettier (`./do qa:prettier-write`)
+- Formatting is handled by Prettier (`pnpm qa:fix` or `./do qa:prettier-write` in `mailpoet/`)
 
 ### SCSS
 
@@ -183,27 +203,37 @@ Run inside `mailpoet/` (or via root `./do <command>` which forwards to the plugi
 
 ## Testing
 
-Tests use **Codeception** and run inside Docker.
+Tests use **Codeception** and run inside the `tests_env/` docker-compose stack (Codeception + Selenium + test MySQL + MailHog). This stack is separate from wp-env and deliberately unchanged by the wp-env migration.
 
-| Type        | File Pattern | Location             | Command                                           |
-| ----------- | ------------ | -------------------- | ------------------------------------------------- |
-| Unit        | `*Test.php`  | `tests/unit/`        | `./do test:unit --file=<path>`                    |
-| Integration | `*Test.php`  | `tests/integration/` | `./do test:integration --skip-deps --file=<path>` |
-| Acceptance  | `*Cest.php`  | `tests/acceptance/`  | `./do test:acceptance --skip-deps --file=<path>`  |
-| JavaScript  | `*.spec.ts`  | `tests/javascript/`  | `./do test:javascript`                            |
+| Type        | File Pattern | Location             | Command                               |
+| ----------- | ------------ | -------------------- | ------------------------------------- |
+| Unit        | `*Test.php`  | `tests/unit/`        | `pnpm test:unit --file=<path>`        |
+| Integration | `*Test.php`  | `tests/integration/` | `pnpm test:integration --file=<path>` |
+| Acceptance  | `*Cest.php`  | `tests/acceptance/`  | `pnpm test:acceptance --file=<path>`  |
+| JavaScript  | `*.spec.ts`  | `tests/javascript/`  | `pnpm test:javascript`                |
 
-**Running tests in Docker from the repo root:**
+All `pnpm test:*` scripts default to `--skip-deps` (matches the standard dev workflow). Use `pnpm test:install-deps` when deps actually need refreshing.
+
+**Running tests from the repo root:**
 
 ```bash
-./do --test test:integration --skip-deps --file=tests/integration/WP/EmojiTest.php
-./do --test test:acceptance --skip-deps --file=tests/acceptance/Misc/MailpoetMenuCest.php
+pnpm test:integration --file=tests/integration/WP/EmojiTest.php
+pnpm test:acceptance --file=tests/acceptance/Misc/MailpoetMenuCest.php
 ```
 
-**Running premium tests** requires SSHing into the test container:
+**Running premium tests** — use the premium aliases:
 
 ```bash
-./do ssh --test
-cd ../mailpoet-premium
+pnpm test:unit:premium --file=tests/unit/Config/EnvTest.php
+pnpm test:integration:premium
+pnpm test:acceptance:premium
+```
+
+Or shell in and run the plugin-level `./do` directly:
+
+```bash
+pnpm shell:test
+cd /wp-core/wp-content/plugins/mailpoet-premium
 ./do test:unit --file=tests/unit/Config/EnvTest.php
 ```
 
@@ -222,7 +252,7 @@ The plugin uses Doctrine ORM for database management:
 
 - **Entities** in `lib/Entities/` map to database tables (e.g., `SubscriberEntity`, `NewsletterEntity`)
 - **Repositories** follow the `*Repository` naming convention (e.g., `SubscribersRepository`)
-- **Migrations** in `lib/Migrations/` handle schema changes. Create new ones with `./do migrations:new <db|app>`
+- **Migrations** in `lib/Migrations/` handle schema changes. Create new ones with `pnpm migrations:new <db|app>` (routes through the wp-env container since a WordPress runtime is required)
 - Entity metadata and proxies are cached in `generated/`
 
 ### Dependency Injection
@@ -259,7 +289,7 @@ New features can be gated behind feature flags:
 - **Subscription form builder:** Built on the Gutenberg block editor
 - **Legacy newsletter editor:** Backbone.js + Marionette (in `newsletter-editor/`). This is legacy code being replaced by the block-based email editor. Do not add new features here.
 - **Block email editor:** New editor integration using `@woocommerce/email-editor` (in `mailpoet-email-editor-integration/`)
-- **Webpack** bundles JS with multiple entry points. Run `./do compile:js` after changes.
+- **Webpack** bundles JS with multiple entry points. Run `pnpm compile:js` after changes.
 
 ### Multi-API Layer
 
@@ -272,7 +302,7 @@ New features can be gated behind feature flags:
 - MUST NOT commit directly to `trunk`
 - Create short-lived feature branches
 - Include the Linear issue ID in commit messages
-- Run `./do qa` and `./do qa:prettier-write` before pushing
+- Run `pnpm qa` and `pnpm qa:fix` before pushing
 
 ### Commit Message Format
 
@@ -296,7 +326,7 @@ MAILPOET-1234
 User-facing changes MUST have a changelog entry. Use:
 
 ```bash
-./do changelog:add --type=Fixed --description="Describe what was fixed"
+pnpm changelog:add --type=Fixed --description="Describe what was fixed"
 ```
 
 Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
@@ -309,22 +339,22 @@ Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
 
 ## Common Pitfalls
 
-- **NEVER** modify WordPress core files in `wordpress/`. This directory is for the local dev environment only.
+- **NEVER** modify WordPress core files shipped by wp-env. Its WordPress install is managed.
 - **NEVER** edit files in `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, or `generated/`. These are managed by Composer, the prefixer, and build tools respectively.
-- **NEVER** edit compiled assets in `assets/dist/`. Run `./do compile:all` to regenerate them.
-- **MUST** run `./do compile:all` (or `compile:js` / `compile:css`) after making JS/CSS/SCSS changes before testing in the browser.
-- **MUST** use the `--skip-deps` flag for integration and acceptance tests during development to avoid slow dependency reinstallation.
-- The root `./do` runs commands inside Docker containers. The `mailpoet/do` script is the plugin-level Robo task runner. They are different scripts.
-- The `--test` flag on root `./do` targets the `test_wordpress` Docker service, which has a separate database and WordPress installation.
-- The legacy Backbone.js newsletter editor (`newsletter-editor/`) is being replaced. Do not extend it with new features -- build on the block email editor instead.
+- **NEVER** edit compiled assets in `assets/dist/`. Run `pnpm compile` to regenerate them.
+- **MUST** run `pnpm compile` (or `compile:js` / `compile:css`) after making JS/CSS/SCSS changes before testing in the browser.
+- **MUST** use `pnpm test:*` (which default to `--skip-deps`) during development. Running `./do test:integration` directly from `mailpoet/` without `--skip-deps` re-triggers the prefixer inside the container and can wipe `mailpoet/vendor-prefixed/` on PHP 8.4; recover with `pnpm bootstrap`.
+- `pnpm <task>` and `./do <task>` are related but not identical: pnpm scripts orchestrate the environment (route to the right container, pass defaults). `mailpoet/do` runs host-side Robo tasks directly.
+- `pnpm setup` is a pnpm built-in (configures pnpm itself). Use `pnpm bootstrap` to run our setup script.
+- The legacy Backbone.js newsletter editor (`newsletter-editor/`) is being replaced. Do not extend it with new features — build on the block email editor instead.
 - When adding PHP dependencies, be aware of vendor prefixing. New dependencies may need prefixer configuration.
-- Integration tests need a running Docker test environment. Use `./do ssh --test` to debug test failures interactively.
+- Integration tests run in `tests_env/` (a separate compose stack). Shell in with `pnpm shell:test` to debug.
 
 ## Boundaries
 
 ### Always Do
 
-- Run QA checks (`./do qa`, `./do qa:prettier-write`) before committing
+- Run QA checks (`pnpm qa`, `pnpm qa:fix`) before committing
 - Cover code with unit or integration tests
 - Use the `WP\Functions` wrapper instead of calling WordPress functions directly
 - Sanitize and validate inputs, escape outputs
@@ -344,7 +374,7 @@ Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
 
 - Database schema changes or new migrations
 - Adding new Composer or npm dependencies
-- Changes to Docker or CI configuration
+- Changes to `.wp-env.json`, `tests_env/`, or CI configuration
 - Modifying the DI container configuration
 - Changes to the public API (`lib/API/MP/`)
 
