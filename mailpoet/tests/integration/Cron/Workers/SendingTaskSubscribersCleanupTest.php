@@ -170,10 +170,11 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
 
     verify($deleted)->equals(SendingTaskSubscribersCleanup::ROW_BATCH_SIZE);
 
-    $remaining = (int)$this->entityManager->getConnection()->executeQuery(
+    $remainingResult = $this->entityManager->getConnection()->executeQuery(
       "SELECT COUNT(*) FROM `{$stsTable}` WHERE task_id = :taskId",
       ['taskId' => $taskId]
     )->fetchOne();
+    $remaining = intval($remainingResult);
 
     verify($remaining)->equals(5);
 
