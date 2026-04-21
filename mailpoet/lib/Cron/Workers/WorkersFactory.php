@@ -33,6 +33,7 @@ class WorkersFactory {
     Mixpanel::TASK_TYPE,
     AbandonedCartWorker::TASK_TYPE,
     LogCleanup::TASK_TYPE,
+    SendingTaskSubscribersCleanup::TASK_TYPE,
     Tracks::TASK_TYPE,
   ];
 
@@ -93,6 +94,11 @@ class WorkersFactory {
   /** @return LogCleanup */
   public function createLogCleanupWorker() {
     return $this->container->get(LogCleanup::class);
+  }
+
+  /** @return SendingTaskSubscribersCleanup */
+  public function createSendingTaskSubscribersCleanupWorker() {
+    return $this->container->get(SendingTaskSubscribersCleanup::class);
   }
 
   /** @return InactiveSubscribers */
