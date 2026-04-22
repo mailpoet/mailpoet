@@ -264,9 +264,9 @@ class NewsletterResendController {
       ]
     );
 
-    return array_map(function ($id) {
-      return (int)$id;
-    }, $result->fetchFirstColumn());
+    /** @var list<string|int> $column */
+    $column = $result->fetchFirstColumn();
+    return array_map('intval', $column);
   }
 
   /**
