@@ -121,16 +121,19 @@ class NewsletterResendController {
     }
 
     $sentAt = $newsletter->getSentAt();
-    if ($sentAt) {
-      $hoursSinceSent = Carbon::now()->diffInHours(Carbon::createFromTimestamp($sentAt->getTimestamp()), true);
-      if ($hoursSinceSent < self::MIN_RESEND_DELAY_HOURS) {
-        throw UnexpectedValueException::create()
-          ->withMessage(__('You can resend this email at least 1 day after it was sent.', 'mailpoet'));
-      }
-      if ($hoursSinceSent > self::MAX_RESEND_DELAY_HOURS) {
-        throw UnexpectedValueException::create()
-          ->withMessage(__('You can only resend this email within 3 days of sending it.', 'mailpoet'));
-      }
+    if (!$sentAt) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('This email has no sent date and cannot be resent.', 'mailpoet'));
+    }
+
+    $hoursSinceSent = Carbon::now()->diffInHours(Carbon::createFromTimestamp($sentAt->getTimestamp()), true);
+    if ($hoursSinceSent < self::MIN_RESEND_DELAY_HOURS) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('You can resend this email at least 1 day after it was sent.', 'mailpoet'));
+    }
+    if ($hoursSinceSent > self::MAX_RESEND_DELAY_HOURS) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('You can only resend this email within 3 days of sending it.', 'mailpoet'));
     }
 
     if ($this->subscribersFeature->check()) {
@@ -181,45 +184,61 @@ class NewsletterResendController {
 
     $this->newslettersRepository->flush();
 
-    $scheduledTask = new ScheduledTaskEntity();
-    $scheduledTask->setType(SendingQueueWorker::TASK_TYPE);
-    $scheduledTask->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
-    $scheduledTask->setStatus(null);
-    $this->scheduledTasksRepository->persist($scheduledTask);
-    $this->scheduledTasksRepository->flush();
+    try {
+      $scheduledTask = new ScheduledTaskEntity();
+      $scheduledTask->setType(SendingQueueWorker::TASK_TYPE);
+      $scheduledTask->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
+      $scheduledTask->setStatus(null);
+      $this->scheduledTasksRepository->persist($scheduledTask);
+      $this->scheduledTasksRepository->flush();
 
-    $sendingQueue = new SendingQueueEntity();
-    $sendingQueue->setNewsletter($duplicate);
-    $sendingQueue->setTask($scheduledTask);
-    $this->sendingQueuesRepository->persist($sendingQueue);
-    $this->sendingQueuesRepository->flush();
-    $this->newslettersRepository->refresh($duplicate);
+      $sendingQueue = new SendingQueueEntity();
+      $sendingQueue->setNewsletter($duplicate);
+      $sendingQueue->setTask($scheduledTask);
+      $this->sendingQueuesRepository->persist($sendingQueue);
+      $this->sendingQueuesRepository->flush();
+      $this->newslettersRepository->refresh($duplicate);
 
-    $segmentIds = $newsletter->getSegmentIds();
-    $filterSegmentId = $newsletter->getFilterSegmentId();
-    $insertedCount = $this->addNonOpenersToTask($scheduledTask, $nonOpenerIds, $segmentIds, $filterSegmentId);
+      $segmentIds = $newsletter->getSegmentIds();
+      $filterSegmentId = $newsletter->getFilterSegmentId();
+      $insertedCount = $this->addNonOpenersToTask($scheduledTask, $nonOpenerIds, $segmentIds, $filterSegmentId);
 
-    if ($insertedCount === 0) {
-      $this->entityManager->remove($sendingQueue);
-      $this->entityManager->remove($scheduledTask);
-      $this->entityManager->flush();
-      $duplicateId = $duplicate->getId();
-      if ($duplicateId) {
-        $this->newsletterDeleteController->bulkDelete([$duplicateId]);
+      if ($insertedCount === 0) {
+        throw UnexpectedValueException::create()
+          ->withMessage(__('No eligible recipients found. All non-openers have since unsubscribed, bounced, or left the original segments.', 'mailpoet'));
       }
-      throw UnexpectedValueException::create()
-        ->withMessage(__('No eligible recipients found. All non-openers have since unsubscribed, bounced, or left the original segments.', 'mailpoet'));
-    }
 
-    $this->sendingQueuesRepository->updateCounts($sendingQueue);
-    $duplicate->setStatus(NewsletterEntity::STATUS_SENDING);
-    $this->newslettersRepository->flush();
+      $this->sendingQueuesRepository->updateCounts($sendingQueue);
+      $duplicate->setStatus(NewsletterEntity::STATUS_SENDING);
+      $this->newslettersRepository->flush();
+    } catch (\Throwable $e) {
+      $this->cleanupDuplicate($duplicate, $scheduledTask ?? null, $sendingQueue ?? null);
+      throw $e;
+    }
 
     if ($this->settings->get('cron_trigger.method') === CronTrigger::METHOD_ACTION_SCHEDULER) {
       $this->daemonTrigger->process();
     }
 
     return $duplicate;
+  }
+
+  private function cleanupDuplicate(
+    NewsletterEntity $duplicate,
+    ?ScheduledTaskEntity $task,
+    ?SendingQueueEntity $queue
+  ): void {
+    if ($queue) {
+      $this->entityManager->remove($queue);
+    }
+    if ($task) {
+      $this->entityManager->remove($task);
+    }
+    $this->entityManager->flush();
+    $duplicateId = $duplicate->getId();
+    if ($duplicateId) {
+      $this->newsletterDeleteController->bulkDelete([$duplicateId]);
+    }
   }
 
   /** @return int[] */

@@ -125,6 +125,41 @@ const trashNewsletter = (
     });
 };
 
+const MIN_RESEND_DELAY_HOURS = 24;
+const MAX_RESEND_DELAY_HOURS = 72;
+
+function isResendEligible(newsletter: NewsletterType): {
+  eligible: boolean;
+  reason?: string;
+} {
+  if (newsletter.type !== 'standard' || newsletter.status !== 'sent') {
+    return { eligible: false };
+  }
+  const sentAt = newsletter.queue?.scheduled_at || newsletter.queue?.created_at;
+  if (!sentAt) {
+    return {
+      eligible: false,
+      reason: __('No send date available.', 'mailpoet'),
+    };
+  }
+  const hoursSinceSent =
+    (Date.now() - new Date(sentAt).getTime()) / (1000 * 60 * 60);
+  if (hoursSinceSent < MIN_RESEND_DELAY_HOURS) {
+    const hoursLeft = Math.ceil(MIN_RESEND_DELAY_HOURS - hoursSinceSent);
+    return {
+      eligible: false,
+      reason: sprintf(__('Available in %d hours.', 'mailpoet'), hoursLeft),
+    };
+  }
+  if (hoursSinceSent > MAX_RESEND_DELAY_HOURS) {
+    return {
+      eligible: false,
+      reason: __('Resend window expired (3 days).', 'mailpoet'),
+    };
+  }
+  return { eligible: true };
+}
+
 type ResendModalProps = {
   newsletter: NewsletterType;
   onClose: () => void;
@@ -327,18 +362,29 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 >
                   {__('Duplicate', 'mailpoet')}
                 </MenuItem>
-                {newsletter.type === 'standard' &&
-                  newsletter.status === 'sent' && (
+                {(() => {
+                  const resendStatus = isResendEligible(newsletter);
+                  if (
+                    newsletter.type !== 'standard' ||
+                    newsletter.status !== 'sent'
+                  )
+                    return null;
+                  return (
                     <MenuItem
                       className="mailpoet-no-box-shadow"
                       variant="tertiary"
+                      disabled={!resendStatus.eligible}
                       onClick={() => {
-                        setIsResendModalOpen(true);
+                        if (resendStatus.eligible) {
+                          setIsResendModalOpen(true);
+                        }
                       }}
+                      info={resendStatus.reason}
                     >
                       {__('Resend to non-openers', 'mailpoet')}
                     </MenuItem>
-                  )}
+                  );
+                })()}
                 <MenuItem
                   isBusy={isBusy}
                   isDestructive
