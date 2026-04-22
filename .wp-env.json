@@ -23,9 +23,6 @@
     "WP_MEMORY_LIMIT": "1024M",
     "WP_MAX_MEMORY_LIMIT": "1024M"
   },
-  "env": {
-    "development": {
-      "phpmyadminPort": 8081
-    }
-  }
+  "testsEnvironment": false,
+  "phpmyadminPort": 8081
 }

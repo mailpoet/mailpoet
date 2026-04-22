@@ -5,10 +5,10 @@
     "build": "pnpm -r build",
     "start": "pnpm --reporter append-only -r start",
     "bootstrap": "bash scripts/setup.sh",
-    "env:start": "bash scripts/launch-smtp-catcher.sh && wp-env start --update",
+    "env:start": "bash scripts/launch-smtp-catcher.sh && wp-env start",
     "env:stop": "wp-env stop; bash scripts/stop-smtp-catcher.sh",
-    "env:destroy": "wp-env destroy; bash scripts/stop-smtp-catcher.sh",
-    "env:restart": "wp-env destroy; bash scripts/stop-smtp-catcher.sh && bash scripts/launch-smtp-catcher.sh && wp-env start --update",
+    "env:destroy": "wp-env destroy --force; bash scripts/stop-smtp-catcher.sh",
+    "env:restart": "wp-env destroy --force; bash scripts/stop-smtp-catcher.sh; bash scripts/launch-smtp-catcher.sh && wp-env start --update",
     "env:debug": "bash scripts/launch-smtp-catcher.sh && wp-env start --update --xdebug=develop,debug",
     "env:logs": "wp-env logs all",
     "shell": "wp-env run cli bash",
@@ -44,7 +44,7 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
-    "@wordpress/env": "^10.0.0",
+    "@wordpress/env": "^11.4.0",
     "@wordpress/scripts": "^30.0.0",
     "lint-staged": "^12.5.0",
     "prettier": "2.6.2",
