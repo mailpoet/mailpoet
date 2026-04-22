@@ -56,7 +56,7 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | ------------- | ------ | -------- | ----------------------------------------------- |
 | id            | string | 11 chars | Id of relation                                  |
 | subscriber_id | string | 11 chars | Id of subscriber                                |
-| tag_id        | string | 11 chars | Id of a list                                    |
+| tag_id        | string | 11 chars | Id of a tag                                     |
 | name          | string | -        | Name of a tag                                   |
 | created_at    | string | -        | UTC time of creation in 'Y-m-d H:i:s' format    |
 | updated_at    | string | -        | UTC time of last update in 'Y-m-d H:i:s' format |

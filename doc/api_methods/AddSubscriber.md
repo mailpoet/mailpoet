@@ -32,7 +32,19 @@ It has to contain an email and all required custom fields. To get defined custom
 | email (required)           | string              | 150 chars | a valid email address                                                                                                                                                         |
 | first_name (optional)      | string/null         | 255 chars | Fist name of the subscriber.                                                                                                                                                  |
 | last_name (optional)       | string/null         | 255 chars | Last name of the subscriber.                                                                                                                                                  |
+| tags (optional)            | array               | -         | An array of tags to attach to the subscriber. See [Tags](#tags) below for supported item formats. Missing tags are auto-created by name.                                      |
 | cf\_\* (optional/required) | string/boolean/null | 65K chars | A custom field (see [Get Subscriber Fields](GetSubscriberFields.md)). <br> If a custom field is a checkbox, send truthy or falsy value (`true`/`false, `1`/`0`or`"1"`\`"0"`). |
+
+#### Tags
+
+Each item of the `tags` array can be one of:
+
+- a string – the tag name (a new tag is created if none matches),
+- an integer or numeric string – the id of an existing tag,
+- an associative array with `name` – equivalent to passing the tag name,
+- an associative array with `id` – the referenced tag must already exist (code `29` otherwise).
+
+Adding a tag fires the `mailpoet_subscriber_tag_added` WordPress action, which can be used to trigger automations.
 
 ### `$list_ids` (optional)
 
