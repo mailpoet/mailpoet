@@ -3,7 +3,9 @@
 namespace MailPoet\Tags;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 /**
  * @extends Repository<TagEntity>
@@ -31,6 +33,21 @@ class TagRepository extends Repository {
       throw new \RuntimeException("Error when saving tag " . $data['name']);
     }
     return $tag;
+  }
+
+  /**
+   * Deletes a tag along with any subscriber_tag rows referencing it.
+   */
+  public function deleteTag(TagEntity $tag): void {
+    $tagId = $tag->getId();
+    $subscriberTagTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "DELETE FROM $subscriberTagTable WHERE tag_id IN (:ids)",
+      ['ids' => [$tagId]],
+      ['ids' => ArrayParameterType::INTEGER]
+    );
+    $this->remove($tag);
+    $this->flush();
   }
 
   public function getSubscriberStatisticsCount(?string $status, bool $isDeleted): array {
