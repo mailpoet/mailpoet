@@ -95,6 +95,49 @@ const duplicateNewsletter = (
     });
 };
 
+const resendToNonOpeners = (
+  newsletter: NewsletterType,
+  performActionAfterUpdate = () => {},
+) => {
+  if (
+    // eslint-disable-next-line no-alert -- simple confirmation before sending emails to potentially large audience
+    !window.confirm(
+      __(
+        'This will resend this email to all subscribers who haven\'t opened it. Subscribers with only machine-generated opens (e.g. Apple Mail) will be included. Continue?',
+        'mailpoet',
+      ),
+    )
+  ) {
+    performActionAfterUpdate();
+    return;
+  }
+  void MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'newsletters',
+    action: 'resendToNonOpeners',
+    data: {
+      id: newsletter.id,
+    },
+  })
+    .done(() => {
+      MailPoet.Notice.success(
+        __(
+          'A copy of this email is being sent to non-openers.',
+          'mailpoet',
+        ),
+        { static: true },
+      );
+    })
+    .fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+      }
+    })
+    .always(() => {
+      performActionAfterUpdate();
+    });
+};
+
 const trashNewsletter = (
   newsletter: NewsletterType,
   performActionAfterUpdate = () => {},
@@ -242,6 +285,23 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 >
                   {__('Duplicate', 'mailpoet')}
                 </MenuItem>
+                {newsletter.type === 'standard' &&
+                  newsletter.status === 'sent' && (
+                    <MenuItem
+                      isBusy={isBusy}
+                      disabled={isBusy}
+                      className="mailpoet-no-box-shadow"
+                      variant="tertiary"
+                      onClick={() => {
+                        setIsBusy(true);
+                        resendToNonOpeners(newsletter, () => {
+                          setIsBusy(false);
+                        });
+                      }}
+                    >
+                      {__('Resend to non-openers', 'mailpoet')}
+                    </MenuItem>
+                  )}
                 <MenuItem
                   isBusy={isBusy}
                   isDestructive

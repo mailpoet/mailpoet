@@ -1,0 +1,231 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Newsletter;
+
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
+use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Mailer\MailerFactory;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Settings\SettingsController;
+use MailPoet\UnexpectedValueException;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+
+class NewsletterResendController {
+  /** @var NewsletterSaveController */
+  private $newsletterSaveController;
+
+  /** @var NewsletterDeleteController */
+  private $newsletterDeleteController;
+
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var EntityManager */
+  private $entityManager;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var DaemonTrigger */
+  private $daemonTrigger;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
+  /** @var MailerFactory */
+  private $mailerFactory;
+
+  public function __construct(
+    NewsletterSaveController $newsletterSaveController,
+    NewsletterDeleteController $newsletterDeleteController,
+    NewslettersRepository $newslettersRepository,
+    EntityManager $entityManager,
+    ScheduledTasksRepository $scheduledTasksRepository,
+    SendingQueuesRepository $sendingQueuesRepository,
+    WPFunctions $wp,
+    DaemonTrigger $daemonTrigger,
+    SettingsController $settings,
+    SubscribersFeature $subscribersFeature,
+    MailerFactory $mailerFactory
+  ) {
+    $this->newsletterSaveController = $newsletterSaveController;
+    $this->newsletterDeleteController = $newsletterDeleteController;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->entityManager = $entityManager;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->wp = $wp;
+    $this->daemonTrigger = $daemonTrigger;
+    $this->settings = $settings;
+    $this->subscribersFeature = $subscribersFeature;
+    $this->mailerFactory = $mailerFactory;
+  }
+
+  public function resendToNonOpeners(NewsletterEntity $newsletter): NewsletterEntity {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('Only standard newsletters can be resent.', 'mailpoet'));
+    }
+
+    if ($newsletter->getStatus() !== NewsletterEntity::STATUS_SENT) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('Only sent newsletters can be resent.', 'mailpoet'));
+    }
+
+    if ($this->subscribersFeature->check()) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('Subscribers limit reached.', 'mailpoet'));
+    }
+
+    try {
+      $this->mailerFactory->getDefaultMailer();
+    } catch (\Exception $e) {
+      throw UnexpectedValueException::create()
+        ->withMessage($e->getMessage());
+    }
+
+    $nonOpenerIds = $this->getNonOpenerIds($newsletter);
+    if (empty($nonOpenerIds)) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('All recipients have already opened this email.', 'mailpoet'));
+    }
+
+    $duplicate = $this->newsletterSaveController->duplicate($newsletter);
+
+    $originalSubject = $newsletter->getSubject();
+    // translators: %s is the subject of the original newsletter being resent.
+    $resendSubject = sprintf(__('(Resent) %s', 'mailpoet'), $originalSubject);
+    $duplicate->setSubject($resendSubject);
+
+    $wpPostId = $duplicate->getWpPostId();
+    if ($wpPostId) {
+      $this->wp->wpUpdatePost([
+        'ID' => $wpPostId,
+        'post_title' => $resendSubject,
+      ]);
+    }
+
+    $this->newslettersRepository->flush();
+
+    $scheduledTask = new ScheduledTaskEntity();
+    $scheduledTask->setType(SendingQueueWorker::TASK_TYPE);
+    $scheduledTask->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
+    $scheduledTask->setStatus(null);
+    $this->scheduledTasksRepository->persist($scheduledTask);
+    $this->scheduledTasksRepository->flush();
+
+    $sendingQueue = new SendingQueueEntity();
+    $sendingQueue->setNewsletter($duplicate);
+    $sendingQueue->setTask($scheduledTask);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+    $this->newslettersRepository->refresh($duplicate);
+
+    $insertedCount = $this->addSubscribersToTask($scheduledTask, $nonOpenerIds);
+
+    if ($insertedCount === 0) {
+      $this->entityManager->remove($sendingQueue);
+      $this->entityManager->remove($scheduledTask);
+      $this->entityManager->flush();
+      $duplicateId = $duplicate->getId();
+      if ($duplicateId) {
+        $this->newsletterDeleteController->bulkDelete([$duplicateId]);
+      }
+      throw UnexpectedValueException::create()
+        ->withMessage(__('All non-openers have since unsubscribed or been deleted.', 'mailpoet'));
+    }
+
+    $this->sendingQueuesRepository->updateCounts($sendingQueue);
+    $duplicate->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->newslettersRepository->flush();
+
+    if ($this->settings->get('cron_trigger.method') === CronTrigger::METHOD_ACTION_SCHEDULER) {
+      $this->daemonTrigger->process();
+    }
+
+    return $duplicate;
+  }
+
+  /** @return int[] */
+  private function getNonOpenerIds(NewsletterEntity $newsletter): array {
+    $statisticsNewsletterTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $statisticsOpenTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
+
+    $connection = $this->entityManager->getConnection();
+
+    $result = $connection->executeQuery(
+      "SELECT DISTINCT sn.subscriber_id
+       FROM $statisticsNewsletterTable sn
+       LEFT JOIN $statisticsOpenTable so
+         ON so.newsletter_id = sn.newsletter_id
+         AND so.subscriber_id = sn.subscriber_id
+         AND so.user_agent_type = ?
+       WHERE sn.newsletter_id = ?
+         AND so.id IS NULL",
+      [
+        UserAgentEntity::USER_AGENT_TYPE_HUMAN,
+        $newsletter->getId(),
+      ],
+      [
+        ParameterType::INTEGER,
+        ParameterType::INTEGER,
+      ]
+    );
+
+    return array_map('intval', $result->fetchFirstColumn());
+  }
+
+  private function addSubscribersToTask(ScheduledTaskEntity $task, array $subscriberIds): int {
+    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $connection = $this->entityManager->getConnection();
+
+    $result = $connection->executeQuery(
+      "INSERT IGNORE INTO $scheduledTaskSubscriberTable
+       (task_id, subscriber_id, processed)
+       SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
+       FROM $subscriberTable subscribers
+       WHERE subscribers.`deleted_at` IS NULL
+       AND subscribers.`status` = ?
+       AND subscribers.`id` IN (?)",
+      [
+        $task->getId(),
+        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+        SubscriberEntity::STATUS_SUBSCRIBED,
+        $subscriberIds,
+      ],
+      [
+        ParameterType::INTEGER,
+        ParameterType::INTEGER,
+        ParameterType::STRING,
+        ArrayParameterType::INTEGER,
+      ]
+    );
+
+    return $result->rowCount();
+  }
+}
