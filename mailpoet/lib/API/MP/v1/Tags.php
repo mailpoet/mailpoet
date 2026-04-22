@@ -55,8 +55,6 @@ class Tags {
 
   public function updateTag(array $data): array {
     $this->validateTagId((string)($data['id'] ?? ''));
-    $data = $this->sanitizeTagData($data);
-    $this->validateTagName($data);
 
     $tag = $this->tagRepository->findOneById((int)$data['id']);
     if (!$tag instanceof TagEntity) {
@@ -66,9 +64,34 @@ class Tags {
       );
     }
 
+    $hasName = array_key_exists('name', $data);
+    $hasDescription = array_key_exists('description', $data);
+    $sanitizedName = $hasName && is_string($data['name']) ? sanitize_text_field($data['name']) : '';
+    $sanitizedDescription = $hasDescription && is_string($data['description']) ? sanitize_text_field($data['description']) : '';
+
+    if ($hasName) {
+      if ($sanitizedName === '') {
+        throw new APIException(
+          __('Tag name is required.', 'mailpoet'),
+          APIException::TAG_NAME_REQUIRED
+        );
+      }
+      $existing = $this->tagRepository->findOneBy(['name' => $sanitizedName]);
+      if ($existing instanceof TagEntity && $existing->getId() !== (int)$data['id']) {
+        throw new APIException(
+          __('This tag already exists.', 'mailpoet'),
+          APIException::TAG_EXISTS
+        );
+      }
+    }
+
     try {
-      $tag->setName($data['name']);
-      $tag->setDescription($data['description']);
+      if ($hasName) {
+        $tag->setName($sanitizedName);
+      }
+      if ($hasDescription) {
+        $tag->setDescription($sanitizedDescription);
+      }
       $this->tagRepository->flush();
     } catch (\Exception $e) {
       throw new APIException(
