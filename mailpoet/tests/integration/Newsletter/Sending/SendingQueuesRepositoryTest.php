@@ -253,7 +253,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $task->setType('sending');
     $task->setProcessedAt(new \DateTime('-40 days'));
-    $queue = $this->createQueue($task);
+    $this->createQueue($task);
     // body already null — nothing to clean
     $this->entityManager->flush();
 
