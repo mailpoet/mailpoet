@@ -103,7 +103,7 @@ const resendToNonOpeners = (
     // eslint-disable-next-line no-alert -- simple confirmation before sending emails to potentially large audience
     !window.confirm(
       __(
-        'This will resend this email to all subscribers who haven\'t opened it. Subscribers with only machine-generated opens (e.g. Apple Mail) will be included. Continue?',
+        'This will resend this email to all subscribers who haven\'t opened it. Continue?',
         'mailpoet',
       ),
     )
