@@ -9,6 +9,7 @@ use MailPoet\API\REST\ErrorResponse;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema;
 use MailPoet\WP\Functions as WPFunctions;
@@ -112,7 +113,14 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
       ->as_json_response($schema)
       ->generate_text();
 
+    $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR);
+
     if (is_wp_error($result)) {
+      $logger->error('AI subject generation failed', [
+        'error_code' => $result->get_error_code(),
+        'error_message' => $result->get_error_message(),
+        'post_id' => $postId,
+      ]);
       return new ErrorResponse(
         502,
         __('Failed to generate suggestions. Please check your AI provider configuration and try again.', 'mailpoet'),
@@ -122,6 +130,10 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
 
     $decoded = json_decode($result, true);
     if (!is_array($decoded) || !isset($decoded['suggestions']) || !is_array($decoded['suggestions'])) {
+      $logger->error('AI subject generation returned invalid JSON', [
+        'raw_response' => is_string($result) ? mb_substr($result, 0, 500) : gettype($result),
+        'post_id' => $postId,
+      ]);
       return new ErrorResponse(
         502,
         __('AI returned an unexpected response.', 'mailpoet'),
@@ -139,6 +151,10 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
         || mb_strlen($suggestion['subject']) > self::SUBJECT_MAX_LENGTH
         || mb_strlen($suggestion['preheader']) > self::PREHEADER_MAX_LENGTH
       ) {
+        $logger->info('AI subject suggestion filtered out', [
+          'suggestion' => is_array($suggestion) ? $suggestion : gettype($suggestion),
+          'post_id' => $postId,
+        ]);
         continue;
       }
       $validSuggestions[] = [
@@ -148,6 +164,10 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     }
 
     if (empty($validSuggestions)) {
+      $logger->error('AI subject generation returned no valid suggestions', [
+        'raw_suggestions' => $decoded['suggestions'],
+        'post_id' => $postId,
+      ]);
       return new ErrorResponse(
         502,
         __('AI did not return any valid suggestions. Please try again.', 'mailpoet'),
