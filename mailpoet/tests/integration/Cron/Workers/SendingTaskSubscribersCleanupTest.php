@@ -250,6 +250,46 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
 
   }
 
+  public function testItProcessesMultipleBatchesAcrossIterations() {
+    $now = Carbon::now();
+    Carbon::setTestNow($now);
+
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+
+    // Create more eligible tasks than TASK_BATCH_SIZE (200), each with 1 subscriber
+    $taskCount = SendingTaskSubscribersCleanup::TASK_BATCH_SIZE + 50;
+    for ($i = 0; $i < $taskCount; $i++) {
+      $oldTask = $this->taskFactory->create(
+        'sending',
+        ScheduledTaskEntity::STATUS_COMPLETED,
+        null,
+        null,
+        null,
+        $now->copy()->subDays(90)
+      );
+      $this->entityManager->getConnection()->executeStatement(
+        "INSERT INTO `{$stsTable}` (task_id, subscriber_id, processed) VALUES (:taskId, :subscriberId, 1)",
+        ['taskId' => $oldTask->getId(), 'subscriberId' => $i + 1]
+      );
+    }
+
+    /** @var string|false $beforeResult */
+    $beforeResult = $this->entityManager->getConnection()->executeQuery(
+      "SELECT COUNT(*) FROM `{$stsTable}`"
+    )->fetchOne();
+    verify((int)$beforeResult)->equals($taskCount);
+
+    $task = new ScheduledTaskEntity();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    /** @var string|false $afterResult */
+    $afterResult = $this->entityManager->getConnection()->executeQuery(
+      "SELECT COUNT(*) FROM `{$stsTable}`"
+    )->fetchOne();
+    verify((int)$afterResult)->equals(0);
+
+  }
+
   public function testItSchedulesInTheFuture() {
     $nextRunDate = $this->worker->getNextRunDate();
     verify($nextRunDate)->notNull();

@@ -213,16 +213,19 @@ class ScheduledTaskSubscribersRepository extends Repository {
       "SELECT DISTINCT st.`id`
        FROM `{$stTable}` st
        INNER JOIN `{$stsTable}` sts ON sts.`task_id` = st.`id`
-       WHERE st.`status` = :status
+       WHERE st.`type` = :type
+         AND st.`status` = :status
          AND st.`processed_at` < :cutoff
          AND st.`deleted_at` IS NULL
        LIMIT :taskBatchSize",
       [
+        'type' => 'sending',
         'status' => ScheduledTaskEntity::STATUS_COMPLETED,
         'cutoff' => $cutoff,
         'taskBatchSize' => $taskBatchSize,
       ],
       [
+        'type' => ParameterType::STRING,
         'status' => ParameterType::STRING,
         'cutoff' => ParameterType::STRING,
         'taskBatchSize' => ParameterType::INTEGER,

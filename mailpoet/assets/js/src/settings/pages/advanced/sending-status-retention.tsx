@@ -28,7 +28,7 @@ export function SendingStatusRetention() {
               onCheck={setRetentionDays}
             />
             <label htmlFor="sending-status-retention-never">
-              {__('Never', 'mailpoet')}
+              {__('Never (default)', 'mailpoet')}
             </label>
           </div>
           <div className="mailpoet-settings-inputs-row">
