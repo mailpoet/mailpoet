@@ -103,7 +103,7 @@ const resendToNonOpeners = (
     // eslint-disable-next-line no-alert -- simple confirmation before sending emails to potentially large audience
     !window.confirm(
       __(
-        'This will resend this email to all subscribers who haven\'t opened it. Continue?',
+        "This will resend this email to all subscribers who haven't opened it. Continue?",
         'mailpoet',
       ),
     )
@@ -121,10 +121,7 @@ const resendToNonOpeners = (
   })
     .done(() => {
       MailPoet.Notice.success(
-        __(
-          'A copy of this email is being sent to non-openers.',
-          'mailpoet',
-        ),
+        __('A copy of this email is being sent to non-openers.', 'mailpoet'),
         { static: true },
       );
     })
