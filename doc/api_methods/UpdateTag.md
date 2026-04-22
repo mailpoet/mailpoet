@@ -20,7 +20,6 @@ An associative array which contains tag data. Only the `id` is required; `name` 
 | name (optional)        | string | 191 chars | A new name for the tag. Omit the key to keep the existing name.                                           |
 | description (optional) | string | -         | A new description for the tag. Omit the key to keep the existing value; pass an empty string to clear it. |
 
-
 ## Error handling
 
 All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`.
