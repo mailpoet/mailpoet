@@ -19,11 +19,14 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewsletterResendController {
+  const MIN_RESEND_DELAY_HOURS = 24;
+  const MAX_RESEND_DELAY_HOURS = 72;
   /** @var NewsletterSaveController */
   private $newsletterSaveController;
 
@@ -102,6 +105,19 @@ class NewsletterResendController {
     if (!$newsletter->getChildren()->isEmpty()) {
       throw UnexpectedValueException::create()
         ->withMessage(__('This email has already been resent.', 'mailpoet'));
+    }
+
+    $sentAt = $newsletter->getSentAt();
+    if ($sentAt) {
+      $hoursSinceSent = Carbon::now()->diffInHours(Carbon::createFromTimestamp($sentAt->getTimestamp()), true);
+      if ($hoursSinceSent < self::MIN_RESEND_DELAY_HOURS) {
+        throw UnexpectedValueException::create()
+          ->withMessage(__('You can resend this email at least 1 day after it was sent.', 'mailpoet'));
+      }
+      if ($hoursSinceSent > self::MAX_RESEND_DELAY_HOURS) {
+        throw UnexpectedValueException::create()
+          ->withMessage(__('You can only resend this email within 3 days of sending it.', 'mailpoet'));
+      }
     }
 
     if ($this->subscribersFeature->check()) {
