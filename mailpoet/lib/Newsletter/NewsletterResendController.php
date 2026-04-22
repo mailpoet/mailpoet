@@ -12,7 +12,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -95,6 +94,16 @@ class NewsletterResendController {
         ->withMessage(__('Only sent newsletters can be resent.', 'mailpoet'));
     }
 
+    if ($newsletter->getParent() !== null) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('A resent email cannot be resent again.', 'mailpoet'));
+    }
+
+    if (!$newsletter->getChildren()->isEmpty()) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('This email has already been resent.', 'mailpoet'));
+    }
+
     if ($this->subscribersFeature->check()) {
       throw UnexpectedValueException::create()
         ->withMessage(__('Subscribers limit reached.', 'mailpoet'));
@@ -114,6 +123,7 @@ class NewsletterResendController {
     }
 
     $duplicate = $this->newsletterSaveController->duplicate($newsletter);
+    $duplicate->setParent($newsletter);
 
     $originalSubject = $newsletter->getSubject();
     // translators: %s is the subject of the original newsletter being resent.
@@ -182,15 +192,12 @@ class NewsletterResendController {
        LEFT JOIN $statisticsOpenTable so
          ON so.newsletter_id = sn.newsletter_id
          AND so.subscriber_id = sn.subscriber_id
-         AND so.user_agent_type = ?
        WHERE sn.newsletter_id = ?
          AND so.id IS NULL",
       [
-        UserAgentEntity::USER_AGENT_TYPE_HUMAN,
         $newsletter->getId(),
       ],
       [
-        ParameterType::INTEGER,
         ParameterType::INTEGER,
       ]
     );
