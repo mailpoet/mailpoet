@@ -27,8 +27,15 @@ class Tag {
     return $this->update('name', $name);
   }
 
+  /**
+   * @return $this
+   */
+  public function withDescription(string $description) {
+    return $this->update('description', $description);
+  }
+
   public function create(): TagEntity {
-    $tag = new TagEntity($this->data['name']);
+    $tag = new TagEntity($this->data['name'], $this->data['description'] ?? '');
     $this->tagRepository->persist($tag);
     $this->tagRepository->flush();
     return $tag;
