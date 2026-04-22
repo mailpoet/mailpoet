@@ -12,7 +12,7 @@ class FeaturesController {
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
-    self::FEATURE_BIRTHDAY_EMAILS => false,
+    self::FEATURE_BIRTHDAY_EMAILS => true,
   ];
 
   /** @var array|null */
