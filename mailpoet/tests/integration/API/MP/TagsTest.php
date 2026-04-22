@@ -200,6 +200,41 @@ class TagsTest extends \MailPoetTest {
     verify($result['description'])->equals('New description');
   }
 
+  public function testItUpdatesOnlyDescriptionWhenNameOmitted(): void {
+    $tag = (new TagFactory())->withName('Keep name')->withDescription('Old description')->create();
+
+    $result = $this->getApi()->updateTag([
+      'id' => (string)$tag->getId(),
+      'description' => 'New description',
+    ]);
+
+    verify($result['name'])->equals('Keep name');
+    verify($result['description'])->equals('New description');
+  }
+
+  public function testItUpdatesOnlyNameWhenDescriptionOmitted(): void {
+    $tag = (new TagFactory())->withName('Old name')->withDescription('Keep description')->create();
+
+    $result = $this->getApi()->updateTag([
+      'id' => (string)$tag->getId(),
+      'name' => 'New name',
+    ]);
+
+    verify($result['name'])->equals('New name');
+    verify($result['description'])->equals('Keep description');
+  }
+
+  public function testItClearsDescriptionWhenExplicitlyEmpty(): void {
+    $tag = (new TagFactory())->withName('Name')->withDescription('Clear me')->create();
+
+    $result = $this->getApi()->updateTag([
+      'id' => (string)$tag->getId(),
+      'description' => '',
+    ]);
+
+    verify($result['description'])->equals('');
+  }
+
   public function testItRequiresIdToDeleteTag(): void {
     try {
       $this->getApi()->deleteTag('');
