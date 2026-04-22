@@ -1156,6 +1156,17 @@ class SubscribersTest extends \MailPoetTest {
     }
   }
 
+  public function testItThrowsWhenTaggingByNameThatSanitizesToEmpty(): void {
+    $subscriber = $this->subscriberFactory->create();
+
+    try {
+      $this->getApi()->tagSubscriber($subscriber->getId(), '<script>');
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+  }
+
   public function testItUntagsSubscriber(): void {
     $subscriber = $this->subscriberFactory->create();
     $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('ToRemove')->create();
@@ -1239,6 +1250,165 @@ class SubscribersTest extends \MailPoetTest {
 
     $tagNames = array_column($result['tags'], 'name');
     verify($tagNames)->equals(['Stay']);
+  }
+
+  public function testAddSubscriberResolvesBareIntegerTagIds(): void {
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('ById')->create();
+
+    $result = $this->getApi()->addSubscriber([
+      'email' => 'bare-int-id@test.com',
+      'tags' => [$tag->getId()],
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    verify($tagNames)->equals(['ById']);
+  }
+
+  public function testAddSubscriberResolvesNumericStringTagIds(): void {
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('ByNumericString')->create();
+
+    $result = $this->getApi()->addSubscriber([
+      'email' => 'numeric-string-id@test.com',
+      'tags' => [(string)$tag->getId()],
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    verify($tagNames)->equals(['ByNumericString']);
+  }
+
+  public function testAddSubscriberThrowsWhenTagIdDoesNotExist(): void {
+    try {
+      $this->getApi()->addSubscriber([
+        'email' => 'missing-tag-id@test.com',
+        'tags' => [999999],
+      ]);
+      $this->fail('Tag not exists exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NOT_EXISTS);
+    }
+  }
+
+  public function testAddSubscriberThrowsWhenTagNameIsEmpty(): void {
+    try {
+      $this->getApi()->addSubscriber([
+        'email' => 'empty-tag-name@test.com',
+        'tags' => [''],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    $subscriber = $this->diContainer->get(SubscribersRepository::class)->findOneBy([
+      'email' => 'empty-tag-name@test.com',
+    ]);
+    verify($subscriber)->null();
+  }
+
+  public function testUpdateSubscriberResolvesBareIntegerTagIds(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('UpdateById')->create();
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tags' => [$tag->getId()],
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    verify($tagNames)->equals(['UpdateById']);
+  }
+
+  public function testUpdateSubscriberThrowsWhenTagNameIsEmptyWithoutSavingChanges(): void {
+    $subscriber = $this->subscriberFactory
+      ->withFirstName('Original')
+      ->create();
+
+    try {
+      $this->getApi()->updateSubscriber($subscriber->getId(), [
+        'first_name' => 'Renamed',
+        'tags' => [''],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    $this->entityManager->clear();
+    $reloadedSubscriber = $this->diContainer->get(SubscribersRepository::class)->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $reloadedSubscriber);
+    verify($reloadedSubscriber->getFirstName())->equals('Original');
+  }
+
+  public function testAddSubscriberSanitizesTagNames(): void {
+    $result = $this->getApi()->addSubscriber([
+      'email' => 'sanitize-tags@test.com',
+      'tags' => ['My <b>Tag</b>', ['name' => 'Other <i>X</i>']],
+    ]);
+
+    // both scalar names and array-entry names must be sanitized to match the
+    // behaviour of tagSubscriber so the same input produces the same tag
+    $tagNames = array_column($result['tags'], 'name');
+    sort($tagNames);
+    verify($tagNames)->equals(['My Tag', 'Other X']);
+  }
+
+  public function testAddSubscriberThrowsOnMalformedTagArrayEntry(): void {
+    try {
+      $this->getApi()->addSubscriber([
+        'email' => 'malformed-tag@test.com',
+        'tags' => [['typo' => 'VIP']],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    $subscriber = $this->diContainer->get(SubscribersRepository::class)->findOneBy([
+      'email' => 'malformed-tag@test.com',
+    ]);
+    verify($subscriber)->null();
+  }
+
+  public function testAddSubscriberThrowsOnNullTagEntry(): void {
+    try {
+      $this->getApi()->addSubscriber([
+        'email' => 'null-tag@test.com',
+        'tags' => [null],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+  }
+
+  public function testAddSubscriberThrowsOnTagArrayWithEmptyName(): void {
+    try {
+      $this->getApi()->addSubscriber([
+        'email' => 'empty-name-array@test.com',
+        'tags' => [['name' => '']],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+  }
+
+  public function testUpdateSubscriberDoesNotClearTagsOnMalformedEntry(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $this->getApi()->tagSubscriber($subscriber->getId(), 'Stay');
+
+    try {
+      $this->getApi()->updateSubscriber($subscriber->getId(), [
+        'tags' => [['typo' => 'VIP']],
+      ]);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    // existing tag must be preserved - a malformed entry must not silently
+    // clear the subscriber's tags via updateTags' replace-all behaviour
+    $reloaded = $this->getApi()->getSubscriber($subscriber->getId());
+    verify(array_column($reloaded['tags'], 'name'))->equals(['Stay']);
   }
 
   public function testUpdateSubscriberClearsTagsWhenEmptyArrayProvided(): void {
