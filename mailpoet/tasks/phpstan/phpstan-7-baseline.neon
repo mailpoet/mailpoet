@@ -41,11 +41,6 @@ parameters:
 			path: ../../lib/API/JSON/v1/Newsletters.php
 
 		-
-			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../lib/API/JSON/v1/Newsletters.php
-
-		-
 			message: "#^Parameter \\#1 \\$data of method MailPoet\\\\Newsletter\\\\NewsletterSaveController\\:\\:save\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/v1/Newsletters.php

@@ -45,8 +45,9 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     verify($duplicate->getSubject())->equals('Re: Test Subject');
     verify($duplicate->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
-    verify($duplicate->getParent())->notNull();
-    verify($duplicate->getParent()->getId())->equals($newsletter->getId());
+    $parent = $duplicate->getParent();
+    $this->assertInstanceOf(NewsletterEntity::class, $parent);
+    verify($parent->getId())->equals($newsletter->getId());
 
     $queue = $duplicate->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -318,7 +319,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
       "SELECT COUNT(*) FROM $table WHERE task_id = ?",
       [$taskId]
     );
-    return intval($result->fetchOne());
+    return (int)$result->fetchOne();
   }
 
   /** @param class-string $entityClass */
@@ -326,6 +327,6 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $connection = $this->entityManager->getConnection();
     $table = $this->entityManager->getClassMetadata($entityClass)->getTableName();
     $result = $connection->executeQuery("SELECT COUNT(*) FROM $table");
-    return intval($result->fetchOne());
+    return (int)$result->fetchOne();
   }
 }
