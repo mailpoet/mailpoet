@@ -41,7 +41,7 @@ class SendingQueueBodyCleanupNotice {
   private function display(): string {
     $settingsUrl = $this->wp->adminUrl('admin.php?page=mailpoet-settings#/advanced');
     $message = Helpers::replaceLinkTags(
-      __('MailPoet now automatically purges rendered email bodies from completed sends older than 30 days to reduce database size. The "View in browser" link for older emails will re-render from the original template. You can change this in [link]Settings → Advanced[/link].', 'mailpoet'),
+      __('MailPoet now includes a setting to automatically purge rendered email bodies from completed sends to reduce database size. By default, sends older than 30 days are purged. The "View in browser" link for purged emails will re-render from the original template. You can change this in [link]Settings → Advanced[/link].', 'mailpoet'),
       $settingsUrl
     );
 
