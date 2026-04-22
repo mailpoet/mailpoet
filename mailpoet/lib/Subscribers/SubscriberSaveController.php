@@ -147,7 +147,7 @@ class SubscriberSaveController {
     $subscriber = $this->createOrUpdate($data, $oldSubscriber);
 
     $this->updateCustomFields($data, $subscriber);
-    $this->updateTags($data, $subscriber);
+    $this->updateTags($data['tags'] ?? [], $subscriber);
 
     $segments = isset($data['segments']) ? $this->findSegments($data['segments']) : null;
     // check for status change
@@ -319,15 +319,18 @@ class SubscriberSaveController {
     }
   }
 
-  private function updateTags(array $data, SubscriberEntity $subscriber): void {
+  /**
+   * Replaces the subscriber's tags with the given list.
+   *
+   * $tags is either an array of arrays containing name, id etc. of the tag or an array of strings - the names
+   * of the tag. The tag names are used to upsert tags; any existing tag not present in the list is removed.
+   *
+   * Fires the `mailpoet_subscriber_tag_added` and `mailpoet_subscriber_tag_removed` WP actions, which is how
+   * tag automations are triggered.
+   */
+  public function updateTags(array $tags, SubscriberEntity $subscriber): void {
     $removedTags = [];
 
-    /**
-     * $data['tags'] is either an array of arrays containing name, id etc. of the tag or an array of strings - the names
-     * of the tag.
-     *
-     * Therefore we map it to be only an array of strings, containing the names of the tag.
-     */
     $tags = array_map(
       function($tag): string {
         if (is_array($tag)) {
@@ -335,7 +338,7 @@ class SubscriberSaveController {
         }
         return (string)$tag;
       },
-      (array)$data['tags']
+      $tags
     );
     foreach ($subscriber->getSubscriberTags() as $subscriberTag) {
       $tag = $subscriberTag->getTag();
