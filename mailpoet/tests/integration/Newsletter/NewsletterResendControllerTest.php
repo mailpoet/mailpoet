@@ -238,8 +238,21 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     }
     $this->entityManager->flush();
 
-    $this->expectException(UnexpectedValueException::class);
-    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
+    $newsletterCountBefore = $this->getTableCount(NewsletterEntity::class);
+    $taskCountBefore = $this->getTableCount(ScheduledTaskEntity::class);
+    $queueCountBefore = $this->getTableCount(SendingQueueEntity::class);
+
+    $thrown = false;
+    try {
+      $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
+    } catch (UnexpectedValueException $e) {
+      $thrown = true;
+    }
+    $this->assertTrue($thrown);
+
+    verify($this->getTableCount(NewsletterEntity::class))->equals($newsletterCountBefore);
+    verify($this->getTableCount(ScheduledTaskEntity::class))->equals($taskCountBefore);
+    verify($this->getTableCount(SendingQueueEntity::class))->equals($queueCountBefore);
   }
 
   public function testThrowsWhenTooSoonAfterSending() {
@@ -305,6 +318,14 @@ class NewsletterResendControllerTest extends \MailPoetTest {
       "SELECT COUNT(*) FROM $table WHERE task_id = ?",
       [$taskId]
     );
+    return intval($result->fetchOne());
+  }
+
+  /** @param class-string $entityClass */
+  private function getTableCount(string $entityClass): int {
+    $connection = $this->entityManager->getConnection();
+    $table = $this->entityManager->getClassMetadata($entityClass)->getTableName();
+    $result = $connection->executeQuery("SELECT COUNT(*) FROM $table");
     return intval($result->fetchOne());
   }
 }
