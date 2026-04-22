@@ -8,6 +8,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
@@ -154,6 +155,8 @@ class NewsletterResendControllerTest extends \MailPoetTest {
       ->withSendingQueue()
       ->withWpPostId($wpPostId)
       ->create();
+    $newsletter->setSentAt(Carbon::now()->subHours(36));
+    $this->entityManager->flush();
 
     $subscribers = $this->createSubscribers(3);
     $this->createStatisticsNewsletters($newsletter, $subscribers);
@@ -203,12 +206,35 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $this->controller->resendToNonOpeners($newsletter);
   }
 
-  private function createSentNewsletter(string $subject): NewsletterEntity {
-    return (new NewsletterFactory())
+  public function testThrowsWhenTooSoonAfterSending() {
+    $newsletter = $this->createSentNewsletter('Test Subject', Carbon::now()->subHours(12));
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('You can resend this email at least 1 day after it was sent.');
+    $this->controller->resendToNonOpeners($newsletter);
+  }
+
+  public function testThrowsWhenTooLongAfterSending() {
+    $newsletter = $this->createSentNewsletter('Test Subject', Carbon::now()->subHours(80));
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('You can only resend this email within 3 days of sending it.');
+    $this->controller->resendToNonOpeners($newsletter);
+  }
+
+  private function createSentNewsletter(string $subject, ?Carbon $sentAt = null): NewsletterEntity {
+    $newsletter = (new NewsletterFactory())
       ->withSubject($subject)
       ->withSentStatus()
       ->withSendingQueue()
       ->create();
+    $newsletter->setSentAt($sentAt ?? Carbon::now()->subHours(36));
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   /** @return SubscriberEntity[] */
