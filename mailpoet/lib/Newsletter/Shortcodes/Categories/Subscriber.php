@@ -19,12 +19,17 @@ class Subscriber implements CategoryInterface {
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    SubscriberCustomFieldRepository $subscriberCustomFieldRepository
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
+    WPFunctions $wp
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
+    $this->wp = $wp;
   }
 
   public function process(
@@ -69,6 +74,17 @@ class Subscriber implements CategoryInterface {
             return $defaultValue;
           }
           $customFieldDefinition = $customField->getCustomField();
+          if (
+            $shortcodeDetails['action_argument'] === 'format'
+            && $customFieldDefinition instanceof CustomFieldEntity
+            && $customFieldDefinition->getType() === CustomFieldEntity::TYPE_DATE
+          ) {
+            $timestamp = strtotime($customField->getValue());
+            if ($timestamp !== false) {
+              return $this->wp->dateI18n($shortcodeDetails['action_argument_value'], $timestamp);
+            }
+            return $defaultValue;
+          }
           if (
             $customFieldDefinition instanceof CustomFieldEntity &&
             $customFieldDefinition->getType() === CustomFieldEntity::TYPE_CHECKBOX &&
