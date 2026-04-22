@@ -14,10 +14,20 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "==> [1/5] Installing Node + PHP dependencies (pnpm install + postinstall)"
+echo "==> [1/6] Installing Node + PHP dependencies (pnpm install + postinstall)"
 pnpm install
 
-echo "==> [2/5] Verifying mailpoet/vendor-prefixed/ is populated"
+echo "==> [2/6] Seeding .env files from .env.sample (if missing)"
+# mailpoet/do loads mailpoet/.env via Dotenv on every invocation (including the
+# WooCommerce downloaders in step 4), and compile:all reads it too. Seed early.
+for dir in mailpoet mailpoet-premium; do
+  if [ -d "$dir" ] && [ -f "$dir/.env.sample" ] && [ ! -f "$dir/.env" ]; then
+    cp "$dir/.env.sample" "$dir/.env"
+    echo "  ✓ seeded $dir/.env from $dir/.env.sample"
+  fi
+done
+
+echo "==> [3/6] Verifying mailpoet/vendor-prefixed/ is populated"
 if [ -z "$(ls -A mailpoet/vendor-prefixed 2>/dev/null)" ]; then
   echo "  ! vendor-prefixed/ is empty — running prefixer and post-install fixers"
   (cd mailpoet \
@@ -29,7 +39,7 @@ else
   echo "  ✓ vendor-prefixed/ populated"
 fi
 
-echo "==> [3/5] Downloading and extracting WooCommerce test plugins (requires gh auth for private ones)"
+echo "==> [4/6] Downloading and extracting WooCommerce test plugins (requires gh auth for private ones)"
 cd mailpoet
 ./do download:woo-commerce-zip latest || echo "  ! WooCommerce (free) download failed — continuing"
 ./do download:woo-commerce-subscriptions-zip latest || echo "  ! Subscriptions download failed (requires gh auth + repo access) — continuing"
@@ -49,10 +59,10 @@ if ls mailpoet/tests/plugins/*.zip >/dev/null 2>&1; then
   cd "$ROOT_DIR"
 fi
 
-echo "==> [4/5] Generating .wp-env.override.json"
+echo "==> [5/6] Generating .wp-env.override.json"
 node scripts/generate-wp-env-override.mjs
 
-echo "==> [5/5] Compiling assets"
+echo "==> [6/6] Compiling assets"
 cd mailpoet
 ./do compile:all
 cd "$ROOT_DIR"

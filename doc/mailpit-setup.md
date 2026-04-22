@@ -45,7 +45,20 @@ MailPoet uses its **own** mailer for newsletters by default (separate from WordP
 - `sender` = `MailPoet Dev <dev@mailpoet.local>` (only when unset)
 - `version` = MailPoet's current version, which marks the welcome wizard as completed (otherwise the wizard would overwrite `mta` back to `PHPMail` on the first admin visit)
 
-**Want to test a different send method?** Change it in **wp-admin → MailPoet → Settings → Advanced**. Note that the afterStart hook re-applies the SMTP config on every `pnpm env:start`, so any manual change will be reverted next time the env boots. For full manual control over mailer settings, comment out the `lifecycleScripts.afterStart` entry in `.wp-env.json` for the session.
+**Want to test a different send method?** Change it in **wp-admin → MailPoet → Settings → Advanced**. Note that the afterStart hook re-applies the SMTP config on every `pnpm env:start`, so any manual change will be reverted next time the env boots. For full manual control, override the hook from your `.wp-env.override.json` so `.wp-env.json` stays untouched:
+
+```json
+{
+  "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+  "lifecycleScripts": {
+    "afterStart": ""
+  }
+}
+```
+
+This is the pattern to use when testing MailPoet Sending Service (MSS) on a custom domain — configure the MSS key in the UI once and the override keeps `afterStart` from stomping it on the next `env:start`.
+
+> **Heads-up:** `pnpm bootstrap` regenerates the `plugins` array in `.wp-env.override.json` from the filesystem (WooCommerce plugin zips, `mailpoet-premium/`, etc.). Non-plugin keys like `lifecycleScripts` or `config` are preserved, but any plugin path you added manually will be dropped. Put personal plugin tweaks under a non-plugin key, or skip `pnpm bootstrap` after customizing the file.
 
 ---
 

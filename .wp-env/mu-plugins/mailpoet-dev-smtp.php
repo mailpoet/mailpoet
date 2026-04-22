@@ -11,3 +11,13 @@ add_action('phpmailer_init', function ($mailer) {
     $mailer->SMTPAuth    = false;
     $mailer->SMTPAutoTLS = false;
 });
+
+// PHPMailer's SMTP mode rejects `wordpress@localhost` (localhost is not a valid FQDN),
+// which is the default From address on a stock wp-env install. Swap it for a FQDN
+// so wp_mail() works out of the box without requiring an explicit From header.
+add_filter('wp_mail_from', function ($from) {
+    if (is_string($from) && substr($from, -10) === '@localhost') {
+        return 'dev@mailpoet.local';
+    }
+    return $from;
+});
