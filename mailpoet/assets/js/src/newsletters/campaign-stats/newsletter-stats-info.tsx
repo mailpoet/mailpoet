@@ -6,6 +6,8 @@ import {
   Dropdown,
   MenuItem as WpMenuItem,
   MenuGroup,
+  Modal,
+  TextControl,
 } from '@wordpress/components';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
@@ -95,46 +97,6 @@ const duplicateNewsletter = (
     });
 };
 
-const resendToNonOpeners = (
-  newsletter: NewsletterType,
-  performActionAfterUpdate = () => {},
-) => {
-  if (
-    // eslint-disable-next-line no-alert -- simple confirmation before sending emails to potentially large audience
-    !window.confirm(
-      __(
-        "This will resend this email to all subscribers who haven't opened it. Continue?",
-        'mailpoet',
-      ),
-    )
-  ) {
-    performActionAfterUpdate();
-    return;
-  }
-  void MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'newsletters',
-    action: 'resendToNonOpeners',
-    data: {
-      id: newsletter.id,
-    },
-  })
-    .done(() => {
-      MailPoet.Notice.success(
-        __('A copy of this email is being sent to non-openers.', 'mailpoet'),
-        { static: true },
-      );
-    })
-    .fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
-      }
-    })
-    .always(() => {
-      performActionAfterUpdate();
-    });
-};
-
 const trashNewsletter = (
   newsletter: NewsletterType,
   performActionAfterUpdate = () => {},
@@ -163,12 +125,95 @@ const trashNewsletter = (
     });
 };
 
+type ResendModalProps = {
+  newsletter: NewsletterType;
+  onClose: () => void;
+};
+
+function ResendToNonOpenersModal({ newsletter, onClose }: ResendModalProps) {
+  const defaultSubject = sprintf(
+    // translators: %s is the subject of the original newsletter.
+    __('Re: %s', 'mailpoet'),
+    newsletter.subject,
+  );
+  const [subject, setSubject] = useState(defaultSubject);
+  const [isSending, setIsSending] = useState(false);
+
+  const handleResend = () => {
+    if (!subject.trim()) return;
+    setIsSending(true);
+    void MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'resendToNonOpeners',
+      data: {
+        id: newsletter.id,
+        subject: subject.trim(),
+      },
+    })
+      .done(() => {
+        MailPoet.Notice.success(
+          __('A copy of this email is being sent to non-openers.', 'mailpoet'),
+          { static: true },
+        );
+        onClose();
+      })
+      .fail((response) => {
+        setIsSending(false);
+        if (response.errors.length > 0) {
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+        }
+      });
+  };
+
+  return (
+    <Modal
+      title={__('Resend to non-openers', 'mailpoet')}
+      onRequestClose={onClose}
+    >
+      <p>
+        {__(
+          'This will send a copy of this email to subscribers who haven\u2019t opened it. A different subject line is required.',
+          'mailpoet',
+        )}
+      </p>
+      <TextControl
+        label={__('New subject line', 'mailpoet')}
+        value={subject}
+        onChange={setSubject}
+        help={__('Must be different from the original subject.', 'mailpoet')}
+      />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '8px',
+          marginTop: '16px',
+        }}
+      >
+        <Button variant="tertiary" onClick={onClose} disabled={isSending}>
+          {__('Cancel', 'mailpoet')}
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleResend}
+          isBusy={isSending}
+          disabled={!subject.trim() || isSending}
+        >
+          {__('Resend', 'mailpoet')}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
 type Props = {
   newsletter: NewsletterType;
 };
 
 function NewsletterStatsInfo({ newsletter }: Props) {
   const [isBusy, setIsBusy] = useState(false);
+  const [isResendModalOpen, setIsResendModalOpen] = useState(false);
   const newsletterDate =
     newsletter?.queue?.scheduled_at ||
     newsletter?.queue?.created_at ||
@@ -285,15 +330,10 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 {newsletter.type === 'standard' &&
                   newsletter.status === 'sent' && (
                     <MenuItem
-                      isBusy={isBusy}
-                      disabled={isBusy}
                       className="mailpoet-no-box-shadow"
                       variant="tertiary"
                       onClick={() => {
-                        setIsBusy(true);
-                        resendToNonOpeners(newsletter, () => {
-                          setIsBusy(false);
-                        });
+                        setIsResendModalOpen(true);
                       }}
                     >
                       {__('Resend to non-openers', 'mailpoet')}
@@ -316,6 +356,12 @@ function NewsletterStatsInfo({ newsletter }: Props) {
           />
         </ButtonGroup>
       </div>
+      {isResendModalOpen && (
+        <ResendToNonOpenersModal
+          newsletter={newsletter}
+          onClose={() => setIsResendModalOpen(false)}
+        />
+      )}
     </Grid.ThreeColumns>
   );
 }

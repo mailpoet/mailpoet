@@ -12,6 +12,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -27,6 +28,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class NewsletterResendController {
   const MIN_RESEND_DELAY_HOURS = 24;
   const MAX_RESEND_DELAY_HOURS = 72;
+
   /** @var NewsletterSaveController */
   private $newsletterSaveController;
 
@@ -86,7 +88,12 @@ class NewsletterResendController {
     $this->mailerFactory = $mailerFactory;
   }
 
-  public function resendToNonOpeners(NewsletterEntity $newsletter): NewsletterEntity {
+  /**
+   * Extensibility hook for premium/plan restrictions.
+   * Override or decorate this method to add per-site daily caps,
+   * plan-based limits, or other restrictions.
+   */
+  public function canResend(NewsletterEntity $newsletter): void {
     if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
       throw UnexpectedValueException::create()
         ->withMessage(__('Only standard newsletters can be resent.', 'mailpoet'));
@@ -95,6 +102,12 @@ class NewsletterResendController {
     if ($newsletter->getStatus() !== NewsletterEntity::STATUS_SENT) {
       throw UnexpectedValueException::create()
         ->withMessage(__('Only sent newsletters can be resent.', 'mailpoet'));
+    }
+
+    $queue = $newsletter->getLatestQueue();
+    if ($queue && $queue->getCountToProcess() > 0) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('This email is still being sent. Wait until sending is complete.', 'mailpoet'));
     }
 
     if ($newsletter->getParent() !== null) {
@@ -131,6 +144,22 @@ class NewsletterResendController {
       throw UnexpectedValueException::create()
         ->withMessage($e->getMessage());
     }
+  }
+
+  public function resendToNonOpeners(NewsletterEntity $newsletter, string $subject): NewsletterEntity {
+    $this->canResend($newsletter);
+
+    $subject = trim($subject);
+    if ($subject === '') {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('Subject line is required.', 'mailpoet'));
+    }
+
+    $originalSubject = trim($newsletter->getSubject());
+    if (strcasecmp($subject, $originalSubject) === 0) {
+      throw UnexpectedValueException::create()
+        ->withMessage(__('The subject line must be different from the original email.', 'mailpoet'));
+    }
 
     $nonOpenerIds = $this->getNonOpenerIds($newsletter);
     if (empty($nonOpenerIds)) {
@@ -140,17 +169,13 @@ class NewsletterResendController {
 
     $duplicate = $this->newsletterSaveController->duplicate($newsletter);
     $duplicate->setParent($newsletter);
-
-    $originalSubject = $newsletter->getSubject();
-    // translators: %s is the subject of the original newsletter being resent.
-    $resendSubject = sprintf(__('(Resent) %s', 'mailpoet'), $originalSubject);
-    $duplicate->setSubject($resendSubject);
+    $duplicate->setSubject($subject);
 
     $wpPostId = $duplicate->getWpPostId();
     if ($wpPostId) {
       $this->wp->wpUpdatePost([
         'ID' => $wpPostId,
-        'post_title' => $resendSubject,
+        'post_title' => $subject,
       ]);
     }
 
@@ -170,7 +195,9 @@ class NewsletterResendController {
     $this->sendingQueuesRepository->flush();
     $this->newslettersRepository->refresh($duplicate);
 
-    $insertedCount = $this->addSubscribersToTask($scheduledTask, $nonOpenerIds);
+    $segmentIds = $newsletter->getSegmentIds();
+    $filterSegmentId = $newsletter->getFilterSegmentId();
+    $insertedCount = $this->addNonOpenersToTask($scheduledTask, $nonOpenerIds, $segmentIds, $filterSegmentId);
 
     if ($insertedCount === 0) {
       $this->entityManager->remove($sendingQueue);
@@ -181,7 +208,7 @@ class NewsletterResendController {
         $this->newsletterDeleteController->bulkDelete([$duplicateId]);
       }
       throw UnexpectedValueException::create()
-        ->withMessage(__('All non-openers have since unsubscribed or been deleted.', 'mailpoet'));
+        ->withMessage(__('No eligible recipients found. All non-openers have since unsubscribed, bounced, or left the original segments.', 'mailpoet'));
     }
 
     $this->sendingQueuesRepository->updateCounts($sendingQueue);
@@ -221,32 +248,62 @@ class NewsletterResendController {
     return array_map('intval', $result->fetchFirstColumn());
   }
 
-  private function addSubscribersToTask(ScheduledTaskEntity $task, array $subscriberIds): int {
+  /**
+   * @param int[] $nonOpenerIds
+   * @param int[] $segmentIds
+   */
+  private function addNonOpenersToTask(ScheduledTaskEntity $task, array $nonOpenerIds, array $segmentIds, ?int $filterSegmentId): int {
     $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
     $connection = $this->entityManager->getConnection();
+
+    $segmentJoin = '';
+    $segmentParams = [];
+    $segmentTypes = [];
+
+    if (!empty($segmentIds)) {
+      $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+
+      $segmentJoin = "INNER JOIN $subscriberSegmentTable ss
+         ON ss.subscriber_id = subscribers.id
+         AND ss.segment_id IN (?)
+         AND ss.status = 'subscribed'";
+      $segmentParams[] = $segmentIds;
+      $segmentTypes[] = ArrayParameterType::INTEGER;
+    }
 
     $result = $connection->executeQuery(
       "INSERT IGNORE INTO $scheduledTaskSubscriberTable
        (task_id, subscriber_id, processed)
        SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
        FROM $subscriberTable subscribers
+       $segmentJoin
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
        AND subscribers.`id` IN (?)",
-      [
-        $task->getId(),
-        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-        SubscriberEntity::STATUS_SUBSCRIBED,
-        $subscriberIds,
-      ],
-      [
-        ParameterType::INTEGER,
-        ParameterType::INTEGER,
-        ParameterType::STRING,
-        ArrayParameterType::INTEGER,
-      ]
+      array_merge(
+        [
+          $task->getId(),
+          ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+        ],
+        $segmentParams,
+        [
+          SubscriberEntity::STATUS_SUBSCRIBED,
+          $nonOpenerIds,
+        ]
+      ),
+      array_merge(
+        [
+          ParameterType::INTEGER,
+          ParameterType::INTEGER,
+        ],
+        $segmentTypes,
+        [
+          ParameterType::STRING,
+          ArrayParameterType::INTEGER,
+        ]
+      )
     );
 
     return $result->rowCount();
