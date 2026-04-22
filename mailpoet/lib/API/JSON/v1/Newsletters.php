@@ -17,6 +17,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Listing;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterDeleteController;
+use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
@@ -77,6 +78,9 @@ class Newsletters extends APIEndpoint {
 
   private NewsletterDeleteController $newsletterDeleteController;
 
+  /** @var NewsletterResendController */
+  private $newsletterResendController;
+
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
@@ -103,6 +107,7 @@ class Newsletters extends APIEndpoint {
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterDeleteController $newsletterDeleteController,
+    NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
     Scheduler $scheduler,
     NewsletterValidator $newsletterValidator,
@@ -121,6 +126,7 @@ class Newsletters extends APIEndpoint {
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterDeleteController = $newsletterDeleteController;
+    $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
     $this->scheduler = $scheduler;
     $this->newsletterValidator = $newsletterValidator;
@@ -421,6 +427,26 @@ class Newsletters extends APIEndpoint {
   }
 
   /** @return NewsletterEntity|null */
+  public function resendToNonOpeners($data = []) {
+    $newsletter = $this->getNewsletter($data);
+    if (!$newsletter) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
+      ]);
+    }
+    try {
+      $duplicate = $this->newsletterResendController->resendToNonOpeners($newsletter);
+    } catch (UnexpectedValueException $e) {
+      return $this->errorResponse([
+        APIError::BAD_REQUEST => $e->getMessage(),
+      ]);
+    }
+    return $this->successResponse(
+      $this->newslettersResponseBuilder->build($duplicate),
+      ['count' => 1]
+    );
+  }
+
   private function getNewsletter(array $data) {
     return isset($data['id'])
       ? $this->newslettersRepository->findOneById((int)$data['id'])
