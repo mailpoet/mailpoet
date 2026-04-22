@@ -10,6 +10,7 @@ use MailPoet\API\MP\v1\APIException;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
+use MailPoet\API\MP\v1\Tags;
 use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
@@ -69,6 +70,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->diContainer->get(CustomFields::class),
       $this->diContainer->get(Segments::class),
       $subscriberActions,
+      $this->diContainer->get(Tags::class),
       $this->diContainer->get(Changelog::class)
     );
   }
@@ -1092,5 +1094,161 @@ class SubscribersTest extends \MailPoetTest {
       'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
     ]);
     $this->assertEquals(1, $count);
+  }
+
+  public function testItTagsSubscriberByTagId(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('VIP')->create();
+
+    $wp = new \MailPoet\WP\Functions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $firedTimes = 0;
+    $wp->addAction('mailpoet_subscriber_tag_added', function () use (&$firedTimes) {
+      $firedTimes++;
+    });
+
+    $result = $this->getApi()->tagSubscriber($subscriber->getId(), $tag->getId());
+
+    verify($result['tags'])->arrayCount(1);
+    verify($result['tags'][0]['tag_id'])->equals((string)$tag->getId());
+    verify($result['tags'][0]['name'])->equals('VIP');
+    verify($firedTimes)->equals(1);
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+  }
+
+  public function testItTagsSubscriberByNameAndAutoCreatesTag(): void {
+    $subscriber = $this->subscriberFactory->create();
+
+    $result = $this->getApi()->tagSubscriber($subscriber->getId(), 'AutoCreated');
+
+    verify($result['tags'])->arrayCount(1);
+    verify($result['tags'][0]['name'])->equals('AutoCreated');
+  }
+
+  public function testTagSubscriberIsIdempotent(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('Dup')->create();
+
+    $this->getApi()->tagSubscriber($subscriber->getId(), $tag->getId());
+
+    $wp = new \MailPoet\WP\Functions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $firedTimes = 0;
+    $wp->addAction('mailpoet_subscriber_tag_added', function () use (&$firedTimes) {
+      $firedTimes++;
+    });
+
+    $result = $this->getApi()->tagSubscriber($subscriber->getId(), $tag->getId());
+
+    verify($result['tags'])->arrayCount(1);
+    verify($firedTimes)->equals(0);
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+  }
+
+  public function testItThrowsWhenTaggingByMissingId(): void {
+    $subscriber = $this->subscriberFactory->create();
+
+    try {
+      $this->getApi()->tagSubscriber($subscriber->getId(), 999999);
+      $this->fail('Tag not exists exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NOT_EXISTS);
+    }
+  }
+
+  public function testItUntagsSubscriber(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('ToRemove')->create();
+    $this->getApi()->tagSubscriber($subscriber->getId(), $tag->getId());
+
+    $wp = new \MailPoet\WP\Functions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $firedTimes = 0;
+    $wp->addAction('mailpoet_subscriber_tag_removed', function () use (&$firedTimes) {
+      $firedTimes++;
+    });
+
+    $result = $this->getApi()->untagSubscriber($subscriber->getId(), $tag->getId());
+
+    verify($result['tags'])->arrayCount(0);
+    verify($firedTimes)->equals(1);
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
+  public function testUntagSubscriberIsIdempotent(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $tag = (new \MailPoet\Test\DataFactories\Tag())->withName('Never')->create();
+
+    $wp = new \MailPoet\WP\Functions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $firedTimes = 0;
+    $wp->addAction('mailpoet_subscriber_tag_removed', function () use (&$firedTimes) {
+      $firedTimes++;
+    });
+
+    $result = $this->getApi()->untagSubscriber($subscriber->getId(), $tag->getId());
+
+    verify($result['tags'])->arrayCount(0);
+    verify($firedTimes)->equals(0);
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
+  public function testItThrowsWhenUntaggingByMissingName(): void {
+    $subscriber = $this->subscriberFactory->create();
+
+    try {
+      $this->getApi()->untagSubscriber($subscriber->getId(), 'DoesNotExist');
+      $this->fail('Tag not exists exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NOT_EXISTS);
+    }
+  }
+
+  public function testAddSubscriberAppliesTags(): void {
+    $result = $this->getApi()->addSubscriber([
+      'email' => 'with-tags@test.com',
+      'tags' => ['T1', ['name' => 'T2']],
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    sort($tagNames);
+    verify($tagNames)->equals(['T1', 'T2']);
+  }
+
+  public function testUpdateSubscriberReplacesTagsWhenKeyPresent(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $this->getApi()->tagSubscriber($subscriber->getId(), 'Keep');
+    $this->getApi()->tagSubscriber($subscriber->getId(), 'Drop');
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tags' => ['Keep', 'NewOne'],
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    sort($tagNames);
+    verify($tagNames)->equals(['Keep', 'NewOne']);
+  }
+
+  public function testUpdateSubscriberLeavesTagsUntouchedWhenKeyAbsent(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $this->getApi()->tagSubscriber($subscriber->getId(), 'Stay');
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'first_name' => 'Renamed',
+    ]);
+
+    $tagNames = array_column($result['tags'], 'name');
+    verify($tagNames)->equals(['Stay']);
+  }
+
+  public function testUpdateSubscriberClearsTagsWhenEmptyArrayProvided(): void {
+    $subscriber = $this->subscriberFactory->create();
+    $this->getApi()->tagSubscriber($subscriber->getId(), 'Bye');
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tags' => [],
+    ]);
+
+    verify($result['tags'])->arrayCount(0);
   }
 }

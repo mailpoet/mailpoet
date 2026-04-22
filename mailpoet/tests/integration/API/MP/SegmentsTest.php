@@ -7,6 +7,7 @@ use MailPoet\API\MP\v1\APIException;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
+use MailPoet\API\MP\v1\Tags;
 use MailPoet\Config\Changelog;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
@@ -312,6 +313,7 @@ class SegmentsTest extends \MailPoetTest {
       $this->diContainer->get(CustomFields::class),
       $this->diContainer->get(Segments::class),
       $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(Tags::class),
       $this->diContainer->get(Changelog::class)
     );
   }
