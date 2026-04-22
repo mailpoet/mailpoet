@@ -268,7 +268,7 @@ class Subscribers {
   public function tagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
     $this->checkSubscriberParam($subscriberIdOrEmail);
     $subscriber = $this->findSubscriber($subscriberIdOrEmail);
-    $tag = $this->resolveTag($tagIdOrName, true);
+    $tag = $this->resolveOrCreateTag($tagIdOrName);
 
     $subscriberTag = $subscriber->getSubscriberTag($tag);
     if (!$subscriberTag) {
@@ -294,7 +294,7 @@ class Subscribers {
   public function untagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
     $this->checkSubscriberParam($subscriberIdOrEmail);
     $subscriber = $this->findSubscriber($subscriberIdOrEmail);
-    $tag = $this->resolveTag($tagIdOrName, false);
+    $tag = $this->resolveTag($tagIdOrName);
 
     $subscriberTag = $subscriber->getSubscriberTag($tag);
     if ($subscriberTag) {
@@ -590,19 +590,49 @@ class Subscribers {
   }
 
   /**
-   * Resolves a tag by id (int or numeric string) or name. When $createByName is true,
-   * a non-existent tag name is auto-created; otherwise missing tags (by id or name) throw.
+   * Resolves a tag by id (int or numeric string) or existing name. Throws when the tag cannot be found.
    *
    * @param int|string $tagIdOrName
    * @throws APIException
    */
-  private function resolveTag($tagIdOrName, bool $createByName): TagEntity {
-    if (is_int($tagIdOrName) || (is_string($tagIdOrName) && (string)(int)$tagIdOrName === $tagIdOrName)) {
-      $tag = $this->tagRepository->findOneById((int)$tagIdOrName);
-      if (!$tag instanceof TagEntity) {
-        throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
-      }
+  private function resolveTag($tagIdOrName): TagEntity {
+    $tag = $this->findTag($tagIdOrName);
+    if (!$tag instanceof TagEntity) {
+      throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
+    }
+    return $tag;
+  }
+
+  /**
+   * Like resolveTag(), but when given a non-numeric name that doesn't match an existing tag,
+   * the tag is created. Numeric id lookups still throw when no tag matches (never auto-created).
+   *
+   * @param int|string $tagIdOrName
+   * @throws APIException
+   */
+  private function resolveOrCreateTag($tagIdOrName): TagEntity {
+    $tag = $this->findTag($tagIdOrName);
+    if ($tag instanceof TagEntity) {
       return $tag;
+    }
+
+    if (!is_string($tagIdOrName) || (string)(int)$tagIdOrName === $tagIdOrName) {
+      throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
+    }
+
+    return $this->tagRepository->createOrUpdate(['name' => $this->sanitizeTagName($tagIdOrName)]);
+  }
+
+  /**
+   * Looks up a tag by id (int/numeric-string) or existing name. Returns null if not found.
+   * Throws when the input is unusable (non-string/non-int, or an empty/sanitizes-to-empty name).
+   *
+   * @param int|string $tagIdOrName
+   * @throws APIException
+   */
+  private function findTag($tagIdOrName): ?TagEntity {
+    if (is_int($tagIdOrName) || (is_string($tagIdOrName) && (string)(int)$tagIdOrName === $tagIdOrName)) {
+      return $this->tagRepository->findOneById((int)$tagIdOrName);
     }
 
     if (!is_string($tagIdOrName)) {
@@ -611,15 +641,7 @@ class Subscribers {
 
     $name = $this->sanitizeTagName($tagIdOrName);
     $tag = $this->tagRepository->findOneBy(['name' => $name]);
-    if ($tag instanceof TagEntity) {
-      return $tag;
-    }
-
-    if (!$createByName) {
-      throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
-    }
-
-    return $this->tagRepository->createOrUpdate(['name' => $name]);
+    return $tag instanceof TagEntity ? $tag : null;
   }
 
   /**
@@ -642,7 +664,7 @@ class Subscribers {
     foreach ($tags as $tag) {
       if (is_array($tag)) {
         if (array_key_exists('id', $tag)) {
-          $names[] = $this->resolveTag($tag['id'], false)->getName();
+          $names[] = $this->resolveTag($tag['id'])->getName();
           continue;
         }
         if (array_key_exists('name', $tag) && is_string($tag['name'])) {
@@ -652,7 +674,7 @@ class Subscribers {
         throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
       }
       if (is_int($tag) || (is_string($tag) && (string)(int)$tag === $tag)) {
-        $names[] = $this->resolveTag($tag, false)->getName();
+        $names[] = $this->resolveTag($tag)->getName();
         continue;
       }
       if (is_string($tag)) {
