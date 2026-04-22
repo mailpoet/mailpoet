@@ -316,6 +316,69 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals('');
   }
 
+  public function testItCanFormatDateCustomFieldShortcodes() {
+    $shortcodesObject = $this->shortcodesObject;
+    $subscriber = $this->subscriber;
+
+    $customField = new CustomFieldEntity();
+    $customField->setName('birthday');
+    $customField->setType(CustomFieldEntity::TYPE_DATE);
+    $customField->setParams(['date_type' => 'year_month_day', 'date_format' => 'YYYY-MM-DD']);
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+
+    $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, '2010-04-20 00:00:00');
+    $this->entityManager->persist($subscriberCustomField);
+    $this->entityManager->flush();
+
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ' | format:F j]']
+    );
+    verify($result[0])->equals('April 20');
+
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ' | format:Y]']
+    );
+    verify($result[0])->equals('2010');
+  }
+
+  public function testItReturnsEmptyStringForEmptyDateCustomFieldWithFormat() {
+    $shortcodesObject = $this->shortcodesObject;
+    $subscriber = $this->subscriber;
+
+    $customField = new CustomFieldEntity();
+    $customField->setName('birthday');
+    $customField->setType(CustomFieldEntity::TYPE_DATE);
+    $customField->setParams(['date_type' => 'year_month_day', 'date_format' => 'YYYY-MM-DD']);
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ' | format:F j]']
+    );
+    verify($result[0])->equals('');
+  }
+
+  public function testItIgnoresFormatForNonDateCustomField() {
+    $shortcodesObject = $this->shortcodesObject;
+    $subscriber = $this->subscriber;
+
+    $customField = new CustomFieldEntity();
+    $customField->setName('nickname');
+    $customField->setType('text');
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+
+    $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'John');
+    $this->entityManager->persist($subscriberCustomField);
+    $this->entityManager->flush();
+
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ' | format:F j]']
+    );
+    verify($result[0])->equals('John');
+  }
+
   public function testItCanProcessLinkShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $result =
