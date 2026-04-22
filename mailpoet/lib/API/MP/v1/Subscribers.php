@@ -148,6 +148,10 @@ class Subscribers {
     }
     $defaultFields['source'] = Source::API;
 
+    // Pre-resolve tag names before any persistence so invalid tags fail fast
+    // and don't leave a half-created subscriber behind.
+    $resolvedTagNames = array_key_exists('tags', $data) ? $this->resolveTagNames((array)$data['tags']) : null;
+
     try {
       $subscriberEntity = $this->subscriberSaveController->createOrUpdate($defaultFields, null);
     } catch (\Exception $e) {
@@ -168,8 +172,8 @@ class Subscribers {
       );
     }
 
-    if (array_key_exists('tags', $data)) {
-      $this->subscriberSaveController->updateTags($this->resolveTagNames((array)$data['tags']), $subscriberEntity);
+    if ($resolvedTagNames !== null) {
+      $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
     }
 
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
@@ -206,6 +210,10 @@ class Subscribers {
     }
     $defaultFields['source'] = Source::API;
 
+    // Pre-resolve tag names before any persistence so invalid tags fail fast
+    // and don't leave the subscriber partially updated.
+    $resolvedTagNames = array_key_exists('tags', $data) ? $this->resolveTagNames((array)$data['tags']) : null;
+
     try {
       $subscriberEntity = $this->subscriberSaveController->createOrUpdate($defaultFields, $subscriber);
     } catch (\Exception $e) {
@@ -226,8 +234,8 @@ class Subscribers {
       );
     }
 
-    if (array_key_exists('tags', $data)) {
-      $this->subscriberSaveController->updateTags($this->resolveTagNames((array)$data['tags']), $subscriberEntity);
+    if ($resolvedTagNames !== null) {
+      $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
     }
 
     return $this->subscribersResponseBuilder->build($subscriberEntity);
@@ -581,11 +589,11 @@ class Subscribers {
       return $tag;
     }
 
-    if (!is_string($tagIdOrName) || trim($tagIdOrName) === '') {
+    if (!is_string($tagIdOrName)) {
       throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
     }
 
-    $name = sanitize_text_field($tagIdOrName);
+    $name = $this->sanitizeTagName($tagIdOrName);
     $tag = $this->tagRepository->findOneBy(['name' => $name]);
     if ($tag instanceof TagEntity) {
       return $tag;
@@ -600,7 +608,14 @@ class Subscribers {
 
   /**
    * Normalizes the `tags` key from addSubscriber/updateSubscriber data to an array of tag names.
-   * Accepts strings (names), `['name' => ...]` entries, or `['id' => ...]` entries (resolved to names).
+   * Accepts:
+   *   - integer or numeric-string scalars: the id of an existing tag (resolved to its name);
+   *   - non-numeric string scalars: a tag name (sanitized);
+   *   - `['id' => ...]`: id of an existing tag (resolved to its name);
+   *   - `['name' => ...]`: a tag name (sanitized).
+   *
+   * Unrecognized entries (null, booleans, arrays without `id`/`name`, empty names) throw so
+   * callers don't silently drop tags - `updateTags` replaces the full tag set.
    *
    * @param array $tags
    * @return string[]
@@ -609,22 +624,36 @@ class Subscribers {
   private function resolveTagNames(array $tags): array {
     $names = [];
     foreach ($tags as $tag) {
-      if (is_string($tag) || is_int($tag)) {
-        $names[] = (string)$tag;
-        continue;
-      }
       if (is_array($tag)) {
-        if (isset($tag['name']) && is_string($tag['name']) && trim($tag['name']) !== '') {
-          $names[] = $tag['name'];
+        if (array_key_exists('id', $tag)) {
+          $names[] = $this->resolveTag($tag['id'], false)->getName();
           continue;
         }
-        if (isset($tag['id'])) {
-          $resolved = $this->resolveTag($tag['id'], false);
-          $names[] = $resolved->getName();
+        if (array_key_exists('name', $tag) && is_string($tag['name'])) {
+          $names[] = $this->sanitizeTagName($tag['name']);
+          continue;
         }
+        throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
       }
+      if (is_int($tag) || (is_string($tag) && (string)(int)$tag === $tag)) {
+        $names[] = $this->resolveTag($tag, false)->getName();
+        continue;
+      }
+      if (is_string($tag)) {
+        $names[] = $this->sanitizeTagName($tag);
+        continue;
+      }
+      throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
     }
     return $names;
+  }
+
+  private function sanitizeTagName(string $name): string {
+    $sanitized = sanitize_text_field($name);
+    if (trim($sanitized) === '') {
+      throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
+    }
+    return $sanitized;
   }
 
   /**

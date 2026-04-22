@@ -36,12 +36,11 @@ class Tags {
   }
 
   public function addTag(array $data): array {
+    $data = $this->sanitizeTagData($data);
     $this->validateTagName($data);
 
     try {
-      $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
-      $description = isset($data['description']) ? sanitize_text_field($data['description']) : '';
-      $tag = new TagEntity($name, $description);
+      $tag = new TagEntity($data['name'], $data['description']);
       $this->tagRepository->persist($tag);
       $this->tagRepository->flush();
     } catch (\Exception $e) {
@@ -56,6 +55,7 @@ class Tags {
 
   public function updateTag(array $data): array {
     $this->validateTagId((string)($data['id'] ?? ''));
+    $data = $this->sanitizeTagData($data);
     $this->validateTagName($data);
 
     $tag = $this->tagRepository->findOneById((int)$data['id']);
@@ -66,12 +66,9 @@ class Tags {
       );
     }
 
-    $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
-    $description = isset($data['description']) ? sanitize_text_field($data['description']) : '';
-
     try {
-      $tag->setName($name);
-      $tag->setDescription($description);
+      $tag->setName($data['name']);
+      $tag->setDescription($data['description']);
       $this->tagRepository->flush();
     } catch (\Exception $e) {
       throw new APIException(
@@ -113,7 +110,8 @@ class Tags {
     $tag = null;
     if (is_int($tagIdOrName) || (is_string($tagIdOrName) && (string)(int)$tagIdOrName === $tagIdOrName)) {
       $tag = $this->tagRepository->findOneById((int)$tagIdOrName);
-    } elseif (is_string($tagIdOrName) && strlen(trim($tagIdOrName)) > 0) {
+    }
+    if (!$tag && is_string($tagIdOrName) && strlen(trim($tagIdOrName)) > 0) {
       $tag = $this->tagRepository->findOneBy(['name' => $tagIdOrName]);
     }
 
@@ -159,6 +157,12 @@ class Tags {
         APIException::TAG_EXISTS
       );
     }
+  }
+
+  private function sanitizeTagData(array $data): array {
+    $data['name'] = isset($data['name']) && is_string($data['name']) ? sanitize_text_field($data['name']) : '';
+    $data['description'] = isset($data['description']) && is_string($data['description']) ? sanitize_text_field($data['description']) : '';
+    return $data;
   }
 
   private function buildItem(TagEntity $tag): array {
