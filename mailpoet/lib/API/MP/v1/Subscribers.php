@@ -166,14 +166,22 @@ class Subscribers {
       $this->subscriberSaveController->updateCustomFields($customFields, $subscriberEntity);
     } catch (\Exception $e) {
       throw new APIException(
-      // translators: %s is an error message
+        // translators: %s is an error message
         sprintf(__('Failed to save subscriber custom fields: %s', 'mailpoet'), $e->getMessage()),
         APIException::FAILED_TO_SAVE_SUBSCRIBER
       );
     }
 
     if ($resolvedTagNames !== null) {
-      $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
+      try {
+        $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
+      } catch (\Exception $e) {
+        throw new APIException(
+          // translators: %s is an error message
+          sprintf(__('Failed to save subscriber tags: %s', 'mailpoet'), $e->getMessage()),
+          APIException::FAILED_TO_SAVE_SUBSCRIBER
+        );
+      }
     }
 
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
@@ -235,7 +243,15 @@ class Subscribers {
     }
 
     if ($resolvedTagNames !== null) {
-      $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
+      try {
+        $this->subscriberSaveController->updateTags($resolvedTagNames, $subscriberEntity);
+      } catch (\Exception $e) {
+        throw new APIException(
+        // translators: %s is an error message
+          sprintf(__('Failed to save subscriber tags: %s', 'mailpoet'), $e->getMessage()),
+          APIException::FAILED_TO_SAVE_SUBSCRIBER
+        );
+      }
     }
 
     return $this->subscribersResponseBuilder->build($subscriberEntity);
