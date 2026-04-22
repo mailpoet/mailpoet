@@ -426,7 +426,6 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($response);
   }
 
-  /** @return NewsletterEntity|null */
   public function resendToNonOpeners($data = []) {
     $newsletter = $this->getNewsletter($data);
     if (!$newsletter) {
@@ -434,8 +433,9 @@ class Newsletters extends APIEndpoint {
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+    $subject = isset($data['subject']) ? (string)$data['subject'] : '';
     try {
-      $duplicate = $this->newsletterResendController->resendToNonOpeners($newsletter);
+      $duplicate = $this->newsletterResendController->resendToNonOpeners($newsletter, $subject);
     } catch (UnexpectedValueException $e) {
       return $this->errorResponse([
         APIError::BAD_REQUEST => $e->getMessage(),

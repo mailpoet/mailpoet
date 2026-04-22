@@ -8,12 +8,12 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\UnexpectedValueException;
+use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterResendControllerTest extends \MailPoetTest {
   /** @var NewsletterResendController */
@@ -41,10 +41,12 @@ class NewsletterResendControllerTest extends \MailPoetTest {
       (new StatisticsOpensFactory($newsletter, $subscribers[$i]))->create();
     }
 
-    $duplicate = $this->controller->resendToNonOpeners($newsletter);
+    $duplicate = $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
 
-    verify($duplicate->getSubject())->equals('(Resent) Test Subject');
+    verify($duplicate->getSubject())->equals('Re: Test Subject');
     verify($duplicate->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($duplicate->getParent())->notNull();
+    verify($duplicate->getParent()->getId())->equals($newsletter->getId());
 
     $queue = $duplicate->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -72,34 +74,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('All recipients have already opened this email.');
-    $this->controller->resendToNonOpeners($newsletter);
-  }
-
-  public function testThrowsWhenAlreadyResent() {
-    $newsletter = $this->createSentNewsletter('Test Subject');
-    $subscribers = $this->createSubscribers(5);
-    $this->createStatisticsNewsletters($newsletter, $subscribers);
-
-    $this->controller->resendToNonOpeners($newsletter);
-    $this->entityManager->refresh($newsletter);
-
-    $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('This email has already been resent.');
-    $this->controller->resendToNonOpeners($newsletter);
-  }
-
-  public function testThrowsWhenResendingAResend() {
-    $newsletter = $this->createSentNewsletter('Test Subject');
-    $subscribers = $this->createSubscribers(5);
-    $this->createStatisticsNewsletters($newsletter, $subscribers);
-
-    $duplicate = $this->controller->resendToNonOpeners($newsletter);
-    $duplicate->setStatus(NewsletterEntity::STATUS_SENT);
-    $this->entityManager->flush();
-
-    $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('A resent email cannot be resent again.');
-    $this->controller->resendToNonOpeners($duplicate);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
   }
 
   public function testThrowsForZeroNonOpeners() {
@@ -113,7 +88,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('All recipients have already opened this email.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
   }
 
   public function testThrowsForWrongType() {
@@ -127,7 +102,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('Only standard newsletters can be resent.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Notification');
   }
 
   public function testThrowsForWrongStatus() {
@@ -139,7 +114,69 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('Only sent newsletters can be resent.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Draft Newsletter');
+  }
+
+  public function testThrowsWhenAlreadyResent() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
+    $this->entityManager->refresh($newsletter);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('This email has already been resent.');
+    $this->controller->resendToNonOpeners($newsletter, 'Another Re: Test Subject');
+  }
+
+  public function testThrowsWhenResendingAResend() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $duplicate = $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
+    $duplicate->setStatus(NewsletterEntity::STATUS_SENT);
+    $duplicate->setSentAt(Carbon::now()->subHours(36));
+    $queue = $duplicate->getLatestQueue();
+    if ($queue) {
+      $queue->setCountToProcess(0);
+    }
+    $this->entityManager->flush();
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('A resent email cannot be resent again.');
+    $this->controller->resendToNonOpeners($duplicate, 'Re: Re: Test Subject');
+  }
+
+  public function testThrowsForSameSubject() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('The subject line must be different from the original email.');
+    $this->controller->resendToNonOpeners($newsletter, 'Test Subject');
+  }
+
+  public function testThrowsForSameSubjectCaseInsensitive() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('The subject line must be different from the original email.');
+    $this->controller->resendToNonOpeners($newsletter, '  TEST SUBJECT  ');
+  }
+
+  public function testThrowsForEmptySubject() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(5);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('Subject line is required.');
+    $this->controller->resendToNonOpeners($newsletter, '   ');
   }
 
   public function testSubjectAndWpPostTitleUpdated() {
@@ -161,15 +198,15 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $subscribers = $this->createSubscribers(3);
     $this->createStatisticsNewsletters($newsletter, $subscribers);
 
-    $duplicate = $this->controller->resendToNonOpeners($newsletter);
+    $duplicate = $this->controller->resendToNonOpeners($newsletter, 'Re: Original Subject');
 
-    verify($duplicate->getSubject())->equals('(Resent) Original Subject');
+    verify($duplicate->getSubject())->equals('Re: Original Subject');
 
     $duplicateWpPostId = $duplicate->getWpPostId();
     $this->assertNotNull($duplicateWpPostId);
     $wpPost = get_post($duplicateWpPostId);
     $this->assertInstanceOf(\WP_Post::class, $wpPost);
-    verify($wpPost->post_title)->equals('(Resent) Original Subject'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($wpPost->post_title)->equals('Re: Original Subject'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testTaskAndQueueCreated() {
@@ -177,7 +214,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $subscribers = $this->createSubscribers(5);
     $this->createStatisticsNewsletters($newsletter, $subscribers);
 
-    $duplicate = $this->controller->resendToNonOpeners($newsletter);
+    $duplicate = $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
 
     $queue = $duplicate->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -202,8 +239,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('All non-openers have since unsubscribed or been deleted.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
   }
 
   public function testThrowsWhenTooSoonAfterSending() {
@@ -213,7 +249,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('You can resend this email at least 1 day after it was sent.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
   }
 
   public function testThrowsWhenTooLongAfterSending() {
@@ -223,7 +259,13 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
     $this->expectException(UnexpectedValueException::class);
     $this->expectExceptionMessage('You can only resend this email within 3 days of sending it.');
-    $this->controller->resendToNonOpeners($newsletter);
+    $this->controller->resendToNonOpeners($newsletter, 'Re: Test Subject');
+  }
+
+  public function testCanResendHookIsCallable() {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $this->controller->canResend($newsletter);
+    $this->addToAssertionCount(1);
   }
 
   private function createSentNewsletter(string $subject, ?Carbon $sentAt = null): NewsletterEntity {
