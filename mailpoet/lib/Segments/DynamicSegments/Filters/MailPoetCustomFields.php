@@ -74,10 +74,10 @@ class MailPoetCustomFields implements Filter {
     $operator = $filterData->getParam('operator');
     $queryBuilder->setParameter($valueParam, $value);
     if ($operator === DynamicSegmentFilterData::IS_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+      $queryBuilder->andWhere("subscribers_custom_field.value IS NULL OR subscribers_custom_field.value = ''");
       return $queryBuilder;
     } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+      $queryBuilder->andWhere("subscribers_custom_field.value IS NOT NULL AND subscribers_custom_field.value != ''");
       return $queryBuilder;
     } elseif ($dateType === 'month') {
       return $this->applyForDateMonth($queryBuilder, $valueParam);
@@ -122,9 +122,9 @@ class MailPoetCustomFields implements Filter {
     $operator = $filterData->getParam('operator');
 
     if ($operator === DynamicSegmentFilterData::IS_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+      $queryBuilder->andWhere("subscribers_custom_field.value IS NULL OR subscribers_custom_field.value = ''");
     } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+      $queryBuilder->andWhere("subscribers_custom_field.value IS NOT NULL AND subscribers_custom_field.value != ''");
     } elseif ($value === '1') {
       $queryBuilder->andWhere('subscribers_custom_field.value = 1');
     } elseif ($value === '0') {
