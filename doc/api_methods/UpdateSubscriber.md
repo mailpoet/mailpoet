@@ -11,6 +11,14 @@ It returns the updated subscriber. See [Get Subscriber](GetSubscriber.md) for a 
 
 If the subscriber is a WordPress user, the method does not allow updating `email`, `first_name` and `last_name`. It needs to be updated in the `wp_users` and MailPoet will synchronise the new values.
 
+### Tags
+
+If the `tags` key is present in `$subscriber`, the subscriber’s tags are replaced with the provided set: any existing tags not in the new set are removed and missing ones are added. See [Add Subscriber](AddSubscriber.md#tags) for supported item formats. Omitting the `tags` key leaves existing tags untouched.
+
+To add or remove a single tag without replacing the entire set, use [Tag Subscriber](TagSubscriber.md) or [Untag Subscriber](UntagSubscriber.md).
+
+Adding or removing a tag fires the `mailpoet_subscriber_tag_added` or `mailpoet_subscriber_tag_removed` WordPress action, which can be used to trigger automations.
+
 ## Arguments
 
 | Argument             | Type          | Description                               |
