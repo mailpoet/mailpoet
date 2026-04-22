@@ -12,13 +12,14 @@ It returns the updated tag. See [Get Tags](GetTags.md) for a tag data structure 
 
 ### `$tag` (required)
 
-An associative array which contains tag data.
+An associative array which contains tag data. Only the `id` is required; `name` and `description` are both optional and only update when the key is present, so you can update one without affecting the other.
 
-| Property               | Type   | Limits    | Description                                                              |
-| ---------------------- | ------ | --------- | ------------------------------------------------------------------------ |
-| id (required)          | string | 11 chars  | An id of the tag.                                                        |
-| name (required)        | string | 191 chars | A name of the tag.                                                       |
-| description (optional) | string | -         | A description of the tag. This will reset the tag description when empty |
+| Property               | Type   | Limits    | Description                                                                                               |
+| ---------------------- | ------ | --------- | --------------------------------------------------------------------------------------------------------- |
+| id (required)          | string | 11 chars  | An id of the tag.                                                                                         |
+| name (optional)        | string | 191 chars | A new name for the tag. Omit the key to keep the existing name.                                           |
+| description (optional) | string | -         | A new description for the tag. Omit the key to keep the existing value; pass an empty string to clear it. |
+
 
 ## Error handling
 
@@ -29,10 +30,10 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                   |
-| ---- | --------------------------------------------- |
-| 25   | Missing tag name                              |
-| 26   | Trying to use a tag name that is already used |
-| 28   | Missing tag id                                |
-| 29   | The tag was not found by id                   |
-| 30   | The tag couldn’t be updated in the database   |
+| Code | Description                                          |
+| ---- | ---------------------------------------------------- |
+| 25   | Missing tag name (when `name` is provided but empty) |
+| 26   | Trying to use a tag name that is already used        |
+| 28   | Missing tag id                                       |
+| 29   | The tag was not found by id                          |
+| 30   | The tag couldn’t be updated in the database          |
