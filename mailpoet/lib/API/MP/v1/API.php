@@ -19,6 +19,9 @@ class API {
   /** @var Subscribers */
   private $subscribers;
 
+  /** @var Tags */
+  private $tags;
+
   /** @var Changelog */
   private $changelog;
 
@@ -26,11 +29,13 @@ class API {
     CustomFields $customFields,
     Segments $segments,
     Subscribers $subscribers,
+    Tags $tags,
     Changelog $changelog
   ) {
     $this->customFields = $customFields;
     $this->segments = $segments;
     $this->subscribers = $subscribers;
+    $this->tags = $tags;
     $this->changelog = $changelog;
   }
 
@@ -114,6 +119,29 @@ class API {
       || $this->changelog->shouldShowWooCommerceListImportPage()
       || $this->changelog->shouldShowRevenueTrackingPermissionPage()
     );
+  }
+
+  public function getTags(): array {
+    return $this->tags->getAll();
+  }
+
+  /**
+   * @param int|string $tagIdOrName
+   */
+  public function getTag($tagIdOrName): array {
+    return $this->tags->getTag($tagIdOrName);
+  }
+
+  public function addTag(array $tag): array {
+    return $this->tags->addTag($tag);
+  }
+
+  public function updateTag(array $tag): array {
+    return $this->tags->updateTag($tag);
+  }
+
+  public function deleteTag(string $tagId): bool {
+    return $this->tags->deleteTag($tagId);
   }
 
   /**
