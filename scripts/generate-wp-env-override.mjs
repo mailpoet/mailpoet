@@ -33,6 +33,12 @@ if (fs.existsSync(pluginsDir)) {
     .readdirSync(pluginsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
+    // Skip empty directories (left over from a failed zip download/extract).
+    // wp-env would otherwise fail `wp plugin activate` with "plugin could not be found".
+    .filter((name) => {
+      const contents = fs.readdirSync(path.join(pluginsDir, name));
+      return contents.some((f) => f.endsWith('.php'));
+    })
     // WooCommerce must be activated before its dependents
     // (Subscriptions, Memberships, AutomateWoo), so it leads the list.
     .sort((a, b) => {

@@ -44,6 +44,8 @@ The development environment is built on [`@wordpress/env`](https://www.npmjs.com
 - **pnpm** as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
 - **[GitHub CLI (`gh`)](https://cli.github.com/)** for downloading private WooCommerce test plugins. Run `gh auth login` to authenticate — no personal access token needed. External contributors without access can skip the download step; the bootstrap script treats those failures as non-fatal.
 
+`@wordpress/env` is pinned to **≥ 11.4** in `package.json`. Earlier 10.x versions are missing `wp-env destroy --force` and the `testsEnvironment` flag that this project relies on, so do not downgrade.
+
 ## Commands
 
 All commands below run from the repository root. The same scripts are also exposed inside `mailpoet/` and `mailpoet-premium/` so `pnpm <task>` works from either plugin directory too. `pnpm -w <task>` runs the root-level script from anywhere in the workspace.
