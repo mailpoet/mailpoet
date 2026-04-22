@@ -319,7 +319,9 @@ class NewsletterResendControllerTest extends \MailPoetTest {
       "SELECT COUNT(*) FROM $table WHERE task_id = ?",
       [$taskId]
     );
-    return (int)$result->fetchOne();
+    /** @var string|int|false $count */
+    $count = $result->fetchOne();
+    return (int)$count;
   }
 
   /** @param class-string $entityClass */
@@ -327,6 +329,8 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $connection = $this->entityManager->getConnection();
     $table = $this->entityManager->getClassMetadata($entityClass)->getTableName();
     $result = $connection->executeQuery("SELECT COUNT(*) FROM $table");
-    return (int)$result->fetchOne();
+    /** @var string|int|false $count */
+    $count = $result->fetchOne();
+    return (int)$count;
   }
 }
