@@ -46,6 +46,17 @@ class TagsTest extends \MailPoetTest {
     $this->assertEquals((string)$tag->getId(), $result['id']);
   }
 
+  public function testItGetsTagByNumericNameWhenIdLookupFails(): void {
+    $tag = (new TagFactory())->withName('2026')->create();
+
+    // numeric string "2026" is a valid name; there is no tag with id 2026 so
+    // the ID lookup must fall back to a name lookup
+    $result = $this->getApi()->getTag('2026');
+
+    $this->assertEquals((string)$tag->getId(), $result['id']);
+    $this->assertEquals('2026', $result['name']);
+  }
+
   public function testItThrowsWhenGettingMissingTag(): void {
     try {
       $this->getApi()->getTag('missing');
@@ -75,6 +86,32 @@ class TagsTest extends \MailPoetTest {
       verify($e->getMessage())->equals('This tag already exists.');
       verify($e->getCode())->equals(APIException::TAG_EXISTS);
     }
+  }
+
+  public function testItDoesNotAddTagWhenSanitizedNameDuplicatesExisting(): void {
+    (new TagFactory())->withName('VIP')->create();
+
+    // raw "  VIP  " sanitizes to "VIP" which already exists; uniqueness must
+    // be checked after sanitization
+    try {
+      $this->getApi()->addTag(['name' => '  VIP  ']);
+      $this->fail('Tag exists exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_EXISTS);
+    }
+  }
+
+  public function testItDoesNotAddTagWhenSanitizedNameIsEmpty(): void {
+    // "<script>" is non-empty but sanitize_text_field strips it to ""; the
+    // empty check must run on the sanitized value
+    try {
+      $this->getApi()->addTag(['name' => '<script>']);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    verify($this->tagRepository->findOneBy(['name' => '']))->null();
   }
 
   public function testItAddsTag(): void {
@@ -118,6 +155,35 @@ class TagsTest extends \MailPoetTest {
     } catch (APIException $e) {
       verify($e->getCode())->equals(APIException::TAG_EXISTS);
     }
+  }
+
+  public function testItDoesNotAllowUpdateWhenSanitizedNameDuplicatesExisting(): void {
+    $tag1 = (new TagFactory())->withName('Tag 1')->create();
+    (new TagFactory())->withName('VIP')->create();
+
+    // raw "  VIP  " sanitizes to "VIP" which is taken by another tag
+    try {
+      $this->getApi()->updateTag(['id' => $tag1->getId(), 'name' => '  VIP  ']);
+      $this->fail('Tag exists exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_EXISTS);
+    }
+  }
+
+  public function testItDoesNotAllowUpdateWhenSanitizedNameIsEmpty(): void {
+    $tag = (new TagFactory())->withName('Original')->create();
+
+    try {
+      $this->getApi()->updateTag(['id' => $tag->getId(), 'name' => '<script>']);
+      $this->fail('Tag name required exception should have been thrown.');
+    } catch (APIException $e) {
+      verify($e->getCode())->equals(APIException::TAG_NAME_REQUIRED);
+    }
+
+    $this->entityManager->clear();
+    $reloaded = $this->tagRepository->findOneById((int)$tag->getId());
+    $this->assertInstanceOf(\MailPoet\Entities\TagEntity::class, $reloaded);
+    verify($reloaded->getName())->equals('Original');
   }
 
   public function testItUpdatesTag(): void {
