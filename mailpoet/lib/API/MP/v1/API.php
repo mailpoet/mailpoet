@@ -115,4 +115,20 @@ class API {
       || $this->changelog->shouldShowRevenueTrackingPermissionPage()
     );
   }
+
+  /**
+   * @param int|string $subscriberIdOrEmail
+   * @param int|string $tagIdOrName
+   */
+  public function tagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
+    return $this->subscribers->tagSubscriber($subscriberIdOrEmail, $tagIdOrName);
+  }
+
+  /**
+   * @param int|string $subscriberIdOrEmail
+   * @param int|string $tagIdOrName
+   */
+  public function untagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
+    return $this->subscribers->untagSubscriber($subscriberIdOrEmail, $tagIdOrName);
+  }
 }

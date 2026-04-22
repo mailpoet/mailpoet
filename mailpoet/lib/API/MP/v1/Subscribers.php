@@ -6,6 +6,8 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
@@ -19,6 +21,8 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\SubscriberTagRepository;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -66,6 +70,12 @@ class Subscribers {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
+  /** @var SubscriberTagRepository */
+  private $subscriberTagRepository;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -79,7 +89,9 @@ class Subscribers {
     RequiredCustomFieldValidator $requiredCustomFieldsValidator,
     SubscriberListingRepository $subscriberListingRepository,
     WPFunctions $wp,
-    Unsubscribes $unsubscribesTracker
+    Unsubscribes $unsubscribesTracker,
+    TagRepository $tagRepository,
+    SubscriberTagRepository $subscriberTagRepository
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -94,6 +106,8 @@ class Subscribers {
     $this->wp = $wp;
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->tagRepository = $tagRepository;
+    $this->subscriberTagRepository = $subscriberTagRepository;
   }
 
   public function getSubscriber($subscriberIdOrEmail): array {
@@ -154,6 +168,10 @@ class Subscribers {
       );
     }
 
+    if (array_key_exists('tags', $data)) {
+      $this->subscriberSaveController->updateTags($this->resolveTagNames((array)$data['tags']), $subscriberEntity);
+    }
+
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
     if (!empty($listIds)) {
       $this->subscribeToLists($subscriberEntity->getId(), $listIds, [
@@ -208,7 +226,62 @@ class Subscribers {
       );
     }
 
+    if (array_key_exists('tags', $data)) {
+      $this->subscriberSaveController->updateTags($this->resolveTagNames((array)$data['tags']), $subscriberEntity);
+    }
+
     return $this->subscribersResponseBuilder->build($subscriberEntity);
+  }
+
+  /**
+   * Adds a tag to a subscriber. Idempotent: no-op if the subscriber already has the tag.
+   * Accepts a tag id (int or numeric string) or name. Names that don't match an existing tag are created.
+   *
+   * @param int|string $subscriberIdOrEmail
+   * @param int|string $tagIdOrName
+   * @throws APIException
+   */
+  public function tagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
+    $this->checkSubscriberParam($subscriberIdOrEmail);
+    $subscriber = $this->findSubscriber($subscriberIdOrEmail);
+    $tag = $this->resolveTag($tagIdOrName, true);
+
+    $subscriberTag = $subscriber->getSubscriberTag($tag);
+    if (!$subscriberTag) {
+      $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+      $subscriber->getSubscriberTags()->add($subscriberTag);
+      $this->subscriberTagRepository->persist($subscriberTag);
+      $this->subscriberTagRepository->flush();
+      $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+    }
+
+    $this->subscribersRepository->refresh($subscriber);
+    return $this->subscribersResponseBuilder->build($subscriber);
+  }
+
+  /**
+   * Removes a tag from a subscriber. Idempotent: no-op if the subscriber doesn't have the tag.
+   * Accepts a tag id (int or numeric string) or name. Name must match an existing tag.
+   *
+   * @param int|string $subscriberIdOrEmail
+   * @param int|string $tagIdOrName
+   * @throws APIException
+   */
+  public function untagSubscriber($subscriberIdOrEmail, $tagIdOrName): array {
+    $this->checkSubscriberParam($subscriberIdOrEmail);
+    $subscriber = $this->findSubscriber($subscriberIdOrEmail);
+    $tag = $this->resolveTag($tagIdOrName, false);
+
+    $subscriberTag = $subscriber->getSubscriberTag($tag);
+    if ($subscriberTag) {
+      $subscriber->getSubscriberTags()->removeElement($subscriberTag);
+      $this->subscriberTagRepository->remove($subscriberTag);
+      $this->subscriberTagRepository->flush();
+      $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
+    }
+
+    $this->subscribersRepository->refresh($subscriber);
+    return $this->subscribersResponseBuilder->build($subscriber);
   }
 
   /**
@@ -490,6 +563,68 @@ class Subscribers {
     }
 
     return $foundSegments;
+  }
+
+  /**
+   * Resolves a tag by id (int or numeric string) or name. When $createByName is true,
+   * a non-existent tag name is auto-created; otherwise missing tags (by id or name) throw.
+   *
+   * @param int|string $tagIdOrName
+   * @throws APIException
+   */
+  private function resolveTag($tagIdOrName, bool $createByName): TagEntity {
+    if (is_int($tagIdOrName) || (is_string($tagIdOrName) && (string)(int)$tagIdOrName === $tagIdOrName)) {
+      $tag = $this->tagRepository->findOneById((int)$tagIdOrName);
+      if (!$tag instanceof TagEntity) {
+        throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
+      }
+      return $tag;
+    }
+
+    if (!is_string($tagIdOrName) || trim($tagIdOrName) === '') {
+      throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
+    }
+
+    $name = sanitize_text_field($tagIdOrName);
+    $tag = $this->tagRepository->findOneBy(['name' => $name]);
+    if ($tag instanceof TagEntity) {
+      return $tag;
+    }
+
+    if (!$createByName) {
+      throw new APIException(__('The tag does not exist.', 'mailpoet'), APIException::TAG_NOT_EXISTS);
+    }
+
+    return $this->tagRepository->createOrUpdate(['name' => $name]);
+  }
+
+  /**
+   * Normalizes the `tags` key from addSubscriber/updateSubscriber data to an array of tag names.
+   * Accepts strings (names), `['name' => ...]` entries, or `['id' => ...]` entries (resolved to names).
+   *
+   * @param array $tags
+   * @return string[]
+   * @throws APIException
+   */
+  private function resolveTagNames(array $tags): array {
+    $names = [];
+    foreach ($tags as $tag) {
+      if (is_string($tag) || is_int($tag)) {
+        $names[] = (string)$tag;
+        continue;
+      }
+      if (is_array($tag)) {
+        if (isset($tag['name']) && is_string($tag['name']) && trim($tag['name']) !== '') {
+          $names[] = $tag['name'];
+          continue;
+        }
+        if (isset($tag['id'])) {
+          $resolved = $this->resolveTag($tag['id'], false);
+          $names[] = $resolved->getName();
+        }
+      }
+    }
+    return $names;
   }
 
   /**
