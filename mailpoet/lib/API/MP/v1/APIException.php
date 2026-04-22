@@ -25,4 +25,11 @@ class APIException extends \Exception {
   const FAILED_TO_DELETE_LIST = 22;
   const LIST_TYPE_IS_NOT_SUPPORTED = 23;
   const SUBSCRIBER_ALREADY_UNSUBSCRIBED = 24;
+  const TAG_NAME_REQUIRED = 25;
+  const TAG_EXISTS = 26;
+  const FAILED_TO_SAVE_TAG = 27;
+  const TAG_ID_REQUIRED = 28;
+  const TAG_NOT_EXISTS = 29;
+  const FAILED_TO_UPDATE_TAG = 30;
+  const FAILED_TO_DELETE_TAG = 31;
 }
