@@ -79,7 +79,32 @@ class TemplatesFactory {
       }
     }
 
+    $templates[] = $this->createBirthdayEmailTemplate();
+
     return $templates;
+  }
+
+  private function createBirthdayEmailTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'birthday-email',
+      'celebrations',
+      __('Birthday email', 'mailpoet'),
+      __(
+        'Send a birthday email to your subscribers on their special day. Select a date custom field to trigger the email annually.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Birthday email', 'mailpoet'),
+          []
+        );
+      },
+      [
+        'automationSteps' => 1,
+      ],
+      AutomationTemplate::TYPE_PREMIUM,
+      'heart'
+    );
   }
 
   private function createSubscriberWelcomeEmailTemplate(): AutomationTemplate {
