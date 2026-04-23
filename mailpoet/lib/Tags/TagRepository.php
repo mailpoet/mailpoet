@@ -6,6 +6,7 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
  * @extends Repository<TagEntity>
@@ -58,19 +59,23 @@ class TagRepository extends Repository {
     if (!$ids) {
       return 0;
     }
-    $subscriberTagTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeStatement(
-      "DELETE FROM $subscriberTagTable WHERE tag_id IN (:ids)",
-      ['ids' => $ids],
-      ['ids' => ArrayParameterType::INTEGER]
-    );
 
-    $tagsTable = $this->entityManager->getClassMetadata(TagEntity::class)->getTableName();
-    $deleted = (int)$this->entityManager->getConnection()->executeStatement(
-      "DELETE FROM $tagsTable WHERE id IN (:ids)",
-      ['ids' => $ids],
-      ['ids' => ArrayParameterType::INTEGER]
-    );
+    $deleted = 0;
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, &$deleted): void {
+      $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+      $entityManager->getConnection()->executeStatement(
+        "DELETE FROM $subscriberTagTable WHERE tag_id IN (:ids)",
+        ['ids' => $ids],
+        ['ids' => ArrayParameterType::INTEGER]
+      );
+
+      $tagsTable = $entityManager->getClassMetadata(TagEntity::class)->getTableName();
+      $deleted = (int)$entityManager->getConnection()->executeStatement(
+        "DELETE FROM $tagsTable WHERE id IN (:ids)",
+        ['ids' => $ids],
+        ['ids' => ArrayParameterType::INTEGER]
+      );
+    });
 
     // Clear Doctrine's UnitOfWork so stale references don't linger.
     $this->entityManager->clear(TagEntity::class);
