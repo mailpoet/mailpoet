@@ -11,12 +11,15 @@ import { registerPlugin } from '@wordpress/plugins';
 import { MailPoet } from 'mailpoet';
 import { initializeEditor } from '@woocommerce/email-editor';
 import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
+import { registerTranslations } from 'common';
 import { withSatismeterSurvey } from './satismeter-survey';
 import { EmailSidebarExtension } from './email-sidebar-extension';
 import { AutomationSaveButton } from './components/automation-save-button';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { initStripPostStatusOnSaveMiddleware } from './middleware/strip-post-status-on-save';
+
+registerTranslations();
 
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
