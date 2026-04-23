@@ -7,6 +7,8 @@
   "port": 8888,
   "mappings": {
     "wp-content/mu-plugins/mailpoet-dev-smtp.php": "./.wp-env/mu-plugins/mailpoet-dev-smtp.php",
+    "wp-content/mu-plugins/mailpoet-dev-companion.php": "./.wp-env/mu-plugins/mailpoet-dev-companion.php",
+    "wp-content/mu-plugins/mailpoet-dev-companion-secret": "./.wp-env/.mailpoet-dev-companion-secret",
     "wp-env-scripts": "./.wp-env/scripts"
   },
   "lifecycleScripts": {
