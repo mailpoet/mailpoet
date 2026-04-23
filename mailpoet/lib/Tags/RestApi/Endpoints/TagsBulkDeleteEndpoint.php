@@ -28,7 +28,19 @@ class TagsBulkDeleteEndpoint extends TagsEndpoint {
       );
     }
 
-    $ids = array_values(array_filter(array_map('intval', $rawIds)));
+    $ids = array_values(array_filter(
+      array_map('intval', $rawIds),
+      static function (int $id): bool {
+        return $id > 0;
+      }
+    ));
+    if ($ids === []) {
+      throw new TagApiException(
+        __('At least one tag id is required.', 'mailpoet'),
+        400,
+        'mailpoet_tags_ids_required'
+      );
+    }
     $deleted = $this->tagRepository->bulkDelete($ids);
 
     return new Response(['deleted' => $deleted]);
