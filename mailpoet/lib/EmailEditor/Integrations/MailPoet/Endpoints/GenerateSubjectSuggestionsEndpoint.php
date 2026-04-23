@@ -90,13 +90,11 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
 
     $schema = [
       'type' => 'object',
-      'additionalProperties' => false,
       'properties' => [
         'suggestions' => [
           'type' => 'array',
           'items' => [
             'type' => 'object',
-            'additionalProperties' => false,
             'properties' => [
               'subject' => ['type' => 'string'],
               'preheader' => ['type' => 'string'],
@@ -108,12 +106,21 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
       'required' => ['suggestions'],
     ];
 
-    $result = wp_ai_client_prompt($prompt)
+    $promptBuilder = wp_ai_client_prompt($prompt)
       ->using_system_instruction($systemInstruction)
-      ->as_json_response($schema)
-      ->generate_text();
+      ->as_json_response($schema);
 
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR);
+
+    if (!$promptBuilder->is_supported_for_text_generation()) {
+      return new ErrorResponse(
+        503,
+        __('AI text generation is not available. Please check your AI provider configuration.', 'mailpoet'),
+        'mailpoet_ai_unavailable'
+      );
+    }
+
+    $result = $promptBuilder->generate_text();
 
     if (is_wp_error($result)) {
       $logger->error('AI subject generation failed', [
@@ -131,7 +138,8 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     $decoded = json_decode($result, true);
     if (!is_array($decoded) || !isset($decoded['suggestions']) || !is_array($decoded['suggestions'])) {
       $logger->error('AI subject generation returned invalid JSON', [
-        'raw_response' => is_string($result) ? mb_substr($result, 0, 500) : gettype($result),
+        'response_type' => gettype($result),
+        'response_length' => is_string($result) ? mb_strlen($result) : null,
         'post_id' => $postId,
       ]);
       return new ErrorResponse(
@@ -152,7 +160,10 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
         || mb_strlen($suggestion['preheader']) > self::PREHEADER_MAX_LENGTH
       ) {
         $logger->info('AI subject suggestion filtered out', [
-          'suggestion' => is_array($suggestion) ? $suggestion : gettype($suggestion),
+          'suggestion_type' => gettype($suggestion),
+          'suggestion_keys' => is_array($suggestion) ? array_keys($suggestion) : [],
+          'subject_length' => is_array($suggestion) && isset($suggestion['subject']) && is_string($suggestion['subject']) ? mb_strlen($suggestion['subject']) : null,
+          'preheader_length' => is_array($suggestion) && isset($suggestion['preheader']) && is_string($suggestion['preheader']) ? mb_strlen($suggestion['preheader']) : null,
           'post_id' => $postId,
         ]);
         continue;
@@ -165,7 +176,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
 
     if (empty($validSuggestions)) {
       $logger->error('AI subject generation returned no valid suggestions', [
-        'raw_suggestions' => $decoded['suggestions'],
+        'suggestion_count' => count($decoded['suggestions']),
         'post_id' => $postId,
       ]);
       return new ErrorResponse(
