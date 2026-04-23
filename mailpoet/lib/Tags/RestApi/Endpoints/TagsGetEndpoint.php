@@ -21,8 +21,8 @@ class TagsGetEndpoint extends TagsEndpoint {
     $search = is_string($request->getParam('search')) ? (string)$request->getParam('search') : '';
     $orderby = is_string($request->getParam('orderby')) ? (string)$request->getParam('orderby') : 'name';
     $order = is_string($request->getParam('order')) ? (string)$request->getParam('order') : 'asc';
-    $page = is_numeric($request->getParam('page')) ? (int)$request->getParam('page') : 1;
-    $perPage = is_numeric($request->getParam('per_page')) ? (int)$request->getParam('per_page') : 25;
+    $page = is_numeric($request->getParam('page')) ? max(1, (int)$request->getParam('page')) : 1;
+    $perPage = is_numeric($request->getParam('per_page')) ? max(1, min(100, (int)$request->getParam('per_page'))) : 25;
 
     $result = $this->tagRepository->listWithCounts([
       'search' => $search,
