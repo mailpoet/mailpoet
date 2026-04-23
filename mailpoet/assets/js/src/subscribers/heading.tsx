@@ -44,6 +44,13 @@ export function SubscribersHeading() {
         >
           {__('Export', 'mailpoet')}
         </a>
+        <a
+          className="page-title-action not-small-screen"
+          href="?page=mailpoet-tags"
+          data-automation-id="manage-tags-button"
+        >
+          {__('Tags', 'mailpoet')}
+        </a>
       </PageHeader>
       <div className="mailpoet-segment-subscriber-count">
         <SubscribersInPlan
