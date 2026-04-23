@@ -97,6 +97,7 @@ class EditorPageRenderer {
       $editorIntegrationAssetsParams['version'],
       true
     );
+    $this->wp->wpSetScriptTranslations('email_editor_integration', 'mailpoet');
     $this->wp->wpEnqueueStyle(
       'email_editor_integration',
       Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.css',
