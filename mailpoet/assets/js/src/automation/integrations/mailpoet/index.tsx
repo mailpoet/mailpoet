@@ -1,5 +1,4 @@
 import { getIsGarden } from 'common/functions';
-import { MailPoet } from 'mailpoet';
 import { registerStepType } from '../../editor/store';
 import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
