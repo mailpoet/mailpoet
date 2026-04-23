@@ -32,12 +32,13 @@ This is a **monorepo** containing:
 │   └── eslint-config/           # @mailpoet/eslint-config
 ├── doc/                         # API documentation and usage examples
 ├── scripts/                     # Dev helper scripts (setup, SMTP catcher, override generator)
-├── tools/                       # Build tooling (Webpack config)
+├── tools/                       # Build tooling (Webpack config) + experimental MCP server
+│   └── mcp-server/              # Dev-only MCP server exposing MailPoet to AI agents
 ├── tests_env/                   # Test environment (Docker + Codeception + Selenium)
 ├── templates/                   # Email templates
 ├── .wp-env.json                 # wp-env dev environment config
 ├── .wp-env.override.json.sample # Template for local wp-env overrides
-└── .wp-env/                     # wp-env helpers: mu-plugins/ (SMTP router), scripts/ (MailPoet SMTP auto-config)
+└── .wp-env/                     # wp-env helpers: mu-plugins/ (SMTP router + dev companion), scripts/
 ```
 
 ### Key PHP Namespaces (`mailpoet/lib/`)
@@ -395,6 +396,18 @@ Skills are progressively-revealed instructions loaded on demand.
 - `reviewing-code.md` -- Reviewing pull requests or local code changes. Use when asked to review a PR, review code, test changes, verify implementation quality, or do a code review.
 - `writing-changelog` -- Use when adding a changelog entry for user-facing changes. Guides through analyzing branch changes, picking the right type, and writing a user-friendly description.
 
+## Experimental: MCP Server for AI Agents
+
+`tools/mcp-server/` hosts an experimental [MCP](https://modelcontextprotocol.io) server that exposes MailPoet local-dev tooling to AI agents (Claude Code, etc.). Not shipped with the plugin, not part of CI, entirely local-dev only.
+
+It gives an agent structured access to things that would otherwise require parsing noisy Robo / wp-cli / container output: environment status, feature flags, migrations, Action Scheduler, subscribers + segments, captured Mailpit emails, unit/integration test runs, QA (phpstan/phpcs/eslint/stylelint/prettier/tsc) with structured violations, and the WP debug log.
+
+Architecture: TS MCP server on the host ↔ PHP companion mu-plugin inside wp-env over loopback HTTP with a shared secret. The companion uses MailPoet's own DI container and Doctrine repositories, so results reflect real entity state. The mu-plugin no-ops unless `WP_DEBUG` is on and the secret file exists — it cannot accidentally run in production.
+
+Every tool call is appended to `.wp-env/mcp-usage.jsonl` (tool name, duration, input keys only — no values) so usage can be analysed later to decide what to expand.
+
+See `tools/mcp-server/README.md` for setup, tool list, configuration, and how to add new tools.
+
 ## Additional Resources
 
 - Main README: `README.md`
@@ -402,3 +415,4 @@ Skills are progressively-revealed instructions loaded on demand.
 - Premium plugin README: `mailpoet-premium/README.md`
 - Contributing guide: `CONTRIBUTING.md`
 - Cursor rules: `.cursor/rules/` (review when working on the project)
+- MCP server (experimental): `tools/mcp-server/README.md`
