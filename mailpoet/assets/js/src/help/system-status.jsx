@@ -1,6 +1,6 @@
 import { MailPoet } from "mailpoet";
 import ReactStringReplace from "react-string-replace";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { copyToClipboard } from "utils";
 import { CronStatus } from "./cron-status.jsx";
 import { QueueStatus } from "./queue-status";
@@ -182,7 +182,10 @@ function buildSystemStatusReport(
   let queueStatusText = MailPoet.I18n.t("unknown");
   if (queueStatus.status === "paused") queueStatusText = MailPoet.I18n.t("paused");
   else if (queueStatus.status !== undefined) queueStatusText = MailPoet.I18n.t("running");
-  const queueRetryAttempt = queueStatus.retryAttempt || MailPoet.I18n.t("none");
+  const queueRetryAttempt =
+    queueStatus.retryAttempt !== undefined && queueStatus.retryAttempt !== null
+      ? queueStatus.retryAttempt
+      : MailPoet.I18n.t("none");
   const queueRetryAt = queueStatus.retryAt
     ? formatTimestamp(queueStatus.retryAt)
     : MailPoet.I18n.t("unknown");
@@ -475,10 +478,10 @@ export function SystemStatus() {
   const [copyButtonLabel, setCopyButtonLabel] = useState(
     MailPoet.I18n.t("systemStatusCopyForSupport")
   );
-  const reportText = buildSystemStatusReport(
-    systemInfoData,
-    systemStatusData,
-    actionSchedulerData
+  const reportText = useMemo(
+    () => buildSystemStatusReport(systemInfoData, systemStatusData, actionSchedulerData),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- data comes from window globals, stable for the page lifetime
+    []
   );
 
   const handleCopyForSupport = async () => {
