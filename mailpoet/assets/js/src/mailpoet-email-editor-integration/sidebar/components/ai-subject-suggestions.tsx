@@ -133,7 +133,6 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
               spacing={4}
             >
               <HStack alignment="center">
-                {/* @ts-expect-error size prop is available in the external @wordpress/components package */}
                 <Heading
                   className="block-editor-inspector-popover-header__heading"
                   level={2}
