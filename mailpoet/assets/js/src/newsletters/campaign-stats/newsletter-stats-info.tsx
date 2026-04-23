@@ -170,8 +170,8 @@ function ResendToNonOpenersModal({ newsletter, onClose }: ResendModalProps) {
     // translators: %s is the subject of the original newsletter.
     __('Re: %s', 'mailpoet'),
     newsletter.subject,
-  );
-  const [subject, setSubject] = useState(defaultSubject);
+  ) as string;
+  const [subject, setSubject] = useState<string>(defaultSubject);
   const [isSending, setIsSending] = useState(false);
 
   const handleResend = () => {
