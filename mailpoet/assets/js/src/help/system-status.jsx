@@ -63,37 +63,49 @@ function addActivePluginsList(lines, plugins) {
 
 function formatOptional(value) {
   if (value === null || value === undefined || value === "") {
-    return "(none)";
+    return MailPoet.I18n.t("none");
   }
   return value;
 }
 
 function formatYesNo(value) {
   if (typeof value === "boolean") {
-    return value ? "yes" : "no";
+    return value ? MailPoet.I18n.t("yes") : MailPoet.I18n.t("no");
   }
   const normalized = `${value || ""}`.trim().toLowerCase();
   if (normalized === "yes" || normalized === "no") {
-    return normalized;
+    return MailPoet.I18n.t(normalized);
   }
   return printValue(value);
 }
 
-function parseCompositeField(value) {
+function parseCompositeField(value, knownKeys) {
   const result = {};
   if (!value || typeof value !== "string") {
     return result;
   }
 
-  const parts = value.split(" - ");
-  parts.forEach((part) => {
+  if (knownKeys && knownKeys.length > 0) {
+    const sortedKeys = [...knownKeys].sort((a, b) => b.length - a.length);
+    const escapedKeys = sortedKeys.map((k) =>
+      k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    );
+    const regex = new RegExp(`(?:^| - )(${escapedKeys.join("|")}): `, "g");
+    const matches = [...value.matchAll(regex)];
+    matches.forEach((match, i) => {
+      const valueStart = match.index + match[0].length;
+      const valueEnd = matches[i + 1] ? matches[i + 1].index : value.length;
+      result[match[1]] = value.slice(valueStart, valueEnd).trim();
+    });
+    return result;
+  }
+
+  value.split(" - ").forEach((part) => {
     const separatorIndex = part.indexOf(": ");
-    if (separatorIndex === -1) {
-      return;
-    }
-    const key = part.slice(0, separatorIndex).trim();
-    const fieldValue = part.slice(separatorIndex + 2).trim();
-    result[key] = fieldValue;
+    if (separatorIndex === -1) return;
+    result[part.slice(0, separatorIndex).trim()] = part
+      .slice(separatorIndex + 2)
+      .trim();
   });
   return result;
 }
@@ -106,13 +118,32 @@ function buildSystemStatusReport(
   const lines = [];
   const queueStatus = systemStatusData.queueStatus || {};
   const systemInfo = systemInfoData || {};
-  const wpInfo = parseCompositeField(systemInfo["WP info"]);
-  const phpInfo = parseCompositeField(systemInfo["PHP info"]);
+  const wpInfo = parseCompositeField(systemInfo["WP info"], [
+    "WP_MEMORY_LIMIT",
+    "WP_MAX_MEMORY_LIMIT",
+    "WP_DEBUG",
+    "WordPress language",
+    "WordPress timezone",
+  ]);
+  const phpInfo = parseCompositeField(systemInfo["PHP info"], [
+    "PHP max_execution_time",
+    "PHP memory_limit",
+    "PHP upload_max_filesize",
+    "PHP post_max_size",
+  ]);
   const sendingServiceInfo = parseCompositeField(
-    systemInfo["MailPoet Sending Service"]
+    systemInfo["MailPoet Sending Service"],
+    ["Is reachable", "Ping response", "API key state", "Premium key state"]
   );
   const sendingDetails = parseCompositeField(
-    systemInfo["MailPoet sending info"]
+    systemInfo["MailPoet sending info"],
+    [
+      "Send all site's emails with",
+      "Task Scheduler method",
+      "Default FROM address",
+      "Default Reply-To address",
+      "Bounce Email Address",
+    ]
   );
   const dataInconsistencyStatus = parseCompositeField(
     systemInfo["Data inconsistency status"]
@@ -146,8 +177,9 @@ function buildSystemStatusReport(
     ? MailPoet.Date.full(actionSchedulerData.latestCompletedRun)
     : MailPoet.I18n.t("unknown");
 
-  const queueStatusText =
-    queueStatus.status === "paused" ? "paused" : "running";
+  let queueStatusText = MailPoet.I18n.t("unknown");
+  if (queueStatus.status === "paused") queueStatusText = "paused";
+  else if (queueStatus.status !== undefined) queueStatusText = "running";
   const queueRetryAttempt = queueStatus.retryAttempt || MailPoet.I18n.t("none");
   const queueRetryAt = queueStatus.retryAt
     ? formatTimestamp(queueStatus.retryAt)
@@ -463,20 +495,24 @@ export function SystemStatus() {
   );
 
   const handleCopyForSupport = async () => {
-    await copyToClipboard(
-      reportId,
-      (wasSuccessful) => {
-        if (!wasSuccessful) {
-          setCopyButtonLabel(MailPoet.I18n.t("copyToClipboardFailure"));
-          return;
-        }
-        setCopyButtonLabel(MailPoet.I18n.t("copyToClipboardSuccess"));
-        window.setTimeout(() => {
-          setCopyButtonLabel(MailPoet.I18n.t("systemStatusCopyForSupport"));
-        }, 3000);
-      },
-      true
-    );
+    try {
+      await copyToClipboard(
+        reportId,
+        (wasSuccessful) => {
+          if (!wasSuccessful) {
+            setCopyButtonLabel(MailPoet.I18n.t("copyToClipboardFailure"));
+            return;
+          }
+          setCopyButtonLabel(MailPoet.I18n.t("copyToClipboardSuccess"));
+          window.setTimeout(() => {
+            setCopyButtonLabel(MailPoet.I18n.t("systemStatusCopyForSupport"));
+          }, 3000);
+        },
+        true
+      );
+    } catch {
+      setCopyButtonLabel(MailPoet.I18n.t("copyToClipboardFailure"));
+    }
   };
 
   return (
