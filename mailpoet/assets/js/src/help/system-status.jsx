@@ -48,7 +48,7 @@ function addBullet(lines, key, value) {
 function addActivePluginsList(lines, plugins) {
   const items = (plugins || []).filter(Boolean);
   if (!items.length) {
-    lines.push("  - (none)");
+    lines.push(`  - ${MailPoet.I18n.t("none")}`);
     return;
   }
   items.forEach((plugin) => {
@@ -165,8 +165,10 @@ function buildSystemStatusReport(
         .join("; ")
     : cronStatus.last_error;
 
-  const actionSchedulerVersion = actionSchedulerData?.version || "(none)";
-  const actionSchedulerStorage = actionSchedulerData?.storage || "(none)";
+  const actionSchedulerVersion =
+    actionSchedulerData?.version || MailPoet.I18n.t("none");
+  const actionSchedulerStorage =
+    actionSchedulerData?.storage || MailPoet.I18n.t("none");
   const actionSchedulerNextTrigger = actionSchedulerData?.latestTrigger
     ? MailPoet.Date.full(actionSchedulerData.latestTrigger)
     : MailPoet.I18n.t("unknown");
@@ -178,8 +180,8 @@ function buildSystemStatusReport(
     : MailPoet.I18n.t("unknown");
 
   let queueStatusText = MailPoet.I18n.t("unknown");
-  if (queueStatus.status === "paused") queueStatusText = "paused";
-  else if (queueStatus.status !== undefined) queueStatusText = "running";
+  if (queueStatus.status === "paused") queueStatusText = MailPoet.I18n.t("paused");
+  else if (queueStatus.status !== undefined) queueStatusText = MailPoet.I18n.t("running");
   const queueRetryAttempt = queueStatus.retryAttempt || MailPoet.I18n.t("none");
   const queueRetryAt = queueStatus.retryAt
     ? formatTimestamp(queueStatus.retryAt)
@@ -187,7 +189,7 @@ function buildSystemStatusReport(
   const queueError = queueStatus.error?.errorMessage || MailPoet.I18n.t("none");
   const queueCounts = queueStatus.tasksStatusCounts || {};
 
-  const activePluginsFromStatus = Array.isArray(systemStatusData.activePlugins)
+  const activePlugins = Array.isArray(systemStatusData.activePlugins)
     ? systemStatusData.activePlugins
         .map((plugin) => ({
           name: `${plugin?.name || ""}`.trim(),
@@ -199,21 +201,6 @@ function buildSystemStatusReport(
         }))
         .filter((plugin) => plugin.name && plugin.author && plugin.version)
     : [];
-  const activePluginsFromSystemInfo = `${
-    systemInfo["Active Plugin names"] || ""
-  }`
-    .split(",")
-    .map((plugin) => `${plugin}`.trim())
-    .filter(Boolean)
-    .map((plugin) => ({
-      name: plugin,
-      author: MailPoet.I18n.t("unknown"),
-      version: MailPoet.I18n.t("unknown"),
-      versionLatest: null,
-    }));
-  const activePlugins = activePluginsFromStatus.length
-    ? activePluginsFromStatus
-    : activePluginsFromSystemInfo;
 
   lines.push("### MailPoet System Status Report ###");
   lines.push(`Generated: ${new Date().toISOString()}`);
