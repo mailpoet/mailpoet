@@ -89,10 +89,7 @@ class TemplatesFactory {
       'birthday-email',
       'celebrations',
       __('Birthday email', 'mailpoet'),
-      __(
-        'Send a birthday email to your subscribers on their special day. Select a date custom field to trigger the email annually.',
-        'mailpoet'
-      ),
+      __('Send a birthday email to your subscribers on their special day.', 'mailpoet'),
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Birthday email', 'mailpoet'),
