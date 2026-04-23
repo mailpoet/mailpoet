@@ -64,6 +64,7 @@
     "@wordpress/core-data": "^7.43.0",
     "@wordpress/data": "^10.43.0",
     "@wordpress/data-controls": "^4.43.0",
+    "@wordpress/dataviews": "^14.1.0",
     "@wordpress/date": "^5.43.0",
     "@wordpress/edit-post": "^8.43.0",
     "@wordpress/edit-site": "^6.43.0",
