@@ -118,6 +118,27 @@ function toRepoRel(absOrRel: string, config: Config): string {
   return relative(config.repoRoot, resolve(config.repoRoot, absOrRel));
 }
 
+// When a linter dies before writing any JSON (PHPStan OOM, missing config
+// file, etc.), its real error usually lands on stderr. Surface that in the
+// tool error message so the agent doesn't see a useless "output was not JSON".
+function badJsonError(
+  code: string,
+  toolLabel: string,
+  res: { stdout: string; stderr: string; exitCode: number },
+): ToolError {
+  const stdoutTrim = res.stdout.trim();
+  const stderrTrim = res.stderr.trim();
+  const hint =
+    stdoutTrim === '' && stderrTrim !== ''
+      ? `${toolLabel} produced no stdout. stderr: ${stderrTrim.slice(0, 300)}`
+      : `${toolLabel} output was not JSON.`;
+  return new ToolError(code, hint, {
+    exit_code: res.exitCode,
+    stdout: res.stdout.slice(0, 500),
+    stderr: res.stderr.slice(0, 500),
+  });
+}
+
 async function runPhpstan(
   files: string[] | 'all',
   config: Config,
@@ -157,10 +178,7 @@ async function runPhpstan(
   try {
     parsed = JSON.parse(res.stdout);
   } catch {
-    throw new ToolError('phpstan_bad_json', 'PHPStan output was not JSON', {
-      stdout: res.stdout.slice(0, 500),
-      stderr: res.stderr.slice(0, 500),
-    });
+    throw badJsonError('phpstan_bad_json', 'PHPStan', res);
   }
   const out: Violation[] = [];
   for (const [file, fileData] of Object.entries(parsed.files ?? {})) {
@@ -219,10 +237,7 @@ async function runPhpcs(
   try {
     parsed = JSON.parse(res.stdout);
   } catch {
-    throw new ToolError('phpcs_bad_json', 'PHPCS output was not JSON', {
-      stdout: res.stdout.slice(0, 500),
-      stderr: res.stderr.slice(0, 500),
-    });
+    throw badJsonError('phpcs_bad_json', 'PHPCS', res);
   }
   const out: Violation[] = [];
   for (const [file, fileData] of Object.entries(parsed.files ?? {})) {
@@ -279,10 +294,7 @@ async function runEslint(
   try {
     parsed = JSON.parse(res.stdout);
   } catch {
-    throw new ToolError('eslint_bad_json', 'ESLint output was not JSON', {
-      stdout: res.stdout.slice(0, 500),
-      stderr: res.stderr.slice(0, 500),
-    });
+    throw badJsonError('eslint_bad_json', 'ESLint', res);
   }
   const out: Violation[] = [];
   for (const fileReport of parsed) {
@@ -332,10 +344,7 @@ async function runStylelint(
   try {
     parsed = JSON.parse(res.stdout || '[]');
   } catch {
-    throw new ToolError('stylelint_bad_json', 'Stylelint output was not JSON', {
-      stdout: res.stdout.slice(0, 500),
-      stderr: res.stderr.slice(0, 500),
-    });
+    throw badJsonError('stylelint_bad_json', 'Stylelint', res);
   }
   const out: Violation[] = [];
   for (const file of parsed) {

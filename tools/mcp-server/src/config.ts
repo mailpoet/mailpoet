@@ -82,6 +82,13 @@ function readOrGenerateSecret(path: string): string {
   if (existsSync(path)) {
     const s = readFileSync(path, 'utf8').trim();
     if (s.length >= 32) return s;
+    // Never silently overwrite: wp-env bind-mounts the file at container start,
+    // so regenerating on the host while the container is running would cause
+    // every companion request to 403 with no obvious cause. Force the user to
+    // delete the file explicitly.
+    throw new Error(
+      `Companion secret at ${path} is shorter than 32 chars. Delete it and re-run to regenerate (then 'pnpm env:restart' so wp-env picks up the new file).`,
+    );
   }
   const secret = randomBytes(32).toString('hex');
   mkdirSync(dirname(path), { recursive: true });

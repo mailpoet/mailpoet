@@ -10,8 +10,8 @@ interface CompanionSubscriber {
   first_name: string | null;
   last_name: string | null;
   status: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   source: string | null;
   segments: { id: string; name: string }[];
 }

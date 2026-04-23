@@ -13,7 +13,10 @@ if (!defined('WP_DEBUG') || !WP_DEBUG) {
 }
 
 $mailpoetDevCompanionSecretPath = WPMU_PLUGIN_DIR . '/mailpoet-dev-companion-secret';
-if (!is_readable($mailpoetDevCompanionSecretPath)) {
+// is_readable() also returns true for directories. If the host secret file is
+// missing when wp-env starts, Docker creates an empty directory at the mount
+// point; guard with is_file() so that case takes the early-return.
+if (!is_file($mailpoetDevCompanionSecretPath) || !is_readable($mailpoetDevCompanionSecretPath)) {
     return;
 }
 
@@ -274,6 +277,9 @@ function mailpoet_dev_companion_create_subscriber(WP_REST_Request $request) {
     }
 
     $subscriber = $existing ?: new \MailPoet\Entities\SubscriberEntity();
+    // Activate the 'Saving' validation group so @Assert\Email runs at flush
+    // time (mirrors SubscriberSaveController behaviour).
+    $subscriber->setValidationGroups(['Saving', 'Default']);
     $subscriber->setEmail($email);
 
     $firstName = $request->get_param('first_name');
@@ -295,9 +301,8 @@ function mailpoet_dev_companion_create_subscriber(WP_REST_Request $request) {
     }
     $subscriber->setSource(is_string($source) && $source !== '' ? $source : 'api');
 
-    if ($subscriber->getStatus() === \MailPoet\Entities\SubscriberEntity::STATUS_SUBSCRIBED && !$subscriber->getLastSubscribedAt()) {
-        $subscriber->setLastSubscribedAt(new \DateTimeImmutable());
-    }
+    // last_subscribed_at is set automatically by LastSubscribedAtListener
+    // when status is / becomes 'subscribed' — no manual setter needed here.
 
     if (!$subscriber->getUnsubscribeToken()) {
         do {

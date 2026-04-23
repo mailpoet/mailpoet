@@ -122,9 +122,22 @@ export function registerTestRun(server: McpServer, config: Config): void {
         "Runs a MailPoet Codeception test suite and returns structured failures. Supports 'unit' (fast, on host) and 'integration' (tests_env docker stack, --skip-deps by default). Full raw output is written to a file; the response returns only structured failures plus the log path to keep tokens small.",
       inputSchema: {
         suite: Suite.describe("Test suite to run: 'unit' or 'integration'."),
-        filter: z.string().optional().describe('Codeception --filter pattern.'),
+        filter: z
+          .string()
+          .regex(
+            /^[\w:./\\-]+$/,
+            'Filter must only contain alphanumerics, :, \\, /, ., _, -. Regex metacharacters are rejected because Robo composes the shell command as a string.',
+          )
+          .optional()
+          .describe(
+            "Codeception --filter pattern. Restricted charset to avoid shell-injection via Robo's string-based _exec (e.g. 'testFoo', 'Foo\\\\BarTest::testBaz').",
+          ),
         file: z
           .string()
+          .regex(
+            /^[\w./-]+$/,
+            'File path must only contain alphanumerics, ., /, -, _. Shell metacharacters are rejected.',
+          )
           .optional()
           .describe(
             "Path to a specific test file, relative to mailpoet/ (e.g. 'tests/unit/WP/EmojiTest.php').",
