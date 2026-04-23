@@ -15,3 +15,5 @@ packages/php/*/vendor
 tests_env/vendor
 .wp-env.override.json*
 !.wp-env.override.json.sample
+.wp-env/.mailpoet-dev-companion-secret
+.wp-env/mcp-usage.jsonl
