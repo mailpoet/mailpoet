@@ -2,4 +2,4 @@
 
 # Description
 
-Birthday email automation: date shortcode format parameter, pre-built template, configurable send time, and "custom field is set/not set" segment filters
+Birthday email automation — send automated birthday emails to subscribers using any date custom field, with configurable send time and date formatting in email content
