@@ -437,7 +437,7 @@ class Newsletters extends APIEndpoint {
     try {
       $duplicate = $this->newsletterResendController->resendToNonOpeners($newsletter, $subject);
     } catch (UnexpectedValueException $e) {
-      return $this->errorResponse([
+      return $this->badRequest([
         APIError::BAD_REQUEST => $e->getMessage(),
       ]);
     }
