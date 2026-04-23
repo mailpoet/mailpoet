@@ -1,0 +1,10 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="mailpoet_tags_container"></div>
+
+<script type="text/javascript">
+  var mailpoet_tags_api = <%= json_encode(api) %>;
+  var mailpoet_tags_subscribers_listing_url = <%= json_encode(subscribers_listing_url) %>;
+</script>
+<% endblock %>

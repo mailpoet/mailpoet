@@ -23,6 +23,7 @@ use MailPoet\AdminPages\Pages\StaticSegments;
 use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
+use MailPoet\AdminPages\Pages\Tags as TagsPage;
 use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
@@ -46,6 +47,7 @@ class Menu {
   const SUBSCRIBERS_PAGE_SLUG = 'mailpoet-subscribers';
   const IMPORT_PAGE_SLUG = 'mailpoet-import';
   const EXPORT_PAGE_SLUG = 'mailpoet-export';
+  const TAGS_PAGE_SLUG = 'mailpoet-tags';
   const LISTS_PAGE_SLUG = 'mailpoet-lists';
   const SEGMENTS_PAGE_SLUG = 'mailpoet-segments';
   const SETTINGS_PAGE_SLUG = 'mailpoet-settings';
@@ -384,6 +386,19 @@ class Menu {
       ]
     );
 
+    // tags
+    $this->wp->addSubmenuPage(
+      self::SUBSCRIBERS_PAGE_SLUG,
+      $this->setPageTitle(__('Tags', 'mailpoet')),
+      esc_html__('Tags', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
+      self::TAGS_PAGE_SLUG,
+      [
+        $this,
+        'tags',
+      ]
+    );
+
     // Lists page
     $listsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
@@ -713,6 +728,10 @@ class Menu {
 
   public function export() {
     $this->container->get(SubscribersExport::class)->render();
+  }
+
+  public function tags() {
+    $this->container->get(TagsPage::class)->render();
   }
 
   public function formEditor() {
