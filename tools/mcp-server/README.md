@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) server that exposes MailPoet local-dev tooling to AI agents (Claude Code, Claude Desktop, etc.).
 
-**Status:** experimental walking skeleton. Only four tools implemented so far.
+**Status:** experimental.
 
 ## Architecture
 
@@ -149,7 +149,7 @@ Conventions:
 - JSON-in, JSON-out. No passthrough text blobs when structure is possible.
 - `list` returns compact core + must-have relations; `get` returns full detail. `list` output has `items[]` and `total`.
 - Timestamps: ISO 8601 UTC strings.
-- Telemetry is automatic via `runHandler` — nothing extra to wire.
+- Telemetry is automatic via `runHandler` — nothing extra to wire. **Keep your handler body inside `runHandler(name, args, async () => { ... })`**; any throw that escapes `runHandler` (e.g. a try/catch at the outer layer) will not be recorded.
 
 ### Host-only tool (no MailPoet DI needed)
 

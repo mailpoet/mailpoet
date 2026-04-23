@@ -31,7 +31,7 @@ export function registerDataSubscribersCreate(
     {
       title: 'Create a MailPoet subscriber',
       description:
-        "Creates a single MailPoet subscriber via Doctrine directly — no confirmation email, no welcome scheduler, no segment-subscribed hook. Fails with 409 on duplicate email unless upsert=true. Source must be one of MailPoet's allowlist: api (default), form, unknown, imported, administrator, wordpress_user, woocommerce_user, woocommerce_checkout.",
+        "Creates a single MailPoet subscriber via Doctrine directly. Bypasses SubscriberSaveController, so NO confirmation email, NO welcome scheduler, and NO `mailpoet_segment_subscribed` action. Doctrine lifecycle listeners still run, so the `mailpoet_subscriber_created` / `_updated` / `_status_changed` WordPress actions WILL fire at request shutdown. Fails with 409 on duplicate email unless upsert=true. Source must be one of MailPoet's allowlist: api (default), form, unknown, imported, administrator, wordpress_user, woocommerce_user, woocommerce_checkout.",
       inputSchema: {
         email: z
           .string()
