@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
@@ -38,8 +38,11 @@ export function TagsPage() {
   const [formState, setFormState] = useState<FormState>({ kind: 'closed' });
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
+  const latestRequestIdRef = useRef(0);
 
   const loadTags = useCallback(async () => {
+    const requestId = latestRequestIdRef.current + 1;
+    latestRequestIdRef.current = requestId;
     setIsLoading(true);
     try {
       const requestedPage = view.page ?? 1;
@@ -50,6 +53,10 @@ export function TagsPage() {
         page: requestedPage,
         per_page: view.perPage ?? 20,
       });
+
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
 
       const lastValidPage = Math.max(1, result.meta.pages);
       if (requestedPage > lastValidPage) {
@@ -63,12 +70,17 @@ export function TagsPage() {
       setItems(result.items);
       setMeta(result.meta);
     } catch (err) {
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
       const apiError = err as ApiErrorResponse;
       setGlobalError(
         apiError?.message || __('Failed to load tags.', 'mailpoet'),
       );
     } finally {
-      setIsLoading(false);
+      if (requestId === latestRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [view.search, view.sort, view.page, view.perPage]);
 
