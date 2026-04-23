@@ -86,16 +86,24 @@ function parseCompositeField(value, knownKeys) {
   }
 
   if (knownKeys && knownKeys.length > 0) {
+    // Backend encodes composite fields as "key: value - key: value - ...".
+    // Values may themselves contain " - " (e.g. error messages), so we anchor
+    // on the known key list rather than splitting. Keys are sorted longest-first
+    // so that longer keys take precedence when one is a prefix of another.
     const sortedKeys = [...knownKeys].sort((a, b) => b.length - a.length);
+    // Escape regex-special characters in each key name.
     const escapedKeys = sortedKeys.map((k) =>
       k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     );
-    const regex = new RegExp(`(?:^| - )(${escapedKeys.join("|")}): `, "g");
+    const regex = new RegExp(
+      `(?:^| - )(?<key>${escapedKeys.join("|")}): `,
+      "g"
+    );
     const matches = [...value.matchAll(regex)];
     matches.forEach((match, i) => {
       const valueStart = match.index + match[0].length;
       const valueEnd = matches[i + 1] ? matches[i + 1].index : value.length;
-      result[match[1]] = value.slice(valueStart, valueEnd).trim();
+      result[match.groups.key] = value.slice(valueStart, valueEnd).trim();
     });
     return result;
   }
@@ -150,10 +158,11 @@ function buildSystemStatusReport(
   );
   const keyStateSummary = [
     sendingServiceInfo["API key state"],
-    sendingServiceInfo["Premium key state"],
+    sendingServiceInfo["Premium key state"]
+      ? `premium: ${sendingServiceInfo["Premium key state"]}`
+      : null,
   ]
     .filter(Boolean)
-    .map((state, index) => (index === 0 ? state : `premium: ${state}`))
     .join("; ");
   const premiumKeyValue = keyStateSummary
     ? `${systemInfo["MailPoet Premium/MSS key"]} (${keyStateSummary})`
