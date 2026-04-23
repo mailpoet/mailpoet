@@ -103,7 +103,13 @@ class TagRepository extends Repository {
       ->leftJoin('t.subscriberTags', 'st')
       ->leftJoin('st.subscriber', 's', 'WITH', 's.deletedAt IS NULL')
       ->groupBy('t.id')
-      ->orderBy($orderByExpr, $order)
+      ->orderBy($orderByExpr, $order);
+
+    // Add deterministic secondary ordering so paginated results are stable when the primary sort has ties.
+    if ($orderby !== 'name') {
+      $qb->addOrderBy('t.name', 'ASC');
+    }
+    $qb->addOrderBy('t.id', 'ASC')
       ->setFirstResult(($page - 1) * $perPage)
       ->setMaxResults($perPage);
 
