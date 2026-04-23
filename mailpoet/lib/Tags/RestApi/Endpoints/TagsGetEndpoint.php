@@ -1,0 +1,56 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Tags\RestApi\Endpoints;
+
+use MailPoet\API\REST\Request;
+use MailPoet\API\REST\Response;
+use MailPoet\Tags\TagRepository;
+use MailPoet\Validator\Builder;
+
+class TagsGetEndpoint extends TagsEndpoint {
+  /** @var TagRepository */
+  private $tagRepository;
+
+  public function __construct(
+    TagRepository $tagRepository
+  ) {
+    $this->tagRepository = $tagRepository;
+  }
+
+  public function handle(Request $request): Response {
+    $search = is_string($request->getParam('search')) ? (string)$request->getParam('search') : '';
+    $orderby = is_string($request->getParam('orderby')) ? (string)$request->getParam('orderby') : 'name';
+    $order = is_string($request->getParam('order')) ? (string)$request->getParam('order') : 'asc';
+    $page = is_numeric($request->getParam('page')) ? (int)$request->getParam('page') : 1;
+    $perPage = is_numeric($request->getParam('per_page')) ? (int)$request->getParam('per_page') : 25;
+
+    $result = $this->tagRepository->listWithCounts([
+      'search' => $search,
+      'orderby' => $orderby,
+      'order' => $order,
+      'page' => $page,
+      'per_page' => $perPage,
+    ]);
+
+    $items = array_map([$this, 'buildItemFromRow'], $result['items']);
+    $pages = $result['total'] === 0 ? 0 : (int)ceil($result['total'] / max(1, $perPage));
+
+    return new Response([
+      'items' => $items,
+      'meta' => [
+        'count' => $result['total'],
+        'pages' => $pages,
+      ],
+    ]);
+  }
+
+  public static function getRequestSchema(): array {
+    return [
+      'search' => Builder::string(),
+      'orderby' => Builder::string(),
+      'order' => Builder::string(),
+      'page' => Builder::integer(),
+      'per_page' => Builder::integer(),
+    ];
+  }
+}
