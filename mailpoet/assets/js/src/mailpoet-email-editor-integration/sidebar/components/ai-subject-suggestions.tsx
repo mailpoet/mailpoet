@@ -171,9 +171,9 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
 
             {!isLoading &&
               !error &&
-              suggestions.map((suggestion, index) => (
+              suggestions.map((suggestion) => (
                 <button
-                  key={`${index}-${suggestion.subject}`}
+                  key={`${suggestion.subject}-${suggestion.preheader}`}
                   type="button"
                   className="mailpoet-ai-suggestions__item"
                   onClick={() => {
