@@ -44,6 +44,11 @@ class AssetsController {
     $this->enqueueJsEntrypoint('settings');
   }
 
+  public function setupTagsDependencies(): void {
+    $this->enqueueJsEntrypoint('tags');
+    $this->wp->wpEnqueueStyle('mailpoet_tags', $this->getCssUrl('mailpoet-tags.css'));
+  }
+
   public function setupDynamicSegmentsDependencies(): void {
     $this->wp->wpEnqueueStyle('mailpoet_templates', $this->getCssUrl('mailpoet-templates.css'));
     $this->wp->wpEnqueueStyle('mailpoet_dynamic_segments', $this->getCssUrl('mailpoet-dynamic-segments.css'));

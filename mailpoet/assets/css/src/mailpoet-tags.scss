@@ -1,0 +1,17 @@
+@import '../../../node_modules/@wordpress/dataviews/build-style/style';
+
+#mailpoet_tags_container .components-notice {
+  margin: 8px 0 0;
+}
+
+.mailpoet-tags-dataviews {
+  margin-top: 8px;
+
+  .dataviews-wrapper {
+    min-height: 200px;
+  }
+}
+
+.mailpoet-tags-dataviews__toolbar {
+  padding: 8px;
+}

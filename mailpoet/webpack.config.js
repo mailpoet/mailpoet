@@ -265,6 +265,7 @@ const adminConfig = {
     newsletter_editor: 'newsletter-editor/webpack-index.jsx',
     form_editor: 'form-editor/form-editor.jsx',
     settings: 'settings/index.tsx',
+    tags: 'subscribers/tags/index.tsx',
   },
   plugins: [
     ...baseConfig.plugins,
