@@ -15,7 +15,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
 
   public function testGetAllTemplates() {
     $result = $this->get(self::ENDPOINT_PATH, []);
-    $this->assertCount(21, $result['data']);
+    $this->assertCount(22, $result['data']);
     $this->assertEquals('subscriber-welcome-email', $result['data'][0]['slug']);
   }
 
@@ -23,7 +23,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     wp_set_current_user($this->editorUserId);
     $data = $this->get(self::ENDPOINT_PATH, []);
 
-    $this->assertCount(21, $data['data']);
+    $this->assertCount(22, $data['data']);
   }
 
   public function testGuestNotAllowed(): void {
@@ -73,6 +73,13 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
       ],
     ]);
     $this->assertCount(6, $result['data']);
+
+    $result = $this->get(self::ENDPOINT_PATH, [
+      'json' => [
+        'category' => 'celebrations',
+      ],
+    ]);
+    $this->assertCount(1, $result['data']);
   }
 
   public function testTemplatesHaveIconProperties(): void {
@@ -115,6 +122,8 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
       'follow-up-on-churned-subscription' => 'payment',
       'follow-up-when-trial-ends' => 'payment',
       'win-back-churned-subscribers' => 'payment',
+      // Celebrations
+      'birthday-email' => 'heart',
     ];
 
     foreach ($result['data'] as $template) {
