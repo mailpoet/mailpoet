@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process";
-import type { SpawnOptionsWithoutStdio } from "node:child_process";
+import { spawn } from 'node:child_process';
+import type { SpawnOptionsWithoutStdio } from 'node:child_process';
 
 export interface ExecResult {
   exitCode: number;
@@ -13,38 +13,51 @@ export interface ExecOptions extends SpawnOptionsWithoutStdio {
   input?: string;
 }
 
-export function exec(command: string, args: string[], options: ExecOptions = {}): Promise<ExecResult> {
+export function exec(
+  command: string,
+  args: string[],
+  options: ExecOptions = {},
+): Promise<ExecResult> {
   const { timeoutMs, input, ...spawnOpts } = options;
   return new Promise((resolvePromise, reject) => {
     const started = Date.now();
-    const child = spawn(command, args, { ...spawnOpts, stdio: ["pipe", "pipe", "pipe"] });
-    let stdout = "";
-    let stderr = "";
+    const child = spawn(command, args, {
+      ...spawnOpts,
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
     let timedOut = false;
 
-    child.stdout.on("data", (chunk: Buffer) => {
-      stdout += chunk.toString("utf8");
+    child.stdout.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString('utf8');
     });
-    child.stderr.on("data", (chunk: Buffer) => {
-      stderr += chunk.toString("utf8");
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString('utf8');
     });
 
     const timer = timeoutMs
       ? setTimeout(() => {
           timedOut = true;
-          child.kill("SIGTERM");
+          child.kill('SIGTERM');
         }, timeoutMs)
       : null;
 
-    child.on("error", (err) => {
+    child.on('error', (err) => {
       if (timer) clearTimeout(timer);
       reject(err);
     });
 
-    child.on("close", (code) => {
+    child.on('close', (code) => {
       if (timer) clearTimeout(timer);
       if (timedOut) {
-        reject(new Error(`Command timed out after ${timeoutMs}ms: ${command} ${args.join(" ")}`));
+        reject(
+          new Error(
+            `Command timed out after ${timeoutMs}ms: ${command} ${args.join(
+              ' ',
+            )}`,
+          ),
+        );
         return;
       }
       resolvePromise({

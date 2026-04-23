@@ -9,14 +9,21 @@ export class ToolError extends Error {
   }
 }
 
-export function toToolResult(err: unknown): { isError: true; content: { type: "text"; text: string }[] } {
+export function toToolResult(err: unknown): {
+  isError: true;
+  content: { type: 'text'; text: string }[];
+} {
   if (err instanceof ToolError) {
     return {
       isError: true,
       content: [
         {
-          type: "text",
-          text: JSON.stringify({ error: { code: err.code, message: err.message, data: err.data } }, null, 2),
+          type: 'text',
+          text: JSON.stringify(
+            { error: { code: err.code, message: err.message, data: err.data } },
+            null,
+            2,
+          ),
         },
       ],
     };
@@ -24,6 +31,11 @@ export function toToolResult(err: unknown): { isError: true; content: { type: "t
   const message = err instanceof Error ? err.message : String(err);
   return {
     isError: true,
-    content: [{ type: "text", text: JSON.stringify({ error: { code: "unknown", message } }, null, 2) }],
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify({ error: { code: 'unknown', message } }, null, 2),
+      },
+    ],
   };
 }
