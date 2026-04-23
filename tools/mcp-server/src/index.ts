@@ -1,30 +1,30 @@
 #!/usr/bin/env node
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { loadConfig } from "./config.js";
-import { initTelemetry } from "./util/telemetry.js";
-import { registerEnvStatus } from "./tools/env-status.js";
-import { registerEnvFeatureFlags } from "./tools/env-feature-flags.js";
-import { registerEnvMigrations } from "./tools/env-migrations.js";
-import { registerEnvScheduler } from "./tools/env-scheduler.js";
-import { registerTestRun } from "./tools/test-run.js";
-import { registerMailList } from "./tools/mail-list.js";
-import { registerMailGet } from "./tools/mail-get.js";
-import { registerMailClear } from "./tools/mail-clear.js";
-import { registerDataSubscribersList } from "./tools/data-subscribers-list.js";
-import { registerDataSubscribersGet } from "./tools/data-subscribers-get.js";
-import { registerDataSubscribersCreate } from "./tools/data-subscribers-create.js";
-import { registerDataSegmentsList } from "./tools/data-segments-list.js";
-import { registerQaRun } from "./tools/qa-run.js";
-import { registerLogsWpDebug } from "./tools/logs-wp-debug.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { loadConfig } from './config.js';
+import { initTelemetry } from './util/telemetry.js';
+import { registerEnvStatus } from './tools/env-status.js';
+import { registerEnvFeatureFlags } from './tools/env-feature-flags.js';
+import { registerEnvMigrations } from './tools/env-migrations.js';
+import { registerEnvScheduler } from './tools/env-scheduler.js';
+import { registerTestRun } from './tools/test-run.js';
+import { registerMailList } from './tools/mail-list.js';
+import { registerMailGet } from './tools/mail-get.js';
+import { registerMailClear } from './tools/mail-clear.js';
+import { registerDataSubscribersList } from './tools/data-subscribers-list.js';
+import { registerDataSubscribersGet } from './tools/data-subscribers-get.js';
+import { registerDataSubscribersCreate } from './tools/data-subscribers-create.js';
+import { registerDataSegmentsList } from './tools/data-segments-list.js';
+import { registerQaRun } from './tools/qa-run.js';
+import { registerLogsWpDebug } from './tools/logs-wp-debug.js';
 
 async function main(): Promise<void> {
   const config = loadConfig();
   initTelemetry(config.telemetryLogPath);
 
   const server = new McpServer({
-    name: "mailpoet-dev",
-    version: "0.0.2",
+    name: 'mailpoet-dev',
+    version: '0.0.2',
   });
 
   registerEnvStatus(server, config);
@@ -51,6 +51,10 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  process.stderr.write(`[mailpoet-dev-mcp] fatal: ${err instanceof Error ? err.stack : String(err)}\n`);
+  process.stderr.write(
+    `[mailpoet-dev-mcp] fatal: ${
+      err instanceof Error ? err.stack : String(err)
+    }\n`,
+  );
   process.exit(1);
 });

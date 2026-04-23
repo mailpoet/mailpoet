@@ -1,14 +1,16 @@
-import { toToolResult } from "../util/errors.js";
-import { ToolError } from "../util/errors.js";
-import { recordToolCall } from "../util/telemetry.js";
+import { toToolResult } from '../util/errors.js';
+import { ToolError } from '../util/errors.js';
+import { recordToolCall } from '../util/telemetry.js';
 
 export type McpTextResult = {
-  content: { type: "text"; text: string }[];
+  content: { type: 'text'; text: string }[];
   isError?: boolean;
 };
 
 export function toMcpResponse(result: unknown): McpTextResult {
-  return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+  return {
+    content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+  };
 }
 
 export async function runHandler(
@@ -24,7 +26,7 @@ export async function runHandler(
       ts: new Date().toISOString(),
       tool: toolName,
       duration_ms: Date.now() - started,
-      status: "ok",
+      status: 'ok',
       input_keys: inputKeys,
     });
     return toMcpResponse(result);
@@ -34,8 +36,8 @@ export async function runHandler(
       ts: new Date().toISOString(),
       tool: toolName,
       duration_ms: Date.now() - started,
-      status: "error",
-      error_code: err instanceof ToolError ? err.code : "unknown",
+      status: 'error',
+      error_code: err instanceof ToolError ? err.code : 'unknown',
       input_keys: inputKeys,
     });
     return errResult;

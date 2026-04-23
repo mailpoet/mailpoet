@@ -26,25 +26,31 @@ An [MCP](https://modelcontextprotocol.io) server that exposes MailPoet local-dev
 
 ## Tools
 
-| Tool | Purpose |
-|---|---|
-| `mp.env.status` | wp-env / Mailpit / companion reachability + plugin/WP/PHP versions |
-| `mp.env.feature_flags.list` / `.set` | Read/toggle experimental feature flags |
-| `mp.env.migrations.status` | MailPoet db+app migration state |
-| `mp.env.scheduler.list` | Action Scheduler actions (filter by status/hook/group) |
-| `mp.test.run` | Codeception unit or integration, returns structured failures |
-| `mp.mail.list` / `.get` / `.clear` | Mailpit: list summaries, get full message, clear mailbox (destructive, confirm=true) |
-| `mp.data.subscribers.list` / `.get` / `.create` | Subscribers CRUD via SubscribersRepository |
-| `mp.data.segments.list` | Segments + optional subscribed-counts |
-| `mp.qa.run` | phpstan / phpcs / eslint / stylelint / prettier / tsc — flat structured violations, default scope=changed-vs-trunk |
-| `mp.logs.wp_debug` | Tail WP debug.log, filter by level/grep |
+| Tool                                            | Purpose                                                                                                            |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `mp.env.status`                                 | wp-env / Mailpit / companion reachability + plugin/WP/PHP versions                                                 |
+| `mp.env.feature_flags.list` / `.set`            | Read/toggle experimental feature flags                                                                             |
+| `mp.env.migrations.status`                      | MailPoet db+app migration state                                                                                    |
+| `mp.env.scheduler.list`                         | Action Scheduler actions (filter by status/hook/group)                                                             |
+| `mp.test.run`                                   | Codeception unit or integration, returns structured failures                                                       |
+| `mp.mail.list` / `.get` / `.clear`              | Mailpit: list summaries, get full message, clear mailbox (destructive, confirm=true)                               |
+| `mp.data.subscribers.list` / `.get` / `.create` | Subscribers CRUD via SubscribersRepository                                                                         |
+| `mp.data.segments.list`                         | Segments + optional subscribed-counts                                                                              |
+| `mp.qa.run`                                     | phpstan / phpcs / eslint / stylelint / prettier / tsc — flat structured violations, default scope=changed-vs-trunk |
+| `mp.logs.wp_debug`                              | Tail WP debug.log, filter by level/grep                                                                            |
 
 ## Telemetry
 
 Every tool call is appended to `.wp-env/mcp-usage.jsonl` as a single-line JSON entry:
 
 ```json
-{"ts":"2026-04-23T09:48:25.701Z","tool":"mp.data.segments.list","duration_ms":137,"status":"ok","input_keys":["include_counts"]}
+{
+  "ts": "2026-04-23T09:48:25.701Z",
+  "tool": "mp.data.segments.list",
+  "duration_ms": 137,
+  "status": "ok",
+  "input_keys": ["include_counts"]
+}
 ```
 
 Fields: `ts` (UTC ISO8601), `tool`, `duration_ms`, `status` (`ok` or `error`), `error_code` (on error only), `input_keys` (argument names only — values are not logged). Override path via `MAILPOET_MCP_TELEMETRY_LOG` env var.
@@ -152,24 +158,24 @@ Use this pattern when the data source is the filesystem, a process, or an HTTP s
 1. Create `src/tools/<domain>-<name>.ts`:
 
    ```ts
-   import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-   import { z } from "zod";
-   import type { Config } from "../config.js";
-   import { runHandler } from "./register.js";
+   import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+   import { z } from 'zod';
+   import type { Config } from '../config.js';
+   import { runHandler } from './register.js';
 
    export function registerMyTool(server: McpServer, config: Config): void {
      server.registerTool(
-       "mp.<domain>.<name>",
+       'mp.<domain>.<name>',
        {
-         title: "Short human title",
-         description: "What it does + when to use it + important caveats.",
+         title: 'Short human title',
+         description: 'What it does + when to use it + important caveats.',
          inputSchema: {
-           foo: z.string().describe("Describe every argument."),
+           foo: z.string().describe('Describe every argument.'),
          },
          annotations: { readOnlyHint: true, openWorldHint: true },
        },
        async (args) =>
-         runHandler("mp.<domain>.<name>", args, async () => {
+         runHandler('mp.<domain>.<name>', args, async () => {
            // Do the work. Throw `new ToolError(code, message, data)` for
            // well-formed errors; anything else becomes `error.code = "unknown"`.
            return { items: [], total: 0 };
@@ -181,7 +187,7 @@ Use this pattern when the data source is the filesystem, a process, or an HTTP s
 2. Wire it in `src/index.ts`:
 
    ```ts
-   import { registerMyTool } from "./tools/<domain>-<name>.js";
+   import { registerMyTool } from './tools/<domain>-<name>.js';
    // ...
    registerMyTool(server, config);
    ```
@@ -210,12 +216,15 @@ Add a companion REST endpoint in `.wp-env/mu-plugins/mailpoet-dev-companion.php`
 4. Add the TS tool as above, but use `CompanionClient`:
 
    ```ts
-   import { CompanionClient } from "../clients/companion.js";
+   import { CompanionClient } from '../clients/companion.js';
    const companion = new CompanionClient(config);
    // GET
-   await companion.request("my-resource", { query: { foo: args.foo } });
+   await companion.request('my-resource', { query: { foo: args.foo } });
    // POST
-   await companion.request("my-resource", { method: "POST", body: { foo: args.foo } });
+   await companion.request('my-resource', {
+     method: 'POST',
+     body: { foo: args.foo },
+   });
    ```
 
 5. `pnpm build` + (if mu-plugin changed) the next HTTP request picks up the new PHP. No wp-env restart needed unless you changed `.wp-env.json` mappings.
