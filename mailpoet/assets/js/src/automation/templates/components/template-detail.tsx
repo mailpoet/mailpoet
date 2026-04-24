@@ -93,11 +93,13 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
             <div className="mailpoet-automation-template-detail-footer-navigation">
               <Button
                 icon={chevronLeft}
+                aria-label={__('Previous template', 'mailpoet')}
                 onClick={onPreviousClick}
                 disabled={!onPreviousClick || loading}
               />
               <Button
                 icon={chevronRight}
+                aria-label={__('Next template', 'mailpoet')}
                 onClick={onNextClick}
                 disabled={!onNextClick || loading}
               />
