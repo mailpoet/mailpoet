@@ -153,6 +153,8 @@ class Populator {
       'FarmersMarket',
       'ConfirmInterestBeforeDeactivation',
       'ConfirmInterestOrUnsubscribe',
+      'BirthdayCelebration',
+      'BirthdaySimple',
     ];
     $this->entityManager = $entityManager;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
