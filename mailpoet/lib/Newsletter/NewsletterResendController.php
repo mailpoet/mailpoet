@@ -236,6 +236,10 @@ class NewsletterResendController {
     ?ScheduledTaskEntity $task,
     ?SendingQueueEntity $queue
   ): void {
+    $duplicateId = $duplicate->getId();
+    if ($duplicateId) {
+      $this->newsletterDeleteController->bulkDelete([$duplicateId]);
+    }
     if ($queue) {
       $this->entityManager->remove($queue);
     }
@@ -243,10 +247,6 @@ class NewsletterResendController {
       $this->entityManager->remove($task);
     }
     $this->entityManager->flush();
-    $duplicateId = $duplicate->getId();
-    if ($duplicateId) {
-      $this->newsletterDeleteController->bulkDelete([$duplicateId]);
-    }
   }
 
   /** @return int[] */
