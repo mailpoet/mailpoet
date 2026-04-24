@@ -56,9 +56,17 @@ export class CompanionClient {
       } catch {
         parsed = text;
       }
+      // A 403 from the companion is almost always a secret mismatch — either
+      // the MCP server has a newer secret than wp-env picked up (file regenerated
+      // without an env restart), or the mu-plugin's gate check failed. Surface
+      // that up-front so the agent doesn't chase generic "forbidden" trails.
+      const hint =
+        response.status === 403
+          ? ' (likely a companion secret mismatch — run `pnpm env:restart` so wp-env remounts the secret file)'
+          : '';
       throw new ToolError(
         'companion_error',
-        `Companion returned ${response.status}`,
+        `Companion returned ${response.status}${hint}`,
         parsed,
       );
     }

@@ -80,10 +80,29 @@ async function uncommittedFiles(
 ): Promise<string[]> {
   const res = await exec('git', ['status', '--porcelain'], { cwd: repoRoot });
   if (res.exitCode !== 0) return [];
-  const files = res.stdout
-    .split('\n')
-    .map((l) => l.slice(3).trim())
-    .filter(Boolean);
+  // git status --porcelain format:
+  //   XY path          — standard changes (X = staged, Y = unstaged)
+  //   R  old -> new    — rename (index or worktree)
+  //   C  old -> new    — copy
+  //   D  path          — deletion — skip, file is gone
+  // We want the current path on disk, excluding deletions.
+  const files: string[] = [];
+  for (const rawLine of res.stdout.split('\n')) {
+    if (rawLine.length < 4) continue;
+    const x = rawLine[0];
+    const y = rawLine[1];
+    // Skip deletions in either index or worktree — no file to lint.
+    if (x === 'D' || y === 'D') continue;
+    const rest = rawLine.slice(3).trim();
+    if (!rest) continue;
+    // Rename / copy keep the new name (after ' -> ').
+    if (x === 'R' || x === 'C') {
+      const idx = rest.indexOf(' -> ');
+      files.push(idx === -1 ? rest : rest.slice(idx + 4).trim());
+    } else {
+      files.push(rest);
+    }
+  }
   if (extensions.length === 0) return files;
   return files.filter((f) => extensions.includes(extname(f)));
 }
@@ -101,6 +120,19 @@ async function resolveScope(
         'path_required',
         "scope='file' requires a 'path' argument.",
       );
+    // Defensive: don't let an agent point a linter at ../../etc/passwd.
+    // spawn() has no shell, and linters are read-only, so the practical
+    // blast radius is nil — but this keeps the invariant obvious.
+    const absolute = resolve(config.repoRoot, path);
+    const repoRootWithSep = config.repoRoot.endsWith('/')
+      ? config.repoRoot
+      : config.repoRoot + '/';
+    if (absolute !== config.repoRoot && !absolute.startsWith(repoRootWithSep)) {
+      throw new ToolError(
+        'path_outside_repo',
+        `Path '${path}' resolves outside the repo root (${config.repoRoot}).`,
+      );
+    }
     return { files: [path], resolvedFromBranch: false };
   }
   const exts = EXTENSIONS_BY_TOOL[tool];

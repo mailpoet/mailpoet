@@ -49,7 +49,7 @@ add_action('rest_api_init', function () use ($mailpoetDevCompanionSecret) {
         'args' => [
             'email_contains' => ['type' => 'string', 'required' => false],
             'status' => ['type' => 'string', 'required' => false],
-            'segment_id' => ['type' => 'string', 'required' => false],
+            'segment_id' => ['type' => 'integer', 'required' => false],
             'limit' => ['type' => 'integer', 'required' => false, 'default' => 50],
             'offset' => ['type' => 'integer', 'required' => false, 'default' => 0],
         ],
@@ -148,8 +148,18 @@ function mailpoet_dev_companion_ping() {
 }
 
 function mailpoet_dev_companion_serialize_subscriber(\MailPoet\Entities\SubscriberEntity $s): array {
+    // SubscriberEntity::getSegments() maps from subscriberSegments regardless
+    // of subscription status, so an unsubscribed-from-segment row would still
+    // show up. Iterate the join entity directly and keep only STATUS_SUBSCRIBED.
     $segments = [];
-    foreach ($s->getSegments() as $seg) {
+    foreach ($s->getSubscriberSegments() as $ss) {
+        if ($ss->getStatus() !== \MailPoet\Entities\SubscriberEntity::STATUS_SUBSCRIBED) {
+            continue;
+        }
+        $seg = $ss->getSegment();
+        if (!$seg) {
+            continue;
+        }
         $segments[] = ['id' => (string) $seg->getId(), 'name' => $seg->getName()];
     }
     return [
@@ -190,9 +200,17 @@ function mailpoet_dev_companion_list_subscribers(WP_REST_Request $request) {
     }
 
     $segmentId = $request->get_param('segment_id');
-    if (is_string($segmentId) && $segmentId !== '') {
-        $qb->innerJoin(\MailPoet\Entities\SubscriberSegmentEntity::class, 'ss', 'WITH', 'ss.subscriber = s AND ss.segment = :segmentId')
-            ->setParameter('segmentId', (int) $segmentId);
+    if ($segmentId !== null && $segmentId !== '' && (int) $segmentId > 0) {
+        // Only include subscribers that are currently subscribed to the segment
+        // (ignore past subscriptions that were cancelled).
+        $qb->innerJoin(
+            \MailPoet\Entities\SubscriberSegmentEntity::class,
+            'ss_filter',
+            'WITH',
+            'ss_filter.subscriber = s AND ss_filter.segment = :segmentId AND ss_filter.status = :subscribedStatus'
+        )
+            ->setParameter('segmentId', (int) $segmentId)
+            ->setParameter('subscribedStatus', \MailPoet\Entities\SubscriberEntity::STATUS_SUBSCRIBED);
     }
 
     $countQb = clone $qb;
@@ -202,7 +220,13 @@ function mailpoet_dev_companion_list_subscribers(WP_REST_Request $request) {
     $limit = max(1, min(500, (int) $request->get_param('limit') ?: 50));
     $offset = max(0, (int) $request->get_param('offset') ?: 0);
 
-    $qb->setMaxResults($limit)->setFirstResult($offset);
+    // Eagerly fetch subscriberSegments + segment to avoid N+1 when the
+    // serializer walks the segment memberships per row.
+    $qb->leftJoin('s.subscriberSegments', 'ss_fetch')
+        ->leftJoin('ss_fetch.segment', 'seg_fetch')
+        ->addSelect('ss_fetch', 'seg_fetch')
+        ->setMaxResults($limit)
+        ->setFirstResult($offset);
 
     /** @var \MailPoet\Entities\SubscriberEntity[] $rows */
     $rows = $qb->getQuery()->getResult();
@@ -315,14 +339,10 @@ function mailpoet_dev_companion_create_subscriber(WP_REST_Request $request) {
         $subscriber->setLinkToken(\MailPoet\Util\Security::generateHash(\MailPoet\Entities\SubscriberEntity::LINK_TOKEN_LENGTH));
     }
 
-    try {
-        $em->persist($subscriber);
-        $em->flush();
-    } catch (\Throwable $e) {
-        return new WP_Error('persist_failed', $e->getMessage(), ['status' => 500]);
-    }
-
+    // Resolve + validate segments BEFORE persisting the subscriber, so an
+    // invalid segment_id doesn't leave a half-committed subscriber in the DB.
     $segmentIds = $request->get_param('segment_ids');
+    $segments = [];
     if (is_array($segmentIds) && $segmentIds !== []) {
         $segmentIdsInt = array_values(array_filter(array_map('intval', $segmentIds), static fn ($id) => $id > 0));
         if ($segmentIdsInt !== []) {
@@ -333,11 +353,21 @@ function mailpoet_dev_companion_create_subscriber(WP_REST_Request $request) {
                 return new WP_Error(
                     'segments_not_found',
                     'Some segment ids do not exist: ' . implode(', ', $missing),
-                    ['status' => 400, 'subscriber' => mailpoet_dev_companion_serialize_subscriber($subscriber)]
+                    ['status' => 400]
                 );
             }
-            $subscriberSegmentRepository->subscribeToSegments($subscriber, $segments, true);
         }
+    }
+
+    try {
+        $em->persist($subscriber);
+        $em->flush();
+    } catch (\Throwable $e) {
+        return new WP_Error('persist_failed', $e->getMessage(), ['status' => 500]);
+    }
+
+    if ($segments !== []) {
+        $subscriberSegmentRepository->subscribeToSegments($subscriber, $segments, true);
     }
 
     $em->refresh($subscriber);

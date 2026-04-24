@@ -66,7 +66,18 @@ function resolveWpBaseUrl(repoRoot: string): string {
   const home =
     (override?.config?.WP_HOME as string | undefined) ??
     (base?.config?.WP_HOME as string | undefined);
-  if (typeof home === 'string' && home) return stripTrailingSlash(home);
+  if (typeof home === 'string' && home) {
+    // wp-env serves HTTP only. If WP_HOME is HTTPS (occasionally set for
+    // canonical URL generation), the companion probe would fail. Warn once
+    // and point at the override env var rather than silently ignoring it.
+    if (home.toLowerCase().startsWith('https://')) {
+      process.stderr.write(
+        `[mailpoet-dev-mcp] warning: WP_HOME is HTTPS (${home}) but wp-env serves HTTP. ` +
+          `Set MAILPOET_MCP_WP_URL=http://... to override if companion requests fail.\n`,
+      );
+    }
+    return stripTrailingSlash(home);
+  }
 
   const port = override?.port ?? base?.port ?? 8888;
   return `http://localhost:${port}`;
