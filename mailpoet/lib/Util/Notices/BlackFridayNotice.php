@@ -35,7 +35,7 @@ class BlackFridayNotice {
       && !$this->servicesChecker->isBundledSubscription()
       && (time() >= strtotime(self::DATE_FROM))
       && (time() <= strtotime(self::DATE_TO))
-      && !get_transient(self::OPTION_NAME);
+      && !WPFunctions::get()->getTransient(self::OPTION_NAME);
     if ($shouldDisplay) {
       $this->display();
     }

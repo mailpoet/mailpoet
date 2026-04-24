@@ -43,7 +43,7 @@ class Widget extends \WP_Widget {
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     $this->customFonts = ContainerWrapper::getInstance()->get(CustomFonts::class);
 
-    if (!is_admin()) {
+    if (!$this->wp->isAdmin()) {
       $this->setupIframe();
     } else {
       WPFunctions::get()->addAction('widgets_admin_page', [
@@ -74,7 +74,7 @@ class Widget extends \WP_Widget {
       $languageAttributes[] = 'dir="rtl"';
     }
 
-    if (get_option('html_type') === 'text/html') {
+    if ($this->wp->getOption('html_type') === 'text/html') {
       $languageAttributes[] = sprintf('lang="%s"', WPFunctions::get()->getBloginfo('language'));
     }
 

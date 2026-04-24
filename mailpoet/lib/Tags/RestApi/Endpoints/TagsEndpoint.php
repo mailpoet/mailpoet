@@ -5,12 +5,13 @@ namespace MailPoet\Tags\RestApi\Endpoints;
 use MailPoet\API\REST\Endpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\TagEntity;
+use MailPoet\WP\Functions as WPFunctions;
 
 abstract class TagsEndpoint extends Endpoint {
   private const DATE_FORMAT = 'Y-m-d H:i:s';
 
   public function checkPermissions(): bool {
-    return current_user_can(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
   }
 
   protected function buildItem(TagEntity $tag, int $subscribersCount = 0): array {

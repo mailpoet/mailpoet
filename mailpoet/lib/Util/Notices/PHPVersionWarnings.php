@@ -18,7 +18,7 @@ class PHPVersionWarnings {
   }
 
   public function isOutdatedPHPVersion($phpVersion) {
-    return version_compare($phpVersion, '8.0', '<') && !get_transient(self::OPTION_NAME);
+    return version_compare($phpVersion, '8.0', '<') && !WPFunctions::get()->getTransient(self::OPTION_NAME);
   }
 
   public function display($phpVersion) {

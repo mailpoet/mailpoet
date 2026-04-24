@@ -63,7 +63,7 @@ class OrderCreatedTrigger implements Trigger {
      * It just creates the order object and saves it to the database. We need therefore to wait for the order to have at least the billing address stored.
      **/
     if (!$order->get_billing_email()) {
-      add_action(
+      $this->wp->addAction(
         'woocommerce_after_order_object_save',
         function($order) use ($orderId) {
           if ((int)$orderId !== (int)$order->get_id()) {
