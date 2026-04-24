@@ -9,8 +9,8 @@ type RecipientCountProps = {
   item: NewsLetter;
 };
 
-function configString(segmentIds: string[], filterSegpmentId?: string) {
-  return `segments:${segmentIds.join(',')}|filterSegmentId:${filterSegpmentId}`;
+function configString(segmentIds: string[], filterSegmentId?: string) {
+  return `segments:${segmentIds.join(',')}|filterSegmentId:${filterSegmentId}`;
 }
 
 export function RecipientCount(props: RecipientCountProps) {
