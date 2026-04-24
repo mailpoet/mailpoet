@@ -60,7 +60,7 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
   }
 
   .mailpoet-automation-filters-list-item-remove {
-    color: #757575;
+    color: $color-text-light;
     margin: 4px;
     padding: 0;
   }
@@ -78,7 +78,7 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
 }
 
 .mailpoet-automation-filters-list-item-value-missing {
-  color: #757575;
+  color: $color-text-light;
   display: inline-block;
   vertical-align: middle;
 
