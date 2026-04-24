@@ -239,6 +239,7 @@ class NewsletterResendController {
     $duplicateId = $duplicate->getId();
     if ($duplicateId) {
       $this->newsletterDeleteController->bulkDelete([$duplicateId]);
+      return;
     }
     if ($queue) {
       $this->entityManager->remove($queue);
