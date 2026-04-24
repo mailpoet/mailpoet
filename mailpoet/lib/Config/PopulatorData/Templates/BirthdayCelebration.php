@@ -40,7 +40,7 @@ class BirthdayCelebration {
             'orientation' => 'horizontal',
             'styles' => [
               'block' => [
-                'backgroundColor' => '#fff0f5',
+                'backgroundColor' => '#fec8c1',
               ],
             ],
             'blocks' => [
@@ -58,7 +58,30 @@ class BirthdayCelebration {
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',
-                        'height' => '40px',
+                        'height' => '20px',
+                      ],
+                    ],
+                  ],
+                  [
+                    'type' => 'image',
+                    'link' => '',
+                    'src' => $this->template_image_url . '/celebration.png',
+                    'alt' => __('Birthday celebration', 'mailpoet'),
+                    'fullWidth' => true,
+                    'width' => '1320px',
+                    'height' => '578px',
+                    'styles' => [
+                      'block' => [
+                        'textAlign' => 'center',
+                      ],
+                    ],
+                  ],
+                  [
+                    'type' => 'spacer',
+                    'styles' => [
+                      'block' => [
+                        'backgroundColor' => 'transparent',
+                        'height' => '25px',
                       ],
                     ],
                   ],
@@ -131,7 +154,7 @@ class BirthdayCelebration {
             'orientation' => 'horizontal',
             'styles' => [
               'block' => [
-                'backgroundColor' => '#ffffff',
+                'backgroundColor' => '#fec8c1',
               ],
             ],
             'blocks' => [
@@ -237,10 +260,10 @@ class BirthdayCelebration {
           'textDecoration' => 'underline',
         ],
         'wrapper' => [
-          'backgroundColor' => '#fff0f5',
+          'backgroundColor' => '#fec8c1',
         ],
         'body' => [
-          'backgroundColor' => '#fff0f5',
+          'backgroundColor' => '#fec8c1',
         ],
       ],
     ];
