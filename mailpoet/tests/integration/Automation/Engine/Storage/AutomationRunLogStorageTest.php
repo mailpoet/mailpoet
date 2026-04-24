@@ -90,7 +90,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
              "(5,                  'step-2', '$status')"; // Wrong automation id
     $this->assertNotFalse($wpdb->query($sql)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     $result = $this->storage->getAutomationRunStatisticsForAutomationInTimeFrame(1, $status, $timeFrame['after'], $timeFrame['before']);
-    $this->assertEquals(count($expected), count($result));
+    $this->assertSameSize($expected, $result);
     $this->assertEquals($expected, $result);
 
     $versionId = 1;
@@ -105,7 +105,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
         'step_id' => 'step-2',
       ],
     ];
-    $this->assertEquals(count($expected), count($result));
+    $this->assertSameSize($expected, $result);
     $this->assertEquals($expected, $result);
   }
 }

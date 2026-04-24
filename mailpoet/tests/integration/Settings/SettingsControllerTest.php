@@ -29,10 +29,10 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   public function testItReturnsNullForUnknownSetting() {
-    $this->assertEquals(null, $this->controller->get('test_key'));
-    $this->assertEquals(null, $this->controller->get('test_key.sub_key'));
+    $this->assertNull($this->controller->get('test_key'));
+    $this->assertNull($this->controller->get('test_key.sub_key'));
     $this->createOrUpdateSetting('test_key', serialize(['sub_key' => 'value']));
-    $this->assertEquals(null, $this->controller->get('test_key.wrong_subkey'));
+    $this->assertNull($this->controller->get('test_key.wrong_subkey'));
   }
 
   public function testItReturnsDefaultValueForUnknownSetting() {
@@ -43,8 +43,8 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   public function testItCanFetchValuesFromDB() {
-    $this->assertEquals(null, $this->controller->fetch('test_key'));
-    $this->assertEquals(null, $this->controller->fetch('test_key.sub_key'));
+    $this->assertNull($this->controller->fetch('test_key'));
+    $this->assertNull($this->controller->fetch('test_key.sub_key'));
     $this->assertEquals('default', $this->controller->fetch('test_key.wrong_subkey', 'default'));
     $this->createOrUpdateSetting('test_key', serialize(['sub_key' => 'value']));
     $this->assertEquals('default', $this->controller->get('test_key.sub_key', 'default'));
@@ -117,7 +117,6 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(1, $this->controller->get('test_key'));
     $this->createOrUpdateSetting('test_key', 2);
     $this->assertEquals(1, $this->controller->get('test_key'));
-    $this->assertEquals(true, true);
   }
 
   public function testItCanCheckIfSavedValueExists(): void {
