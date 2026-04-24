@@ -623,11 +623,6 @@ jQuery(($) => {
     return cookieValue !== '1' || isPreview;
   };
 
-  const isPopupOnClickMode = (formDiv: JQuery<HTMLElement>) => {
-    const form = formDiv.find('form');
-    return form.data('trigger-mode') === 'on_click';
-  };
-
   const showFormImmediately = (
     formDiv: JQuery<HTMLElement>,
     showOverlay = false,
@@ -643,7 +638,8 @@ jQuery(($) => {
   };
 
   const openPopupForm = (formDiv: JQuery<HTMLElement>) => {
-    if (!canFormBeDisplayed(formDiv, isPopupOnClickMode(formDiv))) {
+    // Explicit open (click trigger or openPopup); do not block on dismissal cookie.
+    if (!canFormBeDisplayed(formDiv, true)) {
       return false;
     }
     const showOverlay = true;
