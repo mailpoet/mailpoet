@@ -51,10 +51,12 @@ export function registerDataSubscribersList(
           .optional()
           .describe('Filter by subscriber status.'),
         segment_id: z
-          .string()
+          .number()
+          .int()
+          .positive()
           .optional()
           .describe(
-            'Only subscribers belonging to this segment (numeric id as string).',
+            'Only return subscribers currently subscribed to this segment.',
           ),
         limit: z
           .number()

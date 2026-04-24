@@ -100,16 +100,12 @@ pnpm env:start       # or env:restart if already running
 
 ## Running the server
 
-For stdio (Claude Code / Claude Desktop), point the client at:
+The repo ships a project-level `.mcp.json` at the root, so Claude Code will auto-discover the server and prompt you to approve it the first time you run `claude` inside this directory — no manual `claude mcp add` step needed. Each dev still explicitly opts in when prompted.
 
-```
-node /absolute/path/to/mailpoet-dev/tools/mcp-server/dist/index.js
-```
-
-For Claude Code, the easiest way is:
+If auto-discovery isn't available (different client, or you opted out), register manually:
 
 ```bash
-claude mcp add mailpoet-dev -- node /absolute/path/to/mailpoet-dev/tools/mcp-server/dist/index.js
+claude mcp add mailpoet-dev -- node "$(pwd)/tools/mcp-server/dist/index.js"
 ```
 
 Then in a Claude Code session call `mp.env.status` to verify end-to-end.

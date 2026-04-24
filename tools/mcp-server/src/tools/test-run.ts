@@ -51,13 +51,13 @@ function parseJunit(xmlPath: string): ParsedReport | null {
   let durationSec = 0;
   const failures: TestFailure[] = [];
 
+  // Count per <testcase> rather than summing <testsuite tests="..."> attributes:
+  // nested JUnit structures (testsuites > testsuite > testsuite) have parent
+  // nodes that aggregate their children, so summing every level double-counts.
+  // Per-testcase is unambiguous and matches what we actually show.
   const walk = (suiteNode: Record<string, unknown>): void => {
-    const n = (k: string): number => Number(suiteNode[k] ?? 0);
-    total += n('@_tests');
-    failed += n('@_failures');
-    skipped += n('@_skipped');
-    errors += n('@_errors');
-    durationSec += n('@_time');
+    const time = Number(suiteNode['@_time'] ?? 0);
+    durationSec += time;
 
     const cases = Array.isArray(suiteNode.testcase)
       ? (suiteNode.testcase as Record<string, unknown>[])
@@ -66,9 +66,22 @@ function parseJunit(xmlPath: string): ParsedReport | null {
       : [];
 
     for (const tc of cases) {
-      const fail = tc.failure ?? tc.error;
-      if (!fail) continue;
-      const f = Array.isArray(fail) ? fail[0] : fail;
+      total++;
+      const fail = tc.failure;
+      const err = tc.error;
+      const skip = tc.skipped;
+
+      if (fail) {
+        failed++;
+      } else if (err) {
+        errors++;
+      } else if (skip) {
+        skipped++;
+      }
+
+      const issue = fail ?? err;
+      if (!issue) continue;
+      const f = Array.isArray(issue) ? issue[0] : issue;
       const fObj =
         typeof f === 'object' && f !== null
           ? (f as Record<string, unknown>)
@@ -183,7 +196,16 @@ export function registerTestRun(server: McpServer, config: Config): void {
           }]\n\n# stdout\n${result.stdout}\n\n# stderr\n${result.stderr}\n`,
         );
 
-        const report = parseJunit(xmlPath);
+        // A crashed Codeception run can write a truncated XML that
+        // fast-xml-parser refuses to parse. Treat that as "no report" rather
+        // than letting the parser error surface as an unhandled throw.
+        let report: ParsedReport | null = null;
+        let parseError: string | null = null;
+        try {
+          report = parseJunit(xmlPath);
+        } catch (e) {
+          parseError = e instanceof Error ? e.message : String(e);
+        }
 
         return {
           suite: args.suite,
@@ -202,9 +224,12 @@ export function registerTestRun(server: McpServer, config: Config): void {
           failures: report?.failures ?? [],
           log_path: logPath,
           junit_xml_path: existsSync(xmlPath) ? xmlPath : null,
+          parse_error: parseError,
           note:
             report === null
-              ? 'JUnit XML not found — check the log file for details. The Codeception run may have errored before emitting a report.'
+              ? parseError
+                ? `JUnit XML could not be parsed (${parseError}). Check the log file for details.`
+                : 'JUnit XML not found — check the log file for details. The Codeception run may have errored before emitting a report.'
               : undefined,
         };
       }),

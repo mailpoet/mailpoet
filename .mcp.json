@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mailpoet-dev": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["./tools/mcp-server/dist/index.js"]
+    }
+  }
+}
