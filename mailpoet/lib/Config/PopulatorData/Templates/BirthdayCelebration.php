@@ -54,6 +54,25 @@ class BirthdayCelebration {
                 ],
                 'blocks' => [
                   [
+                    'type' => 'header',
+                    'text' => '<p><a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a></p>',
+                    'styles' => [
+                      'block' => [
+                        'backgroundColor' => 'transparent',
+                      ],
+                      'text' => [
+                        'fontColor' => '#888888',
+                        'fontFamily' => 'Arial',
+                        'fontSize' => '12px',
+                        'textAlign' => 'center',
+                      ],
+                      'link' => [
+                        'fontColor' => '#e6527a',
+                        'textDecoration' => 'underline',
+                      ],
+                    ],
+                  ],
+                  [
                     'type' => 'spacer',
                     'styles' => [
                       'block' => [
@@ -111,14 +130,31 @@ class BirthdayCelebration {
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',
+                        'height' => '15px',
+                      ],
+                    ],
+                  ],
+                  [
+                    'type' => 'text',
+                    'text' => '<p style="text-align: center;"><span style="font-size: 24px; font-weight: bold; letter-spacing: 3px; background-color: #e6527a; color: #ffffff; padding: 12px 24px; border-radius: 5px;">' . __("BIRTHDAY20", 'mailpoet') . '</span></p>',
+                  ],
+                  [
+                    'type' => 'text',
+                    'text' => '<p style="text-align: center; font-size: 13px;"><span style="color: #888888;">' . __("Use this code for 20% off your next order.", 'mailpoet') . '</span></p>',
+                  ],
+                  [
+                    'type' => 'spacer',
+                    'styles' => [
+                      'block' => [
+                        'backgroundColor' => 'transparent',
                         'height' => '20px',
                       ],
                     ],
                   ],
                   [
                     'type' => 'button',
-                    'text' => __("Claim Your Birthday Gift", 'mailpoet'),
-                    'url' => '',
+                    'text' => __("Shop Now", 'mailpoet'),
+                    'url' => '[site:homepage_url]',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => '#ff6b6b',
