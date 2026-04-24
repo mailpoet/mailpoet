@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   Button,
   ButtonGroup,
@@ -148,7 +148,15 @@ function isResendEligible(newsletter: NewsletterType): {
     const hoursLeft = Math.ceil(MIN_RESEND_DELAY_HOURS - hoursSinceSent);
     return {
       eligible: false,
-      reason: sprintf(__('Available in %d hours.', 'mailpoet'), hoursLeft),
+      reason: sprintf(
+        _n(
+          'Available in %d hour.',
+          'Available in %d hours.',
+          hoursLeft,
+          'mailpoet',
+        ),
+        hoursLeft,
+      ),
     };
   }
   if (hoursSinceSent > MAX_RESEND_DELAY_HOURS) {
@@ -194,10 +202,12 @@ function ResendToNonOpenersModal({ newsletter, onClose }: ResendModalProps) {
         onClose();
       })
       .fail((response) => {
-        setIsSending(false);
-        if (response.errors.length > 0) {
+        if (response?.errors?.length > 0) {
           MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
+      })
+      .always(() => {
+        setIsSending(false);
       });
   };
 
@@ -249,6 +259,7 @@ type Props = {
 function NewsletterStatsInfo({ newsletter }: Props) {
   const [isBusy, setIsBusy] = useState(false);
   const [isResendModalOpen, setIsResendModalOpen] = useState(false);
+  const resendStatus = isResendEligible(newsletter);
   const newsletterDate =
     newsletter?.queue?.scheduled_at ||
     newsletter?.queue?.created_at ||
@@ -362,14 +373,8 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 >
                   {__('Duplicate', 'mailpoet')}
                 </MenuItem>
-                {(() => {
-                  const resendStatus = isResendEligible(newsletter);
-                  if (
-                    newsletter.type !== 'standard' ||
-                    newsletter.status !== 'sent'
-                  )
-                    return null;
-                  return (
+                {newsletter.type === 'standard' &&
+                  newsletter.status === 'sent' && (
                     <MenuItem
                       className="mailpoet-no-box-shadow"
                       variant="tertiary"
@@ -383,8 +388,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                     >
                       {__('Resend to non-openers', 'mailpoet')}
                     </MenuItem>
-                  );
-                })()}
+                  )}
                 <MenuItem
                   isBusy={isBusy}
                   isDestructive
