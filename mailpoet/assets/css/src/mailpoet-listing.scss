@@ -13,7 +13,7 @@
 
 .mailpoet-filter-tab-panel {
   background-color: #fff;
-  border: 1px solid #dcdcde;
+  border: 1px solid $color-tertiary-light;
   border-radius: 2px;
   margin-top: $grid-gap-half;
 }
@@ -51,7 +51,7 @@
   }
 
   .mailpoet-listing-name a:hover {
-    color: #2271b1;
+    color: $color-wordpress-button-border;
   }
 
   .mailpoet-listing-checkbox {

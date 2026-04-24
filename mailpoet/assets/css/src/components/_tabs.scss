@@ -16,7 +16,7 @@
 
     &.is-active {
       background-color: #fff;
-      border-color: #dcdcde;
+      border-color: $color-tertiary-light;
       box-shadow: none;
 
       &:focus-visible {

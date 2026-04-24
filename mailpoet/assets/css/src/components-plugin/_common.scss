@@ -176,7 +176,7 @@ p.sender_email_address_warning:first-child {
 
   &.mailpoet_manage_sender_domain_status_pending {
     background: #f0f0f0;
-    color: #757575;
+    color: $color-text-light;
   }
 }
 

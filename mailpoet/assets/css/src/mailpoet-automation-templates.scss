@@ -68,7 +68,7 @@
 }
 
 .mailpoet-automation-template-detail-preview {
-  background: #f6f7f7;
+  background: $color-wordpress-button-background;
   display: grid;
   overflow: auto;
 
@@ -97,7 +97,7 @@
 
   .mailpoet-automation-editor-separator-curve-leaf-left:before,
   .mailpoet-automation-editor-separator-curve-leaf-right:before {
-    background: #f6f7f7;
+    background: $color-wordpress-button-background;
   }
 
   .mailpoet-automation-editor-step-filters {
@@ -128,7 +128,7 @@
 
 .mailpoet-automation-template-detail-footer {
   align-items: center;
-  border-top: 1px solid #dcdcde;
+  border-top: 1px solid $color-tertiary-light;
   display: flex;
   grid-area: footer;
   justify-content: space-between;
