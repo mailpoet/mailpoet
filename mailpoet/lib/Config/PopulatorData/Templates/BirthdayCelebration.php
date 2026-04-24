@@ -65,7 +65,7 @@ class BirthdayCelebration {
                   [
                     'type' => 'image',
                     'link' => '',
-                    'src' => $this->template_image_url . '/celebration.png',
+                    'src' => $this->template_image_url . '/celebration.jpg',
                     'alt' => __('Birthday celebration', 'mailpoet'),
                     'fullWidth' => true,
                     'width' => '1320px',
