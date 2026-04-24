@@ -32,9 +32,8 @@ export class ErrorBoundary extends Component<
     };
   }
 
-  componentDidCatch(error, errorInfo) {
-    // eslint-disable-next-line no-console
-    console.log('logging', { error, errorInfo });
+  componentDidCatch() {
+    // Error details are captured via getDerivedStateFromError
   }
 
   render() {
