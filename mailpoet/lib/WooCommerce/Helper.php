@@ -98,7 +98,7 @@ class Helper {
     return wc_get_price_decimals();
   }
 
-  public function wcGetPriceDecimalSeperator(): string {
+  public function wcGetPriceDecimalSeparator(): string {
     return wc_get_price_decimal_separator();
   }
 
@@ -257,10 +257,6 @@ class Helper {
     return array_values($result);
   }
 
-  public function wcGetPriceDecimalSeparator() {
-    return wc_get_price_decimal_separator();
-  }
-
   public function getLatestCoupon(): ?string {
     $coupons = $this->wp->getPosts([
       'numberposts' => 1,
@@ -316,7 +312,7 @@ class Helper {
   public function getWoocommerceStoreConfig(): array {
     return [
       'precision' => $this->wcGetPriceDecimals(),
-      'decimalSeparator' => $this->wcGetPriceDecimalSeperator(),
+      'decimalSeparator' => $this->wcGetPriceDecimalSeparator(),
       'thousandSeparator' => $this->wcGetPriceThousandSeparator(),
       'code' => $this->getWoocommerceCurrency(),
       'symbol' => html_entity_decode($this->getWoocommerceCurrencySymbol(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),

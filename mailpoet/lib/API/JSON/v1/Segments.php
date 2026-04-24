@@ -192,7 +192,7 @@ class Segments extends APIEndpoint {
         APIError::BAD_REQUEST => str_replace(
           '%1$s',
           "'" . join("', '", $activelyUsedNewslettersSubjects[$segment->getId()]) . "'",
-          // translators: %1$s is a comma-seperated list of emails for which the segment is used.
+          // translators: %1$s is a comma-separated list of emails for which the segment is used.
           _x('List cannot be deleted because it’s used for %1$s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
         ),
       ]);
@@ -204,7 +204,7 @@ class Segments extends APIEndpoint {
         APIError::BAD_REQUEST => str_replace(
           '%1$s',
           "'" . join("', '", $activelyUsedFormNames[$segment->getId()]) . "'",
-          // translators: %1$s is a comma-seperated list of forms for which the segment is used.
+          // translators: %1$s is a comma-separated list of forms for which the segment is used.
           _nx(
             'List cannot be deleted because it’s used for %1$s form',
             'List cannot be deleted because it’s used for %1$s forms',
