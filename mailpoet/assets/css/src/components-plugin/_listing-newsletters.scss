@@ -21,10 +21,6 @@
   color: $color-badge-bad;
 }
 
-.mailpoet_stat_hidden {
-  display: none;
-}
-
 .mailpoet_stat_link_small {
   font-size: 0.75rem;
   text-decoration: underline !important;
@@ -43,23 +39,16 @@
   vertical-align: middle;
 }
 
-.mailpoet_badge_excellent,
-.mailpoet_badge_teal {
+.mailpoet_badge_excellent {
   background: $color-badge-excellent;
 }
 
-.mailpoet_badge_good,
-.mailpoet_badge_yellow {
+.mailpoet_badge_good {
   background: $color-badge-good;
 }
 
-.mailpoet_badge_bad,
-.mailpoet_badge_red {
+.mailpoet_badge_bad {
   background: $color-badge-bad;
-}
-
-.mailpoet_badge_green {
-  background: $color-badge-green;
 }
 
 // h1.title needed to override WP styles specificity
