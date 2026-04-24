@@ -1,7 +1,7 @@
 /* See: https://github.com/WordPress/gutenberg/blob/0b4ad0072a5c3dd4832081ed00d4e27389ae88c8/packages/editor/src/components/post-saved-state/index.js */
 .mailpoet-automation-editor-saved-state {
   align-items: center;
-  color: #757575;
+  color: $color-text-light;
   display: flex;
   overflow: hidden;
   white-space: nowrap;
@@ -11,7 +11,7 @@
   &.is-saved[aria-disabled='true'],
   &.is-saved[aria-disabled='true']:hover {
     background: transparent;
-    color: #757575;
+    color: $color-text-light;
   }
 
   svg {
