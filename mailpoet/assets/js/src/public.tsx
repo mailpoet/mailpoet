@@ -687,7 +687,8 @@ jQuery(($) => {
     const clickTriggerEvent = formId
       ? `click.mailpoet.form-click-trigger-${formId}`
       : 'click.mailpoet.form-click-trigger';
-    $(document).on(clickTriggerEvent, selector, () => {
+    $(document).on(clickTriggerEvent, selector, (e) => {
+      e.preventDefault();
       openPopupForm(formDiv);
     });
   };
