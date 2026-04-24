@@ -107,7 +107,7 @@ class StepSchedulerTest extends MailPoetTest {
     $this->assertTrue($scheduler->hasScheduledNextStep($args));
   }
 
-  public function hasScheduledStep(): void {
+  public function testHasScheduledStep(): void {
     $scheduler = $this->diContainer->get(StepScheduler::class);
 
     // progress
