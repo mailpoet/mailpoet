@@ -1,49 +1,49 @@
 // Settings
 // Global variables, config switches. Not producing any CSS.
 
-@import "settings/breakpoints";
-@import "settings/grid";
-@import "settings/colors";
-@import "settings/form";
-@import "settings/legacy-modal";
-@import "settings/modal";
-@import "settings/newsletter";
-@import "settings/progress";
-@import "settings/typography";
+@import 'settings/breakpoints';
+@import 'settings/grid';
+@import 'settings/colors';
+@import 'settings/form';
+@import 'settings/legacy-modal';
+@import 'settings/modal';
+@import 'settings/newsletter';
+@import 'settings/progress';
+@import 'settings/typography';
 
 // Tools
 // Default mixins and functions. Still not producing any CSS.
 
-@import "mixins/breakpoints";
-@import "mixins/clearfix";
-@import "mixins/full-width-background";
+@import 'mixins/breakpoints';
+@import 'mixins/clearfix';
+@import 'mixins/full-width-background';
 
 // 3rd party styles
 
-@import "../../../node_modules/select2/dist/css/select2";
-@import "../../../node_modules/@wordpress/components/build-style/style";
+@import '../../../node_modules/select2/dist/css/select2';
+@import '../../../node_modules/@wordpress/components/build-style/style';
 
 // WordPress Admin Theme Color Variables
 // Needed for the WordPress Admin color scheme support for @wordpress/components.
-@import "../../../node_modules/@wordpress/base-styles/mixins";
+@import '../../../node_modules/@wordpress/base-styles/mixins';
 
 // Generic
-@import "generic/admin-colors"; // Has to be after @wordpress/components/build-style/style
-@import "generic/typography";
-@import "generic/buttons";
-@import "generic/buttons-spinners";
-@import "generic/forms";
-@import "generic/forms-checkbox";
-@import "generic/forms-input";
-@import "generic/forms-radio";
-@import "generic/forms-select";
-@import "generic/forms-select2";
-@import "generic/forms-textarea";
-@import "generic/forms-toggle";
-@import "generic/forms-token-field";
-@import "generic/forms-yesno";
-@import "generic/grid";
-@import "generic/helpers"; // must be the last
+@import 'generic/admin-colors'; // Has to be after @wordpress/components/build-style/style
+@import 'generic/typography';
+@import 'generic/buttons';
+@import 'generic/buttons-spinners';
+@import 'generic/forms';
+@import 'generic/forms-checkbox';
+@import 'generic/forms-input';
+@import 'generic/forms-radio';
+@import 'generic/forms-select';
+@import 'generic/forms-select2';
+@import 'generic/forms-textarea';
+@import 'generic/forms-toggle';
+@import 'generic/forms-token-field';
+@import 'generic/forms-yesno';
+@import 'generic/grid';
+@import 'generic/helpers'; // must be the last
 
 // Components
 // Actual UI components.
