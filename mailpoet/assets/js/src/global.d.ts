@@ -178,6 +178,7 @@ interface Window {
     captcha_reload_title?: string;
     captcha_audio_title?: string;
     assets_url?: string;
+    openPopup?: (formId: number | string) => boolean;
   };
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];
