@@ -11,19 +11,7 @@
   width: 25em !important;
 }
 
-input.select2-search__field::-webkit-input-placeholder {
-  color: $color-placeholder-select2;
-}
-
-input.select2-search__field:-moz-placeholder {
-  color: $color-placeholder-select2;
-}
-
-input.select2-search__field::-moz-placeholder {
-  color: $color-placeholder-select2;
-}
-
-input.select2-search__field:-ms-input-placeholder {
+input.select2-search__field::placeholder {
   color: $color-placeholder-select2;
 }
 
