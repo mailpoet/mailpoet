@@ -55,7 +55,7 @@ class API {
   private $wp;
   /** @var LoggerFactory */
   private $loggerFactory;
-  /** @var mixed|null It is an instance of \CurlHandle in PHP8 and aboove but a resource in PHP7 */
+  /** @var mixed|null It is an instance of \CurlHandle in PHP8 and above but a resource in PHP7 */
   private $curlHandle = null;
 
   public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';

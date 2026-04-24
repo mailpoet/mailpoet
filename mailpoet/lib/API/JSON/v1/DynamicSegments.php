@@ -218,7 +218,7 @@ class DynamicSegments extends APIEndpoint {
         $segment = $this->getSegment(['id' => $segmentId]);
         if ($segment) {
           $errors[] = sprintf(
-            // translators: %1$s is the name of the segment, %2$s is a comma-seperated list of emails for which the segment is used.
+            // translators: %1$s is the name of the segment, %2$s is a comma-separated list of emails for which the segment is used.
             _x('Segment \'%1$s\' cannot be deleted because it’s used for \'%2$s\' email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet'),
             $segment->getName(),
             join("', '", $activelyUsedNewslettersSubjects[$segmentId])
