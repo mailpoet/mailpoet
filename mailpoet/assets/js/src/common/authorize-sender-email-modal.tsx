@@ -204,7 +204,7 @@ function AuthorizeSenderEmailModal({
           <strong> {createEmailApiError} </strong>
           <p>
             {__(
-              'An error occured when performing the request. Please try again later',
+              'An error occurred when performing the request. Please try again later',
               'mailpoet',
             )}
           </p>
