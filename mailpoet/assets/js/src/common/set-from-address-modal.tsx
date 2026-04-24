@@ -28,7 +28,7 @@ const getErrorMessage = (
   error: ErrorResponse['errors'][number] | null,
 ): string => {
   if (!error) {
-    return __('An error occured when saving FROM email address.', 'mailpoet');
+    return __('An error occurred when saving FROM email address.', 'mailpoet');
   }
 
   if (error.error === 'unauthorized') {
@@ -37,7 +37,7 @@ const getErrorMessage = (
 
   return (
     error.message ||
-    __('An error occured when saving FROM email address.', 'mailpoet')
+    __('An error occurred when saving FROM email address.', 'mailpoet')
   );
 };
 
