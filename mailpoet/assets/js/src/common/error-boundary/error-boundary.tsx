@@ -7,7 +7,7 @@ type ErrorBoundaryState = {
 };
 
 export type ErrorBoundaryProps = {
-  onError?: (Error_Boundary_State) => ReactNode;
+  onError?: (state: ErrorBoundaryState) => ReactNode;
   children?: ReactNode;
 };
 
