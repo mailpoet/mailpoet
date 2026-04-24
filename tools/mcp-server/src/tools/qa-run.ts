@@ -185,6 +185,14 @@ function badJsonError(
   });
 }
 
+// mailpoet/tests/plugins/ holds downloaded third-party WooCommerce plugin
+// zips + extracted code used by acceptance tests (see RoboFile::downloadWoo*).
+// It's gitignored, but guard against it anyway so an accidental commit
+// doesn't send third-party code through the linters.
+function isTestPluginsPath(repoRel: string): boolean {
+  return repoRel.startsWith('mailpoet/tests/plugins/');
+}
+
 // PHPStan's config (mailpoet/tasks/phpstan/phpstan.neon) only sets up stubs
 // and autoload for plugin code. Files outside mailpoet/ (e.g. .wp-env/
 // mu-plugins/) produce hundreds of false 'class.notFound' errors because
@@ -204,6 +212,7 @@ function isPhpstanAnalyzable(repoRel: string): boolean {
 // outside that scope doesn't make sense — the ruleset can't find project
 // context for it.
 function isPhpcsAnalyzable(repoRel: string): boolean {
+  if (isTestPluginsPath(repoRel)) return false;
   return (
     repoRel.startsWith('mailpoet/lib/') || repoRel.startsWith('mailpoet/tests/')
   );
@@ -213,6 +222,7 @@ function isPhpcsAnalyzable(repoRel: string): boolean {
 // ignored files to eslint produces one "File ignored" warning per file —
 // noise that isn't actionable. Skip these paths up front.
 function isEslintAnalyzable(repoRel: string): boolean {
+  if (isTestPluginsPath(repoRel)) return false;
   return !repoRel.startsWith('tools/mcp-server/');
 }
 
@@ -291,7 +301,8 @@ async function runPhpcs(
       ...files.map((f) => relative(config.mailpoetDir, toAbsolute(f, config))),
     );
   } else {
-    args.push('lib/', 'tests/');
+    // tests/plugins/ holds third-party WooCommerce zips + extracts.
+    args.push('--ignore=tests/plugins/*', 'lib/', 'tests/');
   }
   const res = await exec(phpcs, args, {
     cwd: config.mailpoetDir,
