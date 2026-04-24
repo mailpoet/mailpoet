@@ -93,6 +93,10 @@ export function getRow(
       display: (
         <input
           type="checkbox"
+          aria-label={sprintf(
+            __('Select segment "%s"', 'mailpoet'),
+            dynamicSegment.name,
+          )}
           checked={dynamicSegment?.selected ?? false}
           onChange={toggleSelect}
         />
