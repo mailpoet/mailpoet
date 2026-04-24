@@ -544,6 +544,46 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     verify($result)->stringEndsWith($formHtml);
   }
 
+  public function testPopupRenderIncludesClickTriggerSettings(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer
+      ->expects($this->once())
+      ->method('render')
+      ->with(
+        'form/front_end_form.html',
+        $this->callback(function(array $templateData) {
+          return (
+            $templateData['triggerMode'] === 'on_click'
+            && $templateData['clickTriggerSelector'] === '#newsletter-button'
+          );
+        })
+      )
+      ->willReturn($formHtml);
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => ''],
+          'trigger_mode' => 'on_click',
+          'click_trigger_selector' => '#newsletter-button',
+        ],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    $result = $this->hook->contentDisplay('content');
+    verify($result)->stringEndsWith($formHtml);
+  }
+
   public function testDisplayFormOnAllTagArchives(): void {
     $formHtml = '<form id="test-form"></form>';
     $this->wp->expects($this->any())->method('isTag')->willReturn(true);
