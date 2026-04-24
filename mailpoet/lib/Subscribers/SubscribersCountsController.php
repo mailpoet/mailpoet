@@ -69,7 +69,7 @@ class SubscribersCountsController {
     if (!$result) {
       $segment = $this->segmentsRepository->findOneById($segmentId);
       if (!$segment) {
-        throw new InvalidStateException();
+        throw new InvalidStateException("Segment with ID $segmentId not found");
       }
       $result = $this->recalculateSegmentStatisticsCache($segment);
     }

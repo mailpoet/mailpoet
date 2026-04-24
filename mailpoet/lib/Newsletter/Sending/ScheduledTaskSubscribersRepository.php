@@ -43,7 +43,7 @@ class ScheduledTaskSubscribersRepository extends Repository {
     if (!$taskSubscriber) {
       $task = $this->entityManager->getReference(ScheduledTaskEntity::class, (int)$data['task_id']);
       $subscriber = $this->entityManager->getReference(SubscriberEntity::class, (int)$data['subscriber_id']);
-      if (!$task || !$subscriber) throw new InvalidStateException();
+      if (!$task || !$subscriber) throw new InvalidStateException('Task or subscriber not found');
 
       $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
       $this->persist($taskSubscriber);

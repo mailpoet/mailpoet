@@ -47,7 +47,7 @@ class AutomationWalker {
     do {
       $record = array_pop($stack);
       if (!$record) {
-        throw new InvalidStateException();
+        throw new InvalidStateException('Unexpected empty stack during automation graph traversal');
       }
       yield $record;
       [$step, $parents] = $record;

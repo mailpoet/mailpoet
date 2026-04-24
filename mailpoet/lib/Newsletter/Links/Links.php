@@ -131,7 +131,7 @@ class Links {
     // match data tags
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber) {
-      throw new InvalidStateException();
+      throw new InvalidStateException('Subscriber not found for link replacement');
     }
     preg_match_all($this->getLinkRegex(), $content, $matches);
     foreach ($matches[1] as $index => $match) {
