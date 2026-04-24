@@ -31,7 +31,7 @@ class HooksTest extends \MailPoetTest {
     $hooks->setupChangeNotifications();
 
     // check that shutdown hooks was added
-    $this->assertEquals(true, WPHooksHelper::isActionAdded('shutdown'));
+    $this->assertTrue(WPHooksHelper::isActionAdded('shutdown'));
     // manual hook execution and check with mocked return value
     $shutdownHook = WPHooksHelper::getActionAdded('shutdown');
     $this->assertEquals('success', call_user_func($shutdownHook[0]));

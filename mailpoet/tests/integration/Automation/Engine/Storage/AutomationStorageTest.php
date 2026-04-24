@@ -32,7 +32,7 @@ class AutomationStorageTest extends \MailPoetTest {
     $updatedAutomation = $this->testee->getAutomation($automation->getId());
     $this->assertInstanceOf(Automation::class, $updatedAutomation);
     $this->assertTrue($automation->getVersionId() < $updatedAutomation->getVersionId());
-    $this->assertEquals(1, count($updatedAutomation->getSteps()));
+    $this->assertCount(1, $updatedAutomation->getSteps());
 
     $step2 = new Step('id-2', Step::TYPE_ACTION, 'key', [], []);
     $automation->setSteps(['id' => $step1, 'id-2' => $step2]);
@@ -40,7 +40,7 @@ class AutomationStorageTest extends \MailPoetTest {
     $latestAutomation = $this->testee->getAutomation($automation->getId());
     $this->assertInstanceOf(Automation::class, $latestAutomation);
     $this->assertTrue($updatedAutomation->getVersionId() < $latestAutomation->getVersionId());
-    $this->assertEquals(2, count($latestAutomation->getSteps()));
+    $this->assertCount(2, $latestAutomation->getSteps());
   }
 
   public function testItLoadsCorrectVersions() {
@@ -120,7 +120,7 @@ class AutomationStorageTest extends \MailPoetTest {
     $updatedAutomation = $this->testee->getAutomation($automation->getId());
     $this->assertInstanceOf(Automation::class, $updatedAutomation);
     $this->assertTrue($automation->getVersionId() < $updatedAutomation->getVersionId());
-    $this->assertEquals(1, count($updatedAutomation->getSteps()));
+    $this->assertCount(1, $updatedAutomation->getSteps());
 
     $step2 = new Step('id-2', Step::TYPE_ACTION, 'key', [], []);
     $automation->setSteps(['id' => $step1, 'id-2' => $step2]);
