@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
@@ -128,6 +128,39 @@ class BirthdaySimple {
                       'block' => [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
+                      ],
+                    ],
+                  ],
+                  [
+                    'type' => 'social',
+                    'iconSet' => 'official',
+                    'icons' => [
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'facebook',
+                        'link' => 'http://www.facebook.com',
+                        'image' => $this->social_icon_url . '/11-official/Facebook.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Facebook',
+                      ],
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'twitter',
+                        'link' => 'http://www.twitter.com',
+                        'image' => $this->social_icon_url . '/11-official/X.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Twitter',
+                      ],
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'instagram',
+                        'link' => 'http://instagram.com',
+                        'image' => $this->social_icon_url . '/11-official/Instagram.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Instagram',
                       ],
                     ],
                   ],

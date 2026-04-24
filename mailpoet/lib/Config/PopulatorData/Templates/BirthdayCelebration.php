@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
@@ -68,7 +68,7 @@ class BirthdayCelebration {
                   ],
                   [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center; font-size: 17px;"><span style="color: #555555;">' . __("It\u2019s your special day and we want to celebrate with you!", 'mailpoet') . '</span></p>',
+                    'text' => '<p style="text-align: center; font-size: 17px;"><span style="color: #555555;">' . __("It's your special day and we want to celebrate with you!", 'mailpoet') . '</span></p>',
                   ],
                   [
                     'type' => 'spacer',
@@ -81,7 +81,7 @@ class BirthdayCelebration {
                   ],
                   [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center; font-size: 15px;"><span style="color: #555555;">' . __("To make your day even sweeter, here\u2019s a special treat just for you.", 'mailpoet') . '</span></p>',
+                    'text' => '<p style="text-align: center; font-size: 15px;"><span style="color: #555555;">' . __("To make your day even sweeter, here's a special treat just for you.", 'mailpoet') . '</span></p>',
                   ],
                   [
                     'type' => 'spacer',
@@ -144,6 +144,39 @@ class BirthdayCelebration {
                   ],
                 ],
                 'blocks' => [
+                  [
+                    'type' => 'social',
+                    'iconSet' => 'official',
+                    'icons' => [
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'facebook',
+                        'link' => 'http://www.facebook.com',
+                        'image' => $this->social_icon_url . '/11-official/Facebook.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Facebook',
+                      ],
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'twitter',
+                        'link' => 'http://www.twitter.com',
+                        'image' => $this->social_icon_url . '/11-official/X.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Twitter',
+                      ],
+                      [
+                        'type' => 'socialIcon',
+                        'iconType' => 'instagram',
+                        'link' => 'http://instagram.com',
+                        'image' => $this->social_icon_url . '/11-official/Instagram.png',
+                        'height' => '32px',
+                        'width' => '32px',
+                        'text' => 'Instagram',
+                      ],
+                    ],
+                  ],
                   [
                     'type' => 'spacer',
                     'styles' => [

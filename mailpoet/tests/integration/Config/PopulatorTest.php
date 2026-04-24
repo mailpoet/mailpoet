@@ -10,7 +10,7 @@ use MailPoetVendor\Doctrine\ORM\Query;
 
 class PopulatorTest extends MailPoetTest {
   private const OPTION_FIELD_COUNT = 31;
-  private const TEMPLATE_COUNT = 76;
+  private const TEMPLATE_COUNT = 78;
 
   public function testItInsertsOptionFields(): void {
     $populator = $this->diContainer->get(Populator::class);
