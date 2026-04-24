@@ -29,7 +29,7 @@ class PostEditorBlock {
   public function init() {
     $this->subscriptionFormBlock->init();
 
-    if (is_admin()) {
+    if ($this->wp->isAdmin()) {
       $this->initAdmin();
     } else {
       $this->initFrontend();
