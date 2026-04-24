@@ -25,6 +25,8 @@ export const popupForm = {
   },
   ...delayAndCookieExpiration,
   animation: 'slideup',
+  triggerMode: 'auto' as const,
+  clickTriggerSelector: '',
 };
 
 export const fixedBarForm = {
