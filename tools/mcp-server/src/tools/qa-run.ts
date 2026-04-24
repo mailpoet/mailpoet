@@ -107,6 +107,18 @@ async function uncommittedFiles(
   return files.filter((f) => extensions.includes(extname(f)));
 }
 
+// Per-tool scope filter. Changed-file discovery returns every modified file
+// matching the tool's extension, but some tools can't meaningfully analyze
+// files outside their configured scope (e.g. phpstan without WordPress
+// stubs, eslint paths ignored by the mailpoet config). Filtering up front
+// keeps `files_analyzed` accurate in the response.
+function scopeFilter(tool: QaTool): (repoRel: string) => boolean {
+  if (tool === 'phpstan') return isPhpstanAnalyzable;
+  if (tool === 'phpcs') return isPhpcsAnalyzable;
+  if (tool === 'eslint') return isEslintAnalyzable;
+  return () => true;
+}
+
 async function resolveScope(
   scope: 'all' | 'changed' | 'file',
   path: string | undefined,
@@ -138,7 +150,9 @@ async function resolveScope(
   const exts = EXTENSIONS_BY_TOOL[tool];
   const committed = await changedFiles(config.repoRoot, exts);
   const uncommitted = await uncommittedFiles(config.repoRoot, exts);
-  const merged = Array.from(new Set([...committed, ...uncommitted]));
+  const merged = Array.from(new Set([...committed, ...uncommitted])).filter(
+    scopeFilter(tool),
+  );
   return { files: merged, resolvedFromBranch: true };
 }
 
@@ -171,11 +185,46 @@ function badJsonError(
   });
 }
 
+// PHPStan's config (mailpoet/tasks/phpstan/phpstan.neon) only sets up stubs
+// and autoload for plugin code. Files outside mailpoet/ (e.g. .wp-env/
+// mu-plugins/) produce hundreds of false 'class.notFound' errors because
+// WordPress stubs aren't registered for them. Match RoboFile's scope.
+function isPhpstanAnalyzable(repoRel: string): boolean {
+  return (
+    repoRel.startsWith('mailpoet/lib/') ||
+    repoRel.startsWith('mailpoet/tests/_support/') ||
+    repoRel.startsWith('mailpoet/tests/DataFactories/') ||
+    repoRel.startsWith('mailpoet/tests/acceptance/') ||
+    repoRel.startsWith('mailpoet/tests/integration/') ||
+    repoRel.startsWith('mailpoet/tests/unit/')
+  );
+}
+
+// PHPCS's MailPoet ruleset targets lib/ and tests/. Linting a PHP file
+// outside that scope doesn't make sense — the ruleset can't find project
+// context for it.
+function isPhpcsAnalyzable(repoRel: string): boolean {
+  return (
+    repoRel.startsWith('mailpoet/lib/') || repoRel.startsWith('mailpoet/tests/')
+  );
+}
+
+// mailpoet's eslint config ignores paths like tools/mcp-server/. Passing
+// ignored files to eslint produces one "File ignored" warning per file —
+// noise that isn't actionable. Skip these paths up front.
+function isEslintAnalyzable(repoRel: string): boolean {
+  return !repoRel.startsWith('tools/mcp-server/');
+}
+
 async function runPhpstan(
   files: string[] | 'all',
   config: Config,
 ): Promise<Violation[]> {
-  const phpstan = './tasks/phpstan/vendor/bin/phpstan';
+  // PHPStan must run from mailpoet/tasks/phpstan/ so it picks up
+  // phpstan.neon there and avoids autoloading conflicts from the plugin's
+  // own vendor/ (see RoboFile::qaPhpstan for the same reasoning).
+  const phpstanDir = resolve(config.mailpoetDir, 'tasks/phpstan');
+  const phpstan = './vendor/bin/phpstan';
   const args = [
     'analyse',
     '--no-progress',
@@ -184,13 +233,10 @@ async function runPhpstan(
   ];
   if (files !== 'all') {
     if (files.length === 0) return [];
-    const rel = files.map((f) =>
-      relative(config.mailpoetDir, toAbsolute(f, config)),
-    );
-    args.push(...rel);
+    args.push(...files.map((f) => toAbsolute(f, config)));
   }
   const res = await exec(phpstan, args, {
-    cwd: config.mailpoetDir,
+    cwd: phpstanDir,
     timeoutMs: 5 * 60 * 1000,
   });
   // PHPStan exits 1 when it finds violations; that's expected.
@@ -237,7 +283,7 @@ async function runPhpcs(
   const phpcs = './tasks/code_sniffer/vendor/bin/phpcs';
   const args = [
     '--report=json',
-    '--standard=./tasks/code_sniffer/MailPoet/ruleset.xml',
+    '--standard=./tasks/code_sniffer/MailPoet/free-ruleset.xml',
   ];
   if (files !== 'all') {
     if (files.length === 0) return [];
