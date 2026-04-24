@@ -51,8 +51,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   public function testItSendsConfirmationEmail() {
-    $subcriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
-    $subcriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('http://example.com');
+    $subscriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
+    $subscriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('http://example.com');
 
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set(
@@ -86,7 +86,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $subcriptionUrlFactoryMock,
+      $subscriptionUrlFactoryMock,
       $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
@@ -258,8 +258,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
-    $subcriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
-    $subcriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');
+    $subscriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
+    $subscriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');
 
     $newsletterFactory = new NewsletterFactory();
     $newsletter = $newsletterFactory
@@ -311,7 +311,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $settings,
       $this->diContainer->get(SubscribersRepository::class),
-      $subcriptionUrlFactoryMock,
+      $subscriptionUrlFactoryMock,
       $confirmationEmailCustomizer
     );
 
