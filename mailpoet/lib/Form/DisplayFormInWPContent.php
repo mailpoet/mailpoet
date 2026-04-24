@@ -254,6 +254,8 @@ class DisplayFormInWPContent {
     $templateData['delay'] = $formSettings['form_placement'][$displayType]['delay'] ?? 0;
     $templateData['position'] = $formSettings['form_placement'][$displayType]['position'] ?? '';
     $templateData['animation'] = $formSettings['form_placement'][$displayType]['animation'] ?? '';
+    $templateData['triggerMode'] = $formSettings['form_placement'][$displayType]['trigger_mode'] ?? 'auto';
+    $templateData['clickTriggerSelector'] = $formSettings['form_placement'][$displayType]['click_trigger_selector'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
     $templateData['enableExitIntent'] = false;
     // Set default value for cookie expiration for backward compatibility with forms without this value
