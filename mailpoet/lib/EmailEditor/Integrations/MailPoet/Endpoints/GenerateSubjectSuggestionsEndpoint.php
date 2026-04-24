@@ -185,9 +185,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
    * @return array{suggestions: array<int, mixed>}|null
    */
   private function parseAiResponse(string $result): ?array {
-    $json = trim($result);
-    $json = preg_replace('/^```(?:json)?\s*/i', '', $json);
-    $json = preg_replace('/\s*```\s*$/', '', $json);
+    $json = preg_replace('/^```(?:json)?\s*|```\s*$/i', '', trim($result)) ?? trim($result);
     $json = trim($json);
 
     $decoded = json_decode($json, true);
