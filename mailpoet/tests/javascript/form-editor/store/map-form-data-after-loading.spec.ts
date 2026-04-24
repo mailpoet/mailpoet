@@ -206,6 +206,38 @@ describe('Form Data Load Mapper', () => {
       );
     });
 
+    it('Sets default popup trigger mode values', () => {
+      expect(map(data).settings.formPlacement.popup)
+        .to.have.property('triggerMode')
+        .that.eq('auto');
+      expect(map(data).settings.formPlacement.popup)
+        .to.have.property('clickTriggerSelector')
+        .that.eq('');
+    });
+
+    it('Maps popup click trigger settings', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          form_placement: {
+            ...data.settings.form_placement,
+            popup: {
+              ...data.settings.form_placement.popup,
+              trigger_mode: 'on_click',
+              click_trigger_selector: '#signup-popup-trigger',
+            },
+          },
+        },
+      };
+      expect(map(mapData).settings.formPlacement.popup)
+        .to.have.property('triggerMode')
+        .that.eq('on_click');
+      expect(map(mapData).settings.formPlacement.popup)
+        .to.have.property('clickTriggerSelector')
+        .that.eq('#signup-popup-trigger');
+    });
+
     it('It maps font size', () => {
       const mapData = {
         ...data,

@@ -109,5 +109,29 @@ describe('Form Data Save Mapper', () => {
         map(data).settings.form_placement.below_posts,
       ).to.not.have.property('animation');
     });
+
+    it('Maps popup click trigger settings', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          formPlacement: {
+            ...data.settings.formPlacement,
+            popup: {
+              triggerMode: 'on_click',
+              clickTriggerSelector: '#signup-popup-trigger',
+            },
+          },
+        },
+      };
+      expect(map(mapData).settings.form_placement.popup).to.have.property(
+        'trigger_mode',
+        'on_click',
+      );
+      expect(map(mapData).settings.form_placement.popup).to.have.property(
+        'click_trigger_selector',
+        '#signup-popup-trigger',
+      );
+    });
   });
 });
