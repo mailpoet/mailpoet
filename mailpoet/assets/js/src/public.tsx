@@ -623,6 +623,21 @@ jQuery(($) => {
     return cookieValue !== '1' || isPreview;
   };
 
+  const pendingTimeoutKey = 'mailpoetPendingShowTimeout';
+
+  const clearPendingShowTimeout = (formDiv: JQuery<HTMLElement>) => {
+    const pending = formDiv.data(pendingTimeoutKey) as
+      | ReturnType<typeof setTimeout>
+      | undefined;
+    if (pending !== undefined) {
+      clearTimeout(pending);
+      formDiv.removeData(pendingTimeoutKey);
+      // The exit-intent handler registered in showForm is tied to the same
+      // pending open; drop it so it cannot re-open a form the user dismissed.
+      $(document).off(exitIntentEvent);
+    }
+  };
+
   const showFormImmediately = (
     formDiv: JQuery<HTMLElement>,
     showOverlay = false,
@@ -630,6 +645,7 @@ jQuery(($) => {
     if (formDiv.hasClass('active')) {
       return false;
     }
+    clearPendingShowTimeout(formDiv);
     if (!formDiv.hasClass(startingClassName)) {
       formDiv.addClass(startingClassName);
     }
@@ -703,14 +719,17 @@ jQuery(($) => {
     }
     const timeout = setTimeout(() => {
       $(document).off(exitIntentEvent);
+      formDiv.removeData(pendingTimeoutKey);
       doDisplayForm(formDiv, showOverlay);
     }, delay * 1000);
+    formDiv.data(pendingTimeoutKey, timeout);
 
     const exitIntentEnabled = form.data('exit-intent-enabled');
     if (exitIntentEnabled) {
       $(document).on(exitIntentEvent, () => {
         $(document).off(exitIntentEvent);
         clearTimeout(timeout);
+        formDiv.removeData(pendingTimeoutKey);
         doDisplayForm(formDiv, showOverlay);
       });
     }
