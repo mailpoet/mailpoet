@@ -84,31 +84,22 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
       . 'if it\'s fun or casual, feel free to use emojis. '
       . 'IMPORTANT: Generate suggestions in the same language as the email body content. '
       . $tagsInstruction
-      . 'Subject lines must be under 60 characters. Preview text must be under 150 characters and complement the subject line.';
+      . 'Subject lines must be under 60 characters. Preview text must be under 150 characters and complement the subject line. '
+      . 'Respond ONLY with valid JSON (no markdown, no code fences) in this exact format: '
+      . '{"suggestions":[{"subject":"...","preheader":"..."},{"subject":"...","preheader":"..."},{"subject":"...","preheader":"..."},{"subject":"...","preheader":"..."}]}';
 
     $prompt = "Based on the following email body content, generate 4 different subject line and preview text pairs:\n\n" . $bodyText;
 
-    $schema = [
-      'type' => 'object',
-      'properties' => [
-        'suggestions' => [
-          'type' => 'array',
-          'items' => [
-            'type' => 'object',
-            'properties' => [
-              'subject' => ['type' => 'string'],
-              'preheader' => ['type' => 'string'],
-            ],
-            'required' => ['subject', 'preheader'],
-          ],
-        ],
-      ],
-      'required' => ['suggestions'],
-    ];
-
     $promptBuilder = wp_ai_client_prompt($prompt)
       ->using_system_instruction($systemInstruction)
-      ->as_json_response($schema);
+      ->using_model_preference(
+        ['anthropic', 'claude-sonnet-4-6'],
+        ['google', 'gemini-3-flash-preview'],
+        ['google', 'gemini-2.5-flash'],
+        ['openai', 'gpt-5.4-mini'],
+        ['openai', 'gpt-4.1-mini']
+      )
+      ->as_json_response();
 
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR);
 
@@ -135,11 +126,12 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
       );
     }
 
-    $decoded = json_decode($result, true);
-    if (!is_array($decoded) || !isset($decoded['suggestions']) || !is_array($decoded['suggestions'])) {
+    $decoded = $this->parseAiResponse($result);
+    if ($decoded === null) {
       $logger->error('AI subject generation returned invalid JSON', [
         'response_type' => gettype($result),
         'response_length' => is_string($result) ? mb_strlen($result) : null,
+        'response_preview' => is_string($result) ? mb_substr($result, 0, 200) : null,
         'post_id' => $postId,
       ]);
       return new ErrorResponse(
@@ -187,6 +179,28 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     }
 
     return new Response(['suggestions' => $validSuggestions]);
+  }
+
+  /**
+   * @return array{suggestions: array<int, mixed>}|null
+   */
+  private function parseAiResponse(string $result): ?array {
+    $json = trim($result);
+    $json = preg_replace('/^```(?:json)?\s*/i', '', $json);
+    $json = preg_replace('/\s*```\s*$/', '', $json);
+    $json = trim($json);
+
+    $decoded = json_decode($json, true);
+
+    if (is_array($decoded) && isset($decoded['suggestions']) && is_array($decoded['suggestions'])) {
+      return $decoded;
+    }
+
+    if (is_array($decoded) && !isset($decoded['suggestions']) && isset($decoded[0])) {
+      return ['suggestions' => $decoded];
+    }
+
+    return null;
   }
 
   /**
