@@ -94,6 +94,8 @@ class PreviewPage {
       'delay' => 1,
       'position' => $settings['form_placement'][$formDisplayType]['position'] ?? '',
       'animation' => $settings['form_placement'][$formDisplayType]['animation'] ?? '',
+      'triggerMode' => $settings['form_placement'][$formDisplayType]['trigger_mode'] ?? 'auto',
+      'clickTriggerSelector' => $settings['form_placement'][$formDisplayType]['click_trigger_selector'] ?? '',
       'fontFamily' => $settings['font_family'] ?? '',
     ];
     $formPosition = $settings['form_placement'][$formDisplayType]['position'] ?? '';
