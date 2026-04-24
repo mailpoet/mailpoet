@@ -7,6 +7,9 @@ export function mapFormDataBeforeSaving(data) {
         popup: {
           enabled:
             data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
+          trigger_mode: data.settings.formPlacement?.popup?.triggerMode,
+          click_trigger_selector:
+            data.settings.formPlacement?.popup?.clickTriggerSelector,
           exit_intent_enabled: data.settings.formPlacement?.popup
             ?.exitIntentEnabled
             ? '1'

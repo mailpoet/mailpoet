@@ -41,6 +41,8 @@ export type FormSettingsType = {
       delay: number | `${number}`;
       cookieExpiration: number | `${number}`;
       animation: string;
+      triggerMode: 'auto' | 'on_click';
+      clickTriggerSelector: string;
     };
     fixedBar: FormPlacementBase & {
       delay: number;

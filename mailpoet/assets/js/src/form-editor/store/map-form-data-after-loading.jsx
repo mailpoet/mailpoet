@@ -9,6 +9,15 @@ export function mapFormDataAfterLoading(data) {
       formPlacement: {
         popup: {
           enabled: data.settings.form_placement?.popup?.enabled === '1',
+          triggerMode:
+            data.settings.form_placement?.popup?.trigger_mode !== undefined
+              ? data.settings.form_placement?.popup?.trigger_mode
+              : defaults.popupForm.triggerMode,
+          clickTriggerSelector:
+            data.settings.form_placement?.popup?.click_trigger_selector !==
+            undefined
+              ? data.settings.form_placement?.popup?.click_trigger_selector
+              : defaults.popupForm.clickTriggerSelector,
           exitIntentEnabled:
             data.settings.form_placement?.popup?.exit_intent_enabled === '1',
           delay:
