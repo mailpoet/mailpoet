@@ -1,6 +1,6 @@
 {
   "name": "@mailpoet/mcp-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MCP server exposing MailPoet local dev tools to AI agents (Claude Code, etc.). Experimental.",
   "private": true,
   "type": "module",
