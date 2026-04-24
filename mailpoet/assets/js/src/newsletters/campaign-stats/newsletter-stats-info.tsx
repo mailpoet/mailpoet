@@ -135,7 +135,7 @@ function isResendEligible(newsletter: NewsletterType): {
   if (newsletter.type !== 'standard' || newsletter.status !== 'sent') {
     return { eligible: false };
   }
-  const sentAt = newsletter.queue?.scheduled_at || newsletter.queue?.created_at;
+  const sentAt = newsletter.sent_at;
   if (!sentAt) {
     return {
       eligible: false,
