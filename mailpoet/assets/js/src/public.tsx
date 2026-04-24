@@ -588,7 +588,7 @@ jQuery(($) => {
     }
   }
 
-  function hideSucessMessage(form) {
+  function hideSuccessMessage(form) {
     // hide success message
     form.find('.mailpoet_validate_success').hide();
     // show all form elements
@@ -731,7 +731,7 @@ jQuery(($) => {
         if (formDiv && formDiv.data('is-preview')) {
           displaySuccessMessage(form);
           setTimeout(() => {
-            hideSucessMessage(form);
+            hideSuccessMessage(form);
           }, 2500);
           return false;
         }
