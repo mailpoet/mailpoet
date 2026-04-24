@@ -1,7 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import {
   existsSync,
+  readdirSync,
   readFileSync,
+  rmdirSync,
+  statSync,
   writeFileSync,
   chmodSync,
   mkdirSync,
@@ -91,16 +94,41 @@ function resolveMailpitUrl(): string {
 
 function readOrGenerateSecret(path: string): string {
   if (existsSync(path)) {
-    const s = readFileSync(path, 'utf8').trim();
-    if (s.length >= 32) return s;
-    // Never silently overwrite: wp-env bind-mounts the file at container start,
-    // so regenerating on the host while the container is running would cause
-    // every companion request to 403 with no obvious cause. Force the user to
-    // delete the file explicitly.
-    throw new Error(
-      `Companion secret at ${path} is shorter than 32 chars. Delete it and re-run to regenerate (then 'pnpm env:restart' so wp-env picks up the new file).`,
-    );
+    const stat = statSync(path);
+
+    if (stat.isDirectory()) {
+      // Docker bind-mounts create an empty directory at the mount point when
+      // wp-env starts before the host file exists. Clean that up silently
+      // so the user doesn't have to rmdir themselves — but only if it's
+      // actually empty, to avoid destroying anything unexpected.
+      const contents = readdirSync(path);
+      if (contents.length > 0) {
+        throw new Error(
+          `Companion secret path ${path} is a non-empty directory (${contents.length} entries). This shouldn't happen — inspect and remove manually with 'rm -rf ${path}', then re-run.`,
+        );
+      }
+      rmdirSync(path);
+      process.stderr.write(
+        `[mailpoet-dev-mcp] cleaned up empty directory at ${path} (Docker bind-mount artifact); will regenerate secret.\n`,
+      );
+      // fall through to generation below
+    } else if (stat.isFile()) {
+      const s = readFileSync(path, 'utf8').trim();
+      if (s.length >= 32) return s;
+      // Never silently overwrite a too-short file: wp-env bind-mounts the
+      // file at container start, so regenerating on the host while the
+      // container is running would cause every companion request to 403
+      // with no obvious cause. Force the user to delete it explicitly.
+      throw new Error(
+        `Companion secret at ${path} is shorter than 32 chars. Delete it and re-run to regenerate (then 'pnpm env:restart' so wp-env picks up the new file).`,
+      );
+    } else {
+      throw new Error(
+        `Companion secret path ${path} exists but is neither a file nor a directory (symlink, socket, device?). Inspect and remove it manually, then re-run.`,
+      );
+    }
   }
+
   const secret = randomBytes(32).toString('hex');
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, secret + '\n', { mode: 0o600 });
