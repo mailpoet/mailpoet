@@ -141,7 +141,6 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     verify(count($purchaseStats))->equals(1);
     $click = $purchaseStats[0]->getClick();
     $this->assertInstanceOf(StatisticsClickEntity::class, $click);
-    verify($click->getId())->equals($click->getId());
   }
 
   public function testItTracksPayment() {
@@ -170,7 +169,6 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     verify($queue->getId())->equals($this->queue->getId());
     $click = $purchaseStats[0]->getClick();
     $this->assertInstanceOf(StatisticsClickEntity::class, $click);
-    verify($click->getId())->equals($click->getId());
     verify($purchaseStats[0]->getOrderId())->equals($orderMock->get_id());
     verify($purchaseStats[0]->getOrderCurrency())->equals($orderMock->get_currency());
     verify($purchaseStats[0]->getOrderPriceTotal())->equals($orderMock->get_remaining_refund_amount());
