@@ -75,7 +75,7 @@ class Comment {
           'subscribe_on_comment',
           true
         );
-      } else if ($commentStatus === Comment::APPROVED) {
+      } elseif ($commentStatus === Comment::APPROVED) {
         $this->subscribeAuthorOfComment($commentId);
       }
     }

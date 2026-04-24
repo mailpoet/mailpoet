@@ -52,7 +52,7 @@ class Registration {
           id="mailpoet_subscribe_on_register"
           value="1"
           name="mailpoet[subscribe_on_register]"
-        />&nbsp;' . esc_attr($label) . '
+        />&nbsp;' . esc_html($label) . '
       </label>
     </p>';
 
@@ -60,7 +60,7 @@ class Registration {
 
     // We control the template and $form can be considered safe.
     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    print $form;
+    echo $form;
   }
 
   public function onMultiSiteRegister($result) {
