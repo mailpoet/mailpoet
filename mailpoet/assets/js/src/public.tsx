@@ -610,6 +610,76 @@ jQuery(($) => {
       : false;
   };
 
+  const canFormBeDisplayed = (
+    formDiv: JQuery<HTMLElement>,
+    ignoreCookie = false,
+  ) => {
+    if (ignoreCookie) {
+      return true;
+    }
+    const formCookieName = getFormCookieName(formDiv);
+    const cookieValue = Cookies.get(formCookieName);
+    const isPreview = formDiv.data('is-preview') === 1;
+    return cookieValue !== '1' || isPreview;
+  };
+
+  const isPopupOnClickMode = (formDiv: JQuery<HTMLElement>) => {
+    const form = formDiv.find('form');
+    return form.data('trigger-mode') === 'on_click';
+  };
+
+  const showFormImmediately = (
+    formDiv: JQuery<HTMLElement>,
+    showOverlay = false,
+  ) => {
+    if (formDiv.hasClass('active')) {
+      return false;
+    }
+    if (!formDiv.hasClass(startingClassName)) {
+      formDiv.addClass(startingClassName);
+    }
+    doDisplayForm(formDiv, showOverlay);
+    return true;
+  };
+
+  const openPopupForm = (formDiv: JQuery<HTMLElement>) => {
+    if (!canFormBeDisplayed(formDiv, isPopupOnClickMode(formDiv))) {
+      return false;
+    }
+    const showOverlay = true;
+    return showFormImmediately(formDiv, showOverlay);
+  };
+
+  const getFormId = (formDiv: JQuery<HTMLElement>) => {
+    const formId = formDiv.find('input[name="data[form_id]"]').val() as string;
+    const parsedFormId = parseInt(formId, 10);
+    if (Number.isNaN(parsedFormId)) {
+      return null;
+    }
+    return parsedFormId;
+  };
+
+  const bindPopupClickTrigger = (formDiv: JQuery<HTMLElement>) => {
+    const form = formDiv.find('form');
+    const clickTriggerSelector = form.data('click-trigger-selector') as string;
+    const selector = clickTriggerSelector?.trim();
+    if (!selector) {
+      return;
+    }
+    try {
+      document.querySelector(selector);
+    } catch {
+      return;
+    }
+    const formId = getFormId(formDiv);
+    const clickTriggerEvent = formId
+      ? `click.mailpoet.form-click-trigger-${formId}`
+      : 'click.mailpoet.form-click-trigger';
+    $(document).on(clickTriggerEvent, selector, () => {
+      openPopupForm(formDiv);
+    });
+  };
+
   function showForm(formDiv: JQuery<HTMLElement>, showOverlay = false) {
     if (isFormAlreadyEnqueued(formDiv)) {
       return;
@@ -677,18 +747,20 @@ jQuery(($) => {
     $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each(
       (_, element) => {
         const formDiv = $(element);
-        const formCookieName = getFormCookieName(formDiv);
-        const cookieValue = Cookies.get(formCookieName);
-        if (cookieValue === '1' && !formDiv.data('is-preview')) return;
+        if (!canFormBeDisplayed(formDiv)) return;
         showForm(formDiv);
       },
     );
 
     $('div.mailpoet_form_popup').each((_, element) => {
       const formDiv = $(element);
-      const formCookieName = getFormCookieName(formDiv);
-      const cookieValue = Cookies.get(formCookieName);
-      if (cookieValue === '1' && !formDiv.data('is-preview')) return;
+      const form = formDiv.find('form');
+      const triggerMode = form.data('trigger-mode');
+      if (triggerMode === 'on_click') {
+        bindPopupClickTrigger(formDiv);
+        return;
+      }
+      if (!canFormBeDisplayed(formDiv)) return;
       const showOverlay = true;
       showForm(formDiv, showOverlay);
     });
