@@ -189,8 +189,10 @@ function buildSystemStatusReport(
     : MailPoet.I18n.t("unknown");
 
   let queueStatusText = MailPoet.I18n.t("unknown");
-  if (queueStatus.status === "paused") queueStatusText = MailPoet.I18n.t("paused");
-  else if (queueStatus.status !== undefined) queueStatusText = MailPoet.I18n.t("running");
+  if (queueStatus.status === "paused")
+    queueStatusText = MailPoet.I18n.t("paused");
+  else if (queueStatus.status !== undefined)
+    queueStatusText = MailPoet.I18n.t("running");
   const queueRetryAttempt =
     queueStatus.retryAttempt !== undefined && queueStatus.retryAttempt !== null
       ? queueStatus.retryAttempt
@@ -488,7 +490,12 @@ export function SystemStatus() {
     MailPoet.I18n.t("systemStatusCopyForSupport")
   );
   const reportText = useMemo(
-    () => buildSystemStatusReport(systemInfoData, systemStatusData, actionSchedulerData),
+    () =>
+      buildSystemStatusReport(
+        systemInfoData,
+        systemStatusData,
+        actionSchedulerData
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- data comes from window globals, stable for the page lifetime
     []
   );
