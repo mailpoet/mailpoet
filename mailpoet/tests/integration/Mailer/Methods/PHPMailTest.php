@@ -20,8 +20,12 @@ class PHPMailTest extends \MailPoetTest {
   public $replyTo;
   public $sender;
 
+  /** @var callable|string */
+  private $originalValidator;
+
   public function _before() {
     parent::_before();
+    $this->originalValidator = PHPMailer::$validator;
     $this->sender = [
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
@@ -153,6 +157,11 @@ class PHPMailTest extends \MailPoetTest {
       $this->subscriber
     );
     verify($result['response'])->true();
+  }
+
+  public function _after() {
+    PHPMailer::$validator = $this->originalValidator;
+    parent::_after();
   }
 
   public function testItCanValidateEmailAddresses() {
