@@ -680,6 +680,20 @@ jQuery(($) => {
     });
   };
 
+  if (window.MailPoetForm) {
+    window.MailPoetForm.openPopup = (formId) => {
+      const parsedFormId = parseInt(`${formId}`, 10);
+      if (Number.isNaN(parsedFormId)) {
+        return false;
+      }
+      const formDiv = $(`#mp_form_popup${parsedFormId}`);
+      if (formDiv.length === 0) {
+        return false;
+      }
+      return openPopupForm(formDiv);
+    };
+  }
+
   function showForm(formDiv: JQuery<HTMLElement>, showOverlay = false) {
     if (isFormAlreadyEnqueued(formDiv)) {
       return;
