@@ -26,6 +26,22 @@
   margin-top: 4px;
 }
 
+.mailpoet-subscriber-stats-woocommerce-overview {
+  margin-top: $grid-gap;
+}
+
+.mailpoet-subscriber-stats-woocommerce-overview-label {
+  color: $color-gutenberg-grey-700;
+  font-size: 12px;
+}
+
+.mailpoet-subscriber-stats-woocommerce-overview-value {
+  color: $color-gutenberg-grey-900;
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
 .mailpoet-subscriber-stats-summary-grid {
   display: grid;
   grid-gap: $grid-gap;
