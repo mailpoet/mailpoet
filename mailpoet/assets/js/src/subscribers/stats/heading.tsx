@@ -66,9 +66,7 @@ export function StatsHeading({
         </FlexItem>
       ) : null}
       <FlexBlock>
-        <div className="mailpoet-subscriber-stats-heading-email">
-          {email}
-        </div>
+        <div className="mailpoet-subscriber-stats-heading-email">{email}</div>
         {subtitle ? (
           <div className="mailpoet-subscriber-stats-heading-subtitle">
             {subtitle}
