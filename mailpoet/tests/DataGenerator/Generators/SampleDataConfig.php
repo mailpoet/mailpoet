@@ -117,6 +117,31 @@ class SampleDataConfig {
     return new self($values);
   }
 
+  /**
+   * Option keys parsed as booleans in {@see self::fromArray()} (matches bool defaults in PRESET_DEFAULT).
+   *
+   * @return list<string>
+   */
+  public static function getCliBooleanOptionKeys(): array {
+    static $keys = null;
+    if ($keys === null) {
+      $keys = array_keys(array_filter(
+        self::PRESET_DEFAULT,
+        function ($default): bool {
+          return is_bool($default);
+        }
+      ));
+    }
+    return $keys;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  public static function serializeBooleanOptionForCli($value, string $key): string {
+    return self::normalizeBoolean($value, $key) ? '1' : '0';
+  }
+
   public function getListsCount(): int {
     return $this->getInt('lists');
   }

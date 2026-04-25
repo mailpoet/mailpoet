@@ -1414,9 +1414,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private function formatDataGeneratorOptions(array $opts): string {
+    $booleanKeys = array_flip(SampleDataConfig::getCliBooleanOptionKeys());
     $arguments = [];
     foreach ($opts as $name => $value) {
       if ($value === null || $value === '') {
+        continue;
+      }
+      if (isset($booleanKeys[$name])) {
+        $arguments[] = '--' . $name . '=' . SampleDataConfig::serializeBooleanOptionForCli($value, $name);
         continue;
       }
       if ($value === true) {
@@ -1427,9 +1432,25 @@ class RoboFile extends \Robo\Tasks {
         $arguments[] = '--' . $name . '=0';
         continue;
       }
-      $arguments[] = '--' . $name . '=' . escapeshellarg((string)$value);
+      $arguments[] = '--' . $name . '=' . $this->formatDataGeneratorScalarCliValue($value);
     }
     return implode(' ', $arguments);
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function formatDataGeneratorScalarCliValue($value): string {
+    if (is_int($value) || is_float($value)) {
+      return (string)$value;
+    }
+    if (is_string($value)) {
+      $trimmed = trim($value);
+      if ($trimmed !== '' && is_numeric($trimmed)) {
+        return $trimmed;
+      }
+    }
+    return escapeshellarg((string)$value);
   }
 
   public function automationAddStep() {
