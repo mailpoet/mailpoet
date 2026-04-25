@@ -4,6 +4,28 @@
   }
 }
 
+.mailpoet-subscriber-stats-heading {
+  margin-bottom: $grid-gap;
+}
+
+.mailpoet-subscriber-stats-heading-avatar {
+  border-radius: 50%;
+  display: block;
+}
+
+.mailpoet-subscriber-stats-heading-email {
+  color: #000;
+  font-size: 20px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mailpoet-subscriber-stats-heading-subtitle {
+  color: $color-gutenberg-grey-700;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .mailpoet-subscriber-stats-summary-grid {
   display: grid;
   grid-gap: $grid-gap;
