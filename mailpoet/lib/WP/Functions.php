@@ -132,6 +132,10 @@ class Functions {
     return admin_url($path, $scheme);
   }
 
+  public function getAvatarUrl($idOrEmail, $args = null) {
+    return get_avatar_url($idOrEmail, $args);
+  }
+
   public function currentFilter() {
     return current_filter();
   }

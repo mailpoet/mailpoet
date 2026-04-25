@@ -6,10 +6,12 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\Statistics\SubscriberStatistics;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStats extends APIEndpoint {
@@ -26,14 +28,19 @@ class SubscriberStats extends APIEndpoint {
   /** @var Helper */
   private $wooCommerceHelper;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
     SubscriberStatisticsRepository $subscribersStatisticsRepository,
-    Helper $wooCommerceHelper
+    Helper $wooCommerceHelper,
+    WPFunctions $wp
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersStatisticsRepository = $subscribersStatisticsRepository;
     $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->wp = $wp;
   }
 
   public function get($data) {
@@ -45,10 +52,18 @@ class SubscriberStats extends APIEndpoint {
         APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet'),
       ]);
     }
+    $isWooActive = $this->wooCommerceHelper->isWooCommerceActive();
+    $isWoocommerceUser = (bool)$subscriber->getIsWoocommerceUser();
+    $dateFormat = 'Y-m-d H:i:s';
+    $subscribedAt = $subscriber->getLastSubscribedAt() ?: $subscriber->getCreatedAt();
     $response = [
       'email' => $subscriber->getEmail(),
       'engagement_score' => $subscriber->getEngagementScore(),
-      'is_woo_active' => $this->wooCommerceHelper->isWooCommerceActive(),
+      'is_woo_active' => $isWooActive,
+      'is_woocommerce_user' => $isWoocommerceUser,
+      'avatar_url' => $this->wp->getAvatarUrl($subscriber->getEmail(), ['size' => 96]) ?: null,
+      'subscribed_at' => $subscribedAt instanceof \DateTimeInterface ? $subscribedAt->format($dateFormat) : null,
+      'source_label' => $this->getSourceLabel($subscriber->getSource()),
     ];
 
     $statsMapper = function(SubscriberStatistics $statistics, string $timeframe) {
@@ -74,7 +89,18 @@ class SubscriberStats extends APIEndpoint {
       $statsMapper($lifetimeStats, __('Lifetime', 'mailpoet')),
     ];
 
-    $dateFormat = 'Y-m-d H:i:s';
+    if ($isWooActive && $isWoocommerceUser) {
+      $lifetimeRevenue = $lifetimeStats->getWooCommerceRevenue();
+      if ($lifetimeRevenue !== null) {
+        $response['woocommerce_overview'] = [
+          'orders_count' => $lifetimeRevenue->getOrdersCount(),
+          'total_revenue_formatted' => $lifetimeRevenue->getFormattedValue(),
+          'average_order_value_formatted' => $lifetimeRevenue->getFormattedAverageValue(),
+          'orders_url' => $this->getCustomerOrdersUrl($subscriber),
+        ];
+      }
+    }
+
     $lastEngagement = $subscriber->getLastEngagementAt();
     if ($lastEngagement instanceof \DateTimeInterface) {
       $response['last_engagement'] = $lastEngagement->format($dateFormat);
@@ -100,5 +126,39 @@ class SubscriberStats extends APIEndpoint {
       $response['last_sending'] = $lastSending->format($dateFormat);
     }
     return $this->successResponse($response);
+  }
+
+  private function getSourceLabel(?string $source): ?string {
+    switch ($source) {
+      case Source::FORM:
+        return __('MailPoet subscription form', 'mailpoet');
+      case Source::IMPORTED:
+        return __('import', 'mailpoet');
+      case Source::ADMINISTRATOR:
+        return __('admin', 'mailpoet');
+      case Source::API:
+        return __('API', 'mailpoet');
+      case Source::WORDPRESS_USER:
+        return __('WordPress user sync', 'mailpoet');
+      case Source::WOOCOMMERCE_USER:
+        return __('WooCommerce customer sync', 'mailpoet');
+      case Source::WOOCOMMERCE_CHECKOUT:
+        return __('WooCommerce checkout', 'mailpoet');
+      default:
+        return null;
+    }
+  }
+
+  private function getCustomerOrdersUrl(SubscriberEntity $subscriber): string {
+    $path = $this->wooCommerceHelper->isWooCommerceCustomOrdersTableEnabled()
+      ? 'admin.php?page=wc-orders'
+      : 'edit.php?post_type=shop_order';
+    $wpUserId = $subscriber->getWpUserId();
+    if ($wpUserId) {
+      $path .= '&_customer_user=' . (int)$wpUserId;
+    } else {
+      $path .= '&s=' . rawurlencode($subscriber->getEmail());
+    }
+    return $this->wp->adminUrl($path);
   }
 }
