@@ -27,6 +27,7 @@
     "qa:prettier": "./do qa:prettier-check",
     "qa:fix": "./do qa:prettier-write",
     "changelog:add": "./do changelog:add",
+    "generate:sample-data": "cd .. && wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do generate:data",
     "migrations:new": "cd .. && wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do migrations:new",
     "migrations:status": "cd .. && wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do migrations:status",
     "templates": "cd .. && wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do templates",

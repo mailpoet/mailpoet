@@ -34,6 +34,7 @@
     "test:integration:premium": "cd mailpoet-premium && ./do test:integration --skip-deps",
     "test:acceptance:premium": "cd mailpoet-premium && ./do test:acceptance --skip-deps",
     "test:install-deps": "cd mailpoet && ./do test:integration",
+    "generate:sample-data": "wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do generate:data",
     "migrations:new": "wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do migrations:new",
     "migrations:status": "wp-env run --env-cwd='wp-content/plugins/mailpoet' cli ./do migrations:status",
     "changelog:add": "cd mailpoet && ./do changelog:add",
