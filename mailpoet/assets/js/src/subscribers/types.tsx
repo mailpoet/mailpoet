@@ -9,6 +9,18 @@ export type StatsType = {
   last_purchase?: string;
   periodic_stats?: PeriodicStats[];
   is_woo_active: boolean;
+  is_woocommerce_user: boolean;
+  avatar_url: string | null;
+  subscribed_at: string | null;
+  source_label: string | null;
+  woocommerce_overview?: WoocommerceOverview;
+};
+
+export type WoocommerceOverview = {
+  orders_count: number;
+  total_revenue_formatted: string;
+  average_order_value_formatted: string;
+  orders_url: string;
 };
 
 export type PeriodicStats = {
