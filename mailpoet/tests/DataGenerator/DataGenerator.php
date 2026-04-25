@@ -7,8 +7,6 @@ use MailPoet\Test\DataGenerator\Generators\SampleDataConfig;
 
 class DataGenerator {
 
-  const SAMPLE_DATA_GENERATOR = 'sample_data';
-
   /** @var callable|null */
   private $logger;
 
