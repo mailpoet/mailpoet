@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 
 import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
-import { WoocommerceRevenues } from './stats/woocommerce-revenues';
+import { WoocommerceOverview } from './stats/woocommerce-overview';
 import { OpenedEmailsStats } from './stats/opened-email-stats';
 import { EngagementSummary } from './stats/engagement-summary';
 import { StatsType } from './types';
@@ -44,21 +45,31 @@ export function SubscriberStats(): JSX.Element {
   if (!stats) return null;
 
   return (
-    <div className="mailpoet-subscriber-stats">
-      <StatsHeading email={stats.email} />
-      <div className="mailpoet-subscriber-stats-summary-grid">
-        <Summary
-          stats={stats}
-          subscriber={{
-            id: Number(params.id),
-            engagement_score: stats.engagement_score,
-          }}
+    <>
+      <TopBarWithBoundary hideScreenOptions />
+      <div className="mailpoet-subscriber-stats">
+        <StatsHeading
+          email={stats.email}
+          avatarUrl={stats.avatar_url}
+          subscribedAt={stats.subscribed_at}
+          sourceLabel={stats.source_label}
         />
-        <EngagementSummary stats={stats} />
-        {stats.is_woo_active && <WoocommerceRevenues stats={stats} />}
+        {stats.is_woo_active && stats.is_woocommerce_user && (
+          <WoocommerceOverview stats={stats} />
+        )}
+        <div className="mailpoet-subscriber-stats-summary-grid">
+          <Summary
+            stats={stats}
+            subscriber={{
+              id: Number(params.id),
+              engagement_score: stats.engagement_score,
+            }}
+          />
+          <EngagementSummary stats={stats} />
+        </div>
+        <OpenedEmailsStats params={params} location={location} />
       </div>
-      <OpenedEmailsStats params={params} location={location} />
-    </div>
+    </>
   );
 }
 
