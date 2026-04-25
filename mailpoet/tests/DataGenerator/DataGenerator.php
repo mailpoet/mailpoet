@@ -2,59 +2,82 @@
 
 namespace MailPoet\Test\DataGenerator;
 
-use Codeception\Lib\Console\Output;
-use MailPoet\Test\DataGenerator\Generators\WooCommercePastRevenues;
+use MailPoet\Test\DataGenerator\Generators\SampleData;
+use MailPoet\Test\DataGenerator\Generators\SampleDataConfig;
 
 class DataGenerator {
 
-  const PAST_REVENUES_GENERATOR = 'past_revenues';
+  const SAMPLE_DATA_GENERATOR = 'sample_data';
 
-  /** @var Output */
-  private $console;
+  /** @var callable|null */
+  private $logger;
+
+  /** @var callable|null */
+  private $exceptionLogger;
 
   public function __construct(
-    Output $console
+    ?callable $logger = null,
+    ?callable $exceptionLogger = null
   ) {
-    $this->console = $console;
+    $this->logger = $logger;
+    $this->exceptionLogger = $exceptionLogger;
   }
 
-  public function run($generatorName) {
-    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
+  /**
+   * @param array<string, mixed> $options
+   */
+  public function run(array $options = []) {
     ini_set('memory_limit', '1024M'); // phpcs:ignore QITStandard.PHP.DebugCode.DangerousIniSet
     $timer = time();
     try {
-      $generator = $this->createGenerator($generatorName);
+      $generator = $this->createGenerator($options);
       foreach ($generator->generate() as $message) {
         $this->log($timer, $message);
       }
-    } catch (\Exception $e) {
-      $this->console->exception($e);
+    } catch (\Throwable $e) {
+      $this->logException($e);
     }
     $this->log($timer, 'DONE!');
   }
 
-  public function runBefore($generatorName = null) {
-    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
-    $this->createGenerator($generatorName)->runBefore();
+  /**
+   * @param array<string, mixed> $options
+   */
+  public function runBefore(array $options = []) {
+    $this->createGenerator($options)->runBefore();
   }
 
-  public function runAfter($generatorName = null) {
-    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
-    $this->createGenerator($generatorName)->runAfter();
+  /**
+   * @param array<string, mixed> $options
+   */
+  public function runAfter(array $options = []) {
+    $this->createGenerator($options)->runAfter();
   }
 
-  private function createGenerator($generatorName) {
-    switch ($generatorName) {
-      case self::PAST_REVENUES_GENERATOR:
-        return new WooCommercePastRevenues();
-      default:
-        throw new \Exception("Missing or unknown generator name. Possible values: \n " . self::PAST_REVENUES_GENERATOR);
+  /**
+   * @param array<string, mixed> $options
+   */
+  private function createGenerator(array $options): SampleData {
+    return new SampleData(SampleDataConfig::fromArray($options));
+  }
+
+  private function log($timer, $message): void {
+    if (!$this->logger) {
+      return;
     }
-  }
-
-  private function log($timer, $message) {
     $duration = time() - $timer;
     $memory = round(memory_get_usage() / 1048576);
-    $this->console->message("[{$duration}s][{$memory}MB] $message")->writeln();
+    call_user_func($this->logger, "[{$duration}s][{$memory}MB] $message");
+  }
+
+  private function logException(\Throwable $e): void {
+    if ($this->exceptionLogger) {
+      call_user_func($this->exceptionLogger, $e);
+      return;
+    }
+    if ($this->logger) {
+      call_user_func($this->logger, $e->getMessage());
+      call_user_func($this->logger, $e->getTraceAsString());
+    }
   }
 }
