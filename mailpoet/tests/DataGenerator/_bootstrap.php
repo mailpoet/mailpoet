@@ -9,10 +9,3 @@ if (!function_exists('wp_mail')) {
 
 // Load WP
 require_once(getenv('WP_ROOT') . '/wp-load.php');
-
-// Load tests_env autoload so Codeception classes used by DataGenerator are available
-// when invoked outside the Codeception test container (e.g. via `./do generate:data`).
-$testsEnvAutoload = dirname(__DIR__, 3) . '/tests_env/vendor/autoload.php';
-if (file_exists($testsEnvAutoload)) {
-  require_once $testsEnvAutoload;
-}
