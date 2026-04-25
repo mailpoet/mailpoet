@@ -6,6 +6,7 @@
    2. [Installation](#installation)
    3. [Frameworks and libraries](#frameworks-and-libraries)
 3. [Workflow Commands](#workflow-commands)
+   1. [Sample Data Generator](#sample-data-generator)
 4. [Coding and Testing](#coding-and-testing)
    1. [DI](#di)
    2. [PHP-Scoper](#php-scoper)
@@ -129,9 +130,54 @@ $ ./do changelog:add --type=<type> --description=<description> # Creates a new c
 $ ./do changelog:preview [--version=<version>] # Preview compiled changelog for next version
 
 $ ./do container:dump      # Generates DI container cache.
-
-$ ./do generate:data [<generatorName>] [<threads>] # Generates random usage data (Note: requires WooCommerce active) e.g. ./do generate:data past_revenues 4
 ```
+
+### Sample Data Generator
+
+`pnpm generate:sample-data` seeds the local environment with a realistic MailPoet dataset: lists, subscribers, dynamic segments, draft and sent newsletters, post notifications, welcome emails, automations, opens/clicks, and — when WooCommerce is active — products and orders linked back to revenue stats. The generator needs a running WordPress instance, so it runs inside the `wp-env` container; start the env first with `pnpm env:start`.
+
+The script is available both at the repo root and inside `mailpoet/` — pick whichever is convenient. Pick a preset and override individual knobs:
+
+```bash
+pnpm generate:sample-data                                  # default preset, single thread
+pnpm generate:sample-data --preset=small                   # small smoke dataset
+pnpm generate:sample-data 4 --preset=large                 # 4 parallel workers, large dataset
+pnpm generate:sample-data --subscribers=1000 --purchase-rate=0.2
+pnpm generate:sample-data --woocommerce=0                  # skip WooCommerce data
+```
+
+The optional `<threads>` positional spawns parallel worker processes (each runs an independent dataset).
+
+| Option                 | Default       | Description                                              |
+| ---------------------- | ------------- | -------------------------------------------------------- |
+| `--preset`             | `default`     | One of `default`, `small`, `large`                       |
+| `--lists`              | `5`           | Number of static subscriber lists                        |
+| `--dynamic-segments`   | `3`           | Number of dynamic segments                               |
+| `--subscribers`        | `500`         | Total subscribers distributed across lists               |
+| `--products`           | `10`          | WooCommerce products to create (requires WooCommerce)    |
+| `--draft-newsletters`  | `5`           | Draft newsletters                                        |
+| `--sent-newsletters`   | `30`          | Sent standard newsletters                                |
+| `--post-notifications` | `6`           | Post notification history items                          |
+| `--automatic-emails`   | `5`           | Legacy WooCommerce-driven automatic emails               |
+| `--automations`        | `3`           | Automations created                                      |
+| `--automation-runs`    | `75`          | Automation runs distributed across automations           |
+| `--days-min`           | `1`           | Minimum days in the past for backdated activity          |
+| `--days-max`           | `180`         | Maximum days in the past for backdated activity          |
+| `--open-rate`          | `0.35`        | Fraction of recipients that open (0.0–1.0)               |
+| `--click-rate`         | `0.20`        | Fraction of openers that click (0.0–1.0)                 |
+| `--purchase-rate`      | `0.30`        | Fraction of clickers that purchase (0.0–1.0)             |
+| `--orders-min`         | `1`           | Minimum orders per buying subscriber                     |
+| `--orders-max`         | `3`           | Maximum orders per buying subscriber                     |
+| `--email-domain`       | `example.com` | Domain used for generated subscriber emails              |
+| `--prefix`             | `Sample data` | Prefix prepended to generated names/subjects             |
+| `--woocommerce`        | `1`           | Set to `0` to skip WooCommerce products, orders, revenue |
+| `--welcome-emails`     | `1`           | Set to `0` to skip welcome email generation              |
+
+Presets `small` and `large` only override volume-related options (lists, subscribers, newsletters, automations, etc.); rates, domain, and prefix come from the `default` baseline. Any explicit `--option=value` always wins over the preset.
+
+The defaults live in `tests/DataGenerator/Generators/SampleDataConfig.php` (`CLI_OPTIONS_DEFAULTS` and the `PRESET_*` constants).
+
+> Note: `./do generate:data` exists too but only works inside the wp-env container (it needs the WordPress runtime). The `pnpm` script above is the supported entry point — it routes the same command into the container for you.
 
 ## Coding and Testing
 
