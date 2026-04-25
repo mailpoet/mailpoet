@@ -2,6 +2,7 @@
 
 // phpcs:disable PSR1.Classes.ClassDeclaration
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+use MailPoet\Test\DataGenerator\Generators\SampleDataConfig;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class RoboFile extends \Robo\Tasks {
@@ -1370,30 +1371,65 @@ class RoboFile extends \Robo\Tasks {
     ->downloadPluginZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
-  public function generateData($generatorName = null, $threads = 1) {
+  public function generateData($threads = 1, $opts = SampleDataConfig::CLI_OPTIONS_DEFAULTS) {
+    if (!is_numeric($threads) || (int)$threads < 1) {
+      $this->say('generate:data no longer accepts generator names; running the sample data generator with one thread.');
+      $threads = 1;
+    }
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
-    $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
-    $generator->runBefore($generatorName);
+    $generator = $this->createDataGenerator();
+    $generator->runBefore($opts);
     if ((int)$threads === 1) {
-      $this->generateUnitOfData($generatorName);
+      $this->generateUnitOfData($opts);
     } else {
       $parallelTask = $this->taskParallelExec();
+      $options = $this->formatDataGeneratorOptions($opts);
       for ($i = 1; $i <= $threads; $i++) {
-        $parallelTask = $parallelTask->process("./do generate:unit-of-data $generatorName");
+        $parallelTask = $parallelTask->process(trim("./do generate:unit-of-data $options"));
       }
       $parallelTask->run();
     }
-    $generator->runAfter($generatorName);
+    $generator->runAfter($opts);
   }
 
   /**
    * This is intended only for usage as a child process in parallel execution
-   * @param string|null $generatorName
    */
-  public function generateUnitOfData($generatorName = null) {
+  public function generateUnitOfData($opts = SampleDataConfig::CLI_OPTIONS_DEFAULTS) {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
-    $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
-    $generator->run($generatorName);
+    $generator = $this->createDataGenerator();
+    $generator->run($opts);
+  }
+
+  private function createDataGenerator(): \MailPoet\Test\DataGenerator\DataGenerator {
+    return new \MailPoet\Test\DataGenerator\DataGenerator(
+      function(string $message): void {
+        $this->say($message);
+      },
+      function(\Throwable $e): void {
+        $this->say('<error>' . $e->getMessage() . '</error>');
+        $this->say($e->getTraceAsString());
+      }
+    );
+  }
+
+  private function formatDataGeneratorOptions(array $opts): string {
+    $arguments = [];
+    foreach ($opts as $name => $value) {
+      if ($value === null || $value === '') {
+        continue;
+      }
+      if ($value === true) {
+        $arguments[] = '--' . $name;
+        continue;
+      }
+      if ($value === false) {
+        $arguments[] = '--' . $name . '=0';
+        continue;
+      }
+      $arguments[] = '--' . $name . '=' . escapeshellarg((string)$value);
+    }
+    return implode(' ', $arguments);
   }
 
   public function automationAddStep() {
