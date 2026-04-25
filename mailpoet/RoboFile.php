@@ -1420,7 +1420,7 @@ class RoboFile extends \Robo\Tasks {
         continue;
       }
       if ($value === true) {
-        $arguments[] = '--' . $name;
+        $arguments[] = '--' . $name . '=1';
         continue;
       }
       if ($value === false) {
