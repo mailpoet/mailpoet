@@ -42,36 +42,103 @@
   margin-top: 4px;
 }
 
-.mailpoet-subscriber-stats-summary-grid {
+.mailpoet-subscriber-stats-content {
+  align-items: start;
   display: grid;
-  grid-gap: $grid-gap;
-  grid-template-columns: auto auto auto 1fr;
+  gap: $grid-gap;
+  grid-template-columns: minmax(320px, 500px) auto;
+  margin-top: $grid-gap;
+}
 
-  .mailpoet-listing .mailpoet-listing-table {
-    border: 0;
-    box-shadow: none;
-    margin: 0 (-$grid-gap);
+.mailpoet-subscriber-stats-primary-column {
+  display: grid;
+  gap: $grid-gap;
+}
 
-    td {
-      padding-bottom: 10px;
-      padding-top: 10px;
-    }
+.mailpoet-subscriber-stats-card {
+  width: 100%;
+}
 
-    td:not(:first-child) {
-      text-align: right;
+.mailpoet-subscriber-stats-card-header {
+  min-height: 72px;
 
-      &:not(:last-child) {
-        padding-right: 25px;
-      }
-    }
+  .components-flex {
+    width: 100%;
   }
 }
 
-.mailpoet-subscriber-stats-summary {
-  display: inline-block;
-  margin-top: $grid-gap;
-  min-width: 300px;
-  padding: $grid-gap-half $grid-gap;
+.mailpoet-subscriber-stats-card-title-row {
+  align-items: center;
+  display: flex;
+  gap: $grid-gap-half;
+}
+
+.mailpoet-subscriber-stats-card-title {
+  color: $color-gutenberg-grey-900;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+}
+
+.mailpoet-subscriber-stats-card-subtitle {
+  color: $color-gutenberg-grey-700;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 4px;
+}
+
+.mailpoet-subscriber-stats-period-control {
+  margin-bottom: 0;
+  min-width: 128px;
+
+  select {
+    min-height: 36px;
+  }
+}
+
+.mailpoet-subscriber-stats-engagement-badge {
+  flex-shrink: 0;
+}
+
+.mailpoet-subscriber-stats-engagement-table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th,
+  td {
+    font-size: $font-size-small;
+    line-height: 20px;
+    padding: 6px 0;
+  }
+
+  thead th {
+    color: $color-gutenberg-grey-700;
+    font-weight: 400;
+    text-align: right;
+  }
+
+  thead th:first-child,
+  tbody th {
+    text-align: left;
+  }
+
+  tbody th {
+    color: $color-gutenberg-grey-900;
+    font-weight: 600;
+  }
+
+  tbody td {
+    color: $color-gutenberg-grey-900;
+    text-align: right;
+  }
+}
+
+.mailpoet-subscriber-stats-engagement-value-with-badge {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .mailpoet-subscriber-stats-no-access-content {
@@ -91,7 +158,6 @@
   }
 
   tbody td {
-    border-bottom: 1px solid $color-tertiary-light;
     color: $color-tertiary;
     font-size: $font-size-small;
   }
