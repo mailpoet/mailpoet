@@ -79,6 +79,9 @@ class SubscriberStatsTest extends \MailPoetTest {
     ]);
   }
 
+  /**
+   * @group woo
+   */
   public function testItReturnsShippingAddressFromWcCustomer(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('jane.doe@example.com')
