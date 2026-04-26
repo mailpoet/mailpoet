@@ -2,12 +2,12 @@
 
 ## Overview
 
-MailPoet enforces PHP quality through three tools: **PHP lint** (syntax checking), **PHPCS** (coding standards), and **PHPStan** (static analysis). All commands below run from `mailpoet/` unless stated otherwise.
+MailPoet enforces PHP quality through three tools: **PHP lint** (syntax checking), **PHPCS** (coding standards), and **PHPStan** (static analysis). Use the root `pnpm` wrappers for common free-plugin checks; granular PHPCS helpers are still plugin-level Robo-only commands.
 
 ## PHP Lint (Syntax Check)
 
 ```bash
-# Check PHP syntax (from mailpoet/)
+# Check PHP syntax only (Robo-only)
 cd mailpoet && ./do qa:lint
 ```
 
@@ -18,16 +18,16 @@ Runs `parallel-lint lib/ tests/ mailpoet.php`. Fast check that catches syntax er
 ### Running PHPCS
 
 ```bash
-# PHP lint + PHPCS combined (from mailpoet/)
-cd mailpoet && ./do qa:php
+# PHP lint + PHPCS combined
+pnpm qa:php
 
-# PHPCS only on all files (from mailpoet/)
+# PHPCS only on all files (Robo-only)
 cd mailpoet && ./do qa:code-sniffer
 
-# PHPCS on specific files (from mailpoet/)
+# PHPCS on specific files (Robo-only)
 cd mailpoet && ./do qa:code-sniffer lib/Subscribers/SubscribersRepository.php
 
-# Auto-fix a single PHP file with PHPCBF (from mailpoet/)
+# Auto-fix a single PHP file with PHPCBF (Robo-only)
 cd mailpoet && ./do qa:fix-file lib/Subscribers/SubscribersRepository.php
 ```
 
@@ -119,7 +119,7 @@ FOUND 2 ERRORS AFFECTING 2 LINES
 ----------------------------------------------------------------------
 ```
 
-- `[x]` -- auto-fixable with `./do qa:fix-file`
+- `[x]` -- auto-fixable with `cd mailpoet && ./do qa:fix-file`
 - `[ ]` -- requires manual fix
 - The sniff code in parentheses identifies the exact rule
 
@@ -152,12 +152,12 @@ echo $rendered_html;
 ### Running PHPStan
 
 ```bash
-# Run PHPStan (from mailpoet/)
-cd mailpoet && ./do qa:phpstan
+# Run PHPStan
+pnpm qa:phpstan
 
 # Run with specific PHP version target
-cd mailpoet && ./do qa:phpstan --php-version=70400
-cd mailpoet && ./do qa:phpstan --php-version=80300
+pnpm qa:phpstan --php-version=70400
+pnpm qa:phpstan --php-version=80300
 ```
 
 ### Configuration
@@ -180,11 +180,11 @@ PHPStan config is at `mailpoet/tasks/phpstan/phpstan.neon`:
 ## Running All PHP QA
 
 ```bash
-# Full PHP QA: lint + PHPCS (from mailpoet/)
-cd mailpoet && ./do qa:php
+# Full PHP QA: lint + PHPCS
+pnpm qa:php
 
-# Full QA: PHP + frontend (from mailpoet/)
-cd mailpoet && ./do qa
+# Full QA: PHP + frontend
+pnpm qa
 ```
 
 ## Premium Plugin
@@ -192,16 +192,16 @@ cd mailpoet && ./do qa
 The premium plugin uses the same shared ruleset but with its own text domain. Run from `mailpoet-premium/`:
 
 ```bash
-# PHPCS (uses premium-ruleset.xml automatically)
+# PHPCS (uses premium-ruleset.xml automatically; Robo-only)
 cd mailpoet-premium && ./do qa:code-sniffer
 
 # Full QA (lint + PHPCS + ESLint + Stylelint)
-cd mailpoet-premium && ./do qa
+cd mailpoet-premium && pnpm qa
 
 # PHPStan (reuses free plugin's phpstan binary)
-cd mailpoet-premium && ./do qa:phpstan
+cd mailpoet-premium && pnpm qa:phpstan
 
-# Fix a single file
+# Fix a single file (Robo-only)
 cd mailpoet-premium && ./do qa:fix-file lib/SomePremiumClass.php
 ```
 
@@ -209,7 +209,7 @@ Key difference: text domain must be `mailpoet-premium` (not `mailpoet`) in trans
 
 ## CI Reference
 
-In CircleCI (`.circleci/config.yml`):
+In CircleCI (`.circleci/config.yml`), jobs still invoke the plugin-level Robo commands directly:
 
 | Job                      | What it runs                                             | PHP version      |
 | ------------------------ | -------------------------------------------------------- | ---------------- |
@@ -223,21 +223,21 @@ In CircleCI (`.circleci/config.yml`):
 ## Quick Command Reference
 
 ```bash
-# PHP syntax check
+# PHP syntax check (Robo-only)
 cd mailpoet && ./do qa:lint
 
-# PHPCS check
+# PHPCS check (Robo-only)
 cd mailpoet && ./do qa:code-sniffer
 
 # PHP lint + PHPCS
-cd mailpoet && ./do qa:php
+pnpm qa:php
 
 # PHPStan
-cd mailpoet && ./do qa:phpstan
+pnpm qa:phpstan
 
-# Auto-fix a file
+# Auto-fix a file (Robo-only)
 cd mailpoet && ./do qa:fix-file path/to/file.php
 
 # Full QA (PHP + JS + CSS)
-cd mailpoet && ./do qa
+pnpm qa
 ```

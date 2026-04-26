@@ -7,7 +7,7 @@ description: 'Use when adding a changelog entry for a branch. Use after completi
 
 ## Overview
 
-User-facing changes MUST have a changelog entry. Each entry is a small Markdown file created by the `./do changelog:add` command. Follow the steps below in order.
+User-facing changes MUST have a changelog entry. Each entry is a small Markdown file created by the `pnpm changelog:add` command for free-plugin changes. Follow the steps below in order.
 
 ## Workflow
 
@@ -43,13 +43,16 @@ Write a **short, user-facing description**:
 
 ### Step 3: Create the Entry
 
-Run the command from the correct plugin directory:
-
-- **Free plugin changes** → run from `mailpoet/`
-- **Premium plugin changes** → run from `mailpoet-premium/`
+Run the command from the repo root for free-plugin changes:
 
 ```bash
-cd mailpoet && ./do changelog:add --type=<type> --description="<description>"
+pnpm changelog:add --type=<type> --description="<description>"
+```
+
+For premium-only changes, use the premium plugin's Robo command directly because there is no root `pnpm` wrapper for it yet:
+
+```bash
+cd mailpoet-premium && ./do changelog:add --type=<type> --description="<description>"
 ```
 
 ### When to Skip

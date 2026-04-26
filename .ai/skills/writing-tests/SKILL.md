@@ -9,7 +9,7 @@ description: 'Use when writing, running, or debugging tests. Use when asked to a
 
 MailPoet has six test types across two plugins (free `mailpoet/` and premium `mailpoet-premium/`).
 
-**Running tests:** Unit and JavaScript tests run on the host machine from the plugin directory (e.g. `mailpoet/`). Integration, acceptance, and performance tests require Docker and must be run from the monorepo root.
+**Running tests:** Use the `pnpm test:*` scripts from the monorepo root for the common suites. Integration, acceptance, and performance tests require Docker. A few specialist helpers do not have `pnpm` wrappers yet; those are called out below as plugin-level Robo-only commands.
 
 ## Guidelines
 
@@ -27,15 +27,15 @@ MailPoet has six test types across two plugins (free `mailpoet/` and premium `ma
 
 ### PHP Unit Tests
 
-Fast, isolated tests. No WordPress, no database. Run directly on the host machine from `mailpoet/`. **Free plugin only** — premium has no unit tests.
+Fast, isolated tests. No WordPress, no database. Run directly on the host machine via the root `pnpm` wrapper. **Free plugin only** — premium has no unit tests.
 
 - **Location:** `mailpoet/tests/unit/`
 - **File pattern:** `*Test.php`
 - **Base class:** `MailPoetUnitTest`
-- **Run all:** `./do test:unit`
-- **Run one file:** `./do test:unit --file tests/unit/WooCommerce/TransactionalEmails/FontFamilyValidatorTest.php`
-- **Debug mode:** `./do test:debug-unit --file tests/unit/...`
-- **Re-run failed:** `./do test:failed-unit`
+- **Run all:** `pnpm test:unit`
+- **Run one file:** `pnpm test:unit --file=tests/unit/WooCommerce/TransactionalEmails/FontFamilyValidatorTest.php`
+- **Debug mode:** `pnpm test:unit --debug --file=tests/unit/...`
+- **Re-run failed:** `cd mailpoet && ./do test:failed-unit` (Robo-only)
 
 ### PHP Integration Tests
 
@@ -44,27 +44,27 @@ Tests with WordPress and database, run inside Docker. Slower than unit tests. Ru
 - **Location:** `mailpoet/tests/integration/` and `mailpoet-premium/tests/integration/`
 - **File pattern:** `*Test.php`
 - **Base class:** `\MailPoetTest` (extends Codeception)
-- **Run all:** `./do test:integration --skip-deps`
-- **Run one file:** `./do test:integration --skip-deps --file tests/integration/Logging/LogHandlerTest.php`
-- **Debug mode:** `./do test:debug-integration --file tests/integration/...`
-- **Re-run failed:** `./do test:failed-integration`
+- **Run all:** `pnpm test:integration`
+- **Run one file:** `pnpm test:integration --file=tests/integration/Logging/LogHandlerTest.php`
+- **Debug mode:** `pnpm test:integration --debug --file=tests/integration/...`
+- **Re-run failed:** `cd mailpoet && ./do test:failed-integration` (Robo-only)
 - **Variants:**
-  - `./do test:woo-integration` — with WooCommerce loaded
-  - `./do test:base-integration` — without WooCommerce
-  - `./do test:multisite-integration` — WordPress multisite
+  - `cd mailpoet && ./do test:woo-integration` — with WooCommerce loaded (Robo-only)
+  - `cd mailpoet && ./do test:base-integration` — without WooCommerce (Robo-only)
+  - `pnpm test:integration --multisite` — WordPress multisite
 
-Use `--skip-deps` to avoid rebuilding Docker containers every run.
+The `pnpm test:*` scripts already pass `--skip-deps` by default to avoid rebuilding Docker containers every run.
 
 ### PHP Acceptance Tests (E2E)
 
-Browser-based end-to-end tests using Selenium and Chrome in Docker. **The slowest test type** — only add these when testing a real browser flow that can't be covered by unit or integration tests. Run from the `mailpoet/` plugin directory.
+Browser-based end-to-end tests using Selenium and Chrome in Docker. **The slowest test type** — only add these when testing a real browser flow that can't be covered by unit or integration tests. Run from the monorepo root.
 
 - **Location:** `mailpoet/tests/acceptance/` and `mailpoet-premium/tests/acceptance/`
 - **File pattern:** `*Cest.php`
-- **Run all:** `./do test:acceptance --skip-deps`
-- **Run one file:** `./do test:acceptance --skip-deps --file tests/acceptance/Misc/WordPressSiteEditorCest.php`
-- **Multisite:** `./do test:acceptance-multisite --skip-deps --file ...`
-- **Reset Docker:** `./do delete:docker` — if you get unexpected errors, delete the Docker runtime and start fresh
+- **Run all:** `pnpm test:acceptance`
+- **Run one file:** `pnpm test:acceptance --file=tests/acceptance/Misc/WordPressSiteEditorCest.php`
+- **Multisite:** `cd mailpoet && ./do test:acceptance-multisite --skip-deps --file ...` (Robo-only)
+- **Reset Docker:** `cd mailpoet && ./do delete:docker` — if you get unexpected errors, delete the Docker runtime and start fresh (Robo-only)
 - **Debug with pause:** Add `$i->pause();` in your test to pause execution and inspect the browser state
 - **Watch tests in browser:** The browser runs in Docker. Connect via VNC at `vnc://localhost:5900` (password: `secret`).
 
@@ -74,31 +74,31 @@ Frontend tests using Mocha + Chai + Sinon. **Free plugin only.**
 
 - **Location:** `mailpoet/tests/javascript/`
 - **File pattern:** `*.spec.ts`
-- **Run:** `./do test:javascript`
+- **Run:** `pnpm test:javascript`
 
 ### Newsletter Editor JavaScript Tests (Legacy)
 
 Legacy Mocha test suite for the newsletter editor. **Do not write new tests here** — only modify existing ones if necessary. **Free plugin only.**
 
 - **Location:** `mailpoet/tests/javascript-newsletter-editor/`
-- **Run:** `./do test:newsletter-editor`
+- **Run:** `cd mailpoet && ./do test:newsletter-editor` (Robo-only)
 
 ### Performance Tests
 
 Load and performance testing with k6 and Playwright. **Free plugin only.**
 
 - **Location:** `mailpoet/tests/performance/`
-- **Setup:** `./do test:performance-setup`
-- **Run:** `./do test:performance --url=... --us=... --pw=...`
-- **Cleanup:** `./do test:performance-clean`
+- **Setup:** `cd mailpoet && ./do test:performance-setup` (Robo-only)
+- **Run:** `cd mailpoet && ./do test:performance --url=... --us=... --pw=...` (Robo-only)
+- **Cleanup:** `cd mailpoet && ./do test:performance-clean` (Robo-only)
 
 ## Quick Reference
 
-| Type              | Command                             | Runs in | Plugin    |
-| ----------------- | ----------------------------------- | ------- | --------- |
-| Unit              | `./do test:unit`                    | Local   | Free only |
-| Integration       | `./do test:integration --skip-deps` | Docker  | Both      |
-| Acceptance        | `./do test:acceptance --skip-deps`  | Docker  | Both      |
-| JavaScript        | `./do test:javascript`              | Local   | Free only |
-| Newsletter Editor | `./do test:newsletter-editor`       | Local   | Free only |
-| Performance       | `./do test:performance`             | Docker  | Free only |
+| Type              | Command                                      | Runs in | Plugin    |
+| ----------------- | -------------------------------------------- | ------- | --------- |
+| Unit              | `pnpm test:unit`                             | Local   | Free only |
+| Integration       | `pnpm test:integration`                      | Docker  | Both      |
+| Acceptance        | `pnpm test:acceptance`                       | Docker  | Both      |
+| JavaScript        | `pnpm test:javascript`                       | Local   | Free only |
+| Newsletter Editor | `cd mailpoet && ./do test:newsletter-editor` | Local   | Free only |
+| Performance       | `cd mailpoet && ./do test:performance`       | Docker  | Free only |

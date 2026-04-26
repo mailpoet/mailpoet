@@ -135,37 +135,36 @@ pnpm templates
 
 ### Plugin-Level Commands
 
-Run inside `mailpoet/` (same scripts are exposed as `pnpm <task>` there too):
+Use the `pnpm` scripts from the repo root by default. The same common scripts are also exposed inside `mailpoet/` and `mailpoet-premium/`. These wrappers call the plugin-level Robo tasks where appropriate.
 
 **Build:**
 
 ```bash
-./do compile:all                     # Compile JS + CSS
-./do compile:js                      # Compile JavaScript only
-./do compile:css                     # Compile SCSS only
-./do install                         # Install PHP + JS dependencies
+pnpm compile                         # Compile JS + CSS
+pnpm compile:js                      # Compile JavaScript only
+pnpm compile:css                     # Compile SCSS only
 ```
 
 **Quality Assurance (runs on host):**
 
 ```bash
-./do qa                              # Run all PHP + frontend QA checks
-./do qa:php                          # PHP lint + CodeSniffer
-./do qa:phpstan                      # PHPStan static analysis
-./do qa:lint-javascript              # ESLint + TypeScript check
-./do qa:lint-css                     # Stylelint for SCSS
-./do qa:prettier-check               # Check Prettier formatting
-./do qa:prettier-write               # Auto-fix Prettier formatting
-./do qa:fix-file <path>              # Auto-fix a single file (PHPCS or ESLint)
+pnpm qa                              # Run all PHP + frontend QA checks
+pnpm qa:php                          # PHP lint + CodeSniffer
+pnpm qa:phpstan                      # PHPStan static analysis
+pnpm qa:js                           # ESLint + TypeScript check
+pnpm qa:css                          # Stylelint for SCSS
+pnpm qa:prettier                     # Check Prettier formatting
+pnpm qa:fix                          # Auto-fix Prettier formatting
 ```
 
-**Testing:** `./do test:*` on host routes into `tests_env/` via docker compose. Typically better to use the `pnpm test:*` root aliases which default to `--skip-deps`.
+For Robo-only helpers without a `pnpm` wrapper, run `./do` from the relevant plugin directory, for example `cd mailpoet && ./do qa:fix-file <path>`.
+
+**Testing:** use the `pnpm test:*` root aliases, which route into `tests_env/` and default to `--skip-deps`.
 
 **Other:**
 
 ```bash
-./do changelog:add --type=<type> --description="<description>"
-./do changelog:preview               # Preview compiled changelog
+pnpm changelog:add --type=<type> --description="<description>"
 ```
 
 Migrations and templates require a running WordPress and must be invoked via `pnpm migrations:*` / `pnpm templates` (routes through the wp-env container). Running `./do migrations:*` directly from `mailpoet/` fails — no WordPress on the host.
@@ -188,7 +187,7 @@ Migrations and templates require a running WordPress and must be invoked via `pn
 - Follow the [Airbnb JavaScript style guide](https://github.com/airbnb/javascript)
 - Prefer named exports over default exports
 - MUST default to TypeScript for new files
-- Formatting is handled by Prettier (`pnpm qa:fix` or `./do qa:prettier-write` in `mailpoet/`)
+- Formatting is handled by Prettier (`pnpm qa:fix`)
 
 ### SCSS
 

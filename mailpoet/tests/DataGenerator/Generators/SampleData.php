@@ -39,9 +39,9 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  * Generates a customizable MailPoet sample dataset for local development and tests.
  *
  * Local usage examples:
- *   ./do generate:data
- *   ./do generate:data --preset=small --subscribers=100 --woocommerce=0
- *   ./do generate:data 4 --preset=large --open-rate=0.5 --purchase-rate=0.2
+ *   pnpm generate:sample-data
+ *   pnpm generate:sample-data --preset=small --subscribers=100 --woocommerce=0
+ *   pnpm generate:sample-data 4 --preset=large --open-rate=0.5 --purchase-rate=0.2
  */
 class SampleData implements Generator {
   private const BULK_INSERT_BATCH_SIZE = 500;

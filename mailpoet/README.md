@@ -46,10 +46,10 @@ ln -s $(pwd) <wordpress>/wp-content/plugins/mailpoet
 cp .env.sample .env
 
 # 5. Install dependencies (PHP and JS):
-./do install
+pnpm install
 
 # 6. Compile JS and CSS:
-./do compile:all
+pnpm compile
 ```
 
 ### Frameworks and libraries
@@ -70,65 +70,75 @@ cp .env.sample .env
 
 ## Workflow Commands
 
-This `./do` script runs plugin-level Robo tasks directly on the host. Use it for compile, lint, and QA — anything that only needs PHP/Node, not WordPress.
+Use `pnpm` scripts for the common workflow commands. They wrap the plugin-level Robo tasks where needed and can be run from the repo root or from this plugin directory.
 
 At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. See the [monorepo README](../README.md) for the full list.
 
+Use `./do` directly only for Robo helpers that do not have a `pnpm` wrapper yet. Those are listed separately below.
+
 **Rule of thumb:**
 
-- **On host (via `./do` or `pnpm`)**: compile, watch, lint, PHPStan, PHPCS, Prettier, JS tests (mocha)
+- **On host (via `pnpm`)**: compile, watch, lint, PHPStan, PHPCS, Prettier, JS tests (mocha)
 - **In wp-env container (via `pnpm`)**: migrations, templates, wp-cli commands, anything needing WordPress runtime
-- **In `tests_env/` container (via `pnpm test:*` or `./do test:*`)**: integration, unit, acceptance tests
+- **In `tests_env/` container (via `pnpm test:*`)**: integration, unit, acceptance tests
 
 ```bash
-$ ./do install             # install PHP and JS dependencies
-$ ./do update              # update PHP and JS dependencies
+$ pnpm install             # install PHP and JS dependencies
 
-$ ./do compile:css         # compiles SCSS files into CSS.
-$ ./do compile:js          # bundles JS files for the browser.
-$ ./do compile:all         # compiles CSS and JS files.
+$ pnpm compile:css         # compiles SCSS files into CSS.
+$ pnpm compile:js          # bundles JS files for the browser.
+$ pnpm compile             # compiles CSS and JS files.
 
-$ ./do watch:css           # watch CSS files for changes and compile them.
-$ ./do watch:js            # watch JS files for changes and compile them.
+$ pnpm watch:css           # watch CSS files for changes and compile them.
+$ pnpm watch:js            # watch JS files for changes and compile them.
 
-$ ./do test:unit [--file=...] [--debug]
+$ pnpm test:unit [--file=...] [--debug]
   # runs the PHP unit tests.
   # if --file specified then only tests on that file are executed.
   # if --debug then tests are executed in debugging mode.
-$ ./do test:integration [--file=...] [--multisite] [--debug]
+$ pnpm test:integration [--file=...] [--multisite] [--debug]
   # runs the PHP integration tests.
   # if --file specified then only tests on that file are executed.
   # if --multisite then tests are executed in a multisite wordpress setup.
   # if --debug then tests are executed in debugging mode.
-$ ./do test:multisite-integration # alias for ./do test:integration --multisite
-$ ./do test:debug-unit            # alias for ./do test:unit --debug
-$ ./do test:debug-integration     # alias for ./do test:integration --debug
-$ ./do test:failed-unit           # run the last failing unit test.
-$ ./do test:failed-integration    # run the last failing integration test.
-$ ./do test:javascript            # run the JS tests.
-$ ./do test:acceptance [--file=...] [--skip-deps]
+$ pnpm test:javascript            # run the JS tests.
+$ pnpm test:acceptance [--file=...]
   # run acceptances tests into a docker environment.
   # if --file given then only tests on that file are executed.
-  # if --skip-deps then it skips installation of composer dependencies.
+  # the pnpm wrapper passes --skip-deps by default.
+
+$ pnpm qa:php              # PHP lint + PHPCS.
+$ pnpm qa:js               # JS code linter + TypeScript check.
+$ pnpm qa:css              # CSS code linter.
+$ pnpm qa:phpstan          # PHP code static analysis using PHPStan.
+$ pnpm qa:prettier         # Prettier formatting check.
+$ pnpm qa:fix              # Prettier formatting write.
+$ pnpm qa                  # PHP and JS linters.
+
+$ pnpm changelog:add --type=<type> --description=<description> # Creates a new changelog entry
+```
+
+Robo-only helpers with no `pnpm` wrapper yet:
+
+```bash
+$ ./do update              # update PHP and JS dependencies
+$ ./do test:failed-unit           # run the last failing unit test.
+$ ./do test:failed-integration    # run the last failing integration test.
 $ ./do test:acceptance-multisite [--file=...] [--skip-deps]
+  # same as test:acceptance but runs into a multisite wordpress setup.
+$ ./do download:woo-commerce-zip [<tag>]
+$ ./do download:woo-commerce-subscriptions-zip [<tag>]
   # download 3rd party plugins for tests
   # if you pass tag it will attempt to download zip for the tag otherwise it downloads the latest release
   # e.g. ./do download:woo-commerce-zip 5.20.0
-$ ./do download:woo-commerce-zip [<tag>]
-$ ./do download:woo-commerce-subscriptions-zip [<tag>]
-  # same as test:acceptance but runs into a multisite wordpress setup.
 $ ./do delete:docker      # stop and remove all running docker containers.
 
-$ ./do qa:lint             # PHP code linter.
-$ ./do qa:lint-javascript  # JS code linter.
-$ ./do qa:phpstan          # PHP code static analysis using PHPStan.
-$ ./do qa                  # PHP and JS linters.
-
-$ ./do release:changelog-get  [--version-name=...]     # Prints out changelog and release notes for given version or for newest version.
-$ ./do release:changelog-update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
-$ ./do changelog:add --type=<type> --description=<description> # Creates a new changelog entry
-$ ./do changelog:preview [--version=<version>] # Preview compiled changelog for next version
-
+$ ./do qa:lint             # PHP syntax linter only.
+$ ./do qa:code-sniffer     # PHPCS only.
+$ ./do qa:fix-file <path>  # Auto-fix one PHP or JS/TS file.
+$ ./do release:changelog-get [--version-name=...] # Prints changelog and release notes.
+$ ./do release:changelog-update [--version-name=...] [--quiet] # Updates changelog in readme.txt.
+$ ./do changelog:preview [--version=<version>] # Preview compiled changelog for next version.
 $ ./do container:dump      # Generates DI container cache.
 ```
 
@@ -197,7 +207,7 @@ Dependencies handled by PHP-Scoper are configured in extra configuration files `
 Create changelog entries using:
 
 ```bash
-./do changelog:add --type=Fixed --description="Brief description of the change"
+pnpm changelog:add --type=Fixed --description="Brief description of the change"
 ```
 
 See [readme](changelog/README.md) for detailed documentation.
@@ -273,17 +283,17 @@ guides.
 
 ### Acceptance testing
 
-To run the whole acceptance testing suite you need the docker daemon to be running and after that use a command: `./do test:acceptance`.
+To run the whole acceptance testing suite you need the docker daemon to be running and after that use a command: `pnpm test:acceptance`.
 If you want to run only a single test use the parameter `--file`:
 
 ```bash
-./do test:acceptance --skip-deps --file tests/acceptance/ReceiveStandardEmailCest.php
+pnpm test:acceptance --file=tests/acceptance/ReceiveStandardEmailCest.php
 ```
 
-The argument `--skip-deps` is useful locally to speed up the run.
+The `pnpm` wrapper passes `--skip-deps` by default to speed up the run locally.
 
 If there are some unexpected errors you can delete all the runtime and start again.
-To delete all the docker runtime for acceptance tests use the command `./do delete:docker`.
+To delete all the docker runtime for acceptance tests use the Robo-only command `cd mailpoet && ./do delete:docker`.
 
 When debugging you can add `$i->pause();` in to your test which pauses the execution.
 

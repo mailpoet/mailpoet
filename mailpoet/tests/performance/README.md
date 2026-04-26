@@ -2,6 +2,8 @@
 
 Automated k6 performance tests for MailPoet. To be used for benchmarking performance (both single user and under load) by simulating and measuring the response time of browser-level and protocol-lever tests (protocol-level yet to be implemented).
 
+These commands are still plugin-level Robo-only helpers. Run them from the monorepo root with `cd mailpoet && ./do ...`; there is no `pnpm test:performance` wrapper yet.
+
 ## Table of contents
 
 - [Pre-requisites](#pre-requisites)
@@ -44,12 +46,12 @@ The local env's url of the performance test site is: `https://localhost:9500`
 
 When you're done with testing, you may want to stop the environment by the following command:
 
-`./do test:performance-clean`
+`cd mailpoet && ./do test:performance-clean`
 
 ### Config Variables
 
 `config.js` comes with some test data and \_\_ENV values stored in your .env file. You don't need to change the values there if you want to use different test site, user and password, but just include parameters when executing the test such as:
-`./do test:performance --scenario pullrequests --url="yoururl" --pw="yourpassword"`
+`cd mailpoet && ./do test:performance --scenario pullrequests --url="yoururl" --pw="yourpassword"`
 
 #### Config Variables List
 
@@ -77,7 +79,7 @@ When refering to running k6 tests usually it means executing some of the scenari
 
 To execute an individual test file (for example `newsletter-listing.js`):
 
-`./do test:performance tests/performance/tests/newsletter-listing.js`
+`cd mailpoet && ./do test:performance tests/performance/tests/newsletter-listing.js`
 
 This will run the individual test for 1 iteration.
 
@@ -85,7 +87,7 @@ This will run the individual test for 1 iteration.
 
 To execute a test scenario for pull requests, as an example:
 
-`./do test:performance --scenario pullrequests`
+`cd mailpoet && ./do test:performance --scenario pullrequests`
 
 This will run scenario with associated tests and options specificed inside `scenarios.js`.
 
@@ -101,7 +103,7 @@ The amount of think time can be controlled from `config.js`.
 ### Debugging Tests
 
 Browser-level tests: the easiest way is to turn off headless mode by running individual or scenario with this argument `--head` and it will execute test with browser. The example command would be:
-`./do test:performance [test script path here] --head`
+`cd mailpoet && ./do test:performance [test script path here] --head`
 
 Protocol-level tests: to help with getting a test working, the `--http-debug="full"` flag prints to console the full log of requests and their responses. It is also useful to use `console.log()` to print messages when debugging.
 

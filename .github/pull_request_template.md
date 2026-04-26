@@ -32,7 +32,7 @@ _N/A_
 
 ## Tasks
 
-- [ ] I have added a changelog entry (`./do changelog:add --type=<type> --description=<description>`)
+- [ ] I have added a changelog entry (`pnpm changelog:add --type=<type> --description=<description>`)
 - [ ] I followed [best practices](https://codex.wordpress.org/I18n_for_WordPress_Developers) for translations
 - [ ] I added sufficient test coverage
 - [ ] I embraced TypeScript by either creating new files in TypeScript or converting existing JavaScript files when making changes
