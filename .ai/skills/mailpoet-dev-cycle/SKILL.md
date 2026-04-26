@@ -9,11 +9,11 @@ This skill covers linting, code quality, and building assets for MailPoet develo
 
 ## Working Directory
 
-This is a monorepo. All plugin-level `./do` commands MUST be run from the correct subdirectory:
+This is a monorepo. Prefer the root `pnpm` scripts for common build and QA work; they wrap the plugin-level Robo tasks from the correct directory.
 
-- **Free plugin** (default): `mailpoet/`
-- **Premium plugin**: `mailpoet-premium/`
-- **Repo root** `./do`: Docker wrapper that forwards commands. Use `./do --test` for test commands, `./do --premium` for premium.
+- **Free plugin** (default): run `pnpm <task>` from the repo root.
+- **Premium plugin**: run `pnpm <task>` from `mailpoet-premium/` when a premium package script exists.
+- **Robo-only helpers**: run `./do` from the relevant plugin directory only when no `pnpm` wrapper exists.
 
 Unless you are explicitly working on the premium plugin, always default to the free plugin directory.
 
@@ -38,25 +38,25 @@ All commands below default to the free plugin. Run from the repo root.
 
 ```bash
 # QA (all checks: PHP lint + PHPCS + ESLint + Stylelint)
-cd mailpoet && ./do qa
+pnpm qa
 
 # PHP only (lint + PHPCS)
-cd mailpoet && ./do qa:php
+pnpm qa:php
 
 # PHPStan static analysis
-cd mailpoet && ./do qa:phpstan
+pnpm qa:phpstan
 
 # JS/TS linting (ESLint + TypeScript check)
-cd mailpoet && ./do qa:lint-javascript
+pnpm qa:js
 
 # CSS/SCSS linting (Stylelint)
-cd mailpoet && ./do qa:lint-css
+pnpm qa:css
 
 # Prettier check / fix
-cd mailpoet && ./do qa:prettier-check
-cd mailpoet && ./do qa:prettier-write
+pnpm qa:prettier
+pnpm qa:fix
 
-# Fix a single file (PHPCS or ESLint based on extension)
+# Fix a single file (PHPCS or ESLint based on extension; Robo-only)
 cd mailpoet && ./do qa:fix-file path/to/file.php
 cd mailpoet && ./do qa:fix-file path/to/file.tsx
 ```
@@ -75,7 +75,7 @@ graph TD
     G --> E
     F -->|Yes| H[Run Prettier]
     H --> I{Prettier Clean?}
-    I -->|No| J["./do qa:prettier-write"]
+    I -->|No| J["pnpm qa:fix"]
     J --> H
     I -->|Yes| K[Commit]
 ```
@@ -84,8 +84,8 @@ graph TD
 
 Before committing, run these from the repo root:
 
-- [ ] `cd mailpoet && ./do qa` -- all PHP and frontend QA checks pass
-- [ ] `cd mailpoet && ./do qa:prettier-write` -- formatting is clean
+- [ ] `pnpm qa` -- all PHP and frontend QA checks pass
+- [ ] `pnpm qa:fix` -- formatting is clean
 - [ ] Run relevant tests (see the `writing-tests` skill for commands)
 
 ## Premium Plugin
@@ -93,12 +93,6 @@ Before committing, run these from the repo root:
 When working on `mailpoet-premium/`, substitute the directory:
 
 ```bash
-cd mailpoet-premium && ./do qa
-cd mailpoet-premium && ./do qa:phpstan
-```
-
-Or use the root wrapper:
-
-```bash
-./do --premium qa
+cd mailpoet-premium && pnpm qa
+cd mailpoet-premium && pnpm qa:phpstan
 ```

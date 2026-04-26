@@ -11,7 +11,7 @@ An [MCP](https://modelcontextprotocol.io) server that exposes MailPoet local-dev
 │   Claude / agent   │ ───────────▶  │  TS MCP server      │
 └────────────────────┘               │  (this package)     │
                                      └──────┬──────────────┘
-                                            │ shell-out (./do, docker)
+                                            │ shell-out (pnpm/Robo, docker)
                                             │ HTTP (Mailpit, companion)
                               ┌─────────────┼─────────────────────┐
                               ▼             ▼                     ▼

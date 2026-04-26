@@ -2,7 +2,7 @@
 
 ## Overview
 
-MailPoet uses ESLint for JavaScript/TypeScript, Stylelint for SCSS, and Prettier for formatting. All commands below run from `mailpoet/` (the free plugin directory) unless stated otherwise.
+MailPoet uses ESLint for JavaScript/TypeScript, Stylelint for SCSS, and Prettier for formatting. Use the root `pnpm` wrappers for the common free-plugin checks unless a command is explicitly marked as Robo-only.
 
 ## JavaScript / TypeScript Linting (ESLint)
 
@@ -17,10 +17,10 @@ ESLint uses a flat config at `mailpoet/eslint.config.js` which imports shared co
 ### Running ESLint
 
 ```bash
-# Run ESLint + TypeScript type checking (from mailpoet/)
-cd mailpoet && ./do qa:lint-javascript
+# Run ESLint + TypeScript type checking
+pnpm qa:js
 
-# Fix a single JS/TS file (from mailpoet/)
+# Fix a single JS/TS file (Robo-only)
 cd mailpoet && ./do qa:fix-file assets/js/src/path/to/file.tsx
 ```
 
@@ -32,7 +32,7 @@ Under the hood, `qa:lint-javascript` runs `pnpm run check-types && pnpm run lint
 ### Fixing ESLint Issues
 
 ```bash
-# Auto-fix a single file
+# Auto-fix a single file (Robo-only)
 cd mailpoet && ./do qa:fix-file assets/js/src/settings/pages/basics/stats-notifications.tsx
 
 # Or run eslint directly with --fix
@@ -68,8 +68,8 @@ Stylelint config is at `mailpoet/.stylelintrc`. Key rules:
 ### Running Stylelint
 
 ```bash
-# Check all SCSS files (from mailpoet/)
-cd mailpoet && ./do qa:lint-css
+# Check all SCSS files
+pnpm qa:css
 
 # Fix SCSS files (auto-fix where possible)
 cd mailpoet && pnpm run stylelint -- "assets/css/src/**/*.scss"
@@ -111,27 +111,30 @@ Files excluded from Prettier are listed in `.prettierignore` (vendor, dist, gene
 ### Running Prettier
 
 ```bash
-# Check formatting (from mailpoet/)
-cd mailpoet && ./do qa:prettier-check
+# Check formatting
+pnpm qa:prettier
 
-# Auto-fix formatting (from mailpoet/)
-cd mailpoet && ./do qa:prettier-write
+# Auto-fix formatting
+pnpm qa:fix
 ```
 
 Prettier runs from the repo root internally via `npx prettier`. It applies to JS, TS, JSX, TSX, SCSS, JSON, and other supported file types.
 
 ### When to Run Prettier
 
-Always run `./do qa:prettier-write` before committing. CI checks formatting via `./do qa:prettier-check` during the build step.
+Always run `pnpm qa:fix` before committing. CI checks formatting via the underlying Robo Prettier check during the build step.
 
 ## Running All Frontend QA Checks
 
 ```bash
-# ESLint + Stylelint combined (from mailpoet/)
-cd mailpoet && ./do qa:frontend-assets
+# ESLint + TypeScript type checking
+pnpm qa:js
 
-# Everything: PHP lint + PHPCS + ESLint + Stylelint (from mailpoet/)
-cd mailpoet && ./do qa
+# Stylelint
+pnpm qa:css
+
+# Everything: PHP lint + PHPCS + ESLint + Stylelint
+pnpm qa
 ```
 
 ## lint-staged (Git Hooks)
@@ -152,14 +155,8 @@ Pre-commit hooks are configured via `lint-staged` in `mailpoet/package.json`. Th
 The premium plugin (`mailpoet-premium/`) has the same JS and CSS linting commands. Run from its directory:
 
 ```bash
-cd mailpoet-premium && ./do qa:lint-javascript
-cd mailpoet-premium && ./do qa:lint-css
-```
-
-Or via the root wrapper:
-
-```bash
-./do --premium qa:lint-javascript
+cd mailpoet-premium && pnpm qa:js
+cd mailpoet-premium && pnpm qa:css
 ```
 
 ## CI Reference

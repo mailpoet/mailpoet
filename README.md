@@ -102,7 +102,7 @@ pnpm test:install-deps         # Re-install composer deps before testing
                                # (default test:* scripts pass --skip-deps)
 ```
 
-Pass any plugin-level `./do` flags directly — they forward through pnpm:
+Pass test-runner flags directly — the `pnpm` scripts forward them to the underlying test command:
 
 ```shell
 pnpm test:integration --file=tests/integration/WP/EmojiTest.php
