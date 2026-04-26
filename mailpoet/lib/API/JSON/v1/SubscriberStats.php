@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\Statistics\SubscriberStatistics;
@@ -66,9 +67,11 @@ class SubscriberStats extends APIEndpoint {
       'source_label' => $this->getSourceLabel($subscriber->getSource()),
     ];
 
-    $statsMapper = function(SubscriberStatistics $statistics, string $timeframe) {
+    $statsMapper = function(SubscriberStatistics $statistics, string $key, string $timeframe) {
       return [
+        'key' => $key,
         'timeframe' => $timeframe,
+        'label' => $timeframe,
         'total_sent' => $statistics->getTotalSentCount(),
         'open' => $statistics->getOpenCount(),
         'machine_open' => $statistics->getMachineOpenCount(),
@@ -77,17 +80,49 @@ class SubscriberStats extends APIEndpoint {
       ];
     };
 
-    $lifetimeStats = $this->subscribersStatisticsRepository->getStatistics($subscriber);
-    $oneYearStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, Carbon::now()->subYear());
-    $thirtyDaysStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, Carbon::now()->subDays(30));
-
-    $response['periodic_stats'] = [
-      // translators: table header meaning 30 days
-      $statsMapper($thirtyDaysStats, __('30(d)', 'mailpoet')),
-      // translators: table header meaning 12 months
-      $statsMapper($oneYearStats, __('12(m)', 'mailpoet')),
-      $statsMapper($lifetimeStats, __('Lifetime', 'mailpoet')),
+    $now = Carbon::now();
+    $periods = [
+      [
+        'key' => '7_days',
+        'label' => __('7 days', 'mailpoet'),
+        'start' => $now->copy()->subDays(7),
+      ],
+      [
+        'key' => '30_days',
+        'label' => __('30 days', 'mailpoet'),
+        'start' => $now->copy()->subDays(30),
+      ],
+      [
+        'key' => '3_months',
+        'label' => __('3 months', 'mailpoet'),
+        'start' => $now->copy()->subMonths(3),
+      ],
+      [
+        'key' => '12_months',
+        'label' => __('12 months', 'mailpoet'),
+        'start' => $now->copy()->subMonths(12),
+      ],
+      [
+        'key' => 'lifetime',
+        'label' => __('Lifetime', 'mailpoet'),
+        'start' => null,
+      ],
     ];
+
+    $lifetimeStats = null;
+    $response['periodic_stats'] = [];
+    foreach ($periods as $period) {
+      $periodStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, $period['start']);
+      if ($period['key'] === 'lifetime') {
+        $lifetimeStats = $periodStats;
+      }
+      $response['periodic_stats'][] = $statsMapper($periodStats, $period['key'], $period['label']);
+    }
+    if (!$lifetimeStats instanceof SubscriberStatistics) {
+      $lifetimeStats = $this->subscribersStatisticsRepository->getStatistics($subscriber);
+    }
+
+    $response['profile'] = $this->getProfile($subscriber, $isWooActive);
 
     if ($isWooActive && $isWoocommerceUser) {
       $lifetimeRevenue = $lifetimeStats->getWooCommerceRevenue();
@@ -104,6 +139,7 @@ class SubscriberStats extends APIEndpoint {
     $lastEngagement = $subscriber->getLastEngagementAt();
     if ($lastEngagement instanceof \DateTimeInterface) {
       $response['last_engagement'] = $lastEngagement->format($dateFormat);
+      $response['last_engagement_at'] = $lastEngagement->format($dateFormat);
     }
     $lastClick = $subscriber->getLastClickAt();
     if ($lastClick instanceof \DateTimeInterface) {
@@ -147,6 +183,156 @@ class SubscriberStats extends APIEndpoint {
       default:
         return null;
     }
+  }
+
+  private function getProfile(SubscriberEntity $subscriber, bool $isWooActive): array {
+    return [
+      'first_name' => $subscriber->getFirstName(),
+      'last_name' => $subscriber->getLastName(),
+      'email' => $subscriber->getEmail(),
+      'shipping_address' => $isWooActive ? $this->getShippingAddress($subscriber) : [],
+      'tags' => $this->getTags($subscriber),
+      'segments' => $this->getSegments($subscriber),
+      'custom_fields' => $this->getCustomFields($subscriber),
+    ];
+  }
+
+  private function getTags(SubscriberEntity $subscriber): array {
+    $result = [];
+    foreach ($subscriber->getSubscriberTags() as $subscriberTag) {
+      $tag = $subscriberTag->getTag();
+      if (!$tag) {
+        continue;
+      }
+      $result[] = [
+        'id' => (string)$subscriberTag->getId(),
+        'subscriber_id' => (string)$subscriber->getId(),
+        'tag_id' => (string)$tag->getId(),
+        'name' => $tag->getName(),
+      ];
+    }
+    return $result;
+  }
+
+  private function getSegments(SubscriberEntity $subscriber): array {
+    $result = [];
+    foreach ($subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED) as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      if (!$segment) {
+        continue;
+      }
+      $result[] = [
+        'id' => (string)$segment->getId(),
+        'name' => $segment->getName(),
+      ];
+    }
+    return $result;
+  }
+
+  private function getCustomFields(SubscriberEntity $subscriber): array {
+    $result = [];
+    foreach ($subscriber->getSubscriberCustomFields() as $subscriberCustomField) {
+      $customField = $subscriberCustomField->getCustomField();
+      if (!$customField instanceof CustomFieldEntity) {
+        continue;
+      }
+      $value = $subscriberCustomField->getValue();
+      if ($value === '') {
+        continue;
+      }
+      $result[] = [
+        'id' => (string)$customField->getId(),
+        'name' => $customField->getName(),
+        'value' => $value,
+      ];
+    }
+    return $result;
+  }
+
+  private function getShippingAddress(SubscriberEntity $subscriber): array {
+    $address = [];
+    $wpUserId = $subscriber->getWpUserId();
+    if ($wpUserId && class_exists(\WC_Customer::class)) {
+      try {
+        $address = $this->getShippingAddressParts(new \WC_Customer($wpUserId));
+      } catch (\Throwable $e) {
+        $address = [];
+      }
+    }
+
+    if (!$address) {
+      $order = $this->getLatestWooCommerceOrderByEmail($subscriber->getEmail());
+      if ($order) {
+        $address = $this->getShippingAddressParts($order);
+      }
+    }
+
+    return $this->formatShippingAddress($address);
+  }
+
+  private function getLatestWooCommerceOrderByEmail(string $email) {
+    $orders = $this->wooCommerceHelper->wcGetOrders([
+      'billing_email' => $email,
+      'limit' => 1,
+      'orderby' => 'date',
+      'order' => 'DESC',
+    ]);
+    return $orders[0] ?? null;
+  }
+
+  private function getShippingAddressParts($source): array {
+    $address = [];
+    $hasAddress = false;
+    foreach (['first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country'] as $field) {
+      $method = 'get_shipping_' . $field;
+      $address[$field] = method_exists($source, $method) ? trim((string)$source->$method()) : '';
+      if (in_array($field, ['address_1', 'address_2', 'city', 'postcode'], true) && $address[$field] !== '') {
+        $hasAddress = true;
+      }
+    }
+    if (!$hasAddress) {
+      return [];
+    }
+    return array_filter($address, function($value) {
+      return $value !== '';
+    });
+  }
+
+  private function formatShippingAddress(array $address): array {
+    if (!$address) {
+      return [];
+    }
+
+    $formatted = '';
+    try {
+      $formatted = (string)$this->wooCommerceHelper->WC()->countries->get_formatted_address($address);
+    } catch (\Throwable $e) {
+      $formatted = '';
+    }
+
+    if ($formatted !== '') {
+      $formatted = str_replace(['<br/>', '<br />', '<br>'], "\n", $formatted);
+      return array_values(array_filter(
+        array_map('trim', explode("\n", strip_tags($formatted)))
+      ));
+    }
+
+    $lines = [
+      trim(implode(' ', array_filter([
+        $address['first_name'] ?? '',
+        $address['last_name'] ?? '',
+      ]))),
+      $address['company'] ?? '',
+      $address['address_1'] ?? '',
+      $address['address_2'] ?? '',
+      trim(implode(' ', array_filter([
+        $address['city'] ?? '',
+        $address['state'] ?? '',
+        $address['postcode'] ?? '',
+      ]))),
+      $address['country'] ?? '',
+    ];
+    return array_values(array_filter(array_map('trim', $lines)));
   }
 
   private function getCustomerOrdersUrl(SubscriberEntity $subscriber): string {
