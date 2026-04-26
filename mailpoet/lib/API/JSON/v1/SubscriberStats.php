@@ -109,17 +109,13 @@ class SubscriberStats extends APIEndpoint {
       ],
     ];
 
-    $lifetimeStats = null;
+    $lifetimeStats = $this->subscribersStatisticsRepository->getStatistics($subscriber);
     $response['periodic_stats'] = [];
     foreach ($periods as $period) {
-      $periodStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, $period['start']);
-      if ($period['key'] === 'lifetime') {
-        $lifetimeStats = $periodStats;
-      }
+      $periodStats = $period['key'] === 'lifetime'
+        ? $lifetimeStats
+        : $this->subscribersStatisticsRepository->getStatistics($subscriber, $period['start']);
       $response['periodic_stats'][] = $statsMapper($periodStats, $period['key'], $period['label']);
-    }
-    if (!$lifetimeStats instanceof SubscriberStatistics) {
-      $lifetimeStats = $this->subscribersStatisticsRepository->getStatistics($subscriber);
     }
 
     $response['profile'] = $this->getProfile($subscriber, $isWooActive);
