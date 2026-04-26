@@ -5,10 +5,10 @@ import { Loading } from 'common/loading';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 
 import { StatsHeading } from './stats/heading';
-import { Summary } from './stats/summary';
 import { WoocommerceOverview } from './stats/woocommerce-overview';
-import { OpenedEmailsStats } from './stats/opened-email-stats';
-import { EngagementSummary } from './stats/engagement-summary';
+import { EngagementCard } from './stats/engagement-card';
+import { ProfileInformation } from './stats/profile-information';
+import { ActivityShell } from './stats/activity-shell';
 import { StatsType } from './types';
 
 export function SubscriberStats(): JSX.Element {
@@ -57,17 +57,20 @@ export function SubscriberStats(): JSX.Element {
         {stats.is_woo_active && stats.is_woocommerce_user && (
           <WoocommerceOverview stats={stats} />
         )}
-        <div className="mailpoet-subscriber-stats-summary-grid">
-          <Summary
-            stats={stats}
-            subscriber={{
-              id: Number(params.id),
-              engagement_score: stats.engagement_score,
-            }}
+        <div className="mailpoet-subscriber-stats-content">
+          <div className="mailpoet-subscriber-stats-primary-column">
+            <EngagementCard stats={stats} />
+            <ProfileInformation
+              profile={stats.profile}
+              subscriberId={Number(params.id)}
+            />
+          </div>
+          <ActivityShell
+            lastEngagementAt={stats.last_engagement_at || stats.last_engagement}
+            params={params}
+            location={location}
           />
-          <EngagementSummary stats={stats} />
         </div>
-        <OpenedEmailsStats params={params} location={location} />
       </div>
     </>
   );

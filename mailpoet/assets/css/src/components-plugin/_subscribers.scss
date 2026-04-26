@@ -178,6 +178,16 @@
   color: $color-gutenberg-grey-700;
 }
 
+.mailpoet-subscriber-stats-activity {
+  min-height: 100%;
+}
+
+.mailpoet-subscriber-stats-activity-body {
+  .mailpoet-listing {
+    margin: 0;
+  }
+}
+
 .mailpoet-subscriber-stats-no-access-content {
   display: flex;
   justify-content: center;
@@ -219,5 +229,34 @@
 
   .mailpoet-listing-table tr:last-child td {
     border-bottom: 0;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .mailpoet-subscriber-stats-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .mailpoet-subscriber-stats-woocommerce-overview {
+    display: grid;
+  }
+
+  .mailpoet-subscriber-stats-card-header {
+    min-height: auto;
+  }
+
+  .mailpoet-subscriber-stats-card-title-row,
+  .mailpoet-subscriber-stats-card-header .components-flex {
+    align-items: flex-start;
+  }
+
+  .mailpoet-subscriber-stats-card-header .components-flex {
+    gap: $grid-gap-half;
+  }
+
+  .mailpoet-subscriber-stats-profile-row {
+    grid-template-columns: 1fr;
   }
 }
