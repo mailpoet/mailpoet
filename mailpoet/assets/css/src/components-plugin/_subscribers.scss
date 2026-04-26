@@ -141,6 +141,43 @@
   justify-content: flex-end;
 }
 
+.mailpoet-subscriber-stats-profile-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.mailpoet-subscriber-stats-profile-row {
+  display: grid;
+  gap: $grid-gap-half;
+  grid-template-columns: minmax(130px, 0.65fr) minmax(0, 1fr);
+
+  dt,
+  dd {
+    font-size: $font-size-small;
+    line-height: 20px;
+    margin: 0;
+  }
+
+  dt {
+    color: $color-gutenberg-grey-900;
+    font-weight: 600;
+  }
+
+  dd {
+    color: $color-gutenberg-grey-900;
+    min-width: 0;
+  }
+
+  .mailpoet-tags {
+    vertical-align: top;
+  }
+}
+
+.mailpoet-subscriber-stats-empty-value {
+  color: $color-gutenberg-grey-700;
+}
+
 .mailpoet-subscriber-stats-no-access-content {
   display: flex;
   justify-content: center;
