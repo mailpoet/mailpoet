@@ -63,6 +63,17 @@ class Helper {
     return wc_get_customer_order_count($userId);
   }
 
+  public function wcGetCustomer(int $userId): ?\WC_Customer {
+    if (!class_exists(\WC_Customer::class)) {
+      return null;
+    }
+    try {
+      return new \WC_Customer($userId);
+    } catch (\Throwable $e) {
+      return null;
+    }
+  }
+
   public function wcGetOrder($order = false) {
     return wc_get_order($order);
   }

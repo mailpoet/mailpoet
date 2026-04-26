@@ -246,11 +246,10 @@ class SubscriberStats extends APIEndpoint {
   private function getShippingAddress(SubscriberEntity $subscriber): array {
     $address = [];
     $wpUserId = $subscriber->getWpUserId();
-    if ($wpUserId && class_exists(\WC_Customer::class)) {
-      try {
-        $address = $this->getShippingAddressParts(new \WC_Customer($wpUserId));
-      } catch (\Throwable $e) {
-        $address = [];
+    if ($wpUserId) {
+      $customer = $this->wooCommerceHelper->wcGetCustomer((int)$wpUserId);
+      if ($customer) {
+        $address = $this->getShippingAddressParts($customer);
       }
     }
 
