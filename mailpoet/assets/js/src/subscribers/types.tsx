@@ -1,7 +1,6 @@
 export type StatsType = {
   email: string;
   engagement_score: number;
-  last_engagement?: string;
   last_engagement_at?: string;
   last_click?: string;
   last_open?: string;
