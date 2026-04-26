@@ -166,8 +166,8 @@ export function EngagementCard({ stats }: Props): JSX.Element | null {
                   {__('Engagement metric', 'mailpoet')}
                 </span>
               </th>
-              <th>{selectedStats.label || selectedStats.timeframe}</th>
-              <th>{lifetimeStats.label || lifetimeStats.timeframe}</th>
+              <th>{selectedStats.timeframe}</th>
+              <th>{lifetimeStats.timeframe}</th>
             </tr>
           </thead>
           <tbody>

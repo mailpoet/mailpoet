@@ -71,7 +71,6 @@ class SubscriberStats extends APIEndpoint {
       return [
         'key' => $key,
         'timeframe' => $timeframe,
-        'label' => $timeframe,
         'total_sent' => $statistics->getTotalSentCount(),
         'open' => $statistics->getOpenCount(),
         'machine_open' => $statistics->getMachineOpenCount(),

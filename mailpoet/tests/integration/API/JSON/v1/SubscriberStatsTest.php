@@ -95,11 +95,11 @@ class SubscriberStatsTest extends \MailPoetTest {
       '12_months',
       'lifetime',
     ]);
-    verify($periods['7_days']['label'])->equals('7 days');
-    verify($periods['30_days']['label'])->equals('30 days');
-    verify($periods['3_months']['label'])->equals('3 months');
-    verify($periods['12_months']['label'])->equals('12 months');
-    verify($periods['lifetime']['label'])->equals('Lifetime');
+    verify($periods['7_days']['timeframe'])->equals('7 days');
+    verify($periods['30_days']['timeframe'])->equals('30 days');
+    verify($periods['3_months']['timeframe'])->equals('3 months');
+    verify($periods['12_months']['timeframe'])->equals('12 months');
+    verify($periods['lifetime']['timeframe'])->equals('Lifetime');
     verify($periods['7_days']['total_sent'])->equals(1);
     verify($periods['30_days']['total_sent'])->equals(1);
     verify($periods['3_months']['total_sent'])->equals(1);

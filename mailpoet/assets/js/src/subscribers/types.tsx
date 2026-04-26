@@ -27,7 +27,6 @@ export type WoocommerceOverview = {
 export type PeriodicStats = {
   key: StatsPeriodKey;
   timeframe: string;
-  label: string;
   total_sent: number;
   open: number;
   machine_open: number;
