@@ -3,7 +3,8 @@
 
 // Tools versions for PHP 7.4+
 $composerVersion = '2.9.3';
-$phpScoperVersion = '0.17.2';
+// 0.18+ requires PHP ^8.2. 0.17.2 runs on PHP 7.4+ but its bundled Safe stubs throw on PHP 8.4+.
+$phpScoperVersion = PHP_VERSION_ID >= 80200 ? '0.18.19' : '0.17.7';
 $legacyTracyVersion = '2.9.4'; // Tracy 2.9.4 supports PHP 7.4
 $tracyVersion = '2.11.1'; // Tracy 2.11.0+ supports PHP 8.4 and 8.5
 
