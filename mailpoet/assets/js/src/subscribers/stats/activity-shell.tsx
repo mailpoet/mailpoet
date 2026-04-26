@@ -19,7 +19,7 @@ export function ActivityShell({
     ? sprintf(
         // translators: %s is a date and time when the subscriber was last seen.
         __('Last seen on %s', 'mailpoet'),
-        MailPoet.Date.format(lastEngagementAt),
+        MailPoet.Date.full(lastEngagementAt),
       )
     : __('Last seen: never', 'mailpoet');
 
