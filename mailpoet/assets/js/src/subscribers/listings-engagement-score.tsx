@@ -6,6 +6,27 @@ interface Props {
   engagementScore?: number;
 }
 
+export type EngagementScoreBadgeType =
+  | 'unknown'
+  | 'average'
+  | 'good'
+  | 'excellent';
+
+export function getEngagementScoreBadgeType(
+  engagementScore?: number,
+): EngagementScoreBadgeType {
+  if (engagementScore == null) {
+    return 'unknown';
+  }
+  if (engagementScore < 20) {
+    return 'average';
+  }
+  if (engagementScore < 50) {
+    return 'good';
+  }
+  return 'excellent';
+}
+
 export function ListingsEngagementScore({
   id,
   engagementScore,
@@ -37,16 +58,7 @@ export function ListingsEngagementScore({
     },
   };
   const tooltipId = `badge-${id}`;
-  let badge;
-  if (engagementScore == null) {
-    badge = badges.unknown;
-  } else if (engagementScore < 20) {
-    badge = badges.average;
-  } else if (engagementScore < 50) {
-    badge = badges.good;
-  } else {
-    badge = badges.excellent;
-  }
+  const badge = badges[getEngagementScoreBadgeType(engagementScore)];
   const tooltipText = (
     <div key={`tooltip-${tooltipId}`}>
       <div className="mailpoet-listing-stats-tooltip-title">
