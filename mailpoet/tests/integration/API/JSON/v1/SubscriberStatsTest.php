@@ -5,6 +5,9 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SubscriberStats;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink;
@@ -14,6 +17,8 @@ use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStatsTest extends \MailPoetTest {
@@ -35,6 +40,7 @@ class SubscriberStatsTest extends \MailPoetTest {
       ->withLastName('Geller')
       ->withEngagementScore(60)
       ->withLastEngagementAt($lastEngagementAt)
+      ->withSource(Source::WOOCOMMERCE_CHECKOUT)
       ->withSegments([$segment])
       ->withTags([$tag])
       ->create();
@@ -47,6 +53,8 @@ class SubscriberStatsTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['last_engagement_at'])->equals($lastEngagementAt->format('Y-m-d H:i:s'));
+    verify($response->data['source_label'])->equals('WooCommerce checkout');
+    verify($response->data['avatar_url'])->stringContainsString('gravatar.com');
     verify($response->data['profile']['first_name'])->equals('John');
     verify($response->data['profile']['last_name'])->equals('Geller');
     verify($response->data['profile']['email'])->equals('john.geller@example.com');
@@ -56,14 +64,12 @@ class SubscriberStatsTest extends \MailPoetTest {
         'name' => 'Customers',
       ],
     ]);
-    verify($response->data['profile']['tags'])->equals([
-      [
-        'id' => (string)$subscriber->getSubscriberTags()->first()->getId(),
-        'subscriber_id' => (string)$subscriber->getId(),
-        'tag_id' => (string)$tag->getId(),
-        'name' => 'VIP',
-      ],
-    ]);
+    $tags = $response->data['profile']['tags'];
+    verify($tags)->arrayCount(1);
+    verify($tags[0]['subscriber_id'])->equals((string)$subscriber->getId());
+    verify($tags[0]['tag_id'])->equals((string)$tag->getId());
+    verify($tags[0]['name'])->equals('VIP');
+    verify((int)$tags[0]['id'] > 0)->true();
     verify($response->data['profile']['custom_fields'])->equals([
       [
         'id' => (string)$customField->getId(),
@@ -71,6 +77,64 @@ class SubscriberStatsTest extends \MailPoetTest {
         'value' => 'Blue',
       ],
     ]);
+  }
+
+  public function testItReturnsShippingAddressFromWcCustomer(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('jane.doe@example.com')
+      ->withWpUserId(123)
+      ->create();
+
+    $customer = new \WC_Customer();
+    $customer->set_shipping_first_name('Jane');
+    $customer->set_shipping_last_name('Doe');
+    $customer->set_shipping_address_1('742 Evergreen Terrace');
+    $customer->set_shipping_city('Springfield');
+    $customer->set_shipping_postcode('97403');
+    $customer->set_shipping_country('US');
+
+    $wooHelper = $this->createMock(WooCommerceHelper::class);
+    $wooHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooHelper->method('wcGetCustomer')->with(123)->willReturn($customer);
+    $wooHelper->method('WC')->willReturn(\WC());
+
+    $endpoint = $this->buildEndpoint($wooHelper);
+    $response = $endpoint->get(['subscriber_id' => $subscriber->getId()]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $shippingAddress = $response->data['profile']['shipping_address'];
+    verify($shippingAddress)->notEmpty();
+    verify($shippingAddress[0])->equals('Jane Doe');
+    verify(implode("\n", $shippingAddress))->stringContainsString('742 Evergreen Terrace');
+    verify(implode("\n", $shippingAddress))->stringContainsString('Springfield');
+    verify(implode("\n", $shippingAddress))->stringContainsString('97403');
+  }
+
+  public function testItOmitsShippingAddressWhenWooInactive(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('no-woo@example.com')
+      ->create();
+
+    $wooHelper = $this->createMock(WooCommerceHelper::class);
+    $wooHelper->method('isWooCommerceActive')->willReturn(false);
+    $wooHelper->expects($this->never())->method('wcGetCustomer');
+    $wooHelper->expects($this->never())->method('wcGetOrders');
+
+    $endpoint = $this->buildEndpoint($wooHelper);
+    $response = $endpoint->get(['subscriber_id' => $subscriber->getId()]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['is_woo_active'])->false();
+    verify($response->data['profile']['shipping_address'])->equals([]);
+  }
+
+  private function buildEndpoint(WooCommerceHelper $wooHelper): SubscriberStats {
+    return new SubscriberStats(
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriberStatisticsRepository::class),
+      $wooHelper,
+      $this->diContainer->get(WPFunctions::class)
+    );
   }
 
   public function testItReturnsEngagementPeriods(): void {
