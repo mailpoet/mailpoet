@@ -163,6 +163,13 @@ class StatisticsExport extends APIEndpoint {
       ], [], Response::STATUS_NOT_FOUND);
     }
 
+    $requestedBy = isset($meta['requested_by']) ? (int)$meta['requested_by'] : 0;
+    if ($requestedBy !== (int)$this->wp->getCurrentUserId()) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('Export task not found.', 'mailpoet'),
+      ], [], Response::STATUS_NOT_FOUND);
+    }
+
     return $this->successResponse($this->buildStatusPayload($task));
   }
 

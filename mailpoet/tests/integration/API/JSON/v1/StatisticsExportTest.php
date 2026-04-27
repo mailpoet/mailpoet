@@ -157,12 +157,27 @@ class StatisticsExportTest extends \MailPoetTest {
 
   public function testItReturnsStatusForScheduledExportTask() {
     $endpoint = $this->endpointWithDetailedAnalytics(false);
-    $task = $this->createTask(['job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS]);
+    $userId = (int)wp_get_current_user()->ID;
+    $task = $this->createTask([
+      'job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS,
+      'requested_by' => $userId,
+    ]);
 
     $response = $endpoint->getStatus(['task_id' => $task->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['taskId'])->equals($task->getId());
     verify($response->data['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
+  public function testItReturns404WhenStatusRequestedByDifferentUser() {
+    $endpoint = $this->endpointWithDetailedAnalytics(false);
+    $task = $this->createTask([
+      'job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS,
+      'requested_by' => 999999,
+    ]);
+
+    $response = $endpoint->getStatus(['task_id' => $task->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   private function createTask(array $meta): ScheduledTaskEntity {
