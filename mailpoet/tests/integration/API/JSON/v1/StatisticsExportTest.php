@@ -169,6 +169,23 @@ class StatisticsExportTest extends \MailPoetTest {
     verify($response->data['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
+  public function testItReturnsStatusForBulkExportTask() {
+    $endpoint = $this->endpointWithDetailedAnalytics(false);
+    $userId = (int)wp_get_current_user()->ID;
+    $newsletter = (new NewsletterFactory())->withSubject('Bulk')->create();
+    $task = $this->createTask([
+      'job_type' => StatisticsExportWorker::JOB_TYPE_BULK,
+      'newsletter_ids' => [$newsletter->getId()],
+      'format' => StatisticsExporter::FORMAT_CSV,
+      'requested_by' => $userId,
+    ]);
+
+    $response = $endpoint->getStatus(['task_id' => $task->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['taskId'])->equals($task->getId());
+    verify($response->data['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
   public function testItReturns404WhenStatusRequestedByDifferentUser() {
     $endpoint = $this->endpointWithDetailedAnalytics(false);
     $task = $this->createTask([

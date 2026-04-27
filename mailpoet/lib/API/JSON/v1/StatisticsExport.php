@@ -157,7 +157,11 @@ class StatisticsExport extends APIEndpoint {
 
     $meta = $task->getMeta() ?? [];
     $jobType = isset($meta['job_type']) ? (string)$meta['job_type'] : '';
-    if ($jobType !== StatisticsExportWorker::JOB_TYPE_RECIPIENTS) {
+    $allowedJobTypes = [
+      StatisticsExportWorker::JOB_TYPE_RECIPIENTS,
+      StatisticsExportWorker::JOB_TYPE_BULK,
+    ];
+    if (!in_array($jobType, $allowedJobTypes, true)) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('Export task not found.', 'mailpoet'),
       ], [], Response::STATUS_NOT_FOUND);
