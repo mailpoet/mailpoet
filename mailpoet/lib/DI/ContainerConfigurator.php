@@ -97,6 +97,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\UserFlags::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\SendingTaskSubscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Setup::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\v1\StatisticsExport::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\SubscriberStats::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Subscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\WoocommerceSettings::class)->setPublic(true);
@@ -606,6 +607,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Subscriber::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Site::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Statistics\Export\StatisticsExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\AutomationEmailScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
