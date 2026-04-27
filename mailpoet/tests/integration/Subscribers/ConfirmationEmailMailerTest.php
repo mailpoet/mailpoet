@@ -292,7 +292,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   public function testFailedPublicConfirmationEmailDoesNotUpdateCountOrTimestamp() {
-    $this->subscriber->setConfirmationsCount(1);
+    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
     $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -318,8 +318,95 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     }
 
     $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->null();
+  }
+
+  public function testPublicConfirmationCapUsesLockedDatabaseCount(): void {
+    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
+    $this->subscribersRepository->flush();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable SET `count_confirmations` = :count_confirmations WHERE `id` = :id",
+      [
+        'id' => $this->subscriber->getId(),
+        'count_confirmations' => ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS,
+      ]
+    );
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::never(),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->false();
+
+    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+  }
+
+  public function testAvailableWooCommerceFailedPublicSendDoesNotFallbackOrRecordSend(): void {
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::never(),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new class(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    ) extends ConfirmationEmailMailer {
+      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber): string {
+        return self::WC_CONFIRMATION_FAILED;
+      }
+    };
+
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->false();
+    $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(1);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->null();
+  }
+
+  public function testAvailableWooCommercePublicSendRecordsSuccessWithoutFallback(): void {
+    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::never(),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new class(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    ) extends ConfirmationEmailMailer {
+      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber): string {
+        return self::WC_CONFIRMATION_SENT;
+      }
+    };
+
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->true();
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
   }
 
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {

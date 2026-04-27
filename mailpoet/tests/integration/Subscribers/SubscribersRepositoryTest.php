@@ -9,6 +9,8 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -482,6 +484,14 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       ->withCreatedAt($old)
       ->withIsWooCommerceUser(true)
       ->create();
+    $segment = $this->segmentRepository->createOrUpdate('Cleanup retained relationships');
+    $customField = $this->createCustomField('Cleanup retained field');
+    $tag = $this->createTag('Cleanup retained tag');
+    foreach ([$trashed, $wpLinked, $wooLinked] as $excludedSubscriber) {
+      $this->createSubscriberSegment($segment, $excludedSubscriber);
+      $this->createSubscriberCustomField($excludedSubscriber, $customField);
+      $this->createSubscriberTag($excludedSubscriber, $tag);
+    }
     $withoutDates = (new SubscriberFactory())
       ->withEmail('without-dates@example.com')
       ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
@@ -499,6 +509,13 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($this->repository->findOneById($resentEligible->getId()))->null();
     foreach ([$recentResent, $recentCreated, $subscribed, $trashed, $wpLinked, $wooLinked, $withoutDates] as $subscriber) {
       verify($this->repository->findOneById($subscriber->getId()))->notNull();
+    }
+    foreach ([$trashed, $wpLinked, $wooLinked] as $excludedSubscriber) {
+      verify($this->subscriberSegmentRepository->findOneBy(['subscriber' => $excludedSubscriber->getId()]))->notNull();
+      verify($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $excludedSubscriber->getId()]))->notNull();
+      verify($this->entityManager->getRepository(SubscriberTagEntity::class)->findOneBy([
+        'subscriber' => $excludedSubscriber->getId(),
+      ]))->notNull();
     }
   }
 
@@ -542,10 +559,24 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     return $customField;
   }
 
+  private function createTag(string $name): TagEntity {
+    $tag = new TagEntity($name);
+    $this->entityManager->persist($tag);
+    $this->entityManager->flush();
+    return $tag;
+  }
+
   private function createSubscriberCustomField(SubscriberEntity $subscriber, CustomFieldEntity $customField): SubscriberCustomFieldEntity {
     $subscirberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'some value');
     $this->entityManager->persist($subscirberCustomField);
     $this->entityManager->flush();
     return $subscirberCustomField;
+  }
+
+  private function createSubscriberTag(SubscriberEntity $subscriber, TagEntity $tag): SubscriberTagEntity {
+    $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+    $this->entityManager->persist($subscriberTag);
+    $this->entityManager->flush();
+    return $subscriberTag;
   }
 }

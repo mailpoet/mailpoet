@@ -17,11 +17,13 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
+  protected const WC_CONFIRMATION_UNAVAILABLE = 'unavailable';
+  protected const WC_CONFIRMATION_SENT = 'sent';
+  protected const WC_CONFIRMATION_FAILED = 'failed';
 
   /** @var MailerFactory */
   private $mailerFactory;
@@ -87,24 +89,25 @@ class ConfirmationEmailMailer {
 
   /**
    * Send confirmation email using WooCommerce email system.
+   *
+   * @return string
    */
-  private function sendWCConfirmationEmail(SubscriberEntity $subscriber, bool $isPublicFormSend): bool {
+  protected function sendWCConfirmationEmail(SubscriberEntity $subscriber): string {
     try {
-      // Get WooCommerce email instance using the correct function
       if (!function_exists('WC')) {
-        return false;
+        return self::WC_CONFIRMATION_UNAVAILABLE;
       }
 
       $wc = WC();
       if (!$wc || !method_exists($wc, 'mailer')) {
-        return false;
+        return self::WC_CONFIRMATION_UNAVAILABLE;
       }
 
       $mailer = $wc->mailer();
       $emails = $mailer->get_emails();
 
       if (!isset($emails['mailpoet_marketing_confirmation'])) {
-        return false;
+        return self::WC_CONFIRMATION_UNAVAILABLE;
       }
 
       /** @var \MailPoet\WooCommerce\Emails\MarketingConfirmation $email */
@@ -115,20 +118,17 @@ class ConfirmationEmailMailer {
       $subscriber_firstname = $subscriber->getFirstName() ?: '';
 
       if (!$email->trigger($subscriber_email, $activation_link, $subscriber_firstname)) {
-        return false;
+        return self::WC_CONFIRMATION_FAILED;
       }
 
-      $this->recordSuccessfulConfirmationSend($subscriber, $isPublicFormSend);
-      $this->sentEmails[$subscriber->getId()] = true;
-      return true;
+      return self::WC_CONFIRMATION_SENT;
 
     } catch (\Exception $e) {
-      // Log error but don't throw - fall back to regular email
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->error(
         'MailPoet WC Marketing Confirmation Email Error: ' . $e->getMessage(),
         ['error' => $e, 'subscriber_id' => $subscriber->getId()]
       );
-      return false;
+      return self::WC_CONFIRMATION_FAILED;
     }
   }
 
@@ -214,22 +214,53 @@ class ConfirmationEmailMailer {
     if ((bool)$signupConfirmation['enabled'] === false) {
       return false;
     }
-    if (
-      ($isPublicFormSend || !$this->wp->isUserLoggedIn())
+
+    if ($isPublicFormSend) {
+      return $this->subscribersRepository->sendPublicConfirmationEmailWithLock(
+        $subscriber,
+        self::MAX_CONFIRMATION_EMAILS,
+        function() use ($subscriber, $signupConfirmation): bool {
+          $sent = $this->sendConfirmationEmailMessage($subscriber, $signupConfirmation);
+          if ($sent) {
+            $this->sentEmails[$subscriber->getId()] = true;
+          }
+          return $sent;
+        }
+      );
+    } else if (
+      !$this->wp->isUserLoggedIn()
       && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS
     ) {
       return false;
     }
 
+    $sent = $this->sendConfirmationEmailMessage($subscriber, $signupConfirmation);
+    if (!$sent) {
+      return false;
+    }
+
+    $this->recordSuccessfulConfirmationSend($subscriber);
+    $this->sentEmails[$subscriber->getId()] = true;
+
+    return true;
+  }
+
+  /**
+   * @throws \Exception if unable to send the email.
+   */
+  private function sendConfirmationEmailMessage(SubscriberEntity $subscriber, array $signupConfirmation): bool {
     $authorizationEmailsValidation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     $unauthorizedSenderEmail = isset($authorizationEmailsValidation['invalid_sender_address']);
     if (Bridge::isMPSendingServiceEnabled() && $unauthorizedSenderEmail) {
       return false;
     }
 
-    // Try to send using WooCommerce email first. Only available in Garden environment.
-    if ($this->sendWCConfirmationEmail($subscriber, $isPublicFormSend)) {
+    $wcConfirmationEmailResult = $this->sendWCConfirmationEmail($subscriber);
+    if ($wcConfirmationEmailResult === self::WC_CONFIRMATION_SENT) {
       return true;
+    }
+    if ($wcConfirmationEmailResult === self::WC_CONFIRMATION_FAILED) {
+      return false;
     }
 
     $segments = $subscriber->getSegments()->toArray();
@@ -272,18 +303,12 @@ class ConfirmationEmailMailer {
     // E-mail was successfully sent we need to update the MailerLog
     MailerLog::incrementSentCount();
 
-    $this->recordSuccessfulConfirmationSend($subscriber, $isPublicFormSend);
-    $this->sentEmails[$subscriber->getId()] = true;
-
     return true;
   }
 
-  private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber, bool $isPublicFormSend): void {
-    if ($isPublicFormSend || !$this->wp->isUserLoggedIn()) {
+  private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber): void {
+    if (!$this->wp->isUserLoggedIn()) {
       $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
-    }
-    if ($isPublicFormSend) {
-      $subscriber->setLastConfirmationEmailSentAt(Carbon::now());
     }
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();

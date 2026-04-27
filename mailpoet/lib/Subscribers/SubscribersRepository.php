@@ -212,6 +212,70 @@ class SubscribersRepository extends Repository {
     return $count;
   }
 
+  public function sendPublicConfirmationEmailWithLock(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    callable $sendConfirmationEmail
+  ): bool {
+    if (!$subscriber->getId()) {
+      return false;
+    }
+
+    $connection = $this->entityManager->getConnection();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $connection->beginTransaction();
+    try {
+      $confirmationsCount = $connection->executeQuery(
+        "SELECT `count_confirmations`
+         FROM $subscriberTable
+         WHERE `id` = :id
+         FOR UPDATE",
+        ['id' => $subscriber->getId()],
+        ['id' => ParameterType::INTEGER]
+      )->fetchOne();
+
+      if ($confirmationsCount === false) {
+        $connection->rollBack();
+        return false;
+      }
+
+      if ((int)$confirmationsCount >= $maxConfirmationEmails) {
+        $this->entityManager->refresh($subscriber);
+        $connection->rollBack();
+        return false;
+      }
+
+      if (!$sendConfirmationEmail()) {
+        $connection->rollBack();
+        return false;
+      }
+
+      $connection->executeStatement(
+        "UPDATE $subscriberTable
+         SET `count_confirmations` = `count_confirmations` + 1,
+             `last_confirmation_email_sent_at` = :sent_at
+         WHERE `id` = :id",
+        [
+          'id' => $subscriber->getId(),
+          'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
+        ],
+        [
+          'id' => ParameterType::INTEGER,
+          'sent_at' => ParameterType::STRING,
+        ]
+      );
+
+      $this->entityManager->refresh($subscriber);
+      $connection->commit();
+      return true;
+    } catch (\Throwable $throwable) {
+      $connection->rollBack();
+      throw $throwable;
+    }
+
+  }
+
   /**
    * @return int[]
    */
@@ -226,37 +290,23 @@ class SubscribersRepository extends Repository {
       $subscriberCustomFieldTable = $entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
       $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
 
-      $deletedIds = array_map(static function($id): int {
-        if (is_int($id)) {
-          return $id;
-        }
-        return is_string($id) ? (int)$id : 0;
-      }, $entityManager->getConnection()->executeQuery(
-        "SELECT s.`id`
-         FROM $subscriberTable s
-         WHERE s.`status` = :status
-         AND s.`deleted_at` IS NULL
-         AND s.`wp_user_id` IS NULL
-         AND s.`is_woocommerce_user` = 0
-         AND (
-           s.`last_confirmation_email_sent_at` <= :cutoff
-           OR (
-             s.`last_confirmation_email_sent_at` IS NULL
-             AND s.`created_at` <= :cutoff
-           )
-         )
-         ORDER BY s.`id` ASC
-         LIMIT :limit
-         FOR UPDATE",
-        [
-          'status' => SubscriberEntity::STATUS_UNCONFIRMED,
-          'cutoff' => $cutoff->format('Y-m-d H:i:s'),
-          'limit' => $limit,
-        ],
-        [
-          'limit' => ParameterType::INTEGER,
-        ]
-      )->fetchFirstColumn());
+      $confirmationDateIds = $this->findUnconfirmedSubscriberIdsForCleanup(
+        $subscriberTable,
+        's.`last_confirmation_email_sent_at` <= :cutoff',
+        $cutoff,
+        $limit
+      );
+
+      $legacyCreatedAtIds = $this->findUnconfirmedSubscriberIdsForCleanup(
+        $subscriberTable,
+        's.`last_confirmation_email_sent_at` IS NULL AND s.`created_at` <= :cutoff',
+        $cutoff,
+        $limit
+      );
+
+      $deletedIds = array_values(array_unique(array_merge($confirmationDateIds, $legacyCreatedAtIds)));
+      sort($deletedIds);
+      $deletedIds = array_slice($deletedIds, 0, $limit);
 
       if (empty($deletedIds)) {
         return;
@@ -274,7 +324,7 @@ class SubscribersRepository extends Repository {
          WHERE st.`subscriber_id` IN (:ids)
       ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
 
-      $entityManager->getConnection()->executeStatement(
+      $deletedCount = (int)$entityManager->getConnection()->executeStatement(
         "DELETE FROM $subscriberTable
          WHERE `id` IN (:ids)
          AND `status` = :status
@@ -295,6 +345,10 @@ class SubscribersRepository extends Repository {
         ],
         ['ids' => ArrayParameterType::INTEGER]
       );
+
+      if ($deletedCount !== count($deletedIds)) {
+        throw new \RuntimeException('Unconfirmed subscribers cleanup deleted an unexpected number of rows.');
+      }
     });
 
     if (!empty($deletedIds)) {
@@ -302,6 +356,42 @@ class SubscribersRepository extends Repository {
       $this->invalidateTotalSubscribersCache();
     }
     return $deletedIds;
+  }
+
+  /**
+   * @return int[]
+   */
+  private function findUnconfirmedSubscriberIdsForCleanup(
+    string $subscriberTable,
+    string $datePredicate,
+    DateTimeInterface $cutoff,
+    int $limit
+  ): array {
+    return array_map(static function($id): int {
+      if (is_int($id)) {
+        return $id;
+      }
+      return is_string($id) ? (int)$id : 0;
+    }, $this->entityManager->getConnection()->executeQuery(
+      "SELECT s.`id`
+       FROM $subscriberTable s
+       WHERE s.`status` = :status
+       AND s.`deleted_at` IS NULL
+       AND s.`wp_user_id` IS NULL
+       AND s.`is_woocommerce_user` = 0
+       AND $datePredicate
+       ORDER BY s.`id` ASC
+       LIMIT :limit
+       FOR UPDATE",
+      [
+        'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+        'limit' => $limit,
+      ],
+      [
+        'limit' => ParameterType::INTEGER,
+      ]
+    )->fetchFirstColumn());
   }
 
   /**
