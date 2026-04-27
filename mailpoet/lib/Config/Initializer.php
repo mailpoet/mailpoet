@@ -17,6 +17,7 @@ use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
+use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -113,6 +114,9 @@ class Initializer {
   /** @var TagsRestApi */
   private $tagsRestApi;
 
+  /** @var FormsRestApi */
+  private $formsRestApi;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -174,7 +178,8 @@ class Initializer {
     BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     Url $urlHelper,
-    TagsRestApi $tagsRestApi
+    TagsRestApi $tagsRestApi,
+    FormsRestApi $formsRestApi
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -208,6 +213,7 @@ class Initializer {
     $this->blockTypesController = $blockTypesController;
     $this->urlHelper = $urlHelper;
     $this->tagsRestApi = $tagsRestApi;
+    $this->formsRestApi = $formsRestApi;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -375,6 +381,7 @@ class Initializer {
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
       $this->tagsRestApi->initialize();
+      $this->formsRestApi->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
