@@ -29,6 +29,37 @@ class Migration_20260427_100000_Test extends \MailPoetTest {
     verify($column['Default'])->null();
   }
 
+  public function testItAddsCleanupIndexes(): void {
+    $this->migration->run();
+
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $confirmationIndex = $this->entityManager->getConnection()->executeQuery(
+      "SHOW INDEX FROM {$subscribersTable} WHERE Key_name = 'idx_sub_cleanup_confirmation'"
+    )->fetchAllAssociative();
+    $legacyIndex = $this->entityManager->getConnection()->executeQuery(
+      "SHOW INDEX FROM {$subscribersTable} WHERE Key_name = 'idx_sub_cleanup_legacy'"
+    )->fetchAllAssociative();
+
+    $this->assertNotEmpty($confirmationIndex);
+    $this->assertNotEmpty($legacyIndex);
+  }
+
+  public function testItDoesNotBackfillLastConfirmationEmailSentAt(): void {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('confirmation-no-backfill@example.com');
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+
+    $this->migration->run();
+    $this->entityManager->clear();
+
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getLastConfirmationEmailSentAt())->null();
+  }
+
   public function testSubscriberEntityPersistsLastConfirmationEmailSentAt(): void {
     $sentAt = new \DateTimeImmutable('2026-04-27 10:00:00');
     $subscriber = new SubscriberEntity();

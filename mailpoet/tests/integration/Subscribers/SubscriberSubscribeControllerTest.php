@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use Codeception\Util\Fixtures;
+use DateTimeImmutable;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -108,6 +109,48 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($result)->arrayHasKey('error');
     verify($result['error'])->equals('Confirmation email error');
+  }
+
+  public function testItThrottlesRapidSameIpResubmitBeforeUpdatingExistingSubscriber(): void {
+    wp_set_current_user(0);
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.' . rand(1, 254);
+    $this->settings->set('signup_confirmation.enabled', true);
+
+    $confirmationEmailMailerMock = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailerMock->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->willReturn(true);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, ['confirmationEmailMailer' => $confirmationEmailMailerMock]);
+    $subscriberController = $this->getServiceWithOverrides(SubscriberSubscribeController::class, ['subscriberActions' => $subscriberActions]);
+
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'throttled-resubmit-' . rand(0, 10000) . '@example.com';
+    $data = [
+      $this->obfuscatedEmail => $email,
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ];
+
+    $firstResult = $subscriberController->subscribe($data);
+    $this->assertArrayNotHasKey('error', $firstResult);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $lastConfirmationEmailSentAt = new DateTimeImmutable('2026-04-27 10:00:00');
+    $subscriber->setConfirmationsCount(2);
+    $subscriber->setLastConfirmationEmailSentAt($lastConfirmationEmailSentAt);
+    $subscriber->setUnconfirmedData('{"first_name":"Original"}');
+    $this->subscribersRepository->flush();
+
+    $secondResult = $subscriberController->subscribe($data);
+
+    verify($secondResult['refresh_captcha'])->true();
+    verify($secondResult['error'])->stringContainsString('You need to wait');
+    $this->subscribersRepository->refresh($subscriber);
+    verify($subscriber->getConfirmationsCount())->equals(2);
+    verify($subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
+    verify($subscriber->getUnconfirmedData())->equals('{"first_name":"Original"}');
   }
 
   public function testItCanSubscribeSubscriberWithCustomField(): void {
