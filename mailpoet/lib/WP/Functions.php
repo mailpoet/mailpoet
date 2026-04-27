@@ -276,6 +276,10 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  public function getTerm(int $termId, string $taxonomy = '') {
+    return get_term($termId, $taxonomy);
+  }
+
   public function wpUpdatePost($postarr = [], bool $wp_error = false, bool $fire_after_hooks = true) {
     return wp_update_post($postarr, $wp_error, $fire_after_hooks);
   }
@@ -386,6 +390,10 @@ class Functions {
 
   public function isEmail($email) {
     return is_email($email);
+  }
+
+  public function parseBlocks(string $content): array {
+    return parse_blocks($content);
   }
 
   public function isMultisite() {
@@ -624,6 +632,10 @@ class Functions {
 
   public function wpParseArgs($args, $defaults = '') {
     return wp_parse_args($args, $defaults);
+  }
+
+  public function sanitizeEmail(string $email): string {
+    return sanitize_email($email);
   }
 
   public function wpParseUrl($url, $component = -1) {
