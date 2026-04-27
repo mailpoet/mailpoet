@@ -18,8 +18,10 @@ import { AutomationSaveButton } from './components/automation-save-button';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { initStripPostStatusOnSaveMiddleware } from './middleware/strip-post-status-on-save';
+import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
 
 registerTranslations();
+registerCouponCodeRestrictToSubscriberExtension();
 
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
