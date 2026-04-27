@@ -9,16 +9,13 @@ import { store as coreDataStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { registerPlugin } from '@wordpress/plugins';
 import { MailPoet } from 'mailpoet';
-import { initializeEditor } from '@woocommerce/email-editor';
-import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
+import type { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
 import { registerTranslations } from 'common';
 import { withSatismeterSurvey } from './satismeter-survey';
-import { EmailSidebarExtension } from './email-sidebar-extension';
-import { AutomationSaveButton } from './components/automation-save-button';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
-import { initStripPostStatusOnSaveMiddleware } from './middleware/strip-post-status-on-save';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
+import { ensureRestrictToSubscriberAttributeRegisteredWhenAvailable } from './coupon-code-restrict-to-subscriber';
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
@@ -107,24 +104,6 @@ addFilter(
   () => !!window.mailpoet_analytics_enabled,
 );
 
-// Register MailPoet sidebar panels component
-if (!isAutomationNewsletter) {
-  registerPlugin('mailpoet-settings-sidebar', {
-    render: EmailSidebarExtension,
-    scope: 'woocommerce-email-editor',
-  });
-}
-
-// Register save button for automation emails
-// Automation emails use 'private' post status, which WordPress treats as published.
-// The standard "Save Draft" button is not shown for published posts, so we add our own.
-if (isAutomationNewsletter) {
-  registerPlugin('mailpoet-automation-save-button', {
-    render: AutomationSaveButton,
-    scope: 'woocommerce-email-editor',
-  });
-}
-
 // use mailpoet data subject if available
 addFilter(
   'woocommerce_email_editor_preferred_template_title',
@@ -146,6 +125,48 @@ addFilter(
   () => [],
 );
 
-initStripPostStatusOnSaveMiddleware();
+type EmailEditorModule = typeof import('@woocommerce/email-editor');
+type StripPostStatusMiddlewareModule =
+  typeof import('./middleware/strip-post-status-on-save');
+type EmailSidebarExtensionModule = typeof import('./email-sidebar-extension');
+type AutomationSaveButtonModule =
+  typeof import('./components/automation-save-button');
 
-initializeEditor('mailpoet-email-editor');
+/* eslint-disable global-require, @typescript-eslint/no-var-requires -- These imports must run after the MailPoet coupon block extension registers its block-type filter, but must stay in this bundle instead of creating async chunks. */
+const initializeMailPoetEmailEditor = (): void => {
+  const { initializeEditor } =
+    require('@woocommerce/email-editor') as EmailEditorModule;
+  const { initStripPostStatusOnSaveMiddleware } =
+    require('./middleware/strip-post-status-on-save') as StripPostStatusMiddlewareModule;
+
+  // Register MailPoet sidebar panels component
+  if (!isAutomationNewsletter) {
+    const { EmailSidebarExtension } =
+      require('./email-sidebar-extension') as EmailSidebarExtensionModule;
+
+    registerPlugin('mailpoet-settings-sidebar', {
+      render: EmailSidebarExtension,
+      scope: 'woocommerce-email-editor',
+    });
+  }
+
+  // Register save button for automation emails
+  // Automation emails use 'private' post status, which WordPress treats as published.
+  // The standard "Save Draft" button is not shown for published posts, so we add our own.
+  if (isAutomationNewsletter) {
+    const { AutomationSaveButton } =
+      require('./components/automation-save-button') as AutomationSaveButtonModule;
+
+    registerPlugin('mailpoet-automation-save-button', {
+      render: AutomationSaveButton,
+      scope: 'woocommerce-email-editor',
+    });
+  }
+
+  initStripPostStatusOnSaveMiddleware();
+  initializeEditor('mailpoet-email-editor');
+  ensureRestrictToSubscriberAttributeRegisteredWhenAvailable();
+};
+/* eslint-enable global-require, @typescript-eslint/no-var-requires */
+
+initializeMailPoetEmailEditor();

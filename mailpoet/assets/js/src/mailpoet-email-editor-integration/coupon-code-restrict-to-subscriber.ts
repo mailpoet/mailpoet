@@ -1,3 +1,8 @@
+import {
+  getBlockType,
+  registerBlockType,
+  unregisterBlockType,
+} from '@wordpress/blocks';
 import type { BlockConfiguration } from '@wordpress/blocks';
 
 export const COUPON_CODE_BLOCK_NAME = 'woocommerce/coupon-code';
@@ -40,6 +45,50 @@ export const addRestrictToSubscriberAttribute = (
       },
     },
   };
+};
+
+export const ensureRestrictToSubscriberAttributeRegistered = (
+  isFeatureAvailable = isMailPoetCouponGenerationAvailable(),
+): void => {
+  if (!isFeatureAvailable) {
+    return;
+  }
+
+  const settings = getBlockType(COUPON_CODE_BLOCK_NAME) as
+    | BlockConfiguration<Record<string, unknown>>
+    | undefined;
+
+  if (!settings || settings.attributes?.[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]) {
+    return;
+  }
+
+  unregisterBlockType(COUPON_CODE_BLOCK_NAME);
+  const settingsWithAttribute = addRestrictToSubscriberAttribute(
+    settings,
+    COUPON_CODE_BLOCK_NAME,
+    true,
+  ) as unknown as Parameters<typeof registerBlockType>[1];
+  registerBlockType(COUPON_CODE_BLOCK_NAME, settingsWithAttribute);
+};
+
+export const ensureRestrictToSubscriberAttributeRegisteredWhenAvailable = (
+  attempts = 20,
+): void => {
+  ensureRestrictToSubscriberAttributeRegistered();
+
+  const settings = getBlockType(COUPON_CODE_BLOCK_NAME);
+  if (
+    attempts <= 0 ||
+    settings?.attributes?.[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]
+  ) {
+    return;
+  }
+
+  window.setTimeout(
+    () =>
+      ensureRestrictToSubscriberAttributeRegisteredWhenAvailable(attempts - 1),
+    250,
+  );
 };
 
 export const shouldShowRestrictToSubscriberControl = ({

@@ -9,6 +9,7 @@ import type { ComponentType } from 'react';
 import {
   addRestrictToSubscriberAttribute,
   CouponCodeAttributes,
+  ensureRestrictToSubscriberAttributeRegisteredWhenAvailable,
   RESTRICT_TO_SUBSCRIBER_ATTRIBUTE,
   shouldShowRestrictToSubscriberControl,
 } from './coupon-code-restrict-to-subscriber';
@@ -69,6 +70,7 @@ export const registerCouponCodeRestrictToSubscriberExtension = (): void => {
     FILTER_NAMESPACE,
     addRestrictToSubscriberAttribute,
   );
+  ensureRestrictToSubscriberAttributeRegisteredWhenAvailable();
 
   addFilter(
     'editor.BlockEdit',

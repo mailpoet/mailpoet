@@ -4,6 +4,7 @@ import type * as Hooks from '@wordpress/hooks';
 import {
   addRestrictToSubscriberAttribute,
   COUPON_CODE_BLOCK_NAME,
+  ensureRestrictToSubscriberAttributeRegistered,
   RESTRICT_TO_SUBSCRIBER_ATTRIBUTE,
   shouldShowRestrictToSubscriberControl,
 } from '../../../assets/js/src/mailpoet-email-editor-integration/coupon-code-restrict-to-subscriber';
@@ -82,6 +83,41 @@ describe('coupon code restrictToSubscriber extension', () => {
     expect(
       addRestrictToSubscriberAttribute(settings, COUPON_CODE_BLOCK_NAME, false),
     ).to.equal(settings);
+  });
+
+  it('adds the attribute when the coupon block was already registered', () => {
+    setBrowserGlobals();
+
+    registerBlockType(COUPON_CODE_BLOCK_NAME, {
+      apiVersion: 3,
+      attributes: {
+        source: {
+          default: 'createNew',
+          type: 'string',
+        },
+      },
+      category: 'text',
+      save: () => null,
+      title: 'Coupon Code',
+    });
+
+    ensureRestrictToSubscriberAttributeRegistered(true);
+
+    const block = createBlock(COUPON_CODE_BLOCK_NAME, {
+      restrictToSubscriber: true,
+      source: 'createNew',
+    });
+    const serialized = serialize(block);
+
+    expect(
+      getBlockType(COUPON_CODE_BLOCK_NAME)?.attributes?.[
+        RESTRICT_TO_SUBSCRIBER_ATTRIBUTE
+      ],
+    ).to.deep.equal({
+      default: false,
+      type: 'boolean',
+    });
+    expect(serialized).to.contain('"restrictToSubscriber":true');
   });
 
   it('shows the control only for automation create-new coupon blocks', () => {
