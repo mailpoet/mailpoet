@@ -21,6 +21,10 @@ use MailPoet\Validator\Builder;
 abstract class AbstractListingEndpoint extends Endpoint {
   public const DEFAULT_PER_PAGE = 20;
   public const MAX_PER_PAGE = 100;
+  // Sentinel cap on `page`. Keeps `(page-1) * per_page` from producing
+  // huge OFFSETs that would push MySQL through millions of skipped rows
+  // when a client (or fuzzer) sends `page=999999999`.
+  public const MAX_PAGE = 100000;
 
   /** @var ListingHandler */
   private $listingHandler;
@@ -31,6 +35,14 @@ abstract class AbstractListingEndpoint extends Endpoint {
     $this->listingHandler = $listingHandler;
   }
 
+  /**
+   * Subclasses MUST override `checkPermissions()` to declare a real
+   * capability. The inherited default from `Endpoint::checkPermissions()`
+   * checks a non-existent `admin` capability and would fail closed but
+   * silently. PHP does not let us redeclare the parent method as `abstract`
+   * here without breaking other consumers, so this is enforced by review +
+   * tests instead of the type system.
+   */
   public function handle(Request $request): Response {
     $definition = $this->buildDefinition($request);
     $repository = $this->getListingRepository();
@@ -89,7 +101,9 @@ abstract class AbstractListingEndpoint extends Endpoint {
   }
 
   private function buildDefinition(Request $request): ListingDefinition {
-    $page = is_numeric($request->getParam('page')) ? max(1, (int)$request->getParam('page')) : 1;
+    $page = is_numeric($request->getParam('page'))
+      ? min(self::MAX_PAGE, max(1, (int)$request->getParam('page')))
+      : 1;
 
     $perPageParam = $request->getParam('per_page');
     $perPage = is_numeric($perPageParam)

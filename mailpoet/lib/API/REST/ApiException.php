@@ -1,12 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Form\RestApi;
+namespace MailPoet\API\REST;
 
 use Exception as PhpException;
-use MailPoet\API\REST\Exception as RestException;
 use Throwable;
 
-class FormApiException extends PhpException implements RestException {
+class ApiException extends PhpException implements Exception {
   /** @var int */
   private $statusCode;
 
@@ -22,7 +21,7 @@ class FormApiException extends PhpException implements RestException {
   public function __construct(
     string $message,
     int $statusCode = 400,
-    string $errorCode = 'mailpoet_forms_error',
+    string $errorCode = 'mailpoet_rest_api_error',
     array $errors = [],
     ?Throwable $previous = null
   ) {

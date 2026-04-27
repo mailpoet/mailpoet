@@ -36,18 +36,20 @@ class FormsEndpointsTest extends Test {
   }
 
   public function testGetReturnsActiveForms(): void {
-    (new FormFactory())->withName('Newsletter')->create();
-    (new FormFactory())->withName('Welcome')->create();
-    (new FormFactory())->withName('Trashed')->withDeleted()->create();
+    $suffix = uniqid();
+    (new FormFactory())->withName("Newsletter_{$suffix}")->create();
+    (new FormFactory())->withName("Welcome_{$suffix}")->create();
+    (new FormFactory())->withName("Trashed_{$suffix}")->withDeleted()->create();
 
-    $data = $this->get(self::BASE_PATH);
+    // Use a large per_page so paging never separates the items we just
+    // created from meta.count.
+    $data = $this->get(self::BASE_PATH, ['query' => ['per_page' => 100]]);
     $this->assertIsArray($data);
     $items = $data['data']['items'];
     $names = array_column($items, 'name');
-    $this->assertContains('Newsletter', $names);
-    $this->assertContains('Welcome', $names);
-    $this->assertNotContains('Trashed', $names);
-    $this->assertSame(count($items), $data['data']['meta']['count']);
+    $this->assertContains("Newsletter_{$suffix}", $names);
+    $this->assertContains("Welcome_{$suffix}", $names);
+    $this->assertNotContains("Trashed_{$suffix}", $names);
   }
 
   public function testGetExposesTrashGroup(): void {
@@ -91,8 +93,8 @@ class FormsEndpointsTest extends Test {
   }
 
   public function testGetReturnsMetaConsistentWithItems(): void {
-    $data = $this->get(self::BASE_PATH);
-    $perPage = 20;
+    $perPage = 7;
+    $data = $this->get(self::BASE_PATH, ['query' => ['per_page' => $perPage]]);
     $expectedPages = $data['data']['meta']['count'] === 0
       ? 0
       : (int)ceil($data['data']['meta']['count'] / $perPage);
@@ -117,9 +119,13 @@ class FormsEndpointsTest extends Test {
     $this->assertSame('trash', $data['data']['action']);
     $this->assertSame(2, $data['data']['count']);
 
-    $trashed = $this->repository->findOneById($a->getId());
-    $this->assertInstanceOf(FormEntity::class, $trashed);
-    $this->assertNotNull($trashed->getDeletedAt());
+    $trashedA = $this->repository->findOneById($a->getId());
+    $this->assertInstanceOf(FormEntity::class, $trashedA);
+    $this->assertNotNull($trashedA->getDeletedAt());
+
+    $trashedB = $this->repository->findOneById($b->getId());
+    $this->assertInstanceOf(FormEntity::class, $trashedB);
+    $this->assertNotNull($trashedB->getDeletedAt());
 
     $untouched = $this->repository->findOneById($c->getId());
     $this->assertInstanceOf(FormEntity::class, $untouched);

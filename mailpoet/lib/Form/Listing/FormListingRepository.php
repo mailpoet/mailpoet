@@ -61,7 +61,25 @@ class FormListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
-    // the parent class requires this method, but forms listing doesn't currently support this feature.
+    $needle = strtolower(trim($search));
+    if ($needle === '') {
+      return;
+    }
+    // Escape LIKE wildcards (`%`, `_`) and the escape char itself (`|`) so
+    // user input matches as a literal substring rather than a pattern.
+    // Pipe is used as the LIKE ESCAPE character because backslash gets
+    // double-escaped through the DQL -> SQL layer ("Incorrect arguments to
+    // ESCAPE" otherwise).
+    // Order matters: `|` is replaced first so we don't double-escape the
+    // wildcard escapes added in the next steps.
+    $escaped = str_replace(
+      ['|', '%', '_'],
+      ['||', '|%', '|_'],
+      $needle
+    );
+    $queryBuilder
+      ->andWhere("LOWER(f.name) LIKE :search ESCAPE '|'")
+      ->setParameter('search', '%' . $escaped . '%');
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {

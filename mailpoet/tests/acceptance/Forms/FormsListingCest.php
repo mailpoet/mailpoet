@@ -14,7 +14,7 @@ class FormsListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Forms');
-    $i->waitForText($formName, 5, '.mailpoet-listing-table');
+    $i->waitForText($formName, 5, '[data-automation-id="forms_listing"]');
     $i->seeNoJSErrors();
     $i->clickItemRowActionByItemName($formName, 'Move to trash');
     $i->waitForText('No forms were found. Why not create a new one?');

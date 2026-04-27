@@ -8,6 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\WP\Functions as WPFunctions;
 
 class FormsListingEndpoint extends AbstractListingEndpoint {
   /** @var FormListingRepository */
@@ -27,7 +28,7 @@ class FormsListingEndpoint extends AbstractListingEndpoint {
   }
 
   public function checkPermissions(): bool {
-    return current_user_can(AccessControl::PERMISSION_MANAGE_FORMS);
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_FORMS);
   }
 
   protected function getListingRepository(): ListingRepository {
