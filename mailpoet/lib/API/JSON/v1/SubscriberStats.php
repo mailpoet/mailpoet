@@ -245,6 +245,7 @@ class SubscriberStats extends APIEndpoint {
 
   private function getShippingAddress(SubscriberEntity $subscriber): array {
     $address = [];
+    $customer = null;
     $wpUserId = $subscriber->getWpUserId();
     if ($wpUserId) {
       $customer = $this->wooCommerceHelper->wcGetCustomer((int)$wpUserId);
@@ -253,7 +254,7 @@ class SubscriberStats extends APIEndpoint {
       }
     }
 
-    if (!$address) {
+    if (!$address && ($subscriber->getIsWoocommerceUser() || $customer)) {
       $order = $this->getLatestWooCommerceOrderByEmail($subscriber->getEmail());
       if ($order) {
         $address = $this->getShippingAddressParts($order);
