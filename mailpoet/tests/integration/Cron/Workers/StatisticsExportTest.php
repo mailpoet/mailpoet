@@ -68,6 +68,23 @@ class StatisticsExportTest extends \MailPoetTest {
     verify(isset($meta['error']))->false();
   }
 
+  public function testItProcessesBulkExportTask() {
+    $a = (new NewsletterFactory())->withSubject('A')->create();
+    $b = (new NewsletterFactory())->withSubject('B')->create();
+    $task = $this->createTask([
+      'job_type' => StatisticsExportWorker::JOB_TYPE_BULK,
+      'newsletter_ids' => [$a->getId(), $b->getId()],
+      'format' => StatisticsExporter::FORMAT_CSV,
+    ]);
+
+    $result = $this->worker->processTaskStrategy($task, microtime(true));
+    verify($result)->true();
+
+    $meta = $task->getMeta() ?? [];
+    verify($meta['export_file_url'])->stringContainsString('MailPoet_stats_export_');
+    verify($meta['total_exported'])->equals(2);
+  }
+
   public function testItRecordsErrorOnUnknownJobType() {
     $task = $this->createTask([
       'job_type' => 'unknown',
