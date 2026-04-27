@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { dispatch, select } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as editorStore } from '@wordpress/editor';
-import { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
+import type { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
 
 const contentLink = `<a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">${__(
   'Unsubscribe',
