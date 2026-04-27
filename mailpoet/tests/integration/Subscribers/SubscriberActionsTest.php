@@ -304,6 +304,8 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     $this->entityManager->refresh($subscriber);
     verify($meta['confirmationEmailResult'])->false();
+    $this->assertArrayHasKey('error', $meta);
+    verify($meta['error'])->equals(__('We\'ve already sent you a confirmation email. Please check your inbox or spam folder.', 'mailpoet'));
     verify($subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     $this->assertInstanceOf(\DateTimeInterface::class, $subscriber->getLastConfirmationEmailSentAt());
     verify($subscriber->getLastConfirmationEmailSentAt()->format('Y-m-d H:i:s'))->equals($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'));

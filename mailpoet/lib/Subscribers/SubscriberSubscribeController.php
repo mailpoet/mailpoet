@@ -171,6 +171,10 @@ class SubscriberSubscribeController {
       $meta['error'] = $subscriptionMeta['confirmationEmailResult']->getMessage();
       return $meta;
     }
+    if (!empty($subscriptionMeta['error'])) {
+      $meta['error'] = $subscriptionMeta['error'];
+      return $meta;
+    }
 
     if (!empty($formSettings['on_success'])) {
       if ($formSettings['on_success'] === 'page') {

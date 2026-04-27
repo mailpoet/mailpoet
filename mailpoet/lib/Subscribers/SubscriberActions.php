@@ -9,7 +9,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
 class SubscriberActions {
-
   /** @var SettingsController */
   private $settings;
 
@@ -56,7 +55,7 @@ class SubscriberActions {
 
   /**
    * Returns SubscriberEntity and associative array with some metadata related to the subscription (e.g. ['confirmationEmailResult' => $exception])
-   * @return array{0: SubscriberEntity, 1: array{confirmationEmailResult: bool|\Exception}}
+   * @return array{0: SubscriberEntity, 1: array{confirmationEmailResult: bool|\Exception, error?: string}}
    */
   public function subscribe($subscriberData = [], $segmentIds = []): array {
     // filter out keys from the subscriber_data array
@@ -70,6 +69,10 @@ class SubscriberActions {
     $subscriberData['subscribed_ip'] = Helpers::getIP();
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberData['email']]);
+    $isUnconfirmedResubscription = (
+      $subscriber instanceof SubscriberEntity
+      && $subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED
+    );
     if (!$subscriber && !isset($subscriberData['source'])) {
       $subscriberData['source'] = Source::FORM;
     }
@@ -108,7 +111,15 @@ class SubscriberActions {
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
 
     try {
-      $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
+      if (
+        $signupConfirmationEnabled
+        && $isUnconfirmedResubscription
+        && $subscriber->getConfirmationsCount() >= ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS
+      ) {
+        $metaData['error'] = $this->getMaxConfirmationEmailsReachedError();
+      } else {
+        $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
+      }
     } catch (\Exception $e) {
       $metaData['confirmationEmailResult'] = $e;
     }
@@ -124,5 +135,9 @@ class SubscriberActions {
     }
 
     return [$subscriber, $metaData];
+  }
+
+  private function getMaxConfirmationEmailsReachedError(): string {
+    return __('We\'ve already sent you a confirmation email. Please check your inbox or spam folder.', 'mailpoet');
   }
 }
