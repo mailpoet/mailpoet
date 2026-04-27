@@ -5,7 +5,7 @@ import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, ErrorBoundary } from 'common';
-import { FormList } from './list.jsx';
+import { FormList } from './list';
 
 function App() {
   return (

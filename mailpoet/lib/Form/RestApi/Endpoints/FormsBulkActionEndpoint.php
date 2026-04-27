@@ -2,10 +2,10 @@
 
 namespace MailPoet\Form\RestApi\Endpoints;
 
+use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Form\RestApi\FormApiException;
 use MailPoet\Validator\Builder;
 
 class FormsBulkActionEndpoint extends FormsEndpoint {
@@ -31,7 +31,7 @@ class FormsBulkActionEndpoint extends FormsEndpoint {
   public function handle(Request $request): Response {
     $action = is_string($request->getParam('action')) ? (string)$request->getParam('action') : '';
     if (!in_array($action, self::SUPPORTED_ACTIONS, true)) {
-      throw new FormApiException(
+      throw new ApiException(
         // translators: %s is the list of supported bulk actions.
         sprintf(__('Unsupported bulk action. Allowed values are: %s.', 'mailpoet'), implode(', ', self::SUPPORTED_ACTIONS)),
         400,
@@ -41,7 +41,7 @@ class FormsBulkActionEndpoint extends FormsEndpoint {
 
     $rawIds = $request->getParam('ids');
     if (!is_array($rawIds) || $rawIds === []) {
-      throw new FormApiException(
+      throw new ApiException(
         __('At least one form id is required.', 'mailpoet'),
         400,
         'mailpoet_forms_ids_required'
@@ -55,7 +55,7 @@ class FormsBulkActionEndpoint extends FormsEndpoint {
       }
     ));
     if ($ids === []) {
-      throw new FormApiException(
+      throw new ApiException(
         __('At least one form id is required.', 'mailpoet'),
         400,
         'mailpoet_forms_ids_required'

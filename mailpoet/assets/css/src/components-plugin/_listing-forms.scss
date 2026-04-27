@@ -1,7 +1,31 @@
-.mailpoet-forms-listing {
+// Forms admin listing — DataViews layout overrides + empty state.
+.mailpoet-forms-dataviews__tabs {
   margin-top: $grid-gap-half;
 
-  .mailpoet-forms-add-new-row {
-    text-align: center;
+  > [role='tablist'] {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
+    padding: 0 8px;
   }
+}
+
+.mailpoet-forms-dataviews {
+  margin-top: 0;
+
+  .dataviews-wrapper {
+    min-height: 200px;
+  }
+}
+
+.mailpoet-forms-dataviews__toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+}
+
+.mailpoet-forms-add-new-row {
+  text-align: center;
 }

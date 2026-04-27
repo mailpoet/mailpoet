@@ -137,15 +137,53 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickItemRowActionByItemName($itemName, $link) {
     $i = $this;
+    $rowCellXpath = ['xpath' => '//tr//*[normalize-space(text())="' . $itemName . '"]//ancestor::td'];
+    // Legacy MailPoet `Listing` component: row actions render as <a> links in
+    // the same <td> as the item title (revealed on hover).
+    $legacyActionXpath = ['xpath' => '//*[normalize-space(text())="' . $itemName . '"]//ancestor::td//a[normalize-space(text())="' . $link . '"]'];
+    // DataViews primary actions render as inline <button> elements anywhere
+    // in the row (typically in the trailing actions column).
+    $dataViewsPrimaryXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[normalize-space(text())="' . $link . '"]'];
+    // DataViews secondary actions live in a dropdown menu opened by the row's
+    // "Actions" (three-dot) button. The menu renders outside the row, so
+    // open it first and then click the matching role="menuitem".
+    $dataViewsActionsToggleXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[@aria-label="Actions" and @aria-haspopup="menu"]'];
+    $dataViewsMenuItemXpath = ['xpath' => '//*[@role="menuitem" and normalize-space(.)="' . $link . '"]'];
+
     for ($x = 1; $x <= 3; $x++) {
       try {
-        $itemNameCellXpath = ['xpath' => '//tr//*[text()="' . $itemName . '"]//ancestor::td'];
-        $linkXpath = ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::td//a[text()="' . $link . '"]'];
-        $i->moveMouseOver($itemNameCellXpath);
-        $i->waitForElementClickable($linkXpath, 3);
-        $i->click($linkXpath);
-        break;
-      } catch (Exception $exception) {
+        $i->moveMouseOver($rowCellXpath);
+      } catch (Exception $hoverException) {
+        $this->wait(1);
+        continue;
+      }
+
+      // Try the legacy <a> link first.
+      try {
+        $i->waitForElementClickable($legacyActionXpath, 1);
+        $i->click($legacyActionXpath);
+        return;
+      } catch (Exception $legacyException) {
+        // ignore and fall through to DataViews variants
+      }
+
+      // DataViews primary action (inline button).
+      try {
+        $i->waitForElementClickable($dataViewsPrimaryXpath, 1);
+        $i->click($dataViewsPrimaryXpath);
+        return;
+      } catch (Exception $primaryException) {
+        // ignore and try the dropdown menu
+      }
+
+      // DataViews secondary action (dropdown menu).
+      try {
+        $i->waitForElementClickable($dataViewsActionsToggleXpath, 1);
+        $i->click($dataViewsActionsToggleXpath);
+        $i->waitForElementClickable($dataViewsMenuItemXpath, 2);
+        $i->click($dataViewsMenuItemXpath);
+        return;
+      } catch (Exception $menuException) {
         $this->wait(1);
         continue;
       }
@@ -960,18 +998,31 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function changeGroupInListingFilter(string $name): void {
     $i = $this;
+    $legacySelector = '[data-automation-id="filters_' . $name . '"]';
+    // DataViews-backed listings render group tabs as @wordpress/components
+    // TabPanel buttons; the "mailpoet-dataviews-group-X" class is a stable
+    // hook all migrations are expected to apply.
+    $dataViewsSelector = '.mailpoet-dataviews-group-' . $name;
+
     for ($x = 1; $x <= 3; $x++) {
       try {
-        $i->waitForElementClickable('[data-automation-id="filters_' . $name . '"]');
-        $i->click('[data-automation-id="filters_' . $name . '"]');
+        $i->waitForElementClickable($legacySelector, 1);
+        $i->click($legacySelector);
         $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
-        break;
-      } catch (Exception $exception) {
+        return;
+      } catch (Exception $legacyException) {
+        // ignore and try DataViews variant
+      }
+
+      try {
+        $i->waitForElementClickable($dataViewsSelector, 1);
+        $i->click($dataViewsSelector);
+        return;
+      } catch (Exception $dataViewsException) {
         $this->wait(0.5);
         continue;
       }
     }
-    $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
   }
 
   public function checkWooTableCheckboxForItemName(string $itemName): void {

@@ -2,20 +2,10 @@
 
 namespace MailPoet\Tags\RestApi;
 
-use Exception as PhpException;
-use MailPoet\API\REST\Exception as RestException;
+use MailPoet\API\REST\ApiException;
 use Throwable;
 
-class TagApiException extends PhpException implements RestException {
-  /** @var int */
-  private $statusCode;
-
-  /** @var string */
-  private $errorCode;
-
-  /** @var array<string, string> */
-  private $errors;
-
+class TagApiException extends ApiException {
   /**
    * @param array<string, string> $errors
    */
@@ -26,21 +16,6 @@ class TagApiException extends PhpException implements RestException {
     array $errors = [],
     ?Throwable $previous = null
   ) {
-    parent::__construct($message, 0, $previous);
-    $this->statusCode = $statusCode;
-    $this->errorCode = $errorCode;
-    $this->errors = $errors;
-  }
-
-  public function getStatusCode(): int {
-    return $this->statusCode;
-  }
-
-  public function getErrorCode(): string {
-    return $this->errorCode;
-  }
-
-  public function getErrors(): array {
-    return $this->errors;
+    parent::__construct($message, $statusCode, $errorCode, $errors, $previous);
   }
 }
