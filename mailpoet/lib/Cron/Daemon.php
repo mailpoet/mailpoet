@@ -116,5 +116,6 @@ class Daemon {
     yield $this->workersFactory->createBackfillEngagementDataWorker();
     yield $this->workersFactory->createMixpanelWorker();
     yield $this->workersFactory->createTracksWorker();
+    yield $this->workersFactory->createStatisticsExportWorker();
   }
 }
