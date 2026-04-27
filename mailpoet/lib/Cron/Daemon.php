@@ -101,6 +101,7 @@ class Daemon {
     yield $this->workersFactory->createSendingQueueBodyCleanupWorker();
     yield $this->workersFactory->createSubscribersEmailCountsWorker();
     yield $this->workersFactory->createInactiveSubscribersWorker();
+    yield $this->workersFactory->createUnconfirmedSubscribersCleanupWorker();
     yield $this->workersFactory->createUnsubscribeTokensWorker();
     yield $this->workersFactory->createWooCommerceSyncWorker();
     yield $this->workersFactory->createAuthorizedSendingEmailsCheckWorker();

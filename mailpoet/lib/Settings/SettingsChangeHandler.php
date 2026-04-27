@@ -2,7 +2,9 @@
 
 namespace MailPoet\Settings;
 
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
@@ -25,16 +27,21 @@ class SettingsChangeHandler {
   /** @var SubscribersCountReporter */
   private $subscribersCountReporter;
 
+  /** @var CronWorkerScheduler */
+  private $cronWorkerScheduler;
+
   public function __construct(
     ScheduledTasksRepository $scheduledTasksRepository,
     SettingsController $settingsController,
     Bridge $bridge,
-    SubscribersCountReporter $subscribersCountReporter
+    SubscribersCountReporter $subscribersCountReporter,
+    CronWorkerScheduler $cronWorkerScheduler
   ) {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->settingsController = $settingsController;
     $this->bridge = $bridge;
     $this->subscribersCountReporter = $subscribersCountReporter;
+    $this->cronWorkerScheduler = $cronWorkerScheduler;
   }
 
   public function onSubscribeOldWoocommerceCustomersChange(): void {
@@ -65,6 +72,10 @@ class SettingsChangeHandler {
     $task->setScheduledAt($datetime->subMinute());
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
+  }
+
+  public function onUnconfirmedSubscribersCleanupEnable(): void {
+    $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning(UnconfirmedSubscribersCleanup::TASK_TYPE);
   }
 
   public function onMSSActivate($newSettings) {

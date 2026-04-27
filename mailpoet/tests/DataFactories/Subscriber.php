@@ -161,6 +161,14 @@ class Subscriber {
   /**
    * @return $this
    */
+  public function withLastConfirmationEmailSentAt(DateTimeInterface $date) {
+    $this->data['lastConfirmationEmailSentAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
   public function withLastClickAt(DateTimeInterface $date) {
     $this->data['lastClickAt'] = $date;
     return $this;
@@ -313,6 +321,10 @@ class Subscriber {
 
     if (isset($this->data['lastSendingAt'])) {
       $subscriber->setLastSendingAt($this->data['lastSendingAt']);
+    }
+
+    if (isset($this->data['lastConfirmationEmailSentAt'])) {
+      $subscriber->setLastConfirmationEmailSentAt($this->data['lastConfirmationEmailSentAt']);
     }
 
     $entityManager->persist($subscriber);

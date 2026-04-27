@@ -14,6 +14,8 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberActionsTest extends \MailPoetTest {
 
@@ -263,6 +265,52 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($subscriber->getUnconfirmedData())->empty();
 
     $this->settings->set('signup_confirmation.enabled', $originalSettingValue);
+  }
+
+  public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailer->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), true)
+      ->willReturn(false);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
+      'confirmationEmailMailer' => $confirmationEmailMailer,
+    ]);
+
+    $segment = $this->segmentsRepository->createOrUpdate('Public Confirmation Mode');
+    [$subscriber, $meta] = $subscriberActions->subscribe([
+      'email' => 'public-confirmation-mode@example.com',
+    ], [$segment->getId()]);
+
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($meta['confirmationEmailResult'])->false();
+  }
+
+  public function testCappedPublicSubscribeDoesNotRefreshLastConfirmationEmailSentAt(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $lastConfirmationEmailSentAt = Carbon::now()->subDays(3);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('capped-public-subscribe@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
+      ->withLastConfirmationEmailSentAt($lastConfirmationEmailSentAt)
+      ->create();
+
+    [, $meta] = $this->subscriberActions->subscribe([
+      'email' => 'capped-public-subscribe@example.com',
+      'first_name' => 'Updated',
+    ]);
+
+    $this->entityManager->refresh($subscriber);
+    verify($meta['confirmationEmailResult'])->false();
+    verify($subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $this->assertInstanceOf(\DateTimeInterface::class, $subscriber->getLastConfirmationEmailSentAt());
+    verify($subscriber->getLastConfirmationEmailSentAt()->format('Y-m-d H:i:s'))->equals($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'));
+    verify($subscriber->getUnconfirmedData())->equals(json_encode([
+      'email' => 'capped-public-subscribe@example.com',
+      'first_name' => 'Updated',
+    ]));
   }
 
   private function createNewsletter(): NewsletterEntity {

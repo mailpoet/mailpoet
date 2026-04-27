@@ -17,6 +17,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class ConfirmationEmailMailer {
 
@@ -73,11 +74,11 @@ class ConfirmationEmailMailer {
    * e.g. if sending confirmation emails from hooks
    * @throws \Exception if unable to send the email.
    */
-  public function sendConfirmationEmailOnce(SubscriberEntity $subscriber): bool {
+  public function sendConfirmationEmailOnce(SubscriberEntity $subscriber, bool $isPublicFormSend = false): bool {
     if (isset($this->sentEmails[$subscriber->getId()])) {
       return true;
     }
-    return $this->sendConfirmationEmail($subscriber);
+    return $this->sendConfirmationEmail($subscriber, $isPublicFormSend);
   }
 
   public function clearSentEmailsCache(): void {
@@ -87,7 +88,7 @@ class ConfirmationEmailMailer {
   /**
    * Send confirmation email using WooCommerce email system.
    */
-  private function sendWCConfirmationEmail(SubscriberEntity $subscriber): bool {
+  private function sendWCConfirmationEmail(SubscriberEntity $subscriber, bool $isPublicFormSend): bool {
     try {
       // Get WooCommerce email instance using the correct function
       if (!function_exists('WC')) {
@@ -113,15 +114,11 @@ class ConfirmationEmailMailer {
       $activation_link = $this->subscriptionUrlFactory->getConfirmationUrl($subscriber);
       $subscriber_firstname = $subscriber->getFirstName() ?: '';
 
-      $email->trigger($subscriber_email, $activation_link, $subscriber_firstname);
-
-      // Update confirmation count
-      if (!$this->wp->isUserLoggedIn()) {
-        $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
-        $this->subscribersRepository->persist($subscriber);
-        $this->subscribersRepository->flush();
+      if (!$email->trigger($subscriber_email, $activation_link, $subscriber_firstname)) {
+        return false;
       }
 
+      $this->recordSuccessfulConfirmationSend($subscriber, $isPublicFormSend);
       $this->sentEmails[$subscriber->getId()] = true;
       return true;
 
@@ -212,12 +209,15 @@ class ConfirmationEmailMailer {
   /**
    * @throws \Exception if unable to send the email.
    */
-  public function sendConfirmationEmail(SubscriberEntity $subscriber) {
+  public function sendConfirmationEmail(SubscriberEntity $subscriber, bool $isPublicFormSend = false) {
     $signupConfirmation = $this->settings->get('signup_confirmation');
     if ((bool)$signupConfirmation['enabled'] === false) {
       return false;
     }
-    if (!$this->wp->isUserLoggedIn() && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS) {
+    if (
+      ($isPublicFormSend || !$this->wp->isUserLoggedIn())
+      && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS
+    ) {
       return false;
     }
 
@@ -228,7 +228,7 @@ class ConfirmationEmailMailer {
     }
 
     // Try to send using WooCommerce email first. Only available in Garden environment.
-    if ($this->sendWCConfirmationEmail($subscriber)) {
+    if ($this->sendWCConfirmationEmail($subscriber, $isPublicFormSend)) {
       return true;
     }
 
@@ -272,13 +272,20 @@ class ConfirmationEmailMailer {
     // E-mail was successfully sent we need to update the MailerLog
     MailerLog::incrementSentCount();
 
-    if (!$this->wp->isUserLoggedIn()) {
-      $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
-      $this->subscribersRepository->persist($subscriber);
-      $this->subscribersRepository->flush();
-    }
+    $this->recordSuccessfulConfirmationSend($subscriber, $isPublicFormSend);
     $this->sentEmails[$subscriber->getId()] = true;
 
     return true;
+  }
+
+  private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber, bool $isPublicFormSend): void {
+    if ($isPublicFormSend || !$this->wp->isUserLoggedIn()) {
+      $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
+    }
+    if ($isPublicFormSend) {
+      $subscriber->setLastConfirmationEmailSentAt(Carbon::now());
+    }
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
   }
 }

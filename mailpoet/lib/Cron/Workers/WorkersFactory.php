@@ -26,6 +26,7 @@ class WorkersFactory {
     SubscriberLinkTokens::TASK_TYPE,
     UnsubscribeTokens::TASK_TYPE,
     InactiveSubscribers::TASK_TYPE,
+    UnconfirmedSubscribersCleanup::TASK_TYPE,
     SubscribersEmailCount::TASK_TYPE,
     StatsNotificationsWorkerForAutomatedEmails::TASK_TYPE,
     StatsNotificationsWorker::TASK_TYPE,
@@ -110,6 +111,11 @@ class WorkersFactory {
   /** @return InactiveSubscribers */
   public function createInactiveSubscribersWorker() {
     return $this->container->get(InactiveSubscribers::class);
+  }
+
+  /** @return UnconfirmedSubscribersCleanup */
+  public function createUnconfirmedSubscribersCleanupWorker() {
+    return $this->container->get(UnconfirmedSubscribersCleanup::class);
   }
 
   /** @return UnsubscribeTokens */
