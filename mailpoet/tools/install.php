@@ -3,13 +3,18 @@
 
 // Tools versions for PHP 7.4+
 $composerVersion = '2.9.3';
-$phpScoperVersion = '0.17.2';
+$legacyPhpScoperVersion = '0.17.2'; // 0.17.2 supports PHP 7.4-8.3; fails on 8.4+ due to bundled thecodingmachine/safe v2
+$phpScoperVersion = '0.18.19'; // 0.18.19 requires PHP 8.2+ and supports PHP 8.4 and 8.5
 $legacyTracyVersion = '2.9.4'; // Tracy 2.9.4 supports PHP 7.4
 $tracyVersion = '2.11.1'; // Tracy 2.11.0+ supports PHP 8.4 and 8.5
 
+$phpScoperUrl = PHP_VERSION_ID >= 80400
+  ? "https://github.com/humbug/php-scoper/releases/download/$phpScoperVersion/php-scoper.phar"
+  : "https://github.com/humbug/php-scoper/releases/download/$legacyPhpScoperVersion/php-scoper.phar";
+
 $tools = [
   "https://github.com/composer/composer/releases/download/$composerVersion/composer.phar" => 'composer.phar',
-  "https://github.com/humbug/php-scoper/releases/download/$phpScoperVersion/php-scoper.phar" => 'php-scoper.phar',
+  $phpScoperUrl => 'php-scoper.phar',
   "https://github.com/nette/tracy/releases/download/v$legacyTracyVersion/tracy.phar" => 'tracy-legacy.phar',
   "https://github.com/nette/tracy/releases/download/v$tracyVersion/tracy.phar" => 'tracy.phar',
 ];
