@@ -66,7 +66,7 @@ export function SubscriberStats(): JSX.Element {
             />
           </div>
           <ActivityShell
-            lastEngagementAt={stats.last_engagement_at}
+            lastEngagementAt={stats.last_engagement}
             params={params}
             location={location}
           />

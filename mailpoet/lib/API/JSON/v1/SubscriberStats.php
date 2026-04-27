@@ -133,7 +133,7 @@ class SubscriberStats extends APIEndpoint {
 
     $lastEngagement = $subscriber->getLastEngagementAt();
     if ($lastEngagement instanceof \DateTimeInterface) {
-      $response['last_engagement_at'] = $lastEngagement->format($dateFormat);
+      $response['last_engagement'] = $lastEngagement->format($dateFormat);
     }
     $lastClick = $subscriber->getLastClickAt();
     if ($lastClick instanceof \DateTimeInterface) {
