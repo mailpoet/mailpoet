@@ -121,7 +121,6 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
 
   public function testItExportsRecipientsFromFilterRows() {
     $newsletter = $this->createNewsletter(99, 'Recipients', null, '2026-02-01 00:00:00');
-    $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
 
     $rows = [
       [
