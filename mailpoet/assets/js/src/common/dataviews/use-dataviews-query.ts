@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { View } from '@wordpress/dataviews';
-import type {
-  ListingMeta,
-  ListingQueryParams,
-  ListingResponse,
-} from './types';
+import type { ListingMeta, ListingQueryParams, ListingResponse } from './types';
 
 export type LoadListing<T> = (
   params: ListingQueryParams,
