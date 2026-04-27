@@ -119,6 +119,23 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify(count($row))->equals(count($headers));
   }
 
+  public function testItExportsBulkAggregateAsCsv() {
+    $newsletterA = $this->createNewsletter(1, 'A', null, '2026-01-01 00:00:00');
+    $newsletterB = $this->createNewsletter(2, 'B', null, '2026-01-02 00:00:00');
+    $stats = $this->createStats(10, 5, 0, 2, 0, 1, null);
+
+    $exporter = $this->createExporter($stats);
+    $result = $exporter->exportBulkAggregate([$newsletterA, $newsletterB], StatisticsExporter::FORMAT_CSV);
+
+    verify($result['totalExported'])->equals(2);
+    $files = glob($this->tempDir . '/*.csv') ?: [];
+    verify($files)->arrayCount(1);
+
+    $body = substr((string)file_get_contents($files[0]), 3);
+    $lines = explode("\n", trim($body));
+    verify($lines)->arrayCount(3);
+  }
+
   public function testItExportsRecipientsFromFilterRows() {
     $newsletter = $this->createNewsletter(99, 'Recipients', null, '2026-02-01 00:00:00');
 
