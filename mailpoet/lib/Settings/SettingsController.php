@@ -15,6 +15,7 @@ class SettingsController {
   const DEFAULT_SENDING_STATUS_RETENTION_DAYS = '';
   const DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS = 30;
   const DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS = '';
+  const ALLOWED_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS = ['', '30'];
 
   private $loaded = false;
 
@@ -49,6 +50,9 @@ class SettingsController {
     }
     if (is_array($setting) && is_array($default)) {
       return array_replace_recursive($default, $setting);
+    }
+    if ($key === 'delete_unconfirmed_subscribers_after_days') {
+      return $this->normalizeDeleteUnconfirmedSubscribersAfterDays($setting);
     }
     return $setting;
   }
@@ -154,9 +158,7 @@ class SettingsController {
   public function getAll() {
     $this->ensureLoaded();
     $settings = array_replace_recursive($this->getAllDefaults(), $this->settings);
-    if (!in_array($settings['delete_unconfirmed_subscribers_after_days'], ['', '30'], true)) {
-      $settings['delete_unconfirmed_subscribers_after_days'] = self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS;
-    }
+    $settings['delete_unconfirmed_subscribers_after_days'] = $this->normalizeDeleteUnconfirmedSubscribersAfterDays($settings['delete_unconfirmed_subscribers_after_days']);
     return $settings;
   }
 
@@ -223,6 +225,13 @@ class SettingsController {
     }
 
     return $default;
+  }
+
+  private function normalizeDeleteUnconfirmedSubscribersAfterDays($value): string {
+    if (in_array($value, self::ALLOWED_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS, true)) {
+      return $value;
+    }
+    return self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS;
   }
 
   private function fetchValue($key) {

@@ -75,6 +75,14 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(2, $all['test_key2']);
   }
 
+  public function testItNormalizesInvalidDeleteUnconfirmedSubscribersSetting(): void {
+    $this->createOrUpdateSetting('delete_unconfirmed_subscribers_after_days', '7');
+    $this->controller->resetCache();
+
+    $this->assertSame('', $this->controller->get('delete_unconfirmed_subscribers_after_days'));
+    $this->assertSame('', $this->controller->getAll()['delete_unconfirmed_subscribers_after_days']);
+  }
+
   public function testItCanSetAtTopLevel() {
     $this->controller->set('test_key', 1);
     $this->assertEquals(1, $this->controller->get('test_key'));

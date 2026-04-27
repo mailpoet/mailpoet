@@ -390,6 +390,7 @@ class SubscribersRepository extends Repository {
         'limit' => $limit,
       ],
       [
+        'cutoff' => ParameterType::STRING,
         'limit' => ParameterType::INTEGER,
       ]
     )->fetchFirstColumn());

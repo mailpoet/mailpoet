@@ -72,6 +72,7 @@ class MarketingConfirmation extends \WC_Email {
    * @param string $to Email address to send to.
    * @param string $activation_link Activation link for the subscriber.
    * @param string $subscriber_firstname First name of the subscriber.
+   * @return bool True if the email was sent, false otherwise.
    */
   public function trigger($to, $activation_link = '', $subscriber_firstname = '') {
     $this->setup_locale();

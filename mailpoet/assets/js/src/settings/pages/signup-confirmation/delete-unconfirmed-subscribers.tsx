@@ -11,16 +11,20 @@ export function DeleteUnconfirmedSubscribers() {
 
   return (
     <>
-      <Label title={t('deleteUnconfirmedSubscribersTitle')} htmlFor="" />
+      <Label
+        title={t('deleteUnconfirmedSubscribersTitle')}
+        description={
+          <span id={warningId}>
+            {t('deleteUnconfirmedSubscribersDescription')}
+          </span>
+        }
+      />
       <Inputs>
         <div
           role="radiogroup"
           aria-label={t('deleteUnconfirmedSubscribersTitle')}
           aria-describedby={warningId}
         >
-          <p id={warningId} className="description">
-            {t('deleteUnconfirmedSubscribersDescription')}
-          </p>
           <div className="mailpoet-settings-inputs-row">
             <Radio
               id="delete-unconfirmed-subscribers-never"
@@ -29,7 +33,6 @@ export function DeleteUnconfirmedSubscribers() {
               value=""
               checked={deleteAfterDays === ''}
               onCheck={setDeleteAfterDays}
-              aria-describedby={warningId}
             />
             <label htmlFor="delete-unconfirmed-subscribers-never">
               {t('never')}
@@ -43,7 +46,6 @@ export function DeleteUnconfirmedSubscribers() {
               value="30"
               checked={deleteAfterDays === '30'}
               onCheck={setDeleteAfterDays}
-              aria-describedby={warningId}
             />
             <label htmlFor="delete-unconfirmed-subscribers-after-30-days">
               {t('deleteUnconfirmedSubscribersAfter30Days')}
