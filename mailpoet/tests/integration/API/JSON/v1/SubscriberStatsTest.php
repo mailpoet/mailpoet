@@ -113,6 +113,28 @@ class SubscriberStatsTest extends \MailPoetTest {
     verify(implode("\n", $shippingAddress))->stringContainsString('97403');
   }
 
+  /**
+   * @group woo
+   */
+  public function testItDoesNotQueryOrdersForNonWooSubscriberWhenWooActive(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('plain.subscriber@example.com')
+      ->withWpUserId(456)
+      ->withIsWooCommerceUser(false)
+      ->create();
+
+    $wooHelper = $this->createMock(WooCommerceHelper::class);
+    $wooHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooHelper->method('wcGetCustomer')->with(456)->willReturn(null);
+    $wooHelper->expects($this->never())->method('wcGetOrders');
+
+    $endpoint = $this->buildEndpoint($wooHelper);
+    $response = $endpoint->get(['subscriber_id' => $subscriber->getId()]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['profile']['shipping_address'])->equals([]);
+  }
+
   public function testItOmitsShippingAddressWhenWooInactive(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('no-woo@example.com')
