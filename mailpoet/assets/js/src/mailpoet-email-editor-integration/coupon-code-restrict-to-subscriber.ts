@@ -62,6 +62,7 @@ export const ensureRestrictToSubscriberAttributeRegistered = (): boolean => {
     return true;
   }
 
+  // Apply the same settings change if WooCommerce registered the block first.
   unregisterBlockType(COUPON_CODE_BLOCK_NAME);
   const settingsWithAttribute = addRestrictToSubscriberAttribute(
     settings,
@@ -78,7 +79,7 @@ export const ensureRestrictToSubscriberAttributeRegisteredWhenAvailable = (
     return;
   }
 
-  window.setTimeout(
+  setTimeout(
     () =>
       ensureRestrictToSubscriberAttributeRegisteredWhenAvailable(attempts - 1),
     250,

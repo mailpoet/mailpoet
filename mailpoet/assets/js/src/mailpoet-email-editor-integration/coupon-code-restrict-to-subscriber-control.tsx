@@ -25,8 +25,12 @@ const withRestrictToSubscriberControl = createHigherOrderComponent(
     function MailPoetCouponCodeRestrictToSubscriberControl(
       props: CouponCodeBlockEditProps,
     ): JSX.Element {
-      const restrictToSubscriberCopy = __(
+      const restrictToSubscriberLabel = __(
         "Limit this coupon to the recipient's email address.",
+        'mailpoet',
+      );
+      const restrictToSubscriberHelp = __(
+        'When enabled, the generated coupon can only be redeemed by the email address it was sent to.',
         'mailpoet',
       );
 
@@ -48,8 +52,8 @@ const withRestrictToSubscriberControl = createHigherOrderComponent(
                 checked={Boolean(
                   props.attributes[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE],
                 )}
-                label={restrictToSubscriberCopy}
-                help={restrictToSubscriberCopy}
+                label={restrictToSubscriberLabel}
+                help={restrictToSubscriberHelp}
                 onChange={(restrictToSubscriber) => {
                   props.setAttributes({
                     [RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]: restrictToSubscriber,
