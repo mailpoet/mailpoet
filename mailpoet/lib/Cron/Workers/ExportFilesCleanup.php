@@ -2,16 +2,31 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Config\Env;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoetVendor\Carbon\Carbon;
 
 class ExportFilesCleanup extends SimpleWorker {
   const TASK_TYPE = 'export_files_cleanup';
   const DELETE_FILES_AFTER_X_DAYS = 1;
+  const DELETE_STATS_FILES_AFTER_X_DAYS = 7;
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $iterator = new \GlobIterator(Export::getExportPath() . '/' . Export::getFilePrefix() . '*.*');
+    $this->cleanup(
+      Export::getExportPath() . '/' . Export::getFilePrefix() . '*.*',
+      self::DELETE_FILES_AFTER_X_DAYS
+    );
+    $this->cleanup(
+      Env::$tempPath . '/' . StatisticsExporter::FILE_PREFIX . '*.*',
+      self::DELETE_STATS_FILES_AFTER_X_DAYS
+    );
+    return true;
+  }
+
+  private function cleanup(string $globPattern, int $deleteAfterDays): void {
+    $iterator = new \GlobIterator($globPattern);
     foreach ($iterator as $file) {
       if (is_string($file)) {
         continue;
@@ -19,10 +34,9 @@ class ExportFilesCleanup extends SimpleWorker {
       $name = $file->getPathname();
       $created = $file->getMTime();
       $now = new Carbon();
-      if (Carbon::createFromTimestamp((int)$created)->lessThan($now->subDays(self::DELETE_FILES_AFTER_X_DAYS))) {
+      if (Carbon::createFromTimestamp((int)$created)->lessThan($now->subDays($deleteAfterDays))) {
         unlink($name);
-      };
+      }
     }
-    return true;
   }
 }
