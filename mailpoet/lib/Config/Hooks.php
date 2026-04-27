@@ -16,6 +16,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\GutenbergCouponGenerator;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WooCommerce\Subscription;
@@ -102,6 +103,8 @@ class Hooks {
   /** @var AdminUserSubscription */
   private $adminUserSubscription;
 
+  private GutenbergCouponGenerator $gutenbergCouponGenerator;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -123,7 +126,8 @@ class Hooks {
     WooSystemInfoController $wooSystemInfoController,
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
-    AdminUserSubscription $adminUserSubscription
+    AdminUserSubscription $adminUserSubscription,
+    GutenbergCouponGenerator $gutenbergCouponGenerator
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -146,6 +150,7 @@ class Hooks {
     $this->cronTrigger = $cronTrigger;
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
+    $this->gutenbergCouponGenerator = $gutenbergCouponGenerator;
   }
 
   public function init() {
@@ -160,6 +165,7 @@ class Hooks {
     $this->setupAutomateWooSubscriptionEvents();
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
+    $this->gutenbergCouponGenerator->init();
     $this->setupWoocommerceSystemInfo();
     $this->setupFooter();
     $this->setupSettingsLinkInPluginPage();

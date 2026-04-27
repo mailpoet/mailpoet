@@ -658,6 +658,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\FontFamilyValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\CouponPreProcessor::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponBlockDetector::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponGenerationFailureCollector::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponGenerator::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfo::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfoController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController::class)->setPublic(true);
