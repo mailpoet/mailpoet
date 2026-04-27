@@ -224,57 +224,47 @@ class SubscribersRepository extends Repository {
     $connection = $this->entityManager->getConnection();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
-    $connection->beginTransaction();
-    try {
-      $confirmationsCount = $connection->executeQuery(
-        "SELECT `count_confirmations`
-         FROM $subscriberTable
-         WHERE `id` = :id
-         FOR UPDATE",
-        ['id' => $subscriber->getId()],
-        ['id' => ParameterType::INTEGER]
-      )->fetchOne();
+    $confirmationsCount = $connection->executeQuery(
+      "SELECT `count_confirmations`
+       FROM $subscriberTable
+       WHERE `id` = :id",
+      ['id' => $subscriber->getId()],
+      ['id' => ParameterType::INTEGER]
+    )->fetchOne();
 
-      if (!is_int($confirmationsCount) && !is_string($confirmationsCount)) {
-        $connection->rollBack();
-        return false;
-      }
-
-      $confirmationsCount = (int)$confirmationsCount;
-      if ($confirmationsCount >= $maxConfirmationEmails) {
-        $this->entityManager->refresh($subscriber);
-        $connection->rollBack();
-        return false;
-      }
-
-      if (!$sendConfirmationEmail()) {
-        $connection->rollBack();
-        return false;
-      }
-
-      $connection->executeStatement(
-        "UPDATE $subscriberTable
-         SET `count_confirmations` = `count_confirmations` + 1,
-             `last_confirmation_email_sent_at` = :sent_at
-         WHERE `id` = :id",
-        [
-          'id' => $subscriber->getId(),
-          'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
-        ],
-        [
-          'id' => ParameterType::INTEGER,
-          'sent_at' => ParameterType::STRING,
-        ]
-      );
-
-      $this->entityManager->refresh($subscriber);
-      $connection->commit();
-      return true;
-    } catch (\Throwable $throwable) {
-      $connection->rollBack();
-      throw $throwable;
+    if (!is_int($confirmationsCount) && !is_string($confirmationsCount)) {
+      return false;
     }
 
+    if ((int)$confirmationsCount >= $maxConfirmationEmails) {
+      $this->entityManager->refresh($subscriber);
+      return false;
+    }
+
+    if (!$sendConfirmationEmail()) {
+      return false;
+    }
+
+    $updatedRows = (int)$connection->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` + 1,
+           `last_confirmation_email_sent_at` = :sent_at
+       WHERE `id` = :id
+       AND `count_confirmations` < :max_confirmation_emails",
+      [
+        'id' => $subscriber->getId(),
+        'max_confirmation_emails' => $maxConfirmationEmails,
+        'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'max_confirmation_emails' => ParameterType::INTEGER,
+        'sent_at' => ParameterType::STRING,
+      ]
+    );
+
+    $this->entityManager->refresh($subscriber);
+    return $updatedRows === 1;
   }
 
   /**
@@ -313,20 +303,10 @@ class SubscribersRepository extends Repository {
         return;
       }
 
-      $this->removeSubscribersFromAllSegments($deletedIds);
-
-      $entityManager->getConnection()->executeStatement("
-         DELETE scs FROM $subscriberCustomFieldTable scs
-         WHERE scs.`subscriber_id` IN (:ids)
-      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
-
-      $entityManager->getConnection()->executeStatement("
-         DELETE st FROM $subscriberTagTable st
-         WHERE st.`subscriber_id` IN (:ids)
-      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
-
-      $deletedCount = (int)$entityManager->getConnection()->executeStatement(
-        "DELETE FROM $subscriberTable
+      $markedAt = Carbon::now()->format('Y-m-d H:i:s');
+      $entityManager->getConnection()->executeStatement(
+        "UPDATE $subscriberTable
+         SET `deleted_at` = :marked_at
          WHERE `id` IN (:ids)
          AND `status` = :status
          AND `deleted_at` IS NULL
@@ -343,8 +323,63 @@ class SubscribersRepository extends Repository {
           'ids' => $deletedIds,
           'status' => SubscriberEntity::STATUS_UNCONFIRMED,
           'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+          'marked_at' => $markedAt,
         ],
-        ['ids' => ArrayParameterType::INTEGER]
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'cutoff' => ParameterType::STRING,
+          'marked_at' => ParameterType::STRING,
+        ]
+      );
+
+      $deletedIds = array_map(static function($id): int {
+        if (is_int($id)) {
+          return $id;
+        }
+        return is_string($id) ? (int)$id : 0;
+      }, $entityManager->getConnection()->executeQuery(
+        "SELECT `id`
+         FROM $subscriberTable
+         WHERE `id` IN (:ids)
+         AND `deleted_at` = :marked_at",
+        [
+          'ids' => $deletedIds,
+          'marked_at' => $markedAt,
+        ],
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'marked_at' => ParameterType::STRING,
+        ]
+      )->fetchFirstColumn());
+
+      if (empty($deletedIds)) {
+        return;
+      }
+
+      $this->removeSubscribersFromAllSegments($deletedIds);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE scs FROM $subscriberCustomFieldTable scs
+         WHERE scs.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE st FROM $subscriberTagTable st
+         WHERE st.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $deletedCount = (int)$entityManager->getConnection()->executeStatement(
+        "DELETE FROM $subscriberTable
+         WHERE `id` IN (:ids)
+         AND `deleted_at` = :marked_at",
+        [
+          'ids' => $deletedIds,
+          'marked_at' => $markedAt,
+        ],
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'marked_at' => ParameterType::STRING,
+        ]
       );
 
       if ($deletedCount !== count($deletedIds)) {
@@ -382,8 +417,7 @@ class SubscribersRepository extends Repository {
        AND s.`is_woocommerce_user` = 0
        AND $datePredicate
        ORDER BY s.`id` ASC
-       LIMIT :limit
-       FOR UPDATE",
+       LIMIT :limit",
       [
         'status' => SubscriberEntity::STATUS_UNCONFIRMED,
         'cutoff' => $cutoff->format('Y-m-d H:i:s'),

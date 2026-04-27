@@ -255,6 +255,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     }
     verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(0);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
   }
 
   public function testItLimitsAndRecordsPublicConfirmationEmailsForLoggedInUsers() {
@@ -353,12 +356,14 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
   }
 
-  public function testAvailableWooCommerceFailedPublicSendDoesNotFallbackOrRecordSend(): void {
+  public function testAvailableWooCommerceFailedPublicSendFallsBackToDefaultMailer(): void {
     $this->subscriber->setConfirmationsCount(1);
     $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => Stub\Expected::never(),
+      'send' => Stub\Expected::once(function() {
+        return ['response' => true];
+      }),
     ], $this);
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
@@ -375,10 +380,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       }
     };
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->false();
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->true();
     $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(1);
-    verify($this->subscriber->getLastConfirmationEmailSentAt())->null();
+    verify($this->subscriber->getConfirmationsCount())->equals(2);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
   }
 
   public function testAvailableWooCommercePublicSendRecordsSuccessWithoutFallback(): void {

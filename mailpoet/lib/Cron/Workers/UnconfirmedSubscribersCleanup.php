@@ -38,8 +38,12 @@ class UnconfirmedSubscribersCleanup extends SimpleWorker {
     $cutoff = Carbon::now()->millisecond(0)->subDays(self::RETENTION_DAYS);
 
     do {
+      if ($this->settings->fetch('delete_unconfirmed_subscribers_after_days') !== (string)self::RETENTION_DAYS) {
+        break;
+      }
+
       $deletedIds = $this->subscribersRepository->deleteUnconfirmedSubscribersForCleanup($cutoff, self::BATCH_SIZE);
-      if (count($deletedIds) < self::BATCH_SIZE) {
+      if (empty($deletedIds)) {
         break;
       }
 

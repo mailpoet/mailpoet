@@ -17,6 +17,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class ConfirmationEmailMailer {
 
@@ -259,9 +260,6 @@ class ConfirmationEmailMailer {
     if ($wcConfirmationEmailResult === self::WC_CONFIRMATION_SENT) {
       return true;
     }
-    if ($wcConfirmationEmailResult === self::WC_CONFIRMATION_FAILED) {
-      return false;
-    }
 
     $segments = $subscriber->getSegments()->toArray();
     $segmentNames = array_map(function(SegmentEntity $segment) {
@@ -310,6 +308,7 @@ class ConfirmationEmailMailer {
     if (!$this->wp->isUserLoggedIn()) {
       $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
     }
+    $subscriber->setLastConfirmationEmailSentAt(Carbon::now()->millisecond(0));
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
   }
