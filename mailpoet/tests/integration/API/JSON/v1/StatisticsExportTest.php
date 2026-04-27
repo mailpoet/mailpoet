@@ -5,7 +5,10 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\StatisticsExport;
 use MailPoet\Config\Env;
+use MailPoet\Cron\Workers\StatisticsExport as StatisticsExportWorker;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
@@ -118,5 +121,34 @@ class StatisticsExportTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['exportFileURL'])->stringEndsWith('.csv');
+  }
+
+  public function testItRejectsRecipientsExportWhenDetailedAnalyticsRestricted() {
+    $newsletter = (new NewsletterFactory())->create();
+    $response = $this->endpoint->exportRecipients([
+      'id' => $newsletter->getId(),
+      'format' => StatisticsExporter::FORMAT_CSV,
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+  }
+
+  public function testItReturns404ForUnknownStatusTask() {
+    $response = $this->endpoint->getStatus(['task_id' => 99999999]);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
+  public function testItReturnsStatusForScheduledExportTask() {
+    $task = new ScheduledTaskEntity();
+    $task->setType(StatisticsExportWorker::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setMeta(['job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS]);
+    $repo = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $repo->persist($task);
+    $repo->flush();
+
+    $response = $this->endpoint->getStatus(['task_id' => $task->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['taskId'])->equals($task->getId());
+    verify($response->data['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 }

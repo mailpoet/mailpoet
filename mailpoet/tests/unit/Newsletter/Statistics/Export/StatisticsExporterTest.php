@@ -119,6 +119,67 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify(count($row))->equals(count($headers));
   }
 
+  public function testItExportsRecipientsFromFilterRows() {
+    $newsletter = $this->createNewsletter(99, 'Recipients', null, '2026-02-01 00:00:00');
+    $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
+
+    $rows = [
+      [
+        'subscriber_id' => 1,
+        'email' => 'a@example.test',
+        'first_name' => 'Alice',
+        'last_name' => 'Smith',
+        'status' => 'subscribed',
+        'opened' => 'Y',
+        'first_open_at' => '2026-02-02 12:00:00',
+        'open_count' => 3,
+        'machine_opened' => 'N',
+        'clicked' => 'Y',
+        'click_count' => 1,
+        'bounced' => 'N',
+        'unsubscribed' => 'N',
+      ],
+    ];
+
+    $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'wpMkdirP' => true,
+      'applyFilters' => function (string $hook, $value) use ($rows) {
+        if ($hook === StatisticsExporter::FILTER_RECIPIENT_ROWS) {
+          return $rows;
+        }
+        return $value;
+      },
+    ]);
+    $exporter = new StatisticsExporter($repository, $wp);
+
+    $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
+    verify($result['totalExported'])->equals(1);
+
+    $files = glob($this->tempDir . '/*.csv') ?: [];
+    verify($files)->arrayCount(1);
+    $body = substr((string)file_get_contents($files[0]), 3);
+    $exportedRows = $this->parseCsvRows($body);
+    verify($exportedRows)->arrayCount(2);
+    verify($exportedRows[1][1])->equals('a@example.test');
+    verify($exportedRows[1][2])->equals('Alice');
+  }
+
+  public function testItExportsRecipientsAsEmptyFileWhenFilterReturnsNoRows() {
+    $newsletter = $this->createNewsletter(99, 'Empty', null, '2026-02-01 00:00:00');
+    $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'wpMkdirP' => true,
+      'applyFilters' => function (string $hook, $value) {
+        return $value;
+      },
+    ]);
+    $exporter = new StatisticsExporter($repository, $wp);
+
+    $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
+    verify($result['totalExported'])->equals(0);
+  }
+
   private function createExporter(NewsletterStatistics $stats): StatisticsExporter {
     $repository = $this->makeEmpty(NewsletterStatisticsRepository::class, [
       'getStatistics' => $stats,
