@@ -1,8 +1,18 @@
-import { Card, CardBody, CardHeader } from '@wordpress/components';
+import { useState } from 'react';
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  FlexBlock,
+  SelectControl,
+} from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { Location, Params } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { OpenedEmailsStats } from './opened-email-stats';
+
+export type ActivityEventType = 'all' | 'open' | 'click' | 'purchase';
 
 type Props = {
   lastEngagementAt?: string;
@@ -10,11 +20,19 @@ type Props = {
   params: Params;
 };
 
+const EVENT_TYPE_OPTIONS: Array<{ label: string; value: ActivityEventType }> = [
+  { label: __('All events', 'mailpoet'), value: 'all' },
+  { label: __('Email opens', 'mailpoet'), value: 'open' },
+  { label: __('Link clicks', 'mailpoet'), value: 'click' },
+  { label: __('Purchases', 'mailpoet'), value: 'purchase' },
+];
+
 export function ActivityShell({
   lastEngagementAt,
   location,
   params,
 }: Props): JSX.Element {
+  const [eventType, setEventType] = useState<ActivityEventType>('all');
   const subtitle = lastEngagementAt
     ? sprintf(
         // translators: %s is a date and time when the subscriber was last seen.
@@ -29,17 +47,33 @@ export function ActivityShell({
       size="medium"
     >
       <CardHeader className="mailpoet-subscriber-stats-card-header">
-        <div>
-          <h2 className="mailpoet-subscriber-stats-card-title">
-            {__('Activity', 'mailpoet')}
-          </h2>
-          <div className="mailpoet-subscriber-stats-card-subtitle">
-            {subtitle}
-          </div>
-        </div>
+        <Flex align="center" gap={3}>
+          <FlexBlock>
+            <div>
+              <h2 className="mailpoet-subscriber-stats-card-title">
+                {__('Activity', 'mailpoet')}
+              </h2>
+              <div className="mailpoet-subscriber-stats-card-subtitle">
+                {subtitle}
+              </div>
+            </div>
+          </FlexBlock>
+          <SelectControl
+            className="mailpoet-subscriber-stats-activity-filter"
+            hideLabelFromVision
+            label={__('Activity event type', 'mailpoet')}
+            onChange={(value) => setEventType(value as ActivityEventType)}
+            options={EVENT_TYPE_OPTIONS}
+            value={eventType}
+          />
+        </Flex>
       </CardHeader>
       <CardBody className="mailpoet-subscriber-stats-activity-body">
-        <OpenedEmailsStats params={params} location={location} />
+        <OpenedEmailsStats
+          eventType={eventType}
+          params={params}
+          location={location}
+        />
       </CardBody>
     </Card>
   );
