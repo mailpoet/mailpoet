@@ -15,7 +15,6 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
-import { ensureRestrictToSubscriberAttributeRegisteredWhenAvailable } from './coupon-code-restrict-to-subscriber';
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
@@ -165,7 +164,6 @@ const initializeMailPoetEmailEditor = (): void => {
 
   initStripPostStatusOnSaveMiddleware();
   initializeEditor('mailpoet-email-editor');
-  ensureRestrictToSubscriberAttributeRegisteredWhenAvailable();
 };
 /* eslint-enable global-require, @typescript-eslint/no-var-requires */
 

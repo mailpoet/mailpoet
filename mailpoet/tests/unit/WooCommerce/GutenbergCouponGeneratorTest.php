@@ -68,37 +68,8 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
   }
 
   public function testItGeneratesCouponForPositiveOneRecipientAutomationContext(): void {
-    $generatedCode = null;
-    $emailRestrictions = null;
-    $coupon = $this->getMockBuilder(\stdClass::class)
-      ->addMethods([
-        'set_code',
-        'set_description',
-        'set_discount_type',
-        'set_amount',
-        'set_date_expires',
-        'set_free_shipping',
-        'set_minimum_amount',
-        'set_maximum_amount',
-        'set_individual_use',
-        'set_exclude_sale_items',
-        'set_product_ids',
-        'set_excluded_product_ids',
-        'set_product_categories',
-        'set_excluded_product_categories',
-        'set_email_restrictions',
-        'set_usage_limit',
-        'set_usage_limit_per_user',
-        'save',
-      ])
-      ->getMock();
-    $coupon->method('set_code')->willReturnCallback(function($code) use (&$generatedCode): void {
-      $generatedCode = $code;
-    });
-    $coupon->method('set_email_restrictions')->willReturnCallback(function($restrictions) use (&$emailRestrictions): void {
-      $emailRestrictions = $restrictions;
-    });
-    $coupon->method('save')->willReturn(123);
+    /** @var object{generatedCode: string|null, emailRestrictions: array|null} $coupon */
+    $coupon = $this->createCouponStub();
 
     $collector = new GutenbergCouponGenerationFailureCollector();
     $generator = new GutenbergCouponGenerator(
@@ -126,8 +97,8 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
     ], $this->createPositiveRenderingContext());
 
     $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $result);
-    verify($generatedCode)->equals($result);
-    verify($emailRestrictions)->equals(['subscriber@example.com']);
+    verify($coupon->generatedCode)->equals($result);
+    verify($coupon->emailRestrictions)->equals(['subscriber@example.com']);
     verify($collector->hasFailures())->false();
   }
 
@@ -157,7 +128,7 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
   private function createPositiveRenderingContext(): Rendering_Context {
     return $this->createRenderingContext([
       'integration' => 'mailpoet',
-      'recipient_email' => 'subscriber@example.com',
+      'recipient_email' => 'Subscriber@Example.com',
       'newsletter_id' => 1,
       'queue_id' => 2,
       'email_type' => NewsletterEntity::TYPE_AUTOMATION,
@@ -186,4 +157,74 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
       },
     ]);
   }
+
+  // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Methods mirror WooCommerce coupon setters.
+  private function createCouponStub(): object {
+    return new class {
+      /** @var string|null */
+      public $generatedCode;
+
+      /** @var array|null */
+      public $emailRestrictions;
+
+      public function set_code(string $code): void {
+        $this->generatedCode = $code;
+      }
+
+      public function set_email_restrictions(array $restrictions): void {
+        $this->emailRestrictions = $restrictions;
+      }
+
+      public function save(): int {
+        return 123;
+      }
+
+      public function set_description(string $description): void {
+      }
+
+      public function set_discount_type(string $discountType): void {
+      }
+
+      public function set_amount(float $amount): void {
+      }
+
+      public function set_date_expires($date): void {
+      }
+
+      public function set_free_shipping(bool $freeShipping): void {
+      }
+
+      public function set_minimum_amount($minimumAmount): void {
+      }
+
+      public function set_maximum_amount($maximumAmount): void {
+      }
+
+      public function set_individual_use(bool $individualUse): void {
+      }
+
+      public function set_exclude_sale_items(bool $excludeSaleItems): void {
+      }
+
+      public function set_product_ids(array $productIds): void {
+      }
+
+      public function set_excluded_product_ids(array $excludedProductIds): void {
+      }
+
+      public function set_product_categories(array $productCategoryIds): void {
+      }
+
+      public function set_excluded_product_categories(array $excludedProductCategoryIds): void {
+      }
+
+      public function set_usage_limit(int $usageLimit): void {
+      }
+
+      public function set_usage_limit_per_user(int $usageLimitPerUser): void {
+      }
+    };
+  }
+
+  // phpcs:enable
 }

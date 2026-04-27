@@ -287,11 +287,12 @@ class Newsletter {
       return;
     }
 
-    $this->stopGutenbergCouponPreProcessing(
-      $newsletter,
-      $queue,
-      __('Auto-generated coupon codes are only supported in automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet')
+    $message = __(
+      'Auto-generated coupon codes are only supported in automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.',
+      'mailpoet'
     );
+    $this->stopGutenbergCouponPreProcessing($newsletter, $queue, $message);
+    throw NewsletterProcessingException::create()->withMessage($message);
   }
 
   private function renderNewsletterOrStop(NewsletterEntity $newsletter, SendingQueueEntity $queue): array {
@@ -299,11 +300,15 @@ class Newsletter {
       return $this->renderer->render($newsletter, $queue);
     } catch (NewsletterProcessingException $e) {
       $this->stopGutenbergCouponPreProcessing($newsletter, $queue, $e->getMessage());
-      throw $e;
+      throw NewsletterProcessingException::create($e)->withMessage($e->getMessage());
     }
   }
 
-  private function stopGutenbergCouponPreProcessing(NewsletterEntity $newsletter, SendingQueueEntity $queue, string $message): void {
+  private function stopGutenbergCouponPreProcessing(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    string $message
+  ): void {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
       $message,
       [
@@ -313,8 +318,6 @@ class Newsletter {
     );
     $this->newslettersRepository->setAsCorrupt($newsletter);
     $this->sendingQueuesRepository->pause($queue);
-
-    throw NewsletterProcessingException::create()->withMessage($message);
   }
 
   private function isAutomationType(NewsletterEntity $newsletter): bool {

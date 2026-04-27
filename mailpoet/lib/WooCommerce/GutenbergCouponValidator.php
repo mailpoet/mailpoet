@@ -34,7 +34,10 @@ class GutenbergCouponValidator {
 
     $emailRestrictions = $this->validateEmailRestrictions($attrs['emailRestrictions'] ?? []);
     if ($this->toBoolean($attrs['restrictToSubscriber'] ?? false)) {
-      $emailRestrictions[] = $recipientEmail;
+      $recipientEmailRestrictions = $this->validateEmailRestrictions([$recipientEmail]);
+      if (!empty($recipientEmailRestrictions)) {
+        $emailRestrictions[] = $recipientEmailRestrictions[0];
+      }
     }
 
     return [
