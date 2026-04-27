@@ -16,6 +16,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context';
 import { ErrorBoundary, withBoundary } from '../../common';
@@ -100,6 +101,45 @@ const columns = [
   },
 ];
 
+const handleBulkExportSuccess = (response, format) => {
+  if (!response?.data?.taskId) {
+    MailPoet.Notice.error(__('Could not start the export.', 'mailpoet'), {
+      scroll: true,
+    });
+    return;
+  }
+  MailPoet.Notice.success(
+    __(
+      'Export queued. The download will start automatically when it is ready.',
+      'mailpoet',
+    ),
+    { timeout: 6000 },
+  );
+  pollExportStatus(response.data.taskId, {
+    onComplete: (status) => {
+      if (!status.exportFileURL) {
+        MailPoet.Notice.error(
+          __('The export file could not be generated.', 'mailpoet'),
+          { scroll: true },
+        );
+        return;
+      }
+      MailPoet.trackEvent('Email statistics export completed', {
+        'File Format': format,
+        'Export Type': 'bulk',
+      });
+      window.location.href = status.exportFileURL;
+    },
+    onError: (message) => {
+      MailPoet.Notice.error(message, { scroll: true });
+    },
+  });
+};
+
+const isDetailedAnalyticsRestricted = () =>
+  !MailPoet.capabilities.detailedAnalytics ||
+  MailPoet.capabilities.detailedAnalytics.isRestricted;
+
 const bulkActions = [
   {
     name: 'trash',
@@ -107,6 +147,15 @@ const bulkActions = [
     onSuccess: messages.onTrash,
   },
 ];
+
+if (mailpoetTrackingEnabled && !isDetailedAnalyticsRestricted()) {
+  bulkActions.push({
+    name: 'export_stats',
+    label: __('Export statistics', 'mailpoet'),
+    getData: () => ({ format: 'csv' }),
+    onSuccess: (response) => handleBulkExportSuccess(response, 'csv'),
+  });
+}
 
 const confirmEdit = (newsletter) => {
   const editorHref = MailPoet.getActiveEmailEditorUrl(newsletter);
