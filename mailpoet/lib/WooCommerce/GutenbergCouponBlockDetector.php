@@ -20,6 +20,10 @@ class GutenbergCouponBlockDetector {
     return $this->blocksContainCreateNewCoupon($this->wp->parseBlocks($postContent));
   }
 
+  public function hasRecipientRestrictedCreateNewCouponBlock(string $postContent): bool {
+    return $this->blocksContainRecipientRestrictedCreateNewCoupon($this->wp->parseBlocks($postContent));
+  }
+
   private function blocksContainCreateNewCoupon(array $blocks): bool {
     foreach ($blocks as $block) {
       if (!is_array($block)) {
@@ -36,6 +40,29 @@ class GutenbergCouponBlockDetector {
 
       $innerBlocks = isset($block['innerBlocks']) && is_array($block['innerBlocks']) ? $block['innerBlocks'] : [];
       if ($innerBlocks && $this->blocksContainCreateNewCoupon($innerBlocks)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private function blocksContainRecipientRestrictedCreateNewCoupon(array $blocks): bool {
+    foreach ($blocks as $block) {
+      if (!is_array($block)) {
+        continue;
+      }
+
+      $blockName = $block['blockName'] ?? null;
+      if ($blockName === self::BLOCK_NAME) {
+        $attrs = isset($block['attrs']) && is_array($block['attrs']) ? $block['attrs'] : [];
+        if (($attrs['source'] ?? 'createNew') === 'createNew' && !empty($attrs['restrictToSubscriber'])) {
+          return true;
+        }
+      }
+
+      $innerBlocks = isset($block['innerBlocks']) && is_array($block['innerBlocks']) ? $block['innerBlocks'] : [];
+      if ($innerBlocks && $this->blocksContainRecipientRestrictedCreateNewCoupon($innerBlocks)) {
         return true;
       }
     }

@@ -188,6 +188,10 @@ class Renderer {
     ];
 
     if ($preview || !$sendingQueue || !$this->isAutomationType($newsletter)) {
+      if (!$preview && $sendingQueue && $newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
+        $context['is_real_send'] = true;
+        $context['subscriber_count'] = $this->getQueueSubscriberCount($sendingQueue);
+      }
       return $context;
     }
 
@@ -216,6 +220,12 @@ class Renderer {
     return $context;
   }
 
+  private function getQueueSubscriberCount(SendingQueueEntity $sendingQueue): int {
+    $task = $sendingQueue->getTask();
+    $subscribers = $task ? $task->getSubscribers() : null;
+    return $subscribers ? count($subscribers) : 0;
+  }
+
   private function isAutomationType(NewsletterEntity $newsletter): bool {
     return in_array($newsletter->getType(), [
       NewsletterEntity::TYPE_AUTOMATION,
@@ -225,7 +235,16 @@ class Renderer {
   }
 
   private function getGutenbergCouponFailureMessage(): string {
-    return __('Auto-generated coupon codes are only supported in automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
+    $failures = $this->gutenbergCouponFailureCollector->getFailures();
+    $firstFailure = $failures[0] ?? null;
+    if (is_array($firstFailure) && !empty($firstFailure['message']) && is_string($firstFailure['message'])) {
+      return sprintf(
+        // translators: %s is the specific coupon generation failure.
+        __('Auto-generated coupon code could not be created: %s', 'mailpoet'),
+        $firstFailure['message']
+      );
+    }
+    return __('Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
   }
 
   /**

@@ -2,4 +2,4 @@
 
 # Description
 
-Added recipient email restriction support for generated WooCommerce coupon blocks in automation emails
+Added generated WooCommerce coupon block support for regular newsletters and automation emails

@@ -65,8 +65,9 @@ class GutenbergCouponGenerator {
       return self::SAFE_PLACEHOLDER;
     }
 
-    if (!$this->isSupportedRealSendContext($renderingContext)) {
-      $this->recordFailure('invalid_real_send_context', 'Invalid MailPoet coupon generation context.', $attrs, $context);
+    $unsupportedContextMessage = $this->getUnsupportedRealSendContextMessage($attrs, $renderingContext);
+    if ($unsupportedContextMessage !== null) {
+      $this->recordFailure('invalid_real_send_context', $unsupportedContextMessage, $attrs, $context);
       return self::SAFE_PLACEHOLDER;
     }
 
@@ -114,7 +115,23 @@ class GutenbergCouponGenerator {
     }
   }
 
-  private function isSupportedRealSendContext(Rendering_Context $renderingContext): bool {
+  private function getUnsupportedRealSendContextMessage(array $attrs, Rendering_Context $renderingContext): ?string {
+    if ($this->isSupportedAutomationContext($renderingContext)) {
+      return null;
+    }
+
+    if ($this->validatorBoolean($attrs['restrictToSubscriber'] ?? false)) {
+      return 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.';
+    }
+
+    if ($this->isSupportedStandardContext($renderingContext)) {
+      return null;
+    }
+
+    return 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time.';
+  }
+
+  private function isSupportedAutomationContext(Rendering_Context $renderingContext): bool {
     $context = $renderingContext->get_email_context();
     $recipientEmail = $renderingContext->get_recipient_email();
     $automationTypes = [
@@ -133,6 +150,27 @@ class GutenbergCouponGenerator {
       && in_array($context['email_type'] ?? '', $automationTypes, true)
       && is_string($recipientEmail)
       && (bool)$this->wp->isEmail($recipientEmail);
+  }
+
+  private function isSupportedStandardContext(Rendering_Context $renderingContext): bool {
+    $context = $renderingContext->get_email_context();
+    return ($context['integration'] ?? null) === 'mailpoet'
+      && ($context['is_real_send'] ?? null) === true
+      && ($context['is_preview'] ?? null) === false
+      && ($context['email_type'] ?? '') === NewsletterEntity::TYPE_STANDARD
+      && ($context['mailpoet_is_automation'] ?? null) === false
+      && is_numeric($context['subscriber_count'] ?? null)
+      && (int)$context['subscriber_count'] >= 1;
+  }
+
+  private function validatorBoolean($value): bool {
+    if (is_bool($value)) {
+      return $value;
+    }
+    if (is_string($value)) {
+      return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
+    }
+    return (bool)$value;
   }
 
   private function generateUniqueCode(): string {

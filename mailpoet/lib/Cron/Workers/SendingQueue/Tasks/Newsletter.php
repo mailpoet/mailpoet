@@ -37,7 +37,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
-  const GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR = 'Auto-generated coupon codes are only supported in automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.';
+  const GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR = 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.';
+  const GUTENBERG_COUPON_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR = 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.';
 
   public $trackingEnabled;
   public $trackingImageInserted;
@@ -283,14 +284,16 @@ class Newsletter {
       return;
     }
 
-    if ($this->isAutomationType($newsletter) && $this->getTaskSubscriberCount($queue) === 1) {
+    $isAutomationSingleRecipient = $this->isAutomationType($newsletter) && $this->getTaskSubscriberCount($queue) === 1;
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $hasRecipientRestriction = $this->gutenbergCouponBlockDetector->hasRecipientRestrictedCreateNewCouponBlock($wpPost->post_content);
+    if ($isAutomationSingleRecipient || ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && !$hasRecipientRestriction)) {
       return;
     }
 
-    $message = __(
-      'Auto-generated coupon codes are only supported in automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.',
-      'mailpoet'
-    );
+    $message = $hasRecipientRestriction
+      ? __('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.', 'mailpoet')
+      : __('Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
     $this->stopGutenbergCouponPreProcessing($newsletter, $queue, $message);
     throw NewsletterProcessingException::create()->withMessage($message);
   }

@@ -102,6 +102,63 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
     verify($collector->hasFailures())->false();
   }
 
+  public function testItGeneratesCouponForStandardNewsletterContext(): void {
+    /** @var object{generatedCode: string|null, emailRestrictions: array|null} $coupon */
+    $coupon = $this->createCouponStub();
+
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $generator = new GutenbergCouponGenerator(
+      $this->make(Helper::class, [
+        'isWooCommerceActive' => true,
+        'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        'wcGetCouponIdByCode' => 0,
+        'createWcCoupon' => $coupon,
+      ]),
+      new GutenbergCouponValidator(
+        $this->make(Helper::class, [
+          'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        ]),
+        $this->makeWpFunctions()
+      ),
+      $collector,
+      $this->makeWpFunctions()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '10',
+    ], $this->createStandardRenderingContext());
+
+    $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $result);
+    verify($coupon->generatedCode)->equals($result);
+    verify($coupon->emailRestrictions)->equals([]);
+    verify($collector->hasFailures())->false();
+  }
+
+  public function testItRejectsRecipientRestrictionForStandardNewsletterContext(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $generator = new GutenbergCouponGenerator(
+      $this->make(Helper::class, [
+        'isWooCommerceActive' => true,
+      ]),
+      Stub::make(GutenbergCouponValidator::class),
+      $collector,
+      $this->makeWpFunctions()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '10',
+      'restrictToSubscriber' => true,
+    ], $this->createStandardRenderingContext());
+
+    verify($result)->equals(GutenbergCouponGenerator::SAFE_PLACEHOLDER);
+    verify($collector->hasFailures())->true();
+    verify($collector->getFailures()[0]['message'])->equals('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.');
+  }
+
   public function testItRecordsFailureAndReturnsPlaceholderForInvalidAttributes(): void {
     $collector = new GutenbergCouponGenerationFailureCollector();
     $helper = $this->make(Helper::class, [
@@ -137,6 +194,20 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
       'is_single_recipient' => true,
       'subscriber_count' => 1,
       'mailpoet_is_automation' => true,
+    ]);
+  }
+
+  private function createStandardRenderingContext(): Rendering_Context {
+    return $this->createRenderingContext([
+      'integration' => 'mailpoet',
+      'newsletter_id' => 1,
+      'queue_id' => 2,
+      'email_type' => NewsletterEntity::TYPE_STANDARD,
+      'is_real_send' => true,
+      'is_preview' => false,
+      'is_single_recipient' => false,
+      'subscriber_count' => 10,
+      'mailpoet_is_automation' => false,
     ]);
   }
 

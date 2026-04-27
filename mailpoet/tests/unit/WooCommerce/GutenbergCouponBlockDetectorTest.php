@@ -48,6 +48,36 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
     verify($detector->hasCreateNewCouponBlock('content'))->false();
   }
 
+  public function testItFindsRecipientRestrictedCreateNewCouponBlocks(): void {
+    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+      [
+        'blockName' => 'core/group',
+        'attrs' => [],
+        'innerBlocks' => [
+          [
+            'blockName' => 'woocommerce/coupon-code',
+            'attrs' => ['source' => 'createNew', 'restrictToSubscriber' => true],
+            'innerBlocks' => [],
+          ],
+        ],
+      ],
+    ]));
+
+    verify($detector->hasRecipientRestrictedCreateNewCouponBlock('content'))->true();
+  }
+
+  public function testItIgnoresRecipientRestrictionOnExistingCouponBlocks(): void {
+    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+      [
+        'blockName' => 'woocommerce/coupon-code',
+        'attrs' => ['source' => 'existing', 'restrictToSubscriber' => true],
+        'innerBlocks' => [],
+      ],
+    ]));
+
+    verify($detector->hasRecipientRestrictedCreateNewCouponBlock('content'))->false();
+  }
+
   private function makeWpFunctions(array $blocks): WPFunctions {
     return $this->make(WPFunctions::class, [
       'parseBlocks' => $blocks,
