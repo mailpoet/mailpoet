@@ -41,10 +41,10 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
   }
 
   public function testItExportsAggregateAsCsvWithBomAndHeader() {
-    $newsletter = $this->createNewsletter(123, 'Spring sale!', 'Spring 2026', '2026-04-15 10:00:00');
+    $newsletter = $this->createNewsletter(123, 'Spring "sale"!', 'Spring, 2026', '2026-04-15 10:00:00');
     $stats = $this->createStats(500, 200, 30, 80, 5, 10, null);
 
-    $exporter = $this->createExporter($newsletter, $stats);
+    $exporter = $this->createExporter($stats);
     $result = $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
 
     verify($result['totalExported'])->equals(1);
@@ -77,7 +77,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $revenue = new WooCommerceRevenue('USD', 1234.56, 12, $this->makeEmpty(Helper::class));
     $stats = $this->createStats(1000, 400, 50, 200, 10, 20, $revenue);
 
-    $exporter = $this->createExporter($newsletter, $stats);
+    $exporter = $this->createExporter($stats);
     $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
 
     $files = glob($this->tempDir . '/*.csv') ?: [];
@@ -97,7 +97,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $newsletter = $this->createNewsletter(42, 'Hello', null, '2026-01-01 00:00:00');
     $stats = $this->createStats(10, 5, 0, 1, 0, 0, null);
 
-    $exporter = $this->createExporter($newsletter, $stats);
+    $exporter = $this->createExporter($stats);
     $result = $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_XLSX);
 
     verify($result['exportFileURL'])->stringEndsWith('.xlsx');
@@ -109,7 +109,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
   public function testItRejectsUnsupportedFormat() {
     $newsletter = $this->createNewsletter(1, 'x', null, null);
     $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
-    $exporter = $this->createExporter($newsletter, $stats);
+    $exporter = $this->createExporter($stats);
 
     $this->expectException(\InvalidArgumentException::class);
     $exporter->exportSingleAggregate($newsletter, 'pdf');
@@ -118,7 +118,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
   public function testBuildAggregateRowMatchesHeaderColumnCount() {
     $newsletter = $this->createNewsletter(1, 's', null, null);
     $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
-    $exporter = $this->createExporter($newsletter, $stats);
+    $exporter = $this->createExporter($stats);
 
     $headers = $exporter->getAggregateHeaders();
     $row = $exporter->buildAggregateRow($newsletter, $stats);
@@ -126,7 +126,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify(count($row))->equals(count($headers));
   }
 
-  private function createExporter(NewsletterEntity $newsletter, NewsletterStatistics $stats): StatisticsExporter {
+  private function createExporter(NewsletterStatistics $stats): StatisticsExporter {
     $repository = $this->makeEmpty(NewsletterStatisticsRepository::class, [
       'getStatistics' => $stats,
     ]);
