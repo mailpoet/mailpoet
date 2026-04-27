@@ -20,6 +20,7 @@ import {
   Tag,
   getNewsletterStatusString,
 } from 'common';
+import { ExportButton } from './export-button';
 import { NewsletterType } from './newsletter-type';
 
 // Menu Item type definition in @wordpress/components is missing variant and isBusy property
@@ -324,6 +325,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
       </div>
       <div className="mailpoet-stats-button-group">
         <ButtonGroup>
+          <ExportButton newsletter={newsletter} />
           <Button
             href={newsletter.preview_url}
             target="_blank"
