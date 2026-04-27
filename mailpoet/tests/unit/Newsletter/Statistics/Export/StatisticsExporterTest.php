@@ -58,18 +58,17 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     // Starts with the UTF-8 BOM (EF BB BF).
     verify(substr($content, 0, 3))->equals(chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-    $body = substr($content, 3);
-    $lines = explode("\n", trim($body));
-    verify($lines)->arrayCount(2);
-    verify($lines[0])->stringContainsString('Newsletter ID');
-    verify($lines[0])->stringContainsString('Subject');
-    verify($lines[0])->stringContainsString('Total sent');
-    verify($lines[0])->stringContainsString('Revenue');
-    verify($lines[1])->stringContainsString('"123"');
-    verify($lines[1])->stringContainsString('"Spring sale!"');
-    verify($lines[1])->stringContainsString('"Spring 2026"');
-    verify($lines[1])->stringContainsString('"2026-04-15 10:00:00"');
-    verify($lines[1])->stringContainsString('"500"');
+    $rows = $this->parseCsvRows(substr($content, 3));
+    verify($rows)->arrayCount(2);
+    verify($rows[0][0])->equals('Newsletter ID');
+    verify($rows[0][1])->equals('Subject');
+    verify($rows[0][4])->equals('Total sent');
+    verify($rows[0][10])->equals('Revenue');
+    verify($rows[1][0])->equals('123');
+    verify($rows[1][1])->equals('Spring "sale"!');
+    verify($rows[1][2])->equals('Spring, 2026');
+    verify($rows[1][3])->equals('2026-04-15 10:00:00');
+    verify($rows[1][4])->equals('500');
   }
 
   public function testItIncludesWooCommerceRevenueColumnsWhenPresent() {
@@ -81,13 +80,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
 
     $files = glob($this->tempDir . '/*.csv') ?: [];
-    $body = substr((string)file_get_contents($files[0]), 3);
-    $rows = array_map(
-      static function (string $line): array {
-        return str_getcsv($line, ',', '"', '\\');
-      },
-      explode("\n", trim($body))
-    );
+    $rows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
     verify($rows[1][10])->equals('1234.56');
     verify($rows[1][11])->equals('USD');
     verify($rows[1][12])->equals('12');
@@ -134,6 +127,18 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       'wpMkdirP' => true,
     ]);
     return new StatisticsExporter($repository, $wp);
+  }
+
+  /**
+   * @return array<array<string|null>>
+   */
+  private function parseCsvRows(string $body): array {
+    return array_map(
+      static function (string $line): array {
+        return str_getcsv($line, ',', '"', '');
+      },
+      explode("\n", trim($body))
+    );
   }
 
   private function createNewsletter(int $id, string $subject, ?string $campaignName, ?string $sentAt): NewsletterEntity {

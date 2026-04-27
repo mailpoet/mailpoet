@@ -137,11 +137,7 @@ class StatisticsExporter {
    * @param array<int|string|float|null> $row
    */
   private function writeCsvLine($handle, array $row): void {
-    $escaped = [];
-    foreach ($row as $cell) {
-      $escaped[] = '"' . str_replace('"', '\"', (string)$cell) . '"';
-    }
-    fwrite($handle, implode(',', $escaped) . "\n");
+    fputcsv($handle, array_map('strval', $row), ',', '"', '');
   }
 
   /**
