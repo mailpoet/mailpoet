@@ -36,6 +36,7 @@ class WorkersFactory {
     SendingTaskSubscribersCleanup::TASK_TYPE,
     SendingQueueBodyCleanup::TASK_TYPE,
     Tracks::TASK_TYPE,
+    StatisticsExport::TASK_TYPE,
   ];
 
   /** @var ContainerWrapper */
@@ -183,5 +184,10 @@ class WorkersFactory {
 
   public function createTracksWorker() {
     return $this->container->get(Tracks::class);
+  }
+
+  /** @return StatisticsExport */
+  public function createStatisticsExportWorker() {
+    return $this->container->get(StatisticsExport::class);
   }
 }
