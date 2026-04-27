@@ -25,6 +25,17 @@ module.exports = [
     ...config,
     files: ['assets/js/src/**/*.{ts,tsx}'],
   })),
+  ...esTsConfig.map((config) => ({
+    ...config,
+    files: ['tests/javascript/**/*.ts'],
+    languageOptions: {
+      ...config.languageOptions,
+      globals: {
+        ...config.languageOptions?.globals,
+        ...globals.mocha,
+      },
+    },
+  })),
 
   // ES5 config overrides
   {
