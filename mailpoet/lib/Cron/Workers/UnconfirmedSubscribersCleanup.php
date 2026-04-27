@@ -30,7 +30,7 @@ class UnconfirmedSubscribersCleanup extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    if ($this->settings->get('delete_unconfirmed_subscribers_after_days') !== '30') {
+    if ($this->settings->get('delete_unconfirmed_subscribers_after_days') !== (string)self::RETENTION_DAYS) {
       $this->schedule();
       return true;
     }

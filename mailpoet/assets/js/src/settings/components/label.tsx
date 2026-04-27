@@ -3,15 +3,19 @@ import { ReactNode } from 'react';
 type Props = {
   title: string;
   description?: ReactNode;
-  htmlFor: string;
+  htmlFor?: string;
 };
 
 export function Label({ title, description, htmlFor }: Props) {
   return (
     <div className="mailpoet-settings-label">
-      <label className="mailpoet-settings-label-title" htmlFor={htmlFor}>
-        {title}
-      </label>
+      {htmlFor ? (
+        <label className="mailpoet-settings-label-title" htmlFor={htmlFor}>
+          {title}
+        </label>
+      ) : (
+        <div className="mailpoet-settings-label-title">{title}</div>
+      )}
       {description && <p className="description">{description}</p>}
     </div>
   );
