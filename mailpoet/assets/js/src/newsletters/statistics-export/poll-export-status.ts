@@ -13,6 +13,7 @@ export type StatusPayload = {
 
 const POLL_INTERVAL_MS = 2500;
 const POLL_TIMEOUT_MS = 5 * 60 * 1000;
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 export const fetchExportStatus = (taskId: number) =>
   MailPoet.Ajax.post({
@@ -33,6 +34,7 @@ export function pollExportStatus(
 ): { cancel: () => void } {
   let timer: number | null = null;
   let cancelled = false;
+  let consecutiveFailures = 0;
   const startedAt = Date.now();
 
   const cancel = () => {
@@ -62,6 +64,7 @@ export function pollExportStatus(
         if (cancelled) {
           return;
         }
+        consecutiveFailures = 0;
         if (status.error) {
           options.onError(status.error);
           return;
@@ -76,10 +79,15 @@ export function pollExportStatus(
         if (cancelled) {
           return;
         }
-        const message =
-          response?.errors?.[0]?.message ??
-          __('Could not check the export status.', 'mailpoet');
-        options.onError(message);
+        consecutiveFailures += 1;
+        if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+          const message =
+            response?.errors?.[0]?.message ??
+            __('Could not check the export status.', 'mailpoet');
+          options.onError(message);
+          return;
+        }
+        timer = window.setTimeout(tick, POLL_INTERVAL_MS);
       });
   };
 
