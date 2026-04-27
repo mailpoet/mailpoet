@@ -15,6 +15,5 @@ interface Window {
     };
   };
   mailpoet_is_automation_newsletter: boolean;
-  mailpoet_gutenberg_coupon_generation_available: boolean;
   mailpoet_ai_text_generation_available?: boolean;
 }

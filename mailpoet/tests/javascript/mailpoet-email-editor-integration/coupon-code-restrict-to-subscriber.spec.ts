@@ -49,7 +49,7 @@ describe('coupon code restrictToSubscriber extension', () => {
     removeAllFilters('blocks.registerBlockType', FILTER_NAMESPACE);
   });
 
-  it('adds the attribute to the coupon code block when the feature is available', () => {
+  it('adds the attribute to generated coupon code blocks', () => {
     const settings = addRestrictToSubscriberAttribute(
       {
         attributes: {
@@ -62,7 +62,6 @@ describe('coupon code restrictToSubscriber extension', () => {
         title: 'Coupon Code',
       },
       COUPON_CODE_BLOCK_NAME,
-      true,
     );
 
     expect(
@@ -73,15 +72,20 @@ describe('coupon code restrictToSubscriber extension', () => {
     });
   });
 
-  it('does not add the attribute outside the MailPoet feature gate', () => {
+  it('does not add the attribute when the Woo generated coupon contract is unavailable', () => {
     const settings = {
-      attributes: {},
+      attributes: {
+        couponCode: {
+          default: '',
+          type: 'string',
+        },
+      },
       category: 'text',
       title: 'Coupon Code',
     };
 
     expect(
-      addRestrictToSubscriberAttribute(settings, COUPON_CODE_BLOCK_NAME, false),
+      addRestrictToSubscriberAttribute(settings, COUPON_CODE_BLOCK_NAME),
     ).to.equal(settings);
   });
 
@@ -101,7 +105,7 @@ describe('coupon code restrictToSubscriber extension', () => {
       title: 'Coupon Code',
     });
 
-    ensureRestrictToSubscriberAttributeRegistered(true);
+    ensureRestrictToSubscriberAttributeRegistered();
 
     const block = createBlock(COUPON_CODE_BLOCK_NAME, {
       restrictToSubscriber: true,
@@ -126,7 +130,6 @@ describe('coupon code restrictToSubscriber extension', () => {
         attributes: { source: 'createNew' },
         blockName: COUPON_CODE_BLOCK_NAME,
         isAutomationNewsletter: true,
-        isFeatureAvailable: true,
       }),
     ).to.equal(true);
 
@@ -135,7 +138,6 @@ describe('coupon code restrictToSubscriber extension', () => {
         attributes: { source: 'existing' },
         blockName: COUPON_CODE_BLOCK_NAME,
         isAutomationNewsletter: true,
-        isFeatureAvailable: true,
       }),
     ).to.equal(false);
 
@@ -144,7 +146,6 @@ describe('coupon code restrictToSubscriber extension', () => {
         attributes: { source: 'createNew' },
         blockName: COUPON_CODE_BLOCK_NAME,
         isAutomationNewsletter: false,
-        isFeatureAvailable: true,
       }),
     ).to.equal(false);
   });
@@ -158,7 +159,7 @@ describe('coupon code restrictToSubscriber extension', () => {
       (
         settings: Blocks.BlockConfiguration<Record<string, unknown>>,
         blockName: string,
-      ) => addRestrictToSubscriberAttribute(settings, blockName, true),
+      ) => addRestrictToSubscriberAttribute(settings, blockName),
     );
 
     registerBlockType(COUPON_CODE_BLOCK_NAME, {

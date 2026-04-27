@@ -17,21 +17,20 @@ type RestrictToSubscriberVisibility = {
   attributes?: CouponCodeAttributes;
   blockName: string;
   isAutomationNewsletter?: boolean;
-  isFeatureAvailable?: boolean;
 };
 
-export const isMailPoetCouponGenerationAvailable = (): boolean =>
-  Boolean(
-    window.mailpoet_is_automation_newsletter &&
-      window.mailpoet_gutenberg_coupon_generation_available,
-  );
+const hasGeneratedCouponSource = (
+  settings: BlockConfiguration<Record<string, unknown>>,
+): boolean => Boolean(settings.attributes?.source);
 
 export const addRestrictToSubscriberAttribute = (
   settings: BlockConfiguration<Record<string, unknown>>,
   blockName: string,
-  isFeatureAvailable = isMailPoetCouponGenerationAvailable(),
 ): BlockConfiguration<Record<string, unknown>> => {
-  if (blockName !== COUPON_CODE_BLOCK_NAME || !isFeatureAvailable) {
+  if (
+    blockName !== COUPON_CODE_BLOCK_NAME ||
+    !hasGeneratedCouponSource(settings)
+  ) {
     return settings;
   }
 
@@ -47,40 +46,35 @@ export const addRestrictToSubscriberAttribute = (
   };
 };
 
-export const ensureRestrictToSubscriberAttributeRegistered = (
-  isFeatureAvailable = isMailPoetCouponGenerationAvailable(),
-): void => {
-  if (!isFeatureAvailable) {
-    return;
-  }
-
+export const ensureRestrictToSubscriberAttributeRegistered = (): boolean => {
   const settings = getBlockType(COUPON_CODE_BLOCK_NAME) as
     | BlockConfiguration<Record<string, unknown>>
     | undefined;
 
-  if (!settings || settings.attributes?.[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]) {
-    return;
+  if (!settings) {
+    return false;
+  }
+
+  if (
+    !hasGeneratedCouponSource(settings) ||
+    settings.attributes?.[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]
+  ) {
+    return true;
   }
 
   unregisterBlockType(COUPON_CODE_BLOCK_NAME);
   const settingsWithAttribute = addRestrictToSubscriberAttribute(
     settings,
     COUPON_CODE_BLOCK_NAME,
-    true,
   ) as unknown as Parameters<typeof registerBlockType>[1];
   registerBlockType(COUPON_CODE_BLOCK_NAME, settingsWithAttribute);
+  return true;
 };
 
 export const ensureRestrictToSubscriberAttributeRegisteredWhenAvailable = (
   attempts = 20,
 ): void => {
-  ensureRestrictToSubscriberAttributeRegistered();
-
-  const settings = getBlockType(COUPON_CODE_BLOCK_NAME);
-  if (
-    attempts <= 0 ||
-    settings?.attributes?.[RESTRICT_TO_SUBSCRIBER_ATTRIBUTE]
-  ) {
+  if (attempts <= 0 || ensureRestrictToSubscriberAttributeRegistered()) {
     return;
   }
 
@@ -95,11 +89,7 @@ export const shouldShowRestrictToSubscriberControl = ({
   attributes,
   blockName,
   isAutomationNewsletter = Boolean(window.mailpoet_is_automation_newsletter),
-  isFeatureAvailable = Boolean(
-    window.mailpoet_gutenberg_coupon_generation_available,
-  ),
 }: RestrictToSubscriberVisibility): boolean =>
   blockName === COUPON_CODE_BLOCK_NAME &&
   isAutomationNewsletter &&
-  isFeatureAvailable &&
   attributes?.source === 'createNew';
