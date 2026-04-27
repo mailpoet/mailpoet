@@ -235,12 +235,13 @@ class SubscribersRepository extends Repository {
         ['id' => ParameterType::INTEGER]
       )->fetchOne();
 
-      if ($confirmationsCount === false) {
+      if (!is_int($confirmationsCount) && !is_string($confirmationsCount)) {
         $connection->rollBack();
         return false;
       }
 
-      if ((int)$confirmationsCount >= $maxConfirmationEmails) {
+      $confirmationsCount = (int)$confirmationsCount;
+      if ($confirmationsCount >= $maxConfirmationEmails) {
         $this->entityManager->refresh($subscriber);
         $connection->rollBack();
         return false;
