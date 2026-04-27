@@ -196,7 +196,6 @@ class EditorPageRenderer {
       'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
       'mailpoet_automation_id' => $automationId,
-      'mailpoet_gutenberg_coupon_generation_available' => true,
       'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
     ];
