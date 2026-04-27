@@ -423,11 +423,14 @@ class Settings extends APIEndpoint {
   }
 
   private function validateSettingsBeforeSave(array $settings): ?string {
-    if (
-      array_key_exists('delete_unconfirmed_subscribers_after_days', $settings)
-      && !in_array($settings['delete_unconfirmed_subscribers_after_days'], ['', '30'], true)
-    ) {
-      return __('Invalid value for deleting unconfirmed subscribers.', 'mailpoet');
+    foreach ($settings as $name => $value) {
+      if (explode('.', (string)$name)[0] !== 'delete_unconfirmed_subscribers_after_days') {
+        continue;
+      }
+
+      if (!in_array($value, SettingsController::ALLOWED_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS, true)) {
+        return __('Invalid value for deleting unconfirmed subscribers.', 'mailpoet');
+      }
     }
     return null;
   }

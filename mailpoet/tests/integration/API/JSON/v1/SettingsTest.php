@@ -274,6 +274,15 @@ class SettingsTest extends \MailPoetTest {
     verify($this->settings->get('some.setting.key'))->true();
   }
 
+  public function testItRejectsInvalidDottedDeleteUnconfirmedSubscribersSetting(): void {
+    $response = $this->endpoint->set([
+      'delete_unconfirmed_subscribers_after_days.value' => '7',
+    ]);
+
+    verify($response->status)->same(400);
+    verify($this->settings->get('delete_unconfirmed_subscribers_after_days'))->same('');
+  }
+
   public function testItSchedulesUnconfirmedSubscribersCleanupWhenEnabled(): void {
     $this->settings->set('delete_unconfirmed_subscribers_after_days', '');
 

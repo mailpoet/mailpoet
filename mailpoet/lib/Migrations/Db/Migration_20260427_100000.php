@@ -15,20 +15,6 @@ class Migration_20260427_100000 extends DbMigration {
       );
     }
 
-    if (!$this->indexExists($subscribersTable, 'idx_sub_cleanup_confirmation')) {
-      $this->connection->executeQuery(
-        "ALTER TABLE `{$subscribersTable}`
-          ADD INDEX `idx_sub_cleanup_confirmation` (
-            `status`,
-            `deleted_at`,
-            `wp_user_id`,
-            `is_woocommerce_user`,
-            `last_confirmation_email_sent_at`,
-            `id`
-          )"
-      );
-    }
-
     if (!$this->indexExists($subscribersTable, 'idx_sub_cleanup_legacy')) {
       $this->connection->executeQuery(
         "ALTER TABLE `{$subscribersTable}`
