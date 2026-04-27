@@ -323,6 +323,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createBackfillEngagementDataWorker' => $worker,
       'createMixpanelWorker' => $worker,
       'createTracksWorker' => $worker,
+      'createStatisticsExportWorker' => $worker,
       ]);
   }
 }
