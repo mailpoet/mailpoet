@@ -22,7 +22,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PatternsController {
-  private const MIN_WOOCOMMERCE_VERSION_FOR_COUPON_BLOCK = '10.5.0';
+  private const MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK = '10.8.0';
 
   private CdnAssetUrl $cdnAssetUrl;
   private WPFunctions $wp;
@@ -96,11 +96,11 @@ class PatternsController {
         new AbandonedCartPattern($this->cdnAssetUrl),
       ]);
 
-      // Patterns using the coupon block require WooCommerce 10.5.0+
+      // Patterns using generated coupons require WooCommerce 10.8.0+
       $wooCommerceVersion = $this->wooCommerceHelper->getWooCommerceVersion();
       // Strip pre-release suffixes (e.g., -rc1, -beta1) to ensure RC/beta versions pass the check
       $wooCommerceVersion = $wooCommerceVersion ? preg_replace('/[^0-9.].*/', '', $wooCommerceVersion) : null;
-      if ($wooCommerceVersion && version_compare($wooCommerceVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_COUPON_BLOCK, '>=')) {
+      if ($wooCommerceVersion && version_compare($wooCommerceVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK, '>=')) {
         $this->patterns = array_merge($this->patterns, [
           new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
           new WinBackCustomerPattern($this->cdnAssetUrl),

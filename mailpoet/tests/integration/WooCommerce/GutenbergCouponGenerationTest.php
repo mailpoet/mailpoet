@@ -65,10 +65,28 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $newsletter->getStatus());
   }
 
-  public function testItBlocksNonAutomationCreateNewCouponBeforeRender(): void {
+  public function testItAllowsStandardNewslettersWithGeneratedCouponBlocksToRender(): void {
     $newsletter = $this->createGutenbergNewsletter(
       NewsletterEntity::TYPE_STANDARD,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15']),
+      2
+    );
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
+
+    $body = $queue->getNewsletterRenderedBody();
+    $this->assertIsArray($body);
+    $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $newsletter->getStatus());
+  }
+
+  public function testItBlocksRecipientRestrictedStandardNewsletterBeforeRender(): void {
+    $newsletter = $this->createGutenbergNewsletter(
+      NewsletterEntity::TYPE_STANDARD,
+      $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15', 'restrictToSubscriber' => true]),
       1
     );
     $queue = $newsletter->getLatestQueue();
@@ -77,7 +95,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
     $this->expectException(NewsletterProcessingException::class);
-    $this->expectExceptionMessage(NewsletterTask::GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR);
+    $this->expectExceptionMessage(NewsletterTask::GUTENBERG_COUPON_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR);
 
     (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
   }
@@ -130,7 +148,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
       (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
       $this->fail('Expected collected coupon generation failure to stop preprocessing.');
     } catch (NewsletterProcessingException $e) {
-      $this->assertSame(NewsletterTask::GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR, $e->getMessage());
+      $this->assertSame('Auto-generated coupon code could not be created: Forced generation failure.', $e->getMessage());
     } finally {
       WPFunctions::get()->removeFilter('woocommerce_email_editor_rendering_email_context', $forcedFailure, 20);
     }
