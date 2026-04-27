@@ -45,6 +45,7 @@ class StatisticsExport extends SimpleWorker {
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $meta = $task->getMeta() ?? [];
+    unset($meta['export_file_url'], $meta['total_exported'], $meta['error']);
     $jobType = isset($meta['job_type']) ? (string)$meta['job_type'] : '';
     $format = isset($meta['format']) ? (string)$meta['format'] : StatisticsExporter::FORMAT_CSV;
 
