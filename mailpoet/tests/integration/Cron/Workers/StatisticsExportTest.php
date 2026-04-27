@@ -39,7 +39,6 @@ class StatisticsExportTest extends \MailPoetTest {
   }
 
   public function _after() {
-    parent::_after();
     foreach (glob($this->tempDir . '/*') ?: [] as $file) {
       unlink($file);
     }
@@ -48,6 +47,8 @@ class StatisticsExportTest extends \MailPoetTest {
     }
     Env::$tempPath = $this->previousTempPath;
     Env::$tempUrl = $this->previousTempUrl;
+
+    parent::_after();
   }
 
   public function testItProcessesRecipientsExportTask() {
