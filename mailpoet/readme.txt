@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.23.2
+Stable tag: 5.24.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,22 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.23.2 - 2026-04-15 =
-* Updated: Bump the minimum required WooCommerce version to 10.6 and tested up to version to 10.7.
+= 5.24.0 - 2026-04-27 =
+* Added: Automatic cleanup of rendered email body from old completed sends to reduce database size, configurable in Settings → Advanced;
+* Added: Automatic cleanup of per-subscriber sending status data with a configurable retention period in Advanced settings;
+* Added: New public APIs to manage tags and (un)assign tags to subscribers;
+* Added: Add AI-powered subject line and preview text suggestions in the email editor;
+* Added: Ability to resend a newsletter to subscribers who didn't open it;
+* Added: Birthday email automation — send automated birthday emails to subscribers using any date custom field, with configurable send time and date formatting in email content;
+* Added: Subscribers' tags management page with list, create, edit, and delete actions;
+* Added: Birthday Celebration email template for the newsletter editor;
+* Added: Popup forms can now be configured to open on click using a CSS selector, and can also be opened programmatically via `window.MailPoetForm.openPopup(formId)`.;
+* Added: Export single-campaign email statistics as CSV or XLSX;
+* Improved: Show list visibility on the Lists listing page;
+* Improved: Redesign the subscriber statistics page;
+* Fixed: Default scheduled send time now shows 8:00 AM in the site's local timezone instead of 8:00 AM UTC;
+* Fixed: Newly created tags are now available for autocomplete when importing subscribers multiple times without reloading the page;
+* Fixed: Missing translations in the new email editor;
+* Removed: Removed deprecated \_\_get magic getter methods from NewsletterEntity, SendingQueueEntity, and SubscriberEntity.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
