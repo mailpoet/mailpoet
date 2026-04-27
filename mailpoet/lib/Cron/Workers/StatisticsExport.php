@@ -13,8 +13,9 @@ use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
  * to meta so the UI can poll for completion and offer the download.
  *
  * Job meta shape:
- *   - job_type: 'recipients'
+ *   - job_type: 'recipients' | 'bulk'
  *   - newsletter_id: int (recipients job only)
+ *   - newsletter_ids: int[] (bulk job only)
  *   - format: StatisticsExporter::FORMAT_CSV | StatisticsExporter::FORMAT_XLSX
  *   - requested_by: int (WP user id)
  *   - export_file_url: string (set after processing)
@@ -27,6 +28,7 @@ class StatisticsExport extends SimpleWorker {
   const SUPPORT_MULTIPLE_INSTANCES = false;
 
   const JOB_TYPE_RECIPIENTS = 'recipients';
+  const JOB_TYPE_BULK = 'bulk';
 
   /** @var StatisticsExporter */
   private $exporter;
@@ -57,6 +59,18 @@ class StatisticsExport extends SimpleWorker {
           throw new \RuntimeException(sprintf('Newsletter %d not found.', $newsletterId));
         }
         $result = $this->exporter->exportRecipients($newsletter, $format);
+      } elseif ($jobType === self::JOB_TYPE_BULK) {
+        $newsletterIds = isset($meta['newsletter_ids']) && is_array($meta['newsletter_ids'])
+          ? array_map('intval', $meta['newsletter_ids'])
+          : [];
+        $newsletters = [];
+        foreach ($newsletterIds as $id) {
+          $newsletter = $this->newslettersRepository->findOneById($id);
+          if ($newsletter) {
+            $newsletters[] = $newsletter;
+          }
+        }
+        $result = $this->exporter->exportBulkAggregate($newsletters, $format);
       } else {
         throw new \RuntimeException(sprintf('Unsupported export job type "%s".', $jobType));
       }

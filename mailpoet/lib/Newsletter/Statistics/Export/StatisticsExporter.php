@@ -63,6 +63,36 @@ class StatisticsExporter {
   }
 
   /**
+   * Export aggregate stats for multiple newsletters to CSV or XLSX (one
+   * row per newsletter). Used by the bulk export action on the listing.
+   *
+   * @param NewsletterEntity[] $newsletters
+   * @return array{exportFileURL: string, totalExported: int}
+   */
+  public function exportBulkAggregate(array $newsletters, string $format): array {
+    $format = $this->normalizeFormat($format);
+    $headers = $this->getAggregateHeaders();
+
+    $rows = [];
+    foreach ($newsletters as $newsletter) {
+      if (!$newsletter instanceof NewsletterEntity) {
+        continue;
+      }
+      $stats = $this->statisticsRepository->getStatistics($newsletter);
+      $rows[] = $this->buildAggregateRow($newsletter, $stats);
+    }
+
+    $this->ensureExportDirectory();
+    $filePath = $this->getExportFilePath($format);
+    $this->writeFile($filePath, $headers, $rows, $format);
+
+    return [
+      'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
+      'totalExported' => count($rows),
+    ];
+  }
+
+  /**
    * Export per-recipient stats for a newsletter to CSV or XLSX. Rows are
    * populated via the FILTER_RECIPIENT_ROWS filter — the free plugin returns
    * no rows, premium populates them.
