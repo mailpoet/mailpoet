@@ -18,9 +18,18 @@ Always create pull requests as **drafts** and follow the repository's PR templat
 1. **Read the PR template first** refer .github/pull_request_template.md
 2. **Gather context**
 3. **Check for changelog** — if the branch has user-facing changes and no changelog entry exists yet, use the `writing-changelog` skill to create one before proceeding
-4. **Create as draft**
-5. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
-6. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
+4. **Run QA before pushing** — CI will fail the PR otherwise. Always run, even when only TS/JS files changed:
+
+   ```bash
+   cd mailpoet && ./do qa:prettier-check
+   cd mailpoet && ./do qa
+   ```
+
+   Fix any issues with `./do qa:prettier-write` and `./do qa:fix-file <path>`. See the `mailpoet-dev-cycle` skill for the full pre-commit checklist (PHPStan, ESLint, Stylelint, tests). Commit any auto-formatting changes before opening the PR — landing a "fix Prettier" follow-up commit on a fresh PR is wasteful.
+
+5. **Create as draft**
+6. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
+7. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
 
 ## Code Review Notes Section
 
@@ -52,3 +61,4 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Skipping template read             | ALWAYS read the template first, it may have changed                                 |
 | Narrating the diff in review notes | Only write what the reviewer can't see from the code. Use `_N/A_` if nothing to add |
 | Missing changelog entry            | Check for changelog before creating the PR. Use the `writing-changelog` skill       |
+| Skipping Prettier / QA before push | Run `./do qa:prettier-check` + `./do qa` first; CI will fail the PR otherwise       |
