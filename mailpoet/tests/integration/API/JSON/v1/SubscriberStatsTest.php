@@ -52,7 +52,7 @@ class SubscriberStatsTest extends \MailPoetTest {
     $response = $this->endpoint->get(['subscriber_id' => $subscriber->getId()]);
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['last_engagement_at'])->equals($lastEngagementAt->format('Y-m-d H:i:s'));
+    verify($response->data['last_engagement'])->equals($lastEngagementAt->format('Y-m-d H:i:s'));
     verify($response->data['source_label'])->equals('WooCommerce checkout');
     verify($response->data['avatar_url'])->stringContainsString('gravatar.com');
     verify($response->data['profile']['first_name'])->equals('John');
