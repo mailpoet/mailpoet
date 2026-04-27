@@ -15,8 +15,17 @@ class StatisticsExporter {
   public const FORMAT_CSV = 'csv';
   public const FORMAT_XLSX = 'xlsx';
 
-  private const FILE_PREFIX = 'MailPoet_stats_export_';
+  public const FILE_PREFIX = 'MailPoet_stats_export_';
   private const RANDOM_NAME_LENGTH = 15;
+
+  /**
+   * Filter applied to populate per-recipient rows when exporting recipients.
+   * The free plugin ships an empty implementation; the premium plugin
+   * registers a callback that returns the per-recipient data.
+   *
+   * Filter signature: (array $rows, NewsletterEntity $newsletter): array
+   */
+  public const FILTER_RECIPIENT_ROWS = 'mailpoet_statistics_export_recipient_rows';
 
   /** @var NewsletterStatisticsRepository */
   private $statisticsRepository;
@@ -50,6 +59,51 @@ class StatisticsExporter {
     return [
       'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
       'totalExported' => 1,
+    ];
+  }
+
+  /**
+   * Export per-recipient stats for a newsletter to CSV or XLSX. Rows are
+   * populated via the FILTER_RECIPIENT_ROWS filter — the free plugin returns
+   * no rows, premium populates them.
+   *
+   * @return array{exportFileURL: string, totalExported: int}
+   */
+  public function exportRecipients(NewsletterEntity $newsletter, string $format): array {
+    $format = $this->normalizeFormat($format);
+    $headers = $this->getRecipientHeaders();
+
+    /** @var array<array<int|string|float|null>> $rows */
+    $rows = (array)$this->wp->applyFilters(self::FILTER_RECIPIENT_ROWS, [], $newsletter);
+
+    $this->ensureExportDirectory();
+    $filePath = $this->getExportFilePath($format);
+    $this->writeFile($filePath, $headers, $rows, $format);
+
+    return [
+      'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
+      'totalExported' => count($rows),
+    ];
+  }
+
+  /**
+   * @return string[]
+   */
+  public function getRecipientHeaders(): array {
+    return [
+      __('Subscriber ID', 'mailpoet'),
+      __('Email', 'mailpoet'),
+      __('First name', 'mailpoet'),
+      __('Last name', 'mailpoet'),
+      __('Status', 'mailpoet'),
+      __('Opened', 'mailpoet'),
+      __('First open at', 'mailpoet'),
+      __('Open count', 'mailpoet'),
+      __('Machine opened', 'mailpoet'),
+      __('Clicked', 'mailpoet'),
+      __('Click count', 'mailpoet'),
+      __('Bounced', 'mailpoet'),
+      __('Unsubscribed', 'mailpoet'),
     ];
   }
 
