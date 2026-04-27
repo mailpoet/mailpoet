@@ -4,6 +4,7 @@ import { EmailSubject } from './email-subject';
 import { EmailContent } from './email-content';
 import { ConfirmationPage } from './confirmation-page';
 import { ConfirmationEmailCustomizer } from './confirmation-email-customizer';
+import { DeleteUnconfirmedSubscribers } from './delete-unconfirmed-subscribers';
 
 export function SignupConfirmation() {
   return (
@@ -13,6 +14,7 @@ export function SignupConfirmation() {
       <EmailSubject />
       <EmailContent />
       <ConfirmationPage />
+      <DeleteUnconfirmedSubscribers />
       <SaveButton />
     </div>
   );
