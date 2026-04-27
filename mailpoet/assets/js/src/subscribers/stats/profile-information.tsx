@@ -82,11 +82,9 @@ export function ProfileInformation({
           </ProfileRow>
           {profile.shipping_address.length > 0 && (
             <ProfileRow label={__('Shipping', 'mailpoet')}>
-              <>
-                {profile.shipping_address.map((line) => (
-                  <div key={line}>{line}</div>
-                ))}
-              </>
+              <div className="mailpoet-subscriber-stats-shipping-address">
+                {profile.shipping_address.join('\n')}
+              </div>
             </ProfileRow>
           )}
           {profile.custom_fields.map((field) => (
