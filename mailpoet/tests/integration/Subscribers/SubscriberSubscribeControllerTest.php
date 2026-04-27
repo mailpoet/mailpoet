@@ -13,6 +13,7 @@ use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
@@ -37,6 +38,9 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var string */
   private $obfuscatedSegments;
 
+  /** @var string */
+  private $obfuscatedFirstName;
+
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
 
@@ -46,6 +50,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->obfuscator = $this->diContainer->get(FieldNameObfuscator::class);
     $this->obfuscatedEmail = $this->obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $this->obfuscator->obfuscate('segments');
+    $this->obfuscatedFirstName = $this->obfuscator->obfuscate('first_name');
     $this->subscribeController = $this->diContainer->get(SubscriberSubscribeController::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
@@ -151,6 +156,63 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($subscriber->getConfirmationsCount())->equals(2);
     verify($subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
     verify($subscriber->getUnconfirmedData())->equals('{"first_name":"Original"}');
+  }
+
+  public function testItReturnsHelpfulErrorWhenUnconfirmedSubscriberReachedConfirmationEmailLimit(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'confirmation-limit-' . rand(0, 10000) . '@example.com';
+    (new SubscriberFactory())
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
+      ->create();
+
+    $result = $this->subscribeController->subscribe([
+      $this->obfuscatedEmail => $email,
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ]);
+
+    verify($result['error'])->equals(__('We\'ve already sent you a confirmation email. Please check your inbox or spam folder.', 'mailpoet'));
+  }
+
+  public function testItResubscribesExistingUnconfirmedSubscriber(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $confirmationEmailMailerMock = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailerMock->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), true)
+      ->willReturn(true);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, ['confirmationEmailMailer' => $confirmationEmailMailerMock]);
+    $subscriberController = $this->getServiceWithOverrides(SubscriberSubscribeController::class, ['subscriberActions' => $subscriberActions]);
+
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'unconfirmed-resubscribe-' . rand(0, 10000) . '@example.com';
+    $subscriber = (new SubscriberFactory())
+      ->withEmail($email)
+      ->withFirstName('Original')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(1)
+      ->create();
+
+    $result = $subscriberController->subscribe([
+      $this->obfuscatedEmail => $email,
+      $this->obfuscatedFirstName => 'Updated',
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ]);
+
+    $this->assertArrayNotHasKey('error', $result);
+    $this->subscribersRepository->refresh($subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getFirstName())->equals('Original');
+    verify($subscriber->getUnconfirmedData())->equals(json_encode([
+      'email' => $email,
+      'first_name' => 'Updated',
+    ]));
   }
 
   public function testItCanSubscribeSubscriberWithCustomField(): void {
