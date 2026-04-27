@@ -6,13 +6,15 @@ import { DataViews, View, Action } from '@wordpress/dataviews';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
 import { withNpsPoll } from 'nps-poll.jsx';
-import {
-  useDataViewsQuery,
-  type ListingQueryParams,
-} from 'common/dataviews';
+import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
 import { FormsHeading, onAddNewForm } from './heading';
 import { listFields } from './fields';
-import { bulkAction, getForms, type BulkAction, type FormListingItem } from './api';
+import {
+  bulkAction,
+  getForms,
+  type BulkAction,
+  type FormListingItem,
+} from './api';
 
 type Group = 'all' | 'trash';
 
@@ -32,7 +34,12 @@ function bulkActionSuccessMessage(action: BulkAction, count: number): string {
       ? __('1 form was moved to the trash.', 'mailpoet')
       : sprintf(
           /* translators: %d is the number of forms */
-          _n('%d form was moved to the trash.', '%d forms were moved to the trash.', count, 'mailpoet'),
+          _n(
+            '%d form was moved to the trash.',
+            '%d forms were moved to the trash.',
+            count,
+            'mailpoet',
+          ),
           count,
         );
   }
@@ -41,7 +48,12 @@ function bulkActionSuccessMessage(action: BulkAction, count: number): string {
       ? __('1 form has been restored from the trash.', 'mailpoet')
       : sprintf(
           /* translators: %d is the number of forms */
-          _n('%d form has been restored from the trash.', '%d forms have been restored from the trash.', count, 'mailpoet'),
+          _n(
+            '%d form has been restored from the trash.',
+            '%d forms have been restored from the trash.',
+            count,
+            'mailpoet',
+          ),
           count,
         );
   }
@@ -49,7 +61,12 @@ function bulkActionSuccessMessage(action: BulkAction, count: number): string {
     ? __('1 form was permanently deleted.', 'mailpoet')
     : sprintf(
         /* translators: %d is the number of forms */
-        _n('%d form was permanently deleted.', '%d forms were permanently deleted.', count, 'mailpoet'),
+        _n(
+          '%d form was permanently deleted.',
+          '%d forms were permanently deleted.',
+          count,
+          'mailpoet',
+        ),
         count,
       );
 }
@@ -118,7 +135,12 @@ function FormListComponent(): JSX.Element {
             ? __('Delete this form permanently?', 'mailpoet')
             : sprintf(
                 /* translators: %d is the number of forms */
-                _n('Delete %d form permanently?', 'Delete %d forms permanently?', ids.length, 'mailpoet'),
+                _n(
+                  'Delete %d form permanently?',
+                  'Delete %d forms permanently?',
+                  ids.length,
+                  'mailpoet',
+                ),
                 ids.length,
               );
         // eslint-disable-next-line no-alert

@@ -65,7 +65,9 @@ export async function bulkAction(
   ids: number[],
 ): Promise<number> {
   ensureInitialized();
-  const response = await apiFetch<{ data: { action: BulkAction; count: number } }>({
+  const response = await apiFetch<{
+    data: { action: BulkAction; count: number };
+  }>({
     path: '/mailpoet/v1/forms/bulk-action',
     method: 'POST',
     data: { action, ids },

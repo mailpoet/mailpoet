@@ -6,9 +6,7 @@ import { SegmentTags } from 'common/tag/tags';
 import type { FormListingItem } from './api';
 import { FormStatusToggle } from './status-toggle';
 
-function getFormPlacement(
-  settings: FormListingItem['settings'],
-): string {
+function getFormPlacement(settings: FormListingItem['settings']): string {
   const placements: string[] = [];
   const placement = settings?.form_placement;
   if (placement?.fixed_bar?.enabled === '1') {
