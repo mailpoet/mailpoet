@@ -250,7 +250,7 @@ class Subscription {
     $this->subscribersRepository->flush();
 
     try {
-      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
     } catch (\Exception $e) {
       // ignore errors
     }

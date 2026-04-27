@@ -109,6 +109,12 @@ class SubscriberEntity {
   private $lastSubscribedAt;
 
   /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $lastConfirmationEmailSentAt;
+
+  /**
    * @ORM\Column(type="text", nullable=true)
    * @var string|null
    */
@@ -382,6 +388,20 @@ class SubscriberEntity {
    */
   public function setLastSubscribedAt($lastSubscribedAt) {
     $this->lastSubscribedAt = $lastSubscribedAt;
+  }
+
+  /**
+   * @return DateTimeInterface|null
+   */
+  public function getLastConfirmationEmailSentAt() {
+    return $this->lastConfirmationEmailSentAt;
+  }
+
+  /**
+   * @param DateTimeInterface|null $lastConfirmationEmailSentAt
+   */
+  public function setLastConfirmationEmailSentAt($lastConfirmationEmailSentAt) {
+    $this->lastConfirmationEmailSentAt = $lastConfirmationEmailSentAt;
   }
 
   /**

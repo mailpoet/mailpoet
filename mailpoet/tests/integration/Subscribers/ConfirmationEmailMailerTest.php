@@ -257,6 +257,71 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
   }
 
+  public function testItLimitsAndRecordsPublicConfirmationEmailsForLoggedInUsers() {
+    wp_set_current_user(1);
+    verify((new WPFunctions)->isUserLoggedIn())->true();
+    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::once(function() {
+        return ['response' => true];
+      }),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->equals(true);
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
+    $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+
+    verify($sender->sendConfirmationEmail($this->subscriber, true))->equals(false);
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
+  }
+
+  public function testFailedPublicConfirmationEmailDoesNotUpdateCountOrTimestamp() {
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::once(function() {
+        throw new \Exception('send error');
+      }),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    try {
+      $sender->sendConfirmationEmail($this->subscriber, true);
+    } catch (\Exception $e) {
+      verify($e->getMessage())->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+    }
+
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
+    verify($this->subscriber->getLastConfirmationEmailSentAt())->null();
+  }
+
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
     $subscriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
     $subscriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');

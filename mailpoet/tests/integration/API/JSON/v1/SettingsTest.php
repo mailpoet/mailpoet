@@ -11,6 +11,7 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
@@ -252,6 +253,63 @@ class SettingsTest extends \MailPoetTest {
     );
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getScheduledAt())->lessThan(Carbon::now());
+  }
+
+  public function testItReturnsDefaultDeleteUnconfirmedSubscribersSetting(): void {
+    $response = $this->endpoint->get();
+
+    verify($response->getData()['data']['delete_unconfirmed_subscribers_after_days'])->same('');
+  }
+
+  public function testItRejectsInvalidDeleteUnconfirmedSubscribersSettingWithoutPartialSave(): void {
+    $this->settings->set('some.setting.key', true);
+
+    $response = $this->endpoint->set([
+      'delete_unconfirmed_subscribers_after_days' => '7',
+      'some.setting.key' => false,
+    ]);
+
+    verify($response->status)->same(400);
+    verify($this->settings->get('delete_unconfirmed_subscribers_after_days'))->same('');
+    verify($this->settings->get('some.setting.key'))->true();
+  }
+
+  public function testItSchedulesUnconfirmedSubscribersCleanupWhenEnabled(): void {
+    $this->settings->set('delete_unconfirmed_subscribers_after_days', '');
+
+    $this->endpoint->set(['delete_unconfirmed_subscribers_after_days' => '30']);
+
+    $task = $this->scheduledTasksRepository->findOneBy([
+      'type' => UnconfirmedSubscribersCleanup::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $this->assertLessThanOrEqual(Carbon::now(), $task->getScheduledAt());
+
+    $this->endpoint->set(['delete_unconfirmed_subscribers_after_days' => '30']);
+    verify($this->scheduledTasksRepository->findBy([
+      'type' => UnconfirmedSubscribersCleanup::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]))->arrayCount(1);
+  }
+
+  public function testItMovesFutureUnconfirmedSubscribersCleanupTaskToNowWhenEnabled(): void {
+    $this->settings->set('delete_unconfirmed_subscribers_after_days', '');
+    $task = new ScheduledTaskEntity();
+    $task->setType(UnconfirmedSubscribersCleanup::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setScheduledAt(Carbon::now()->addYear());
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+
+    $this->endpoint->set(['delete_unconfirmed_subscribers_after_days' => '30']);
+    $this->entityManager->refresh($task);
+
+    $this->assertLessThanOrEqual(Carbon::now(), $task->getScheduledAt());
+    verify($this->scheduledTasksRepository->findBy([
+      'type' => UnconfirmedSubscribersCleanup::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]))->arrayCount(1);
   }
 
   public function testItRemovesFreeAddressOverrideOnMSSActivation() {

@@ -108,7 +108,7 @@ class SubscriberActions {
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
 
     try {
-      $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+      $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
     } catch (\Exception $e) {
       $metaData['confirmationEmailResult'] = $e;
     }

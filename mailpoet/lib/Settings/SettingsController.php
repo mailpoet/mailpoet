@@ -14,6 +14,7 @@ class SettingsController {
   const DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS = 365;
   const DEFAULT_SENDING_STATUS_RETENTION_DAYS = '';
   const DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS = 30;
+  const DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS = '';
 
   private $loaded = false;
 
@@ -78,6 +79,7 @@ class SettingsController {
         ],
         'display_nps_poll' => true,
         'deactivate_subscriber_after_inactive_days' => self::DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS,
+        'delete_unconfirmed_subscribers_after_days' => self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS,
         'sending_status_retention_days' => self::DEFAULT_SENDING_STATUS_RETENTION_DAYS,
         'sending_queue_body_retention_days' => self::DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS,
       ];
@@ -151,7 +153,11 @@ class SettingsController {
 
   public function getAll() {
     $this->ensureLoaded();
-    return array_replace_recursive($this->getAllDefaults(), $this->settings);
+    $settings = array_replace_recursive($this->getAllDefaults(), $this->settings);
+    if (!in_array($settings['delete_unconfirmed_subscribers_after_days'], ['', '30'], true)) {
+      $settings['delete_unconfirmed_subscribers_after_days'] = self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS;
+    }
+    return $settings;
   }
 
   public function set($key, $value) {

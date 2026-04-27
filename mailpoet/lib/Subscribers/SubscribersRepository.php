@@ -213,6 +213,98 @@ class SubscribersRepository extends Repository {
   }
 
   /**
+   * @return int[]
+   */
+  public function deleteUnconfirmedSubscribersForCleanup(DateTimeInterface $cutoff, int $limit): array {
+    if ($limit <= 0) {
+      return [];
+    }
+
+    $deletedIds = [];
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($cutoff, $limit, &$deletedIds) {
+      $subscriberTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $subscriberCustomFieldTable = $entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+      $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+
+      $deletedIds = array_map(static function($id): int {
+        if (is_int($id)) {
+          return $id;
+        }
+        return is_string($id) ? (int)$id : 0;
+      }, $entityManager->getConnection()->executeQuery(
+        "SELECT s.`id`
+         FROM $subscriberTable s
+         WHERE s.`status` = :status
+         AND s.`deleted_at` IS NULL
+         AND s.`wp_user_id` IS NULL
+         AND s.`is_woocommerce_user` = 0
+         AND (
+           s.`last_confirmation_email_sent_at` <= :cutoff
+           OR (
+             s.`last_confirmation_email_sent_at` IS NULL
+             AND s.`created_at` <= :cutoff
+           )
+         )
+         ORDER BY s.`id` ASC
+         LIMIT :limit
+         FOR UPDATE",
+        [
+          'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+          'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+          'limit' => $limit,
+        ],
+        [
+          'limit' => ParameterType::INTEGER,
+        ]
+      )->fetchFirstColumn());
+
+      if (empty($deletedIds)) {
+        return;
+      }
+
+      $this->removeSubscribersFromAllSegments($deletedIds);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE scs FROM $subscriberCustomFieldTable scs
+         WHERE scs.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE st FROM $subscriberTagTable st
+         WHERE st.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $entityManager->getConnection()->executeStatement(
+        "DELETE FROM $subscriberTable
+         WHERE `id` IN (:ids)
+         AND `status` = :status
+         AND `deleted_at` IS NULL
+         AND `wp_user_id` IS NULL
+         AND `is_woocommerce_user` = 0
+         AND (
+           `last_confirmation_email_sent_at` <= :cutoff
+           OR (
+             `last_confirmation_email_sent_at` IS NULL
+             AND `created_at` <= :cutoff
+           )
+         )",
+        [
+          'ids' => $deletedIds,
+          'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+          'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+        ],
+        ['ids' => ArrayParameterType::INTEGER]
+      );
+    });
+
+    if (!empty($deletedIds)) {
+      $this->changesNotifier->subscribersDeleted($deletedIds);
+      $this->invalidateTotalSubscribersCache();
+    }
+    return $deletedIds;
+  }
+
+  /**
    * @return int - number of processed ids
    */
   public function bulkRemoveFromSegment(SegmentEntity $segment, array $ids): int {

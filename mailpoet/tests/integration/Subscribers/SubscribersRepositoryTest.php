@@ -10,6 +10,8 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersRepositoryTest extends \MailPoetTest {
   /** @var SubscribersRepository */
@@ -427,6 +429,89 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscribers = $this->repository->findAll();
     $this->assertCount(1, $subscribers);
     $this->assertSame($subscribers[0], $subscriber3);
+  }
+
+  public function testItDeletesOnlyEligibleUnconfirmedSubscribersForCleanup(): void {
+    $now = Carbon::now()->millisecond(0);
+    $old = $now->copy()->subDays(31);
+    $recent = $now->copy()->subDays(10);
+    $cutoff = $now->copy()->subDays(30);
+
+    $legacyEligible = (new SubscriberFactory())
+      ->withEmail('legacy-eligible@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->create();
+    $resentEligible = (new SubscriberFactory())
+      ->withEmail('resent-eligible@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($recent)
+      ->withLastConfirmationEmailSentAt($old)
+      ->create();
+    $recentResent = (new SubscriberFactory())
+      ->withEmail('recent-resent@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->withLastConfirmationEmailSentAt($recent)
+      ->create();
+    $recentCreated = (new SubscriberFactory())
+      ->withEmail('recent-created@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($recent)
+      ->create();
+    $subscribed = (new SubscriberFactory())
+      ->withEmail('subscribed@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withCreatedAt($old)
+      ->create();
+    $trashed = (new SubscriberFactory())
+      ->withEmail('trashed@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->withDeletedAt($old)
+      ->create();
+    $wpLinked = (new SubscriberFactory())
+      ->withEmail('wp-linked@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->withWpUserId(123)
+      ->create();
+    $wooLinked = (new SubscriberFactory())
+      ->withEmail('woo-linked@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->withIsWooCommerceUser(true)
+      ->create();
+    $withoutDates = (new SubscriberFactory())
+      ->withEmail('without-dates@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    $this->entityManager->getConnection()->executeStatement(
+      'UPDATE ' . $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName() . ' SET created_at = NULL WHERE id = :id',
+      ['id' => $withoutDates->getId()]
+    );
+    $this->entityManager->clear();
+
+    $deletedIds = $this->repository->deleteUnconfirmedSubscribersForCleanup($cutoff, 10);
+
+    verify($deletedIds)->equals([$legacyEligible->getId(), $resentEligible->getId()]);
+    verify($this->repository->findOneById($legacyEligible->getId()))->null();
+    verify($this->repository->findOneById($resentEligible->getId()))->null();
+    foreach ([$recentResent, $recentCreated, $subscribed, $trashed, $wpLinked, $wooLinked, $withoutDates] as $subscriber) {
+      verify($this->repository->findOneById($subscriber->getId()))->notNull();
+    }
+  }
+
+  public function testUnconfirmedSubscribersCleanupRespectsLimitAndIdOrdering(): void {
+    $old = Carbon::now()->millisecond(0)->subDays(31);
+    $first = (new SubscriberFactory())->withEmail('cleanup-first@example.com')->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withCreatedAt($old)->create();
+    $second = (new SubscriberFactory())->withEmail('cleanup-second@example.com')->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withCreatedAt($old)->create();
+    $third = (new SubscriberFactory())->withEmail('cleanup-third@example.com')->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withCreatedAt($old)->create();
+
+    $deletedIds = $this->repository->deleteUnconfirmedSubscribersForCleanup(Carbon::now()->subDays(30), 2);
+
+    verify($deletedIds)->equals([$first->getId(), $second->getId()]);
+    verify($this->repository->findOneById($third->getId()))->notNull();
   }
   
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
