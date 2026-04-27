@@ -86,7 +86,7 @@ From repo root:
 ```bash
 # 1. Install + build the MCP server
 cd tools/mcp-server
-pnpm install
+pnpm install --ignore-workspace
 pnpm build
 
 # 2. Generate the companion secret (must exist BEFORE wp-env starts, so the mapping picks it up)
@@ -97,6 +97,8 @@ pnpm init-secret
 cd ../..
 pnpm env:start       # or env:restart if already running
 ```
+
+> **Why `--ignore-workspace`?** `tools/mcp-server` is intentionally outside the repo's pnpm workspace (`pnpm-workspace.yaml` lists only `mailpoet` and `packages/js/*`) so that this experimental dev tool doesn't inherit the monorepo's React/JSX/TS pins, `minimumReleaseAge` gate, etc. Without the flag, `pnpm install` walks up to the workspace root and never installs deps locally — `pnpm build` then fails with TS errors about missing `@modelcontextprotocol/sdk` / `zod`.
 
 ## Running the server
 
