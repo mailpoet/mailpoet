@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
+use Codeception\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\StatisticsExport;
 use MailPoet\Config\Env;
@@ -11,6 +12,8 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Util\License\Features\Data\Capability;
 
 class StatisticsExportTest extends \MailPoetTest {
   /** @var StatisticsExport */
@@ -133,22 +136,51 @@ class StatisticsExportTest extends \MailPoetTest {
   }
 
   public function testItReturns404ForUnknownStatusTask() {
-    $response = $this->endpoint->getStatus(['task_id' => 99999999]);
+    $endpoint = $this->endpointWithDetailedAnalytics(false);
+    $response = $endpoint->getStatus(['task_id' => 99999999]);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
+  public function testItRejectsStatusWhenDetailedAnalyticsRestricted() {
+    $task = $this->createTask(['job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS]);
+    $response = $this->endpoint->getStatus(['task_id' => $task->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+  }
+
+  public function testItReturns404ForUnrelatedTaskJobType() {
+    $endpoint = $this->endpointWithDetailedAnalytics(false);
+    $task = $this->createTask(['job_type' => 'something_else']);
+    $response = $endpoint->getStatus(['task_id' => $task->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItReturnsStatusForScheduledExportTask() {
-    $task = new ScheduledTaskEntity();
-    $task->setType(StatisticsExportWorker::TASK_TYPE);
-    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $task->setMeta(['job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS]);
-    $repo = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
-    $repo->persist($task);
-    $repo->flush();
+    $endpoint = $this->endpointWithDetailedAnalytics(false);
+    $task = $this->createTask(['job_type' => StatisticsExportWorker::JOB_TYPE_RECIPIENTS]);
 
-    $response = $this->endpoint->getStatus(['task_id' => $task->getId()]);
+    $response = $endpoint->getStatus(['task_id' => $task->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['taskId'])->equals($task->getId());
     verify($response->data['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
+  private function createTask(array $meta): ScheduledTaskEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType(StatisticsExportWorker::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setMeta($meta);
+    $repo = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $repo->persist($task);
+    $repo->flush();
+    return $task;
+  }
+
+  private function endpointWithDetailedAnalytics(bool $isRestricted): StatisticsExport {
+    $capability = new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, $isRestricted);
+    return $this->getServiceWithOverrides(StatisticsExport::class, [
+      'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
+        'getCapability' => $capability,
+      ]),
+    ]);
   }
 }

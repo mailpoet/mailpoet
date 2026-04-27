@@ -142,8 +142,22 @@ class StatisticsExport extends APIEndpoint {
       ]);
     }
 
+    if ($this->isDetailedAnalyticsRestricted()) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => __('Per-recipient export requires a MailPoet plan with detailed analytics.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
+    }
+
     $task = $this->scheduledTasksRepository->findOneById($taskId);
     if (!$task instanceof ScheduledTaskEntity || $task->getType() !== StatisticsExportWorker::TASK_TYPE) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('Export task not found.', 'mailpoet'),
+      ], [], Response::STATUS_NOT_FOUND);
+    }
+
+    $meta = $task->getMeta() ?? [];
+    $jobType = isset($meta['job_type']) ? (string)$meta['job_type'] : '';
+    if ($jobType !== StatisticsExportWorker::JOB_TYPE_RECIPIENTS) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('Export task not found.', 'mailpoet'),
       ], [], Response::STATUS_NOT_FOUND);
