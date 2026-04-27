@@ -125,6 +125,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       ['', '90', '180', '365', '540'],
       '365',
     ),
+    delete_unconfirmed_subscribers_after_days: asEnum(['', '30'], ''),
     sending_status_retention_days: asEnum(['', '30', '60', '90', '180'], ''),
     sending_queue_body_retention_days: asEnum(
       ['', '7', '30', '90', '365'],

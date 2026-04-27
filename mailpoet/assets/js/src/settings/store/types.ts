@@ -59,6 +59,7 @@ export type Settings = {
   };
   send_transactional_emails: '' | '1';
   deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365' | '540';
+  delete_unconfirmed_subscribers_after_days: '' | '30';
   sending_status_retention_days: '' | '30' | '60' | '90' | '180';
   sending_queue_body_retention_days: '' | '7' | '30' | '90' | '365';
   analytics: {
