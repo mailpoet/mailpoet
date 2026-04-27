@@ -137,6 +137,7 @@ class StatisticsExporter {
    * @param array<int|string|float|null> $row
    */
   private function writeCsvLine($handle, array $row): void {
+    // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fputcsv -- Export handles are created under Env::$tempPath, which is MailPoet's WordPress temp directory.
     fputcsv($handle, array_map('strval', $row), ',', '"', '');
   }
 
