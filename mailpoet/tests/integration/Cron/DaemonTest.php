@@ -123,6 +123,7 @@ class DaemonTest extends \MailPoetTest {
       'createBackfillEngagementDataWorker' => $this->createSimpleWorkerMock(),
       'createMixpanelWorker' => $this->createSimpleWorkerMock(),
       'createTracksWorker' => $this->createSimpleWorkerMock(),
+      'createStatisticsExportWorker' => $this->createSimpleWorkerMock(),
       ]);
   }
 
