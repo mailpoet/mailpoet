@@ -195,11 +195,11 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
     $collector = $this->diContainer->get(CouponBlockGenerationFailureCollector::class);
-    $forcedFailure = function(array $context) use ($collector): array {
-      $collector->record('forced_failure', 'Forced generation failure.', [], $context);
-      return $context;
+    $forcedFailure = function($couponCode, array $attrs, Rendering_Context $context) use ($collector): string {
+      $collector->record('forced_failure', 'Forced generation failure.', [], $context->get_email_context());
+      return CouponBlockGenerator::SAFE_PLACEHOLDER;
     };
-    WPFunctions::get()->addFilter('woocommerce_email_editor_rendering_email_context', $forcedFailure, 20, 1);
+    WPFunctions::get()->addFilter('woocommerce_coupon_code_block_auto_generate', $forcedFailure, 1, 3);
 
     try {
       (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
@@ -207,7 +207,7 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     } catch (NewsletterProcessingException $e) {
       $this->assertSame('Auto-generated coupon code could not be created: Forced generation failure.', $e->getMessage());
     } finally {
-      WPFunctions::get()->removeFilter('woocommerce_email_editor_rendering_email_context', $forcedFailure, 20);
+      WPFunctions::get()->removeFilter('woocommerce_coupon_code_block_auto_generate', $forcedFailure, 1);
     }
 
     $this->diContainer->get(NewslettersRepository::class)->refresh($newsletter);

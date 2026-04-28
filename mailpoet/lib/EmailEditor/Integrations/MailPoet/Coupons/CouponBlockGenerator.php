@@ -58,6 +58,7 @@ class CouponBlockGenerator {
       5,
       3
     );
+    $this->wp->addAction('woocommerce_email_editor_render_start', [$this, 'registerEmailRenderer']);
   }
 
   public function generate($couponCode, array $attrs, Rendering_Context $renderingContext): string {
@@ -128,6 +129,57 @@ class CouponBlockGenerator {
       $this->recordFailure('generation_failed', $e->getMessage(), $attrs, $context);
       return self::SAFE_PLACEHOLDER;
     }
+  }
+
+  public function registerEmailRenderer(): void {
+    if (!class_exists('\WP_Block_Type_Registry')) {
+      return;
+    }
+
+    $blockType = \WP_Block_Type_Registry::get_instance()->get_registered(CouponBlock::NAME);
+    $renderEmailCallbackProperty = 'render_email_callback';
+    $currentCallback = $blockType ? (get_object_vars($blockType)[$renderEmailCallbackProperty] ?? null) : null;
+    if (!$blockType || $this->usesWooCommerceEmailEditorRenderer($currentCallback)) {
+      return;
+    }
+
+    // WooCommerce 10.8 development builds can expose the block attributes
+    // without wiring the matching email renderer. Patch only that gap.
+    // @phpstan-ignore-next-line -- WooCommerce email editor reads this dynamic block setting.
+    $blockType->{$renderEmailCallbackProperty} = [$this, 'renderEmailCouponBlock'];
+  }
+
+  public function renderEmailCouponBlock(string $blockContent, array $parsedBlock, Rendering_Context $renderingContext): string {
+    $attrs = $parsedBlock['attrs'] ?? [];
+    if (!is_array($attrs)) {
+      $attrs = [];
+    }
+
+    if (!CouponBlock::isCreateNew($attrs, strpos($blockContent, self::SAFE_PLACEHOLDER) !== false)) {
+      return $blockContent;
+    }
+
+    $couponCode = $this->wp->applyFilters(
+      'woocommerce_coupon_code_block_auto_generate',
+      '',
+      $attrs,
+      $renderingContext
+    );
+    $couponCode = is_scalar($couponCode) ? (string)$couponCode : '';
+
+    if ($couponCode === '') {
+      return '';
+    }
+
+    return str_replace(self::SAFE_PLACEHOLDER, $this->wp->escHtml($couponCode), $blockContent);
+  }
+
+  private function usesWooCommerceEmailEditorRenderer($callback): bool {
+    if (!is_array($callback) || !isset($callback[0]) || !is_object($callback[0])) {
+      return false;
+    }
+
+    return strpos(get_class($callback[0]), 'Automattic\\WooCommerce\\EmailEditor\\Integrations\\WooCommerce\\') === 0;
   }
 
   private function getUnsupportedRealSendContextMessage(array $attrs, Rendering_Context $renderingContext): ?string {

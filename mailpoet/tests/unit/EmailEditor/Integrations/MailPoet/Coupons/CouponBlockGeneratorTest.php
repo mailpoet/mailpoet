@@ -22,6 +22,11 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
         verify($acceptedArgs)->equals(3);
         return true;
       },
+      'addAction' => function($hook, $callback) {
+        verify($hook)->equals('woocommerce_email_editor_render_start');
+        verify($callback)->isArray();
+        return true;
+      },
     ]);
 
     $generator = new CouponBlockGenerator(
@@ -33,6 +38,35 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
     );
 
     $generator->init();
+  }
+
+  public function testItRendersGeneratedCouponCodeWhenWooCommerceEmailRendererIsNotWired(): void {
+    $wp = $this->make(WPFunctions::class, [
+      'applyFilters' => function($hook, $couponCode, $attrs) {
+        verify($hook)->equals('woocommerce_coupon_code_block_auto_generate');
+        verify($couponCode)->equals('');
+        verify($attrs)->equals([]);
+        return 'ABCD-EFGHIJ-KLMN';
+      },
+      'escHtml' => function($text) {
+        return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      },
+    ]);
+    $generator = new CouponBlockGenerator(
+      Stub::make(Helper::class),
+      Stub::make(CouponBlockValidator::class),
+      new CouponBlockGenerationFailureCollector(),
+      $wp,
+      new RandomCouponCodeGenerator()
+    );
+
+    $result = $generator->renderEmailCouponBlock(
+      '<div><strong>XXXX-XXXXXX-XXXX</strong></div>',
+      ['attrs' => []],
+      $this->createRenderingContext([])
+    );
+
+    verify($result)->equals('<div><strong>ABCD-EFGHIJ-KLMN</strong></div>');
   }
 
   public function testItReturnsExistingCouponCodeUnchanged(): void {
