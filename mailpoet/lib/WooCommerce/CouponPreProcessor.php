@@ -20,12 +20,16 @@ class CouponPreProcessor {
   /** @var Helper */
   private $wcHelper;
 
+  private RandomCouponCodeGenerator $randomCouponCodeGenerator;
+
   public function __construct(
     Helper $wcHelper,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    RandomCouponCodeGenerator $randomCouponCodeGenerator
   ) {
     $this->wcHelper = $wcHelper;
     $this->newslettersRepository = $newslettersRepository;
+    $this->randomCouponCodeGenerator = $randomCouponCodeGenerator;
   }
 
   /**
@@ -88,7 +92,7 @@ class CouponPreProcessor {
   private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue) {
     $coupon = $this->wcHelper->createWcCoupon($couponBlock['couponId'] ?? '');
     if ($this->shouldGenerateCoupon($couponBlock)) {
-      $code = isset($couponBlock['code']) && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->generateRandomCode();
+      $code = isset($couponBlock['code']) && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->randomCouponCodeGenerator->generate();
       $coupon->set_code($code);
     }
 
@@ -162,29 +166,6 @@ class CouponPreProcessor {
     return array_map(function ($item) {
       return $item['id'];
     }, $items);
-  }
-
-  private function generateRandomSegment($length) {
-    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    $segment = '';
-
-    for ($i = 0; $i < $length; $i++) {
-      $randomIndex = rand(0, strlen($characters) - 1);
-      $segment .= $characters[$randomIndex];
-    }
-
-    return $segment;
-  }
-
-  /**
-   * Generates Coupon code for XXXX-XXXXXX-XXXX pattern
-   */
-  private function generateRandomCode(): string {
-    $part1 = $this->generateRandomSegment(4);
-    $part2 = $this->generateRandomSegment(6);
-    $part3 = $this->generateRandomSegment(4);
-
-    return $part1 . '-' . $part2 . '-' . $part3;
   }
 
   private function shouldGenerateCoupon(array $block): bool {

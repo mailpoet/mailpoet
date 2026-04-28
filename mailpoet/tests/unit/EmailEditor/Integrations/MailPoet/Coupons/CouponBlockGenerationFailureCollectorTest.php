@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace unit\WooCommerce;
+namespace unit\EmailEditor\Integrations\MailPoet\Coupons;
 
-use MailPoet\WooCommerce\GutenbergCouponGenerationFailureCollector;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
 
-class GutenbergCouponGenerationFailureCollectorTest extends \MailPoetUnitTest {
+class CouponBlockGenerationFailureCollectorTest extends \MailPoetUnitTest {
   public function testItRecordsFailuresInOrder(): void {
-    $collector = new GutenbergCouponGenerationFailureCollector();
+    $collector = new CouponBlockGenerationFailureCollector();
 
     $collector->record('first', 'First failure.', ['amount' => '101'], ['newsletter_id' => 1]);
     $collector->record('second', 'Second failure.', ['amount' => '10'], ['newsletter_id' => 2]);
@@ -29,7 +29,7 @@ class GutenbergCouponGenerationFailureCollectorTest extends \MailPoetUnitTest {
   }
 
   public function testItClearsFailures(): void {
-    $collector = new GutenbergCouponGenerationFailureCollector();
+    $collector = new CouponBlockGenerationFailureCollector();
 
     $collector->record('failure', 'Failure.', [], []);
     $collector->clear();

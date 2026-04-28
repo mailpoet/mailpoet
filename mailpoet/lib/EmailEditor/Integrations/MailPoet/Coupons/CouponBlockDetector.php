@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\WooCommerce;
+namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-class GutenbergCouponBlockDetector {
+class CouponBlockDetector {
   const BLOCK_NAME = 'woocommerce/coupon-code';
   const SAFE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
 

@@ -1,10 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\WooCommerce;
+namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
-class GutenbergCouponValidator {
+class CouponBlockValidator {
   /** @var Helper */
   private $wcHelper;
 
@@ -23,17 +24,17 @@ class GutenbergCouponValidator {
     $discountType = $this->validateDiscountType($attrs['discountType'] ?? null);
     $amount = $this->validateRequiredNumber($attrs['amount'] ?? null, 'amount');
     if ($discountType === 'percent' && $amount > 100) {
-      throw new GutenbergCouponValidationException('Percent coupon amount must be 100 or lower.');
+      throw new CouponBlockValidationException('Percent coupon amount must be 100 or lower.');
     }
 
     $minimumAmount = $this->validateOptionalNumber($attrs['minimumAmount'] ?? null, 'minimumAmount');
     $maximumAmount = $this->validateOptionalNumber($attrs['maximumAmount'] ?? null, 'maximumAmount');
     if ($minimumAmount !== '' && $maximumAmount !== '' && $maximumAmount < $minimumAmount) {
-      throw new GutenbergCouponValidationException('Maximum amount must be greater than or equal to minimum amount.');
+      throw new CouponBlockValidationException('Maximum amount must be greater than or equal to minimum amount.');
     }
 
     $emailRestrictions = $this->validateEmailRestrictions($attrs['emailRestrictions'] ?? []);
-    if ($this->toBoolean($attrs['restrictToSubscriber'] ?? false)) {
+    if (CouponBlockAttributeParser::toBoolean($attrs['restrictToSubscriber'] ?? false)) {
       $recipientEmailRestrictions = $this->validateEmailRestrictions([$recipientEmail]);
       if (!empty($recipientEmailRestrictions)) {
         $emailRestrictions[] = $recipientEmailRestrictions[0];
@@ -44,9 +45,9 @@ class GutenbergCouponValidator {
       'discountType' => $discountType,
       'amount' => $amount,
       'expiryDay' => $this->validateOptionalInteger($attrs['expiryDay'] ?? null, 'expiryDay'),
-      'freeShipping' => $this->toBoolean($attrs['freeShipping'] ?? false),
-      'individualUse' => $this->toBoolean($attrs['individualUse'] ?? false),
-      'excludeSaleItems' => $this->toBoolean($attrs['excludeSaleItems'] ?? false),
+      'freeShipping' => CouponBlockAttributeParser::toBoolean($attrs['freeShipping'] ?? false),
+      'individualUse' => CouponBlockAttributeParser::toBoolean($attrs['individualUse'] ?? false),
+      'excludeSaleItems' => CouponBlockAttributeParser::toBoolean($attrs['excludeSaleItems'] ?? false),
       'usageLimit' => $this->validateOptionalInteger($attrs['usageLimit'] ?? null, 'usageLimit'),
       'usageLimitPerUser' => $this->validateOptionalInteger($attrs['usageLimitPerUser'] ?? null, 'usageLimitPerUser'),
       'minimumAmount' => $minimumAmount,
@@ -61,11 +62,11 @@ class GutenbergCouponValidator {
 
   private function validateDiscountType($discountType): string {
     if (!is_string($discountType) || $discountType === '') {
-      throw new GutenbergCouponValidationException('Discount type is required.');
+      throw new CouponBlockValidationException('Discount type is required.');
     }
 
     if (!in_array($discountType, array_keys($this->wcHelper->wcGetCouponTypes()), true)) {
-      throw new GutenbergCouponValidationException('Invalid discount type.');
+      throw new CouponBlockValidationException('Invalid discount type.');
     }
 
     return $discountType;
@@ -73,12 +74,12 @@ class GutenbergCouponValidator {
 
   private function validateRequiredNumber($value, string $field): float {
     if ($value === null || $value === '' || !is_numeric($value)) {
-      throw new GutenbergCouponValidationException(sprintf('%s must be numeric.', $field));
+      throw new CouponBlockValidationException(sprintf('%s must be numeric.', $field));
     }
 
     $value = (float)$value;
     if ($value < 0) {
-      throw new GutenbergCouponValidationException(sprintf('%s must be greater than or equal to 0.', $field));
+      throw new CouponBlockValidationException(sprintf('%s must be greater than or equal to 0.', $field));
     }
 
     return $value;
@@ -101,12 +102,12 @@ class GutenbergCouponValidator {
     }
 
     if (filter_var($value, FILTER_VALIDATE_INT) === false) {
-      throw new GutenbergCouponValidationException(sprintf('%s must be an integer.', $field));
+      throw new CouponBlockValidationException(sprintf('%s must be an integer.', $field));
     }
 
     $value = (int)$value;
     if ($value < 0) {
-      throw new GutenbergCouponValidationException(sprintf('%s must be greater than or equal to 0.', $field));
+      throw new CouponBlockValidationException(sprintf('%s must be greater than or equal to 0.', $field));
     }
 
     return $value;
@@ -116,7 +117,7 @@ class GutenbergCouponValidator {
     $ids = $this->extractItemIds($items, 'product');
     foreach ($ids as $id) {
       if (!$this->wcHelper->wcGetProduct($id)) {
-        throw new GutenbergCouponValidationException('Invalid product ID.');
+        throw new CouponBlockValidationException('Invalid product ID.');
       }
     }
     return $ids;
@@ -127,7 +128,7 @@ class GutenbergCouponValidator {
     foreach ($ids as $id) {
       $term = $this->wp->getTerm($id, 'product_cat');
       if (!$term || $this->wp->isWpError($term)) {
-        throw new GutenbergCouponValidationException('Invalid product category ID.');
+        throw new CouponBlockValidationException('Invalid product category ID.');
       }
     }
     return $ids;
@@ -138,7 +139,7 @@ class GutenbergCouponValidator {
       return [];
     }
     if (!is_array($items)) {
-      throw new GutenbergCouponValidationException(sprintf('Invalid %s IDs.', $label));
+      throw new CouponBlockValidationException(sprintf('Invalid %s IDs.', $label));
     }
 
     $ids = [];
@@ -151,7 +152,7 @@ class GutenbergCouponValidator {
       }
 
       if (filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === false) {
-        throw new GutenbergCouponValidationException(sprintf('Invalid %s ID.', $label));
+        throw new CouponBlockValidationException(sprintf('Invalid %s ID.', $label));
       }
       $ids[] = (int)$id;
     }
@@ -169,34 +170,24 @@ class GutenbergCouponValidator {
     }
 
     if (!is_array($raw)) {
-      throw new GutenbergCouponValidationException('Invalid email restrictions.');
+      throw new CouponBlockValidationException('Invalid email restrictions.');
     }
 
     $emails = [];
     foreach ($raw as $email) {
       if (!is_string($email)) {
-        throw new GutenbergCouponValidationException('Invalid email restriction.');
+        throw new CouponBlockValidationException('Invalid email restriction.');
       }
       $email = strtolower(trim($this->wp->sanitizeEmail($email)));
       if (!$email) {
         continue;
       }
       if (!$this->wp->isEmail($email)) {
-        throw new GutenbergCouponValidationException('Invalid email restriction.');
+        throw new CouponBlockValidationException('Invalid email restriction.');
       }
       $emails[] = $email;
     }
 
     return array_values(array_unique($emails));
-  }
-
-  private function toBoolean($value): bool {
-    if (is_bool($value)) {
-      return $value;
-    }
-    if (is_string($value)) {
-      return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
-    }
-    return (bool)$value;
   }
 }

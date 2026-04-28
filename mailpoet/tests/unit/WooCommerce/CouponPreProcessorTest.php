@@ -14,6 +14,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
+use MailPoet\WooCommerce\RandomCouponCodeGenerator;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 
 class CouponPreProcessorTest extends \MailPoetUnitTest {
@@ -37,7 +38,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $this->processor = new CouponPreProcessor(
       Stub::make(Helper::class),
-      Stub::make(NewslettersRepository::class)
+      Stub::make(NewslettersRepository::class),
+      new RandomCouponCodeGenerator()
     );
 
   }
@@ -66,7 +68,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(), // for type = NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body shouldn't update
-      ], $this)
+      ], $this),
+      new RandomCouponCodeGenerator()
     );
 
     $newsletter = (new NewsletterEntity());
@@ -92,7 +95,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::once(), // for type != NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body should update
-      ], $this)
+      ], $this),
+      new RandomCouponCodeGenerator()
     );
 
     $newsletter = (new NewsletterEntity());
@@ -119,7 +123,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this)
+      ], $this),
+      new RandomCouponCodeGenerator()
     );
 
     $newsletter = (new NewsletterEntity());
@@ -147,7 +152,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this)
+      ], $this),
+      new RandomCouponCodeGenerator()
     );
     $newsletter = (new NewsletterEntity());
 
@@ -172,7 +178,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this)
+      ], $this),
+      new RandomCouponCodeGenerator()
     );
 
     [$newsletter, $blocks] = $this->createNewsletterAndBlockForType(NewsletterEntity::TYPE_STANDARD, 5);
@@ -208,7 +215,8 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $processor = new CouponPreProcessor(
       $wcHelper,
-      $this->make(NewslettersRepository::class)
+      $this->make(NewslettersRepository::class),
+      new RandomCouponCodeGenerator()
     );
 
     $newsletter = new NewsletterEntity();

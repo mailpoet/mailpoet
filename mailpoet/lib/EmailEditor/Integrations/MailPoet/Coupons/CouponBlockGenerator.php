@@ -1,9 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\WooCommerce;
+namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\WooCommerce\Helper;
+use MailPoet\WooCommerce\RandomCouponCodeGenerator;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -13,32 +15,36 @@ use MailPoet\WP\Functions as WPFunctions;
  * immediately after rendering, so failures recorded here stop that send without
  * leaking details into later renders.
  */
-class GutenbergCouponGenerator {
+class CouponBlockGenerator {
   const SAFE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
   const MAX_CODE_RETRIES = 5;
 
   /** @var Helper */
   private $wcHelper;
 
-  /** @var GutenbergCouponValidator */
+  /** @var CouponBlockValidator */
   private $validator;
 
-  /** @var GutenbergCouponGenerationFailureCollector */
+  /** @var CouponBlockGenerationFailureCollector */
   private $failureCollector;
 
   /** @var WPFunctions */
   private $wp;
 
+  private RandomCouponCodeGenerator $randomCouponCodeGenerator;
+
   public function __construct(
     Helper $wcHelper,
-    GutenbergCouponValidator $validator,
-    GutenbergCouponGenerationFailureCollector $failureCollector,
-    WPFunctions $wp
+    CouponBlockValidator $validator,
+    CouponBlockGenerationFailureCollector $failureCollector,
+    WPFunctions $wp,
+    RandomCouponCodeGenerator $randomCouponCodeGenerator
   ) {
     $this->wcHelper = $wcHelper;
     $this->validator = $validator;
     $this->failureCollector = $failureCollector;
     $this->wp = $wp;
+    $this->randomCouponCodeGenerator = $randomCouponCodeGenerator;
   }
 
   public function init(): void {
@@ -128,7 +134,7 @@ class GutenbergCouponGenerator {
       return null;
     }
 
-    if ($this->validatorBoolean($attrs['restrictToSubscriber'] ?? false)) {
+    if (CouponBlockAttributeParser::toBoolean($attrs['restrictToSubscriber'] ?? false)) {
       return 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.';
     }
 
@@ -212,45 +218,15 @@ class GutenbergCouponGenerator {
       && (int)$context['subscriber_count'] >= 1;
   }
 
-  private function validatorBoolean($value): bool {
-    if (is_bool($value)) {
-      return $value;
-    }
-    if (is_string($value)) {
-      return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
-    }
-    return (bool)$value;
-  }
-
   private function generateUniqueCode(): string {
     for ($i = 0; $i < self::MAX_CODE_RETRIES; $i++) {
-      $code = $this->generateRandomCode();
+      $code = $this->randomCouponCodeGenerator->generate();
       if (!$this->wcHelper->wcGetCouponIdByCode($code)) {
         return $code;
       }
     }
 
     throw new \RuntimeException('Failed to generate a unique coupon code.');
-  }
-
-  private function generateRandomCode(): string {
-    return implode('-', [
-      $this->generateRandomSegment(4),
-      $this->generateRandomSegment(6),
-      $this->generateRandomSegment(4),
-    ]);
-  }
-
-  private function generateRandomSegment(int $length): string {
-    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    $maxIndex = strlen($characters) - 1;
-    $segment = '';
-
-    for ($i = 0; $i < $length; $i++) {
-      $segment .= $characters[random_int(0, $maxIndex)];
-    }
-
-    return $segment;
   }
 
   private function getCouponDescription(array $context): string {

@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\WooCommerce;
+namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
-class GutenbergCouponGenerationFailureCollector {
+class CouponBlockGenerationFailureCollector {
   /** @var array<int, array{code: string, message: string, attrs: array, context: array}> */
   private $failures = [];
 

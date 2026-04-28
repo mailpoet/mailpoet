@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -31,15 +32,11 @@ use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
-use MailPoet\WooCommerce\GutenbergCouponBlockDetector;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
-  const GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR = 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.';
-  const GUTENBERG_COUPON_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR = 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.';
-
   public $trackingEnabled;
   public $trackingImageInserted;
 
@@ -88,7 +85,7 @@ class Newsletter {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
-  private GutenbergCouponBlockDetector $gutenbergCouponBlockDetector;
+  private CouponBlockDetector $couponBlockDetector;
 
   public function __construct(
     ?WPFunctions $wp = null,
@@ -125,7 +122,7 @@ class Newsletter {
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
     $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
-    $this->gutenbergCouponBlockDetector = ContainerWrapper::getInstance()->get(GutenbergCouponBlockDetector::class);
+    $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
@@ -184,7 +181,7 @@ class Newsletter {
     );
 
     $campaignId = null;
-    $this->preflightGutenbergCouponGeneration($newsletter, $queue);
+    $this->preflightCouponBlockGeneration($newsletter, $queue);
 
     // if tracking is enabled, do additional processing
     if ($this->trackingEnabled) {
@@ -272,7 +269,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  private function preflightGutenbergCouponGeneration(NewsletterEntity $newsletter, SendingQueueEntity $queue): void {
+  private function preflightCouponBlockGeneration(NewsletterEntity $newsletter, SendingQueueEntity $queue): void {
     $wpPostEntity = $newsletter->getWpPost();
     $wpPost = $wpPostEntity ? $wpPostEntity->getWpPostInstance() : null;
     if (!$wpPost instanceof \WP_Post) {
@@ -280,13 +277,13 @@ class Newsletter {
     }
 
     // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    if (!$this->gutenbergCouponBlockDetector->hasCreateNewCouponBlock($wpPost->post_content)) {
+    if (!$this->couponBlockDetector->hasCreateNewCouponBlock($wpPost->post_content)) {
       return;
     }
 
     $isAutomationSingleRecipient = $this->isAutomationType($newsletter) && $this->getTaskSubscriberCount($queue) === 1;
     // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $hasRecipientRestriction = $this->gutenbergCouponBlockDetector->hasRecipientRestrictedCreateNewCouponBlock($wpPost->post_content);
+    $hasRecipientRestriction = $this->couponBlockDetector->hasRecipientRestrictedCreateNewCouponBlock($wpPost->post_content);
     if ($isAutomationSingleRecipient || ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && !$hasRecipientRestriction)) {
       return;
     }
@@ -294,7 +291,7 @@ class Newsletter {
     $message = $hasRecipientRestriction
       ? __('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.', 'mailpoet')
       : __('Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
-    $this->stopGutenbergCouponPreProcessing($newsletter, $queue, $message);
+    $this->failCouponBlockSend($newsletter, $queue, $message);
     throw NewsletterProcessingException::create()->withMessage($message);
   }
 
@@ -302,12 +299,12 @@ class Newsletter {
     try {
       return $this->renderer->render($newsletter, $queue);
     } catch (NewsletterProcessingException $e) {
-      $this->stopGutenbergCouponPreProcessing($newsletter, $queue, $e->getMessage());
+      $this->failCouponBlockSend($newsletter, $queue, $e->getMessage());
       throw NewsletterProcessingException::create($e)->withMessage($e->getMessage());
     }
   }
 
-  private function stopGutenbergCouponPreProcessing(
+  private function failCouponBlockSend(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
     string $message

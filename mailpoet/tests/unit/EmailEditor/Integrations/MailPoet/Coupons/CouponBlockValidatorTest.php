@@ -1,15 +1,15 @@
 <?php declare(strict_types = 1);
 
-namespace unit\WooCommerce;
+namespace unit\EmailEditor\Integrations\MailPoet\Coupons;
 
-use MailPoet\WooCommerce\GutenbergCouponValidationException;
-use MailPoet\WooCommerce\GutenbergCouponValidator;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockValidationException;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockValidator;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
-class GutenbergCouponValidatorTest extends \MailPoetUnitTest {
+class CouponBlockValidatorTest extends \MailPoetUnitTest {
   public function testItValidatesCouponAttributes(): void {
-    $validator = new GutenbergCouponValidator(
+    $validator = new CouponBlockValidator(
       $this->makeHelper(),
       $this->makeWpFunctions()
     );
@@ -43,26 +43,26 @@ class GutenbergCouponValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testItRejectsInvalidDiscountType(): void {
-    $this->expectException(GutenbergCouponValidationException::class);
+    $this->expectException(CouponBlockValidationException::class);
     $this->expectExceptionMessage('Invalid discount type.');
 
-    (new GutenbergCouponValidator($this->makeHelper(), $this->makeWpFunctions()))
+    (new CouponBlockValidator($this->makeHelper(), $this->makeWpFunctions()))
       ->validate(['discountType' => 'invalid', 'amount' => '10'], '');
   }
 
   public function testItRejectsPercentAmountAboveOneHundred(): void {
-    $this->expectException(GutenbergCouponValidationException::class);
+    $this->expectException(CouponBlockValidationException::class);
     $this->expectExceptionMessage('Percent coupon amount must be 100 or lower.');
 
-    (new GutenbergCouponValidator($this->makeHelper(), $this->makeWpFunctions()))
+    (new CouponBlockValidator($this->makeHelper(), $this->makeWpFunctions()))
       ->validate(['discountType' => 'percent', 'amount' => '101'], '');
   }
 
   public function testItRejectsMaximumAmountBelowMinimumAmount(): void {
-    $this->expectException(GutenbergCouponValidationException::class);
+    $this->expectException(CouponBlockValidationException::class);
     $this->expectExceptionMessage('Maximum amount must be greater than or equal to minimum amount.');
 
-    (new GutenbergCouponValidator($this->makeHelper(), $this->makeWpFunctions()))
+    (new CouponBlockValidator($this->makeHelper(), $this->makeWpFunctions()))
       ->validate([
         'discountType' => 'fixed_cart',
         'amount' => '10',
@@ -72,10 +72,10 @@ class GutenbergCouponValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testItRejectsInvalidProductId(): void {
-    $this->expectException(GutenbergCouponValidationException::class);
+    $this->expectException(CouponBlockValidationException::class);
     $this->expectExceptionMessage('Invalid product ID.');
 
-    (new GutenbergCouponValidator(
+    (new CouponBlockValidator(
       $this->makeHelper(['wcGetProduct' => false]),
       $this->makeWpFunctions()
     ))->validate([
@@ -86,10 +86,10 @@ class GutenbergCouponValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testItRejectsInvalidProductCategoryId(): void {
-    $this->expectException(GutenbergCouponValidationException::class);
+    $this->expectException(CouponBlockValidationException::class);
     $this->expectExceptionMessage('Invalid product category ID.');
 
-    (new GutenbergCouponValidator(
+    (new CouponBlockValidator(
       $this->makeHelper(),
       $this->makeWpFunctions(['getTerm' => false])
     ))->validate([
@@ -100,7 +100,7 @@ class GutenbergCouponValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testItKeepsEmptyRecipientRestrictionExplicit(): void {
-    $attrs = (new GutenbergCouponValidator(
+    $attrs = (new CouponBlockValidator(
       $this->makeHelper(),
       $this->makeWpFunctions()
     ))->validate([

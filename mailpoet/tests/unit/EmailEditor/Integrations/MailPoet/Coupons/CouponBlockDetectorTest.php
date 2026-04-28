@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace unit\WooCommerce;
+namespace unit\EmailEditor\Integrations\MailPoet\Coupons;
 
-use MailPoet\WooCommerce\GutenbergCouponBlockDetector;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
 use MailPoet\WP\Functions as WPFunctions;
 
-class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
+class CouponBlockDetectorTest extends \MailPoetUnitTest {
   public function testItTreatsMissingSourceWithStaticCouponCodeAsExisting(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'woocommerce/coupon-code',
         'attrs' => ['couponCode' => 'WELCOME10'],
@@ -20,7 +20,7 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
   }
 
   public function testItTreatsMissingSourceWithGeneratedPlaceholderAsCreateNew(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'woocommerce/coupon-code',
         'attrs' => [],
@@ -33,7 +33,7 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
   }
 
   public function testItFindsNestedCreateNewCouponBlocks(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'core/group',
         'attrs' => [],
@@ -51,7 +51,7 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
   }
 
   public function testItIgnoresExistingCouponBlocks(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'woocommerce/coupon-code',
         'attrs' => ['source' => 'existing'],
@@ -63,7 +63,7 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
   }
 
   public function testItFindsRecipientRestrictedCreateNewCouponBlocks(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'core/group',
         'attrs' => [],
@@ -93,7 +93,7 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
   }
 
   public function testItIgnoresRecipientRestrictionOnExistingCouponBlocks(): void {
-    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+    $detector = new CouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'woocommerce/coupon-code',
         'attrs' => ['source' => 'existing', 'restrictToSubscriber' => true],

@@ -6,7 +6,9 @@ use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer as GuntenbergRenderer;
 use MailPoet\Config\Env;
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockFailureTranslator;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -16,7 +18,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\pQuery\DomNode;
-use MailPoet\WooCommerce\GutenbergCouponGenerationFailureCollector;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
@@ -49,7 +50,11 @@ class Renderer {
 
   private CapabilitiesManager $capabilitiesManager;
 
-  private GutenbergCouponGenerationFailureCollector $gutenbergCouponFailureCollector;
+  private CouponBlockGenerationFailureCollector $couponBlockFailureCollector;
+
+  private EmailContextBuilder $emailContextBuilder;
+
+  private CouponBlockFailureTranslator $couponBlockFailureTranslator;
 
   public function __construct(
     BodyRenderer $bodyRenderer,
@@ -60,7 +65,9 @@ class Renderer {
     NewslettersRepository $newslettersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     CapabilitiesManager $capabilitiesManager,
-    ?GutenbergCouponGenerationFailureCollector $gutenbergCouponFailureCollector = null
+    CouponBlockGenerationFailureCollector $couponBlockFailureCollector,
+    EmailContextBuilder $emailContextBuilder,
+    CouponBlockFailureTranslator $couponBlockFailureTranslator
   ) {
     $this->bodyRenderer = $bodyRenderer;
     $this->guntenbergRenderer = Email_Editor_Container::container()->get(GuntenbergRenderer::class);
@@ -71,7 +78,9 @@ class Renderer {
     $this->newslettersRepository = $newslettersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->capabilitiesManager = $capabilitiesManager;
-    $this->gutenbergCouponFailureCollector = $gutenbergCouponFailureCollector ?: ContainerWrapper::getInstance()->get(GutenbergCouponGenerationFailureCollector::class);
+    $this->couponBlockFailureCollector = $couponBlockFailureCollector;
+    $this->emailContextBuilder = $emailContextBuilder;
+    $this->couponBlockFailureTranslator = $couponBlockFailureTranslator;
   }
 
   public function render(NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue = null, $type = false) {
@@ -89,8 +98,8 @@ class Renderer {
     $wpPostEntity = $newsletter->getWpPost();
     $wpPost = $wpPostEntity ? $wpPostEntity->getWpPostInstance() : null;
     if ($wpPost instanceof \WP_Post) {
-      $this->gutenbergCouponFailureCollector->clear();
-      $renderContext = $this->getGutenbergRenderContext($newsletter, $sendingQueue, (bool)$preview);
+      $this->couponBlockFailureCollector->clear();
+      $renderContext = $this->emailContextBuilder->build($newsletter, $sendingQueue, (bool)$preview);
       $filterCallback = function (array $context) use ($renderContext): array {
         return array_merge($context, $renderContext);
       };
@@ -98,9 +107,9 @@ class Renderer {
 
       try {
         $renderedNewsletter = $this->guntenbergRenderer->render($wpPost, $subject, $newsletter->getPreheader(), $language, $metaRobots);
-        if ($this->gutenbergCouponFailureCollector->hasFailures()) {
+        if ($this->couponBlockFailureCollector->hasFailures()) {
           throw NewsletterProcessingException::create()
-            ->withMessage($this->getGutenbergCouponFailureMessage());
+            ->withMessage($this->couponBlockFailureTranslator->getFailureMessage($this->couponBlockFailureCollector));
         }
         $renderedNewsletter['html'] = $this->wp->applyFilters(
           self::FILTER_POST_PROCESS,
@@ -108,7 +117,7 @@ class Renderer {
         );
       } finally {
         $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
-        $this->gutenbergCouponFailureCollector->clear();
+        $this->couponBlockFailureCollector->clear();
       }
     } else {
       $body = (is_array($newsletter->getBody()))
@@ -172,82 +181,6 @@ class Renderer {
     return ($type && !empty($renderedNewsletter[$type])) ?
       $renderedNewsletter[$type] :
       $renderedNewsletter;
-  }
-
-  private function getGutenbergRenderContext(NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue, bool $preview): array {
-    $context = [
-      'integration' => 'mailpoet',
-      'newsletter_id' => (int)$newsletter->getId(),
-      'queue_id' => $sendingQueue ? (int)$sendingQueue->getId() : 0,
-      'email_type' => $newsletter->getType(),
-      'is_real_send' => false,
-      'is_preview' => $preview,
-      'is_single_recipient' => false,
-      'subscriber_count' => 0,
-      'mailpoet_is_automation' => false,
-    ];
-
-    if ($preview || !$sendingQueue || !$this->isAutomationType($newsletter)) {
-      if (!$preview && $sendingQueue && $newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
-        $context['is_real_send'] = true;
-        $context['subscriber_count'] = $this->getQueueSubscriberCount($sendingQueue);
-      }
-      return $context;
-    }
-
-    $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    $subscriberCount = $subscribers ? count($subscribers) : 0;
-    $context['subscriber_count'] = $subscriberCount;
-    $context['mailpoet_is_automation'] = true;
-
-    if ($subscriberCount !== 1) {
-      return $context;
-    }
-
-    // Only one-recipient automation sends can safely expose a unique recipient
-    // email to WooCommerce. Bulk renders must not use the first subscriber as a
-    // stand-in for everyone who will receive the email.
-    $firstSubscriber = $subscribers ? $subscribers->first() : null;
-    $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
-    $recipientEmail = $subscriber ? $subscriber->getEmail() : null;
-    if (!is_string($recipientEmail) || !$this->wp->isEmail($recipientEmail)) {
-      return $context;
-    }
-
-    $context['recipient_email'] = $recipientEmail;
-    $context['is_real_send'] = true;
-    $context['is_preview'] = false;
-    $context['is_single_recipient'] = true;
-    $context['subscriber_count'] = 1;
-    return $context;
-  }
-
-  private function getQueueSubscriberCount(SendingQueueEntity $sendingQueue): int {
-    $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    return $subscribers ? count($subscribers) : 0;
-  }
-
-  private function isAutomationType(NewsletterEntity $newsletter): bool {
-    return in_array($newsletter->getType(), [
-      NewsletterEntity::TYPE_AUTOMATION,
-      NewsletterEntity::TYPE_AUTOMATION_NOTIFICATION,
-      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
-    ], true);
-  }
-
-  private function getGutenbergCouponFailureMessage(): string {
-    $failures = $this->gutenbergCouponFailureCollector->getFailures();
-    $firstFailure = $failures[0] ?? null;
-    if (is_array($firstFailure) && !empty($firstFailure['message']) && is_string($firstFailure['message'])) {
-      return sprintf(
-        // translators: %s is the specific coupon generation failure.
-        __('Auto-generated coupon code could not be created: %s', 'mailpoet'),
-        $firstFailure['message']
-      );
-    }
-    return __('Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
   }
 
   /**
