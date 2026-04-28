@@ -87,6 +87,36 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
     verify($collector->hasFailures())->false();
   }
 
+  public function testItGeneratesCouponWhenWooCommerceOmitsDefaultCreateNewSource(): void {
+    /** @var object{generatedCode: string|null, emailRestrictions: array|null} $coupon */
+    $coupon = $this->createCouponStub();
+
+    $collector = new CouponBlockGenerationFailureCollector();
+    $generator = new CouponBlockGenerator(
+      $this->make(Helper::class, [
+        'isWooCommerceActive' => true,
+        'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        'wcGetCouponIdByCode' => 0,
+        'createWcCoupon' => $coupon,
+      ]),
+      new CouponBlockValidator(
+        $this->make(Helper::class, [
+          'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        ]),
+        $this->makeWpFunctions()
+      ),
+      $collector,
+      $this->makeWpFunctions(),
+      new RandomCouponCodeGenerator()
+    );
+
+    $result = $generator->generate('', [], $this->createStandardRenderingContext());
+
+    $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $result);
+    verify($coupon->generatedCode)->equals($result);
+    verify($collector->hasFailures())->false();
+  }
+
   public function testItReturnsPlaceholderForMailPoetPreviewToPreventWooCommerceDefaultGeneration(): void {
     $collector = new CouponBlockGenerationFailureCollector();
     $generator = new CouponBlockGenerator(

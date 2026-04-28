@@ -74,6 +74,7 @@ class CouponBlockGenerator {
     if (!CouponBlock::isCreateNew($attrs)) {
       return self::SAFE_PLACEHOLDER;
     }
+    $attrs = CouponBlock::withCreateNewDefaults($attrs);
 
     if (!($context['is_real_send'] ?? false)) {
       return self::SAFE_PLACEHOLDER;

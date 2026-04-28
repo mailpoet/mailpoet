@@ -25,7 +25,27 @@ class CouponBlock {
     'restrictToSubscriber',
   ];
 
-  public static function isCreateNew(array $attrs, bool $containsGeneratedPlaceholder = false): bool {
+  private const CREATE_NEW_DEFAULT_ATTRIBUTES = [
+    'source' => 'createNew',
+    'discountType' => 'percent',
+    'amount' => 10,
+    'expiryDay' => 10,
+    'freeShipping' => false,
+    'minimumAmount' => '',
+    'maximumAmount' => '',
+    'individualUse' => false,
+    'excludeSaleItems' => false,
+    'productIds' => [],
+    'excludedProductIds' => [],
+    'productCategoryIds' => [],
+    'excludedProductCategoryIds' => [],
+    'emailRestrictions' => '',
+    'usageLimit' => 0,
+    'usageLimitPerUser' => 0,
+    'restrictToSubscriber' => false,
+  ];
+
+  public static function isCreateNew(array $attrs, ?bool $containsGeneratedPlaceholder = null): bool {
     if (array_key_exists('source', $attrs)) {
       return $attrs['source'] === 'createNew';
     }
@@ -34,7 +54,15 @@ class CouponBlock {
       return false;
     }
 
-    return $containsGeneratedPlaceholder || self::hasGeneratedCouponAttributes($attrs);
+    if ($containsGeneratedPlaceholder !== null) {
+      return $containsGeneratedPlaceholder || self::hasGeneratedCouponAttributes($attrs);
+    }
+
+    return true;
+  }
+
+  public static function withCreateNewDefaults(array $attrs): array {
+    return array_merge(self::CREATE_NEW_DEFAULT_ATTRIBUTES, $attrs);
   }
 
   private static function hasGeneratedCouponAttributes(array $attrs): bool {
