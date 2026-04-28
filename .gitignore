@@ -5,6 +5,7 @@
 .claude/settings.local.json
 .claude/worktrees/
 .playwright-mcp/
+.superset/
 docker-compose.override.yml
 node_modules
 npm-debug.log
