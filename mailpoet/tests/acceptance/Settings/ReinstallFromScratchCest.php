@@ -54,7 +54,7 @@ class ReinstallFromScratchCest {
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
     $i->see('Newsletter mailing list', '[data-automation-id="listing_item_3"]');
-    $i->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
+    $i->seeNumberOfElements('.mailpoet-listing-title', 2);
     // Check subscribers
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForText('admin', 30, '.mailpoet-listing-table');
