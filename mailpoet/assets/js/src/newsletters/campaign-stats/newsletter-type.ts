@@ -32,6 +32,7 @@ export type NewsletterType = {
       formatted: string;
       count: number;
     };
+    unsubscribeReasons?: { reason: string; count: string | number }[];
   };
   type: string;
   status: string;

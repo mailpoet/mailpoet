@@ -47,6 +47,9 @@ interface Unsubscribe {
   meta?: string;
   newsletterId?: string;
   newsletterSubject?: string;
+  reason?: string;
+  reasonLabel?: string;
+  reasonText?: string;
 }
 
 interface FormValues {
@@ -328,10 +331,25 @@ function afterFormContent(values: FormValues) {
             date,
           );
         }
+        const reason = unsubscribe.reasonLabel
+          ? MailPoet.I18n.t(
+              unsubscribe.reasonText
+                ? 'unsubscribeReasonWithDetails'
+                : 'unsubscribeReason',
+            )
+              .replace('%1$s', unsubscribe.reasonLabel)
+              .replace('%2$s', unsubscribe.reasonText || '')
+          : null;
         return (
-          <p className="description" key={message}>
-            {message}
-          </p>
+          <div
+            className="description"
+            key={`${unsubscribe.source}-${date}-${
+              unsubscribe.newsletterId || ''
+            }`}
+          >
+            <p>{message}</p>
+            {reason && <p>{reason}</p>}
+          </div>
         );
       })}
       <p className="description">

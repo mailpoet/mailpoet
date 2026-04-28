@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilderTest extends \MailPoetTest {
@@ -34,6 +35,7 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
         'bounced' => 1,
         'machineOpened' => 9,
         'revenue' => null,
+        'unsubscribeReasons' => [],
       ],
     ];
     $statistics = new NewsletterStatistics(4, 6, 2, 1, 10, null);
@@ -47,7 +49,18 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     $newsletterUrl = $this->diContainer->get(Url::class);
     $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $logRepository = $this->diContainer->get(LogRepository::class);
-    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository, $newsletterUrl, $sendingQueuesRepository, $logRepository);
+    $statisticsUnsubscribesRepository = Stub::make(StatisticsUnsubscribesRepository::class, [
+      'getReasonCountsForNewsletter' => [],
+    ]);
+    $responseBuilder = new NewslettersResponseBuilder(
+      $em,
+      $newsletterRepository,
+      $newsletterStatsRepository,
+      $newsletterUrl,
+      $sendingQueuesRepository,
+      $logRepository,
+      $statisticsUnsubscribesRepository
+    );
     $response = $responseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_CHILDREN_COUNT,
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,

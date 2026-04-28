@@ -31,6 +31,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -100,7 +101,8 @@ class NewslettersTest extends \MailPoetTest {
           ),
           $this->diContainer->get(Url::class),
           $this->diContainer->get(SendingQueuesRepository::class),
-          $this->diContainer->get(LogRepository::class)
+          $this->diContainer->get(LogRepository::class),
+          $this->diContainer->get(StatisticsUnsubscribesRepository::class)
         ),
       ]
     );

@@ -4,7 +4,10 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -23,7 +26,9 @@ class SubscriberExporterTest extends \MailPoetTest {
     parent::_before();
     $this->exporter = new SubscriberExporter(
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(CustomFieldsRepository::class)
+      $this->diContainer->get(CustomFieldsRepository::class),
+      $this->diContainer->get(StatisticsUnsubscribesRepository::class),
+      $this->diContainer->get(UnsubscribeReasonTracker::class)
     );
     $this->subscriberFactory = new SubscriberFactory();
   }
@@ -119,5 +124,21 @@ class SubscriberExporterTest extends \MailPoetTest {
 
     $result = $this->exporter->export($email);
     verify($result['data'][0]['data'])->arrayContains(['name' => 'Custom field1', 'value' => 'Value']);
+  }
+
+  public function testExportSubscriberWithUnsubscribeReason() {
+    $email = 'email.that@has.unsubscribe.reason';
+    $subscriber = $this->subscriberFactory
+      ->withEmail($email)
+      ->create();
+
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $subscriber);
+    $unsubscribe->setReasonData(StatisticsUnsubscribeEntity::REASON_OTHER, 'Personal detail');
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+
+    $result = $this->exporter->export($email);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Unsubscribe reason', 'value' => 'Other']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Unsubscribe reason details', 'value' => 'Personal detail']);
   }
 }

@@ -12,6 +12,7 @@ import { NewsletterGeneralStats } from './newsletter-general-stats';
 import { NewsletterType } from './newsletter-type';
 import { NewsletterStatsInfo } from './newsletter-stats-info';
 import { PremiumBanner } from './premium-banner';
+import { UnsubscribeReasonStats } from './unsubscribe-reason-stats';
 
 type State = {
   item?: NewsletterType;
@@ -97,6 +98,10 @@ export function CampaignStatsPage() {
             newsletter={newsletter}
             isWoocommerceActive={MailPoet.isWoocommerceActive}
           />
+        </ErrorBoundary>
+
+        <ErrorBoundary>
+          <UnsubscribeReasonStats newsletter={newsletter} />
         </ErrorBoundary>
 
         <Tabs activeKey="clicked">

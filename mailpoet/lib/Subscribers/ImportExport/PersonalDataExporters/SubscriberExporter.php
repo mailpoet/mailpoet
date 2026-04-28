@@ -4,7 +4,10 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\DateTime;
@@ -16,15 +19,25 @@ class SubscriberExporter {
   /*** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
+  /** @var UnsubscribeReasonTracker */
+  private $unsubscribeReasonTracker;
+
   /*** @var array<int, string> */
   private $customFields = [];
 
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    CustomFieldsRepository $customFieldsRepository
+    CustomFieldsRepository $customFieldsRepository,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
+    UnsubscribeReasonTracker $unsubscribeReasonTracker
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->customFieldsRepository = $customFieldsRepository;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
+    $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
   }
 
   /**
@@ -114,6 +127,41 @@ class SubscriberExporter {
       'value' => $this->formatSource($subscriber->getSource()),
     ];
 
+    foreach ($this->getUnsubscribeReasonExportData($subscriber) as $item) {
+      $result[] = $item;
+    }
+
+    return $result;
+  }
+
+  /**
+   * @return mixed[][]
+   */
+  private function getUnsubscribeReasonExportData(SubscriberEntity $subscriber): array {
+    $unsubscribes = $this->statisticsUnsubscribesRepository->findBy([
+      'subscriber' => $subscriber,
+    ], [
+      'createdAt' => 'desc',
+    ]);
+
+    $reasonLabels = $this->unsubscribeReasonTracker->getReasonLabels();
+    $result = [];
+    foreach ($unsubscribes as $unsubscribe) {
+      if (!$unsubscribe instanceof StatisticsUnsubscribeEntity || $unsubscribe->getReason() === null) {
+        continue;
+      }
+
+      $result[] = [
+        'name' => __('Unsubscribe reason', 'mailpoet'),
+        'value' => $reasonLabels[$unsubscribe->getReason()] ?? $unsubscribe->getReason(),
+      ];
+      if ($unsubscribe->getReasonText() !== null) {
+        $result[] = [
+          'name' => __('Unsubscribe reason details', 'mailpoet'),
+          'value' => $unsubscribe->getReasonText(),
+        ];
+      }
+    }
     return $result;
   }
 
