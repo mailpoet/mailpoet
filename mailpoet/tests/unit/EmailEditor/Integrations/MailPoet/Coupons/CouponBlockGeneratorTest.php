@@ -202,6 +202,40 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
     verify($collector->getFailures()[0]['message'])->equals('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.');
   }
 
+  public function testItRecordsFailureForRecipientRestrictedAutomationWithoutRecipientEmail(): void {
+    $collector = new CouponBlockGenerationFailureCollector();
+    $generator = new CouponBlockGenerator(
+      $this->make(Helper::class, [
+        'isWooCommerceActive' => true,
+      ]),
+      Stub::make(CouponBlockValidator::class),
+      $collector,
+      $this->makeWpFunctions(),
+      new RandomCouponCodeGenerator()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '10',
+      'restrictToSubscriber' => true,
+    ], $this->createRenderingContext([
+      'integration' => 'mailpoet',
+      'newsletter_id' => 1,
+      'queue_id' => 2,
+      'email_type' => NewsletterEntity::TYPE_AUTOMATION,
+      'is_real_send' => true,
+      'is_preview' => false,
+      'is_single_recipient' => true,
+      'subscriber_count' => 1,
+      'mailpoet_is_automation' => true,
+    ]));
+
+    verify($result)->equals(CouponBlockGenerator::SAFE_PLACEHOLDER);
+    verify($collector->hasFailures())->true();
+    verify($collector->getFailures()[0]['message'])->equals('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.');
+  }
+
   public function testItRecordsFailureAndReturnsPlaceholderForInvalidAttributes(): void {
     $collector = new CouponBlockGenerationFailureCollector();
     $helper = $this->make(Helper::class, [

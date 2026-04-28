@@ -36,9 +36,10 @@ class CouponBlockValidator {
     $emailRestrictions = $this->validateEmailRestrictions($attrs['emailRestrictions'] ?? []);
     if (CouponBlockAttributeParser::toBoolean($attrs['restrictToSubscriber'] ?? false)) {
       $recipientEmailRestrictions = $this->validateEmailRestrictions([$recipientEmail]);
-      if (!empty($recipientEmailRestrictions)) {
-        $emailRestrictions[] = $recipientEmailRestrictions[0];
+      if (empty($recipientEmailRestrictions)) {
+        throw new CouponBlockValidationException('Recipient email is required for recipient-restricted coupons.');
       }
+      $emailRestrictions[] = $recipientEmailRestrictions[0];
     }
 
     return [

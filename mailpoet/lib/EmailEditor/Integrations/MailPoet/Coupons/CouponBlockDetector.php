@@ -5,8 +5,8 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CouponBlockDetector {
-  const BLOCK_NAME = 'woocommerce/coupon-code';
-  const SAFE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
+  const BLOCK_NAME = CouponBlock::NAME;
+  const SAFE_PLACEHOLDER = CouponBlock::SAFE_PLACEHOLDER;
 
   /** @var WPFunctions */
   private $wp;
@@ -71,16 +71,10 @@ class CouponBlockDetector {
   }
 
   private function isCreateNewCouponBlock(array $block): bool {
-    $attrs = $this->getBlockAttrs($block);
-    if (array_key_exists('source', $attrs)) {
-      return $attrs['source'] === 'createNew';
-    }
-
-    if (!empty($attrs['couponCode'])) {
-      return false;
-    }
-
-    return $this->blockContainsGeneratedCouponPlaceholder($block);
+    return CouponBlock::isCreateNew(
+      $this->getBlockAttrs($block),
+      $this->blockContainsGeneratedCouponPlaceholder($block)
+    );
   }
 
   private function getBlockAttrs(array $block): array {
