@@ -192,25 +192,35 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
-    $i->waitForElementVisible($xpath);
-    $i->waitForElementClickable($xpath);
-    $i->moveMouseOver($xpath);
-    $i->click($xpath);
+    try {
+      $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
+      $i->waitForElementVisible($xpath, 1);
+      $i->waitForElementClickable($xpath, 1);
+      $i->moveMouseOver($xpath);
+      $i->click($xpath);
+      return;
+    } catch (Exception $exception) {
+      $i->clickItemRowActionByItemName($itemName, $actionLinkText);
+    }
   }
 
   public function clickWooTableMoreButtonByItemName($itemName) {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//div[contains(@class, "mailpoet-listing-more-button")]'];
-    $i->waitForElementClickable($xpath);
-    $i->click($xpath);
+    try {
+      $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//div[contains(@class, "mailpoet-listing-more-button")]'];
+      $i->waitForElementClickable($xpath, 1);
+      $i->click($xpath);
+      return;
+    } catch (Exception $exception) {
+      $dataViewsActionsToggleXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[@aria-label="Actions" and @aria-haspopup="menu"]'];
+      $i->waitForElementClickable($dataViewsActionsToggleXpath);
+      $i->click($dataViewsActionsToggleXpath);
+    }
   }
 
   public function clickWooTableActionInsideMoreButton(string $itemName, string $moreButtonAction, ?string $confirmAction = null) {
     $i = $this;
-    $i->clickWooTableMoreButtonByItemName($itemName);
-    $i->waitForText($itemName);
-    $i->click($moreButtonAction);
+    $i->clickItemRowActionByItemName($itemName, $moreButtonAction);
     if ($confirmAction) {
       $i->click($confirmAction);
     }
@@ -311,8 +321,15 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function selectAllListingItems() {
     $i = $this;
-    $i->waitForElementVisible('[data-automation-id="select_all"]');
-    $i->click('[data-automation-id="select_all"]');
+    try {
+      $i->waitForElementVisible('[data-automation-id="select_all"]', 1);
+      $i->click('[data-automation-id="select_all"]');
+      return;
+    } catch (Exception $exception) {
+      $dataViewsSelectAll = ['xpath' => '//table//thead//input[@type="checkbox"]'];
+      $i->waitForElementVisible($dataViewsSelectAll);
+      $i->click($dataViewsSelectAll);
+    }
   }
 
   public function waitForListingItemsToLoad() {
@@ -1027,13 +1044,25 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function checkWooTableCheckboxForItemName(string $itemName): void {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//input[@type="checkbox"]'];
+    $xpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//input[@type="checkbox"]'];
     $i->click($xpath);
+  }
+
+  public function selectListingBulkAction(string $actionName): void {
+    $i = $this;
+    try {
+      $i->selectOption('Bulk actions', $actionName);
+      return;
+    } catch (Exception $exception) {
+      $dataViewsAction = ['xpath' => '//div[contains(@class, "dataviews-bulk-actions-footer__action-buttons")]//button[normalize-space(.)="' . $actionName . '"]'];
+      $i->waitForElementClickable($dataViewsAction);
+      $i->click($dataViewsAction);
+    }
   }
 
   public function changeWooTableTab(string $name): void {
     $i = $this;
-    $i->click('button.mailpoet-tab-' . $name);
+    $i->changeGroupInListingFilter($name);
   }
 
   public function clearTransientCache(): void {

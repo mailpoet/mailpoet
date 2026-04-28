@@ -268,25 +268,22 @@ class WooCommerceDynamicSegmentsCest {
     $i->see($message, $customerCountrySegmentRow);
 
     $i->wantTo('Check that Edit links are not clickable');
-    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->categorySegment->getId()}]", 'disabled', '');
-    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->productSegment->getId()}]", 'disabled', '');
-    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->numberOfOrdersSegment->getId()}]", 'disabled', '');
-    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->totalSpentSegment->getId()}]", 'disabled', '');
-    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->customerCountrySegment->getId()}]", 'disabled', '');
+    $this->seeDisabledEditAction($i, $this->categorySegment);
+    $this->seeDisabledEditAction($i, $this->productSegment);
+    $this->seeDisabledEditAction($i, $this->numberOfOrdersSegment);
+    $this->seeDisabledEditAction($i, $this->totalSpentSegment);
+    $this->seeDisabledEditAction($i, $this->customerCountrySegment);
     $i->seeNoJSErrors();
   }
 
   private function clickAction(\AcceptanceTester $i, SegmentEntity $segmentEntity, $actionName) {
-    $column = sprintf('[data-automation-id="mailpoet_dynamic_segment_actions_%d"]', $segmentEntity->getId());
+    $i->clickWooTableActionByItemName($segmentEntity->getName(), $actionName);
+  }
 
-    switch ($actionName) {
-      case 'View subscribers':
-        $actionName = 'a';
-        break;
-      case 'Edit':
-        $actionName = 'a:nth-child(2)';
-        break;
-    }
-    $i->click($actionName, $column);
+  private function seeDisabledEditAction(\AcceptanceTester $i, SegmentEntity $segmentEntity): void {
+    $rowEditAction = [
+      'xpath' => '//tr[.//*[normalize-space(text())="' . $segmentEntity->getName() . '"]]//button[contains(normalize-space(.), "Edit unavailable:") and @disabled]',
+    ];
+    $i->waitForElementVisible($rowEditAction);
   }
 }

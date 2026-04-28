@@ -3,3 +3,41 @@
 // alongside the registered `wp-components` style handle. Per-listing tweaks
 // belong in their feature-specific stylesheet (see `_listing-forms.scss`).
 @import '../../../node_modules/@wordpress/dataviews/build-style/style';
+
+.mailpoet-segments-dataviews__tabs {
+  margin-top: $grid-gap-half;
+
+  > [role='tablist'] {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
+    padding: 0 8px;
+  }
+}
+
+.mailpoet-segments-dataviews {
+  margin-top: 0;
+
+  .dataviews-wrapper {
+    min-height: 200px;
+  }
+}
+
+.mailpoet-segments-dataviews__toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+}
+
+.mailpoet-segments-dataviews .mailpoet-listing-actions {
+  display: flex;
+  gap: 8px;
+  line-height: 15px;
+  visibility: hidden;
+}
+
+.mailpoet-segments-dataviews tr:hover .mailpoet-listing-actions {
+  visibility: visible;
+}
