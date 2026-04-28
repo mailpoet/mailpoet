@@ -168,7 +168,6 @@ class Widget extends \WP_Widget {
   }
 
   /**
-   * @phpstan-ignore-next-line $args are not passed to parent and our rendering is custom so it is ok that $args doesn't match parent's $arg shape.
    * @param array{form?: int|string, form_type?: string, before_widget?: string, after_widget?: string, before_title?: string, after_title?: string } $args Widget arguments.
    * Output the widget itself.
    */
