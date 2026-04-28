@@ -24,6 +24,18 @@ function ensureInitialized(): void {
   initialized = true;
 }
 
+function cleanQueryParams(params: ListingQueryParams): Record<string, unknown> {
+  return Object.entries(params).reduce<Record<string, unknown>>(
+    (query, [key, value]) => {
+      if (value !== undefined) {
+        return { ...query, [key]: value };
+      }
+      return query;
+    },
+    {},
+  );
+}
+
 export type DynamicSegmentListingItem = {
   id: number;
   name: string;
@@ -31,7 +43,7 @@ export type DynamicSegmentListingItem = {
   count_all: string;
   count_subscribed: string;
   created_at: string;
-  updated_at?: string;
+  updated_at: string | null;
   deleted_at: string | null;
   subscribers_url: string;
   is_plugin_missing: boolean;
@@ -56,7 +68,7 @@ export async function getDynamicSegments(
   const response = await apiFetch<ListingEnvelope<DynamicSegmentListingItem>>({
     path: addQueryArgs(
       '/mailpoet/v1/dynamic-segments',
-      params as Record<string, unknown>,
+      cleanQueryParams(params),
     ),
     method: 'GET',
   });
