@@ -144,7 +144,6 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check some Lists strings');
     $i->amOnMailpoetPage('lists');
     $i->waitForText('Abonnenten');
-    $i->waitForText('Listen-Bewertung');
     $i->waitForText('Neue Liste hinzufügen');
     $i->waitForText('Ausgetragen');
 

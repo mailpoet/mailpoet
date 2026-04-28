@@ -99,7 +99,7 @@ class ManageListsCest {
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($editedListTitle);
     $i->clickItemRowActionByItemName($editedListTitle, 'Delete permanently');
-    $i->click('Delete permanently');
+    $i->clickModalButton('Delete permanently');
     $i->waitForNoticeAndClose('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->seeNoJSErrors();
     $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
@@ -130,7 +130,7 @@ class ManageListsCest {
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newListTitle);
     $i->click('[data-automation-id="empty_trash"]');
-    $i->click('Empty Trash');
+    $i->clickModalButton('Empty Trash');
 
     $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->dontSee($newListTitle);
