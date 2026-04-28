@@ -9,6 +9,8 @@ pnpm-lock.yaml
 vendor
 vendor-prefixed
 /.mp_svn
+/.superset
+/.wp-env.override.json
 /dev/data
 /mailpoet/assets/dist
 /mailpoet/assets/js/lib
