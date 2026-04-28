@@ -5,11 +5,18 @@ import { MailPoet } from 'mailpoet';
 import * as ROUTES from 'segments/routes';
 import type { DynamicSegmentListingItem } from './api';
 
-function dateTime(value: string | null | undefined): JSX.Element {
+function dateTime(
+  value: string | null | undefined,
+  segmentId?: number,
+): JSX.Element {
   if (!value) return createElement('span', null, '—');
   return createElement(
     'span',
-    { 'data-automation-id': 'mailpoet_dynamic_segment_created_at' },
+    {
+      'data-automation-id': segmentId
+        ? `mailpoet_dynamic_segment_created_at_${segmentId}`
+        : 'mailpoet_dynamic_segment_created_at',
+    },
     createElement('span', null, MailPoet.Date.short(value)),
     createElement('br', null),
     createElement('span', null, MailPoet.Date.time(value)),
@@ -89,6 +96,6 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
     type: 'datetime',
     enableSorting: true,
     enableGlobalSearch: false,
-    render: ({ item }) => dateTime(item.created_at),
+    render: ({ item }) => dateTime(item.updated_at, item.id),
   },
 ];

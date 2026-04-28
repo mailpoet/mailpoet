@@ -1,8 +1,12 @@
 export type ListingQueryParams = {
-  page: number;
-  per_page: number;
+  page?: number;
+  per_page?: number;
+  offset?: number;
+  limit?: number;
   orderby?: string;
   order?: 'asc' | 'desc';
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
   search?: string;
   group?: string;
   filter?: Record<string, unknown>;

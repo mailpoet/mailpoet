@@ -144,6 +144,32 @@ class SegmentsEndpointsTest extends Test {
     $this->assertNull($restoredWpUsers->getDeletedAt());
   }
 
+  public function testBulkActionSelectAllRestoresStaticTrash(): void {
+    $trashedOne = (new SegmentFactory())->withName('Select all restore one')->withDeleted()->create();
+    $trashedTwo = (new SegmentFactory())->withName('Select all restore two')->withDeleted()->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => [
+        'action' => 'restore',
+        'select_all' => true,
+        'group' => 'trash',
+        'page' => 1,
+        'per_page' => 20,
+        'orderby' => 'name',
+        'order' => 'asc',
+      ],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertGreaterThanOrEqual(2, $data['data']['updated']);
+    $restoredOne = $this->segmentsRepository->findOneById($trashedOne->getId());
+    $restoredTwo = $this->segmentsRepository->findOneById($trashedTwo->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $restoredOne);
+    $this->assertInstanceOf(SegmentEntity::class, $restoredTwo);
+    $this->assertNull($restoredOne->getDeletedAt());
+    $this->assertNull($restoredTwo->getDeletedAt());
+  }
+
   public function testBulkActionReportsPartialFailures(): void {
     $blocked = (new SegmentFactory())->withName('Blocked')->create();
     $ok = (new SegmentFactory())->withName('OK')->create();

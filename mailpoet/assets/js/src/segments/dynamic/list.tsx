@@ -67,6 +67,12 @@ function viewMatchesQuery(
   );
 }
 
+function usesNonPageAlignedOffset(
+  query: ReturnType<typeof getSegmentsQuery>,
+): boolean {
+  return query.limit > 0 && query.offset % query.limit !== 0;
+}
+
 function actionCount(
   action: DynamicSegmentBulkAction,
   result: DynamicSegmentBulkActionResult,
@@ -195,6 +201,9 @@ export function DynamicSegmentList(): JSX.Element {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const legacyOffsetRef = useRef<number | null>(
+    usesNonPageAlignedOffset(initialQuery) ? initialQuery.offset : null,
+  );
   const latestViewRef = useRef<View>(viewFromQuery(initialQuery));
   const latestGroupRef = useRef<Group>(initialQuery.group as Group);
 
@@ -216,6 +225,25 @@ export function DynamicSegmentList(): JSX.Element {
   } = useDataViewsQuery<DynamicSegmentListingItem>({
     initialView: viewFromQuery(initialQuery),
     load,
+    extraParams: (currentView) => {
+      if (
+        legacyOffsetRef.current !== null &&
+        viewMatchesQuery(currentView, {
+          ...initialQuery,
+          offset: legacyOffsetRef.current,
+        })
+      ) {
+        return {
+          page: undefined,
+          per_page: undefined,
+          offset: legacyOffsetRef.current,
+          limit: currentView.perPage ?? initialQuery.limit,
+          sort_by: currentView.sort?.field ?? 'updated_at',
+          sort_order: currentView.sort?.direction ?? 'desc',
+        };
+      }
+      return {};
+    },
   });
 
   useEffect(() => {
@@ -224,6 +252,15 @@ export function DynamicSegmentList(): JSX.Element {
   }, [group, view]);
 
   useEffect(() => {
+    if (
+      legacyOffsetRef.current !== null &&
+      viewMatchesQuery(view, {
+        ...initialQuery,
+        offset: legacyOffsetRef.current,
+      })
+    ) {
+      return;
+    }
     updateSegmentsQuery({
       group,
       limit: view.perPage ?? 25,
@@ -232,12 +269,15 @@ export function DynamicSegmentList(): JSX.Element {
       sort_by: view.sort?.field ?? 'updated_at',
       sort_order: view.sort?.direction ?? 'desc',
     });
-  }, [group, view]);
+  }, [group, initialQuery, view]);
 
   useEffect(() => {
     const applyHashState = (): void => {
       const nextQuery = getSegmentsQuery();
       const nextGroup = nextQuery.group as Group;
+      legacyOffsetRef.current = usesNonPageAlignedOffset(nextQuery)
+        ? nextQuery.offset
+        : null;
       if (nextGroup !== latestGroupRef.current) {
         setGroup(nextGroup);
       }
@@ -257,6 +297,11 @@ export function DynamicSegmentList(): JSX.Element {
     window.addEventListener('hashchange', applyHashState);
     return () => window.removeEventListener('hashchange', applyHashState);
   }, [clearLoadError, setView]);
+
+  const handleViewChange = (nextView: View): void => {
+    legacyOffsetRef.current = null;
+    setView(nextView);
+  };
 
   const handleBulkAction = useCallback(
     async (
@@ -426,6 +471,7 @@ export function DynamicSegmentList(): JSX.Element {
   const handleTabSelect = (tabName: string): void => {
     if (tabName !== 'all' && tabName !== 'trash') return;
     if (tabName === group) return;
+    legacyOffsetRef.current = null;
     setGroup(tabName);
     setSelection([]);
     setGlobalError(null);
@@ -493,7 +539,7 @@ export function DynamicSegmentList(): JSX.Element {
               data={items}
               fields={dynamicSegmentFields}
               view={view}
-              onChangeView={setView}
+              onChangeView={handleViewChange}
               actions={actions}
               paginationInfo={paginationInfo}
               defaultLayouts={{ table: {} }}
