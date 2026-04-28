@@ -6,11 +6,25 @@ use MailPoet\WooCommerce\GutenbergCouponBlockDetector;
 use MailPoet\WP\Functions as WPFunctions;
 
 class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
-  public function testItTreatsMissingSourceAsCreateNew(): void {
+  public function testItTreatsMissingSourceWithStaticCouponCodeAsExisting(): void {
+    $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
+      [
+        'blockName' => 'woocommerce/coupon-code',
+        'attrs' => ['couponCode' => 'WELCOME10'],
+        'innerHTML' => '<span class="woocommerce-coupon-code">WELCOME10</span>',
+        'innerBlocks' => [],
+      ],
+    ]));
+
+    verify($detector->hasCreateNewCouponBlock('content'))->false();
+  }
+
+  public function testItTreatsMissingSourceWithGeneratedPlaceholderAsCreateNew(): void {
     $detector = new GutenbergCouponBlockDetector($this->makeWpFunctions([
       [
         'blockName' => 'woocommerce/coupon-code',
         'attrs' => [],
+        'innerHTML' => '<span class="woocommerce-coupon-code">XXXX-XXXXXX-XXXX</span>',
         'innerBlocks' => [],
       ],
     ]));
@@ -55,9 +69,21 @@ class GutenbergCouponBlockDetectorTest extends \MailPoetUnitTest {
         'attrs' => [],
         'innerBlocks' => [
           [
-            'blockName' => 'woocommerce/coupon-code',
-            'attrs' => ['source' => 'createNew', 'restrictToSubscriber' => true],
-            'innerBlocks' => [],
+            'blockName' => 'core/columns',
+            'attrs' => [],
+            'innerBlocks' => [
+              [
+                'blockName' => 'core/column',
+                'attrs' => [],
+                'innerBlocks' => [
+                  [
+                    'blockName' => 'woocommerce/coupon-code',
+                    'attrs' => ['source' => 'createNew', 'restrictToSubscriber' => true],
+                    'innerBlocks' => [],
+                  ],
+                ],
+              ],
+            ],
           ],
         ],
       ],

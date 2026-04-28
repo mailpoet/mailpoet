@@ -48,6 +48,40 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
     verify($collector->hasFailures())->false();
   }
 
+  public function testItAcceptsNullCouponCodeFromEarlierFilters(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $generator = new GutenbergCouponGenerator(
+      Stub::make(Helper::class),
+      Stub::make(GutenbergCouponValidator::class),
+      $collector,
+      Stub::make(WPFunctions::class)
+    );
+
+    $result = $generator->generate(null, ['source' => 'createNew'], $this->createRenderingContext([
+      'integration' => 'mailpoet',
+      'is_real_send' => false,
+      'is_preview' => true,
+    ]));
+
+    verify($result)->equals(GutenbergCouponGenerator::SAFE_PLACEHOLDER);
+    verify($collector->hasFailures())->false();
+  }
+
+  public function testItTreatsMissingSourceWithExistingCouponCodeAsStaticCoupon(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $generator = new GutenbergCouponGenerator(
+      Stub::make(Helper::class),
+      Stub::make(GutenbergCouponValidator::class),
+      $collector,
+      Stub::make(WPFunctions::class)
+    );
+
+    $result = $generator->generate('', ['couponCode' => 'WELCOME10'], $this->createStandardRenderingContext());
+
+    verify($result)->equals(GutenbergCouponGenerator::SAFE_PLACEHOLDER);
+    verify($collector->hasFailures())->false();
+  }
+
   public function testItReturnsPlaceholderForMailPoetPreviewToPreventWooCommerceDefaultGeneration(): void {
     $collector = new GutenbergCouponGenerationFailureCollector();
     $generator = new GutenbergCouponGenerator(
@@ -182,6 +216,77 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
     verify($collector->hasFailures())->true();
   }
 
+  public function testItRecordsFailureWhenUniqueCodeGenerationIsExhausted(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $helper = $this->make(Helper::class, [
+      'isWooCommerceActive' => true,
+      'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+      'wcGetCouponIdByCode' => 123,
+    ]);
+    $generator = new GutenbergCouponGenerator(
+      $helper,
+      new GutenbergCouponValidator($helper, $this->makeWpFunctions()),
+      $collector,
+      $this->makeWpFunctions()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '15',
+    ], $this->createPositiveRenderingContext());
+
+    verify($result)->equals(GutenbergCouponGenerator::SAFE_PLACEHOLDER);
+    verify($collector->getFailures()[0]['message'])->equals('Failed to generate a unique coupon code.');
+  }
+
+  public function testItRecordsFailureWhenWooCommerceDoesNotSaveCoupon(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $helper = $this->make(Helper::class, [
+      'isWooCommerceActive' => true,
+      'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+      'wcGetCouponIdByCode' => 0,
+      'createWcCoupon' => $this->createCouponStub(0),
+    ]);
+    $generator = new GutenbergCouponGenerator(
+      $helper,
+      new GutenbergCouponValidator($helper, $this->makeWpFunctions()),
+      $collector,
+      $this->makeWpFunctions()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '15',
+    ], $this->createPositiveRenderingContext());
+
+    verify($result)->equals(GutenbergCouponGenerator::SAFE_PLACEHOLDER);
+    verify($collector->getFailures()[0]['message'])->equals('WooCommerce did not save the generated coupon.');
+  }
+
+  public function testItDoesNotRecordRecipientEmailInFailureContext(): void {
+    $collector = new GutenbergCouponGenerationFailureCollector();
+    $helper = $this->make(Helper::class, [
+      'isWooCommerceActive' => true,
+      'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+    ]);
+    $generator = new GutenbergCouponGenerator(
+      $helper,
+      new GutenbergCouponValidator($helper, $this->makeWpFunctions()),
+      $collector,
+      $this->makeWpFunctions()
+    );
+
+    $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '101',
+    ], $this->createPositiveRenderingContext());
+
+    verify(isset($collector->getFailures()[0]['context']['recipient_email']))->false();
+  }
+
   private function createPositiveRenderingContext(): Rendering_Context {
     return $this->createRenderingContext([
       'integration' => 'mailpoet',
@@ -230,13 +335,22 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
   }
 
   // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Methods mirror WooCommerce coupon setters.
-  private function createCouponStub(): object {
-    return new class {
+  private function createCouponStub(int $saveResult = 123): object {
+    return new class($saveResult) {
+      /** @var int */
+      private $saveResult;
+
       /** @var string|null */
       public $generatedCode;
 
       /** @var array|null */
       public $emailRestrictions;
+
+      public function __construct(
+        int $saveResult
+      ) {
+        $this->saveResult = $saveResult;
+      }
 
       public function set_code(string $code): void {
         $this->generatedCode = $code;
@@ -247,7 +361,7 @@ class GutenbergCouponGeneratorTest extends \MailPoetUnitTest {
       }
 
       public function save(): int {
-        return 123;
+        return $this->saveResult;
       }
 
       public function set_description(string $description): void {
