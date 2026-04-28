@@ -106,6 +106,16 @@ parameters:
 			path: ../../lib/Automation/Engine/WordPress.php
 
 		-
+			message: "#^Parameter \\#1 \\$hook_name of function apply_filters expects non\\-empty\\-string, string given\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/WordPress.php
+
+		-
+			message: "#^Parameter \\#1 \\$hook_name of function do_action expects non\\-empty\\-string, string given\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/WordPress.php
+
+		-
 			message: "#^Function str_contains not found\\.$#"
 			count: 2
 			path: ../../lib/Automation/Integrations/Core/Filters/StringFilter.php
@@ -547,6 +557,21 @@ parameters:
 
 		-
 			message: "#^Method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) should return bool but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/WP/Functions.php
+
+		-
+			message: "#^Result of function register_activation_hook \\(void\\) is used\\.$#"
+			count: 1
+			path: ../../lib/WP/Functions.php
+
+		-
+			message: "#^Result of function register_deactivation_hook \\(void\\) is used\\.$#"
+			count: 1
+			path: ../../lib/WP/Functions.php
+
+		-
+			message: "#^Result of function register_widget \\(void\\) is used\\.$#"
 			count: 1
 			path: ../../lib/WP/Functions.php
 
