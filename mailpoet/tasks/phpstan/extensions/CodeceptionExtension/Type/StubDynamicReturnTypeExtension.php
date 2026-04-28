@@ -28,11 +28,15 @@ class StubDynamicReturnTypeExtension implements DynamicStaticMethodReturnTypeExt
     ], true);
   }
 
-  public function getTypeFromStaticMethodCall(MethodReflection $reflection, StaticCall $call, Scope $scope): Type {
-    $type = $scope->getType($call->args[0]->value);
+  public function getTypeFromStaticMethodCall(MethodReflection $reflection, StaticCall $call, Scope $scope): ?Type {
+    $args = $call->getArgs();
+    if (!isset($args[0])) {
+      return null;
+    }
+    $type = $scope->getType($args[0]->value);
     if ($type instanceof ConstantStringType) {
       return new ObjectType($type->getValue()); // $type is class name
     }
-    return $type;
+    return null;
   }
 }

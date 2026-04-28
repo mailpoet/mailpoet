@@ -244,7 +244,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $subjectField = $systemInfoData['Sending queue status'];
     verify($subjectField)->stringContainsString('Started at: ' . date('Y-m-d')); // ignoring time segment
     verify($subjectField)->stringContainsString('Retry attempts: 1');
-    verify($subjectField)->stringContainsString("Last seen error: $error ($operation)"); // @phpstan-ignore-line
+    verify($subjectField)->stringContainsString("Last seen error: $error ($operation)");
 
     MailerLog::pauseSending($mailerLog);
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
