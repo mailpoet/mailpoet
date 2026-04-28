@@ -252,7 +252,10 @@ class Subscription {
     $this->subscribersRepository->flush();
 
     try {
-      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
+      // Per-list confirmation settings are not resolved here because this path
+      // subscribes to the WooCommerce Customers segment (TYPE_WC_USERS),
+      // which does not support custom confirmation overrides.
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, null, null, true);
     } catch (\Exception $e) {
       // ignore errors
     }

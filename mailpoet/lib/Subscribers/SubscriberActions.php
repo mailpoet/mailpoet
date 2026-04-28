@@ -6,6 +6,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -34,6 +35,9 @@ class SubscriberActions {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var ConfirmationEmailResolver */
+  private $confirmationEmailResolver;
+
   public function __construct(
     SettingsController $settings,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -42,7 +46,8 @@ class SubscriberActions {
     SegmentsRepository $segmentsRepository,
     SubscriberSaveController $subscriberSaveController,
     SubscribersRepository $subscribersRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    ConfirmationEmailResolver $confirmationEmailResolver
   ) {
     $this->settings = $settings;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -52,10 +57,13 @@ class SubscriberActions {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->confirmationEmailResolver = $confirmationEmailResolver;
   }
 
   /**
    * Returns SubscriberEntity and associative array with some metadata related to the subscription (e.g. ['confirmationEmailResult' => $exception])
+   * @param array $subscriberData Subscriber data (email, first_name, last_name, etc.)
+   * @param array $segmentIds IDs of segments to subscribe to
    * @return array{0: SubscriberEntity, 1: array{confirmationEmailResult: bool|\Exception, error?: string}}
    */
   public function subscribe($subscriberData = [], $segmentIds = []): array {
@@ -117,6 +125,9 @@ class SubscriberActions {
     $segments = $this->segmentsRepository->findByIds($segmentIds);
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
 
+    // resolve confirmation settings from segment-level overrides
+    [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($segments);
+
     try {
       if (
         $signupConfirmationEnabled
@@ -125,7 +136,7 @@ class SubscriberActions {
       ) {
         $metaData['error'] = $this->getMaxConfirmationEmailsReachedError();
       } else {
-        $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, true);
+        $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, $confirmationEmailId, $confirmationPageId, true);
       }
     } catch (\Exception $e) {
       $metaData['confirmationEmailResult'] = $e;

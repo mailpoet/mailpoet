@@ -238,6 +238,8 @@ class Subscribers extends APIEndpoint {
     $subscriber = $this->subscribersRepository->findOneById($id);
     if ($subscriber instanceof SubscriberEntity) {
       try {
+        // Per-list confirmation settings are not resolved for manual resends;
+        // the global default is used to avoid ambiguity across multiple segments.
         if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
           return $this->successResponse();
         } else {

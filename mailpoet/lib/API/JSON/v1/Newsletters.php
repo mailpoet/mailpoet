@@ -31,6 +31,7 @@ use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -103,6 +104,9 @@ class Newsletters extends APIEndpoint {
   /** @var CapabilitiesManager */
   private $capabilitiesManager;
 
+  /** @var ConfirmationEmailCustomizer */
+  private $confirmationEmailCustomizer;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -123,7 +127,8 @@ class Newsletters extends APIEndpoint {
     NewsletterValidator $newsletterValidator,
     AuthorizedEmailsController $authorizedEmailsController,
     ScheduledTasksRepository $scheduledTasksRepository,
-    CapabilitiesManager $capabilitiesManager
+    CapabilitiesManager $capabilitiesManager,
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -145,6 +150,7 @@ class Newsletters extends APIEndpoint {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->capabilitiesManager = $capabilitiesManager;
+    $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
   }
 
   public function get($data = []) {
@@ -528,5 +534,52 @@ class Newsletters extends APIEndpoint {
     $url = $this->newsletterUrl->getViewInBrowserUrl($newsletter);
     // strip protocol to avoid mix content error
     return preg_replace('/^https?:/i', '', $url);
+  }
+
+  /**
+   * Get all confirmation email newsletters for use in form editor.
+   * @return Response
+   */
+  public function getConfirmationEmails() {
+    $newsletters = $this->newslettersRepository->findBy([
+      'type' => NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER,
+      'deletedAt' => null,
+    ]);
+
+    $result = [];
+    foreach ($newsletters as $newsletter) {
+      $id = $newsletter->getId();
+      if ($id === null) {
+        continue;
+      }
+      $result[] = [
+        'id' => $id,
+        'subject' => $newsletter->getSubject() ?: __('(no subject)', 'mailpoet'),
+      ];
+    }
+
+    return $this->successResponse($result);
+  }
+
+  /**
+   * Create a new confirmation email from the global default template.
+   * @return Response
+   */
+  public function createConfirmationEmail() {
+    // Get the global default confirmation email as a base
+    $defaultNewsletter = $this->confirmationEmailCustomizer->getNewsletter();
+
+    $newsletterData = [
+      'type' => NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER,
+      'subject' => $defaultNewsletter->getSubject(),
+      'body' => json_encode($defaultNewsletter->getBody()),
+    ];
+
+    $newsletter = $this->newsletterSaveController->save($newsletterData);
+
+    return $this->successResponse([
+      'id' => $newsletter->getId(),
+      'subject' => $newsletter->getSubject(),
+    ]);
   }
 }

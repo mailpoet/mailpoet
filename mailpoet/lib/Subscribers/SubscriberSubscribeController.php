@@ -166,9 +166,8 @@ class SubscriberSubscribeController {
     // record form statistics
     $this->statisticsFormsRepository->record($form, $subscriber);
 
-    $formSettings = $form->getSettings();
-
     // add tags to subscriber if they are filled
+    $formSettings = $form->getSettings();
     $this->addTagsToSubscriber($formSettings['tags'] ?? [], $subscriber);
 
     // Confirmation email failed. We want to show the error message

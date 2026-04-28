@@ -87,7 +87,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $subscriptionUrlFactoryMock,
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     $segment = $this->segmentFactory->withName('Test segment')->create();
@@ -118,7 +119,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     $this->expectException(\Exception::class);
@@ -140,7 +142,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
     $exceptionMessage = '';
     try {
@@ -169,7 +172,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
     $exceptionMessage = '';
     try {
@@ -197,7 +201,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     $result = $sender->sendConfirmationEmail($this->subscriber);
@@ -222,7 +227,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
@@ -248,7 +254,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
@@ -469,7 +476,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $settings,
       $this->diContainer->get(SubscribersRepository::class),
       $subscriptionUrlFactoryMock,
-      $confirmationEmailCustomizer
+      $confirmationEmailCustomizer,
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();

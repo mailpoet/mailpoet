@@ -160,7 +160,8 @@ class AdminUserSubscription {
       return;
     }
 
-    // Send confirmation email
+    // Send confirmation email. Per-list confirmation settings are not resolved
+    // here because admin-created users are subscribed via the WP Users segment.
     try {
       $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
     } catch (\Exception $e) {

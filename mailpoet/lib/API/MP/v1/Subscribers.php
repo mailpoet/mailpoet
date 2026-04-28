@@ -14,6 +14,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
@@ -76,6 +77,9 @@ class Subscribers {
   /** @var SubscriberTagRepository */
   private $subscriberTagRepository;
 
+  /** @var ConfirmationEmailResolver */
+  private $confirmationEmailResolver;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -91,7 +95,8 @@ class Subscribers {
     WPFunctions $wp,
     Unsubscribes $unsubscribesTracker,
     TagRepository $tagRepository,
-    SubscriberTagRepository $subscriberTagRepository
+    SubscriberTagRepository $subscriberTagRepository,
+    ConfirmationEmailResolver $confirmationEmailResolver
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -108,6 +113,7 @@ class Subscribers {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->tagRepository = $tagRepository;
     $this->subscriberTagRepository = $subscriberTagRepository;
+    $this->confirmationEmailResolver = $confirmationEmailResolver;
   }
 
   public function getSubscriber($subscriberIdOrEmail): array {
@@ -374,7 +380,8 @@ class Subscribers {
 
     // send confirmation email
     if ($sendConfirmationEmail) {
-      $this->_sendConfirmationEmail($subscriber);
+      [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($foundSegments);
+      $this->_sendConfirmationEmail($subscriber, $confirmationEmailId, $confirmationPageId);
     }
 
     if (!$skipSubscriberNotification && ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)) {
@@ -477,9 +484,9 @@ class Subscribers {
   /**
    * @throws APIException
    */
-  protected function _sendConfirmationEmail(SubscriberEntity $subscriberEntity) {
+  protected function _sendConfirmationEmail(SubscriberEntity $subscriberEntity, ?int $confirmationEmailId = null, ?int $confirmationPageId = null) {
     try {
-      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity, $confirmationEmailId, $confirmationPageId);
     } catch (\Exception $e) {
       throw new APIException(
         // translators: %s is the error message

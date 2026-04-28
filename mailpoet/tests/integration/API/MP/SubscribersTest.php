@@ -21,6 +21,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\SubscriberSaveController;
@@ -190,6 +191,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ]
     );
 
@@ -262,6 +264,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ],
       $this
     );
@@ -287,6 +290,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ],
       $this
     );
@@ -602,6 +606,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $settings,
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ],
       $this
     );
@@ -654,6 +659,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ],
       $this
     );
@@ -684,6 +690,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
       ],
       $this
     );
