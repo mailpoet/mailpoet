@@ -16,7 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * leaking details into later renders.
  */
 class CouponBlockGenerator {
-  const SAFE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
+  const SAFE_PLACEHOLDER = CouponBlock::SAFE_PLACEHOLDER;
   const MAX_CODE_RETRIES = 5;
 
   /** @var Helper */
@@ -71,7 +71,7 @@ class CouponBlockGenerator {
       return $couponCode;
     }
 
-    if (!$this->isCreateNewCouponBlock($attrs)) {
+    if (!CouponBlock::isCreateNew($attrs)) {
       return self::SAFE_PLACEHOLDER;
     }
 
@@ -143,47 +143,6 @@ class CouponBlockGenerator {
     }
 
     return 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time.';
-  }
-
-  private function isCreateNewCouponBlock(array $attrs): bool {
-    if (array_key_exists('source', $attrs)) {
-      return $attrs['source'] === 'createNew';
-    }
-
-    if (!empty($attrs['couponCode'])) {
-      return false;
-    }
-
-    return $this->hasGeneratedCouponAttributes($attrs);
-  }
-
-  private function hasGeneratedCouponAttributes(array $attrs): bool {
-    $generatedCouponAttributes = [
-      'discountType',
-      'amount',
-      'expiryDay',
-      'freeShipping',
-      'minimumAmount',
-      'maximumAmount',
-      'individualUse',
-      'excludeSaleItems',
-      'productIds',
-      'excludedProductIds',
-      'productCategoryIds',
-      'excludedProductCategoryIds',
-      'emailRestrictions',
-      'usageLimit',
-      'usageLimitPerUser',
-      'restrictToSubscriber',
-    ];
-
-    foreach ($generatedCouponAttributes as $attribute) {
-      if (array_key_exists($attribute, $attrs)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   private function isSupportedAutomationContext(Rendering_Context $renderingContext): bool {

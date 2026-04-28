@@ -99,8 +99,11 @@ class CouponBlockValidatorTest extends \MailPoetUnitTest {
     ], '');
   }
 
-  public function testItKeepsEmptyRecipientRestrictionExplicit(): void {
-    $attrs = (new CouponBlockValidator(
+  public function testItRejectsRecipientRestrictionWithoutRecipientEmail(): void {
+    $this->expectException(CouponBlockValidationException::class);
+    $this->expectExceptionMessage('Recipient email is required for recipient-restricted coupons.');
+
+    (new CouponBlockValidator(
       $this->makeHelper(),
       $this->makeWpFunctions()
     ))->validate([
@@ -108,8 +111,22 @@ class CouponBlockValidatorTest extends \MailPoetUnitTest {
       'amount' => '10',
       'restrictToSubscriber' => true,
     ], '');
+  }
 
-    verify($attrs['emailRestrictions'])->equals([]);
+  public function testItRejectsRecipientRestrictionWhenRecipientEmailSanitizesToEmpty(): void {
+    $this->expectException(CouponBlockValidationException::class);
+    $this->expectExceptionMessage('Recipient email is required for recipient-restricted coupons.');
+
+    (new CouponBlockValidator(
+      $this->makeHelper(),
+      $this->makeWpFunctions([
+        'sanitizeEmail' => '',
+      ])
+    ))->validate([
+      'discountType' => 'percent',
+      'amount' => '10',
+      'restrictToSubscriber' => true,
+    ], 'subscriber@example.com');
   }
 
   private function makeHelper(array $overrides = []): Helper {

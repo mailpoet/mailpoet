@@ -46,21 +46,21 @@ class EmailContextBuilder {
       return $context;
     }
 
+    $context['is_real_send'] = true;
+    $context['is_preview'] = false;
+    $context['is_single_recipient'] = true;
+    $context['subscriber_count'] = 1;
+
     // Only one-recipient automation sends can safely expose a unique recipient
     // email to WooCommerce. Bulk renders must not use the first subscriber as a
     // stand-in for everyone who will receive the email.
     $firstSubscriber = $subscribers ? $subscribers->first() : null;
     $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
     $recipientEmail = $subscriber ? $subscriber->getEmail() : null;
-    if (!is_string($recipientEmail) || !$this->wp->isEmail($recipientEmail)) {
-      return $context;
+    if (is_string($recipientEmail) && $this->wp->isEmail($recipientEmail)) {
+      $context['recipient_email'] = $recipientEmail;
     }
 
-    $context['recipient_email'] = $recipientEmail;
-    $context['is_real_send'] = true;
-    $context['is_preview'] = false;
-    $context['is_single_recipient'] = true;
-    $context['subscriber_count'] = 1;
     return $context;
   }
 
