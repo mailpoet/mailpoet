@@ -183,7 +183,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $confirmationEmailMailerMock = $this->createMock(ConfirmationEmailMailer::class);
     $confirmationEmailMailerMock->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->with($this->isInstanceOf(SubscriberEntity::class), true)
+      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true)
       ->willReturn(true);
     $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, ['confirmationEmailMailer' => $confirmationEmailMailerMock]);
     $subscriberController = $this->getServiceWithOverrides(SubscriberSubscribeController::class, ['subscriberActions' => $subscriberActions]);
