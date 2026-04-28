@@ -1,7 +1,7 @@
 <% block content %>
 <form class="mailpoet-unsubscribe-reason" action="<%= actionUrl|escape %>" method="post">
   <fieldset>
-    <legend><%= __('Would you tell us why you unsubscribed?', 'mailpoet') %></legend>
+    <legend><%= __('Please let us know why you unsubscribed:', 'mailpoet') %></legend>
     <% for reason, label in reasons %>
       <p>
         <label>

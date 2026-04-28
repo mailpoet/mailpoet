@@ -303,7 +303,7 @@ class PagesTest extends \MailPoetTest {
     $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
     $content = $pages->setPageContent('[mailpoet_page]');
 
-    verify($content)->stringContainsString('Would you tell us why you unsubscribed?');
+    verify($content)->stringContainsString('Please let us know why you unsubscribed:');
   }
 
   public function testItSavesUnsubscribeReason() {

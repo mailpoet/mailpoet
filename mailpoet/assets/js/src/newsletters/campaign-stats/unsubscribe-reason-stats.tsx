@@ -6,12 +6,12 @@ type Props = {
 };
 
 const reasonLabels: Record<string, string> = {
-  too_many_emails: __('Too many emails', 'mailpoet'),
-  not_relevant: __('Content is not relevant', 'mailpoet'),
-  do_not_remember_signing_up: __('I do not remember signing up', 'mailpoet'),
-  no_longer_interested: __('I am no longer interested', 'mailpoet'),
-  too_promotional: __('Emails are too promotional', 'mailpoet'),
-  other: __('Other', 'mailpoet'),
+  normal: __('I no longer want to receive these emails', 'mailpoet'),
+  nosignup: __('I never signed up for this mailing list', 'mailpoet'),
+  inappropriate: __('The emails are inappropriate', 'mailpoet'),
+  spam: __('The emails are spam and should be reported', 'mailpoet'),
+  other: __('Other (fill in reason below)', 'mailpoet'),
+  unspecified: __('No reason provided', 'mailpoet'),
 };
 
 export function UnsubscribeReasonStats({ newsletter }: Props) {
