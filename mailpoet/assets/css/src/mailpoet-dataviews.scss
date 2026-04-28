@@ -2,6 +2,8 @@
 // `@wordpress/dataviews`. Loaded by AdminPages\AssetsController::setupDataViewsDependencies()
 // alongside the registered `wp-components` style handle. Per-listing tweaks
 // belong in their feature-specific stylesheet (see `_listing-forms.scss`).
+@import 'settings/grid';
+@import 'settings/colors';
 @import '../../../node_modules/@wordpress/dataviews/build-style/style';
 
 .mailpoet-segments-dataviews__tabs {
@@ -40,4 +42,11 @@
 
 .mailpoet-segments-dataviews tr:hover .mailpoet-listing-actions {
   visibility: visible;
+}
+
+.mailpoet-segments-dataviews__row-note {
+  color: $color-text-light;
+  font-weight: 400;
+  margin-top: 4px;
+  max-width: 680px;
 }
