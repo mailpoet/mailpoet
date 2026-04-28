@@ -173,6 +173,52 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
     verify($collector->hasFailures())->false();
   }
 
+  public function testItGeneratesUnrestrictedAutomationCouponWithoutRecipientEmail(): void {
+    /** @var object{generatedCode: string|null, emailRestrictions: array|null} $coupon */
+    $coupon = $this->createCouponStub();
+
+    $collector = new CouponBlockGenerationFailureCollector();
+    $generator = new CouponBlockGenerator(
+      $this->make(Helper::class, [
+        'isWooCommerceActive' => true,
+        'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        'wcGetCouponIdByCode' => 0,
+        'createWcCoupon' => $coupon,
+      ]),
+      new CouponBlockValidator(
+        $this->make(Helper::class, [
+          'wcGetCouponTypes' => ['percent' => 'Percentage discount'],
+        ]),
+        $this->makeWpFunctions()
+      ),
+      $collector,
+      $this->makeWpFunctions(),
+      new RandomCouponCodeGenerator()
+    );
+
+    $result = $generator->generate('', [
+      'source' => 'createNew',
+      'discountType' => 'percent',
+      'amount' => '25',
+      'restrictToSubscriber' => false,
+    ], $this->createRenderingContext([
+      'integration' => 'mailpoet',
+      'newsletter_id' => 1,
+      'queue_id' => 2,
+      'email_type' => NewsletterEntity::TYPE_AUTOMATION,
+      'is_real_send' => true,
+      'is_preview' => false,
+      'is_single_recipient' => true,
+      'subscriber_count' => 1,
+      'mailpoet_is_automation' => true,
+    ]));
+
+    $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $result);
+    verify($coupon->generatedCode)->equals($result);
+    verify($coupon->emailRestrictions)->equals([]);
+    verify($collector->hasFailures())->false();
+  }
+
   public function testItGeneratesCouponForStandardNewsletterContext(): void {
     /** @var object{generatedCode: string|null, emailRestrictions: array|null} $coupon */
     $coupon = $this->createCouponStub();

@@ -131,11 +131,12 @@ class CouponBlockGenerator {
   }
 
   private function getUnsupportedRealSendContextMessage(array $attrs, Rendering_Context $renderingContext): ?string {
-    if ($this->isSupportedAutomationContext($renderingContext)) {
+    $requiresRecipientEmail = CouponBlockAttributeParser::toBoolean($attrs['restrictToSubscriber'] ?? false);
+    if ($this->isSupportedAutomationContext($renderingContext, $requiresRecipientEmail)) {
       return null;
     }
 
-    if (CouponBlockAttributeParser::toBoolean($attrs['restrictToSubscriber'] ?? false)) {
+    if ($requiresRecipientEmail) {
       return 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time.';
     }
 
@@ -146,7 +147,7 @@ class CouponBlockGenerator {
     return 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time.';
   }
 
-  private function isSupportedAutomationContext(Rendering_Context $renderingContext): bool {
+  private function isSupportedAutomationContext(Rendering_Context $renderingContext, bool $requiresRecipientEmail): bool {
     $context = $renderingContext->get_email_context();
     $recipientEmail = $renderingContext->get_recipient_email();
     $automationTypes = [
@@ -163,8 +164,10 @@ class CouponBlockGenerator {
       && (int)$context['subscriber_count'] === 1
       && ($context['mailpoet_is_automation'] ?? null) === true
       && in_array($context['email_type'] ?? '', $automationTypes, true)
-      && is_string($recipientEmail)
-      && (bool)$this->wp->isEmail($recipientEmail);
+      && (
+        !$requiresRecipientEmail
+        || (is_string($recipientEmail) && (bool)$this->wp->isEmail($recipientEmail))
+      );
   }
 
   private function isSupportedStandardContext(Rendering_Context $renderingContext): bool {
