@@ -1,8 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Test\WooCommerce;
+namespace MailPoet\Test\EmailEditor\Integrations\MailPoet\Coupons;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -12,22 +14,23 @@ use MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
-use MailPoet\WooCommerce\GutenbergCouponGenerationFailureCollector;
-use MailPoet\WooCommerce\GutenbergCouponGenerator;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @group woo
  */
-class GutenbergCouponGenerationTest extends \MailPoetTest {
+class CouponBlockGenerationTest extends \MailPoetTest {
+  private const COUPON_BLOCK_UNSUPPORTED_SEND_ERROR = 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.';
+  private const COUPON_BLOCK_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR = 'Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.';
+
   /** @var int[] */
   private $postIds = [];
 
-  private GutenbergCouponGenerator $generator;
+  private CouponBlockGenerator $generator;
 
   public function _before() {
     parent::_before();
-    $this->generator = $this->diContainer->get(GutenbergCouponGenerator::class);
+    $this->generator = $this->diContainer->get(CouponBlockGenerator::class);
     $this->generator->init();
   }
 
@@ -43,7 +46,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
   }
 
   public function testItAllowsSupportedOneRecipientAutomationQueuesToRender(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_AUTOMATION,
       $this->createCouponBlockContent([
         'source' => 'createNew',
@@ -66,7 +69,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
   }
 
   public function testItAllowsStandardNewslettersWithGeneratedCouponBlocksToRender(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_STANDARD,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15']),
       2
@@ -84,7 +87,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
   }
 
   public function testItBlocksRecipientRestrictedStandardNewsletterBeforeRender(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_STANDARD,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15', 'restrictToSubscriber' => true]),
       1
@@ -95,13 +98,13 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
     $this->expectException(NewsletterProcessingException::class);
-    $this->expectExceptionMessage(NewsletterTask::GUTENBERG_COUPON_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR);
+    $this->expectExceptionMessage(self::COUPON_BLOCK_RECIPIENT_RESTRICTION_UNSUPPORTED_SEND_ERROR);
 
     (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
   }
 
   public function testItBlocksMultiRecipientAutomationBeforeRender(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_AUTOMATION,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15']),
       2
@@ -115,7 +118,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
       (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
       $this->fail('Expected coupon generation preflight to stop preprocessing.');
     } catch (NewsletterProcessingException $e) {
-      $this->assertSame(NewsletterTask::GUTENBERG_COUPON_UNSUPPORTED_SEND_ERROR, $e->getMessage());
+      $this->assertSame(self::COUPON_BLOCK_UNSUPPORTED_SEND_ERROR, $e->getMessage());
     }
 
     $this->diContainer->get(NewslettersRepository::class)->refresh($newsletter);
@@ -127,7 +130,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
   }
 
   public function testGenerationFailureStopsBeforeRenderedBodyPersistence(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_AUTOMATION,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15']),
       1
@@ -137,7 +140,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
-    $collector = $this->diContainer->get(GutenbergCouponGenerationFailureCollector::class);
+    $collector = $this->diContainer->get(CouponBlockGenerationFailureCollector::class);
     $forcedFailure = function(array $context) use ($collector): array {
       $collector->record('forced_failure', 'Forced generation failure.', [], $context);
       return $context;
@@ -162,7 +165,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
   }
 
   public function testItDoesNotGenerateCouponsForPreviewOrViewInBrowserRenders(): void {
-    $newsletter = $this->createGutenbergNewsletter(
+    $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_AUTOMATION,
       $this->createCouponBlockContent(['discountType' => 'percent', 'amount' => '15']),
       1
@@ -177,7 +180,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     $this->assertCount(0, get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]));
   }
 
-  private function createGutenbergNewsletter(string $type, string $postContent, int $subscriberCount): NewsletterEntity {
+  private function createBlockEmailNewsletter(string $type, string $postContent, int $subscriberCount): NewsletterEntity {
     $postId = wp_insert_post([
       'post_type' => 'mailpoet_email',
       'post_status' => 'publish',
@@ -213,7 +216,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
     return sprintf(
       '<!-- wp:woocommerce/coupon-code %1$s --><span class="woocommerce-coupon-code">%2$s</span><!-- /wp:woocommerce/coupon-code -->',
       $attrsJson,
-      GutenbergCouponGenerator::SAFE_PLACEHOLDER
+      CouponBlockGenerator::SAFE_PLACEHOLDER
     );
   }
 }

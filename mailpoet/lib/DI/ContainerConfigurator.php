@@ -368,6 +368,12 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes\PoweredByMailpoet::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockFailureTranslator::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor::class)->setPublic(true);
@@ -662,10 +668,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\FontFamilyValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\CouponPreProcessor::class)->setPublic(true);
-    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponBlockDetector::class)->setPublic(true);
-    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponGenerationFailureCollector::class)->setPublic(true);
-    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponGenerator::class)->setPublic(true);
-    $container->autowire(\MailPoet\WooCommerce\GutenbergCouponValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\RandomCouponCodeGenerator::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfo::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfoController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController::class)->setPublic(true);

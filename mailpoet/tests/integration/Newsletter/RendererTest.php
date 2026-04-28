@@ -3,6 +3,9 @@
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockFailureTranslator;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -70,7 +73,10 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->capabilitiesManager
+      $this->capabilitiesManager,
+      $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
+      $this->diContainer->get(EmailContextBuilder::class),
+      $this->diContainer->get(CouponBlockFailureTranslator::class)
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
@@ -641,7 +647,10 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $capabilitiesManager
+      $capabilitiesManager,
+      $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
+      $this->diContainer->get(EmailContextBuilder::class),
+      $this->diContainer->get(CouponBlockFailureTranslator::class)
     );
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
@@ -661,7 +670,10 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $capabilitiesManager
+      $capabilitiesManager,
+      $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
+      $this->diContainer->get(EmailContextBuilder::class),
+      $this->diContainer->get(CouponBlockFailureTranslator::class)
     );
 
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);

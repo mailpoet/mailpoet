@@ -378,7 +378,10 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(CapabilitiesManager::class)
+      $this->diContainer->get(CapabilitiesManager::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockFailureTranslator::class)
     );
   }
 
