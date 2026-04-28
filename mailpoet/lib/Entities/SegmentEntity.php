@@ -80,6 +80,18 @@ class SegmentEntity {
    */
   private $displayInManageSubscriptionPage = false;
 
+  /**
+   * @ORM\Column(type="integer", nullable=true)
+   * @var int|null
+   */
+  private $confirmationEmailId;
+
+  /**
+   * @ORM\Column(type="integer", nullable=true)
+   * @var int|null
+   */
+  private $confirmationPageId;
+
   public function __construct(
     string $name,
     string $type,
@@ -176,6 +188,22 @@ class SegmentEntity {
 
   public function setDisplayInManageSubscriptionPage(bool $state): void {
     $this->displayInManageSubscriptionPage = $state;
+  }
+
+  public function getConfirmationEmailId(): ?int {
+    return $this->confirmationEmailId;
+  }
+
+  public function setConfirmationEmailId(?int $confirmationEmailId): void {
+    $this->confirmationEmailId = $confirmationEmailId;
+  }
+
+  public function getConfirmationPageId(): ?int {
+    return $this->confirmationPageId;
+  }
+
+  public function setConfirmationPageId(?int $confirmationPageId): void {
+    $this->confirmationPageId = $confirmationPageId;
   }
 
   /**

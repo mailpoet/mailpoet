@@ -35,6 +35,8 @@ class SegmentsResponseBuilder {
       'average_engagement_score' => $segment->getAverageEngagementScore(),
       'filters_connect' => $segment->getFiltersConnectOperator(),
       'show_in_manage_subscription_page' => (int)$segment->getDisplayInManageSubscriptionPage(),
+      'confirmation_email_id' => $segment->getConfirmationEmailId(),
+      'confirmation_page_id' => $segment->getConfirmationPageId(),
     ];
   }
 

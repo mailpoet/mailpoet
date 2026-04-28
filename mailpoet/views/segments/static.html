@@ -6,6 +6,8 @@
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments_api = <%= json_encode(api) %>;
+    var mailpoet_confirmation_emails = <%= json_encode(confirmation_emails) %>;
+    var mailpoet_pages = <%= json_encode(pages) %>;
   </script>
 
   <% include 'segments/translations.html' %>

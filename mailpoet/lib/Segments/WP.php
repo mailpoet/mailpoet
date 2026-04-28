@@ -247,6 +247,9 @@ class WP {
       /** @var ConfirmationEmailMailer $confirmationEmailMailer */
       $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
       try {
+        // Per-list confirmation settings are not resolved here because this path
+        // subscribes to the WordPress Users segment (TYPE_WP_USERS),
+        // which does not support custom confirmation overrides.
         $confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
       } catch (\Exception $e) {
         // ignore errors

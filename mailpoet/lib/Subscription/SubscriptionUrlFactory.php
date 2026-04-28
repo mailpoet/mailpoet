@@ -35,8 +35,9 @@ class SubscriptionUrlFactory {
     $this->linkTokens = $linkTokens;
   }
 
-  public function getConfirmationUrl(?SubscriberEntity $subscriber = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
+  public function getConfirmationUrl(?SubscriberEntity $subscriber = null, ?int $confirmationPageId = null) {
+    $pageId = $confirmationPageId ?? $this->settings->get('subscription.pages.confirmation');
+    $post = $this->getPost($pageId);
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
