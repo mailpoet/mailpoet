@@ -100,15 +100,24 @@ abstract class AbstractListingEndpoint extends Endpoint {
     return null;
   }
 
-  private function buildDefinition(Request $request): ListingDefinition {
-    $page = is_numeric($request->getParam('page'))
-      ? min(self::MAX_PAGE, max(1, (int)$request->getParam('page')))
-      : 1;
+  protected function getDefaultPerPage(): int {
+    return self::DEFAULT_PER_PAGE;
+  }
 
-    $perPageParam = $request->getParam('per_page');
+  protected function getDefaultParameters(): array {
+    return [];
+  }
+
+  private function buildDefinition(Request $request): ListingDefinition {
+    $perPageParam = $request->getParam('per_page') ?? $request->getParam('limit');
     $perPage = is_numeric($perPageParam)
       ? max(1, min(self::MAX_PER_PAGE, (int)$perPageParam))
-      : self::DEFAULT_PER_PAGE;
+      : $this->getDefaultPerPage();
+
+    $offsetParam = $request->getParam('offset');
+    $page = is_numeric($request->getParam('page'))
+      ? min(self::MAX_PAGE, max(1, (int)$request->getParam('page')))
+      : (is_numeric($offsetParam) ? min(self::MAX_PAGE, max(1, (int)floor((int)$offsetParam / $perPage) + 1)) : 1);
 
     $orderByParam = $request->getParam('orderby');
     $sortBy = is_string($orderByParam) && $orderByParam !== '' ? $orderByParam : $this->getDefaultSortBy();
@@ -133,6 +142,7 @@ abstract class AbstractListingEndpoint extends Endpoint {
       'search' => $search,
       'group' => $group,
       'filter' => $filters,
+      'params' => $this->getDefaultParameters(),
     ]);
   }
 }

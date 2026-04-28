@@ -23,6 +23,7 @@ use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration;
 use MailPoet\Router;
+use MailPoet\Segments\RestApi\Api as SegmentsRestApi;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Tags\RestApi\Api as TagsRestApi;
@@ -117,6 +118,9 @@ class Initializer {
   /** @var FormsRestApi */
   private $formsRestApi;
 
+  /** @var SegmentsRestApi */
+  private $segmentsRestApi;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -179,7 +183,8 @@ class Initializer {
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     Url $urlHelper,
     TagsRestApi $tagsRestApi,
-    FormsRestApi $formsRestApi
+    FormsRestApi $formsRestApi,
+    SegmentsRestApi $segmentsRestApi
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -214,6 +219,7 @@ class Initializer {
     $this->urlHelper = $urlHelper;
     $this->tagsRestApi = $tagsRestApi;
     $this->formsRestApi = $formsRestApi;
+    $this->segmentsRestApi = $segmentsRestApi;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -382,6 +388,7 @@ class Initializer {
       $this->automationEngine->initialize();
       $this->tagsRestApi->initialize();
       $this->formsRestApi->initialize();
+      $this->segmentsRestApi->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
