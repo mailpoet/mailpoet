@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -97,5 +98,21 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
     verify($subscriberAfter->getEmail())->notEquals('subscriber@for.anon.test');
+  }
+
+  public function testItDeletesUnsubscribeReasonText() {
+    $subscriber = $this->subscribersFactory
+      ->withEmail('subscriber@with.unsubscribe.reason')
+      ->create();
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $subscriber);
+    $unsubscribe->setReasonData(StatisticsUnsubscribeEntity::REASON_OTHER, 'Personal detail');
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+
+    $this->eraser->erase('subscriber@with.unsubscribe.reason');
+    $this->entityManager->refresh($unsubscribe);
+
+    verify($unsubscribe->getReason())->equals(StatisticsUnsubscribeEntity::REASON_OTHER);
+    verify($unsubscribe->getReasonText())->null();
   }
 }

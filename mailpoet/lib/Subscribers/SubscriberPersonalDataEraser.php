@@ -2,7 +2,9 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SubscriberPersonalDataEraser {
@@ -15,14 +17,19 @@ class SubscriberPersonalDataEraser {
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
 
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
     EntityManager $entityManager,
-    SubscriberCustomFieldRepository $subscriberCustomFieldRepository
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->entityManager = $entityManager;
     $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
   public function erase($email) {
@@ -39,6 +46,7 @@ class SubscriberPersonalDataEraser {
     $itemsRetained = true;
     if ($subscriber) {
       $this->eraseCustomFields($subscriber);
+      $this->eraseUnsubscribeReasonText($subscriber);
       $this->anonymizeSubscriberData($subscriber);
       $itemRemoved = true;
       $itemsRetained = false;
@@ -57,6 +65,18 @@ class SubscriberPersonalDataEraser {
     foreach ($customFields as $customField) {
       $customField->setValue('');
       $this->entityManager->persist($customField);
+    }
+    $this->entityManager->flush();
+  }
+
+  private function eraseUnsubscribeReasonText(SubscriberEntity $subscriber) {
+    $unsubscribes = $this->statisticsUnsubscribesRepository->findBy(['subscriber' => $subscriber]);
+    foreach ($unsubscribes as $unsubscribe) {
+      if (!$unsubscribe instanceof StatisticsUnsubscribeEntity) {
+        continue;
+      }
+      $unsubscribe->setReasonText(null);
+      $this->entityManager->persist($unsubscribe);
     }
     $this->entityManager->flush();
   }

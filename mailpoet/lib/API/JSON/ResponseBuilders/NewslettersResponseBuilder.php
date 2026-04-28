@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilder {
@@ -44,13 +45,17 @@ class NewslettersResponseBuilder {
   /*** @var LogRepository */
   private $logRepository;
 
+  /*** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
   public function __construct(
     EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newslettersStatsRepository,
     NewsletterUrl $newsletterUrl,
     SendingQueuesRepository $sendingQueuesRepository,
-    LogRepository $logRepository
+    LogRepository $logRepository,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository
   ) {
     $this->newslettersStatsRepository = $newslettersStatsRepository;
     $this->newslettersRepository = $newslettersRepository;
@@ -58,6 +63,7 @@ class NewslettersResponseBuilder {
     $this->newsletterUrl = $newsletterUrl;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->logRepository = $logRepository;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
   public function build(NewsletterEntity $newsletter, $relations = []) {
@@ -108,6 +114,7 @@ class NewslettersResponseBuilder {
 
       if ($relation === self::RELATION_STATISTICS) {
         $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter)->asArray();
+        $data['statistics']['unsubscribeReasons'] = $this->statisticsUnsubscribesRepository->getReasonCountsForNewsletter($newsletter);
       }
     }
     return $data;
