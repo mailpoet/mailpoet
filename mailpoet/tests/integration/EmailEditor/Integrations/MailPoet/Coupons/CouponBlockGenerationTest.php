@@ -112,6 +112,34 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     $this->assertGreaterThan(0, wc_get_coupon_id_by_code($couponCode));
   }
 
+  public function testItGeneratesUnrestrictedAutomationCouponWithoutRecipientEmail(): void {
+    $context = new Rendering_Context(new \WP_Theme_JSON(), [
+      'integration' => 'mailpoet',
+      'newsletter_id' => 1,
+      'queue_id' => 2,
+      'email_type' => NewsletterEntity::TYPE_AUTOMATION,
+      'is_real_send' => true,
+      'is_preview' => false,
+      'is_single_recipient' => true,
+      'subscriber_count' => 1,
+      'mailpoet_is_automation' => true,
+    ]);
+
+    $couponCode = WPFunctions::get()->applyFilters(
+      'woocommerce_coupon_code_block_auto_generate',
+      '',
+      ['source' => 'createNew', 'discountType' => 'percent', 'amount' => '15'],
+      $context
+    );
+
+    $this->assertIsString($couponCode);
+    $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $couponCode);
+    $couponId = wc_get_coupon_id_by_code($couponCode);
+    $this->assertGreaterThan(0, $couponId);
+    $coupon = new \WC_Coupon($couponId);
+    $this->assertSame([], $coupon->get_email_restrictions());
+  }
+
   public function testItBlocksRecipientRestrictedStandardNewsletterBeforeRender(): void {
     $newsletter = $this->createBlockEmailNewsletter(
       NewsletterEntity::TYPE_STANDARD,
