@@ -387,14 +387,8 @@ export function DynamicSegmentList(): JSX.Element {
       },
       {
         id: 'edit_missing_plugin',
-        label: (selected) =>
-          sprintf(
-            __('Edit unavailable: %s', 'mailpoet'),
-            selected[0]?.missing_plugin_message?.message ??
-              __('Required plugin is inactive.', 'mailpoet'),
-          ),
+        label: __('Edit unavailable', 'mailpoet'),
         disabled: true,
-        isPrimary: true,
         supportsBulk: false,
         isEligible: (item) => !item.deleted_at && item.is_plugin_missing,
         callback: () => undefined,

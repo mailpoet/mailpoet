@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { Field } from '@wordpress/dataviews';
 import { MailPoet } from 'mailpoet';
 import * as ROUTES from 'segments/routes';
@@ -20,6 +20,14 @@ function dateTime(
     createElement('span', null, MailPoet.Date.short(value)),
     createElement('br', null),
     createElement('span', null, MailPoet.Date.time(value)),
+  );
+}
+
+function editUnavailableMessage(item: DynamicSegmentListingItem): string {
+  return sprintf(
+    __('Edit unavailable: %s', 'mailpoet'),
+    item.missing_plugin_message?.message ??
+      __('Required plugin is inactive.', 'mailpoet'),
   );
 }
 
@@ -44,6 +52,16 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
               item.name,
             ),
         item.description ? createElement('div', null, item.description) : null,
+        item.is_plugin_missing
+          ? createElement(
+              'div',
+              {
+                className: 'mailpoet-segments-dataviews__row-note',
+                'data-automation-id': `mailpoet_dynamic_segment_plugin_missing_message_${item.id}`,
+              },
+              editUnavailableMessage(item),
+            )
+          : null,
       ),
   },
   {
@@ -53,13 +71,7 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
     enableGlobalSearch: false,
     render: ({ item }) =>
       item.is_plugin_missing
-        ? createElement(
-            'div',
-            {
-              'data-automation-id': `mailpoet_dynamic_segment_plugin_missing_message_${item.id}`,
-            },
-            item.missing_plugin_message?.message ?? '',
-          )
+        ? createElement('span', null, '—')
         : createElement(
             'div',
             {
