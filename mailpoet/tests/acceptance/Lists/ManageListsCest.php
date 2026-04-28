@@ -99,6 +99,7 @@ class ManageListsCest {
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($editedListTitle);
     $i->clickItemRowActionByItemName($editedListTitle, 'Delete permanently');
+    $i->click('Delete permanently');
     $i->waitForNoticeAndClose('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->seeNoJSErrors();
     $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
@@ -129,6 +130,7 @@ class ManageListsCest {
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newListTitle);
     $i->click('[data-automation-id="empty_trash"]');
+    $i->click('Empty Trash');
 
     $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->dontSee($newListTitle);
@@ -199,10 +201,10 @@ class ManageListsCest {
     $i->clickItemRowActionByItemName($listTitle, 'Move to trash');
     $i->waitForText("List cannot be deleted because it’s used for '{$subject}' email");
     $i->seeNoJSErrors();
-    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
+    $i->checkWooTableCheckboxForItemName($listTitle);
     $i->waitForText('Move to trash');
     $i->click('Move to trash');
-    $i->waitForText('0 lists were moved to the trash.');
+    $i->waitForText("List cannot be deleted because it’s used for '{$subject}' email");
   }
 
   public function cantTrashOrBulkTrashListWithForm(\AcceptanceTester $i) {
@@ -225,10 +227,10 @@ class ManageListsCest {
     $i->clickItemRowActionByItemName($listTitle, 'Move to trash');
     $i->waitForText("List cannot be deleted because it’s used for '{$formName}' form");
     $i->seeNoJSErrors();
-    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
+    $i->checkWooTableCheckboxForItemName($listTitle);
     $i->waitForText('Move to trash');
     $i->click('Move to trash');
-    $i->waitForText('0 lists were moved to the trash.');
+    $i->waitForText("List cannot be deleted because it’s used for '{$formName}' form");
   }
 
   public function cannotDisableWPUserList(\AcceptanceTester $i) {

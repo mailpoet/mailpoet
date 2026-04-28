@@ -216,6 +216,11 @@ class DynamicSegments {
     }, $this->automationStorage->getAutomations());
 
     $this->assetsController->setupDynamicSegmentsDependencies();
+    $this->assetsController->setupDataViewsDependencies();
+    $data['api'] = [
+      'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+      'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+    ];
     $this->pageRenderer->displayPage('segments/dynamic.html', $data);
   }
 

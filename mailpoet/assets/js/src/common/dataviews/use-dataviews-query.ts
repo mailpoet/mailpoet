@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import type { View } from '@wordpress/dataviews';
 import type { ListingMeta, ListingQueryParams, ListingResponse } from './types';
 
@@ -18,7 +25,7 @@ type UseDataViewsQueryOptions<T> = {
 
 type UseDataViewsQueryResult<T> = {
   view: View;
-  setView: (view: View) => void;
+  setView: Dispatch<SetStateAction<View>>;
   items: T[];
   meta: ListingMeta;
   groups: ListingResponse<T>['groups'];
@@ -104,6 +111,8 @@ export function useDataViewsQuery<T>({
           err && typeof err === 'object' && 'message' in err
             ? String((err as { message?: unknown }).message ?? '')
             : '';
+        setItems([]);
+        setMeta({ count: 0, pages: 0 });
         setError(message || 'Failed to load data.');
       })
       .finally(() => {

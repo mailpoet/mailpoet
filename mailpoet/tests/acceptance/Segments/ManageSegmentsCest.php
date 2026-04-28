@@ -268,7 +268,7 @@ class ManageSegmentsCest {
     $i->waitForText($segment1Name);
     $i->checkWooTableCheckboxForItemName($segment1Name);
     $i->checkWooTableCheckboxForItemName($segment2Name);
-    $i->selectOption('Bulk actions', 'Restore');
+    $i->selectListingBulkAction('Restore');
     $i->click('Restore'); // confirmation modal
     $i->wantTo('Check that segments were restored and trash filter is not present');
     $i->waitForText('No data to display');
@@ -278,7 +278,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Select all segments and move them back to trash');
     $i->selectAllListingItems();
-    $i->selectOption('Bulk actions', 'Trash');
+    $i->selectListingBulkAction('Move to trash');
     $i->waitForText('Are you sure you want to trash the selected segments');
     $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
     $i->waitForText('No data to display');
@@ -287,7 +287,7 @@ class ManageSegmentsCest {
     $i->changeWooTableTab('trash');
     $i->waitForText($segment1Name);
     $i->selectAllListingItems();
-    $i->selectOption('Bulk actions', 'Delete permanently');
+    $i->selectListingBulkAction('Delete permanently');
     $i->click('Delete permanently'); // modal confirmation
     $i->waitForText('No data to display');
   }
@@ -314,7 +314,7 @@ class ManageSegmentsCest {
     $i->waitForText("Segment '{$segmentTitle}' cannot be deleted because it’s used for '{$subject}' email");
     $i->seeNoJSErrors();
     $i->checkWooTableCheckboxForItemName($segment->getName());
-    $i->selectOption('Bulk actions', 'Trash');
+    $i->selectListingBulkAction('Move to trash');
     $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
     $i->waitForText("Segment '{$segmentTitle}' cannot be deleted because it’s used for '{$subject}' email");
   }
