@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberActions {
   /** @var SettingsController */
@@ -69,6 +70,7 @@ class SubscriberActions {
     $subscriberData['subscribed_ip'] = Helpers::getIP();
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberData['email']]);
+    $previousStatus = $subscriber instanceof SubscriberEntity ? $subscriber->getStatus() : null;
     $isUnconfirmedResubscription = (
       $subscriber instanceof SubscriberEntity
       && $subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED
@@ -98,6 +100,11 @@ class SubscriberActions {
     if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
       if ($signupConfirmationEnabled === true) {
         $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+        if ($previousStatus !== SubscriberEntity::STATUS_UNCONFIRMED) {
+          $subscriber->setConfirmationsCount(0);
+          $subscriber->setLastConfirmationEmailSentAt(null);
+          $subscriber->setLastSubscribedAt(Carbon::now()->millisecond(0));
+        }
       } else {
         $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
       }

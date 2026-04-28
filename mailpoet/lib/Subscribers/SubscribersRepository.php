@@ -212,7 +212,7 @@ class SubscribersRepository extends Repository {
     return $count;
   }
 
-  public function sendPublicConfirmationEmailWithLock(
+  public function sendPublicConfirmationEmailWithCap(
     SubscriberEntity $subscriber,
     int $maxConfirmationEmails,
     callable $sendConfirmationEmail
@@ -224,47 +224,65 @@ class SubscribersRepository extends Repository {
     $connection = $this->entityManager->getConnection();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
-    $confirmationsCount = $connection->executeQuery(
-      "SELECT `count_confirmations`
-       FROM $subscriberTable
-       WHERE `id` = :id",
-      ['id' => $subscriber->getId()],
-      ['id' => ParameterType::INTEGER]
-    )->fetchOne();
-
-    if (!is_int($confirmationsCount) && !is_string($confirmationsCount)) {
-      return false;
-    }
-
-    if ((int)$confirmationsCount >= $maxConfirmationEmails) {
-      $this->entityManager->refresh($subscriber);
-      return false;
-    }
-
-    if (!$sendConfirmationEmail()) {
-      return false;
-    }
-
-    $updatedRows = (int)$connection->executeStatement(
+    $claimedRows = (int)$connection->executeStatement(
       "UPDATE $subscriberTable
-       SET `count_confirmations` = `count_confirmations` + 1,
-           `last_confirmation_email_sent_at` = :sent_at
+       SET `count_confirmations` = `count_confirmations` + 1
        WHERE `id` = :id
        AND `count_confirmations` < :max_confirmation_emails",
       [
         'id' => $subscriber->getId(),
         'max_confirmation_emails' => $maxConfirmationEmails,
-        'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
       ],
       [
         'id' => ParameterType::INTEGER,
         'max_confirmation_emails' => ParameterType::INTEGER,
+      ]
+    );
+
+    if ($claimedRows !== 1) {
+      $this->entityManager->refresh($subscriber);
+      return false;
+    }
+
+    try {
+      if (!$sendConfirmationEmail()) {
+        $this->releasePublicConfirmationEmailClaim($subscriberTable, (int)$subscriber->getId());
+        $this->entityManager->refresh($subscriber);
+        return false;
+      }
+    } catch (\Throwable $throwable) {
+      $this->releasePublicConfirmationEmailClaim($subscriberTable, (int)$subscriber->getId());
+      $this->entityManager->refresh($subscriber);
+      throw $throwable;
+    }
+
+    $connection->executeStatement(
+      "UPDATE $subscriberTable
+       SET `last_confirmation_email_sent_at` = :sent_at
+       WHERE `id` = :id",
+      [
+        'id' => $subscriber->getId(),
+        'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
+      ],
+      [
+        'id' => ParameterType::INTEGER,
         'sent_at' => ParameterType::STRING,
       ]
     );
 
     $this->entityManager->refresh($subscriber);
-    return $updatedRows === 1;
+    return true;
+  }
+
+  private function releasePublicConfirmationEmailClaim(string $subscriberTable, int $subscriberId): void {
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` - 1
+       WHERE `id` = :id
+       AND `count_confirmations` > 0",
+      ['id' => $subscriberId],
+      ['id' => ParameterType::INTEGER]
+    );
   }
 
   /**
@@ -290,7 +308,7 @@ class SubscribersRepository extends Repository {
 
       $legacyCreatedAtIds = $this->findUnconfirmedSubscriberIdsForCleanup(
         $subscriberTable,
-        's.`last_confirmation_email_sent_at` IS NULL AND s.`created_at` <= :cutoff',
+        's.`last_confirmation_email_sent_at` IS NULL AND COALESCE(s.`last_subscribed_at`, s.`created_at`) <= :cutoff',
         $cutoff,
         $limit
       );
@@ -316,7 +334,7 @@ class SubscribersRepository extends Repository {
            `last_confirmation_email_sent_at` <= :cutoff
            OR (
              `last_confirmation_email_sent_at` IS NULL
-             AND `created_at` <= :cutoff
+             AND COALESCE(`last_subscribed_at`, `created_at`) <= :cutoff
            )
          )",
         [
