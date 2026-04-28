@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Settings;
@@ -281,9 +282,11 @@ class WooCommerceDynamicSegmentsCest {
   }
 
   private function seeDisabledEditAction(\AcceptanceTester $i, SegmentEntity $segmentEntity): void {
+    $i->clickWooTableMoreButtonByItemName($segmentEntity->getName());
     $rowEditAction = [
-      'xpath' => '//tr[.//*[normalize-space(text())="' . $segmentEntity->getName() . '"]]//button[contains(normalize-space(.), "Edit unavailable:") and @disabled]',
+      'xpath' => '//*[@role="menuitem" and normalize-space(.)="Edit unavailable" and @aria-disabled="true"]',
     ];
     $i->waitForElementVisible($rowEditAction);
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
   }
 }
