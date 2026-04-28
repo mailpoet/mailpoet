@@ -102,7 +102,7 @@ export const segmentFields: Field<SegmentListingItem>[] = [
           enableGlobalSearch: false,
           render: ({ item }) =>
             createElement(ListingsEngagementScore, {
-              id: item.id,
+              id: Number(item.id),
               engagementScore: item.average_engagement_score,
             }),
         },

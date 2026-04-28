@@ -25,7 +25,7 @@ function ensureInitialized(): void {
 }
 
 export type SegmentListingItem = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   type: string;
