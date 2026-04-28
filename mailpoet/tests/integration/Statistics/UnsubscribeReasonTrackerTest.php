@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Statistics;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
@@ -19,6 +20,9 @@ class UnsubscribeReasonTrackerTest extends \MailPoetTest {
   /** @var \MailPoet\Entities\SubscriberEntity */
   private $subscriber;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
   /** @var int */
   private $queueId;
 
@@ -27,8 +31,8 @@ class UnsubscribeReasonTrackerTest extends \MailPoetTest {
     $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
     $this->unsubscribeReasonTracker = $this->diContainer->get(UnsubscribeReasonTracker::class);
     $this->subscriber = (new SubscriberFactory())->create();
-    $newsletter = (new NewsletterFactory())->withSendingQueue()->create();
-    $queue = $newsletter->getLatestQueue();
+    $this->newsletter = (new NewsletterFactory())->withSendingQueue()->create();
+    $queue = $this->newsletter->getLatestQueue();
     $this->assertNotNull($queue);
     $this->queueId = (int)$queue->getId();
 
@@ -55,6 +59,30 @@ class UnsubscribeReasonTrackerTest extends \MailPoetTest {
     verify($unsubscribe->getReason())->equals(StatisticsUnsubscribeEntity::REASON_OTHER);
     verify(strlen((string)$unsubscribe->getReasonText()))->equals(UnsubscribeReasonTracker::MAX_REASON_TEXT_LENGTH);
     verify($unsubscribe->getReasonSubmittedAt())->notNull();
+  }
+
+  public function testItReturnsSubscriberFacingReasonLabels(): void {
+    $reasonLabels = $this->unsubscribeReasonTracker->getReasonLabels();
+
+    verify(array_keys($reasonLabels))->equals([
+      StatisticsUnsubscribeEntity::REASON_NO_LONGER_INTERESTED,
+      StatisticsUnsubscribeEntity::REASON_DID_NOT_SIGN_UP,
+      StatisticsUnsubscribeEntity::REASON_INAPPROPRIATE_CONTENT,
+      StatisticsUnsubscribeEntity::REASON_SPAM,
+      StatisticsUnsubscribeEntity::REASON_OTHER,
+    ]);
+    verify($reasonLabels[StatisticsUnsubscribeEntity::REASON_OTHER])->equals('Other');
+  }
+
+  public function testItCountsMissingReasonsAsUnspecified(): void {
+    $reasonCounts = $this->statisticsUnsubscribesRepository->getReasonCountsForNewsletter($this->newsletter);
+
+    verify($reasonCounts)->equals([
+      [
+        'reason' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
+        'count' => '1',
+      ],
+    ]);
   }
 
   public function testItRejectsInvalidReasonSlugs(): void {

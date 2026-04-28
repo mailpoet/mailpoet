@@ -99,7 +99,7 @@ class Subscription {
     }
 
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-    $reason = $this->wp->sanitizeKey((string)$this->request->getStringParam('reason'));
+    $reason = strtolower($this->wp->sanitizeKey((string)$this->request->getStringParam('reason')));
     $reasonText = $this->request->getTextareaParam('reason_text');
 
     $saved = $reason !== '' && $subscription->saveUnsubscribeReason($reason, $reasonText);

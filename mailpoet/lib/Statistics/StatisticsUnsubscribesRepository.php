@@ -67,7 +67,7 @@ class StatisticsUnsubscribesRepository extends Repository {
   }
 
   public function getReasonCountsForNewsletter(NewsletterEntity $newsletter): array {
-    return $this->entityManager->createQueryBuilder()
+    $reasonCounts = $this->entityManager->createQueryBuilder()
       ->select('stats.reason as reason, count(stats.id) as count')
       ->from(StatisticsUnsubscribeEntity::class, 'stats')
       ->andWhere('stats.newsletter = :newsletter')
@@ -76,5 +76,23 @@ class StatisticsUnsubscribesRepository extends Repository {
       ->setParameter('newsletter', $newsletter)
       ->getQuery()
       ->getArrayResult();
+
+    $unspecifiedCount = $this->entityManager->createQueryBuilder()
+      ->select('count(stats.id)')
+      ->from(StatisticsUnsubscribeEntity::class, 'stats')
+      ->andWhere('stats.newsletter = :newsletter')
+      ->andWhere('stats.reason IS NULL')
+      ->setParameter('newsletter', $newsletter)
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    if ((int)$unspecifiedCount > 0) {
+      $reasonCounts[] = [
+        'reason' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
+        'count' => $unspecifiedCount,
+      ];
+    }
+
+    return $reasonCounts;
   }
 }

@@ -28,19 +28,18 @@ class StatisticsUnsubscribeEntity {
   const METHOD_ONE_CLICK = 'one_click';
   const METHOD_UNKNOWN = 'unknown';
 
-  const REASON_TOO_MANY_EMAILS = 'too_many_emails';
-  const REASON_NOT_RELEVANT = 'not_relevant';
-  const REASON_DO_NOT_REMEMBER_SIGNING_UP = 'do_not_remember_signing_up';
-  const REASON_NO_LONGER_INTERESTED = 'no_longer_interested';
-  const REASON_TOO_PROMOTIONAL = 'too_promotional';
+  const REASON_NO_LONGER_INTERESTED = 'normal';
+  const REASON_DID_NOT_SIGN_UP = 'nosignup';
+  const REASON_INAPPROPRIATE_CONTENT = 'inappropriate';
+  const REASON_SPAM = 'spam';
   const REASON_OTHER = 'other';
+  const REASON_UNSPECIFIED = 'unspecified';
 
   const REASONS = [
-    self::REASON_TOO_MANY_EMAILS,
-    self::REASON_NOT_RELEVANT,
-    self::REASON_DO_NOT_REMEMBER_SIGNING_UP,
     self::REASON_NO_LONGER_INTERESTED,
-    self::REASON_TOO_PROMOTIONAL,
+    self::REASON_DID_NOT_SIGN_UP,
+    self::REASON_INAPPROPRIATE_CONTENT,
+    self::REASON_SPAM,
     self::REASON_OTHER,
   ];
 

@@ -36,12 +36,11 @@ class UnsubscribeReasonTracker {
    */
   public function getReasonLabels(): array {
     return [
-      StatisticsUnsubscribeEntity::REASON_TOO_MANY_EMAILS => __('Too many emails', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_NOT_RELEVANT => __('Content is not relevant', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_DO_NOT_REMEMBER_SIGNING_UP => __('I do not remember signing up', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_NO_LONGER_INTERESTED => __('I am no longer interested', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_TOO_PROMOTIONAL => __('Emails are too promotional', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_OTHER => __('Other', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_NO_LONGER_INTERESTED => __('I no longer want to receive these emails', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_DID_NOT_SIGN_UP => __('I never signed up for this mailing list', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_INAPPROPRIATE_CONTENT => __('The emails are inappropriate', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_SPAM => __('The emails are spam and should be reported', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_OTHER => __('Other (fill in reason below)', 'mailpoet'),
     ];
   }
 
