@@ -1052,6 +1052,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     try {
       $i->selectOption('Bulk actions', $actionName);
+      $i->click(['css' => 'input[value="Apply"], button[value="Apply"]']);
       return;
     } catch (Exception $exception) {
       $dataViewsAction = ['xpath' => '//div[contains(@class, "dataviews-bulk-actions-footer__action-buttons")]//button[normalize-space(.)="' . $actionName . '"]'];

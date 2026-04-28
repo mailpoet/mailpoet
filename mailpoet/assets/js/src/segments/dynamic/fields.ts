@@ -14,8 +14,8 @@ function dateTime(
     'span',
     {
       'data-automation-id': segmentId
-        ? `mailpoet_dynamic_segment_created_at_${segmentId}`
-        : 'mailpoet_dynamic_segment_created_at',
+        ? `mailpoet_dynamic_segment_updated_at_${segmentId}`
+        : 'mailpoet_dynamic_segment_updated_at',
     },
     createElement('span', null, MailPoet.Date.short(value)),
     createElement('br', null),

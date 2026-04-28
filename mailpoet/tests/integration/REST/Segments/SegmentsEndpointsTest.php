@@ -100,6 +100,7 @@ class SegmentsEndpointsTest extends Test {
     $this->assertSame('mailpoet_segments_invalid_order', $this->get(self::BASE_PATH, ['query' => ['order' => 'sideways']])['code']);
     $this->assertSame('mailpoet_segments_invalid_page', $this->get(self::BASE_PATH, ['query' => ['page' => 0]])['code']);
     $this->assertSame('mailpoet_segments_invalid_per_page', $this->get(self::BASE_PATH, ['query' => ['per_page' => 101]])['code']);
+    $this->assertSame('mailpoet_segments_invalid_offset', $this->get(self::BASE_PATH, ['query' => ['offset' => 100001]])['code']);
     $this->assertSame('mailpoet_segments_search_not_supported', $this->get(self::BASE_PATH, ['query' => ['search' => 'hidden']])['code']);
   }
 

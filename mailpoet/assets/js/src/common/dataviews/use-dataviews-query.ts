@@ -113,6 +113,7 @@ export function useDataViewsQuery<T>({
             : '';
         setItems([]);
         setMeta({ count: 0, pages: 0 });
+        setGroups([]);
         setError(message || 'Failed to load data.');
       })
       .finally(() => {

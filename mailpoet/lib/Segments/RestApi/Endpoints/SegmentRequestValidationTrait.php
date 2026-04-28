@@ -65,9 +65,14 @@ trait SegmentRequestValidationTrait {
     if ($offset === null || $offset === '') {
       return 0;
     }
-    if (!is_numeric($offset) || (string)(int)$offset !== (string)$offset || (int)$offset < 0) {
+    if (
+      !is_numeric($offset)
+      || (string)(int)$offset !== (string)$offset
+      || (int)$offset < 0
+      || (int)$offset > 100000
+    ) {
       throw new ApiException(
-        __('Offset must be a non-negative integer.', 'mailpoet'),
+        __('Offset must be a non-negative integer no greater than 100000.', 'mailpoet'),
         400,
         'mailpoet_segments_invalid_offset'
       );

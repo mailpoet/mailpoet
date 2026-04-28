@@ -325,15 +325,6 @@ function SegmentListComponent(): JSX.Element {
             ? successMessage(action, count, targets.some(isWPUsersSegment))
             : null,
         );
-        if (
-          (action === 'restore' ||
-            action === 'delete' ||
-            action === 'empty_trash') &&
-          group === 'trash'
-        ) {
-          setGroup('all');
-          setView({ ...view, page: 1 });
-        }
         refresh();
       } catch (err) {
         const apiError = err as { message?: string };
@@ -344,7 +335,7 @@ function SegmentListComponent(): JSX.Element {
         );
       }
     },
-    [group, refresh, setView, view],
+    [refresh],
   );
 
   const handleDuplicate = useCallback(

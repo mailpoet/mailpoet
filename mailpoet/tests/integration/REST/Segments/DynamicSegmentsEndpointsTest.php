@@ -140,6 +140,7 @@ class DynamicSegmentsEndpointsTest extends Test {
     $this->assertSame('mailpoet_segments_invalid_order', $this->get(self::BASE_PATH, ['query' => ['order' => 'sideways']])['code']);
     $this->assertSame('mailpoet_segments_invalid_page', $this->get(self::BASE_PATH, ['query' => ['page' => 0]])['code']);
     $this->assertSame('mailpoet_segments_invalid_per_page', $this->get(self::BASE_PATH, ['query' => ['limit' => 101]])['code']);
+    $this->assertSame('mailpoet_segments_invalid_offset', $this->get(self::BASE_PATH, ['query' => ['offset' => 100001]])['code']);
 
     wp_set_current_user($this->editorUserId);
     $this->assertSame('rest_forbidden', $this->get(self::BASE_PATH)['code']);
