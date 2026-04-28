@@ -205,6 +205,9 @@ class Renderer {
       return $context;
     }
 
+    // Only one-recipient automation sends can safely expose a unique recipient
+    // email to WooCommerce. Bulk renders must not use the first subscriber as a
+    // stand-in for everyone who will receive the email.
     $firstSubscriber = $subscribers ? $subscribers->first() : null;
     $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
     $recipientEmail = $subscriber ? $subscriber->getEmail() : null;

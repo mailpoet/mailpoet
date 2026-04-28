@@ -6,6 +6,13 @@ use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * Generates coupon codes only while WooCommerce renders a MailPoet block email.
+ *
+ * Renderer clears the failure collector before each render and reads it
+ * immediately after rendering, so failures recorded here stop that send without
+ * leaking details into later renders.
+ */
 class GutenbergCouponGenerator {
   const SAFE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
   const MAX_CODE_RETRIES = 5;
@@ -47,18 +54,19 @@ class GutenbergCouponGenerator {
     );
   }
 
-  public function generate(string $couponCode, array $attrs, Rendering_Context $renderingContext): string {
+  public function generate($couponCode, array $attrs, Rendering_Context $renderingContext): string {
+    $couponCode = (string)$couponCode;
     if ($couponCode !== '') {
-      return $couponCode;
-    }
-
-    if (($attrs['source'] ?? 'createNew') !== 'createNew') {
       return $couponCode;
     }
 
     $context = $renderingContext->get_email_context();
     if (($context['integration'] ?? null) !== 'mailpoet') {
       return $couponCode;
+    }
+
+    if (!$this->isCreateNewCouponBlock($attrs)) {
+      return self::SAFE_PLACEHOLDER;
     }
 
     if (!($context['is_real_send'] ?? false)) {
@@ -129,6 +137,47 @@ class GutenbergCouponGenerator {
     }
 
     return 'Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time.';
+  }
+
+  private function isCreateNewCouponBlock(array $attrs): bool {
+    if (array_key_exists('source', $attrs)) {
+      return $attrs['source'] === 'createNew';
+    }
+
+    if (!empty($attrs['couponCode'])) {
+      return false;
+    }
+
+    return $this->hasGeneratedCouponAttributes($attrs);
+  }
+
+  private function hasGeneratedCouponAttributes(array $attrs): bool {
+    $generatedCouponAttributes = [
+      'discountType',
+      'amount',
+      'expiryDay',
+      'freeShipping',
+      'minimumAmount',
+      'maximumAmount',
+      'individualUse',
+      'excludeSaleItems',
+      'productIds',
+      'excludedProductIds',
+      'productCategoryIds',
+      'excludedProductCategoryIds',
+      'emailRestrictions',
+      'usageLimit',
+      'usageLimitPerUser',
+      'restrictToSubscriber',
+    ];
+
+    foreach ($generatedCouponAttributes as $attribute) {
+      if (array_key_exists($attribute, $attrs)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private function isSupportedAutomationContext(Rendering_Context $renderingContext): bool {
