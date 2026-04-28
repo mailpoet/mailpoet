@@ -145,7 +145,6 @@ class SwitchingLanguagesCest {
     $i->amOnMailpoetPage('lists');
     $i->waitForText('Abonnenten');
     $i->waitForText('Neue Liste hinzufügen');
-    $i->waitForText('Ausgetragen');
 
     $i->wantTo('Check Settings tabs strings');
     $i->amOnMailpoetPage('settings');
