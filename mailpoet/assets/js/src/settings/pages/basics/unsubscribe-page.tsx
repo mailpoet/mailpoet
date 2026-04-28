@@ -1,5 +1,6 @@
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
+import { Checkbox } from 'common/form/checkbox/checkbox';
 import { useSetting } from 'settings/store/hooks';
 import { Inputs, Label, PageSelect } from 'settings/components';
 
@@ -11,6 +12,16 @@ export function UnsubscribePage() {
   );
   const [unsubscribeConfirmationPage, setUnsubscribeConfirmationPage] =
     useSetting('subscription', 'pages', 'confirm_unsubscribe');
+  const [unsubscribeSurveyEnabled, setUnsubscribeSurveyEnabled] = useSetting(
+    'subscription',
+    'unsubscribe_survey',
+    'enabled',
+  );
+  const [allowOtherText, setAllowOtherText] = useSetting(
+    'subscription',
+    'unsubscribe_survey',
+    'allow_other_text',
+  );
 
   return (
     <>
@@ -67,6 +78,33 @@ export function UnsubscribePage() {
           automationId="unsubscribe-success-page-selection"
           linkAutomationId="unsubscribe_page_preview_link"
         />
+        <div className="mailpoet-settings-inputs-row">
+          <Checkbox
+            id="subscription-unsubscribe-survey-enabled"
+            automationId="unsubscribe-survey-enabled"
+            checked={unsubscribeSurveyEnabled === '1'}
+            onCheck={(isChecked) => {
+              setUnsubscribeSurveyEnabled(isChecked ? '1' : '0');
+            }}
+          />
+          <label htmlFor="subscription-unsubscribe-survey-enabled">
+            {t('unsubscribeSurveyEnabled')}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Checkbox
+            id="subscription-unsubscribe-survey-allow-other-text"
+            automationId="unsubscribe-survey-allow-other-text"
+            checked={allowOtherText === '1'}
+            disabled={unsubscribeSurveyEnabled !== '1'}
+            onCheck={(isChecked) => {
+              setAllowOtherText(isChecked ? '1' : '0');
+            }}
+          />
+          <label htmlFor="subscription-unsubscribe-survey-allow-other-text">
+            {t('unsubscribeSurveyAllowOtherText')}
+          </label>
+        </div>
       </Inputs>
     </>
   );

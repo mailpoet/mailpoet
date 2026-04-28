@@ -57,6 +57,12 @@ class SubscriptionUrlFactory {
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber, $data);
   }
 
+  public function getUnsubscribeReasonUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
+    $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
+    $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
+    return $this->getSubscriptionUrl($post, 'unsubscribe_reason', $subscriber, $data);
+  }
+
   public function getReEngagementUrl(?SubscriberEntity $subscriber = null) {
     $reEngagementSetting = $this->settings->get('reEngagement');
     $postId = $reEngagementSetting['page'] ?? null;

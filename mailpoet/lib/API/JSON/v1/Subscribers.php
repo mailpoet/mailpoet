@@ -12,12 +12,14 @@ use MailPoet\Config\AccessControl;
 use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Exception;
 use MailPoet\Listing;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
@@ -65,6 +67,9 @@ class Subscribers extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Unsubscribes */
+  private $unsubscribesTracker;
+
   public function __construct(
     Listing\Handler $listingHandler,
     ConfirmationEmailMailer $confirmationEmailMailer,
@@ -75,7 +80,8 @@ class Subscribers extends APIEndpoint {
     TagRepository $tagRepository,
     SubscriberSaveController $saveController,
     SubscriberSubscribeController $subscribeController,
-    SettingsController $settings
+    SettingsController $settings,
+    Unsubscribes $unsubscribesTracker
   ) {
     $this->listingHandler = $listingHandler;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
@@ -87,6 +93,7 @@ class Subscribers extends APIEndpoint {
     $this->saveController = $saveController;
     $this->subscribeController = $subscribeController;
     $this->settings = $settings;
+    $this->unsubscribesTracker = $unsubscribesTracker;
   }
 
   public function get($data = []) {
@@ -290,6 +297,7 @@ class Subscribers extends APIEndpoint {
     } elseif ($data['action'] === 'moveToList' && $segment instanceof SegmentEntity) {
       $count = $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
     } elseif ($data['action'] === 'unsubscribe') {
+      $this->trackBulkUnsubscribe($ids);
       $count = $this->subscribersRepository->bulkUnsubscribe($ids);
     } elseif ($data['action'] === 'addTag' && $tag instanceof TagEntity) {
       $count = $this->subscribersRepository->bulkAddTag($tag, $ids);
@@ -332,6 +340,21 @@ class Subscribers extends APIEndpoint {
     return isset($data['tag_id'])
       ? $this->tagRepository->findOneById((int)$data['tag_id'])
       : null;
+  }
+
+  private function trackBulkUnsubscribe(array $ids): void {
+    $subscribers = $this->subscribersRepository->findBy(['id' => $ids]);
+    foreach ($subscribers as $subscriber) {
+      if (
+        $subscriber instanceof SubscriberEntity
+        && $subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
+      ) {
+        $this->unsubscribesTracker->track(
+          (int)$subscriber->getId(),
+          StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR
+        );
+      }
+    }
   }
 
   private function getErrorMessage(ValidationException $exception): string {

@@ -1,0 +1,42 @@
+<% block content %>
+<form class="mailpoet-unsubscribe-reason" action="<%= actionUrl|escape %>" method="post">
+  <fieldset>
+    <legend><%= __('Would you tell us why you unsubscribed?', 'mailpoet') %></legend>
+    <% for reason, label in reasons %>
+      <p>
+        <label>
+          <input type="radio" name="reason" value="<%= reason|escape('html_attr') %>" required>
+          <%= label %>
+        </label>
+      </p>
+      <% if allowOtherText and reason == otherReason %>
+        <p class="mailpoet-unsubscribe-reason-text" hidden>
+          <label>
+            <%= __('Tell us more', 'mailpoet') %><br>
+            <textarea name="reason_text" maxlength="500" rows="4"></textarea>
+          </label>
+        </p>
+      <% endif %>
+    <% endfor %>
+  </fieldset>
+  <p>
+    <button type="submit"><%= __('Submit', 'mailpoet') %></button>
+  </p>
+  <% if allowOtherText %>
+    <script>
+      (function() {
+        var form = document.currentScript.closest('form');
+        if (!form) return;
+        var textField = form.querySelector('.mailpoet-unsubscribe-reason-text');
+        if (!textField) return;
+        var update = function() {
+          var selected = form.querySelector('input[name="reason"]:checked');
+          textField.hidden = !selected || selected.value !== '<%= otherReason|escape('js') %>';
+        };
+        form.addEventListener('change', update);
+        update();
+      }());
+    </script>
+  <% endif %>
+</form>
+<% endblock %>

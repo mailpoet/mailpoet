@@ -13,6 +13,7 @@ class Subscription {
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
+  const ACTION_UNSUBSCRIBE_REASON = 'unsubscribeReason';
   const ACTION_CONFIRM_UNSUBSCRIBE = 'confirmUnsubscribe';
   const ACTION_RE_ENGAGEMENT = 'reEngagement';
 
@@ -20,6 +21,7 @@ class Subscription {
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE,
+    self::ACTION_UNSUBSCRIBE_REASON,
     self::ACTION_CONFIRM_UNSUBSCRIBE,
     self::ACTION_RE_ENGAGEMENT,
   ];
@@ -88,6 +90,21 @@ class Subscription {
         $this->confirmUnsubscribe($data);
       }
     }
+  }
+
+  public function unsubscribeReason($data) {
+    if (!$this->request->isPost()) {
+      $this->wp->wpSafeRedirect($this->wp->homeUrl());
+      exit;
+    }
+
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
+    $reason = $this->wp->sanitizeKey((string)$this->request->getStringParam('reason'));
+    $reasonText = $this->request->getTextareaParam('reason_text');
+
+    $saved = $reason !== '' && $subscription->saveUnsubscribeReason($reason, $reasonText);
+    $this->wp->wpSafeRedirect($subscription->getUnsubscribeReasonRedirectUrl($saved));
+    exit;
   }
 
   public function reEngagement($data) {

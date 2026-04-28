@@ -33,6 +33,10 @@ export type Settings = {
       captcha: string;
       confirm_unsubscribe: string;
     };
+    unsubscribe_survey: {
+      enabled: '1' | '0';
+      allow_other_text: '1' | '0';
+    };
     segments: string[];
   };
   stats_notifications: {

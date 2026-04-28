@@ -78,6 +78,12 @@ class SettingsController {
         'tracking' => [
           'level' => TrackingConfig::LEVEL_FULL,
         ],
+        'subscription' => [
+          'unsubscribe_survey' => [
+            'enabled' => false,
+            'allow_other_text' => false,
+          ],
+        ],
         'analytics' => [
           'enabled' => false,
         ],
