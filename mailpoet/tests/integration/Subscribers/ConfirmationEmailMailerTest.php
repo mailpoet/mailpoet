@@ -286,16 +286,17 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->equals(true);
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->equals(true);
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
     $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->equals(false);
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->equals(false);
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
@@ -318,11 +319,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     try {
-      $sender->sendConfirmationEmail($this->subscriber, true);
+      $sender->sendConfirmationEmail($this->subscriber, null, null, true);
     } catch (\Exception $e) {
       verify($e->getMessage())->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     }
@@ -355,10 +357,11 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->false();
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->false();
 
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
   }
@@ -380,14 +383,15 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     ) extends ConfirmationEmailMailer {
-      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber): string {
+      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationPageId = null): string {
         return self::WC_CONFIRMATION_FAILED;
       }
     };
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->true();
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->true();
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(2);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
@@ -408,14 +412,15 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     ) extends ConfirmationEmailMailer {
-      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber): string {
+      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationPageId = null): string {
         return self::WC_CONFIRMATION_SENT;
       }
     };
 
-    verify($sender->sendConfirmationEmail($this->subscriber, true))->true();
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->true();
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();

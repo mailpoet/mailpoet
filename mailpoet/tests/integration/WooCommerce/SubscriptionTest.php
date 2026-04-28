@@ -234,7 +234,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->confirmationEmailMailer
       ->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->with($this->isInstanceOf(SubscriberEntity::class), true);
+      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true);
 
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->subscribersRepository->flush();
