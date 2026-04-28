@@ -315,6 +315,46 @@ class SubscriberActionsTest extends \MailPoetTest {
     ]));
   }
 
+  public function testFailedResubscribeStartsNewUnconfirmedCleanupGracePeriod(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $old = Carbon::now()->millisecond(0)->subYear();
+    $cutoff = Carbon::now()->millisecond(0)->subDays(30);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('failed-resubscribe-grace-period@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withCreatedAt($old)
+      ->withLastSubscribedAt($old)
+      ->withLastConfirmationEmailSentAt($old)
+      ->create();
+
+    $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailer->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), true)
+      ->willReturn(false);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
+      'confirmationEmailMailer' => $confirmationEmailMailer,
+    ]);
+
+    [, $meta] = $subscriberActions->subscribe([
+      'email' => 'failed-resubscribe-grace-period@example.com',
+    ]);
+
+    verify($meta['confirmationEmailResult'])->false();
+    $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
+    $subscribersRepository->refresh($subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getConfirmationsCount())->equals(0);
+    verify($subscriber->getLastConfirmationEmailSentAt())->null();
+    $this->assertInstanceOf(\DateTimeInterface::class, $subscriber->getLastSubscribedAt());
+    verify($subscriber->getLastSubscribedAt() > $cutoff)->true();
+
+    $deletedIds = $subscribersRepository->deleteUnconfirmedSubscribersForCleanup($cutoff, 10);
+
+    verify($deletedIds)->empty();
+    verify($subscribersRepository->findOneById($subscriber->getId()))->notNull();
+  }
+
   private function createNewsletter(): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);

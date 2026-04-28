@@ -325,7 +325,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($this->subscriber->getLastConfirmationEmailSentAt())->null();
   }
 
-  public function testPublicConfirmationCapUsesLockedDatabaseCount(): void {
+  public function testPublicConfirmationCapUsesClaimedDatabaseCount(): void {
     $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
     $this->subscribersRepository->flush();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

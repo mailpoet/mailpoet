@@ -217,7 +217,7 @@ class ConfirmationEmailMailer {
     }
 
     if ($isPublicFormSend) {
-      return $this->subscribersRepository->sendPublicConfirmationEmailWithLock(
+      return $this->subscribersRepository->sendPublicConfirmationEmailWithCap(
         $subscriber,
         self::MAX_CONFIRMATION_EMAILS,
         function() use ($subscriber, $signupConfirmation): bool {

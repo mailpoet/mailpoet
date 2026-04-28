@@ -461,6 +461,12 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
       ->withCreatedAt($recent)
       ->create();
+    $recentSubscribed = (new SubscriberFactory())
+      ->withEmail('recent-subscribed@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt($old)
+      ->withLastSubscribedAt($recent)
+      ->create();
     $subscribed = (new SubscriberFactory())
       ->withEmail('subscribed@example.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
@@ -507,7 +513,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($deletedIds)->equals([$legacyEligible->getId(), $resentEligible->getId()]);
     verify($this->repository->findOneById($legacyEligible->getId()))->null();
     verify($this->repository->findOneById($resentEligible->getId()))->null();
-    foreach ([$recentResent, $recentCreated, $subscribed, $trashed, $wpLinked, $wooLinked, $withoutDates] as $subscriber) {
+    foreach ([$recentResent, $recentCreated, $recentSubscribed, $subscribed, $trashed, $wpLinked, $wooLinked, $withoutDates] as $subscriber) {
       verify($this->repository->findOneById($subscriber->getId()))->notNull();
     }
     foreach ([$trashed, $wpLinked, $wooLinked] as $excludedSubscriber) {
@@ -529,6 +535,42 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     verify($deletedIds)->equals([$first->getId(), $second->getId()]);
     verify($this->repository->findOneById($third->getId()))->notNull();
+  }
+
+  public function testPublicConfirmationEmailClaimIsReleasedWhenSendFails(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('claim-released@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(2)
+      ->create();
+
+    $result = $this->repository->sendPublicConfirmationEmailWithCap($subscriber, 3, function(): bool {
+      return false;
+    });
+
+    verify($result)->false();
+    $this->repository->refresh($subscriber);
+    verify($subscriber->getConfirmationsCount())->equals(2);
+    verify($subscriber->getLastConfirmationEmailSentAt())->null();
+  }
+
+  public function testPublicConfirmationEmailClaimPreventsSendAtCap(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('claim-capped@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(3)
+      ->create();
+    $sent = false;
+
+    $result = $this->repository->sendPublicConfirmationEmailWithCap($subscriber, 3, function() use (&$sent): bool {
+      $sent = true;
+      return true;
+    });
+
+    verify($result)->false();
+    verify($sent)->false();
+    $this->repository->refresh($subscriber);
+    verify($subscriber->getConfirmationsCount())->equals(3);
   }
   
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {

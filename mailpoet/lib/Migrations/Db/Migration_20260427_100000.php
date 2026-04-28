@@ -24,6 +24,7 @@ class Migration_20260427_100000 extends DbMigration {
             `wp_user_id`,
             `is_woocommerce_user`,
             `last_confirmation_email_sent_at`,
+            `last_subscribed_at`,
             `created_at`,
             `id`
           )"
