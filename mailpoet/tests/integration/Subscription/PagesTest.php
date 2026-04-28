@@ -25,6 +25,7 @@ use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
@@ -39,6 +40,7 @@ use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -216,8 +218,8 @@ class PagesTest extends \MailPoetTest {
     $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
   }
 
-  public function testItDontTrackUnsubscribeWhenTrackingIsDisabled() {
-    $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::never()]);
+  public function testItTracksUnsubscribeWhenTrackingIsDisabled() {
+    $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::once()]);
     $this->testData['queueId'] = 1;
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
@@ -294,6 +296,48 @@ class PagesTest extends \MailPoetTest {
     verify($clickStat)->arrayCount(1);
   }
 
+  public function testItRendersUnsubscribeReasonSurveyWhenEnabled() {
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+    $content = $pages->setPageContent('[mailpoet_page]');
+
+    verify($content)->stringContainsString('Would you tell us why you unsubscribed?');
+  }
+
+  public function testItSavesUnsubscribeReason() {
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.allow_other_text', '1');
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+    $result = $pages->saveUnsubscribeReason(
+      StatisticsUnsubscribeEntity::REASON_OTHER,
+      'Not for me'
+    );
+
+    verify($result)->true();
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $this->subscriber->getId()]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscriptionStat);
+    verify($unsubscriptionStat->getReason())->equals(StatisticsUnsubscribeEntity::REASON_OTHER);
+    verify($unsubscriptionStat->getReasonText())->equals('Not for me');
+  }
+
+  public function testItDoesNotSaveUnsubscribeReasonForPreview() {
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
+    $this->testData['preview'] = 1;
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $result = $pages->saveUnsubscribeReason(
+      StatisticsUnsubscribeEntity::REASON_NO_LONGER_INTERESTED,
+      null
+    );
+
+    verify($result)->false();
+    verify($this->statisticsUnsubscribesRepository->findAll())->arrayCount(0);
+  }
+
   public function testWindowTitleCanBeCalledWithSingleArgument() {
     $pages = $this->getPages();
 
@@ -335,7 +379,10 @@ class PagesTest extends \MailPoetTest {
       $container->get(SubscriberSegmentRepository::class),
       $container->get(NewsletterLinkRepository::class),
       $container->get(StatisticsClicksRepository::class),
-      $container->get(SendingQueuesRepository::class)
+      $container->get(SendingQueuesRepository::class),
+      $container->get(SettingsController::class),
+      $container->get(UnsubscribeReasonTracker::class),
+      $container->get(Request::class)
     );
   }
 

@@ -24,6 +24,8 @@ use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberListingRepository;
@@ -97,7 +99,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(TagRepository::class),
       $container->get(SubscriberSaveController::class),
       $container->get(SubscriberSubscribeController::class),
-      $container->get(SettingsController::class)
+      $container->get(SettingsController::class),
+      $container->get(Unsubscribes::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -644,6 +647,32 @@ class SubscribersTest extends \MailPoetTest {
     ]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(0);
+  }
+
+  public function testItTracksBulkUnsubscribeOnlyForSubscribersWhoseStatusChanged() {
+    $alreadyUnsubscribed = (new SubscriberFactory())
+      ->withEmail('already-unsubscribed@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $subscribed = (new SubscriberFactory())
+      ->withEmail('bulk-unsubscribe@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $response = $this->endpoint->bulkAction([
+      'listing' => [
+        'selection' => [
+          $alreadyUnsubscribed->getId(),
+          $subscribed->getId(),
+        ],
+      ],
+      'action' => 'unsubscribe',
+    ]);
+
+    $statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($statisticsUnsubscribesRepository->findBy(['subscriber' => $alreadyUnsubscribed]))->arrayCount(0);
+    verify($statisticsUnsubscribesRepository->findBy(['subscriber' => $subscribed]))->arrayCount(1);
   }
 
   public function testItCannotRunAnInvalidBulkAction() {

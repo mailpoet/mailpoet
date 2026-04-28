@@ -12,16 +12,19 @@ use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\Pages as SettingsPages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -92,6 +95,15 @@ class Pages {
   /*** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /*** @var SettingsController */
+  private $settings;
+
+  /*** @var UnsubscribeReasonTracker */
+  private $unsubscribeReasonTracker;
+
+  /*** @var Request */
+  private $request;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -110,7 +122,10 @@ class Pages {
     SubscriberSegmentRepository $subscriberSegmentRepository,
     NewsletterLinkRepository $newsletterLinkRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
-    SendingQueuesRepository $sendingQueuesRepository
+    SendingQueuesRepository $sendingQueuesRepository,
+    SettingsController $settings,
+    UnsubscribeReasonTracker $unsubscribeReasonTracker,
+    Request $request
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -130,6 +145,9 @@ class Pages {
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->settings = $settings;
+    $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
+    $this->request = $request;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -242,24 +260,23 @@ class Pages {
       && (!is_null($this->subscriber))
       && ($this->subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED)
     ) {
-      if ($this->trackingConfig->isEmailTrackingEnabled() && isset($this->data['queueId'])) {
-        $queueId = (int)$this->data['queueId'];
-
-        if ($method === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK) {
+      $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+      if ($queueId !== null) {
+        if ($this->trackingConfig->isEmailTrackingEnabled() && $method === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK) {
           /**
            * With 1-click method, redirect shouldn't happen that's why the click state should be directly recorded
            */
           $this->updateClickStatistics($queueId);
         }
-
-        $this->unsubscribesTracker->track(
-          (int)$this->subscriber->getId(),
-          StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
-          $queueId,
-          null,
-          $method
-        );
       }
+
+      $this->unsubscribesTracker->track(
+        (int)$this->subscriber->getId(),
+        StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
+        $queueId,
+        null,
+        $method
+      );
       $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
       $this->subscribersRepository->persist($this->subscriber);
       $this->subscribersRepository->flush();
@@ -444,7 +461,83 @@ class Pages {
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
     }
+    if ($this->shouldRenderUnsubscribeReasonSurvey()) {
+      if ($this->isUnsubscribeReasonSaved()) {
+        $content .= '<p class="mailpoet_unsubscribe_reason_success">' . __('Thank you for your feedback.', 'mailpoet') . '</p>';
+      } else {
+        $content .= $this->renderUnsubscribeReasonSurvey();
+      }
+    }
     return $content;
+  }
+
+  public function saveUnsubscribeReason(string $reason, ?string $reasonText): bool {
+    if (
+      $this->isPreview()
+      || !$this->isSettingEnabled('subscription.unsubscribe_survey.enabled')
+      || !($this->subscriber instanceof SubscriberEntity)
+      || $this->subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
+    ) {
+      return false;
+    }
+
+    $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+    $result = $this->unsubscribeReasonTracker->saveReason(
+      $this->subscriber,
+      $queueId,
+      $reason,
+      $reasonText,
+      $this->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text')
+    );
+
+    return $result instanceof StatisticsUnsubscribeEntity;
+  }
+
+  public function getUnsubscribeReasonRedirectUrl(bool $saved): string {
+    $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+    $url = $this->subscriber instanceof SubscriberEntity
+      ? $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId)
+      : $this->wp->homeUrl();
+
+    if ($saved) {
+      $url = $this->wp->addQueryArg('unsubscribe_reason_saved', 1, $url);
+    }
+    return $url;
+  }
+
+  private function shouldRenderUnsubscribeReasonSurvey(): bool {
+    if (
+      $this->isPreview()
+      || !$this->isSettingEnabled('subscription.unsubscribe_survey.enabled')
+      || !($this->subscriber instanceof SubscriberEntity)
+      || $this->subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
+    ) {
+      return false;
+    }
+
+    $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+    return $this->unsubscribeReasonTracker->findTargetUnsubscribe($this->subscriber, $queueId) instanceof StatisticsUnsubscribeEntity;
+  }
+
+  private function renderUnsubscribeReasonSurvey(): string {
+    $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+
+    return $this->templateRenderer->render('subscription/unsubscribe_reason.html', [
+      'actionUrl' => $this->subscriptionUrlFactory->getUnsubscribeReasonUrl($this->subscriber, $queueId),
+      'allowOtherText' => $this->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text'),
+      'reasons' => $this->unsubscribeReasonTracker->getReasonLabels(),
+      'otherReason' => StatisticsUnsubscribeEntity::REASON_OTHER,
+    ]);
+  }
+
+  private function isSettingEnabled(string $key): bool {
+    $value = $this->settings->get($key);
+    return $value === true || $value === '1' || $value === 1;
+  }
+
+  private function isUnsubscribeReasonSaved(): bool {
+    $value = $this->request->getStringParam('unsubscribe_reason_saved');
+    return $value !== null && $this->wp->absint($value) === 1;
   }
 
   private function getReEngagementContent() {

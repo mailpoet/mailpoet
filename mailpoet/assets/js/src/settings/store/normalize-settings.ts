@@ -96,6 +96,10 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
         captcha: text,
         confirm_unsubscribe: text,
       }),
+      unsubscribe_survey: asObject({
+        enabled: disabledCheckbox,
+        allow_other_text: disabledCheckbox,
+      }),
       segments: emptyArray,
     }),
     stats_notifications: asObject({

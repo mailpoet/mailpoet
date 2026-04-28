@@ -889,6 +889,30 @@ class Functions {
     return esc_url_raw($url, $protocols);
   }
 
+  public function sanitizeKey(string $key): string {
+    return sanitize_key($key);
+  }
+
+  public function sanitizeTextField(string $text): string {
+    return sanitize_text_field($text);
+  }
+
+  public function sanitizeTextareaField(string $text): string {
+    return sanitize_textarea_field($text);
+  }
+
+  public function absint($maybeint): int {
+    return absint($maybeint);
+  }
+
+  /**
+   * @param mixed $value
+   * @return mixed
+   */
+  public function wpUnslash($value) {
+    return wp_unslash($value);
+  }
+
   public function restUrl(string $path = '', string $scheme = 'rest'): string {
     return rest_url($path, $scheme);
   }

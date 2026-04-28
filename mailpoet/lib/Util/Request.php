@@ -9,8 +9,22 @@ class Request {
 
   public function getStringParam(string $key): ?string {
     if ($this->isPost()) {
-      return isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : null;
+      return $this->getSanitizedParam($_POST, $key, 'sanitize_text_field');
     }
-    return isset($_GET[$key]) ? sanitize_text_field($_GET[$key]) : null;
+    return $this->getSanitizedParam($_GET, $key, 'sanitize_text_field');
+  }
+
+  public function getTextareaParam(string $key): ?string {
+    if ($this->isPost()) {
+      return $this->getSanitizedParam($_POST, $key, 'sanitize_textarea_field');
+    }
+    return $this->getSanitizedParam($_GET, $key, 'sanitize_textarea_field');
+  }
+
+  private function getSanitizedParam(array $source, string $key, callable $sanitize): ?string {
+    if (!isset($source[$key]) || !is_scalar($source[$key])) {
+      return null;
+    }
+    return $sanitize(wp_unslash((string)$source[$key]));
   }
 }

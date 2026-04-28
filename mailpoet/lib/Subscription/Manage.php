@@ -105,20 +105,20 @@ class Manage {
     if (!empty($subscriberData['email'])) {
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberData['email']]);
 
-      if (
-        ($subscriberData['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
-        && ($subscriber instanceof SubscriberEntity)
-        && ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)
-      ) {
-        $this->unsubscribesTracker->track(
-          (int)$subscriber->getId(),
-          StatisticsUnsubscribeEntity::SOURCE_MANAGE
-        );
-      }
-
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
+          $shouldTrackUnsubscribe = (
+            ($subscriberData['status'] ?? '') === SubscriberEntity::STATUS_UNSUBSCRIBED
+            && $subscriber instanceof SubscriberEntity
+            && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+          );
           $subscriber = $this->subscriberSaveController->createOrUpdate($subscriberData, $subscriber);
+          if ($shouldTrackUnsubscribe) {
+            $this->unsubscribesTracker->track(
+              (int)$subscriber->getId(),
+              StatisticsUnsubscribeEntity::SOURCE_MANAGE
+            );
+          }
           $this->subscriberSaveController->updateCustomFields($this->filterOutEmptyMandatoryFields($subscriberData), $subscriber);
           $this->updateSubscriptions($subscriber, $subscriberData);
         }
