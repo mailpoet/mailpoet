@@ -3,7 +3,10 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
 
 /**
@@ -37,5 +40,41 @@ class StatisticsUnsubscribesRepository extends Repository {
       ->setParameter('dateTime', $from)
       ->getQuery()
       ->getResult();
+  }
+
+  public function findOneBySubscriberAndQueue(SubscriberEntity $subscriber, SendingQueueEntity $queue, NewsletterEntity $newsletter): ?StatisticsUnsubscribeEntity {
+    $statistics = $this->findOneBy([
+      'queue' => $queue,
+      'newsletter' => $newsletter,
+      'subscriber' => $subscriber,
+    ]);
+    return $statistics instanceof StatisticsUnsubscribeEntity ? $statistics : null;
+  }
+
+  public function findLatestForSubscriber(SubscriberEntity $subscriber): ?StatisticsUnsubscribeEntity {
+    $result = $this->entityManager->createQueryBuilder()
+      ->select('stats')
+      ->from(StatisticsUnsubscribeEntity::class, 'stats')
+      ->andWhere('stats.subscriber = :subscriber')
+      ->setParameter('subscriber', $subscriber)
+      ->orderBy('stats.createdAt', 'DESC')
+      ->addOrderBy('stats.id', 'DESC')
+      ->setMaxResults(1)
+      ->getQuery()
+      ->getOneOrNullResult();
+
+    return $result instanceof StatisticsUnsubscribeEntity ? $result : null;
+  }
+
+  public function getReasonCountsForNewsletter(NewsletterEntity $newsletter): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('stats.reason as reason, count(stats.id) as count')
+      ->from(StatisticsUnsubscribeEntity::class, 'stats')
+      ->andWhere('stats.newsletter = :newsletter')
+      ->andWhere('stats.reason IS NOT NULL')
+      ->groupBy('stats.reason')
+      ->setParameter('newsletter', $newsletter)
+      ->getQuery()
+      ->getArrayResult();
   }
 }
