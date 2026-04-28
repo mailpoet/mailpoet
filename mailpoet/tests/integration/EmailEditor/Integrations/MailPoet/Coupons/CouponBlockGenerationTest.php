@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\EmailEditor\Integrations\MailPoet\Coupons;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
@@ -84,6 +85,31 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     $body = $queue->getNewsletterRenderedBody();
     $this->assertIsArray($body);
     $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $newsletter->getStatus());
+  }
+
+  public function testItGeneratesWooCommerceCouponWhenWooCommerceOmitsDefaultAttributes(): void {
+    $context = new Rendering_Context(new \WP_Theme_JSON(), [
+      'integration' => 'mailpoet',
+      'newsletter_id' => 1,
+      'queue_id' => 2,
+      'email_type' => NewsletterEntity::TYPE_STANDARD,
+      'is_real_send' => true,
+      'is_preview' => false,
+      'is_single_recipient' => false,
+      'subscriber_count' => 2,
+      'mailpoet_is_automation' => false,
+    ]);
+
+    $couponCode = WPFunctions::get()->applyFilters(
+      'woocommerce_coupon_code_block_auto_generate',
+      '',
+      [],
+      $context
+    );
+
+    $this->assertIsString($couponCode);
+    $this->assertMatchesRegularExpression('/^[A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4}$/', $couponCode);
+    $this->assertGreaterThan(0, wc_get_coupon_id_by_code($couponCode));
   }
 
   public function testItBlocksRecipientRestrictedStandardNewsletterBeforeRender(): void {
@@ -212,9 +238,9 @@ class CouponBlockGenerationTest extends \MailPoetTest {
   }
 
   private function createCouponBlockContent(array $attrs): string {
-    $attrsJson = wp_json_encode($attrs);
+    $attrsJson = $attrs ? ' ' . wp_json_encode($attrs) : '';
     return sprintf(
-      '<!-- wp:woocommerce/coupon-code %1$s --><span class="woocommerce-coupon-code">%2$s</span><!-- /wp:woocommerce/coupon-code -->',
+      '<!-- wp:woocommerce/coupon-code%1$s --><div class="wp-block-woocommerce-coupon-code"><strong>%2$s</strong></div><!-- /wp:woocommerce/coupon-code -->',
       $attrsJson,
       CouponBlockGenerator::SAFE_PLACEHOLDER
     );
