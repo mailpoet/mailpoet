@@ -353,7 +353,7 @@ class PatternsControllerTest extends \MailPoetTest {
   private function createControllerWithWooCommerce(): PatternsController {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.5.0');
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
 
     return new PatternsController(
       $this->diContainer->get(CdnAssetUrl::class),

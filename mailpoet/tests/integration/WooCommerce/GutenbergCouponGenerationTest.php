@@ -185,6 +185,7 @@ class GutenbergCouponGenerationTest extends \MailPoetTest {
       'post_content' => $postContent,
     ]);
     $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId, 'Failed to create mailpoet_email post.');
     $this->postIds[] = $postId;
 
     $factory = (new NewsletterFactory())
