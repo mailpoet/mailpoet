@@ -6,7 +6,9 @@ use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 
@@ -24,13 +26,23 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var ListingHandler */
+  private $listingHandler;
+
+  /** @var DynamicSegmentsListingRepository */
+  private $dynamicSegmentsListingRepository;
+
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
   public function __construct(
+    ListingHandler $listingHandler,
+    DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     SegmentsRepository $segmentsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository
   ) {
+    $this->listingHandler = $listingHandler;
+    $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
   }
@@ -38,11 +50,14 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
   public function handle(Request $request): Response {
     $action = $this->validateAction($request);
     $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null);
-    $this->validateOrder(is_string($request->getParam('order')) ? (string)$request->getParam('order') : null, 'desc');
+    $orderParam = $request->getParam('order') ?? $request->getParam('sort_order');
+    $this->validateOrder(is_string($orderParam) ? (string)$orderParam : null, 'desc');
     $this->validatePage($request->getParam('page'));
-    $this->validatePerPage($request->getParam('per_page'), 25);
-    $orderby = is_string($request->getParam('orderby')) && $request->getParam('orderby') !== ''
-      ? (string)$request->getParam('orderby')
+    $this->validateOffset($request->getParam('offset'));
+    $this->validatePerPage($request->getParam('per_page') ?? $request->getParam('limit'), 25);
+    $orderbyParam = $request->getParam('orderby') ?? $request->getParam('sort_by');
+    $orderby = is_string($orderbyParam) && $orderbyParam !== ''
+      ? (string)$orderbyParam
       : 'updated_at';
     $allowedSortFields = ['name', 'created_at', 'updated_at'];
     if (!in_array($orderby, $allowedSortFields, true)) {
@@ -56,7 +71,11 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
         'mailpoet_segments_invalid_orderby'
       );
     }
-    $ids = $this->validateIds($request->getParam('ids'));
+    $ids = $this->getSelectedIds($request, $orderby, is_string($orderParam) ? strtolower($orderParam) : 'desc');
+    $this->validateDynamicSelection($ids);
+    if ($action === self::ACTION_DELETE) {
+      $this->validateDeletionSelection($ids);
+    }
 
     $result = [
       'updated' => 0,
@@ -68,9 +87,9 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
     if ($action === self::ACTION_TRASH) {
       $this->trashSegments($ids, $result);
     } elseif ($action === self::ACTION_RESTORE) {
-      $result['updated'] = $this->segmentsRepository->bulkRestore($this->getDynamicIds($ids, $result), SegmentEntity::TYPE_DYNAMIC);
+      $result['updated'] = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
     } else {
-      $result['deleted'] = $this->segmentsRepository->bulkDelete($this->getDynamicIds($ids, $result), SegmentEntity::TYPE_DYNAMIC);
+      $result['deleted'] = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
     }
 
     return new Response($result);
@@ -79,12 +98,18 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
   public static function getRequestSchema(): array {
     return [
       'action' => Builder::string()->required(),
-      'ids' => Builder::array(Builder::integer())->required(),
+      'ids' => Builder::array(Builder::integer()),
+      'select_all' => Builder::boolean(),
       'group' => Builder::string(),
+      'search' => Builder::string(),
       'page' => Builder::integer(),
       'per_page' => Builder::integer(),
+      'limit' => Builder::integer(),
+      'offset' => Builder::integer(),
       'orderby' => Builder::string(),
       'order' => Builder::string(),
+      'sort_by' => Builder::string(),
+      'sort_order' => Builder::string(),
     ];
   }
 
@@ -105,13 +130,40 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
   }
 
   /**
+   * @return int[]
+   */
+  private function getSelectedIds(Request $request, string $sortBy, string $sortOrder): array {
+    if ($request->getParam('select_all') !== true) {
+      return $this->validateIds($request->getParam('ids'));
+    }
+
+    $definition = $this->listingHandler->getListingDefinition([
+      'group' => $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null),
+      'search' => is_string($request->getParam('search')) ? (string)$request->getParam('search') : null,
+      'sort_by' => $sortBy,
+      'sort_order' => $sortOrder,
+      'params' => ['segments'],
+    ]);
+    $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
+    $ids = array_map('intval', $ids);
+    if ($ids === []) {
+      throw new ApiException(
+        __('At least one segment id is required.', 'mailpoet'),
+        400,
+        'mailpoet_segments_ids_required'
+      );
+    }
+    return $ids;
+  }
+
+  /**
    * @param int[] $ids
    * @param array{updated:int,deleted:int,skipped:int,errors:array<int, array{id:int|null,message:string}>} $result
    */
   private function trashSegments(array $ids, array &$result): void {
     $newsletterBlockers = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($ids);
     $trashIds = [];
-    foreach ($this->getDynamicIds($ids, $result) as $id) {
+    foreach ($ids as $id) {
       if (isset($newsletterBlockers[$id])) {
         $segment = $this->segmentsRepository->findOneById($id);
         $this->skip($result, $id, sprintf(
@@ -129,24 +181,41 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
 
   /**
    * @param int[] $ids
-   * @param array{updated:int,deleted:int,skipped:int,errors:array<int, array{id:int|null,message:string}>} $result
-   * @return int[]
    */
-  private function getDynamicIds(array $ids, array &$result): array {
-    $dynamicIds = [];
+  private function validateDynamicSelection(array $ids): void {
     foreach ($ids as $id) {
       $segment = $this->segmentsRepository->findOneById($id);
       if (!$segment instanceof SegmentEntity) {
-        $this->skip($result, $id, __('This segment does not exist.', 'mailpoet'));
-        continue;
+        throw new ApiException(
+          __('One or more selected dynamic segments were not found.', 'mailpoet'),
+          400,
+          'mailpoet_dynamic_segments_not_found'
+        );
       }
       if ($segment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
-        $this->skip($result, $id, __('This segment action only supports dynamic segments.', 'mailpoet'));
-        continue;
+        throw new ApiException(
+          __('This endpoint only supports dynamic segments.', 'mailpoet'),
+          400,
+          'mailpoet_dynamic_segments_invalid_type'
+        );
       }
-      $dynamicIds[] = $id;
     }
-    return $dynamicIds;
+  }
+
+  /**
+   * @param int[] $ids
+   */
+  private function validateDeletionSelection(array $ids): void {
+    foreach ($ids as $id) {
+      $segment = $this->segmentsRepository->findOneById($id);
+      if ($segment instanceof SegmentEntity && $segment->getDeletedAt() === null) {
+        throw new ApiException(
+          __('Only dynamic segments in the trash can be permanently deleted.', 'mailpoet'),
+          400,
+          'mailpoet_dynamic_segments_delete_requires_trash'
+        );
+      }
+    }
   }
 
   /**

@@ -65,6 +65,10 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
     $action = $this->validateAction($request);
     $this->validateListingParams($request);
     $ids = $this->getSelectedIds($request, $action);
+    $this->validateTypeBoundaries($ids);
+    if ($action === self::ACTION_DELETE) {
+      $this->validateDeletionSelection($ids);
+    }
 
     $result = [
       'updated' => 0,
@@ -94,6 +98,8 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
       'per_page' => Builder::integer(),
       'orderby' => Builder::string(),
       'order' => Builder::string(),
+      'sort_by' => Builder::string(),
+      'sort_order' => Builder::string(),
     ];
   }
 
@@ -115,12 +121,14 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
 
   private function validateListingParams(Request $request): void {
     $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null);
-    $this->validateOrder(is_string($request->getParam('order')) ? (string)$request->getParam('order') : null, 'asc');
+    $orderParam = $request->getParam('order') ?? $request->getParam('sort_order');
+    $this->validateOrder(is_string($orderParam) ? (string)$orderParam : null, 'asc');
     $this->validatePage($request->getParam('page'));
     $this->validatePerPage($request->getParam('per_page'), 20);
 
-    $orderby = is_string($request->getParam('orderby')) && $request->getParam('orderby') !== ''
-      ? (string)$request->getParam('orderby')
+    $orderbyParam = $request->getParam('orderby') ?? $request->getParam('sort_by');
+    $orderby = is_string($orderbyParam) && $orderbyParam !== ''
+      ? (string)$orderbyParam
       : 'name';
     $allowedSortFields = ['name', 'created_at', 'updated_at', 'average_engagement_score'];
     if (!in_array($orderby, $allowedSortFields, true)) {
@@ -261,6 +269,38 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
         continue;
       }
       $result['deleted'] += $this->segmentsRepository->bulkDelete([$id]);
+    }
+  }
+
+  /**
+   * @param int[] $ids
+   */
+  private function validateTypeBoundaries(array $ids): void {
+    foreach ($ids as $id) {
+      $segment = $this->segmentsRepository->findOneById($id);
+      if ($segment instanceof SegmentEntity && $segment->getType() === SegmentEntity::TYPE_DYNAMIC) {
+        throw new ApiException(
+          __('This endpoint only supports lists.', 'mailpoet'),
+          400,
+          'mailpoet_segments_invalid_type'
+        );
+      }
+    }
+  }
+
+  /**
+   * @param int[] $ids
+   */
+  private function validateDeletionSelection(array $ids): void {
+    foreach ($ids as $id) {
+      $segment = $this->segmentsRepository->findOneById($id);
+      if ($segment instanceof SegmentEntity && $segment->getDeletedAt() === null) {
+        throw new ApiException(
+          __('Only lists in the trash can be permanently deleted.', 'mailpoet'),
+          400,
+          'mailpoet_segments_delete_requires_trash'
+        );
+      }
     }
   }
 

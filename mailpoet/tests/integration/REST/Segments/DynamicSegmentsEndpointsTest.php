@@ -2,10 +2,13 @@
 
 namespace MailPoet\Test\REST\Segments;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\REST\Test;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/../Test.php';
 
@@ -91,6 +94,46 @@ class DynamicSegmentsEndpointsTest extends Test {
     $this->assertContains((string)$trashed->getId(), $ids);
   }
 
+  public function testGetUsesDefaultPaginationAndSortWhenParamsAreOmitted(): void {
+    $suffix = uniqid();
+    $older = (new SegmentFactory())->withName("zzz_default_older_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $newer = (new SegmentFactory())->withName("zzz_default_newer_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $fillers = [];
+    for ($i = 0; $i < 25; $i++) {
+      $fillers[] = (new SegmentFactory())->withName("zzz_default_filler_{$suffix}_{$i}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    }
+    $this->setUpdatedAt($older, new Carbon('2024-01-01 00:00:00'));
+    $this->setUpdatedAt($newer, new Carbon('2024-01-02 00:00:00'));
+    foreach ($fillers as $filler) {
+      $this->setUpdatedAt($filler, new Carbon('2023-01-01 00:00:00'));
+    }
+    $this->entityManager->flush();
+
+    $data = $this->get(self::BASE_PATH, ['query' => ['search' => $suffix]]);
+    $names = array_column($data['data']['items'], 'name');
+
+    $this->assertCount(25, $data['data']['items']);
+    $this->assertSame("zzz_default_newer_{$suffix}", $names[0]);
+  }
+
+  public function testGetSupportsLegacySortAliasesAndOffset(): void {
+    $suffix = uniqid();
+    (new SegmentFactory())->withName("zzz_alias_a_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    (new SegmentFactory())->withName("zzz_alias_b_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    (new SegmentFactory())->withName("zzz_alias_c_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'limit' => 1,
+      'offset' => 2,
+      'sort_by' => 'name',
+      'sort_order' => 'asc',
+    ]]);
+
+    $this->assertSame(3, $data['data']['meta']['count']);
+    $this->assertSame("zzz_alias_c_{$suffix}", $data['data']['items'][0]['name']);
+  }
+
   public function testGetRejectsInvalidListingParamsAndUsersWithoutPermission(): void {
     $this->assertSame('mailpoet_segments_invalid_group', $this->get(self::BASE_PATH, ['query' => ['group' => 'archived']])['code']);
     $this->assertSame('mailpoet_segments_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'bad_field']])['code']);
@@ -124,6 +167,12 @@ class DynamicSegmentsEndpointsTest extends Test {
     $this->assertNull($restoredSegment->getDeletedAt());
 
     $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$segment->getId()]],
+    ]);
+    $this->entityManager->clear();
+    $this->assertSame(1, $data['data']['updated']);
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
       'json' => ['action' => 'delete', 'ids' => [(int)$segment->getId()]],
     ]);
     $this->entityManager->clear();
@@ -131,7 +180,7 @@ class DynamicSegmentsEndpointsTest extends Test {
     $this->assertNull($this->segmentsRepository->findOneById($segment->getId()));
   }
 
-  public function testBulkActionReportsWrongTypeAsSkipped(): void {
+  public function testBulkActionRejectsWrongTypeWithoutMutatingRows(): void {
     $static = (new SegmentFactory())->withName('Static')->create();
     $dynamic = (new SegmentFactory())->withName('Dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
 
@@ -140,15 +189,97 @@ class DynamicSegmentsEndpointsTest extends Test {
     ]);
     $this->entityManager->clear();
 
-    $this->assertSame(1, $data['data']['updated']);
-    $this->assertSame(1, $data['data']['skipped']);
-    $this->assertSame((int)$static->getId(), $data['data']['errors'][0]['id']);
+    $this->assertSame('mailpoet_dynamic_segments_invalid_type', $data['code']);
     $staticAfterAction = $this->segmentsRepository->findOneById($static->getId());
     $dynamicAfterAction = $this->segmentsRepository->findOneById($dynamic->getId());
     $this->assertInstanceOf(SegmentEntity::class, $staticAfterAction);
     $this->assertInstanceOf(SegmentEntity::class, $dynamicAfterAction);
     $this->assertNull($staticAfterAction->getDeletedAt());
-    $this->assertNotNull($dynamicAfterAction->getDeletedAt());
+    $this->assertNull($dynamicAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionRejectsMissingIdsWithoutMutatingRows(): void {
+    $dynamic = (new SegmentFactory())->withName('Dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$dynamic->getId(), 999999]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('mailpoet_dynamic_segments_not_found', $data['code']);
+    $dynamicAfterAction = $this->segmentsRepository->findOneById($dynamic->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $dynamicAfterAction);
+    $this->assertNull($dynamicAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionRejectsPermanentDeleteForActiveDynamicSegments(): void {
+    $active = (new SegmentFactory())->withName('Active dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $trashed = (new SegmentFactory())->withName('Trashed dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->withDeleted()->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'delete', 'ids' => [(int)$active->getId(), (int)$trashed->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('mailpoet_dynamic_segments_delete_requires_trash', $data['code']);
+    $this->assertInstanceOf(SegmentEntity::class, $this->segmentsRepository->findOneById($active->getId()));
+    $this->assertInstanceOf(SegmentEntity::class, $this->segmentsRepository->findOneById($trashed->getId()));
+  }
+
+  public function testBulkActionSupportsSelectAllMatchingDynamicSegments(): void {
+    $suffix = uniqid();
+    $first = (new SegmentFactory())->withName("zzz_select_all_first_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $second = (new SegmentFactory())->withName("zzz_select_all_second_{$suffix}")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    (new SegmentFactory())->withName("zzz_select_all_other")->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'select_all' => true, 'search' => $suffix, 'sort_by' => 'name', 'sort_order' => 'asc'],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame(2, $data['data']['updated']);
+    $firstAfterAction = $this->segmentsRepository->findOneById($first->getId());
+    $secondAfterAction = $this->segmentsRepository->findOneById($second->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $firstAfterAction);
+    $this->assertInstanceOf(SegmentEntity::class, $secondAfterAction);
+    $this->assertNotNull($firstAfterAction->getDeletedAt());
+    $this->assertNotNull($secondAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionGuestCannotMutateRows(): void {
+    $segment = (new SegmentFactory())->withName('Guest protected')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    wp_set_current_user(0);
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$segment->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('rest_forbidden', $data['code']);
+    $segmentAfterAction = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $segmentAfterAction);
+    $this->assertNull($segmentAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionReportsActiveNewsletterBlocker(): void {
+    $segment = (new SegmentFactory())->withName('Blocked dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    (new NewsletterFactory())
+      ->withSubject('Dynamic blocker')
+      ->withScheduledStatus()
+      ->withScheduledQueue(['status' => ScheduledTaskEntity::STATUS_SCHEDULED])
+      ->withSegments([$segment])
+      ->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$segment->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame(0, $data['data']['updated']);
+    $this->assertSame(1, $data['data']['skipped']);
+    $segmentAfterAction = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $segmentAfterAction);
+    $this->assertNull($segmentAfterAction->getDeletedAt());
   }
 
   public function testBulkActionRejectsInvalidInputs(): void {
@@ -160,5 +291,16 @@ class DynamicSegmentsEndpointsTest extends Test {
     $this->assertSame('mailpoet_segments_ids_required', $this->post(self::BASE_PATH . '/bulk-action', [
       'json' => ['action' => 'trash', 'ids' => []],
     ])['code']);
+  }
+
+  private function setUpdatedAt(SegmentEntity $segment, Carbon $updatedAt): void {
+    $this->entityManager->createQueryBuilder()
+      ->update(SegmentEntity::class, 's')
+      ->set('s.updatedAt', ':updatedAt')
+      ->where('s.id = :id')
+      ->setParameter('updatedAt', $updatedAt)
+      ->setParameter('id', $segment->getId())
+      ->getQuery()
+      ->execute();
   }
 }

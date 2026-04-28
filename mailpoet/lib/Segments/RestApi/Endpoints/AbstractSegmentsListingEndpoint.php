@@ -40,6 +40,8 @@ abstract class AbstractSegmentsListingEndpoint extends AbstractListingEndpoint {
     $schema = parent::getRequestSchema();
     $schema['limit'] = Builder::integer();
     $schema['offset'] = Builder::integer();
+    $schema['sort_by'] = Builder::string();
+    $schema['sort_order'] = Builder::string();
     return $schema;
   }
 
@@ -51,10 +53,12 @@ abstract class AbstractSegmentsListingEndpoint extends AbstractListingEndpoint {
 
   protected function validateListingRequest(Request $request): void {
     $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null);
-    $this->validateOrder(is_string($request->getParam('order')) ? (string)$request->getParam('order') : null, $this->getDefaultSortOrder());
+    $orderParam = $request->getParam('order') ?? $request->getParam('sort_order');
+    $this->validateOrder(is_string($orderParam) ? (string)$orderParam : null, $this->getDefaultSortOrder());
 
-    $orderby = is_string($request->getParam('orderby')) && $request->getParam('orderby') !== ''
-      ? (string)$request->getParam('orderby')
+    $orderbyParam = $request->getParam('orderby') ?? $request->getParam('sort_by');
+    $orderby = is_string($orderbyParam) && $orderbyParam !== ''
+      ? (string)$orderbyParam
       : $this->getDefaultSortBy();
     if (!in_array($orderby, $this->allowedSortFields, true)) {
       throw new ApiException(
