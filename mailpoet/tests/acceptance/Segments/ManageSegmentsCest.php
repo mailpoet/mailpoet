@@ -269,7 +269,7 @@ class ManageSegmentsCest {
     $i->checkWooTableCheckboxForItemName($segment1Name);
     $i->checkWooTableCheckboxForItemName($segment2Name);
     $i->selectListingBulkAction('Restore');
-    $i->click('Restore'); // confirmation modal
+    $i->clickModalButton('Restore');
     $i->wantTo('Check that segments were restored and trash filter is not present');
     $i->waitForText('No data to display');
     $i->changeWooTableTab('all');
@@ -288,7 +288,7 @@ class ManageSegmentsCest {
     $i->waitForText($segment1Name);
     $i->selectAllListingItems();
     $i->selectListingBulkAction('Delete permanently');
-    $i->click('Delete permanently'); // modal confirmation
+    $i->clickModalButton('Delete permanently');
     $i->waitForText('No data to display');
   }
 

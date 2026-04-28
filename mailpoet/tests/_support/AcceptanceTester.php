@@ -475,8 +475,20 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function waitForNoticeAndClose($text, $timeout = 10, $selector = null) {
     $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
-    $this->waitForElementVisible('.notice-dismiss', 1);
-    $this->click('.notice-dismiss');
+    try {
+      $this->waitForElementVisible('.notice-dismiss', 1);
+      $this->click('.notice-dismiss');
+    } catch (Exception $exception) {
+      // DataViews notices may not render a WordPress notice dismiss button.
+    }
+  }
+
+  public function clickModalButton(string $label): void {
+    $button = [
+      'xpath' => '//div[contains(@class, "components-modal__screen-overlay")]//button[normalize-space(.)="' . $label . '"]',
+    ];
+    $this->waitForElementClickable($button);
+    $this->click($button);
   }
 
   public function closeNoticeIfVisible() {

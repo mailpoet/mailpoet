@@ -5,8 +5,14 @@ import { MailPoet } from 'mailpoet';
 import { ListingsEngagementScore } from 'subscribers/listings-engagement-score';
 import type { SegmentListingItem } from './api';
 
-function count(item: SegmentListingItem, status: string): string {
-  return Number(item.subscribers_count[status] ?? 0).toLocaleString();
+function count(item: SegmentListingItem, status: string): JSX.Element {
+  return createElement(
+    'span',
+    {
+      'data-automation-id': `listing_item_${item.id}_${status}_count`,
+    },
+    Number(item.subscribers_count[status] ?? 0).toLocaleString(),
+  );
 }
 
 function dateTime(value: string | null): JSX.Element {
@@ -113,38 +119,35 @@ export const segmentFields: Field<SegmentListingItem>[] = [
     label: MailPoet.I18n.t('subscribed'),
     enableSorting: false,
     enableGlobalSearch: false,
-    render: ({ item }) =>
-      createElement('span', null, count(item, 'subscribed')),
+    render: ({ item }) => count(item, 'subscribed'),
   },
   {
     id: 'unconfirmed',
     label: MailPoet.I18n.t('unconfirmed'),
     enableSorting: false,
     enableGlobalSearch: false,
-    render: ({ item }) =>
-      createElement('span', null, count(item, 'unconfirmed')),
+    render: ({ item }) => count(item, 'unconfirmed'),
   },
   {
     id: 'unsubscribed',
     label: MailPoet.I18n.t('unsubscribed'),
     enableSorting: false,
     enableGlobalSearch: false,
-    render: ({ item }) =>
-      createElement('span', null, count(item, 'unsubscribed')),
+    render: ({ item }) => count(item, 'unsubscribed'),
   },
   {
     id: 'inactive',
     label: MailPoet.I18n.t('inactive'),
     enableSorting: false,
     enableGlobalSearch: false,
-    render: ({ item }) => createElement('span', null, count(item, 'inactive')),
+    render: ({ item }) => count(item, 'inactive'),
   },
   {
     id: 'bounced',
     label: MailPoet.I18n.t('bounced'),
     enableSorting: false,
     enableGlobalSearch: false,
-    render: ({ item }) => createElement('span', null, count(item, 'bounced')),
+    render: ({ item }) => count(item, 'bounced'),
   },
   {
     id: 'created_at',
