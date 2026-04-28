@@ -69,6 +69,8 @@ abstract class AbstractListingEndpoint extends Endpoint {
       'per_page' => Builder::integer(),
       'orderby' => Builder::string(),
       'order' => Builder::string(),
+      'sort_by' => Builder::string(),
+      'sort_order' => Builder::string(),
       'search' => Builder::string(),
       'group' => Builder::string(),
       'filter' => Builder::object(),
@@ -114,15 +116,16 @@ abstract class AbstractListingEndpoint extends Endpoint {
       ? max(1, min(self::MAX_PER_PAGE, (int)$perPageParam))
       : $this->getDefaultPerPage();
 
+    $pageParam = $request->getParam('page');
     $offsetParam = $request->getParam('offset');
-    $page = is_numeric($request->getParam('page'))
-      ? min(self::MAX_PAGE, max(1, (int)$request->getParam('page')))
-      : (is_numeric($offsetParam) ? min(self::MAX_PAGE, max(1, (int)floor((int)$offsetParam / $perPage) + 1)) : 1);
+    $offset = is_numeric($pageParam)
+      ? (min(self::MAX_PAGE, max(1, (int)$pageParam)) - 1) * $perPage
+      : (is_numeric($offsetParam) ? (int)$offsetParam : 0);
 
-    $orderByParam = $request->getParam('orderby');
+    $orderByParam = $request->getParam('orderby') ?? $request->getParam('sort_by');
     $sortBy = is_string($orderByParam) && $orderByParam !== '' ? $orderByParam : $this->getDefaultSortBy();
 
-    $orderParam = $request->getParam('order');
+    $orderParam = $request->getParam('order') ?? $request->getParam('sort_order');
     $sortOrder = is_string($orderParam) ? strtolower($orderParam) : $this->getDefaultSortOrder();
 
     $searchParam = $request->getParam('search');
@@ -135,7 +138,7 @@ abstract class AbstractListingEndpoint extends Endpoint {
     $filters = is_array($filterParam) ? $filterParam : [];
 
     return $this->listingHandler->getListingDefinition([
-      'offset' => ($page - 1) * $perPage,
+      'offset' => $offset,
       'limit' => $perPage,
       'sort_by' => $sortBy,
       'sort_order' => $sortOrder,

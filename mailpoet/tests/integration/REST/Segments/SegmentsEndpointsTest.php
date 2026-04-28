@@ -2,12 +2,14 @@
 
 namespace MailPoet\Test\REST\Segments;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\REST\Test;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Form as FormFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
@@ -161,6 +163,90 @@ class SegmentsEndpointsTest extends Test {
     $this->assertInstanceOf(SegmentEntity::class, $okAfterAction);
     $this->assertNull($blockedAfterAction->getDeletedAt());
     $this->assertNotNull($okAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionRejectsWrongTypeWithoutMutatingRows(): void {
+    $dynamic = (new SegmentFactory())->withName('Dynamic')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $list = (new SegmentFactory())->withName('Static')->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$dynamic->getId(), (int)$list->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('mailpoet_segments_invalid_type', $data['code']);
+    $dynamicAfterAction = $this->segmentsRepository->findOneById($dynamic->getId());
+    $listAfterAction = $this->segmentsRepository->findOneById($list->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $dynamicAfterAction);
+    $this->assertInstanceOf(SegmentEntity::class, $listAfterAction);
+    $this->assertNull($dynamicAfterAction->getDeletedAt());
+    $this->assertNull($listAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionRejectsPermanentDeleteForActiveLists(): void {
+    $active = (new SegmentFactory())->withName('Active')->create();
+    $trashed = (new SegmentFactory())->withName('Trashed')->withDeleted()->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'delete', 'ids' => [(int)$active->getId(), (int)$trashed->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('mailpoet_segments_delete_requires_trash', $data['code']);
+    $this->assertInstanceOf(SegmentEntity::class, $this->segmentsRepository->findOneById($active->getId()));
+    $this->assertInstanceOf(SegmentEntity::class, $this->segmentsRepository->findOneById($trashed->getId()));
+  }
+
+  public function testBulkActionGuestCannotMutateRows(): void {
+    $list = (new SegmentFactory())->withName('Guest protected')->create();
+    wp_set_current_user(0);
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$list->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame('rest_forbidden', $data['code']);
+    $listAfterAction = $this->segmentsRepository->findOneById($list->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $listAfterAction);
+    $this->assertNull($listAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionReportsActiveNewsletterBlocker(): void {
+    $blocked = (new SegmentFactory())->withName('Blocked by newsletter')->create();
+    (new NewsletterFactory())
+      ->withSubject('Blocking newsletter')
+      ->withScheduledStatus()
+      ->withScheduledQueue(['status' => ScheduledTaskEntity::STATUS_SCHEDULED])
+      ->withSegments([$blocked])
+      ->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$blocked->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame(0, $data['data']['updated']);
+    $this->assertSame(1, $data['data']['skipped']);
+    $this->assertSame((int)$blocked->getId(), $data['data']['errors'][0]['id']);
+    $blockedAfterAction = $this->segmentsRepository->findOneById($blocked->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $blockedAfterAction);
+    $this->assertNull($blockedAfterAction->getDeletedAt());
+  }
+
+  public function testBulkActionSkipsWooCommerceSpecialSegment(): void {
+    $woocommerce = (new SegmentFactory())->withName('WooCommerce Customers')->withType(SegmentEntity::TYPE_WC_USERS)->create();
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'trash', 'ids' => [(int)$woocommerce->getId()]],
+    ]);
+    $this->entityManager->clear();
+
+    $this->assertSame(0, $data['data']['updated']);
+    $this->assertSame(1, $data['data']['skipped']);
+    $woocommerceAfterAction = $this->segmentsRepository->findOneById($woocommerce->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $woocommerceAfterAction);
+    $this->assertNull($woocommerceAfterAction->getDeletedAt());
   }
 
   public function testBulkActionDeletesAndEmptyTrashDeletesStaticListsOnly(): void {
