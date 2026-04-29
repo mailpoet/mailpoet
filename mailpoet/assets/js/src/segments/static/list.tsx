@@ -688,6 +688,9 @@ function SegmentListComponent(): JSX.Element {
               isLoading={isLoading}
               empty={<div>{emptyLabel}</div>}
             >
+              <div className="mailpoet-segments-dataviews__toolbar">
+                <DataViews.Search label={__('Search', 'mailpoet')} />
+              </div>
               {(canSelectAllMatching ||
                 (selectAllMatching && selection.length > 0) ||
                 (group === 'trash' && (groupCounts.trash ?? 0) > 0)) && (

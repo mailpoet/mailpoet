@@ -94,6 +94,23 @@ class SegmentsEndpointsTest extends Test {
     $this->assertGreaterThanOrEqual(1, $groups['trash']);
   }
 
+  public function testGetSearchesStaticLists(): void {
+    $suffix = uniqid();
+    $matching = (new SegmentFactory())->withName("Searchable list {$suffix}")->create();
+    (new SegmentFactory())->withName("Hidden list {$suffix}")->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => "Searchable list {$suffix}",
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_column($data['data']['items'], 'id');
+    $this->assertContains((string)$matching->getId(), $ids);
+    foreach ($data['data']['items'] as $item) {
+      $this->assertStringContainsString("Searchable list {$suffix}", $item['name'] . $item['description']);
+    }
+  }
+
   public function testGetRejectsInvalidListingParams(): void {
     $this->assertSame('mailpoet_segments_invalid_group', $this->get(self::BASE_PATH, ['query' => ['group' => 'archived']])['code']);
     $this->assertSame('mailpoet_segments_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'bad_field']])['code']);
@@ -101,7 +118,6 @@ class SegmentsEndpointsTest extends Test {
     $this->assertSame('mailpoet_segments_invalid_page', $this->get(self::BASE_PATH, ['query' => ['page' => 0]])['code']);
     $this->assertSame('mailpoet_segments_invalid_per_page', $this->get(self::BASE_PATH, ['query' => ['per_page' => 101]])['code']);
     $this->assertSame('mailpoet_segments_invalid_offset', $this->get(self::BASE_PATH, ['query' => ['offset' => 100001]])['code']);
-    $this->assertSame('mailpoet_segments_search_not_supported', $this->get(self::BASE_PATH, ['query' => ['search' => 'hidden']])['code']);
   }
 
   public function testGetRejectsUsersWithoutPermission(): void {
