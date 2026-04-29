@@ -247,7 +247,7 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
     $hasAny = false;
     foreach ($actions as $action) {
       $a = $action->get_args();
-      if (is_array($a) && isset($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $this->runningRun->getId()) {
+      if (is_array($a) && isset($a[0]) && is_array($a[0]) && isset($a[0]['automation_run_id']) && is_numeric($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $this->runningRun->getId()) {
         $hasAny = true;
         break;
       }
@@ -272,7 +272,7 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
         return false;
       }
       $a = $action->get_args();
-      return is_array($a) && isset($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $this->runningRun->getId();
+      return is_array($a) && isset($a[0]) && is_array($a[0]) && isset($a[0]['automation_run_id']) && is_numeric($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $this->runningRun->getId();
     });
     $this->assertCount(0, $remaining);
   }
@@ -288,7 +288,7 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
     $actions = $this->actionScheduler->getScheduledActions(['hook' => Hooks::AUTOMATION_STEP]);
     foreach ($actions as $action) {
       $a = $action->get_args();
-      if (is_array($a) && isset($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $run->getId()) {
+      if (is_array($a) && isset($a[0]) && is_array($a[0]) && isset($a[0]['automation_run_id']) && is_numeric($a[0]['automation_run_id']) && (int)$a[0]['automation_run_id'] === $run->getId()) {
         $this->actionScheduler->unscheduleAction(Hooks::AUTOMATION_STEP, [$a[0]]);
       }
     }
@@ -309,9 +309,13 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
     $matching = array_values(array_filter($actions, function($action) use ($run) {
       $a = $action->get_args();
       return is_array($a)
+        && isset($a[0])
+        && is_array($a[0])
         && isset($a[0]['automation_run_id'], $a[0]['step_id'], $a[0]['run_number'])
+        && is_numeric($a[0]['automation_run_id'])
         && (int)$a[0]['automation_run_id'] === $run->getId()
         && $a[0]['step_id'] === 'step-1'
+        && is_numeric($a[0]['run_number'])
         && (int)$a[0]['run_number'] === 1;
     }));
     $this->assertNotEmpty($matching);

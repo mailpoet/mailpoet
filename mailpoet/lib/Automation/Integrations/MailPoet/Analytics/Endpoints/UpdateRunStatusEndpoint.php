@@ -133,7 +133,7 @@ class UpdateRunStatusEndpoint extends Endpoint {
     ]);
     foreach ($actions as $action) {
       $args = $action->get_args();
-      if (is_array($args) && isset($args[0]['automation_run_id']) && (int)$args[0]['automation_run_id'] === $runId) {
+      if ($this->argsMatchRun($args, $runId)) {
         $this->actionScheduler->unscheduleAction(Hooks::AUTOMATION_STEP, $args);
       }
     }
@@ -146,11 +146,23 @@ class UpdateRunStatusEndpoint extends Endpoint {
     ]);
     foreach ($actions as $action) {
       $args = $action->get_args();
-      if (is_array($args) && isset($args[0]['automation_run_id']) && (int)$args[0]['automation_run_id'] === $runId) {
+      if ($this->argsMatchRun($args, $runId)) {
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * @param mixed $args
+   */
+  private function argsMatchRun($args, int $runId): bool {
+    return is_array($args)
+      && isset($args[0])
+      && is_array($args[0])
+      && isset($args[0]['automation_run_id'])
+      && is_numeric($args[0]['automation_run_id'])
+      && (int)$args[0]['automation_run_id'] === $runId;
   }
 
   private function enqueueStep(int $runId, string $stepId, int $runNumber = 1): int {

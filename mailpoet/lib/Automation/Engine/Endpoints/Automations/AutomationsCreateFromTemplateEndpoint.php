@@ -25,7 +25,8 @@ class AutomationsCreateFromTemplateEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $automation = $this->createAutomationFromTemplateController->createAutomation((string)$request->getParam('slug'));
+    $slug = $request->getParam('slug');
+    $automation = $this->createAutomationFromTemplateController->createAutomation(is_string($slug) ? $slug : '');
     return new Response($this->automationMapper->buildAutomation($automation));
   }
 

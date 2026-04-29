@@ -59,6 +59,6 @@ class SubscribersLastEngagement extends SimpleWorker {
   private function getHighestSubscriberId(): int {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $result = $this->entityManager->getConnection()->executeQuery("SELECT MAX(id) FROM $subscribersTable LIMIT 1;")->fetchNumeric();
-    return is_array($result) && isset($result[0]) ? (int)$result[0] : 0;
+    return is_array($result) && isset($result[0]) && is_numeric($result[0]) ? (int)$result[0] : 0;
   }
 }

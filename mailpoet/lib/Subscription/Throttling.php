@@ -25,8 +25,10 @@ class Throttling {
   public function throttle() {
     $subscriptionLimitEnabled = $this->wp->applyFilters('mailpoet_subscription_limit_enabled', true);
 
-    $subscriptionLimitWindow = (int)$this->wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
-    $subscriptionLimitBase = (int)$this->wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
+    $window = $this->wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
+    $subscriptionLimitWindow = is_numeric($window) ? (int)$window : DAY_IN_SECONDS;
+    $base = $this->wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
+    $subscriptionLimitBase = is_numeric($base) ? (int)$base : MINUTE_IN_SECONDS;
 
     $subscriberIp = Helpers::getIP();
 

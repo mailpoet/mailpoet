@@ -94,9 +94,11 @@ class SegmentsSimpleListRepository {
     // Fetch subscribers counts for static and dynamic segments and correct data types
     foreach ($segments as $key => $segment) {
       // BC compatibility fix. PHP8.1+ returns integer but JS apps expect string
-      $segments[$key]['id'] = (string)$segment['id'];
+      $id = is_scalar($segment['id']) ? (string)$segment['id'] : '';
+      $segments[$key]['id'] = $id;
       $statisticsKey = $subscriberGlobalStatus ?: 'all';
-      $segments[$key]['subscribers'] = (int)$this->subscribersCountsController->getSegmentStatisticsCountById($segment['id'])[$statisticsKey];
+      $stats = $this->subscribersCountsController->getSegmentStatisticsCountById((int)$id);
+      $segments[$key]['subscribers'] = isset($stats[$statisticsKey]) && is_numeric($stats[$statisticsKey]) ? (int)$stats[$statisticsKey] : 0;
     }
     /* @var array<array{id: string, name: string, type: string, subscribers: int}> */
     return $segments;

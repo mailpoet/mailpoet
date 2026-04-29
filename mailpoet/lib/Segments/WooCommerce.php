@@ -314,11 +314,11 @@ class WooCommerce {
 
     $processedOrders = [];
     foreach ($result as $item) {
-      if (!$this->validator->validateEmail($item['email'])) {
+      if (!is_string($item['email']) || !$this->validator->validateEmail($item['email']) || !is_numeric($item['order_id'])) {
         continue;
       }
       // because data in result are sorted by id, we can replace the previous order id
-      $processedOrders[(string)$item['email']] = (int)$item['order_id'];
+      $processedOrders[$item['email']] = (int)$item['order_id'];
     }
 
     if (count($processedOrders)) {

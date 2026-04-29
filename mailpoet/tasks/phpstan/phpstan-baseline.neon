@@ -61,16 +61,6 @@ parameters:
 			path: ../../lib/AdminPages/PageRenderer.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/AdminPages/Pages/AutomationAnalytics.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/AdminPages/Pages/AutomationEditor.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AdminPages/Pages/AutomationPreviewEmbed.php
@@ -81,19 +71,9 @@ parameters:
 			path: ../../lib/AdminPages/Pages/FormEditor.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/AdminPages/Pages/FormEditor.php
-
-		-
 			identifier: argument.type
 			count: 5
 			path: ../../lib/AdminPages/Pages/Logs.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/AdminPages/Pages/NewsletterEditor.php
 
 		-
 			identifier: phpstanWP.wpConstant.fetch
@@ -166,39 +146,14 @@ parameters:
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Automation/Engine/Control/StepHandler.php
-
-		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationsCreateFromTemplateEndpoint.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
-
-		-
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
 
 		-
 			identifier: return.type
@@ -231,16 +186,6 @@ parameters:
 			path: ../../lib/Automation/Integrations/Core/Filters/StringFilter.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Endpoints/UpdateRunStatusEndpoint.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Endpoints/UpdateRunStatusEndpoint.php
-
-		-
 			identifier: argument.type
 			count: 6
 			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
@@ -264,11 +209,6 @@ parameters:
 			identifier: nullCoalesce.expr
 			count: 1
 			path: ../../lib/Cache/TransientCache.php
-
-		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Captcha/CaptchaFormRenderer.php
 
 		-
 			identifier: argument.type
@@ -381,19 +321,9 @@ parameters:
 			path: ../../lib/Cron/Workers/StatsNotifications/AutomatedEmails.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Cron/Workers/StatsNotifications/NewsletterLinkRepository.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Workers/StatsNotifications/Scheduler.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Cron/Workers/SubscribersLastEngagement.php
 
 		-
 			identifier: method.nonObject
@@ -421,11 +351,6 @@ parameters:
 			path: ../../lib/Doctrine/PSRArrayCache.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Doctrine/Types/BigIntType.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Doctrine/Types/BigIntType.php
@@ -437,11 +362,6 @@ parameters:
 
 		-
 			identifier: argument.type
-			count: 1
-			path: ../../lib/Doctrine/Types/JsonType.php
-
-		-
-			identifier: cast.string
 			count: 1
 			path: ../../lib/Doctrine/Types/JsonType.php
 
@@ -474,11 +394,6 @@ parameters:
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/EditorPageRenderer.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/EmailEditor.php
 
 		-
 			identifier: return.type
@@ -551,11 +466,6 @@ parameters:
 			path: ../../lib/Form/DisplayFormInWPContent.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Form/DisplayFormInWPContent.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Form/DisplayFormInWPContent.php
@@ -581,11 +491,6 @@ parameters:
 			path: ../../lib/Form/Widget.php
 
 		-
-			identifier: cast.int
-			count: 3
-			path: ../../lib/Form/Widget.php
-
-		-
 			identifier: class.notFound
 			count: 2
 			path: ../../lib/Logging/LogHandler.php
@@ -593,11 +498,6 @@ parameters:
 		-
 			identifier: argument.type
 			count: 3
-			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
-
-		-
-			identifier: cast.int
-			count: 2
 			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
 
 		-
@@ -646,19 +546,9 @@ parameters:
 			path: ../../lib/Newsletter/NewsletterSaveController.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Newsletter/NewsletterSaveController.php
-
-		-
 			identifier: return.type
 			count: 2
 			path: ../../lib/Newsletter/NewslettersRepository.php
-
-		-
-			identifier: cast.string
-			count: 10
-			path: ../../lib/Newsletter/Preview/WooCommerceDummyData.php
 
 		-
 			identifier: argument.type
@@ -676,13 +566,8 @@ parameters:
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 7
+			count: 5
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
@@ -786,11 +671,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberScore.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSegment.php
@@ -826,11 +706,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
 		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceProduct.php
@@ -846,23 +721,8 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceUsedCouponCode.php
 
 		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
+			count: 3
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
@@ -874,16 +734,6 @@ parameters:
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/Segments/WP.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Segments/WooCommerce.php
-
-		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/Segments/WooCommerce.php
 
 		-
 			identifier: offsetAccess.invalidOffset
@@ -904,16 +754,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Settings/SettingsChangeHandler.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Statistics/Track/PageViewCookie.php
-
-		-
-			identifier: cast.int
-			count: 1
-			path: ../../lib/Statistics/Track/SubscriberCookie.php
 
 		-
 			identifier: return.type
@@ -954,11 +794,6 @@ parameters:
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SubscriberExporter.php
-
-		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Subscribers/InactiveSubscribersController.php
 
 		-
 			identifier: return.type
@@ -1016,11 +851,6 @@ parameters:
 			path: ../../lib/Subscription/Pages.php
 
 		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/Subscription/Registration.php
-
-		-
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../lib/Subscription/Registration.php
@@ -1031,17 +861,7 @@ parameters:
 			path: ../../lib/Subscription/Throttling.php
 
 		-
-			identifier: cast.int
-			count: 2
-			path: ../../lib/Subscription/Throttling.php
-
-		-
 			identifier: argument.type
-			count: 1
-			path: ../../lib/SystemReport/SystemReportCollector.php
-
-		-
-			identifier: cast.string
 			count: 1
 			path: ../../lib/SystemReport/SystemReportCollector.php
 
@@ -1149,11 +969,6 @@ parameters:
 			identifier: function.impossibleType
 			count: 2
 			path: ../../lib/WooCommerce/Helper.php
-
-		-
-			identifier: cast.string
-			count: 1
-			path: ../../lib/WooCommerce/Subscription.php
 
 		-
 			identifier: return.type
@@ -1274,16 +1089,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../tests/integration/Newsletter/ShortcodesTest.php
-
-		-
-			identifier: cast.int
-			count: 5
-			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 6
-			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
 
 		-
 			identifier: offsetAccess.nonOffsetAccessible

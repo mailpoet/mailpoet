@@ -64,7 +64,7 @@ class AutomationEditor {
   public function render() {
     $this->assetsController->setupAutomationEditorDependencies();
 
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+    $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
 
     $this->wp->doAction(Hooks::EDITOR_BEFORE_LOAD, (int)$id);
 

@@ -148,7 +148,14 @@ class AutomationStatisticsStorage {
       }
 
       foreach ($steps as $step) {
-        if (isset($step['key']) && $step['key'] === 'mailpoet:send-email' && isset($step['args']['email_id'])) {
+        if (
+          is_array($step)
+          && isset($step['key'], $step['args'])
+          && $step['key'] === 'mailpoet:send-email'
+          && is_array($step['args'])
+          && isset($step['args']['email_id'])
+          && is_numeric($step['args']['email_id'])
+        ) {
           $emailIds[] = (int)$step['args']['email_id'];
         }
       }

@@ -73,7 +73,7 @@ class NewsletterEditor {
   public function render() {
     $this->setupImageSize();
     $this->assetsController->setupNewsletterEditorDependencies();
-    $newsletterId = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
+    $newsletterId = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
     $woocommerceTemplateId = (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     if (
       $woocommerceTemplateId

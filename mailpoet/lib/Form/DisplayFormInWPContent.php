@@ -241,14 +241,14 @@ class DisplayFormInWPContent {
 
     // (POST) non ajax success/error variables
     $templateData['success'] = (
-      (isset($_GET['mailpoet_success']))
-      &&
-      ((int)$_GET['mailpoet_success'] === $form->getId())
+      isset($_GET['mailpoet_success'])
+      && is_numeric($_GET['mailpoet_success'])
+      && (int)$_GET['mailpoet_success'] === $form->getId()
     );
     $templateData['error'] = (
-      (isset($_GET['mailpoet_error']))
-      &&
-      ((int)$_GET['mailpoet_error'] === $form->getId())
+      isset($_GET['mailpoet_error'])
+      && is_numeric($_GET['mailpoet_error'])
+      && (int)$_GET['mailpoet_error'] === $form->getId()
     );
 
     $templateData['delay'] = $formSettings['form_placement'][$displayType]['delay'] ?? 0;

@@ -49,7 +49,7 @@ class AutomationAnalytics {
   public function render() {
     $this->assetsController->setupAutomationAnalyticsDependencies();
 
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+    $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
     $automation = $id ? $this->automationStorage->getAutomation($id) : null;
     if (!$automation) {
       $notice = new WPNotice(

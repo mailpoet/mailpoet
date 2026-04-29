@@ -130,8 +130,8 @@ class InactiveSubscribersController {
     $connection->executeQuery("DROP TABLE {$inactiveSubscriberIdsTmpTable}");
 
     $idsToDeactivate = array_map(
-      function ($id) {
-        return (int)$id['id'];
+      function (array $id): int {
+        return isset($id['id']) && is_numeric($id['id']) ? (int)$id['id'] : 0;
       },
       $idsToDeactivate
     );
@@ -169,8 +169,8 @@ class InactiveSubscribersController {
     ], ['batchSize' => ParameterType::INTEGER])->fetchAllAssociative();
 
     $idsToActivate = array_map(
-      function($id) {
-        return (int)$id['id'];
+      function (array $id): int {
+        return isset($id['id']) && is_numeric($id['id']) ? (int)$id['id'] : 0;
       },
       $idsToActivate
     );

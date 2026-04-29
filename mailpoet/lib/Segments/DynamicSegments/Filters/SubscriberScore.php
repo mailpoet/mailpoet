@@ -40,7 +40,7 @@ class SubscriberScore implements Filter {
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
-    $queryBuilder->setParameter($parameter, (int)$value);
+    $queryBuilder->setParameter($parameter, is_numeric($value) ? (int)$value : 0);
 
     return $queryBuilder;
   }

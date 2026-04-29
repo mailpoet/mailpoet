@@ -16,7 +16,10 @@ class BigIntType extends DoctrineBigIntType {
   }
 
   public function convertToPHPValue($value, AbstractPlatform $platform) {
-    return $value === null ? null : (int)$value;
+    if ($value === null) {
+      return null;
+    }
+    return is_numeric($value) ? (int)$value : 0;
   }
 
   public function getName() {
