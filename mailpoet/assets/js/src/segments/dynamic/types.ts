@@ -42,6 +42,7 @@ export enum SubscriberActionTypes {
 export enum SegmentConnectTypes {
   AND = 'and',
   OR = 'or',
+  NONE = 'none',
 }
 
 export enum AnyValueTypes {

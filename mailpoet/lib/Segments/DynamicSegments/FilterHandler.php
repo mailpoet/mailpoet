@@ -35,6 +35,10 @@ class FilterHandler {
     $filterSelects = [];
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $pluginsForAllFiltersMissing = $this->segmentDependencyValidator->getMissingPluginsByAllFilters($filters);
+    if ($pluginsForAllFiltersMissing) {
+      return $queryBuilder->andWhere('1 = 0');
+    }
+    $filtersConnectOperator = $segment->getFiltersConnectOperator();
     foreach ($filters as $filter) {
       $subscribersIdsQuery = $this->entityManager
         ->getConnection()
@@ -42,7 +46,11 @@ class FilterHandler {
         ->select("DISTINCT $subscribersTable.id as inner_subscriber_id")
         ->from($subscribersTable);
       // When a required plugin is missing we want to return empty result
-      if ($pluginsForAllFiltersMissing || $this->segmentDependencyValidator->getMissingPluginsByFilter($filter)) {
+      $missingPlugins = $this->segmentDependencyValidator->getMissingPluginsByFilter($filter);
+      if ($missingPlugins && $filtersConnectOperator === DynamicSegmentFilterData::CONNECT_TYPE_NONE) {
+        return $queryBuilder->andWhere('1 = 0');
+      }
+      if ($missingPlugins) {
         $subscribersIdsQuery->andWhere('1 = 0');
       } else {
         $this->filterFactory->getFilterForFilterEntity($filter)->apply($subscribersIdsQuery, $filter);
@@ -59,16 +67,15 @@ class FilterHandler {
         )
       );
     }
-    $this->joinSubqueries($queryBuilder, $segment, $filterSelects);
+    $this->joinSubqueries($queryBuilder, $filtersConnectOperator, $filterSelects);
     return $queryBuilder;
   }
 
-  private function joinSubqueries(QueryBuilder $queryBuilder, SegmentEntity $segment, array $subQueries): QueryBuilder {
-    $filter = $segment->getDynamicFilters()->first();
-    if (!$filter) return $queryBuilder;
+  private function joinSubqueries(QueryBuilder $queryBuilder, string $filtersConnectOperator, array $subQueries): QueryBuilder {
+    if (!$subQueries) return $queryBuilder;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
-    if ($segment->getFiltersConnectOperator() === DynamicSegmentFilterData::CONNECT_TYPE_OR) {
+    if ($filtersConnectOperator === DynamicSegmentFilterData::CONNECT_TYPE_OR) {
       // the final query: SELECT * FROM subscribers INNER JOIN (filter_select1 UNION filter_select2) filtered_subscribers ON filtered_subscribers.inner_subscriber_id = id
       $queryBuilder->innerJoin(
         $subscribersTable,
@@ -76,6 +83,17 @@ class FilterHandler {
         'filtered_subscribers',
         "filtered_subscribers.inner_subscriber_id = $subscribersTable.id"
       );
+      return $queryBuilder;
+    }
+
+    if ($filtersConnectOperator === DynamicSegmentFilterData::CONNECT_TYPE_NONE) {
+      $queryBuilder->leftJoin(
+        $subscribersTable,
+        sprintf('(%s)', join(' UNION ', $subQueries)),
+        'filtered_subscribers',
+        "filtered_subscribers.inner_subscriber_id = $subscribersTable.id"
+      )
+        ->andWhere('filtered_subscribers.inner_subscriber_id IS NULL');
       return $queryBuilder;
     }
 
