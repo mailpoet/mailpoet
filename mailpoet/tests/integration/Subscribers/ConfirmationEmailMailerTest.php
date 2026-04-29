@@ -236,7 +236,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class)
     );
 
-    verify($sender->sendConfirmationEmail($this->subscriber))->equals(false);
+    $result = $sender->sendAdminConfirmationEmail($this->subscriber);
+    verify($result['status'])->equals('skipped');
+    verify($result['reason'] ?? null)->equals('max_confirmations_reached');
   }
 
   public function testItRecordsAndThrottlesAdminConfirmationEmailsForLoggedInUser() {
