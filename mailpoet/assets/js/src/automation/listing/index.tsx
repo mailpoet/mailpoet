@@ -180,6 +180,7 @@ export function AutomationListing(): JSX.Element {
     loadLegacyAutomations,
     restoreAutomation,
     restoreLegacyAutomation,
+    duplicateAutomation,
     trashAutomation,
     trashLegacyAutomation,
     deleteAutomation,
@@ -356,6 +357,13 @@ export function AutomationListing(): JSX.Element {
     [restoreAutomation, restoreLegacyAutomation],
   );
 
+  const duplicate = useCallback(
+    (automation: AutomationItem): void => {
+      void (duplicateAutomation(automation) as Promise<void>);
+    },
+    [duplicateAutomation],
+  );
+
   const runPendingAction = useCallback((): void => {
     if (!pendingAction) return;
     pendingAction.targets.forEach((automation) => {
@@ -404,6 +412,16 @@ export function AutomationListing(): JSX.Element {
         },
       },
       {
+        id: 'duplicate',
+        label: __('Duplicate', 'mailpoet'),
+        supportsBulk: false,
+        isEligible: (item) =>
+          !item.isLegacy && item.status !== AutomationStatus.TRASH,
+        callback: (targets) => {
+          if (targets[0]) duplicate(targets[0]);
+        },
+      },
+      {
         id: 'trash',
         label: _x('Trash', 'verb', 'mailpoet'),
         supportsBulk: false,
@@ -436,7 +454,7 @@ export function AutomationListing(): JSX.Element {
         },
       },
     ],
-    [restore],
+    [duplicate, restore],
   );
 
   const emptyLabel =
