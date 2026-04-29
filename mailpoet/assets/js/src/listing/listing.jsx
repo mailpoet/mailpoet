@@ -1,6 +1,7 @@
 import jQuery from 'jquery';
 import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 import _ from 'underscore';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -410,6 +411,35 @@ class ListingComponent extends Component {
         }
       })
       .fail((response) => {
+        if (this.isComponentMounted) {
+          this.setState({ loading: false });
+        }
+        if (
+          data.action === 'resendConfirmationEmails' &&
+          response &&
+          response.errors &&
+          response.errors.some(
+            (error) => error.error === 'confirmation_disabled',
+          )
+        ) {
+          this.context.notices.error(
+            <p>
+              {createInterpolateElement(
+                __(
+                  'Sign-up confirmation is disabled in your <link>MailPoet settings</link>. Please enable it to resend confirmation emails or update your subscriber’s status manually.',
+                  'mailpoet',
+                ),
+                {
+                  link: (
+                    <a href="admin.php?page=mailpoet-settings#/signup"> </a>
+                  ),
+                },
+              )}
+            </p>,
+            { scroll: true },
+          );
+          return;
+        }
         if (response && response.errors && response.errors.length > 0) {
           this.context.notices.apiError(response, { scroll: true });
         } else {

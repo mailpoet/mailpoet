@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { noop } from 'lodash';
+import { __ } from '@wordpress/i18n';
 
 import { ModalFrame } from './frame';
 import { ModalHeader } from './header';
@@ -16,6 +17,8 @@ type Props = {
   fullScreen?: boolean;
   contentClassName?: string;
   overlayClassName?: string;
+  ariaLabel?: string;
+  closeButtonLabel?: string;
   children: ReactNode;
 };
 
@@ -28,8 +31,15 @@ export function Modal({
   fullScreen = false,
   contentClassName = '',
   overlayClassName = '',
+  ariaLabel = undefined,
+  closeButtonLabel = __('Close modal', 'mailpoet'),
   children,
 }: Props) {
+  const generatedTitleId = useId();
+  const titleId = title
+    ? `mailpoet-modal-title-${generatedTitleId}`
+    : undefined;
+
   return createPortal(
     <ModalOverlay
       isDismissible={isDismissible}
@@ -38,14 +48,20 @@ export function Modal({
       shouldCloseOnClickOutside={shouldCloseOnClickOutside}
       className={overlayClassName}
     >
-      <ModalFrame className={contentClassName} fullScreen={fullScreen}>
-        {title && <ModalHeader title={title} />}
+      <ModalFrame
+        className={contentClassName}
+        fullScreen={fullScreen}
+        ariaLabel={ariaLabel}
+        ariaLabelledBy={ariaLabel ? undefined : titleId}
+      >
+        {title && <ModalHeader id={titleId} title={title} />}
         {isDismissible && (
           <button
             type="button"
             onClick={onRequestClose}
             className="mailpoet-modal-close"
             data-automation-id="mailpoet-modal-close"
+            aria-label={closeButtonLabel}
           >
             {modalCloseIcon}
           </button>

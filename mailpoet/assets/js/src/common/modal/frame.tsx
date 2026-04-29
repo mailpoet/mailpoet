@@ -4,12 +4,16 @@ import classnames from 'classnames';
 type Props = {
   fullScreen?: boolean;
   className?: string;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
   children: ReactNode;
 };
 
 export function ModalFrame({
   fullScreen = false,
   className = '',
+  ariaLabel = undefined,
+  ariaLabelledBy = undefined,
   children,
 }: Props) {
   return (
@@ -20,6 +24,8 @@ export function ModalFrame({
         className,
       )}
       role="dialog"
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       tabIndex={-1}
     >
       {children}
