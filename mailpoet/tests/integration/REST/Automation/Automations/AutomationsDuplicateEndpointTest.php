@@ -4,8 +4,14 @@ namespace MailPoet\REST\Automation\Automations;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Filter;
+use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\REST\Automation\AutomationTest;
 
 require_once __DIR__ . '/../AutomationTest.php';
@@ -121,5 +127,116 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
     $automation = $this->automationStorage->getAutomation($id);
     $this->assertInstanceOf(Automation::class, $automation);
     $this->assertTrue($automation->equals($expectedAutomation));
+  }
+
+  public function testItDuplicatesAutomationEmailWhenDuplicatingAutomation(): void {
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $newsletter->setSubject('Original email');
+    $newsletter->setSenderName('Sender');
+    $newsletter->setSenderAddress('sender@example.com');
+    $newslettersRepository->persist($newsletter);
+    $newslettersRepository->flush();
+    $originalNewsletterId = $newsletter->getId();
+    $this->assertIsInt($originalNewsletterId);
+
+    $automationId = $this->automationStorage->createAutomation(
+      new Automation(
+        'Testing automation with email',
+        [
+          'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('send-email')]),
+          'send-email' => new Step(
+            'send-email',
+            Step::TYPE_ACTION,
+            'mailpoet:send-email',
+            [
+              'email_id' => $originalNewsletterId,
+              'subject' => 'Original email',
+              'sender_name' => 'Sender',
+              'sender_address' => 'sender@example.com',
+            ],
+            []
+          ),
+        ],
+        wp_get_current_user()
+      )
+    );
+
+    $data = $this->post(sprintf(self::ENDPOINT_PATH, $automationId));
+
+    $sendEmailStep = $this->getStepByKey($data['data']['steps'], 'mailpoet:send-email');
+    $this->assertIsArray($sendEmailStep);
+    $duplicatedNewsletterId = (int)$sendEmailStep['args']['email_id'];
+    $this->assertNotSame($originalNewsletterId, $duplicatedNewsletterId);
+    $this->assertSame('Copy of Original email', $sendEmailStep['args']['subject']);
+
+    $duplicatedNewsletter = $newslettersRepository->findOneBy(['id' => $duplicatedNewsletterId]);
+    $this->assertInstanceOf(NewsletterEntity::class, $duplicatedNewsletter);
+    $this->assertSame('Copy of Original email', $duplicatedNewsletter->getSubject());
+    $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $duplicatedNewsletter->getStatus());
+
+    $originalNewsletter = $newslettersRepository->findOneBy(['id' => $originalNewsletterId]);
+    $this->assertInstanceOf(NewsletterEntity::class, $originalNewsletter);
+    $this->assertSame('Original email', $originalNewsletter->getSubject());
+  }
+
+  public function testItPreservesMetaAndStepFiltersWhenDuplicatingAutomation(): void {
+    $filters = new Filters(
+      Filters::OPERATOR_AND,
+      [
+        new FilterGroup(
+          'group-1',
+          FilterGroup::OPERATOR_AND,
+          [
+            new Filter(
+              'filter-1',
+              'string',
+              'mailpoet:subscriber:email',
+              'contains',
+              ['value' => 'example.com']
+            ),
+          ]
+        ),
+      ]
+    );
+    $automation = new Automation(
+      'Testing automation with meta and filters',
+      [
+        'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('delay')]),
+        'delay' => new Step(
+          'delay',
+          Step::TYPE_ACTION,
+          'core:delay',
+          [
+            'delay' => 1,
+            'delay_type' => 'HOURS',
+          ],
+          [],
+          $filters
+        ),
+      ],
+      wp_get_current_user()
+    );
+    $automation->setMeta('mailpoet:run-once-per-subscriber', true);
+    $automationId = $this->automationStorage->createAutomation($automation);
+
+    $data = $this->post(sprintf(self::ENDPOINT_PATH, $automationId));
+
+    $this->assertSame(['mailpoet:run-once-per-subscriber' => true], $data['data']['meta']);
+
+    $delayStep = $this->getStepByKey($data['data']['steps'], 'core:delay');
+    $this->assertIsArray($delayStep);
+    $this->assertSame($filters->toArray(), $delayStep['filters']);
+  }
+
+  private function getStepByKey(array $steps, string $key): ?array {
+    foreach ($steps as $step) {
+      if ($step['key'] === $key) {
+        return $step;
+      }
+    }
+    return null;
   }
 }

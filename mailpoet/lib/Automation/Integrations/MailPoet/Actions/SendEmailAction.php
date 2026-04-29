@@ -590,7 +590,7 @@ class SendEmailAction implements Action {
 
   public function onDuplicate(Step $step): Step {
     $args = $step->getArgs();
-    $emailId = (int)$args['email_id'];
+    $emailId = (int)($args['email_id'] ?? 0);
     if (!$emailId) {
       // if the email is not yet designed, we don't need to duplicate it
       return $step;
