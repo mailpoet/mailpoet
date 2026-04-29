@@ -1066,6 +1066,11 @@ parameters:
 			path: ../../lib/SystemReport/SystemReportCollector.php
 
 		-
+			identifier: cast.string
+			count: 1
+			path: ../../lib/SystemReport/SystemReportCollector.php
+
+		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Tags/RestApi/Endpoints/TagsBulkDeleteEndpoint.php
