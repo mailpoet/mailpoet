@@ -13,8 +13,9 @@ class Social {
           continue;
         }
 
-        $width = is_numeric($icon['width']) ? (int)$icon['width'] : 0;
-        $height = is_numeric($icon['height']) ? (int)$icon['height'] : 0;
+        // Width/height typically arrive as CSS strings like "32px"; PHP's lenient string-to-int strips the unit.
+        $width = is_scalar($icon['width']) ? (int)$icon['width'] : 0;
+        $height = is_scalar($icon['height']) ? (int)$icon['height'] : 0;
         $style = 'width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
         $iconsBlock .= '<a href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
         ><img
