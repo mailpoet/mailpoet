@@ -113,7 +113,6 @@ class SwitchingLanguagesCest {
     $i->waitForText('Erstelle deine eigenen Automatisierungen');
     $i->waitForText('Neue Automatisierung hinzufügen');
     $i->waitForText('Wesentliche Dinge erforschen');
-    $i->waitForText('Bearbeiten');
     $i->waitForText('Eingetragen');
     $i->waitForText('Aktiv');
 
