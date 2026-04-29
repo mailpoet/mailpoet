@@ -21,7 +21,8 @@ class Footer {
     $this->wp = $wp;
   }
 
-  public function render($element) {
+  public function render($element, bool $isRtl = false) {
+    $element = StylesHelper::applyTextAlignment($element, $isRtl ? 'right' : 'left', 'text');
     $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
     $lineHeight = sprintf(

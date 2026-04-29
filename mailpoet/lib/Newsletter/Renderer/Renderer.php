@@ -93,6 +93,7 @@ class Renderer {
 
   private function _render(NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue = null, $type = false, $preview = false, $subject = null) {
     $language = $this->wp->getBloginfo('language');
+    $isRtl = (bool)$this->wp->isRtl();
     $metaRobots = $preview ? '<meta name="robots" content="noindex, nofollow" />' : '';
     $subject = $subject ?: $newsletter->getSubject();
     $wpPostEntity = $newsletter->getWpPost();
@@ -143,7 +144,7 @@ class Renderer {
       $renderedBody = "";
       try {
         $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingQueue);
-        $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content);
+        $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content, $isRtl);
       } catch (NewsletterProcessingException $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
           $e->getMessage(),
@@ -161,10 +162,13 @@ class Renderer {
         (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
         [
           $language,
+          $isRtl ? ' dir="rtl"' : '',
           $metaRobots,
           htmlspecialchars($subject, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
           $renderedStyles,
           $customFontsLinks,
+          $isRtl ? ' style="direction: rtl;"' : '',
+          $isRtl ? ';direction:rtl' : '',
           EHelper::escapeHtmlText($newsletter->getPreheader()),
           $renderedBody,
         ]

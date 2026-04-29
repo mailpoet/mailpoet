@@ -24,14 +24,14 @@ class BodyRenderer {
    * @param array $content
    * @return string
    */
-  public function renderBody(NewsletterEntity $newsletter, array $content) {
+  public function renderBody(NewsletterEntity $newsletter, array $content, bool $isRtl = false) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
       : [];
 
     $renderedContent = [];
     foreach ($blocks as $contentBlock) {
-      $columnsData = $this->blocksRenderer->render($newsletter, $contentBlock);
+      $columnsData = $this->blocksRenderer->render($newsletter, $contentBlock, $isRtl);
 
       $renderedContent[] = $this->columnsRenderer->render(
         $contentBlock,

@@ -63,6 +63,22 @@ class FooterTest extends \MailPoetUnitTest {
     verify($output)->equals($expectedResult);
   }
 
+  public function testItAppliesRtlDefaultTextAlignment() {
+    unset($this->block['styles']['text']['textAlign']);
+    $output = $this->renderer->render($this->block, true);
+    verify($output)->stringContainsString('text-align: right;');
+
+    $this->block['styles']['text']['textAlign'] = 'left';
+    $output = $this->renderer->render($this->block, true);
+    verify($output)->stringContainsString('text-align: right;');
+  }
+
+  public function testItPreservesExplicitRtlTextAlignment() {
+    $this->block['styles']['text']['textAlign'] = 'justify';
+    $output = $this->renderer->render($this->block, true);
+    verify($output)->stringContainsString('text-align: justify;');
+  }
+
   public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Footer text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
     $output = $this->renderer->render($this->block);

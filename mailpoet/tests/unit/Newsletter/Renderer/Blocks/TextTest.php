@@ -145,6 +145,42 @@ class TextTest extends \MailPoetUnitTest {
     verify($blockquoteTable)->equals($expectedResult);
   }
 
+  public function testItRendersRtlParagraphsHeadingsAndLists() {
+    $this->block['text'] = '<p>Text</p><p style="text-align: left;">Left</p><h1>Heading</h1><ul><li>Item</li></ul>';
+    $output = (new Text)->render($this->block, true);
+
+    verify($output)->stringContainsString('word-wrap:break-word;text-align: right;">');
+    verify($output)->stringContainsString('text-align: left;text-align: right;">');
+    verify($output)->stringContainsString('<h1 style="text-align:right;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
+    verify($output)->stringContainsString('<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:right;margin-bottom:10px;">');
+    verify($output)->stringContainsString('<li class="mailpoet_paragraph" style="text-align:right;margin-bottom:10px;">Item</li>');
+  }
+
+  public function testItPreservesExplicitRtlTextAlignments() {
+    $this->block['text'] = '<p style="text-align: center;">Center</p><h1 style="text-align: justify;">Heading</h1><ul style="text-align: right;"><li>Item</li></ul>';
+    $output = (new Text)->render($this->block, true);
+
+    verify($output)->stringContainsString('text-align: center;">');
+    verify($output)->stringContainsString('<h1 style="text-align: justify;padding:0;');
+    verify($output)->stringContainsString('style="text-align: right;padding-top:0;');
+  }
+
+  public function testItRendersRtlBlockquoteRuleOnLeadingSide() {
+    $this->block['text'] = '<blockquote><p>Quote</p></blockquote>';
+    $output = (new Text)->render($this->block, true);
+    $blockquote = $this->parser->parseStr($output)->query('table.mailpoet_blockquote');
+    $this->assertInstanceOf(pQuery::class, $blockquote);
+    $blockquoteElement = $blockquote[0];
+    $this->assertInstanceOf(DomNode::class, $blockquoteElement);
+    $blockquoteHtml = $blockquoteElement->toString();
+
+    $contentPosition = strpos($blockquoteHtml, '<td valign="top">');
+    $rulePosition = strpos($blockquoteHtml, '<td width="2" bgcolor="#565656"></td>');
+    $this->assertIsInt($contentPosition);
+    $this->assertIsInt($rulePosition);
+    $this->assertLessThan($rulePosition, $contentPosition);
+  }
+
   public function testItShouldRemoveEmptyParagraphs() {
     $this->block['text'] = '<p></p><p>Text</p><p></p><p>Text2</p><p></p><p></p>';
     $output = (new Text)->render($this->block);

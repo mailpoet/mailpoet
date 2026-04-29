@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\WooCommerce\Helper;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class RendererTest extends \MailPoetUnitTest {
@@ -197,5 +198,141 @@ class RendererTest extends \MailPoetUnitTest {
     verify($result)->notNull();
     verify(is_array($result))->true();
     verify(count($result))->equals(1);
+  }
+
+  public function testItKeepsNonTextBlockAlignmentStableInRtl() {
+    $renderer = $this->createRendererWithRealNonTextBlocks();
+    foreach ($this->nonTextBlocksWithMissingAlignment() as $blockType => $block) {
+      $ltrOutput = $this->renderSingleBlock($renderer, $block, false);
+      $rtlOutput = $this->renderSingleBlock($renderer, $block, true);
+
+      verify($rtlOutput)->equals($ltrOutput);
+      switch ($blockType) {
+        case 'button':
+          verify($rtlOutput)->stringContainsString('class="mailpoet_button-container" style="text-align:left;"');
+          break;
+        case 'coupon':
+          verify($rtlOutput)->stringContainsString('class="mailpoet_coupon-container" style="text-align:left;"');
+          break;
+        case 'image':
+          verify($rtlOutput)->stringContainsString('class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="left"');
+          break;
+        case 'social':
+          verify($rtlOutput)->stringContainsString('class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="left"');
+          break;
+      }
+    }
+  }
+
+  private function createRendererWithRealNonTextBlocks(): Renderer {
+    $wcHelper = $this->make(Helper::class, [
+      'wcGetCouponCodeById' => 'ABCD-1234',
+    ]);
+
+    return new Renderer(
+      $this->ALC,
+      new Button(),
+      $this->divider,
+      $this->footer,
+      $this->header,
+      new Image(),
+      new Social(),
+      $this->spacer,
+      $this->text,
+      $this->placeholder,
+      new Coupon($wcHelper),
+      $this->dynamicProducts
+    );
+  }
+
+  private function renderSingleBlock(Renderer $renderer, array $block, bool $isRtl): string {
+    $result = $renderer->render($this->newsletter, [
+      'type' => 'container',
+      'blocks' => [
+        [
+          'blocks' => [
+            $block,
+          ],
+        ],
+      ],
+      'styles' => ['block' => []],
+    ], $isRtl);
+
+    $this->assertIsArray($result);
+    $this->assertIsString($result[0]);
+    return $result[0];
+  }
+
+  private function nonTextBlocksWithMissingAlignment(): array {
+    return [
+      'button' => [
+        'type' => 'button',
+        'text' => 'Button',
+        'url' => 'https://example.com',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => '#252525',
+            'borderColor' => '#363636',
+            'borderWidth' => '2px',
+            'borderRadius' => '5px',
+            'borderStyle' => 'solid',
+            'width' => '180px',
+            'lineHeight' => '40px',
+            'fontColor' => '#ffffff',
+            'fontFamily' => 'Source Sans Pro',
+            'fontSize' => '14px',
+            'fontWeight' => 'bold',
+          ],
+        ],
+      ],
+      'coupon' => [
+        'type' => 'coupon',
+        'couponId' => 1,
+        'styles' => [
+          'block' => [
+            'backgroundColor' => '#eeeeee',
+            'borderColor' => '#dddddd',
+            'borderWidth' => '2px',
+            'borderRadius' => '10px',
+            'borderStyle' => 'solid',
+            'lineHeight' => '30px',
+            'fontColor' => '#ccffcc',
+            'fontFamily' => 'Source Sans Pro',
+            'fontSize' => '14px',
+            'fontWeight' => 'bold',
+            'width' => '150px',
+          ],
+        ],
+      ],
+      'image' => [
+        'type' => 'image',
+        'link' => 'http://example.com',
+        'src' => 'http://mailpoet.localhost/image.jpg',
+        'alt' => 'Alt text',
+        'fullWidth' => false,
+        'width' => '310px',
+        'height' => '390px',
+        'styles' => [
+          'block' => [],
+        ],
+      ],
+      'social' => [
+        'type' => 'social',
+        'styles' => [
+          'block' => [],
+        ],
+        'icons' => [
+          [
+            'type' => 'socialIcon',
+            'iconType' => 'facebook',
+            'link' => 'http://www.facebook.com',
+            'image' => 'http://mailpoet.localhost/Facebook.png',
+            'height' => '32px',
+            'width' => '32px',
+            'text' => 'Facebook',
+          ],
+        ],
+      ],
+    ];
   }
 }

@@ -99,20 +99,20 @@ class StylesHelper {
     return $css;
   }
 
-  public static function applyTextAlignment($block) {
+  public static function applyTextAlignment($block, string $defaultAlignment = 'left', string $styleType = 'block') {
     if (is_array($block)) {
       if (!isset($block['styles']) || !is_array($block['styles'])) {
         $block['styles'] = [];
       }
-      if (!isset($block['styles']['block']) || !is_array($block['styles']['block'])) {
-        $block['styles']['block'] = [];
+      if (!isset($block['styles'][$styleType]) || !is_array($block['styles'][$styleType])) {
+        $block['styles'][$styleType] = [];
       }
-      $rawTextAlign = $block['styles']['block']['textAlign'] ?? null;
+      $rawTextAlign = $block['styles'][$styleType]['textAlign'] ?? null;
       $textAlignment = is_string($rawTextAlign) ? strtolower($rawTextAlign) : '';
       if (preg_match('/center|right|justify/i', $textAlignment)) {
         return $block;
       }
-      $block['styles']['block']['textAlign'] = 'left';
+      $block['styles'][$styleType]['textAlign'] = $defaultAlignment;
       return $block;
     }
 
@@ -127,7 +127,7 @@ class StylesHelper {
       $block .= ';';
     }
 
-    return $block . 'text-align:left;';
+    return $block . 'text-align:' . $defaultAlignment . ';';
   }
 
   /**

@@ -71,7 +71,7 @@ class Renderer {
     $this->dynamicProducts = $dynamicProducts;
   }
 
-  public function render(NewsletterEntity $newsletter, $data) {
+  public function render(NewsletterEntity $newsletter, $data, bool $isRtl = false) {
     if (!isset($data['blocks']) || !is_countable($data['blocks']) || !is_iterable($data['blocks'])) {
         return null;
     }
@@ -81,20 +81,20 @@ class Renderer {
     $columnContent = [];
 
     foreach ($data['blocks'] as $index => $columnBlocks) {
-      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index]);
+      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index], $isRtl);
       $columnContent[] = $renderedBlockElement;
     }
 
     return $columnContent;
   }
 
-  private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
+  private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth, bool $isRtl = false) {
     $blockContent = '';
     $_this = $this;
-    array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this) {
-      $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth);
+    array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this, $isRtl) {
+      $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth, $isRtl);
       if (isset($block['blocks'])) {
-        $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth);
+        $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth, $isRtl);
         // nested vertical column container is rendered as an array
         if (is_array($renderedBlockElement)) {
           $renderedBlockElement = implode('', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $renderedBlockElement));
@@ -106,9 +106,9 @@ class Renderer {
     return $blockContent;
   }
 
-  public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
+  public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth, bool $isRtl = false) {
     if ($block['type'] === 'automatedLatestContent') {
-      return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
+      return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth, $isRtl);
     }
     if ($block['type'] === 'dynamicProducts') {
       return $this->processDynamicProducts($block, $columnBaseWidth);
@@ -120,9 +120,9 @@ class Renderer {
       case 'divider':
         return $this->divider->render($block);
       case 'footer':
-        return $this->footer->render($block);
+        return $this->footer->render($block, $isRtl);
       case 'header':
-        return $this->header->render($block);
+        return $this->header->render($block, $isRtl);
       case 'image':
         return $this->image->render($block, $columnBaseWidth);
       case 'social':
@@ -130,7 +130,7 @@ class Renderer {
       case 'spacer':
         return $this->spacer->render($block);
       case 'text':
-        return $this->text->render($block);
+        return $this->text->render($block, $isRtl);
       case 'placeholder':
         return $this->placeholder->render($block);
       case Coupon::TYPE:
@@ -139,12 +139,12 @@ class Renderer {
     return "<!-- Skipped unsupported block type: {$block['type']} -->";
   }
 
-  public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth) {
+  public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth, bool $isRtl = false) {
     $transformedPosts = [
       'blocks' => $this->ALC->render($newsletter, $args),
     ];
     $transformedPosts = StylesHelper::applyTextAlignment($transformedPosts);
-    return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
+    return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth, $isRtl);
   }
 
   public function processDynamicProducts($args, $columnBaseWidth) {
