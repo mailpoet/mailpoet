@@ -11,7 +11,6 @@ use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 class DriverTest extends MailPoetTest {
   public function testDriverSetup(): void {
     $driver = new Driver();
-    $driver->connect([]);
     $this->assertInstanceOf(MySQLPlatform::class, $driver->getDatabasePlatform());
     $this->assertInstanceOf(MariaDb1052Platform::class, $driver->createDatabasePlatformForVersion('10.5.8-MariaDB-1:10.5.8+maria~focal'));
     $this->assertInstanceOf(ExceptionConverter::class, $driver->getExceptionConverter());
