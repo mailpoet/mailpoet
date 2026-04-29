@@ -119,5 +119,6 @@ class Daemon {
     yield $this->workersFactory->createMixpanelWorker();
     yield $this->workersFactory->createTracksWorker();
     yield $this->workersFactory->createStatisticsExportWorker();
+    yield $this->workersFactory->createBulkConfirmationEmailResendWorker();
   }
 }

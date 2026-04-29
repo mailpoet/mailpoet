@@ -20,6 +20,7 @@ use MailPoet\Listing;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
@@ -70,6 +71,9 @@ class Subscribers extends APIEndpoint {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var BulkConfirmationEmailResender */
+  private $bulkConfirmationEmailResender;
+
   public function __construct(
     Listing\Handler $listingHandler,
     ConfirmationEmailMailer $confirmationEmailMailer,
@@ -81,7 +85,8 @@ class Subscribers extends APIEndpoint {
     SubscriberSaveController $saveController,
     SubscriberSubscribeController $subscribeController,
     SettingsController $settings,
-    Unsubscribes $unsubscribesTracker
+    Unsubscribes $unsubscribesTracker,
+    BulkConfirmationEmailResender $bulkConfirmationEmailResender
   ) {
     $this->listingHandler = $listingHandler;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
@@ -94,6 +99,7 @@ class Subscribers extends APIEndpoint {
     $this->subscribeController = $subscribeController;
     $this->settings = $settings;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->bulkConfirmationEmailResender = $bulkConfirmationEmailResender;
   }
 
   public function get($data = []) {
@@ -243,6 +249,21 @@ class Subscribers extends APIEndpoint {
         if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
           return $this->successResponse();
         } else {
+          $reason = $this->subscribersRepository->getAdminConfirmationEmailResendIneligibilityReason(
+            $subscriber,
+            ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS,
+            \MailPoetVendor\Carbon\Carbon::now()->subDays(ConfirmationEmailMailer::ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS)->millisecond(0)
+          );
+          if ($reason === 'max_confirmations_reached') {
+            return $this->errorResponse([
+              APIError::BAD_REQUEST => __('The maximum number of confirmation emails has already been reached for this subscriber.', 'mailpoet'),
+            ], [], Response::STATUS_BAD_REQUEST);
+          }
+          if ($reason === 'recently_sent') {
+            return $this->errorResponse([
+              APIError::BAD_REQUEST => __('A confirmation email was sent recently. Please wait before resending it.', 'mailpoet'),
+            ], [], Response::STATUS_BAD_REQUEST);
+          }
           return $this->errorResponse([
             APIError::UNKNOWN => __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
           ]);
@@ -261,6 +282,25 @@ class Subscribers extends APIEndpoint {
 
   public function bulkAction($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    if (($data['action'] ?? null) === 'resendConfirmationEmails') {
+      if (!$this->bulkConfirmationEmailResender->canCurrentUserResend()) {
+        return $this->errorResponse([
+          APIError::FORBIDDEN => __('You do not have permission to resend confirmation emails.', 'mailpoet'),
+        ], [], Response::STATUS_FORBIDDEN);
+      }
+      if ($definition->getGroup() !== SubscriberEntity::STATUS_UNCONFIRMED) {
+        return $this->badRequest([
+          'invalid_group' => __('Confirmation emails can be resent in bulk only from the Unconfirmed subscribers view.', 'mailpoet'),
+        ]);
+      }
+      if (!$this->bulkConfirmationEmailResender->isSignupConfirmationEnabled()) {
+        return $this->errorResponse([
+          'confirmation_disabled' => $this->bulkConfirmationEmailResender->getConfirmationDisabledMessage(),
+        ], [], Response::STATUS_BAD_REQUEST);
+      }
+      return $this->successResponse($this->bulkConfirmationEmailResender->queue($definition, $data));
+    }
+
     $ids = $this->subscriberListingRepository->getActionableIds($definition);
 
     $count = 0;

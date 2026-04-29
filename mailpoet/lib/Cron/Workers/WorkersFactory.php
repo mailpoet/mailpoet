@@ -38,6 +38,7 @@ class WorkersFactory {
     SendingQueueBodyCleanup::TASK_TYPE,
     Tracks::TASK_TYPE,
     StatisticsExport::TASK_TYPE,
+    BulkConfirmationEmailResend::TASK_TYPE,
   ];
 
   /** @var ContainerWrapper */
@@ -195,5 +196,10 @@ class WorkersFactory {
   /** @return StatisticsExport */
   public function createStatisticsExportWorker() {
     return $this->container->get(StatisticsExport::class);
+  }
+
+  /** @return BulkConfirmationEmailResend */
+  public function createBulkConfirmationEmailResendWorker() {
+    return $this->container->get(BulkConfirmationEmailResend::class);
   }
 }

@@ -274,6 +274,196 @@ class SubscribersRepository extends Repository {
     return true;
   }
 
+  /**
+   * @return array{claimed: bool, reason?: string, claim_time?: string, previous_last_confirmation_email_sent_at?: string|null, previous_count_confirmations?: int}
+   */
+  public function claimAdminConfirmationEmailResend(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate = null
+  ): array {
+    if (!$subscriber->getId()) {
+      return ['claimed' => false, 'reason' => 'not_found'];
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+    $reason = $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate);
+    if ($reason !== null) {
+      $this->entityManager->refresh($subscriber);
+      return ['claimed' => false, 'reason' => $reason];
+    }
+
+    $claimTime = Carbon::now()->millisecond(0)->format('Y-m-d H:i:s');
+    $ageCondition = $oldestLifecycleDate instanceof DateTimeInterface
+      ? 'AND COALESCE(`last_subscribed_at`, `created_at`) >= :oldest_lifecycle_date'
+      : '';
+    $parameters = [
+      'id' => $subscriber->getId(),
+      'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+      'max_confirmation_emails' => $maxConfirmationEmails,
+      'recent_cutoff' => $recentCutoff->format('Y-m-d H:i:s'),
+      'claim_time' => $claimTime,
+    ];
+    $types = [
+      'id' => ParameterType::INTEGER,
+      'max_confirmation_emails' => ParameterType::INTEGER,
+      'recent_cutoff' => ParameterType::STRING,
+      'claim_time' => ParameterType::STRING,
+    ];
+    if ($oldestLifecycleDate instanceof DateTimeInterface) {
+      $parameters['oldest_lifecycle_date'] = $oldestLifecycleDate->format('Y-m-d H:i:s');
+      $types['oldest_lifecycle_date'] = ParameterType::STRING;
+    }
+
+    $claimedRows = (int)$this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` + 1,
+         `last_confirmation_email_sent_at` = :claim_time
+       WHERE `id` = :id
+       AND `status` = :status
+       AND `deleted_at` IS NULL
+       AND `count_confirmations` < :max_confirmation_emails
+       AND (`last_confirmation_email_sent_at` IS NULL OR `last_confirmation_email_sent_at` <= :recent_cutoff)
+       $ageCondition",
+      $parameters,
+      $types
+    );
+
+    $this->entityManager->refresh($subscriber);
+    if ($claimedRows !== 1) {
+      $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+      return [
+        'claimed' => false,
+        'reason' => $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate) ?? 'not_found',
+      ];
+    }
+
+    return [
+      'claimed' => true,
+      'claim_time' => $claimTime,
+      'previous_last_confirmation_email_sent_at' => $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null),
+      'previous_count_confirmations' => $this->toInt($row['count_confirmations'] ?? 0),
+    ];
+  }
+
+  public function releaseAdminConfirmationEmailResendClaim(
+    SubscriberEntity $subscriber,
+    string $claimTime,
+    ?string $previousLastConfirmationEmailSentAt,
+    int $previousCountConfirmations
+  ): void {
+    if (!$subscriber->getId()) {
+      return;
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = :previous_count_confirmations,
+         `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at
+       WHERE `id` = :id
+       AND `last_confirmation_email_sent_at` = :claim_time
+       AND `count_confirmations` = :claimed_count_confirmations",
+      [
+        'id' => $subscriber->getId(),
+        'claim_time' => $claimTime,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+        'previous_count_confirmations' => $previousCountConfirmations,
+        'claimed_count_confirmations' => $previousCountConfirmations + 1,
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'claim_time' => ParameterType::STRING,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt === null ? ParameterType::NULL : ParameterType::STRING,
+        'previous_count_confirmations' => ParameterType::INTEGER,
+        'claimed_count_confirmations' => ParameterType::INTEGER,
+      ]
+    );
+    $this->entityManager->refresh($subscriber);
+  }
+
+  public function getAdminConfirmationEmailResendIneligibilityReason(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate = null
+  ): ?string {
+    if (!$subscriber->getId()) {
+      return 'not_found';
+    }
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+    return $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate);
+  }
+
+  /**
+   * @return array<string, mixed>|false
+   */
+  private function getConfirmationResendState(string $subscriberTable, int $subscriberId) {
+    return $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`, `status`, `deleted_at`, `count_confirmations`, `last_confirmation_email_sent_at`,
+         COALESCE(`last_subscribed_at`, `created_at`) AS lifecycle_date
+       FROM $subscriberTable
+       WHERE `id` = :id",
+      ['id' => $subscriberId],
+      ['id' => ParameterType::INTEGER]
+    )->fetchAssociative();
+  }
+
+  /**
+   * @param array<string, mixed>|false $row
+   */
+  private function getConfirmationResendIneligibilityReasonFromRow(
+    $row,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate
+  ): ?string {
+    if (!$row) {
+      return 'not_found';
+    }
+    if (!empty($row['deleted_at'])) {
+      return 'deleted';
+    }
+    if (($row['status'] ?? null) !== SubscriberEntity::STATUS_UNCONFIRMED) {
+      return 'not_unconfirmed';
+    }
+    if ($this->toInt($row['count_confirmations'] ?? 0) >= $maxConfirmationEmails) {
+      return 'max_confirmations_reached';
+    }
+    $lastConfirmationEmailSentAt = $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null);
+    if ($lastConfirmationEmailSentAt !== null && strtotime($lastConfirmationEmailSentAt) > $recentCutoff->getTimestamp()) {
+      return 'recently_sent';
+    }
+    $lifecycleDate = $this->toStringOrNull($row['lifecycle_date'] ?? null);
+    if ($oldestLifecycleDate instanceof DateTimeInterface && $lifecycleDate !== null && strtotime($lifecycleDate) < $oldestLifecycleDate->getTimestamp()) {
+      return 'too_old';
+    }
+    return null;
+  }
+
+  private function toInt($value): int {
+    if (is_int($value)) {
+      return $value;
+    }
+    if (is_string($value) || is_float($value) || is_bool($value)) {
+      return (int)$value;
+    }
+    return 0;
+  }
+
+  private function toStringOrNull($value): ?string {
+    if ($value === null || $value === '') {
+      return null;
+    }
+    if (is_scalar($value)) {
+      return (string)$value;
+    }
+    return null;
+  }
+
   private function releasePublicConfirmationEmailClaim(string $subscriberTable, int $subscriberId): void {
     $this->entityManager->getConnection()->executeStatement(
       "UPDATE $subscriberTable
