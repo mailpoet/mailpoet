@@ -410,8 +410,16 @@ class ListingComponent extends Component {
         }
       })
       .fail((response) => {
-        if (response.errors.length > 0) {
+        if (response && response.errors && response.errors.length > 0) {
           this.context.notices.apiError(response, { scroll: true });
+        } else {
+          MailPoet.Notice.error(
+            __(
+              'The bulk action could not be completed. Please try again.',
+              'mailpoet',
+            ),
+            { scroll: true },
+          );
         }
       });
   };
@@ -580,6 +588,18 @@ class ListingComponent extends Component {
 
     // bulk actions
     let bulkActions = this.props.bulk_actions || [];
+    bulkActions = bulkActions.filter(
+      (action) =>
+        action.display === undefined ||
+        action.display({
+          group: this.state.group,
+          filter: this.state.filter,
+          search: this.state.search,
+          count: this.state.count,
+          selection: this.state.selection,
+          selected_ids: this.state.selected_ids,
+        }),
+    );
 
     if (this.state.group === 'trash' && bulkActions.length > 0) {
       bulkActions = [

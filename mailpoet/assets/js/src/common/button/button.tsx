@@ -39,6 +39,7 @@ export function Button({
   target,
   automationId,
   className,
+  'aria-describedby': ariaDescribedBy,
 }: Props) {
   const Element = href ? 'a' : 'button';
   return (
@@ -64,6 +65,7 @@ export function Button({
       data-automation-id={automationId}
       data-tip={dataTip}
       data-tooltip-id={dataFor}
+      aria-describedby={ariaDescribedBy}
     >
       {iconStart}
       {children && <span>{children}</span>}
