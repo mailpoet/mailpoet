@@ -178,7 +178,7 @@ class TextTest extends \MailPoetUnitTest {
     $rulePosition = strpos($blockquoteHtml, '<td width="2" bgcolor="#565656"></td>');
     $this->assertIsInt($contentPosition);
     $this->assertIsInt($rulePosition);
-    $this->assertLessThan($rulePosition, $contentPosition);
+    $this->assertLessThan($contentPosition, $rulePosition);
   }
 
   public function testItShouldRemoveEmptyParagraphs() {
