@@ -28,9 +28,7 @@ class ListingBulkActions extends Component {
       const submitModal = () => this.handleApplyAction(actionName);
       const closeModal = () => {
         this.setState({ extra: false }, () => {
-          if (this.triggerElement) {
-            this.triggerElement.focus();
-          }
+          this.restoreTriggerElementFocus();
         });
       };
       this.setState({
@@ -69,9 +67,7 @@ class ListingBulkActions extends Component {
         extra: false,
       },
       () => {
-        if (this.triggerElement) {
-          this.triggerElement.focus();
-        }
+        this.restoreTriggerElementFocus();
       },
     );
   }
@@ -88,6 +84,14 @@ class ListingBulkActions extends Component {
       }
     }
     return null;
+  }
+
+  restoreTriggerElementFocus() {
+    const { triggerElement } = this;
+    this.triggerElement = null;
+    if (triggerElement && document.contains(triggerElement)) {
+      triggerElement.focus();
+    }
   }
 
   render() {
