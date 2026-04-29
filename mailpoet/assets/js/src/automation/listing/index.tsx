@@ -2,7 +2,7 @@ import {
   __experimentalConfirmDialog as ConfirmDialog,
   TabPanel,
 } from '@wordpress/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import {
   DataViews,
   filterSortAndPaginate,
@@ -10,6 +10,7 @@ import {
   Action,
 } from '@wordpress/dataviews';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
+import { store as noticesStore } from '@wordpress/notices';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { storeName } from './store/constants';
@@ -27,8 +28,10 @@ type Group =
   | AutomationStatus.DRAFT
   | AutomationStatus.TRASH;
 
+type AutomationBulkAction = 'duplicate' | 'trash' | 'restore' | 'delete';
+
 type PendingAction = {
-  action: 'trash' | 'delete';
+  action: Extract<AutomationBulkAction, 'trash' | 'delete'>;
   targets: AutomationItem[];
 } | null;
 
@@ -149,6 +152,81 @@ function getActionCopy(pendingAction: PendingAction): {
   };
 }
 
+function getAutomationActionTargets(
+  action: AutomationBulkAction,
+  targets: AutomationItem[],
+): AutomationItem[] {
+  switch (action) {
+    case 'duplicate':
+      return targets.filter(
+        (item) => !item.isLegacy && item.status !== AutomationStatus.TRASH,
+      );
+    case 'trash':
+      return targets.filter((item) => item.status !== AutomationStatus.TRASH);
+    case 'restore':
+    case 'delete':
+      return targets.filter((item) => item.status === AutomationStatus.TRASH);
+    default:
+      return [];
+  }
+}
+
+function getBulkActionSuccessMessage(
+  action: AutomationBulkAction,
+  count: number,
+): string {
+  if (action === 'duplicate') {
+    return sprintf(
+      // translators: %d is the number of automations.
+      _n(
+        '%d automation was duplicated.',
+        '%d automations were duplicated.',
+        count,
+        'mailpoet',
+      ),
+      count,
+    );
+  }
+  if (action === 'trash') {
+    return sprintf(
+      // translators: %d is the number of automations.
+      _n(
+        '%d automation was moved to the trash.',
+        '%d automations were moved to the trash.',
+        count,
+        'mailpoet',
+      ),
+      count,
+    );
+  }
+  if (action === 'restore') {
+    return sprintf(
+      // translators: %d is the number of automations.
+      _n(
+        '%d automation was restored from the trash.',
+        '%d automations were restored from the trash.',
+        count,
+        'mailpoet',
+      ),
+      count,
+    );
+  }
+  return sprintf(
+    // translators: %d is the number of automations.
+    _n(
+      '%d automation was permanently deleted.',
+      '%d automations were permanently deleted.',
+      count,
+      'mailpoet',
+    ),
+    count,
+  );
+}
+
+const createSuccessNotice = (content: string): void => {
+  void dispatch(noticesStore).createSuccessNotice(content);
+};
+
 export function AutomationListingHeader(): JSX.Element {
   return (
     <PageHeader heading={__('Automations', 'mailpoet')}>
@@ -168,6 +246,7 @@ export function AutomationListing(): JSX.Element {
   const [view, setView] = useState<View>(() =>
     getViewFromSearch(new URLSearchParams(location.search)),
   );
+  const [selection, setSelection] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const latestGroupRef = useRef(group);
   const latestViewRef = useRef(view);
@@ -200,11 +279,17 @@ export function AutomationListing(): JSX.Element {
   useEffect(() => {
     const nextSearch = new URLSearchParams(location.search);
     const nextGroup = getGroupFromSearch(nextSearch);
+    let selectionShouldBeCleared = false;
     if (nextGroup !== latestGroupRef.current) {
       setGroup(nextGroup);
+      selectionShouldBeCleared = true;
     }
     if (!viewMatchesSearch(latestViewRef.current, nextSearch)) {
       setView(getViewFromSearch(nextSearch));
+      selectionShouldBeCleared = true;
+    }
+    if (selectionShouldBeCleared) {
+      setSelection([]);
     }
   }, [location.search]);
 
@@ -249,6 +334,7 @@ export function AutomationListing(): JSX.Element {
 
   const handleViewChange = useCallback(
     (nextView: View) => {
+      setSelection([]);
       setView(nextView);
       updateUrlSearchString(group, nextView);
     },
@@ -262,6 +348,7 @@ export function AutomationListing(): JSX.Element {
 
     const nextView = { ...view, page: 1 };
     setGroup(nextGroup);
+    setSelection([]);
     setView(nextView);
     updateUrlSearchString(nextGroup, nextView);
   };
@@ -347,44 +434,75 @@ export function AutomationListing(): JSX.Element {
     [groupedAutomations],
   );
 
-  const restore = useCallback(
-    (automation: AutomationItem): void => {
-      const action = automation.isLegacy
-        ? restoreLegacyAutomation
-        : restoreAutomation;
-      void (action(automation, AutomationStatus.DRAFT) as Promise<void>);
-    },
-    [restoreAutomation, restoreLegacyAutomation],
-  );
+  const runAutomationAction = useCallback(
+    async (
+      action: AutomationBulkAction,
+      targets: AutomationItem[],
+    ): Promise<void> => {
+      const actionTargets = getAutomationActionTargets(action, targets);
+      if (actionTargets.length === 0) return;
 
-  const duplicate = useCallback(
-    (automation: AutomationItem): void => {
-      void (duplicateAutomation(automation) as Promise<void>);
+      const showsIndividualNotices = actionTargets.length === 1;
+      const noticeOptions = { showSuccessNotice: showsIndividualNotices };
+
+      await Promise.all(
+        actionTargets.map((automation) => {
+          if (action === 'duplicate') {
+            return duplicateAutomation(
+              automation,
+              noticeOptions,
+            ) as Promise<void>;
+          }
+          if (action === 'trash') {
+            const selectedAction = automation.isLegacy
+              ? trashLegacyAutomation
+              : trashAutomation;
+            return selectedAction(automation, noticeOptions) as Promise<void>;
+          }
+          if (action === 'restore') {
+            return automation.isLegacy
+              ? (restoreLegacyAutomation(
+                  automation,
+                  noticeOptions,
+                ) as Promise<void>)
+              : (restoreAutomation(
+                  automation,
+                  AutomationStatus.DRAFT,
+                  noticeOptions,
+                ) as Promise<void>);
+          }
+
+          const selectedAction = automation.isLegacy
+            ? deleteLegacyAutomation
+            : deleteAutomation;
+          return selectedAction(automation, noticeOptions) as Promise<void>;
+        }),
+      );
+
+      if (!showsIndividualNotices) {
+        createSuccessNotice(
+          getBulkActionSuccessMessage(action, actionTargets.length),
+        );
+      }
+
+      setSelection([]);
     },
-    [duplicateAutomation],
+    [
+      deleteAutomation,
+      deleteLegacyAutomation,
+      duplicateAutomation,
+      restoreAutomation,
+      restoreLegacyAutomation,
+      trashAutomation,
+      trashLegacyAutomation,
+    ],
   );
 
   const runPendingAction = useCallback((): void => {
     if (!pendingAction) return;
-    pendingAction.targets.forEach((automation) => {
-      let selectedAction = automation.isLegacy
-        ? deleteLegacyAutomation
-        : deleteAutomation;
-      if (pendingAction.action === 'trash') {
-        selectedAction = automation.isLegacy
-          ? trashLegacyAutomation
-          : trashAutomation;
-      }
-      void (selectedAction(automation) as Promise<void>);
-    });
+    void runAutomationAction(pendingAction.action, pendingAction.targets);
     setPendingAction(null);
-  }, [
-    deleteAutomation,
-    deleteLegacyAutomation,
-    pendingAction,
-    trashAutomation,
-    trashLegacyAutomation,
-  ]);
+  }, [pendingAction, runAutomationAction]);
 
   const actions = useMemo<Action<AutomationItem>[]>(
     () => [
@@ -414,47 +532,49 @@ export function AutomationListing(): JSX.Element {
       {
         id: 'duplicate',
         label: __('Duplicate', 'mailpoet'),
-        supportsBulk: false,
+        supportsBulk: true,
         isEligible: (item) =>
           !item.isLegacy && item.status !== AutomationStatus.TRASH,
         callback: (targets) => {
-          if (targets[0]) duplicate(targets[0]);
+          void runAutomationAction('duplicate', targets);
         },
       },
       {
         id: 'trash',
         label: _x('Trash', 'verb', 'mailpoet'),
-        supportsBulk: false,
+        supportsBulk: true,
         isEligible: (item) => item.status !== AutomationStatus.TRASH,
         callback: (targets) => {
-          if (targets.length > 0) {
-            setPendingAction({ action: 'trash', targets });
+          const actionTargets = getAutomationActionTargets('trash', targets);
+          if (actionTargets.length > 0) {
+            setPendingAction({ action: 'trash', targets: actionTargets });
           }
         },
       },
       {
         id: 'restore',
         label: __('Restore', 'mailpoet'),
-        supportsBulk: false,
+        supportsBulk: true,
         isEligible: (item) => item.status === AutomationStatus.TRASH,
         callback: (targets) => {
-          if (targets[0]) restore(targets[0]);
+          void runAutomationAction('restore', targets);
         },
       },
       {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
-        supportsBulk: false,
+        supportsBulk: true,
         isDestructive: true,
         isEligible: (item) => item.status === AutomationStatus.TRASH,
         callback: (targets) => {
-          if (targets.length > 0) {
-            setPendingAction({ action: 'delete', targets });
+          const actionTargets = getAutomationActionTargets('delete', targets);
+          if (actionTargets.length > 0) {
+            setPendingAction({ action: 'delete', targets: actionTargets });
           }
         },
       },
     ],
-    [duplicate, restore],
+    [runAutomationAction],
   );
 
   const emptyLabel =
@@ -490,6 +610,8 @@ export function AutomationListing(): JSX.Element {
               getItemId={(item) =>
                 `${item.isLegacy ? 'legacy' : 'automation'}-${item.id}`
               }
+              selection={selection}
+              onChangeSelection={setSelection}
               isLoading={!automations}
               empty={<div>{emptyLabel}</div>}
             >
