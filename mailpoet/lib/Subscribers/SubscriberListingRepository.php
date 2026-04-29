@@ -159,38 +159,21 @@ class SubscriberListingRepository extends ListingRepository {
       $base['query']->andWhere("$idColumn IN (:selected_ids)")
         ->setParameter('selected_ids', $selectedIds, ArrayParameterType::INTEGER);
     } else {
-      $selectedCount = $this->countBulkResendQuery($base['query'], $idColumn);
+      $selectedCount = 0;
       $scopeSkippedCount = 0;
     }
 
-    $inScopeCount = $hasExplicitSelection ? $this->countBulkResendQuery($base['query'], $idColumn) : $selectedCount;
-    $skippedByReason['max_confirmations_reached'] = $this->countBulkResendQuery(
-      $this->addMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
-      $idColumn
-    );
-    $skippedByReason['recently_sent'] = $this->countBulkResendQuery(
-      $this->addRecentPredicate(
-        $this->addBelowMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
-        $idColumn,
-        $recentCutoff
-      ),
-      $idColumn
-    );
-    $skippedByReason['too_old'] = $this->countBulkResendQuery(
-      $this->addTooOldPredicate(
-        $this->addNotRecentPredicate(
-          $this->addBelowMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
-          $idColumn,
-          $recentCutoff
-        ),
-        $idColumn,
-        $oldestLifecycleDate
-      ),
-      $idColumn
-    );
+    $counts = $this->getBulkResendEligibilityCounts(clone $base['query'], $idColumn, $recentCutoff, $oldestLifecycleDate, $maxConfirmationEmails);
+    $inScopeCount = $counts['in_scope_count'];
+    if (!$hasExplicitSelection) {
+      $selectedCount = $inScopeCount;
+    }
+    $skippedByReason['max_confirmations_reached'] = $counts['max_confirmations_reached'];
+    $skippedByReason['recently_sent'] = $counts['recently_sent'];
+    $skippedByReason['too_old'] = $counts['too_old'];
+    $eligibleCount = $counts['eligible'];
 
     $eligibleQuery = $this->addEligiblePredicates(clone $base['query'], $idColumn, $recentCutoff, $oldestLifecycleDate, $maxConfirmationEmails);
-    $eligibleCount = $this->countBulkResendQuery($eligibleQuery, $idColumn);
     $queuedIds = $this->fetchBulkResendIds($eligibleQuery, $idColumn, $limit);
     $skippedByReason['batch_limit'] = max(0, $eligibleCount - count($queuedIds));
 
@@ -387,10 +370,46 @@ class SubscriberListingRepository extends ListingRepository {
     return $conditions;
   }
 
-  private function countBulkResendQuery(DBALQueryBuilder $query, string $idColumn): int {
+  /**
+   * @return array{in_scope_count: int, max_confirmations_reached: int, recently_sent: int, too_old: int, eligible: int}
+   */
+  private function getBulkResendEligibilityCounts(
+    DBALQueryBuilder $query,
+    string $idColumn,
+    \DateTimeInterface $recentCutoff,
+    \DateTimeInterface $oldestLifecycleDate,
+    int $maxConfirmationEmails
+  ): array {
     $countQuery = clone $query;
-    $countQuery->select("COUNT(DISTINCT $idColumn)");
-    return $this->toInt($countQuery->executeQuery()->fetchOne());
+    $countConfirmationColumn = $this->column($idColumn, 'count_confirmations');
+    $lastConfirmationEmailSentAtColumn = $this->column($idColumn, 'last_confirmation_email_sent_at');
+    $lifecycleDateExpression = 'COALESCE(' . $this->column($idColumn, 'last_subscribed_at') . ', ' . $this->column($idColumn, 'created_at') . ')';
+    $belowMaxConfirmations = "$countConfirmationColumn < :max_confirmation_emails";
+    $maxConfirmationsReached = "$countConfirmationColumn >= :max_confirmation_emails";
+    $recentlySent = "$lastConfirmationEmailSentAtColumn IS NOT NULL AND $lastConfirmationEmailSentAtColumn > :recent_cutoff";
+    $notRecentlySent = "($lastConfirmationEmailSentAtColumn IS NULL OR $lastConfirmationEmailSentAtColumn <= :recent_cutoff)";
+    $tooOld = "$lifecycleDateExpression < :oldest_lifecycle_date";
+    $notTooOld = "$lifecycleDateExpression >= :oldest_lifecycle_date";
+
+    $countQuery->select(implode(', ', [
+      "COUNT(DISTINCT $idColumn) AS in_scope_count",
+      "COUNT(DISTINCT CASE WHEN $maxConfirmationsReached THEN $idColumn END) AS max_confirmations_reached",
+      "COUNT(DISTINCT CASE WHEN $belowMaxConfirmations AND $recentlySent THEN $idColumn END) AS recently_sent",
+      "COUNT(DISTINCT CASE WHEN $belowMaxConfirmations AND $notRecentlySent AND $tooOld THEN $idColumn END) AS too_old",
+      "COUNT(DISTINCT CASE WHEN $belowMaxConfirmations AND $notRecentlySent AND $notTooOld THEN $idColumn END) AS eligible",
+    ]))
+      ->setParameter('max_confirmation_emails', $maxConfirmationEmails, ParameterType::INTEGER)
+      ->setParameter('recent_cutoff', $recentCutoff->format('Y-m-d H:i:s'), ParameterType::STRING)
+      ->setParameter('oldest_lifecycle_date', $oldestLifecycleDate->format('Y-m-d H:i:s'), ParameterType::STRING);
+
+    $row = $countQuery->executeQuery()->fetchAssociative() ?: [];
+    return [
+      'in_scope_count' => $this->toInt($row['in_scope_count'] ?? 0),
+      'max_confirmations_reached' => $this->toInt($row['max_confirmations_reached'] ?? 0),
+      'recently_sent' => $this->toInt($row['recently_sent'] ?? 0),
+      'too_old' => $this->toInt($row['too_old'] ?? 0),
+      'eligible' => $this->toInt($row['eligible'] ?? 0),
+    ];
   }
 
   /**
@@ -423,29 +442,10 @@ class SubscriberListingRepository extends ListingRepository {
     return $query;
   }
 
-  private function addMaxConfirmationPredicate(DBALQueryBuilder $query, string $idColumn, int $maxConfirmationEmails): DBALQueryBuilder {
-    $query->andWhere($this->column($idColumn, 'count_confirmations') . ' >= :max_confirmation_emails')
-      ->setParameter('max_confirmation_emails', $maxConfirmationEmails, ParameterType::INTEGER);
-    return $query;
-  }
-
-  private function addRecentPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $recentCutoff): DBALQueryBuilder {
-    $query->andWhere($this->column($idColumn, 'last_confirmation_email_sent_at') . ' IS NOT NULL')
-      ->andWhere($this->column($idColumn, 'last_confirmation_email_sent_at') . ' > :recent_cutoff')
-      ->setParameter('recent_cutoff', $recentCutoff->format('Y-m-d H:i:s'), ParameterType::STRING);
-    return $query;
-  }
-
   private function addNotRecentPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $recentCutoff): DBALQueryBuilder {
     $column = $this->column($idColumn, 'last_confirmation_email_sent_at');
     $query->andWhere("($column IS NULL OR $column <= :recent_cutoff)")
       ->setParameter('recent_cutoff', $recentCutoff->format('Y-m-d H:i:s'), ParameterType::STRING);
-    return $query;
-  }
-
-  private function addTooOldPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $oldestLifecycleDate): DBALQueryBuilder {
-    $query->andWhere('COALESCE(' . $this->column($idColumn, 'last_subscribed_at') . ', ' . $this->column($idColumn, 'created_at') . ') < :oldest_lifecycle_date')
-      ->setParameter('oldest_lifecycle_date', $oldestLifecycleDate->format('Y-m-d H:i:s'), ParameterType::STRING);
     return $query;
   }
 
