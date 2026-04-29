@@ -108,8 +108,8 @@ class StylesHelper {
         $block['styles'][$styleType] = [];
       }
       $rawTextAlign = $block['styles'][$styleType]['textAlign'] ?? null;
-      $textAlignment = is_string($rawTextAlign) ? strtolower($rawTextAlign) : '';
-      if (preg_match('/center|right|justify/i', $textAlignment)) {
+      $textAlignment = is_string($rawTextAlign) ? trim(strtolower($rawTextAlign)) : '';
+      if (in_array($textAlignment, ['center', 'right', 'justify'], true)) {
         return $block;
       }
       $block['styles'][$styleType]['textAlign'] = $defaultAlignment;
@@ -117,7 +117,7 @@ class StylesHelper {
     }
 
     // Check if text-align is already set to center, right, or justify
-    if (preg_match('/text-align\s*:\s*(center|justify|right)/i', (string)$block)) {
+    if (preg_match('/text-align\s*:\s*(center|justify|right)\s*(;|$)/i', (string)$block)) {
       return $block;
     }
 
