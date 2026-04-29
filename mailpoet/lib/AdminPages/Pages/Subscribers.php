@@ -9,6 +9,7 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Settings\SettingsController;
 
 class Subscribers {
   /** @var PageRenderer */
@@ -29,13 +30,17 @@ class Subscribers {
   /** @var CustomFieldsResponseBuilder */
   private $customFieldsResponseBuilder;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     Block\Date $dateBlock,
     SegmentsSimpleListRepository $segmentsListRepository,
     CustomFieldsRepository $customFieldsRepository,
-    CustomFieldsResponseBuilder $customFieldsResponseBuilder
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder,
+    SettingsController $settings
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -43,6 +48,7 @@ class Subscribers {
     $this->segmentsListRepository = $segmentsListRepository;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
+    $this->settings = $settings;
   }
 
   public function render() {
@@ -67,6 +73,9 @@ class Subscribers {
 
     $data['date_formats'] = $this->dateBlock->getDateFormats();
     $data['month_names'] = $this->dateBlock->getMonthNames();
+    $data['signup_confirmation_enabled'] = (bool)$this->settings->get(
+      'signup_confirmation.enabled'
+    );
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
 }
