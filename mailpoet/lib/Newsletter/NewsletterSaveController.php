@@ -361,7 +361,7 @@ class NewsletterSaveController {
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
     $newsletterSegments = [];
     foreach ($segments as $segmentData) {
-      if (!is_array($segmentData) || !isset($segmentData['id'])) {
+      if (!is_array($segmentData) || !isset($segmentData['id']) || !is_numeric($segmentData['id'])) {
         continue;
       }
 

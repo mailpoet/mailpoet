@@ -81,11 +81,11 @@ class CaptchaFormRenderer {
     $showErrorMessage = !empty($_GET['mailpoet_error']);
 
     $formId = 0;
-    if (isset($captchaSessionForm['form_id'])) {
+    if (isset($captchaSessionForm['form_id']) && is_numeric($captchaSessionForm['form_id'])) {
       $formId = (int)$captchaSessionForm['form_id'];
-    } elseif ($showSuccessMessage) {
+    } elseif ($showSuccessMessage && is_numeric($_GET['mailpoet_success'])) {
       $formId = (int)$_GET['mailpoet_success'];
-    } elseif ($showErrorMessage) {
+    } elseif ($showErrorMessage && is_numeric($_GET['mailpoet_error'])) {
       $formId = (int)$_GET['mailpoet_error'];
     }
 

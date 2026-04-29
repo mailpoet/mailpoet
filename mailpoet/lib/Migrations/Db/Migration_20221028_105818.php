@@ -918,7 +918,7 @@ class Migration_20221028_105818 extends DbMigration {
           $filterData['link_ids'] = [];
         }
 
-        if (isset($filterData['link_id']) && !in_array($filterData['link_id'], $filterData['link_ids'])) {
+        if (isset($filterData['link_id']) && is_numeric($filterData['link_id']) && !in_array($filterData['link_id'], $filterData['link_ids'])) {
           $filterData['link_ids'][] = (int)$filterData['link_id'];
           unset($filterData['link_id']);
         }
@@ -936,7 +936,7 @@ class Migration_20221028_105818 extends DbMigration {
           $filterData['newsletters'] = [];
         }
 
-        if (isset($filterData['newsletter_id']) && !in_array($filterData['newsletter_id'], $filterData['newsletters'])) {
+        if (isset($filterData['newsletter_id']) && is_numeric($filterData['newsletter_id']) && !in_array($filterData['newsletter_id'], $filterData['newsletters'])) {
           $filterData['newsletters'][] = (int)$filterData['newsletter_id'];
           unset($filterData['newsletter_id']);
         }

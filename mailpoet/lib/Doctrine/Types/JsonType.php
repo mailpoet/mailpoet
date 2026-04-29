@@ -36,6 +36,10 @@ class JsonType extends Type {
       $value = stream_get_contents($value);
     }
 
+    if (!is_scalar($value)) {
+      throw new \RuntimeException('Cannot convert non-scalar database value to JSON.');
+    }
+
     $value = mb_convert_encoding((string)$value, 'UTF-8', 'UTF-8'); // sanitize invalid utf8
     $decoded = json_decode($value, true);
     $this->handleErrors();

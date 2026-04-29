@@ -48,7 +48,7 @@ class PageViewCookie {
 
   private function getTimestampCookie(string $cookieName): ?int {
     $data = $this->cookies->get($cookieName);
-    return is_array($data) && $data['timestamp']
+    return is_array($data) && isset($data['timestamp']) && is_numeric($data['timestamp'])
       ? (int)$data['timestamp']
       : null;
   }

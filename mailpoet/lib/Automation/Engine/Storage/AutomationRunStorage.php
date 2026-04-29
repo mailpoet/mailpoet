@@ -233,14 +233,16 @@ class AutomationRunStorage {
     $result = array_fill_keys($automationIds, null);
 
     foreach ($runs as $runData) {
+      $runId = is_numeric($runData['id']) ? (int)$runData['id'] : 0;
       $runData['subjects'] = array_values(array_filter(
         is_array($subjects) ? $subjects : [],
-        function($subjectData) use ($runData): bool {
+        function ($subjectData) use ($runId): bool {
           /** @var array $subjectData */
-          return (int)$subjectData['automation_run_id'] === (int)$runData['id'];
+          return is_numeric($subjectData['automation_run_id']) && (int)$subjectData['automation_run_id'] === $runId;
         }
       ));
-      $result[(int)$runData['automation_id']] = AutomationRun::fromArray($runData);
+      $automationId = is_numeric($runData['automation_id']) ? (int)$runData['automation_id'] : 0;
+      $result[$automationId] = AutomationRun::fromArray($runData);
     }
 
     return $result;

@@ -114,18 +114,14 @@ class WooCommerceDummyData {
       return $default;
     }
 
-    return [
-      'first_name' => (string)($address['first_name'] ?? $default['first_name']),
-      'last_name' => (string)($address['last_name'] ?? $default['last_name']),
-      'company' => (string)($address['company'] ?? $default['company']),
-      'email' => (string)($address['email'] ?? $default['email']),
-      'phone' => (string)($address['phone'] ?? $default['phone']),
-      'address_1' => (string)($address['address_1'] ?? $default['address_1']),
-      'city' => (string)($address['city'] ?? $default['city']),
-      'postcode' => (string)($address['postcode'] ?? $default['postcode']),
-      'country' => (string)($address['country'] ?? $default['country']),
-      'state' => (string)($address['state'] ?? $default['state']),
-    ];
+    $result = $default;
+    foreach ($default as $key => $defaultValue) {
+      $value = $address[$key] ?? null;
+      if (is_scalar($value)) {
+        $result[$key] = (string)$value;
+      }
+    }
+    return $result;
   }
 
   /**

@@ -35,7 +35,7 @@ class NewsletterLinkRepository extends Repository {
       return null;
     }
     $topId = $topIdQuery->fetch();
-    if (is_array($topId) && isset($topId['link_id'])) {
+    if (is_array($topId) && isset($topId['link_id']) && is_numeric($topId['link_id'])) {
       return $this->findOneById((int)$topId['link_id']);
     }
     return null;

@@ -32,7 +32,7 @@ class WooCommerceCountry implements Filter {
     $filterData = $filter->getFilterData();
     $countryCode = $filterData->getParam('country_code');
     if (!is_array($countryCode)) {
-      $countryCode = [(string)$countryCode];
+      $countryCode = [is_scalar($countryCode) ? (string)$countryCode : ''];
     }
     $operator = $filterData->getParam('operator');
     if (!$operator) {

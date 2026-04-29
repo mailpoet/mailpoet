@@ -60,7 +60,7 @@ class SubscriberCookie {
 
   private function getSubscriberIdFromCookie(string $cookieName): ?int {
     $data = $this->cookies->get($cookieName);
-    return is_array($data) && $data['subscriber_id']
+    return is_array($data) && isset($data['subscriber_id']) && is_numeric($data['subscriber_id'])
       ? (int)$data['subscriber_id']
       : null;
   }

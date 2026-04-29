@@ -137,7 +137,7 @@ class SegmentSubscribersRepository {
         $result = $this->logErrorAndReturnEmptyResult(null, $queryBuilder, $result);
       }
 
-      return (int)$result['all'];
+      return isset($result['all']) && is_numeric($result['all']) ? (int)$result['all'] : 0;
     } catch (Throwable $e) {
       $this->logQueryException(null, $e);
       return 0;

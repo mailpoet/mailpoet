@@ -73,13 +73,19 @@ class StepHandler {
   /** @param mixed $args */
   public function handle($args): void {
     // TODO: better args validation
-    if (!is_array($args) || !isset($args['automation_run_id']) || !array_key_exists('step_id', $args)) {
+    if (
+      !is_array($args)
+      || !isset($args['automation_run_id'])
+      || !is_numeric($args['automation_run_id'])
+      || !array_key_exists('step_id', $args)
+      || !is_scalar($args['step_id'])
+    ) {
       throw new InvalidStateException();
     }
 
     $runId = (int)$args['automation_run_id'];
     $stepId = (string)$args['step_id'];
-    $runNumber = (int)($args['run_number'] ?? 1);
+    $runNumber = is_numeric($args['run_number'] ?? null) ? (int)$args['run_number'] : 1;
 
     // BC — complete automation run if "step_id" is empty (was nullable in the past)
     if (!$stepId) {
@@ -95,7 +101,7 @@ class StepHandler {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_not_active'
         ? AutomationRun::STATUS_CANCELLED
         : AutomationRun::STATUS_FAILED;
-      $this->automationRunStorage->updateStatus((int)$args['automation_run_id'], $status);
+      $this->automationRunStorage->updateStatus($runId, $status);
       $logger->logFailure($e);
 
       // Action Scheduler catches only Exception instances, not other errors.

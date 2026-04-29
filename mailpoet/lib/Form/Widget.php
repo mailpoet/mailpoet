@@ -54,7 +54,7 @@ class Widget extends \WP_Widget {
   }
 
   public function setupIframe() {
-    $formId = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
+    $formId = isset($_GET['mailpoet_form_iframe']) && is_numeric($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0;
     if (!$formId || !$this->formsRepository->findOneById($formId)) return;
 
     $formHtml = $this->widget(
@@ -242,14 +242,14 @@ class Widget extends \WP_Widget {
 
       // (POST) non ajax success/error variables
       $data['success'] = (
-        (isset($_GET['mailpoet_success']))
-        &&
-        ((int)$_GET['mailpoet_success'] === $form->getId())
+        isset($_GET['mailpoet_success'])
+        && is_numeric($_GET['mailpoet_success'])
+        && (int)$_GET['mailpoet_success'] === $form->getId()
       );
       $data['error'] = (
-        (isset($_GET['mailpoet_error']))
-        &&
-        ((int)$_GET['mailpoet_error'] === $form->getId())
+        isset($_GET['mailpoet_error'])
+        && is_numeric($_GET['mailpoet_error'])
+        && (int)$_GET['mailpoet_error'] === $form->getId()
       );
 
       // generate security token
