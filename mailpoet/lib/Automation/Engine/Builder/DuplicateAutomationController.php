@@ -44,6 +44,9 @@ class DuplicateAutomationController {
       $this->wordPress->wpGetCurrentUser()
     );
     $duplicate->setStatus(Automation::STATUS_DRAFT);
+    foreach ($automation->getAllMetas() as $key => $value) {
+      $duplicate->setMeta((string)$key, $value);
+    }
 
     $steps = $duplicate->getSteps();
     foreach ($steps as $id => $step) {
@@ -97,7 +100,8 @@ class DuplicateAutomationController {
         array_map(function (NextStep $nextStep) use ($newIds): NextStep {
           $nextStepId = $nextStep->getId();
           return new NextStep($nextStepId ? $newIds[$nextStepId] : null);
-        }, $step->getNextSteps())
+        }, $step->getNextSteps()),
+        $step->getFilters()
       );
     }
     return $newSteps;
