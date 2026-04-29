@@ -20,6 +20,7 @@ class DynamicSegmentFilterData {
 
   public const CONNECT_TYPE_AND = 'and';
   public const CONNECT_TYPE_OR = 'or';
+  public const CONNECT_TYPE_NONE = 'none';
 
   public const OPERATOR_ALL = 'all';
   public const OPERATOR_ANY = 'any';
