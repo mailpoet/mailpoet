@@ -128,9 +128,6 @@ class BulkConfirmationEmailResender {
 
       foreach ($queuedIds as $subscriberId) {
         $subscriberReference = $entityManager->getReference(SubscriberEntity::class, $subscriberId);
-        if (!$subscriberReference instanceof SubscriberEntity) {
-          throw new \RuntimeException(sprintf('Subscriber %d not found.', $subscriberId));
-        }
         $entityManager->persist(new ScheduledTaskSubscriberEntity(
           $task,
           $subscriberReference

@@ -295,23 +295,34 @@ class SubscribersRepository extends Repository {
       return ['claimed' => false, 'reason' => $reason];
     }
 
+    $previousCountConfirmations = $this->toInt($row['count_confirmations'] ?? 0);
+    $previousLastConfirmationEmailSentAt = $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null);
     $claimTime = Carbon::now()->millisecond(0)->format('Y-m-d H:i:s');
     $ageCondition = $oldestLifecycleDate instanceof DateTimeInterface
       ? 'AND COALESCE(`last_subscribed_at`, `created_at`) >= :oldest_lifecycle_date'
       : '';
+    $lastConfirmationEmailSentAtCondition = $previousLastConfirmationEmailSentAt === null
+      ? 'AND `last_confirmation_email_sent_at` IS NULL'
+      : 'AND `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at';
     $parameters = [
       'id' => $subscriber->getId(),
       'status' => SubscriberEntity::STATUS_UNCONFIRMED,
       'max_confirmation_emails' => $maxConfirmationEmails,
       'recent_cutoff' => $recentCutoff->format('Y-m-d H:i:s'),
       'claim_time' => $claimTime,
+      'previous_count_confirmations' => $previousCountConfirmations,
     ];
     $types = [
       'id' => ParameterType::INTEGER,
       'max_confirmation_emails' => ParameterType::INTEGER,
       'recent_cutoff' => ParameterType::STRING,
       'claim_time' => ParameterType::STRING,
+      'previous_count_confirmations' => ParameterType::INTEGER,
     ];
+    if ($previousLastConfirmationEmailSentAt !== null) {
+      $parameters['previous_last_confirmation_email_sent_at'] = $previousLastConfirmationEmailSentAt;
+      $types['previous_last_confirmation_email_sent_at'] = ParameterType::STRING;
+    }
     if ($oldestLifecycleDate instanceof DateTimeInterface) {
       $parameters['oldest_lifecycle_date'] = $oldestLifecycleDate->format('Y-m-d H:i:s');
       $types['oldest_lifecycle_date'] = ParameterType::STRING;
@@ -326,6 +337,8 @@ class SubscribersRepository extends Repository {
        AND `deleted_at` IS NULL
        AND `count_confirmations` < :max_confirmation_emails
        AND (`last_confirmation_email_sent_at` IS NULL OR `last_confirmation_email_sent_at` <= :recent_cutoff)
+       AND `count_confirmations` = :previous_count_confirmations
+       $lastConfirmationEmailSentAtCondition
        $ageCondition",
       $parameters,
       $types
@@ -343,8 +356,8 @@ class SubscribersRepository extends Repository {
     return [
       'claimed' => true,
       'claim_time' => $claimTime,
-      'previous_last_confirmation_email_sent_at' => $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null),
-      'previous_count_confirmations' => $this->toInt($row['count_confirmations'] ?? 0),
+      'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+      'previous_count_confirmations' => $previousCountConfirmations,
     ];
   }
 
