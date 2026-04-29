@@ -325,6 +325,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createMixpanelWorker' => $worker,
       'createTracksWorker' => $worker,
       'createStatisticsExportWorker' => $worker,
+      'createBulkConfirmationEmailResendWorker' => $worker,
       ]);
   }
 }
