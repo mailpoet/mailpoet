@@ -1,5 +1,8 @@
 parameters:
   level: 9
+  phpVersion:
+    min: 70400
+    max: 80300
   tmpDir: ../../temp/phpstan
   bootstrapFiles:
     - ../../vendor/autoload.php
@@ -102,4 +105,4 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
-  - phpstan-baseline-fix-lib.php # include baseline files
+  - phpstan-baseline.neon

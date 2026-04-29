@@ -82,7 +82,7 @@ anchors:
     multisite: 1
     requires:
       - unit_tests
-      - static_analysis_php8
+      - static_analysis
     <<: *only_trunk_and_release
 
   command_add_github_key: &command_add_github_key
@@ -264,16 +264,12 @@ jobs:
     executor: wpcli_php_latest
     resource_class: medium+
     working_directory: /home/circleci/mailpoet/mailpoet
-    parameters:
-      php_version:
-        type: integer
-        default: 70400
     steps:
       - attach_workspace:
           at: /home/circleci
       - run:
           name: 'Static analysis'
-          command: ./do qa:phpstan --php-version=<< parameters.php_version >>
+          command: ./do qa:phpstan
   security_analysis:
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
@@ -1029,14 +1025,6 @@ workflows:
             - build
       - static_analysis:
           <<: *slack-fail-post-step
-          name: static_analysis_php7
-          php_version: 70400
-          requires:
-            - build
-      - static_analysis:
-          <<: *slack-fail-post-step
-          name: static_analysis_php8
-          php_version: 80300
           requires:
             - build
       - security_analysis:
@@ -1163,8 +1151,7 @@ workflows:
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
             - acceptance_tests_blockbased_theme
-            - static_analysis_php8
-            - static_analysis_php7
+            - static_analysis
             - unit_tests
             - qa_js
             - qa_php
