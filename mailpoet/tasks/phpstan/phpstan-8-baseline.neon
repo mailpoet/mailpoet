@@ -1,2707 +1,1497 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Cannot access property \$permissions on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: ../../lib/API/JSON/API.php
 
 		-
-			message: '#^Cannot call method isMethodAllowed\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../../lib/API/JSON/API.php
 
 		-
-			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/API/JSON/API.php
 
 		-
-			message: '#^Binary operation "\." between ''Content\-Type\:…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/API/JSON/Response.php
 
 		-
-			message: '#^Property MailPoet\\API\\JSON\\ResponseBuilders\\DynamicSegmentsResponseBuilder\:\:\$segmentSubscriberRepository is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: ../../lib/API/JSON/ResponseBuilders/DynamicSegmentsResponseBuilder.php
 
 		-
-			message: '#^Parameter \#4 \$data of class MailPoet\\Subscribers\\ImportExport\\Export\\Export constructor expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/API/JSON/v1/ImportExport.php
 
 		-
-			message: '#^Parameter \#8 \$data of class MailPoet\\Subscribers\\ImportExport\\Import\\Import constructor expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/API/JSON/v1/ImportExport.php
-
-		-
-			message: '#^Parameter \#1 \$body of method MailPoet\\Newsletter\\ApiDataSanitizer\:\:sanitizeBody\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/API/JSON/v1/NewsletterTemplates.php
 
 		-
-			message: '#^Cannot access offset ''preview_url'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/API/JSON/v1/Newsletters.php
 
 		-
-			message: '#^Parameter \#1 \$data of method MailPoet\\Newsletter\\NewsletterSaveController\:\:save\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/API/JSON/v1/Newsletters.php
 
 		-
-			message: '#^Property MailPoet\\API\\JSON\\v1\\Segments\:\:\$wooCommerceSync is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: ../../lib/API/JSON/v1/Segments.php
 
 		-
-			message: '#^PHPDoc tag @var has invalid value \(ConfirmationEmailMailer;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 32 on line 1$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/API/JSON/v1/Subscribers.php
 
 		-
-			message: '#^Call to function is_callable\(\) with ''mail'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/AdminPages/PageRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AdminPages/PageRenderer.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/AdminPages/Pages/AutomationAnalytics.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/AdminPages/Pages/AutomationEditor.php
 
 		-
-			message: '#^Parameter \#1 \$key of function sanitize_key expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AdminPages/Pages/AutomationPreviewEmbed.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/AdminPages/Pages/FormEditor.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AdminPages/Pages/FormEditor.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 5
 			path: ../../lib/AdminPages/Pages/Logs.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/AdminPages/Pages/NewsletterEditor.php
 
 		-
-			message: '#^Found usage of constant DOING_AJAX\. Use wp_doing_ajax\(\) instead\.$#'
 			identifier: phpstanWP.wpConstant.fetch
 			count: 1
 			path: ../../lib/AdminPages/Pages/WelcomeWizard.php
 
 		-
-			message: '#^Found usage of constant DOING_AJAX\. Use wp_doing_ajax\(\) instead\.$#'
 			identifier: phpstanWP.wpConstant.fetch
 			count: 1
 			path: ../../lib/AdminPages/Pages/WooCommerceSetup.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, list\<array\<int\|string, string\>\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Analytics/Reporter.php
 
 		-
-			message: '#^Cannot access offset ''events'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			identifier: argument.type
 			count: 3
 			path: ../../lib/AutomaticEmails/AutomaticEmails.php
 
 		-
-			message: '#^Cannot access offset ''slug'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			message: '#^Parameter \#1 \$automaticEmail of method MailPoet\\AutomaticEmails\\AutomaticEmails\:\:validateAutomaticEmailDataFields\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			message: '#^Parameter \#1 \$automaticEmailEvents of method MailPoet\\AutomaticEmails\\AutomaticEmails\:\:validateAutomaticEmailEventsDataFields\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: ../../lib/AutomaticEmails/AutomaticEmails.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
 
 		-
-			message: '#^Binary operation "\." between ''woocommerce_order…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
 
 		-
-			message: '#^Binary operation "\." between ''woocommerce_order…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
 
 		-
-			message: '#^Binary operation "\." between ''woocommerce_order…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Automation/Engine/Control/StepHandler.php
 
 		-
-			message: '#^Call to function is_bool\(\) with bool will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Automation/Engine/Control/StepRunLogger.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationsCreateFromTemplateEndpoint.php
 
 		-
-			message: '#^Cannot access offset ''automation_id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 3
 			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
-
-		-
-			message: '#^Cannot access offset ''subjects'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
 
 		-
-			message: '#^Parameter \#1 \$data of static method MailPoet\\Automation\\Engine\\Data\\AutomationRun\:\:fromArray\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
 
 		-
-			message: '#^Cannot access offset ''args'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 3
 			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
 
 		-
-			message: '#^Cannot access offset ''email_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
-
-		-
-			message: '#^Cannot access offset ''key'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationStatisticsStorage.php
 
 		-
-			message: '#^Method MailPoet\\Automation\\Engine\\Storage\\AutomationStorage\:\:getNameColumnLength\(\) should return int but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationStorage.php
 
 		-
-			message: '#^Offset ''fields''\|''filters'' might not exist on array\{step_id\: string, fields\: array\<string, string\>\}\|array\{step_id\: string, message\: string, fields\: array\{\}, filters\: array\{\}\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../../lib/Automation/Engine/Validation/AutomationRules/ValidStepRule.php
 
 		-
-			message: '#^Parameter \#1 \$args of function get_comments expects array\{author_email\?\: string, author_url\?\: string, author__in\?\: array\<int\>, author__not_in\?\: array\<int\>, comment__in\?\: array\<int\>, comment__not_in\?\: array\<int\>, count\?\: bool, date_query\?\: array, \.\.\.\}, array\|string given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 4
 			path: ../../lib/Automation/Engine/WordPress.php
 
 		-
-			message: '#^Parameter \#1 \$args of function get_terms expects array\{taxonomy\?\: array\<string\>\|string, object_ids\?\: array\<int\>\|int, orderby\?\: string, order\?\: string, hide_empty\?\: bool\|int, include\?\: array\<int\>\|string, exclude\?\: array\<int\>\|string, exclude_tree\?\: array\<int\>\|string, \.\.\.\}, array\|string given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Engine/WordPress.php
-
-		-
-			message: '#^Parameter \#1 \$hook_name of function apply_filters expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Engine/WordPress.php
-
-		-
-			message: '#^Parameter \#1 \$hook_name of function do_action expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Engine/WordPress.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_intersect expects an array of values castable to string, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Automation/Integrations/Core/Filters/EnumArrayFilter.php
 
 		-
-			message: '#^Parameter \#2 \$arrays of function array_intersect expects an array of values castable to string, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/Core/Filters/EnumArrayFilter.php
-
-		-
-			message: '#^Parameter \#1 \$value of function floatval expects array\|bool\|float\|GMP\|int\|resource\|SimpleXMLElement\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Automation/Integrations/Core/Filters/NumberFilter.php
 
 		-
-			message: '#^Cannot access offset ''automation_run_id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Endpoints/UpdateRunStatusEndpoint.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Endpoints/UpdateRunStatusEndpoint.php
 
 		-
-			message: '#^Parameter \#1 \$string of function strtolower expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 6
 			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
 
 		-
-			message: '#^Parameter \#3 \$limit of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\Query constructor expects int, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
-
-		-
-			message: '#^Parameter \#4 \$orderBy of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\Query constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
-
-		-
-			message: '#^Parameter \#6 \$page of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\Query constructor expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
-
-		-
-			message: '#^Parameter \#7 \$filter of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\Query constructor expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
-
-		-
-			message: '#^Parameter \#8 \$search of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\Query constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/Query.php
-
-		-
-			message: '#^Parameter \#10 \$search of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
+			count: 6
 			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
 
 		-
-			message: '#^Parameter \#5 \$limit of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
-
-		-
-			message: '#^Parameter \#6 \$orderBy of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
-
-		-
-			message: '#^Parameter \#7 \$orderDirection of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
-
-		-
-			message: '#^Parameter \#8 \$page of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
-
-		-
-			message: '#^Parameter \#9 \$filter of class MailPoet\\Automation\\Integrations\\MailPoet\\Analytics\\Entities\\QueryWithCompare constructor expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Entities/QueryWithCompare.php
-
-		-
-			message: '#^Method MailPoet\\Automation\\Integrations\\MailPoet\\Templates\\EmailFactory\:\:fetchEmailTemplate\(\) should return array\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Automation/Integrations/MailPoet/Templates/EmailFactory.php
 
 		-
-			message: '#^Parameter \#2 \$arrays of function array_intersect expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Automation/Integrations/MailPoet/Triggers/UserRegistrationTrigger.php
 
 		-
-			message: '#^Call to function method_exists\(\) with ''Automattic\\\\WooCommerce\\\\Utilities\\\\OrderUtil'' and ''custom_orders_table…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Automation/Integrations/WooCommerce/WooCommerce.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
 			path: ../../lib/Cache/TransientCache.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Captcha/CaptchaFormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$data of method MailPoet\\Captcha\\Validator\\CaptchaValidator\:\:validate\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Captcha/CaptchaHooks.php
 
 		-
-			message: '#^Call to function is_array\(\) with list\<string\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Captcha/PageRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$responseToken of method MailPoet\\Captcha\\ReCaptchaValidator\:\:validate\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Captcha/ReCaptchaHooks.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_intersect expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Captcha/Validator/CaptchaValidator.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Config/AssetsLoader.php
 
 		-
-			message: '#^Found usage of constant DOING_AJAX\. Use wp_doing_ajax\(\) instead\.$#'
 			identifier: phpstanWP.wpConstant.fetch
 			count: 1
 			path: ../../lib/Config/Changelog.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 6
 			path: ../../lib/Config/Changelog.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Config/Hooks.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 6
 			path: ../../lib/Config/Menu.php
 
 		-
-			message: '#^Call to an undefined method object\:\:get\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: ../../lib/Config/Populator.php
 
 		-
-			message: '#^Call to function is_callable\(\) with array\{\$this\(MailPoet\\Config\\RequirementsChecker\), ''checkTempFolderCrea…''\|''checkVendorSource''\|''checkXmlExtension''\} will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Config/RequirementsChecker.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Config/Router.php
 
 		-
-			message: '#^Binary operation "\." between ''\<h3 class\="mailpoet…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/Config/Shortcodes.php
-
-		-
-			message: '#^Binary operation "\." between ''\<li\>\<span class\=…'' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/Config/Shortcodes.php
-
-		-
-			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/Config/Shortcodes.php
-
-		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
-			identifier: argument.type
 			count: 3
 			path: ../../lib/Config/Shortcodes.php
 
 		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|GMP\|int\|resource\|SimpleXMLElement\|string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 7
 			path: ../../lib/Config/Shortcodes.php
 
 		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../../lib/Config/Shortcodes.php
-
-		-
-			message: '#^Parameter \#2 \$args of method MailPoet\\WP\\Functions\:\:wpRemotePost\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Cron/CronHelper.php
 
 		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Cron/CronHelper.php
-
-		-
-			message: '#^Expression in empty\(\) is not falsy\.$#'
 			identifier: empty.expr
 			count: 1
 			path: ../../lib/Cron/CronWorkerRunner.php
 
 		-
-			message: '#^Parameter \#2 \$string of function explode expects string, class\-string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Daemon.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/DaemonHttpRunner.php
 
 		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 9
 			path: ../../lib/Cron/Triggers/WordPress.php
 
 		-
-			message: '#^Method MailPoet\\Cron\\Workers\\SendingQueue\\SendingThrottlingHandler\:\:getMaxBatchSize\(\) should return int but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Cron/Workers/SendingQueue/SendingThrottlingHandler.php
 
 		-
-			message: '#^Instanceof between MailPoet\\Util\\pQuery\\DomNode and MailPoet\\Util\\pQuery\\DomNode will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: ../../lib/Cron/Workers/SendingQueue/Tasks/Newsletter.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Workers/StatisticsExport.php
 
 		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Workers/StatsNotifications/AutomatedEmails.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Cron/Workers/StatsNotifications/NewsletterLinkRepository.php
 
 		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Workers/StatsNotifications/Scheduler.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Cron/Workers/SubscribersLastEngagement.php
 
 		-
-			message: '#^Cannot call method get\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../../lib/DI/ContainerConfigurator.php
 
 		-
-			message: '#^Cannot access offset 0 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: ../../lib/Doctrine/ArrayCache.php
 
 		-
-			message: '#^Cannot access offset 1 on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Doctrine/ArrayCache.php
-
-		-
-			message: '#^Cannot use array destructuring on list\<mixed\>\|MailPoetVendor\\Doctrine\\ORM\\PersistentCollection\.$#'
 			identifier: offsetAccess.nonArray
 			count: 1
 			path: ../../lib/Doctrine/EventListeners/LastSubscribedAtListener.php
 
 		-
-			message: '#^Dead catch \- ReflectionException is never thrown in the try block\.$#'
 			identifier: catch.neverThrown
 			count: 1
 			path: ../../lib/Doctrine/MetadataCache.php
 
 		-
-			message: '#^Parameter \#2 \$isHit of class MailPoet\\Doctrine\\PSRCacheItem constructor expects bool, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Doctrine/PSRArrayCache.php
 
 		-
-			message: '#^Cannot cast T of mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Doctrine/Types/BigIntType.php
 
 		-
-			message: '#^Method MailPoet\\Doctrine\\Types\\BigIntType\:\:convertToPHPValue\(\) should return string\|null but returns int\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Doctrine/Types/BigIntType.php
 
 		-
-			message: '#^Parameter \#1 \$data of function is_serialized expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Doctrine/Types/JsonOrSerializedType.php
 
 		-
-			message: '#^Parameter \#1 \$data of function unserialize expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Doctrine/Types/JsonOrSerializedType.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Doctrine/Types/JsonType.php
 
 		-
-			message: '#^Parameter \#1 \$data of function unserialize expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Doctrine/Types/SerializedArrayType.php
 
 		-
-			message: '#^Method MailPoet\\Doctrine\\WPDB\\Result\:\:fetchAllAssociative\(\) should return list\<array\<string, mixed\>\> but returns array\<array\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Doctrine/WPDB/Result.php
 
 		-
-			message: '#^Cannot call method getId\(\) on MailPoet\\Entities\\WpPostEntity\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Cli.php
 
 		-
-			message: '#^Binary operation "\." between ''/wp/v2/templates…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/EditorPageRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|GMP\|int\|resource\|SimpleXMLElement\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/EditorPageRenderer.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/EmailEditor.php
 
 		-
-			message: '#^Method MailPoet\\EmailEditor\\Integrations\\MailPoet\\Endpoints\\GenerateSubjectSuggestionsEndpoint\:\:parseAiResponse\(\) should return array\{suggestions\: array\<int, mixed\>\}\|null but returns array\{suggestions\: non\-empty\-array\<mixed, mixed\>\}\.$#'
 			identifier: return.type
-			count: 1
+			count: 2
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Endpoints/GenerateSubjectSuggestionsEndpoint.php
 
 		-
-			message: '#^Method MailPoet\\EmailEditor\\Integrations\\MailPoet\\Endpoints\\GenerateSubjectSuggestionsEndpoint\:\:parseAiResponse\(\) should return array\{suggestions\: array\<int, mixed\>\}\|null but returns non\-empty\-array\<mixed, mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Endpoints/GenerateSubjectSuggestionsEndpoint.php
-
-		-
-			message: '#^Cannot access offset ''content'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
+
+		-
+			identifier: return.type
+			count: 1
+			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
+
+		-
+			identifier: argument.type
 			count: 2
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
 
 		-
-			message: '#^Cannot access offset ''email_content'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			message: '#^Cannot access offset ''name'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			message: '#^Method MailPoet\\EmailEditor\\Integrations\\MailPoet\\Patterns\\PatternsController\:\:getPatternContent\(\) should return string\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			message: '#^Parameter \#1 \$pattern_name of function register_block_pattern expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			message: '#^Parameter \#2 \$pattern_properties of function register_block_pattern expects array\{title\?\: string, content\?\: string, description\?\: string, viewportWidth\?\: int, inserter\?\: bool, categories\?\: array\<string\>, keywords\?\: array\<string\>, blockTypes\?\: array\<string\>, \.\.\.\}, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 3
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
 
 		-
-			message: '#^Property MailPoet\\EmailEditor\\Integrations\\MailPoet\\Patterns\\PatternsController\:\:\$emailContentRegistry \(array\<string, string\>\) does not accept array\<mixed\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
 
 		-
-			message: '#^Method MailPoet\\EmailEditor\\Integrations\\MailPoet\\PersonalizationTagManager\:\:getCategoryToSubjectsMapping\(\) should return array\<string, array\<string\>\> but returns array\<mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php
 
 		-
-			message: '#^Method MailPoet\\Entities\\SegmentEntity\:\:getFiltersConnectOperator\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Entities/SegmentEntity.php
 
 		-
-			message: '#^Part \$bottom \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
-			count: 1
+			count: 4
 			path: ../../lib/Form/Block/Column.php
 
 		-
-			message: '#^Part \$left \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Column.php
-
-		-
-			message: '#^Part \$right \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Column.php
-
-		-
-			message: '#^Part \$top \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Column.php
-
-		-
-			message: '#^Part \$bottom \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
+			count: 4
 			path: ../../lib/Form/Block/Columns.php
 
 		-
-			message: '#^Part \$left \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Columns.php
-
-		-
-			message: '#^Part \$right \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Columns.php
-
-		-
-			message: '#^Part \$top \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Columns.php
-
-		-
-			message: '#^Part \$bottom \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
+			count: 4
 			path: ../../lib/Form/Block/Heading.php
 
 		-
-			message: '#^Part \$left \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Heading.php
-
-		-
-			message: '#^Part \$right \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Heading.php
-
-		-
-			message: '#^Part \$top \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Heading.php
-
-		-
-			message: '#^Part \$bottom \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
+			count: 4
 			path: ../../lib/Form/Block/Paragraph.php
 
 		-
-			message: '#^Part \$left \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Paragraph.php
-
-		-
-			message: '#^Part \$right \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Paragraph.php
-
-		-
-			message: '#^Part \$top \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Form/Block/Paragraph.php
-
-		-
-			message: '#^Variable \$classes in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
 			count: 1
 			path: ../../lib/Form/Block/Paragraph.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Form/DisplayFormInWPContent.php
 
 		-
-			message: '#^Method MailPoet\\Form\\DisplayFormInWPContent\:\:shouldDisplay\(\) should return bool but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Form/DisplayFormInWPContent.php
 
 		-
-			message: '#^Parameter \#1 \$postTypes of method MailPoet\\WP\\Functions\:\:isSingular\(\) expects array\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Form/DisplayFormInWPContent.php
 
 		-
-			message: '#^Parameter \#1 \$body of method MailPoet\\Entities\\FormEntity\:\:setBody\(\) expects array\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 5
 			path: ../../lib/Form/PreviewPage.php
 
 		-
-			message: '#^Parameter \#1 \$id of method MailPoet\\Entities\\FormEntity\:\:setId\(\) expects int\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Form/PreviewPage.php
-
-		-
-			message: '#^Parameter \#1 \$settings of method MailPoet\\Entities\\FormEntity\:\:setSettings\(\) expects array\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Form/PreviewPage.php
-
-		-
-			message: '#^Parameter \#1 \$status of method MailPoet\\Entities\\FormEntity\:\:setStatus\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Form/PreviewPage.php
-
-		-
-			message: '#^Parameter \#1 \$styles of method MailPoet\\Entities\\FormEntity\:\:setStyles\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Form/PreviewPage.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
 			path: ../../lib/Form/Renderer.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Form/RestApi/Endpoints/FormsBulkActionEndpoint.php
 
 		-
-			message: '#^Binary operation "\." between mixed and ''_'' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/Form/Widget.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 3
 			path: ../../lib/Form/Widget.php
 
 		-
-			message: '#^Parameter \$record of method MailPoet\\Logging\\LogHandler\:\:write\(\) has invalid type MailPoetVendor\\Monolog\\Handler\\Level\.$#'
 			identifier: class.notFound
-			count: 1
+			count: 2
 			path: ../../lib/Logging/LogHandler.php
 
 		-
-			message: '#^Parameter \$record of method MailPoet\\Logging\\LogHandler\:\:write\(\) has invalid type MailPoetVendor\\Monolog\\Handler\\LevelName\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../../lib/Logging/LogHandler.php
-
-		-
-			message: '#^Cannot access an offset on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
 
 		-
-			message: '#^Parameter \#1 \$data of function unserialize expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 3
 			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
 
 		-
-			message: '#^Parameter \#2 \$haystack of function in_array expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
-
-		-
-			message: '#^Cannot access offset ''args'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 5
 			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
-
-		-
-			message: '#^Cannot access offset ''key'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
-
-		-
-			message: '#^Cannot access offset ''subjects'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
 
 		-
-			message: '#^Cannot access offset ''filters'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/Migrations/Db/Migration_20241108_103249_Db.php
 
 		-
-			message: '#^Parameter \#3 \$subject of function preg_replace expects array\<float\|int\|string\>\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Migrations/Db/Migration_20241108_103249_Db.php
 
 		-
-			message: '#^Variable \$terms in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
 			count: 1
 			path: ../../lib/Newsletter/BlockPostQuery.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between ''below'' and ''below'' will always evaluate to true\.$#'
 			identifier: identical.alwaysTrue
 			count: 1
 			path: ../../lib/Newsletter/Editor/MetaInformationManager.php
 
 		-
-			message: '#^Parameter \#1 \$string of function strip_tags expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Editor/PostTransformerContentsExtractor.php
 
 		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Newsletter/NewsletterCoupon.php
 
 		-
-			message: '#^Cannot access offset ''blocks'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/Newsletter/NewsletterCoupon.php
 
 		-
-			message: '#^Parameter \#1 \$blocks of method MailPoet\\Newsletter\\NewsletterCoupon\:\:cleanupCouponBlocks\(\) expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Newsletter/NewsletterCoupon.php
 
 		-
-			message: '#^Parameter \#1 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Newsletter/NewsletterCoupon.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Newsletter/NewsletterSaveController.php
 
 		-
-			message: '#^Parameter \#1 \$body of method MailPoet\\Entities\\NewsletterEntity\:\:setBody\(\) expects array\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Newsletter/NewsletterSaveController.php
 
 		-
-			message: '#^Parameter \#1 \$body of method MailPoet\\Newsletter\\ApiDataSanitizer\:\:sanitizeBody\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Newsletter/NewsletterSaveController.php
-
-		-
-			message: '#^Method MailPoet\\Newsletter\\NewslettersRepository\:\:getNotificationHistoryItems\(\) should return array\<MailPoet\\Entities\\NewsletterEntity\> but returns array\<mixed\>\.$#'
 			identifier: return.type
-			count: 1
+			count: 2
 			path: ../../lib/Newsletter/NewslettersRepository.php
 
 		-
-			message: '#^Method MailPoet\\Newsletter\\NewslettersRepository\:\:getStandardNewsletterListWithMultipleStatuses\(\) should return array\<MailPoet\\Entities\\NewsletterEntity\> but returns array\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../lib/Newsletter/NewslettersRepository.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 10
 			path: ../../lib/Newsletter/Preview/WooCommerceDummyData.php
 
 		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Renderer/Blocks/Renderer.php
 
 		-
-			message: '#^Binary operation "\." between ''width\:'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
-			count: 1
+			count: 2
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
-			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Cannot access offset ''height'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 7
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
-			message: '#^Cannot access offset ''iconType'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Cannot access offset ''image'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Cannot access offset ''link'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Cannot access offset ''width'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
-			message: '#^Parameter \#1 \$string of static method MailPoet\\Newsletter\\Renderer\\EscapeHelper\:\:escapeHtmlAttr\(\) expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 3
 			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
 
 		-
-			message: '#^Parameter \#1 \$string of static method MailPoet\\Newsletter\\Renderer\\EscapeHelper\:\:escapeHtmlLinkAttr\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			message: '#^Method MailPoet\\Newsletter\\Renderer\\Renderer\:\:postProcessTemplate\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Newsletter/Renderer/Renderer.php
 
 		-
-			message: '#^Cannot access offset ''block'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 4
 			path: ../../lib/Newsletter/Renderer/StylesHelper.php
 
 		-
-			message: '#^Cannot access offset ''textAlign'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Newsletter/Renderer/StylesHelper.php
-
-		-
-			message: '#^Parameter \#1 \$string of function strtolower expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Renderer/StylesHelper.php
 
 		-
-			message: '#^Method MailPoet\\Newsletter\\Shortcodes\\Categories\\Link\:\:processShortcodeAction\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
 
 		-
-			message: '#^Property MailPoet\\Newsletter\\Shortcodes\\Categories\\Link\:\:\$settings is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between non\-empty\-string and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Categories/Subscriber.php
 
 		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Shortcodes.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(array\(newsletter_id\: string, newsletter_rendered_subject\: string, opened_at\: string\|null, sent_at\: string\)\)\: Unexpected token "\(", expected TOKEN_HORIZONTAL_WS at offset 120 on line 5$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
 
 		-
-			message: '#^Parameter \#1 \$body of method MailPoet\\Entities\\NewsletterTemplateEntity\:\:setBody\(\) expects array\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
 
 		-
-			message: '#^Variable \$thumbnailUrl on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.variable
 			count: 1
 			path: ../../lib/NewsletterTemplates/ThumbnailSaver.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Router/Endpoints/TemplateImage.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Router/Endpoints/Track.php
 
 		-
-			message: '#^Cannot access property \$allowedActions on mixed\.$#'
 			identifier: property.nonObject
-			count: 1
+			count: 2
 			path: ../../lib/Router/Router.php
 
 		-
-			message: '#^Cannot access property \$permissions on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../../lib/Router/Router.php
-
-		-
-			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Router/Router.php
 
 		-
-			message: '#^Method MailPoet\\Segments\\DynamicSegments\\FilterDataMapper\:\:map\(\) should return array\<MailPoet\\Entities\\DynamicSegmentFilterData\> but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/FilterDataMapper.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Segments/DynamicSegments/FilterDataMapper.php
 
 		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|GMP\|int\|resource\|SimpleXMLElement\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/FilterDataMapper.php
-
-		-
-			message: '#^Binary operation "\." between ''COUNT\(1\) \= '' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
 
 		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
 
 		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 2
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
 
 		-
-			message: '#^Parameter \#2 \$operator of method MailPoet\\Segments\\DynamicSegments\\Filters\\MailPoetCustomFields\:\:applyForDateEqual\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
 
 		-
-			message: '#^Parameter \#2 \$operator of method MailPoet\\Segments\\DynamicSegments\\Filters\\MailPoetCustomFields\:\:applyForDateYear\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberScore.php
 
 		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSegment.php
 
 		-
-			message: '#^Binary operation "\." between ''%%"'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
 
 		-
-			message: '#^Parameter \#1 \$roles of method MailPoet\\Segments\\DynamicSegments\\Filters\\UserRole\:\:createCondition\(\) expects array\<string\>, array\<mixed\> given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
 
 		-
-			message: '#^Parameter \#2 \$operator of method MailPoet\\Segments\\DynamicSegments\\Filters\\UserRole\:\:createCondition\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
-
-		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
 
 		-
-			message: '#^Cannot access property \$term_id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCategory.php
 
 		-
-			message: '#^Binary operation "\." between ''%%'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
 		-
-			message: '#^Parameter \#2 \$operator of method MailPoet\\Segments\\DynamicSegments\\Filters\\WooCommerceCountry\:\:createCondition\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
 		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceProduct.php
 
 		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceSubscription.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceUsedCouponCode.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Segments/SegmentSubscribersRepository.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
+			count: 4
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: '#^Cannot access offset ''subscribers'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: '#^Method MailPoet\\Segments\\SegmentsSimpleListRepository\:\:getList\(\) should return array\<array\{id\: string, name\: string, type\: string, subscribers\: int\}\> but returns array\<int\<0, max\>, mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: '#^Parameter \#1 \$segmentId of method MailPoet\\Subscribers\\SubscribersCountsController\:\:getSegmentStatisticsCountById\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: '#^Cannot access offset ''subscribe_on_register_active'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/Segments/WP.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Segments/WooCommerce.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Segments/WooCommerce.php
 
 		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 2
 			path: ../../lib/Segments/WooCommerce.php
 
 		-
-			message: '#^Possibly invalid array key type float\|int\|string\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 2
 			path: ../../lib/Services/Bridge.php
 
 		-
-			message: '#^Parameter \#1 \$errorMessage of method MailPoet\\Services\\Bridge\\API\:\:getTranslatedErrorMessage\(\) expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 7
 			path: ../../lib/Services/Bridge/API.php
 
 		-
-			message: '#^Parameter \#1 \$handle of function curl_errno expects CurlHandle, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Services/Bridge/API.php
-
-		-
-			message: '#^Parameter \#1 \$handle of function curl_error expects CurlHandle, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Services/Bridge/API.php
-
-		-
-			message: '#^Parameter \#1 \$handle of function curl_getinfo expects CurlHandle, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Services/Bridge/API.php
-
-		-
-			message: '#^Parameter \#2 \$error of method MailPoet\\Services\\Bridge\\API\:\:createErrorResponse\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../../lib/Services/Bridge/API.php
-
-		-
-			message: '#^Unsafe access to private property MailPoet\\Settings\\Hosts\:\:\$smtp through static\:\:\.$#'
 			identifier: staticClassAccess.privateProperty
-			count: 1
+			count: 2
 			path: ../../lib/Settings/Hosts.php
 
 		-
-			message: '#^Unsafe access to private property MailPoet\\Settings\\Hosts\:\:\$web through static\:\:\.$#'
-			identifier: staticClassAccess.privateProperty
-			count: 1
-			path: ../../lib/Settings/Hosts.php
-
-		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Settings/SettingsChangeHandler.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Statistics/Track/PageViewCookie.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
 			path: ../../lib/Statistics/Track/SubscriberCookie.php
 
 		-
-			message: '#^Method MailPoet\\Subscribers\\EngagementDataBackfiller\:\:getBatch\(\) should return array\<MailPoet\\Entities\\SubscriberEntity\> but returns array\<mixed, mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Subscribers/EngagementDataBackfiller.php
 
 		-
-			message: '#^Method MailPoet\\Subscribers\\ImportExport\\Import\\MailChimp\:\:getApiData\(\) should return array\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/Import/MailChimp.php
 
 		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/Import/MailChimpDataMapper.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
 
 		-
-			message: '#^Part \$customField\[''id''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(array\(data\: mixed\[\], done\: boolean\)\)\: Unexpected token "\(", expected TOKEN_HORIZONTAL_WS at offset 48 on line 3$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SegmentsExporter.php
 
 		-
-			message: '#^Offset int\|null might not exist on array\<int, string\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SubscriberExporter.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(array\(data\: mixed\[\], done\: boolean\)\)\: Unexpected token "\(", expected TOKEN_HORIZONTAL_WS at offset 48 on line 3$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SubscriberExporter.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Subscribers/InactiveSubscribersController.php
 
 		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscribers/NewSubscriberNotificationMailer.php
 
 		-
-			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, mixed\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../../lib/Subscribers/SubscriberSaveController.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: '#^Method MailPoet\\Subscribers\\SubscribersRepository\:\:findIdsOfDeletedByEmails\(\) should return array\<int\> but returns list\<array\<string, int\>\>\.$#'
 			identifier: return.type
-			count: 1
-			path: ../../lib/Subscribers/SubscribersRepository.php
-
-		-
-			message: '#^Method MailPoet\\Subscribers\\SubscribersRepository\:\:getUndeletedSubscribersEmailsByIds\(\) should return array\<string\> but returns array\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../lib/Subscribers/SubscribersRepository.php
-
-		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
-			identifier: argument.type
 			count: 2
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: '#^Parameter \#2 \$subscriber of class MailPoet\\Entities\\SubscriberSegmentEntity constructor expects MailPoet\\Entities\\SubscriberEntity, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 3
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscription/AdminUserSubscription.php
 
 		-
-			message: '#^Cannot access offset ''subscribe_on_comment'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../lib/Subscription/Comment.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_diff expects an array of values castable to string, array\<mixed\> given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 4
 			path: ../../lib/Subscription/Manage.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../../lib/Subscription/Manage.php
-
-		-
-			message: '#^Parameter \#1 \$blocks of method MailPoet\\Form\\Renderer\:\:renderBlocks\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php
 
 		-
-			message: '#^Call to function is_array\(\) with list\<string\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Subscription/Pages.php
 
 		-
-			message: '#^Parameter \#1 \$maybeint of function absint expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscription/Pages.php
 
 		-
-			message: '#^Cannot access offset ''subscribe_on_register'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../lib/Subscription/Registration.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Subscription/Registration.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: ../../lib/Subscription/Throttling.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_intersect expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: ../../lib/Subscription/Throttling.php
 
 		-
-			message: '#^Parameter \#1 \$seconds of method MailPoet\\Subscribers\\SubscriberIPsRepository\:\:deleteCreatedAtBeforeTimeInSeconds\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Subscription/Throttling.php
-
-		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/SystemReport/SystemReportCollector.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Tags/RestApi/Endpoints/TagsBulkDeleteEndpoint.php
 
 		-
-			message: '#^Method MailPoet\\Tasks\\Subscribers\\BatchIterator\:\:count\(\) should return int\<0, max\> but returns int\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/Tasks/Subscribers/BatchIterator.php
 
 		-
-			message: '#^Cannot call method getDefinitions\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
-			message: '#^Parameter \#1 \$class of class ReflectionProperty constructor expects class\-string\|object, class\-string\|false given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 3
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
-			message: '#^Parameter \#1 \$object of function get_class expects object, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
-			message: '#^Parameter \#1 \$object of method ReflectionProperty\:\:getValue\(\) expects object\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
-			message: '#^Parameter &\$results by\-ref type of method MailPoet\\Tracy\\DIPanel\\DIPanel\:\:getAllArguments\(\) expects array\<string\>, array given\.$#'
 			identifier: parameterByRef.type
 			count: 1
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
-			message: '#^Call to function is_callable\(\) with array\{\$this\(MailPoet\\Twig\\I18n\), ''date''\|''getLocale''\|''localize''\|''pluralize''\|''translate''\|''translateEscAttr''\|''translateEscHTML''\|''translateWithContext''\} will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Twig/I18n.php
 
 		-
-			message: '#^Parameter \#2 \$array of function implode expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Util/ConflictResolver.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Util/Cookies.php
 
 		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Util/DBCollationChecker.php
 
 		-
-			message: '#^Part \$sourceCollation \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: ../../lib/Util/DBCollationChecker.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Util/Helpers.php
 
 		-
-			message: '#^Call to function is_callable\(\) with callable\-string and false will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/Util/Notices/DisabledMailFunctionNotice.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Util/Request.php
 
 		-
-			message: '#^Parameter \#1 \$length of function random_bytes expects int\<1, max\>, int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Util/Security.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Util/Url.php
 
 		-
-			message: '#^PHPDoc type MailPoet\\Util\\pQuery\\DomNode\|string of property MailPoet\\Util\\pQuery\\Html5Parser\:\:\$root is not covariant with PHPDoc type MailPoetVendor\\pQuery\\DomNode of overridden property MailPoetVendor\\pQuery\\HtmlParser\:\:\$root\.$#'
 			identifier: property.phpDocType
 			count: 1
 			path: ../../lib/Util/pQuery/Html5Parser.php
 
 		-
-			message: '#^Cannot access property \$name on mixed\.$#'
 			identifier: property.nonObject
-			count: 1
+			count: 2
 			path: ../../lib/WP/AutocompletePostListLoader.php
 
 		-
-			message: '#^Cannot access property \$term_id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../../lib/WP/AutocompletePostListLoader.php
-
-		-
-			message: '#^Method MailPoet\\WP\\Emoji\:\:sanitizeEmojisInFormBody\(\) should return array but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/WP/Emoji.php
 
 		-
-			message: '#^Method MailPoet\\WP\\Functions\:\:addAction\(\) should return bool but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/WP/Functions.php
 
 		-
-			message: '#^Result of function register_activation_hook \(void\) is used\.$#'
 			identifier: function.void
-			count: 1
+			count: 3
 			path: ../../lib/WP/Functions.php
 
 		-
-			message: '#^Result of function register_deactivation_hook \(void\) is used\.$#'
-			identifier: function.void
-			count: 1
-			path: ../../lib/WP/Functions.php
-
-		-
-			message: '#^Result of function register_widget \(void\) is used\.$#'
-			identifier: function.void
-			count: 1
-			path: ../../lib/WP/Functions.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''\\\\Automattic…'' and ''get_addresses_table…'' will always evaluate to false\.$#'
-			identifier: function.impossibleType
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: ../../lib/WooCommerce/Helper.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: ../../lib/WooCommerce/Helper.php
+
+		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/WooCommerce/Helper.php
 
 		-
-			message: '#^Call to function method_exists\(\) with ''AutomateWoo\\\\Customer'' and ''opt_out'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
+			count: 2
 			path: ../../lib/WooCommerce/Integrations/AutomateWooHooks.php
 
 		-
-			message: '#^Call to function method_exists\(\) with ''AutomateWoo…'' and ''get_by_email'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/WooCommerce/Integrations/AutomateWooHooks.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: ../../lib/WooCommerce/Subscription.php
 
 		-
-			message: '#^Method MailPoet\\WooCommerce\\WooCommerceSubscriptions\\Helper\:\:wcsGetSubscriptions\(\) should return array\<WC_Subscription\> but returns array\<mixed, mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../lib/WooCommerce/WooCommerceSubscriptions/Helper.php
 
 		-
-			message: '#^Method MailPoet\\Test\\DataFactories\\Log\:\:update\(\) should return \$this\(MailPoet\\Test\\DataFactories\\Log\) but returns static\(MailPoet\\Test\\DataFactories\\Log\)\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../tests/DataFactories/Log.php
 
 		-
-			message: '#^Method MailPoet\\Test\\DataFactories\\Segment\:\:update\(\) should return \$this\(MailPoet\\Test\\DataFactories\\Segment\) but returns static\(MailPoet\\Test\\DataFactories\\Segment\)\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../tests/DataFactories/Segment.php
 
 		-
-			message: '#^Method MailPoet\\Test\\DataFactories\\Tag\:\:update\(\) should return \$this\(MailPoet\\Test\\DataFactories\\Tag\) but returns static\(MailPoet\\Test\\DataFactories\\Tag\)\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../tests/DataFactories/Tag.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../tests/DataFactories/WooCommerceCustomer.php
 
 		-
-			message: '#^Parameter \#1 \$id of method MailPoet\\Test\\DataFactories\\WooCommerceCustomer\:\:delete\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../tests/DataFactories/WooCommerceCustomer.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../tests/DataFactories/WooCommerceOrder.php
 
 		-
-			message: '#^Binary operation "\." between ''wp\-admin/admin\.php…'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../tests/acceptance/Automation/ConfirmLeaveWhenUnsavedChangesCest.php
 
 		-
-			message: '#^Binary operation "\." between ''\#'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../tests/acceptance/Subscriptions/WooCheckoutBlocksCest.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Acceptance\\WooCheckoutBlocksCest\:\:\$checkoutPostContent \(string\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../../tests/acceptance/Subscriptions/WooCheckoutBlocksCest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 6
-			path: ../../tests/integration/API/JSON/APITest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:makeEmpty\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/API/JSON/APITest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\SendingQueueEntity'' and MailPoet\\Entities\\SendingQueueEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/API/JSON/ResponseBuilders/SendingQueuesResponseBuilderTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\SegmentEntity'' and MailPoet\\Entities\\SegmentEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
 			path: ../../tests/integration/API/JSON/v1/DynamicSegmentsTest.php
 
 		-
-			message: '#^Property MailPoet\\Test\\API\\JSON\\v1\\NewslettersTest\:\:\$endpoint \(MailPoet\\API\\JSON\\v1\\Newsletters\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 3
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: '#^Return type of call to method Codeception\\Test\\Unit\:\:make\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 23
-			path: ../../tests/integration/API/JSON/v1/ServicesTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/SetupTest.php
-
-		-
-			message: '#^Parameter \#1 \$expected of method PHPUnit\\Framework\\Assert\:\:assertSame\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 8
 			path: ../../tests/integration/API/MP/SubscribersTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:construct\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/FirstPurchaseTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 6
-			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/FirstPurchaseTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\NewsletterEntity'' and MailPoet\\Entities\\NewsletterEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 4
-			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedProductTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with MailPoet\\Automation\\Engine\\Data\\AutomationRunLog will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Automation/Engine/Control/StepRunLoggerTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertEmpty\(\) with array\{\} will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Automation/Engine/Control/TriggerHandlerTest.php
 
 		-
-			message: '#^Parameter \#1 \$array \(array\{\}\) to function array_values is empty, call has no effect\.$#'
 			identifier: arrayValues.empty
 			count: 1
 			path: ../../tests/integration/Automation/Integrations/MailPoet/Actions/SendEmailActionTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Config/AccessControlTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Config/CapabilitiesTest.php
-
-		-
-			message: '#^Return type of call to method Codeception\\Test\\Unit\:\:make\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Config/HooksTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 2
-			path: ../../tests/integration/Config/MenuTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Config/RendererTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 3
-			path: ../../tests/integration/Cron/CronHelperTest.php
-
-		-
-			message: '#^Cannot call method run\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/KeyCheck/KeyCheckWorkerTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/KeyCheck/PremiumKeyCheckTest.php
-
-		-
-			message: '#^Return type of call to method Codeception\\Test\\Unit\:\:make\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/KeyCheck/SendingServiceKeyCheckTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/KeyCheck/SendingServiceKeyCheckTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\SendingQueueEntity'' and MailPoet\\Entities\\SendingQueueEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
 
 		-
-			message: '#^Return type of call to method Codeception\\Test\\Unit\:\:make\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 3
-			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
-
-		-
-			message: '#^Cannot call method preProcessNewsletter\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 2
-			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
-
-		-
-			message: '#^Property MailPoet\\Cron\\Workers\\StatsNotifications\\AutomatedEmailsTest\:\:\$cronWorkerRunner \(MailPoet\\Cron\\CronWorkerRunner\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/StatsNotifications/AutomatedEmailsTest.php
-
-		-
-			message: '#^Property MailPoet\\Test\\Cron\\Workers\\WooCommerceOrdersTest\:\:\$cronWorkerRunner \(MailPoet\\Cron\\CronWorkerRunner\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/WooCommerceOrdersTest.php
-
-		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\EventListeners\\TimestampEntity\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
 			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\EventListeners\\TimestampEntity\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\EventListeners\\ValidatedEntity\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
 			path: ../../tests/integration/Doctrine/EventListeners/ValidatedEntity.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\EventListeners\\ValidatedEntity\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: ../../tests/integration/Doctrine/EventListeners/ValidatedEntity.php
 
 		-
-			message: '#^Dead catch \- MailPoet\\Doctrine\\Validator\\ValidationException is never thrown in the try block\.$#'
 			identifier: catch.neverThrown
 			count: 4
 			path: ../../tests/integration/Doctrine/EventListeners/ValidationTest.php
 
 		-
-			message: '#^PHPDoc tag @var with type MailPoet\\Doctrine\\Repository\<MailPoet\\Entities\\SettingEntity\> is not subtype of native type MailPoet\\Doctrine\\Repository@anonymous/tests/integration/Doctrine/RepositoryTest\.php\:145\.$#'
 			identifier: varTag.nativeType
 			count: 1
 			path: ../../tests/integration/Doctrine/RepositoryTest.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\Types\\JsonEntity\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
 			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
 
 		-
-			message: '#^Property MailPoet\\Test\\Doctrine\\Types\\JsonEntity\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
 
 		-
-			message: '#^Binary operation "\-" between mixed and 1 results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../tests/integration/Doctrine/WPDB/ConnectionTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Doctrine\\\\WPDB\\\\Result'' and MailPoet\\Doctrine\\WPDB\\Result will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 4
 			path: ../../tests/integration/Doctrine/WPDB/ConnectionTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Doctrine\\\\WPDB\\\\Connection'' and MailPoet\\Doctrine\\WPDB\\Connection will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Doctrine/WPDB/DriverTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Doctrine\\\\WPDB\\\\Result'' and MailPoet\\Doctrine\\WPDB\\Result will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 11
 			path: ../../tests/integration/Doctrine/WPDB/ResultTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\NewsletterOptionEntity'' and MailPoet\\Entities\\NewsletterOptionEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Entities/NewsletterEntityTest.php
 
 		-
-			message: '#^Cannot call method getPageData\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../../tests/integration/Homepage/HomepageDataControllerTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Mailer/Methods/AmazonSESTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 5
-			path: ../../tests/integration/Mailer/Methods/MailPoetAPITest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Mailer/Methods/PHPMailTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Mailer/Methods/SMTPTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Mailer/Methods/SendGridTest.php
-
-		-
-			message: '#^Parameter \#1 \$expected of method PHPUnit\\Framework\\Assert\:\:assertSame\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
 			path: ../../tests/integration/Migrator/MigratorTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\NewsletterLinkEntity'' and MailPoet\\Entities\\NewsletterLinkEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
+			count: 2
 			path: ../../tests/integration/Newsletter/NewsletterDeleteControllerTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\StatisticsClickEntity'' and MailPoet\\Entities\\StatisticsClickEntity will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Newsletter/NewsletterDeleteControllerTest.php
-
-		-
-			message: '#^Binary operation "\." between ''src\="'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../tests/integration/Newsletter/RendererTest.php
 
 		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../tests/integration/Newsletter/ShortcodesTest.php
 
 		-
-			message: '#^Cannot access offset ''automation_run_id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
+			count: 6
 			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
 
 		-
-			message: '#^Cannot access offset ''run_number'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
-
-		-
-			message: '#^Cannot access offset ''step_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 5
 			path: ../../tests/integration/REST/Automation/Analytics/UpdateRunStatusEndpointTest.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../tests/integration/REST/Automation/Automations/AutomationsGetTest.php
 
 		-
-			message: '#^Cannot access offset ''items'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../tests/integration/REST/Forms/FormsEndpointsTest.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../tests/integration/REST/Forms/FormsEndpointsTest.php
 
 		-
-			message: '#^Cannot access offset ''count'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 7
 			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
 
 		-
-			message: '#^Cannot access offset ''items'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
-
-		-
-			message: '#^Cannot access offset ''meta'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
+			identifier: argument.type
 			count: 2
 			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
 
 		-
-			message: '#^Cannot access offset ''pages'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
-
-		-
-			message: '#^Cannot access offset ''subscribers_count'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 4
-			path: ../../tests/integration/Router/RouterTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\SubscriberEntity'' and MailPoet\\Entities\\SubscriberEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Segments/SegmentSubscribersRepositoryTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 13
-			path: ../../tests/integration/Services/BridgeTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Entities\\\\ScheduledTaskEntity'' and MailPoet\\Entities\\ScheduledTaskEntity will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
 			path: ../../tests/integration/Settings/SettingsChangeHandlerTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Settings/UserFlagsControllerTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
-			path: ../../tests/integration/Subscribers/ImportExport/Import/ImportTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Subscribers/ImportExport/Import/MailChimpTest.php
-
-		-
-			message: '#^Cannot access offset ''data'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
 			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterClicksExporterTest.php
 
 		-
-			message: '#^Cannot access offset 3 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterClicksExporterTest.php
-
-		-
-			message: '#^Cannot access offset ''data'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterOpensExporterTest.php
 
 		-
-			message: '#^Cannot access offset 2 on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterOpensExporterTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with 0 and 0 will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Subscribers/SubscriberSaveControllerTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''DateTimeInterface'' and DateTimeInterface will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/integration/Subscribers/SubscribersRepositoryTest.php
 
 		-
-			message: '#^Cannot access offset ''subscribe_on_register'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 5
 			path: ../../tests/integration/Subscription/RegistrationTest.php
 
 		-
-			message: '#^Parameter \#1 \$str of function sanitize_text_field expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../../tests/integration/SystemReport/SystemReportCollectorTest.php
-
-		-
-			message: '#^Parameter \#2 \$array of function join expects array\<string\>, array\<mixed, mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../tests/integration/SystemReport/SystemReportCollectorTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/Twig/FunctionsTest.php
-
-		-
-			message: '#^Offset ''action'' on non\-empty\-array\<mixed\> in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../tests/integration/Util/ConflictResolverTest.php
-
-		-
-			message: '#^Offset ''endpoint'' on non\-empty\-array\<mixed\> in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../tests/integration/Util/ConflictResolverTest.php
-
-		-
-			message: '#^Offset ''test'' on non\-empty\-array\<mixed\> in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../tests/integration/Util/ConflictResolverTest.php
-
-		-
-			message: '#^Return type of call to method Codeception\\Test\\Unit\:\:make\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 2
-			path: ../../tests/integration/WooCommerce/Integration/AutomateWooHooksTest.php
+			path: ../../tests/integration/SystemReport/SystemReportCollectorTest.php
 
 		-
-			message: '#^Call to new MailPoet\\WooCommerce\\TransactionalEmailHooks\(\) on a separate line has no effect\.$#'
+			identifier: empty.offset
+			count: 3
+			path: ../../tests/integration/Util/ConflictResolverTest.php
+
+		-
 			identifier: new.resultUnused
 			count: 1
 			path: ../../tests/integration/WooCommerce/TransactionalEmailHooksTest.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 2
-			path: ../../tests/integration/WooCommerce/TransactionalEmailHooksTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/integration/WooCommerce/TransactionalEmailsTest.php
-
-		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
 
 		-
-			message: '#^Cannot access offset mixed on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
 
 		-
-			message: '#^Method MailPoetTest\:\:getServiceWithOverrides\(\) should return T of object but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
 
 		-
-			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/API/JSON/ErrorResponseTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: ../../tests/unit/Automation/Engine/Control/SubjectTransformerHandlerTest.php
 
 		-
-			message: '#^Property MailPoet\\Automation\\Engine\\Validation\\AutomationGraph\\AutomationNodeVisitor@anonymous/tests/unit/Automation/Engine/Validation/AutomationGraph/AutomationWalkerTest\.php\:109\:\:\$nodes has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
 			path: ../../tests/unit/Automation/Engine/Validation/AutomationGraph/AutomationWalkerTest.php
 
 		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''DOMNamedNodeMap'' and DOMNamedNodeMap will always evaluate to true\.$#'
 			identifier: staticMethod.alreadyNarrowedType
 			count: 1
 			path: ../../tests/unit/Form/HtmlParser.php
 
 		-
-			message: '#^Method MailPoet\\Test\\Form\\HtmlParser\:\:findByXpath\(\) should return DOMNodeList\<DOMNode\> but returns DOMNodeList\<DOMNameSpaceNode\|DOMNode\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../tests/unit/Form/HtmlParser.php
 
 		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/Mailer/MailerErrorTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 2
-			path: ../../tests/unit/Mailer/Methods/ErrorMappers/MailPoetMapperTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/Mailer/Methods/ErrorMappers/PHPMailMapperTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/Mailer/Methods/ErrorMappers/SMTPMapperTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/Util/UrlTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\AnyOfSchema'' and MailPoet\\Validator\\Schema\\AnyOfSchema will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\ArraySchema'' and MailPoet\\Validator\\Schema\\ArraySchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\BooleanSchema'' and MailPoet\\Validator\\Schema\\BooleanSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\IntegerSchema'' and MailPoet\\Validator\\Schema\\IntegerSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\NullSchema'' and MailPoet\\Validator\\Schema\\NullSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\NumberSchema'' and MailPoet\\Validator\\Schema\\NumberSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\ObjectSchema'' and MailPoet\\Validator\\Schema\\ObjectSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\OneOfSchema'' and MailPoet\\Validator\\Schema\\OneOfSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''MailPoet\\\\Validator\\\\Schema\\\\StringSchema'' and MailPoet\\Validator\\Schema\\StringSchema will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Validator/BuilderTest.php
-
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
 			count: 9
-			path: ../../tests/unit/WP/DateTimeTest.php
+			path: ../../tests/unit/Validator/BuilderTest.php
 
-		-
-			message: '#^Return type of call to static method Codeception\\Stub\:\:make\(\) contains unresolvable type\.$#'
-			identifier: staticMethod.unresolvableReturnType
-			count: 1
-			path: ../../tests/unit/WooCommerce/TransactionalEmailsUnitTest.php
