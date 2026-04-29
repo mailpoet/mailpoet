@@ -785,6 +785,30 @@ class RendererTest extends \MailPoetTest {
     $this->assertEquals($expectedLanguage, $html->attr('lang'));
   }
 
+  public function testItRendersRtlDirectionAttributes() {
+    $renderer = $this->createRendererWithWpFunctions(true, 'ar');
+
+    $template = $renderer->render($this->newsletter);
+    $DOM = $this->dOMParser->parseStr($template['html']);
+
+    verify($DOM->query('html')->attr('dir'))->equals('rtl');
+    verify($DOM->query('body')->attr('style'))->stringContainsString('direction:rtl');
+    verify($template['html'])->stringContainsString('class="mailpoet_template"');
+    verify($template['html'])->stringContainsString('direction:rtl');
+    verify($template['html'])->stringContainsString('text-align:right');
+  }
+
+  public function testItDoesNotRenderDirectionAttributesForLtrEmails() {
+    $renderer = $this->createRendererWithWpFunctions(false, 'en-US');
+
+    $template = $renderer->render($this->newsletter);
+    $DOM = $this->dOMParser->parseStr($template['html']);
+
+    verify($DOM->query('html')->attr('dir'))->null();
+    verify((string)$DOM->query('body')->attr('style'))->stringNotContainsString('direction: rtl');
+    verify($template['html'])->stringNotContainsString('direction:rtl');
+  }
+
   public function testItRendersScreenReaderText() {
     $body = json_decode(
       (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
@@ -805,6 +829,29 @@ class RendererTest extends \MailPoetTest {
   private function setGlobalLocale($value) {
     global $locale;
     $locale = $value;
+  }
+
+  private function createRendererWithWpFunctions(bool $isRtl, string $language): Renderer {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getBloginfo')->with('language')->willReturn($language);
+    $wp->method('isRtl')->willReturn($isRtl);
+    $wp->method('applyFilters')->willReturnCallback(function($filter, $value) {
+      return $value;
+    });
+
+    return new Renderer(
+      $this->diContainer->get(BodyRenderer::class),
+      $this->diContainer->get(Preprocessor::class),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $wp,
+      $this->diContainer->get(LoggerFactory::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class),
+      $this->capabilitiesManager,
+      $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
+      $this->diContainer->get(EmailContextBuilder::class),
+      $this->diContainer->get(CouponBlockFailureTranslator::class)
+    );
   }
 
   public function makeAttachment($upload, $parentPostId = 0) {

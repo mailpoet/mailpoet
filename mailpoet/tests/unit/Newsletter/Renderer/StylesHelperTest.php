@@ -100,4 +100,36 @@ class StylesHelperTest extends \MailPoetUnitTest {
     verify(StylesHelper::applyTextAlignment($blockWithExtraSpaces))
       ->equals("color: #000000; font-size: 16px;text-align:left;");
   }
+
+  public function testItAppliesDefaultTextAlignmentToArrayBlocks(): void {
+    $block = ['styles' => ['block' => []]];
+    verify(StylesHelper::applyTextAlignment($block, 'right'))->equals(['styles' => ['block' => ['textAlign' => 'right']]]);
+
+    $block = ['styles' => ['block' => ['textAlign' => 'left']]];
+    verify(StylesHelper::applyTextAlignment($block, 'right'))->equals(['styles' => ['block' => ['textAlign' => 'right']]]);
+
+    foreach (['center', 'right', 'justify'] as $alignment) {
+      $block = ['styles' => ['block' => ['textAlign' => $alignment]]];
+      verify(StylesHelper::applyTextAlignment($block, 'right'))->equals($block);
+    }
+  }
+
+  public function testItAppliesDefaultTextAlignmentToStringStyles(): void {
+    verify(StylesHelper::applyTextAlignment('color: #000000', 'right'))
+      ->equals('color: #000000;text-align:right;');
+    verify(StylesHelper::applyTextAlignment('text-align:left;', 'right'))
+      ->equals('text-align:left;text-align:right;');
+
+    foreach (['center', 'right', 'justify'] as $alignment) {
+      $style = 'text-align:' . $alignment . ';';
+      verify(StylesHelper::applyTextAlignment($style, 'right'))->equals($style);
+    }
+  }
+
+  public function testItAppliesTextAlignmentToArrayTextStyles(): void {
+    $block = ['styles' => ['text' => ['fontSize' => '12px', 'textAlign' => 'left']]];
+
+    verify(StylesHelper::applyTextAlignment($block, 'right', 'text'))
+      ->equals(['styles' => ['text' => ['fontSize' => '12px', 'textAlign' => 'right']]]);
+  }
 }
