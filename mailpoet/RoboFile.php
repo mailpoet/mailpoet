@@ -768,16 +768,12 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function qaPhpstan(array $opts = ['php-version' => null]) {
+  public function qaPhpstan() {
     $dir = __DIR__;
     $task = implode(' ', [
       'php -d memory_limit=-1',
       "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
     ]);
-
-    if ($opts['php-version'] !== null) {
-      $task = "ANALYSIS_PHP_VERSION={$opts['php-version']} $task";
-    }
 
     // make sure Codeception support files are present to avoid invalid errors when running PHPStan
     $this->_exec('../tests_env/vendor/bin/codecept build');
