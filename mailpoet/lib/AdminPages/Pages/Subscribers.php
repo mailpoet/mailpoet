@@ -10,6 +10,7 @@ use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\BulkConfirmationEmailResender;
 
 class Subscribers {
   /** @var PageRenderer */
@@ -76,6 +77,7 @@ class Subscribers {
     $data['signup_confirmation_enabled'] = (bool)$this->settings->get(
       'signup_confirmation.enabled'
     );
+    $data['bulk_confirmation_resend_limit'] = BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT;
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
 }
