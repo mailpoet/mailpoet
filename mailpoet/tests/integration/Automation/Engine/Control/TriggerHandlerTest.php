@@ -158,6 +158,7 @@ class TriggerHandlerTest extends \MailPoetTest {
 
     $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
     $this->testee->processTrigger($trigger, [$segmentSubject]);
+    $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation1));
   }
 
   public function testItAppliesFilters(): void {
