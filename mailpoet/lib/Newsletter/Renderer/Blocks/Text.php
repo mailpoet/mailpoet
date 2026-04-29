@@ -50,8 +50,7 @@ class Text {
       $blockquote->spacing = 0;
       $blockquote->border = 0;
       $blockquote->cellpadding = 0;
-      if (!$isRtl) {
-        $blockquote->html('
+      $blockquote->html('
         <tbody>
           <tr>
             <td width="2" bgcolor="#565656"></td>
@@ -65,30 +64,6 @@ class Text {
                 </tr>
               </table>
             </td>
-          </tr>
-        </tbody>');
-        $blockquote = $this->insertLineBreak($blockquote);
-        continue;
-      }
-      $contentCell = '
-            <td valign="top">
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
-                <tr>
-                  <td class="mailpoet_blockquote">
-                  ' . implode('', $contents) . '
-                  </td>
-                </tr>
-              </table>
-            </td>';
-      $ruleCell = '<td width="2" bgcolor="#565656"></td>';
-      $spacerCell = '<td width="10"></td>';
-      $cells = $contentCell . '
-            ' . $spacerCell . '
-            ' . $ruleCell;
-      $blockquote->html('
-        <tbody>
-          <tr>
-            ' . $cells . '
           </tr>
         </tbody>');
       $blockquote = $this->insertLineBreak($blockquote);

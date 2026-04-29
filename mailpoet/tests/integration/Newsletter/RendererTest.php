@@ -793,9 +793,24 @@ class RendererTest extends \MailPoetTest {
 
     verify($DOM->query('html')->attr('dir'))->equals('rtl');
     verify($DOM->query('body')->attr('style'))->stringContainsString('direction:rtl');
-    verify($template['html'])->stringContainsString('class="mailpoet_template"');
-    verify($template['html'])->stringContainsString('direction:rtl');
+    verify($DOM->query('table.mailpoet_template')->attr('style'))->stringContainsString('direction:rtl');
     verify($template['html'])->stringContainsString('text-align:right');
+  }
+
+  public function testItKeepsRenderedColumnContentStableForRtlEmails() {
+    $this->newsletter->setBody($this->getColumnsOnlyBody());
+    $ltrRenderer = $this->createRendererWithWpFunctions(false, 'en-US');
+    $rtlRenderer = $this->createRendererWithWpFunctions(true, 'ar');
+
+    $ltrTemplate = $ltrRenderer->render($this->newsletter);
+    $rtlTemplate = $rtlRenderer->render($this->newsletter);
+    $ltrDOM = $this->dOMParser->parseStr($ltrTemplate['html']);
+    $rtlDOM = $this->dOMParser->parseStr($rtlTemplate['html']);
+
+    verify($rtlDOM->query('body')->attr('style'))->stringContainsString('direction:rtl');
+    verify($rtlDOM->query('table.mailpoet_template')->attr('style'))->stringContainsString('direction:rtl');
+    verify($rtlDOM('td.mailpoet_content-cols-two', 0)->html())
+      ->equals($ltrDOM('td.mailpoet_content-cols-two', 0)->html());
   }
 
   public function testItDoesNotRenderDirectionAttributesForLtrEmails() {
@@ -852,6 +867,73 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(EmailContextBuilder::class),
       $this->diContainer->get(CouponBlockFailureTranslator::class)
     );
+  }
+
+  private function getColumnsOnlyBody(): array {
+    return [
+      'content' => [
+        'type' => 'container',
+        'orientation' => 'vertical',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => 'transparent',
+          ],
+        ],
+        'blocks' => [
+          [
+            'type' => 'container',
+            'orientation' => 'horizontal',
+            'styles' => [
+              'block' => [
+                'backgroundColor' => 'transparent',
+              ],
+            ],
+            'blocks' => [
+              [
+                'type' => 'container',
+                'orientation' => 'vertical',
+                'styles' => [
+                  'block' => [
+                    'backgroundColor' => 'transparent',
+                  ],
+                ],
+                'blocks' => [
+                  [
+                    'type' => 'spacer',
+                    'styles' => [
+                      'block' => [
+                        'backgroundColor' => 'transparent',
+                        'height' => '24px',
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+              [
+                'type' => 'container',
+                'orientation' => 'vertical',
+                'styles' => [
+                  'block' => [
+                    'backgroundColor' => 'transparent',
+                  ],
+                ],
+                'blocks' => [
+                  [
+                    'type' => 'spacer',
+                    'styles' => [
+                      'block' => [
+                        'backgroundColor' => 'transparent',
+                        'height' => '48px',
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
   }
 
   public function makeAttachment($upload, $parentPostId = 0) {
