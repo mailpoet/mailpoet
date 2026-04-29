@@ -1,5 +1,4 @@
-import { State } from './types';
-import { Automation } from '../automation';
+import { AutomationItem, State } from './types';
 
 export function legacyReducer(state: State, action): State {
   switch (action.type) {
@@ -12,7 +11,7 @@ export function legacyReducer(state: State, action): State {
       return {
         ...state,
         legacyAutomations: state.legacyAutomations.map(
-          (automation: Automation) =>
+          (automation: AutomationItem) =>
             automation.id === action.id
               ? { ...automation, status: action.status }
               : automation,
@@ -22,7 +21,7 @@ export function legacyReducer(state: State, action): State {
       return {
         ...state,
         legacyAutomations: state.legacyAutomations.filter(
-          (automation: Automation) => automation.id !== action.id,
+          (automation: AutomationItem) => automation.id !== action.id,
         ),
       };
     default:

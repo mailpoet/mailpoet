@@ -1,27 +1,153 @@
-import { TableCard } from '@woocommerce/components';
-import { TabPanel } from '@wordpress/components';
+import {
+  __experimentalConfirmDialog as ConfirmDialog,
+  TabPanel,
+} from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { __, _x } from '@wordpress/i18n';
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
+import {
+  DataViews,
+  filterSortAndPaginate,
+  View,
+  Action,
+} from '@wordpress/dataviews';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getRow } from './get-row';
-import { AutomationItem, storeName } from './store';
-import { Automation, AutomationStatus } from './automation';
+import { storeName } from './store/constants';
+import type { AutomationItem } from './store/types';
+import { AutomationStatus } from './automation';
 import { automationCount, legacyAutomationCount } from '../config';
 import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
+import { automationFields } from './fields';
+import { getAutomationAnalyticsUrl, getAutomationEditorUrl } from './urls';
 
-const tableHeaders = [
-  {
-    key: 'name',
-    label: __('Name', 'mailpoet'),
-    cellClassName:
-      'mailpoet-listing-name mailpoet-automation-listing-cell-name',
+type Group =
+  | 'all'
+  | AutomationStatus.ACTIVE
+  | AutomationStatus.DRAFT
+  | AutomationStatus.TRASH;
+
+type PendingAction = {
+  action: 'trash' | 'delete';
+  targets: AutomationItem[];
+} | null;
+
+const DEFAULT_PER_PAGE = 25;
+
+const DEFAULT_VIEW: View = {
+  type: 'table',
+  perPage: DEFAULT_PER_PAGE,
+  page: 1,
+  fields: ['subscribers', 'status'],
+  titleField: 'name',
+  descriptionField: 'description',
+  showTitle: true,
+  showDescription: true,
+  layout: {
+    styles: {
+      subscribers: { minWidth: '360px' },
+      status: { width: '120px' },
+    },
   },
-  { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
-  { key: 'status', label: __('Status', 'mailpoet') },
-  { key: 'actions' },
-] as const;
+};
+
+const groupNames: Group[] = [
+  'all',
+  AutomationStatus.ACTIVE,
+  AutomationStatus.DRAFT,
+  AutomationStatus.TRASH,
+];
+
+function parsePositiveInt(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function getGroupFromSearch(search: URLSearchParams): Group {
+  const status = search.get('status');
+  return groupNames.includes(status as Group) ? (status as Group) : 'all';
+}
+
+function getViewFromSearch(search: URLSearchParams): View {
+  const order = search.get('order');
+  const orderby = search.get('orderby');
+  return {
+    ...DEFAULT_VIEW,
+    page: parsePositiveInt(search.get('paged')) ?? DEFAULT_VIEW.page,
+    perPage: parsePositiveInt(search.get('per_page')) ?? DEFAULT_VIEW.perPage,
+    search: search.get('search') ?? undefined,
+    sort:
+      orderby && (order === 'asc' || order === 'desc')
+        ? { field: orderby, direction: order }
+        : undefined,
+  };
+}
+
+function viewMatchesSearch(view: View, search: URLSearchParams): boolean {
+  const searchView = getViewFromSearch(search);
+  return (
+    (view.page ?? 1) === (searchView.page ?? 1) &&
+    (view.perPage ?? DEFAULT_PER_PAGE) ===
+      (searchView.perPage ?? DEFAULT_PER_PAGE) &&
+    (view.search ?? '') === (searchView.search ?? '') &&
+    (view.sort?.field ?? '') === (searchView.sort?.field ?? '') &&
+    (view.sort?.direction ?? '') === (searchView.sort?.direction ?? '')
+  );
+}
+
+function formatTabTitle(label: string, count: number): string {
+  return count > 0 ? `${label} (${count})` : label;
+}
+
+function getActionCopy(pendingAction: PendingAction): {
+  title: string;
+  message: string;
+  confirmText: string;
+} {
+  if (!pendingAction) return { title: '', message: '', confirmText: '' };
+  const count = pendingAction.targets.length;
+  const names = pendingAction.targets
+    .map((automation) => `"${automation.name}"`)
+    .join(', ');
+
+  if (pendingAction.action === 'trash') {
+    return {
+      title: _n('Trash automation', 'Trash automations', count, 'mailpoet'),
+      message: sprintf(
+        // translators: %s is the list of automation names.
+        _n(
+          'Are you sure you want to move the automation %s to the Trash?',
+          'Are you sure you want to move the automations %s to the Trash?',
+          count,
+          'mailpoet',
+        ),
+        names,
+      ),
+      confirmText: __('Yes, move to trash', 'mailpoet'),
+    };
+  }
+
+  return {
+    title: _n(
+      'Permanently delete automation',
+      'Permanently delete automations',
+      count,
+      'mailpoet',
+    ),
+    message: sprintf(
+      // translators: %s is the list of automation names.
+      _n(
+        'Are you sure you want to permanently delete %s and all associated data? This cannot be undone!',
+        'Are you sure you want to permanently delete %s and all associated data? This cannot be undone!',
+        count,
+        'mailpoet',
+      ),
+      names,
+    ),
+    confirmText: __('Yes, permanently delete', 'mailpoet'),
+  };
+}
 
 export function AutomationListingHeader(): JSX.Element {
   return (
@@ -36,49 +162,120 @@ export function AutomationListingHeader(): JSX.Element {
 export function AutomationListing(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
-  const pageSearch = useMemo(
-    () => new URLSearchParams(location.search),
-    [location],
+  const [group, setGroup] = useState<Group>(() =>
+    getGroupFromSearch(new URLSearchParams(location.search)),
   );
+  const [view, setView] = useState<View>(() =>
+    getViewFromSearch(new URLSearchParams(location.search)),
+  );
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const latestGroupRef = useRef(group);
+  const latestViewRef = useRef(view);
 
   const automations = useSelect((select) =>
     select(storeName).getAllAutomations(),
   );
-  const { loadAutomations, loadLegacyAutomations } = useDispatch(storeName);
-
-  const status = pageSearch.get('status');
+  const {
+    loadAutomations,
+    loadLegacyAutomations,
+    restoreAutomation,
+    restoreLegacyAutomation,
+    trashAutomation,
+    trashLegacyAutomation,
+    deleteAutomation,
+    deleteLegacyAutomation,
+  } = useDispatch(storeName);
 
   useEffect(() => {
     void loadAutomations();
     void loadLegacyAutomations();
   }, [loadAutomations, loadLegacyAutomations]);
 
+  useEffect(() => {
+    latestGroupRef.current = group;
+    latestViewRef.current = view;
+  }, [group, view]);
+
+  useEffect(() => {
+    const nextSearch = new URLSearchParams(location.search);
+    const nextGroup = getGroupFromSearch(nextSearch);
+    if (nextGroup !== latestGroupRef.current) {
+      setGroup(nextGroup);
+    }
+    if (!viewMatchesSearch(latestViewRef.current, nextSearch)) {
+      setView(getViewFromSearch(nextSearch));
+    }
+  }, [location.search]);
+
   const updateUrlSearchString = useCallback(
-    (search: Record<string, string>) => {
-      const newSearch = new URLSearchParams({
-        ...Object.fromEntries(pageSearch.entries()),
-        ...search,
-      });
-      const changedKeys = Object.keys(search);
-      if (
-        changedKeys.includes('status') ||
-        changedKeys.includes('per_page') ||
-        newSearch.get('paged') === '1'
-      ) {
+    (nextGroup: Group, nextView: View) => {
+      const newSearch = new URLSearchParams(location.search);
+
+      newSearch.set('status', nextGroup);
+      if ((nextView.page ?? 1) > 1) {
+        newSearch.set('paged', String(nextView.page));
+      } else {
         newSearch.delete('paged');
       }
-      navigate({ search: newSearch.toString() });
+      if ((nextView.perPage ?? DEFAULT_PER_PAGE) !== DEFAULT_PER_PAGE) {
+        newSearch.set('per_page', String(nextView.perPage));
+      } else {
+        newSearch.delete('per_page');
+      }
+      if (nextView.search) {
+        newSearch.set('search', nextView.search);
+      } else {
+        newSearch.delete('search');
+      }
+      if (nextView.sort) {
+        newSearch.set('orderby', nextView.sort.field);
+        newSearch.set('order', nextView.sort.direction);
+      } else {
+        newSearch.delete('orderby');
+        newSearch.delete('order');
+      }
+
+      const currentSearch = location.search.startsWith('?')
+        ? location.search.slice(1)
+        : location.search;
+      const nextSearch = newSearch.toString();
+      if (nextSearch !== currentSearch) {
+        navigate({ search: nextSearch });
+      }
     },
-    [pageSearch, navigate],
+    [location.search, navigate],
   );
 
-  const groupedAutomations = useMemo<Record<string, Automation[]>>(() => {
-    const grouped = { all: [] };
+  const handleViewChange = useCallback(
+    (nextView: View) => {
+      setView(nextView);
+      updateUrlSearchString(group, nextView);
+    },
+    [group, updateUrlSearchString],
+  );
+
+  const handleTabSelect = (tabName: string): void => {
+    if (!groupNames.includes(tabName as Group)) return;
+    const nextGroup = tabName as Group;
+    if (nextGroup === group) return;
+
+    const nextView = { ...view, page: 1 };
+    setGroup(nextGroup);
+    setView(nextView);
+    updateUrlSearchString(nextGroup, nextView);
+  };
+
+  const groupedAutomations = useMemo<Record<Group, AutomationItem[]>>(() => {
+    const grouped: Record<Group, AutomationItem[]> = {
+      all: [],
+      [AutomationStatus.ACTIVE]: [],
+      [AutomationStatus.DRAFT]: [],
+      [AutomationStatus.TRASH]: [],
+    };
     (automations ?? []).forEach((automation) => {
-      if (!grouped[automation.status]) {
-        grouped[automation.status] = [];
+      if (automation.status in grouped) {
+        grouped[automation.status as Group].push(automation);
       }
-      grouped[automation.status].push(automation);
       if (automation.status !== AutomationStatus.TRASH) {
         grouped.all.push(automation);
       }
@@ -86,99 +283,220 @@ export function AutomationListing(): JSX.Element {
     return grouped;
   }, [automations]);
 
-  const tabs = useMemo(() => {
-    const tabConfig = [
+  const totalCount = automationCount + legacyAutomationCount;
+  const { data, paginationInfo } = useMemo(() => {
+    if (!automations) {
+      return {
+        data: [],
+        paginationInfo: {
+          totalItems: totalCount,
+          totalPages: Math.ceil(
+            totalCount / (view.perPage ?? DEFAULT_PER_PAGE),
+          ),
+        },
+      };
+    }
+    const filteredAutomations = groupedAutomations[group] ?? [];
+    return filterSortAndPaginate(filteredAutomations, view, automationFields);
+  }, [automations, group, groupedAutomations, totalCount, view]);
+
+  useEffect(() => {
+    const currentPage = view.page ?? 1;
+    const lastPage = paginationInfo.totalPages;
+    if (automations && lastPage > 0 && currentPage > lastPage) {
+      handleViewChange({ ...view, page: lastPage });
+    }
+  }, [automations, handleViewChange, paginationInfo.totalPages, view]);
+
+  const tabs = useMemo(
+    () => [
       {
         name: 'all',
-        title: __('All', 'mailpoet'),
-        className: 'mailpoet-tab-all',
+        title: formatTabTitle(
+          __('All', 'mailpoet'),
+          groupedAutomations.all.length,
+        ),
+        className: 'mailpoet-dataviews-group-all mailpoet-tab-all',
       },
       {
         name: AutomationStatus.ACTIVE,
-        title: __('Active', 'mailpoet'),
+        title: formatTabTitle(
+          __('Active', 'mailpoet'),
+          groupedAutomations[AutomationStatus.ACTIVE].length,
+        ),
         className: 'mailpoet-tab-active',
       },
       {
         name: AutomationStatus.DRAFT,
-        title: _x('Inactive', 'noun', 'mailpoet'),
+        title: formatTabTitle(
+          _x('Inactive', 'noun', 'mailpoet'),
+          groupedAutomations[AutomationStatus.DRAFT].length,
+        ),
         className: 'mailpoet-tab-draft',
       },
       {
         name: AutomationStatus.TRASH,
-        title: _x('Trash', 'noun', 'mailpoet'),
-        className: 'mailpoet-tab-trash',
+        title: formatTabTitle(
+          _x('Trash', 'noun', 'mailpoet'),
+          groupedAutomations[AutomationStatus.TRASH].length,
+        ),
+        className: 'mailpoet-dataviews-group-trash mailpoet-tab-trash',
       },
-    ] as const;
-
-    return tabConfig.map((tab) => {
-      const count = (groupedAutomations[tab.name] ?? []).length;
-      return {
-        name: tab.name,
-        title: (
-          <>
-            <span>{tab.title}</span>
-            {count > 0 && <span className="count">{count}</span>}
-          </>
-        ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-        className: tab.className,
-      };
-    });
-  }, [groupedAutomations]);
-
-  const renderTabs = useCallback(
-    (tab) => {
-      const totalCount = automationCount + legacyAutomationCount;
-      const filteredAutomations: AutomationItem[] =
-        groupedAutomations[tab.name] ?? [];
-      const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
-      const currentPage = parseInt(pageSearch.get('paged') ?? '1', 10);
-      const start = (currentPage - 1) * rowsPerPage;
-      const rows = filteredAutomations
-        .map((automation) => getRow(automation))
-        .slice(start, start + rowsPerPage);
-
-      return (
-        <TableCard
-          className="mailpoet-listing-card mailpoet-automation-listing"
-          title=""
-          isLoading={!automations}
-          headers={
-            // typed as mutable so doesn't accept our const (readonly) type
-            tableHeaders as unknown as ComponentProps<
-              typeof TableCard
-            >['headers']
-          }
-          rows={rows}
-          rowKey={(_, i) =>
-            filteredAutomations[i].id *
-            (filteredAutomations[i].isLegacy ? -1 : 1)
-          }
-          rowsPerPage={rowsPerPage}
-          onQueryChange={(key) => (value) => {
-            updateUrlSearchString({ [key]: value });
-          }}
-          totalRows={automations ? filteredAutomations.length : totalCount}
-          query={Object.fromEntries(pageSearch)}
-          showMenu={false}
-        />
-      );
-    },
-    [automations, groupedAutomations, pageSearch, updateUrlSearchString],
+    ],
+    [groupedAutomations],
   );
 
+  const restore = useCallback(
+    (automation: AutomationItem): void => {
+      const action = automation.isLegacy
+        ? restoreLegacyAutomation
+        : restoreAutomation;
+      void (action(automation, AutomationStatus.DRAFT) as Promise<void>);
+    },
+    [restoreAutomation, restoreLegacyAutomation],
+  );
+
+  const runPendingAction = useCallback((): void => {
+    if (!pendingAction) return;
+    pendingAction.targets.forEach((automation) => {
+      let selectedAction = automation.isLegacy
+        ? deleteLegacyAutomation
+        : deleteAutomation;
+      if (pendingAction.action === 'trash') {
+        selectedAction = automation.isLegacy
+          ? trashLegacyAutomation
+          : trashAutomation;
+      }
+      void (selectedAction(automation) as Promise<void>);
+    });
+    setPendingAction(null);
+  }, [
+    deleteAutomation,
+    deleteLegacyAutomation,
+    pendingAction,
+    trashAutomation,
+    trashLegacyAutomation,
+  ]);
+
+  const actions = useMemo<Action<AutomationItem>[]>(
+    () => [
+      {
+        id: 'analytics',
+        label: __('Analytics', 'mailpoet'),
+        isPrimary: true,
+        supportsBulk: false,
+        callback: (targets) => {
+          if (targets[0]) {
+            window.location.href = getAutomationAnalyticsUrl(targets[0]);
+          }
+        },
+      },
+      {
+        id: 'edit',
+        label: __('Edit', 'mailpoet'),
+        icon: 'edit',
+        isPrimary: true,
+        supportsBulk: false,
+        callback: (targets) => {
+          if (targets[0]) {
+            window.location.href = getAutomationEditorUrl(targets[0]);
+          }
+        },
+      },
+      {
+        id: 'trash',
+        label: _x('Trash', 'verb', 'mailpoet'),
+        supportsBulk: false,
+        isEligible: (item) => item.status !== AutomationStatus.TRASH,
+        callback: (targets) => {
+          if (targets.length > 0) {
+            setPendingAction({ action: 'trash', targets });
+          }
+        },
+      },
+      {
+        id: 'restore',
+        label: __('Restore', 'mailpoet'),
+        supportsBulk: false,
+        isEligible: (item) => item.status === AutomationStatus.TRASH,
+        callback: (targets) => {
+          if (targets[0]) restore(targets[0]);
+        },
+      },
+      {
+        id: 'delete',
+        label: __('Delete permanently', 'mailpoet'),
+        supportsBulk: false,
+        isDestructive: true,
+        isEligible: (item) => item.status === AutomationStatus.TRASH,
+        callback: (targets) => {
+          if (targets.length > 0) {
+            setPendingAction({ action: 'delete', targets });
+          }
+        },
+      },
+    ],
+    [restore],
+  );
+
+  const emptyLabel =
+    group === AutomationStatus.TRASH
+      ? __('Trash is empty.', 'mailpoet')
+      : __('No automations found.', 'mailpoet');
+  const actionCopy = getActionCopy(pendingAction);
+
   return (
-    <TabPanel
-      className="mailpoet-filter-tab-panel"
-      tabs={tabs}
-      onSelect={(tabName) => {
-        if (status !== tabName) {
-          updateUrlSearchString({ status: tabName });
-        }
-      }}
-      initialTabName={status ?? 'all'}
-      key={status} // force re-mount on history change to switch tab (via "initialTabName")
-    >
-      {renderTabs}
-    </TabPanel>
+    <>
+      <TabPanel
+        key={group}
+        className="mailpoet-dataviews__tabs"
+        activeClass="is-active"
+        tabs={tabs}
+        initialTabName={group}
+        onSelect={handleTabSelect}
+      >
+        {() => (
+          <div
+            className="mailpoet-dataviews mailpoet-automation-dataviews"
+            data-automation-id="automation_listing"
+          >
+            <DataViews<AutomationItem>
+              key={group}
+              data={data}
+              fields={automationFields}
+              view={view}
+              onChangeView={handleViewChange}
+              actions={actions}
+              paginationInfo={paginationInfo}
+              defaultLayouts={{ table: {} }}
+              getItemId={(item) =>
+                `${item.isLegacy ? 'legacy' : 'automation'}-${item.id}`
+              }
+              isLoading={!automations}
+              empty={<div>{emptyLabel}</div>}
+            >
+              <div className="mailpoet-dataviews__toolbar">
+                <DataViews.Search
+                  label={__('Search automations', 'mailpoet')}
+                />
+              </div>
+              <DataViews.Layout />
+              <DataViews.Footer />
+            </DataViews>
+          </div>
+        )}
+      </TabPanel>
+      <ConfirmDialog
+        className="mailpoet-confirm-dialog"
+        isOpen={!!pendingAction}
+        title={actionCopy.title}
+        confirmButtonText={actionCopy.confirmText}
+        __experimentalHideHeader={false}
+        onConfirm={runPendingAction}
+        onCancel={() => setPendingAction(null)}
+      >
+        {actionCopy.message}
+      </ConfirmDialog>
+    </>
   );
 }

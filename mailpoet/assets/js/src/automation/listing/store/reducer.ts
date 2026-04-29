@@ -1,5 +1,4 @@
-import { State } from './types';
-import { Automation } from '../automation';
+import { AutomationItem, State } from './types';
 
 export function reducer(state: State, action): State {
   switch (action.type) {
@@ -16,7 +15,7 @@ export function reducer(state: State, action): State {
     case 'UPDATE_AUTOMATION':
       return {
         ...state,
-        automations: state.automations.map((automation: Automation) =>
+        automations: state.automations.map((automation: AutomationItem) =>
           automation.id === action.automation.id
             ? action.automation
             : automation,
@@ -26,7 +25,8 @@ export function reducer(state: State, action): State {
       return {
         ...state,
         automations: state.automations.filter(
-          (automation: Automation) => automation.id !== action.automation.id,
+          (automation: AutomationItem) =>
+            automation.id !== action.automation.id,
         ),
       };
     default:
