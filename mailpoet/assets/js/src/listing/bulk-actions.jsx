@@ -10,20 +10,29 @@ class ListingBulkActions extends Component {
     this.state = {
       extra: false,
     };
+    this.isSubmittingAction = false;
+    this.triggerElement = null;
     this.handleApplyAction = this.handleApplyAction.bind(this);
   }
 
-  handleApplyAction(actionName) {
+  handleApplyAction(actionName, triggerElement = null) {
     const action = this.getSelectedAction(actionName);
 
-    if (action === null) {
+    if (action === null || this.isSubmittingAction) {
       return;
     }
 
     // action on select callback
     if (action.onSelect !== undefined && !this.state.extra) {
+      this.triggerElement = triggerElement;
       const submitModal = () => this.handleApplyAction(actionName);
-      const closeModal = () => this.setState({ extra: false });
+      const closeModal = () => {
+        this.setState({ extra: false }, () => {
+          if (this.triggerElement) {
+            this.triggerElement.focus();
+          }
+        });
+      };
       this.setState({
         extra: action.onSelect(submitModal, closeModal, this.props),
       });
@@ -43,15 +52,28 @@ class ListingBulkActions extends Component {
     }
 
     if (data.action) {
+      this.isSubmittingAction = true;
       const promise = this.props.onBulkAction(selectedIds, data);
       if (promise !== false) {
         promise.then(onSuccess);
+        promise.always(() => {
+          this.isSubmittingAction = false;
+        });
+      } else {
+        this.isSubmittingAction = false;
       }
     }
 
-    this.setState({
-      extra: false,
-    });
+    this.setState(
+      {
+        extra: false,
+      },
+      () => {
+        if (this.triggerElement) {
+          this.triggerElement.focus();
+        }
+      },
+    );
   }
 
   getSelectedAction(actionName) {
@@ -90,7 +112,7 @@ class ListingBulkActions extends Component {
               key={`action-${action.name}`}
               onClick={(e) => {
                 e.preventDefault();
-                return this.handleApplyAction(action.name);
+                return this.handleApplyAction(action.name, e.currentTarget);
               }}
             >
               {action.label}

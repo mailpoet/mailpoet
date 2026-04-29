@@ -1,9 +1,10 @@
 import classnames from 'classnames';
 import jQuery from 'jquery';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 
-import { Button, SegmentTags, SubscriberTags } from 'common';
+import { Button, Checkbox, SegmentTags, SubscriberTags } from 'common';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
@@ -44,6 +45,15 @@ type Subscriber = {
 };
 
 type Response = {
+  data?: {
+    selected_count: number;
+    eligible_count: number;
+    queued_count: number;
+    skipped_count: number;
+    skipped_by_reason: Record<string, number>;
+    task_id: number | null;
+    message: string;
+  };
   meta: {
     count: number;
     segment: string;
@@ -53,6 +63,9 @@ type Response = {
 };
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const bulkConfirmationResendLimit = 20;
+const bulkConfirmationCheckboxId = 'bulk-resend-confirmation-checkbox-input';
+const bulkConfirmationConfirmHelpId = 'bulk-resend-confirmation-confirm-help';
 
 const getColumns = () => [
   {
@@ -190,6 +203,187 @@ const createModal = (submitModal, closeModal, field, title) => (
   </Modal>
 );
 
+const getFocusableElements = (container: HTMLElement) =>
+  Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => element.offsetParent !== null);
+
+const trapModalTabFocus = (event: KeyboardEvent, container: HTMLElement) => {
+  if (event.key !== 'Tab') {
+    return;
+  }
+
+  const focusableElements = getFocusableElements(container);
+
+  if (focusableElements.length === 0) {
+    return;
+  }
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  if (event.shiftKey && document.activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+  } else if (!event.shiftKey && document.activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
+};
+
+function BulkResendConfirmationEmailsModal({
+  submitModal,
+  closeModal,
+  count,
+}: {
+  submitModal: () => void;
+  closeModal: () => void;
+  count: number;
+}) {
+  const [isChecked, setIsChecked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const modalContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.getElementById(bulkConfirmationCheckboxId)?.focus();
+  }, []);
+
+  useEffect(() => {
+    const modalFrame = modalContentRef.current?.closest<HTMLElement>(
+      '.mailpoet-modal-frame',
+    );
+    if (!modalFrame) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      trapModalTabFocus(event, modalFrame);
+    };
+    modalFrame.addEventListener('keydown', handleKeyDown);
+    return () => modalFrame.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSubmit = () => {
+    if (!isChecked || isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+    submitModal();
+  };
+
+  return (
+    <Modal
+      title={__('Resend confirmation emails', 'mailpoet')}
+      onRequestClose={closeModal}
+      isDismissible
+    >
+      <div ref={modalContentRef}>
+        <p>
+          {__(
+            'You selected %1$s subscribers. MailPoet will queue confirmation emails for up to %2$s eligible unconfirmed subscribers.',
+            'mailpoet',
+          )
+            .replace('%1$s', Number(count).toLocaleString())
+            .replace('%2$s', bulkConfirmationResendLimit.toLocaleString())}
+        </p>
+        <p>
+          {__(
+            'Subscribers who reached the resend limit, were emailed recently, are too old, or are no longer unconfirmed will be skipped.',
+            'mailpoet',
+          )}
+        </p>
+        <Checkbox
+          id={bulkConfirmationCheckboxId}
+          automationId="bulk-resend-confirmation-checkbox"
+          checked={isChecked}
+          disabled={isSubmitting}
+          onCheck={(checked) => setIsChecked(checked)}
+          isFullWidth
+        >
+          {__(
+            'I understand these confirmation emails will be queued and only sent to eligible unconfirmed subscribers.',
+            'mailpoet',
+          )}
+        </Checkbox>
+        <p id={bulkConfirmationConfirmHelpId} className="description">
+          {__('Confirm the checkbox to queue confirmation emails.', 'mailpoet')}
+        </p>
+        <span className="mailpoet-gap-half" />
+        <Button
+          onClick={handleSubmit}
+          dimension="small"
+          isDisabled={!isChecked || isSubmitting}
+          withSpinner={isSubmitting}
+          aria-describedby={bulkConfirmationConfirmHelpId}
+          automationId="bulk-resend-confirmation-confirm"
+        >
+          {__('Queue emails', 'mailpoet')}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+const showBulkResendConfirmationNotice = (response: Response) => {
+  const data = response.data;
+  if (!data) {
+    MailPoet.Notice.success(__('Confirmation emails were queued.', 'mailpoet'));
+    return;
+  }
+
+  const queuedCount = Number(data.queued_count);
+  const skippedCount = Number(data.skipped_count);
+  let message;
+
+  if (queuedCount === 0) {
+    message = __(
+      'No confirmation emails were queued. No selected subscribers were eligible.',
+      'mailpoet',
+    );
+  } else if (queuedCount === 1 && skippedCount === 1) {
+    message = __(
+      'Confirmation emails were queued for 1 subscriber. 1 selected subscriber was skipped.',
+      'mailpoet',
+    );
+  } else if (queuedCount === 1 && skippedCount > 0) {
+    message = __(
+      'Confirmation emails were queued for 1 subscriber. %1$s selected subscribers were skipped.',
+      'mailpoet',
+    ).replace('%1$s', skippedCount.toLocaleString());
+  } else if (skippedCount === 1) {
+    message = __(
+      'Confirmation emails were queued for %1$s subscribers. 1 selected subscriber was skipped.',
+      'mailpoet',
+    ).replace('%1$s', queuedCount.toLocaleString());
+  } else if (skippedCount > 0) {
+    message = __(
+      'Confirmation emails were queued for %1$s subscribers. %2$s selected subscribers were skipped.',
+      'mailpoet',
+    )
+      .replace('%1$s', queuedCount.toLocaleString())
+      .replace('%2$s', skippedCount.toLocaleString());
+  } else if (queuedCount === 1) {
+    message = __(
+      'Confirmation emails were queued for 1 subscriber.',
+      'mailpoet',
+    );
+  } else {
+    message = __(
+      'Confirmation emails were queued for %1$s subscribers.',
+      'mailpoet',
+    ).replace('%1$s', queuedCount.toLocaleString());
+  }
+
+  MailPoet.Notice.success(message, {
+    onOpen: (element) => {
+      element.attr('role', 'status');
+      element.attr('aria-live', 'polite');
+    },
+  });
+};
+
 const getBulkActions = () => {
   const bulkActions = [
     {
@@ -320,6 +514,7 @@ const getBulkActions = () => {
     {
       name: 'unsubscribe',
       label: __('Unsubscribe', 'mailpoet'),
+      display: ({ group }) => group !== 'unsubscribed',
       onSelect: (submitModal, closeModal, bulkActionProps) => {
         const count =
           bulkActionProps.selection !== 'all'
@@ -349,6 +544,25 @@ const getBulkActions = () => {
           </Modal>
         );
       },
+    },
+    {
+      name: 'resendConfirmationEmails',
+      label: __('Resend confirmation emails', 'mailpoet'),
+      display: ({ group }) => group === 'unconfirmed',
+      onSelect: (submitModal, closeModal, bulkActionProps) => {
+        const count =
+          bulkActionProps.selection !== 'all'
+            ? bulkActionProps.selected_ids.length
+            : bulkActionProps.count;
+        return (
+          <BulkResendConfirmationEmailsModal
+            submitModal={submitModal}
+            closeModal={closeModal}
+            count={count}
+          />
+        );
+      },
+      onSuccess: showBulkResendConfirmationNotice,
     },
     {
       name: 'addTag',
@@ -417,15 +631,6 @@ const getBulkActions = () => {
       },
     },
   ];
-
-  // Filter out 'unsubscribe' action if we're in the unsubscribed group
-  const url = window.location.href;
-  const match = url.match(/group\[(.*?)\]/);
-  const group = match ? match[1] : null;
-
-  if (group === 'unsubscribed') {
-    return bulkActions.filter((action) => action.name !== 'unsubscribe');
-  }
 
   return bulkActions;
 };

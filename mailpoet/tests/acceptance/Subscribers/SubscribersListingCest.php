@@ -3,9 +3,11 @@
 namespace MailPoet\Test\Acceptance;
 
 use DateTime;
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Tag;
+use PHPUnit\Framework\Assert;
 
 class SubscribersListingCest {
   public function subscribersListing(\AcceptanceTester $i) {
@@ -83,7 +85,7 @@ class SubscribersListingCest {
 
     $i->waitForText($maxConfirmationsEmail);
     $i->moveMouseOver(['xpath' => '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr']);
-    // Admins can resend confirmation emails even when the subscriber reached the limit
+    // The backend enforces resend limits when admins use this row action.
     $i->see('Resend confirmation email', '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr');
 
     $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
@@ -137,6 +139,186 @@ class SubscribersListingCest {
     $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber4->getId()}']");
   }
 
+  public function bulkResendConfirmationEmailActionVisibility(\AcceptanceTester $i) {
+    $i->wantTo('Show the bulk confirmation resend action only for unconfirmed subscribers');
+
+    $subscribers = [
+      'all' => (new Subscriber())
+        ->withEmail('bulk-resend-all@example.com')
+        ->withStatus('unconfirmed')
+        ->create(),
+      'subscribed' => (new Subscriber())
+        ->withEmail('bulk-resend-subscribed@example.com')
+        ->withStatus('subscribed')
+        ->create(),
+      'unsubscribed' => (new Subscriber())
+        ->withEmail('bulk-resend-unsubscribed@example.com')
+        ->withStatus('unsubscribed')
+        ->create(),
+      'inactive' => (new Subscriber())
+        ->withEmail('bulk-resend-inactive@example.com')
+        ->withStatus('inactive')
+        ->create(),
+      'bounced' => (new Subscriber())
+        ->withEmail('bulk-resend-bounced@example.com')
+        ->withStatus('bounced')
+        ->create(),
+      'trash' => (new Subscriber())
+        ->withEmail('bulk-resend-trash@example.com')
+        ->withDeletedAt(new DateTime())
+        ->create(),
+    ];
+    $unconfirmedSubscriber = (new Subscriber())
+      ->withEmail('bulk-resend-unconfirmed@example.com')
+      ->withStatus('unconfirmed')
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+
+    $this->selectSubscriberForBulkAction($i, $subscribers['all']);
+    $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+
+    foreach (['subscribed', 'unsubscribed', 'inactive', 'bounced'] as $group) {
+      $this->openSubscribersGroup($i, $group);
+      $this->selectSubscriberForBulkAction($i, $subscribers[$group]);
+      $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+    }
+
+    $this->openSubscribersGroup($i, 'trash');
+    $i->waitForElement("tbody [data-automation-id^='listing-row-checkbox-']");
+    $i->click("tbody [data-automation-id^='listing-row-checkbox-']");
+    $i->waitForElement("[data-automation-id='listing-bulk-actions']");
+    $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+
+    $this->openSubscribersGroup($i, 'unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
+    $i->seeElement("[data-automation-id='action-resendConfirmationEmails']");
+  }
+
+  public function bulkResendConfirmationEmailModalAndNotice(\AcceptanceTester $i) {
+    $i->wantTo('Queue bulk confirmation email resends with a gated accessible modal');
+
+    $eligibleSubscriber = (new Subscriber())
+      ->withEmail('bulk-resend-eligible@example.com')
+      ->withStatus('unconfirmed')
+      ->withCountConfirmations(0)
+      ->create();
+    $skippedSubscriber = (new Subscriber())
+      ->withEmail('bulk-resend-skipped@example.com')
+      ->withStatus('unconfirmed')
+      ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $eligibleSubscriber);
+    $this->selectSubscriberForBulkAction($i, $skippedSubscriber);
+    $this->openBulkResendConfirmationModal($i);
+
+    $i->waitForElement('#bulk-resend-confirmation-checkbox-input');
+    Assert::assertSame(
+      'bulk-resend-confirmation-checkbox-input',
+      $i->executeJS('return document.activeElement.id;')
+    );
+    $i->see(
+      'I understand these confirmation emails will be queued and only sent to eligible unconfirmed subscribers.',
+      "[data-automation-id='bulk-resend-confirmation-checkbox']"
+    );
+    $i->seeElement("[data-automation-id='bulk-resend-confirmation-confirm']:disabled");
+    Assert::assertSame(
+      'bulk-resend-confirmation-confirm-help',
+      $i->grabAttributeFrom("[data-automation-id='bulk-resend-confirmation-confirm']", 'aria-describedby')
+    );
+
+    $i->pressKey('#bulk-resend-confirmation-checkbox-input', WebDriverKeys::ESCAPE);
+    $i->waitForElementNotVisible('.mailpoet-modal-frame');
+    Assert::assertSame(
+      'action-resendConfirmationEmails',
+      $i->executeJS('return document.activeElement.getAttribute("data-automation-id");')
+    );
+
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+    $i->dontSeeElement("[data-automation-id='bulk-resend-confirmation-confirm']:disabled");
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+
+    $i->waitForText('Confirmation emails were queued for 1 subscriber. 1 selected subscriber was skipped.');
+  }
+
+  public function bulkResendConfirmationEmailPreventsDuplicateSubmits(\AcceptanceTester $i) {
+    $i->wantTo('Prevent duplicate bulk confirmation resend requests while queueing is pending');
+
+    $subscriber = (new Subscriber())
+      ->withEmail('bulk-resend-pending@example.com')
+      ->withStatus('unconfirmed')
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $subscriber);
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+
+    $i->executeJS(<<<'JS'
+      window.mailpoetBulkResendRequests = 0;
+      window.mailpoetBulkResendDeferred = jQuery.Deferred();
+      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
+      MailPoet.Ajax.post = function(request) {
+        if (
+          request.action === 'bulkAction'
+          && request.data
+          && request.data.action === 'resendConfirmationEmails'
+        ) {
+          window.mailpoetBulkResendRequests += 1;
+          return window.mailpoetBulkResendDeferred.promise();
+        }
+        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+      };
+    JS);
+
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+    $i->click("[data-automation-id='action-resendConfirmationEmails']");
+    Assert::assertSame(1, $i->executeJS('return window.mailpoetBulkResendRequests;'));
+
+    $i->executeJS(<<<'JS'
+      MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;
+      window.mailpoetBulkResendDeferred.resolve({
+        data: {
+          selected_count: 1,
+          eligible_count: 1,
+          queued_count: 1,
+          skipped_count: 0,
+          skipped_by_reason: {},
+          task_id: 1,
+          message: 'Confirmation emails were queued.'
+        }
+      });
+    JS);
+  }
+
+  public function bulkResendConfirmationEmailShowsZeroEligibleNotice(\AcceptanceTester $i) {
+    $i->wantTo('Show a zero eligible notice for bulk confirmation resends');
+
+    $subscriber = (new Subscriber())
+      ->withEmail('bulk-resend-zero@example.com')
+      ->withStatus('unconfirmed')
+      ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $subscriber);
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+
+    $i->waitForText('No confirmation emails were queued. No selected subscribers were eligible.');
+  }
+
   public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
     $i->wantTo('Verify that searching in Trash with no results does not redirect to All');
 
@@ -159,5 +341,23 @@ class SubscribersListingCest {
     // Should stay in trash — not redirect to All
     $i->waitForText('No items found.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
+  }
+
+  private function selectSubscriberForBulkAction(\AcceptanceTester $i, $subscriber): void {
+    $i->waitForText($subscriber->getEmail());
+    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber->getId()}']");
+    $i->waitForElement("[data-automation-id='listing-bulk-actions']");
+  }
+
+  private function openBulkResendConfirmationModal(\AcceptanceTester $i): void {
+    $i->waitForElement("[data-automation-id='action-resendConfirmationEmails']");
+    $i->click("[data-automation-id='action-resendConfirmationEmails']");
+    $i->waitForElement("[data-automation-id='bulk-resend-confirmation-checkbox']");
+  }
+
+  private function openSubscribersGroup(\AcceptanceTester $i, string $group): void {
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[' . $group . ']');
+    $i->waitForElement('#search_input');
+    $i->waitForElementNotVisible(\AcceptanceTester::LISTING_LOADING_SELECTOR);
   }
 }
