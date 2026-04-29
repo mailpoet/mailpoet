@@ -52,7 +52,7 @@ class SegmentsListingEndpoint extends AbstractSegmentsListingEndpoint {
   }
 
   protected function allowsSearch(): bool {
-    return false;
+    return true;
   }
 
   protected function getDefaultParameters(): array {
