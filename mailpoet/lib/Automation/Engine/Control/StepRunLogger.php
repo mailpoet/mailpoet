@@ -57,6 +57,8 @@ class StepRunLogger {
     if (!defined('WP_DEBUG')) {
       return false;
     }
+    // WP_DEBUG can be defined as a non-bool value in wp-config.php, even if PHPStan stubs claim bool
+    // @phpstan-ignore-next-line function.alreadyNarrowedType
     if (!is_bool(WP_DEBUG)) {
       return in_array(strtolower((string)WP_DEBUG), ['true', '1'], true);
     }

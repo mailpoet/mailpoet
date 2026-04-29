@@ -61,11 +61,6 @@ parameters:
 			path: ../../lib/AdminPages/PageRenderer.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/AdminPages/PageRenderer.php
-
-		-
 			identifier: cast.int
 			count: 1
 			path: ../../lib/AdminPages/Pages/AutomationAnalytics.php
@@ -176,11 +171,6 @@ parameters:
 			path: ../../lib/Automation/Engine/Control/StepHandler.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Automation/Engine/Control/StepRunLogger.php
-
-		-
 			identifier: cast.string
 			count: 1
 			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationsCreateFromTemplateEndpoint.php
@@ -271,11 +261,6 @@ parameters:
 			path: ../../lib/Automation/Integrations/MailPoet/Triggers/UserRegistrationTrigger.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Automation/Integrations/WooCommerce/WooCommerce.php
-
-		-
 			identifier: nullCoalesce.expr
 			count: 1
 			path: ../../lib/Cache/TransientCache.php
@@ -329,11 +314,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: ../../lib/Config/Populator.php
-
-		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Config/RequirementsChecker.php
 
 		-
 			identifier: argument.type
@@ -659,21 +639,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Editor/PostTransformerContentsExtractor.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Newsletter/NewsletterCoupon.php
-
-		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Newsletter/NewsletterCoupon.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Newsletter/NewsletterCoupon.php
 
 		-
 			identifier: argument.type
@@ -1106,11 +1071,6 @@ parameters:
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Twig/I18n.php
-
-		-
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Util/ConflictResolver.php
@@ -1134,11 +1094,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Util/Helpers.php
-
-		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Util/Notices/DisabledMailFunctionNotice.php
 
 		-
 			identifier: argument.type
@@ -1191,19 +1146,9 @@ parameters:
 			path: ../../lib/WooCommerce/Helper.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/WooCommerce/Helper.php
-
-		-
 			identifier: function.impossibleType
 			count: 2
 			path: ../../lib/WooCommerce/Helper.php
-
-		-
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: ../../lib/WooCommerce/Integrations/AutomateWooHooks.php
 
 		-
 			identifier: cast.string
@@ -1261,44 +1206,14 @@ parameters:
 			path: ../../tests/acceptance/Subscriptions/WooCheckoutBlocksCest.php
 
 		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/API/JSON/ResponseBuilders/SendingQueuesResponseBuilderTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: ../../tests/integration/API/JSON/v1/DynamicSegmentsTest.php
-
-		-
 			identifier: argument.unresolvableType
 			count: 8
 			path: ../../tests/integration/API/MP/SubscribersTest.php
 
 		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Automation/Engine/Control/StepRunLoggerTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Automation/Engine/Control/TriggerHandlerTest.php
-
-		-
 			identifier: arrayValues.empty
 			count: 1
 			path: ../../tests/integration/Automation/Integrations/MailPoet/Actions/SendEmailActionTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
 
 		-
 			identifier: property.onlyRead
@@ -1346,34 +1261,9 @@ parameters:
 			path: ../../tests/integration/Doctrine/WPDB/ConnectionTest.php
 
 		-
-			identifier: method.alreadyNarrowedType
-			count: 4
-			path: ../../tests/integration/Doctrine/WPDB/ConnectionTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Doctrine/WPDB/DriverTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 11
-			path: ../../tests/integration/Doctrine/WPDB/ResultTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Entities/NewsletterEntityTest.php
-
-		-
 			identifier: argument.unresolvableType
 			count: 1
 			path: ../../tests/integration/Migrator/MigratorTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: ../../tests/integration/Newsletter/NewsletterDeleteControllerTest.php
 
 		-
 			identifier: binaryOp.invalid
@@ -1421,16 +1311,6 @@ parameters:
 			path: ../../tests/integration/REST/Tags/TagsEndpointsTest.php
 
 		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Segments/SegmentSubscribersRepositoryTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: ../../tests/integration/Settings/SettingsChangeHandlerTest.php
-
-		-
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterClicksExporterTest.php
@@ -1439,16 +1319,6 @@ parameters:
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../tests/integration/Subscribers/ImportExport/PersonalDataExporters/NewsletterOpensExporterTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Subscribers/SubscriberSaveControllerTest.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/integration/Subscribers/SubscribersRepositoryTest.php
 
 		-
 			identifier: offsetAccess.nonOffsetAccessible
@@ -1491,11 +1361,6 @@ parameters:
 			path: ../../tests/integration/_bootstrap.php
 
 		-
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../tests/unit/Automation/Engine/Control/SubjectTransformerHandlerTest.php
-
-		-
 			identifier: missingType.property
 			count: 1
 			path: ../../tests/unit/Automation/Engine/Validation/AutomationGraph/AutomationWalkerTest.php
@@ -1504,9 +1369,3 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../../tests/unit/Form/HtmlParser.php
-
-		-
-			identifier: method.alreadyNarrowedType
-			count: 9
-			path: ../../tests/unit/Validator/BuilderTest.php
-

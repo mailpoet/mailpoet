@@ -168,6 +168,7 @@ class PageRenderer {
       'transactional_emails_opt_in_notice_dismissed' => (bool)$this->userFlags->get('transactional_emails_opt_in_notice_dismissed'),
       'track_wizard_loaded_via_woocommerce' => (bool)$this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME),
       'track_wizard_loaded_via_woocommerce_marketing_dashboard' => (bool)$this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_MARKETING_DASHBOARD_SETTING_NAME),
+      // @phpstan-ignore-next-line function.alreadyNarrowedType -- is_callable() detects functions disabled at runtime via disable_functions
       'mail_function_enabled' => function_exists('mail') && is_callable('mail'),
       'admin_plugins_url' => WPFunctions::get()->adminUrl('plugins.php'),
 

@@ -30,7 +30,10 @@ class AutomateWooHooks {
   }
 
   public function areMethodsAvailable(): bool {
+    // method_exists checks guard older AutomateWoo versions that may not ship these methods, even though current stubs declare them.
+    // @phpstan-ignore-next-line function.alreadyNarrowedType
     return class_exists('AutomateWoo\Customer_Factory') && method_exists('AutomateWoo\Customer_Factory', 'get_by_email') &&
+      // @phpstan-ignore-next-line function.alreadyNarrowedType
       class_exists('AutomateWoo\Customer') && method_exists('AutomateWoo\Customer', 'opt_out');
   }
 

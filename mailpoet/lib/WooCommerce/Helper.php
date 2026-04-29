@@ -46,6 +46,8 @@ class Helper {
   public function isWooCommerceCustomOrdersTableEnabled(): bool {
     if (
       $this->isWooCommerceActive()
+      // Stubs reflect the current WC version; the runtime check guards older WooCommerce installs that lack this helper.
+      // @phpstan-ignore-next-line function.alreadyNarrowedType
       && method_exists('\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled')
       && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()
     ) {

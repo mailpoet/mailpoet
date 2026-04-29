@@ -630,7 +630,6 @@ class SendingQueueTest extends \MailPoetTest {
     $wrongSubscriber = $this->createSubscriber('doe@john.com>', 'Doe', 'John');
 
     $sendingQueue = $this->createQueueWithTask($this->newsletter);
-    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId(), $wrongSubscriber->getId()]);
