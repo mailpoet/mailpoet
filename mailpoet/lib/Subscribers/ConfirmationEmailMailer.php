@@ -382,10 +382,10 @@ class ConfirmationEmailMailer {
   }
 
   private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber): void {
-    if (!$this->wp->isUserLoggedIn()) {
-      $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
+    if ($this->wp->isUserLoggedIn()) {
+      return;
     }
-    $subscriber->setLastConfirmationEmailSentAt(Carbon::now()->millisecond(0));
+    $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
   }
