@@ -46,6 +46,7 @@ class AssetsController {
 
   public function setupTagsDependencies(): void {
     $this->enqueueJsEntrypoint('tags');
+    $this->setupDataViewsDependencies();
     $this->wp->wpEnqueueStyle('mailpoet_tags', $this->getCssUrl('mailpoet-tags.css'));
   }
 
