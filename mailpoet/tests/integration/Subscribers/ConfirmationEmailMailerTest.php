@@ -17,6 +17,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
@@ -260,14 +261,89 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class)
     );
 
-    verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+    verify($sender->sendAdminConfirmationEmail($this->subscriber)['status'])->equals('sent');
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(1);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
 
-    verify($sender->sendConfirmationEmail($this->subscriber))->equals(false);
+    $result = $sender->sendAdminConfirmationEmail($this->subscriber);
+    verify($result['status'])->equals('skipped');
+    verify($result['reason'] ?? null)->equals('recently_sent');
     $this->subscribersRepository->refresh($this->subscriber);
     verify($this->subscriber->getConfirmationsCount())->equals(1);
+  }
+
+  public function testGenericConfirmationEmailKeepsApiCompatibilityWithoutAdminThrottle(): void {
+    wp_set_current_user(1);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscriber->setLastConfirmationEmailSentAt(Carbon::now()->subDay());
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::once(function() {
+        return ['response' => true];
+      }),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    verify($sender->sendConfirmationEmail($this->subscriber))->true();
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
+    $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+    $this->assertNotNull($lastConfirmationEmailSentAt);
+    $this->assertGreaterThan(Carbon::now()->subMinute()->getTimestamp(), $lastConfirmationEmailSentAt->getTimestamp());
+  }
+
+  public function testAdminConfirmationEmailReleaseDoesNotEraseNewerClaim(): void {
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscriber->setLastConfirmationEmailSentAt(Carbon::now()->subDays(8));
+    $this->subscribersRepository->flush();
+
+    $claim = $this->subscribersRepository->claimAdminConfirmationEmailResend(
+      $this->subscriber,
+      ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS,
+      Carbon::now()->subDays(ConfirmationEmailMailer::ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS)->millisecond(0)
+    );
+    $this->assertTrue($claim['claimed']);
+    $this->assertArrayHasKey('claim_time', $claim);
+    $this->assertArrayHasKey('previous_count_confirmations', $claim);
+
+    $newerClaimTime = Carbon::now()->addSecond()->millisecond(0)->format('Y-m-d H:i:s');
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = :count_confirmations,
+         `last_confirmation_email_sent_at` = :last_confirmation_email_sent_at
+       WHERE `id` = :id",
+      [
+        'count_confirmations' => 3,
+        'last_confirmation_email_sent_at' => $newerClaimTime,
+        'id' => $this->subscriber->getId(),
+      ]
+    );
+
+    $this->subscribersRepository->releaseAdminConfirmationEmailResendClaim(
+      $this->subscriber,
+      (string)$claim['claim_time'],
+      $claim['previous_last_confirmation_email_sent_at'] ?? null,
+      (int)$claim['previous_count_confirmations']
+    );
+
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(3);
+    $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+    $this->assertNotNull($lastConfirmationEmailSentAt);
+    verify($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'))->equals($newerClaimTime);
   }
 
   public function testItLimitsAndRecordsPublicConfirmationEmailsForLoggedInUsers() {

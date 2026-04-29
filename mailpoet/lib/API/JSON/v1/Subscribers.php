@@ -246,14 +246,11 @@ class Subscribers extends APIEndpoint {
       try {
         // Per-list confirmation settings are not resolved for manual resends;
         // the global default is used to avoid ambiguity across multiple segments.
-        if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
+        $result = $this->confirmationEmailMailer->sendAdminConfirmationEmail($subscriber);
+        if ($result['status'] === 'sent') {
           return $this->successResponse();
         } else {
-          $reason = $this->subscribersRepository->getAdminConfirmationEmailResendIneligibilityReason(
-            $subscriber,
-            ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS,
-            \MailPoetVendor\Carbon\Carbon::now()->subDays(ConfirmationEmailMailer::ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS)->millisecond(0)
-          );
+          $reason = $result['reason'] ?? null;
           if ($reason === 'max_confirmations_reached') {
             return $this->errorResponse([
               APIError::BAD_REQUEST => __('The maximum number of confirmation emails has already been reached for this subscriber.', 'mailpoet'),

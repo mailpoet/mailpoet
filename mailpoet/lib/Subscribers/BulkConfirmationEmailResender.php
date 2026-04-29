@@ -77,7 +77,8 @@ class BulkConfirmationEmailResender {
       (clone $now)->subDays(self::RECENT_CONFIRMATION_RESEND_INTERVAL_DAYS),
       (clone $now)->subDays(self::BULK_CONFIRMATION_MAX_SUBSCRIBER_AGE_DAYS),
       ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS,
-      self::BULK_CONFIRMATION_RESEND_LIMIT
+      self::BULK_CONFIRMATION_RESEND_LIMIT,
+      $this->hasExplicitSelection($requestData)
     );
 
     $queuedIds = $queueData['queued_ids'];
@@ -192,5 +193,13 @@ class BulkConfirmationEmailResender {
       'has_search' => !empty($listing['search']),
       'filter_keys' => isset($listing['filter']) && is_array($listing['filter']) ? array_keys($listing['filter']) : [],
     ];
+  }
+
+  /**
+   * @param array<string, mixed> $requestData
+   */
+  private function hasExplicitSelection(array $requestData): bool {
+    $listing = isset($requestData['listing']) && is_array($requestData['listing']) ? $requestData['listing'] : [];
+    return array_key_exists('selection', $listing);
   }
 }
