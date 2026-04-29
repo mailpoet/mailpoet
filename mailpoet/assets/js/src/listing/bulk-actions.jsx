@@ -40,7 +40,7 @@ class ListingBulkActions extends Component {
     }
 
     const selectedIds =
-      this.props.selection !== 'all' ? this.props.selected_ids : [];
+      this.props.selection === 'all' ? 'all' : this.props.selected_ids;
 
     const data = action.getData !== undefined ? action.getData() : {};
 

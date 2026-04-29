@@ -222,6 +222,17 @@ class SubscribersListingCest {
       'bulk-resend-confirmation-checkbox-input',
       $i->executeJS('return document.activeElement.id;')
     );
+    $i->seeElement('.mailpoet-modal-frame[role="dialog"][aria-labelledby]');
+    $i->seeElement(
+      "[data-automation-id='mailpoet-modal-close'][aria-label='Close modal']"
+    );
+    $modalTitleId = $i->grabAttributeFrom('.mailpoet-modal-frame', 'aria-labelledby');
+    Assert::assertSame(
+      'Resend confirmation emails',
+      $i->executeJS(
+        'return document.getElementById(' . json_encode($modalTitleId) . ').textContent;'
+      )
+    );
     $i->see(
       'I understand these confirmation emails will be queued and only sent to eligible unconfirmed subscribers.',
       "[data-automation-id='bulk-resend-confirmation-checkbox']"
@@ -297,6 +308,174 @@ class SubscribersListingCest {
         }
       });
     JS);
+  }
+
+  public function bulkResendConfirmationEmailSelectAllKeepsListingScope(\AcceptanceTester $i) {
+    $i->wantTo('Queue bulk confirmation resends for all pages without sending an explicit empty selection');
+
+    for ($index = 1; $index <= 11; $index++) {
+      (new Subscriber())
+        ->withEmail(sprintf('bulk-resend-all-pages-%02d@example.com', $index))
+        ->withStatus('unconfirmed')
+        ->create();
+    }
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $i->waitForText('bulk-resend-all-pages-01@example.com');
+    $i->click("[data-automation-id='select_all']");
+    $i->waitForText('Select all items on all pages');
+    $i->click('Select all items on all pages');
+    $i->waitForElement('tbody .mailpoet-form-checkbox.mailpoet-disabled');
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+
+    $i->executeJS(<<<'JS'
+      window.mailpoetBulkResendRequestHasListingSelection = null;
+      window.mailpoetBulkResendListingGroup = null;
+      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
+      MailPoet.Ajax.post = function(request) {
+        if (
+          request.action === 'bulkAction'
+          && request.data
+          && request.data.action === 'resendConfirmationEmails'
+        ) {
+          window.mailpoetBulkResendRequestHasListingSelection = Object.prototype.hasOwnProperty.call(
+            request.data.listing,
+            'selection'
+          );
+          window.mailpoetBulkResendListingGroup = request.data.listing.group;
+          return jQuery.Deferred().resolve({
+            data: {
+              selected_count: 11,
+              eligible_count: 11,
+              queued_count: 11,
+              skipped_count: 0,
+              skipped_by_reason: {},
+              task_id: 1,
+              message: 'Confirmation emails were queued.'
+            }
+          }).promise();
+        }
+        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+      };
+    JS);
+
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+    $i->waitForJS(
+      'return window.mailpoetBulkResendRequestHasListingSelection !== null;'
+    );
+    Assert::assertFalse(
+      $i->executeJS('return window.mailpoetBulkResendRequestHasListingSelection;')
+    );
+    Assert::assertSame(
+      'unconfirmed',
+      $i->executeJS('return window.mailpoetBulkResendListingGroup;')
+    );
+
+    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
+  }
+
+  public function bulkResendConfirmationEmailFailureClearsLoading(\AcceptanceTester $i) {
+    $i->wantTo('Clear the subscribers listing loading state after a failed bulk confirmation resend');
+
+    $subscriber = (new Subscriber())
+      ->withEmail('bulk-resend-failed@example.com')
+      ->withStatus('unconfirmed')
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $subscriber);
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+
+    $i->executeJS(<<<'JS'
+      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
+      MailPoet.Ajax.post = function(request) {
+        if (
+          request.action === 'bulkAction'
+          && request.data
+          && request.data.action === 'resendConfirmationEmails'
+        ) {
+          return jQuery.Deferred().reject({
+            errors: [
+              {
+                error: 'forced_failure',
+                message: 'Forced bulk resend failure.'
+              }
+            ]
+          }).promise();
+        }
+        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+      };
+    JS);
+
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+    $i->waitForText('Forced bulk resend failure.');
+    $i->waitForElementNotVisible(\AcceptanceTester::LISTING_LOADING_SELECTOR);
+
+    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
+  }
+
+  public function bulkResendConfirmationEmailSettingsErrorShowsSafeLink(\AcceptanceTester $i) {
+    $i->wantTo('Show the confirmation-disabled error with a safe settings link');
+
+    $subscriber = (new Subscriber())
+      ->withEmail('bulk-resend-settings-link@example.com')
+      ->withStatus('unconfirmed')
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->changeGroupInListingFilter('unconfirmed');
+    $this->selectSubscriberForBulkAction($i, $subscriber);
+    $this->openBulkResendConfirmationModal($i);
+    $i->click("[data-automation-id='bulk-resend-confirmation-checkbox']");
+
+    $i->executeJS(<<<'JS'
+      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
+      MailPoet.Ajax.post = function(request) {
+        if (
+          request.action === 'bulkAction'
+          && request.data
+          && request.data.action === 'resendConfirmationEmails'
+        ) {
+          return jQuery.Deferred().reject({
+            errors: [
+              {
+                error: 'confirmation_disabled',
+                message: [
+                  'Sign-up confirmation is disabled in your ',
+                  '<a href="admin.php?page=mailpoet-settings#/signup">',
+                  'MailPoet settings',
+                  '</a>. Please enable it to resend confirmation emails ',
+                  'or update your subscriber’s status manually.'
+                ].join('')
+              }
+            ]
+          }).promise();
+        }
+        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+      };
+    JS);
+
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
+    $i->waitForText('Sign-up confirmation is disabled in your');
+    Assert::assertSame(
+      'admin.php?page=mailpoet-settings#/signup',
+      $i->executeJS(
+        'return document.querySelector(".mailpoet_notice.error a").getAttribute("href");'
+      )
+    );
+    Assert::assertStringNotContainsString(
+      '&lt;a',
+      $i->executeJS('return document.querySelector(".mailpoet_notice.error").innerHTML;')
+    );
+
+    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
   }
 
   public function bulkResendConfirmationEmailShowsZeroEligibleNotice(\AcceptanceTester $i) {
