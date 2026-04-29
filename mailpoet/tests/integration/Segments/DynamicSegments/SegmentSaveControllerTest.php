@@ -79,6 +79,28 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItCanSaveNoneConnectOperator(): void {
+    $segmentData = [
+      'name' => 'Test Segment',
+      'description' => 'Description',
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => ['subscriber'],
+        'action' => UserRole::TYPE,
+      ]],
+    ];
+
+    $segment = $this->saveController->save($segmentData);
+    $filter = $segment->getDynamicFilters()->first();
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
+    verify($filter->getFilterData()->getData())->equals([
+      'wordpressRole' => ['subscriber'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+    ]);
+  }
+
   public function testItCheckDuplicateSegment(): void {
     $name = 'Test name';
     $this->createSegment($name);
