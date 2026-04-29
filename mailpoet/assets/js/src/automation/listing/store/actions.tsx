@@ -7,10 +7,17 @@ import { Automation, AutomationStatus } from '../automation';
 import { UndoTrashButton } from '../components/actions';
 import { getAutomationEditorUrl } from '../urls';
 
+type NoticeOptions = {
+  showSuccessNotice?: boolean;
+};
+
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore).createSuccessNotice(content, options);
 
 const removeNotice = (id: string) => dispatch(noticesStore).removeNotice(id);
+
+const shouldShowSuccessNotice = (options?: NoticeOptions): boolean =>
+  options?.showSuccessNotice !== false;
 
 export function* loadAutomations() {
   const data = yield apiFetch({
@@ -23,16 +30,24 @@ export function* loadAutomations() {
   } as const;
 }
 
-export function* duplicateAutomation(automation: Automation) {
+export function* duplicateAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   const data = yield apiFetch({
     path: `/automations/${automation.id}/duplicate`,
     method: 'POST',
   });
 
-  void createSuccessNotice(
-    // translators: %s is the automation name
-    sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), automation.name),
-  );
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(
+      // translators: %s is the automation name
+      sprintf(
+        __('Automation "%s" was duplicated.', 'mailpoet'),
+        automation.name,
+      ),
+    );
+  }
 
   return {
     type: 'ADD_AUTOMATION',
@@ -40,7 +55,10 @@ export function* duplicateAutomation(automation: Automation) {
   } as const;
 }
 
-export function* trashAutomation(automation: Automation) {
+export function* trashAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
@@ -53,18 +71,20 @@ export function* trashAutomation(automation: Automation) {
     __('Automation "%s" was moved to the trash.', 'mailpoet'),
     automation.name,
   );
-  void createSuccessNotice(message, {
-    id: `automation-trashed-${automation.id}`,
-    __unstableHTML: (
-      <p>
-        {message}{' '}
-        <UndoTrashButton
-          automation={automation}
-          previousStatus={automation.status}
-        />
-      </p>
-    ),
-  });
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(message, {
+      id: `automation-trashed-${automation.id}`,
+      __unstableHTML: (
+        <p>
+          {message}{' '}
+          <UndoTrashButton
+            automation={automation}
+            previousStatus={automation.status}
+          />
+        </p>
+      ),
+    });
+  }
 
   return {
     type: 'UPDATE_AUTOMATION',
@@ -75,6 +95,7 @@ export function* trashAutomation(automation: Automation) {
 export function* restoreAutomation(
   automation: Automation,
   status: AutomationStatus,
+  options?: NoticeOptions,
 ) {
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
@@ -90,16 +111,18 @@ export function* restoreAutomation(
     __('Automation "%s" was restored from the trash.', 'mailpoet'),
     automation.name,
   );
-  void createSuccessNotice(message, {
-    __unstableHTML: (
-      <p>
-        {message}{' '}
-        <Button variant="link" href={getAutomationEditorUrl(automation)}>
-          {__('Edit automation', 'mailpoet')}
-        </Button>
-      </p>
-    ),
-  });
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(message, {
+      __unstableHTML: (
+        <p>
+          {message}{' '}
+          <Button variant="link" href={getAutomationEditorUrl(automation)}>
+            {__('Edit automation', 'mailpoet')}
+          </Button>
+        </p>
+      ),
+    });
+  }
 
   return {
     type: 'UPDATE_AUTOMATION',
@@ -107,21 +130,26 @@ export function* restoreAutomation(
   } as const;
 }
 
-export function* deleteAutomation(automation: Automation) {
+export function* deleteAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'DELETE',
   });
 
-  void createSuccessNotice(
-    sprintf(
-      __(
-        'Automation "%s" and all associated data were permanently deleted.',
-        'mailpoet',
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(
+      sprintf(
+        __(
+          'Automation "%s" and all associated data were permanently deleted.',
+          'mailpoet',
+        ),
+        automation.name,
       ),
-      automation.name,
-    ),
-  );
+    );
+  }
 
   return {
     type: 'DELETE_AUTOMATION',

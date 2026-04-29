@@ -7,10 +7,17 @@ import { getDescription } from './legacy-description';
 import { AutomationItem } from './types';
 import { Automation, AutomationStatus } from '../automation';
 
+type NoticeOptions = {
+  showSuccessNotice?: boolean;
+};
+
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore).createSuccessNotice(content, options);
 
 const removeNotice = (id: string) => dispatch(noticesStore).removeNotice(id);
+
+const shouldShowSuccessNotice = (options?: NoticeOptions): boolean =>
+  options?.showSuccessNotice !== false;
 
 const mapToAutomation = (item: ListingItem): AutomationItem => ({
   id: item.id,
@@ -55,7 +62,10 @@ export function* loadLegacyAutomations() {
   } as const;
 }
 
-export function* trashLegacyAutomation(automation: Automation) {
+export function* trashLegacyAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   yield AwaitPromise(
     legacyApiFetch({
       endpoint: 'newsletters',
@@ -64,12 +74,14 @@ export function* trashLegacyAutomation(automation: Automation) {
     }),
   );
 
-  void createSuccessNotice(
-    sprintf(
-      __('Automation "%s" was moved to the trash.', 'mailpoet'),
-      automation.name,
-    ),
-  );
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(
+      sprintf(
+        __('Automation "%s" was moved to the trash.', 'mailpoet'),
+        automation.name,
+      ),
+    );
+  }
 
   return {
     type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
@@ -78,7 +90,10 @@ export function* trashLegacyAutomation(automation: Automation) {
   } as const;
 }
 
-export function* restoreLegacyAutomation(automation: Automation) {
+export function* restoreLegacyAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   const data: { data: ListingItem } = yield AwaitPromise(
     legacyApiFetch({
       endpoint: 'newsletters',
@@ -89,12 +104,14 @@ export function* restoreLegacyAutomation(automation: Automation) {
 
   void removeNotice(`automation-trashed-${automation.id}`);
 
-  void createSuccessNotice(
-    sprintf(
-      __('Automation "%s" was restored from the trash.', 'mailpoet'),
-      automation.name,
-    ),
-  );
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(
+      sprintf(
+        __('Automation "%s" was restored from the trash.', 'mailpoet'),
+        automation.name,
+      ),
+    );
+  }
 
   return {
     type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
@@ -103,7 +120,10 @@ export function* restoreLegacyAutomation(automation: Automation) {
   } as const;
 }
 
-export function* deleteLegacyAutomation(automation: Automation) {
+export function* deleteLegacyAutomation(
+  automation: Automation,
+  options?: NoticeOptions,
+) {
   yield AwaitPromise(
     legacyApiFetch({
       endpoint: 'newsletters',
@@ -112,15 +132,17 @@ export function* deleteLegacyAutomation(automation: Automation) {
     }),
   );
 
-  void createSuccessNotice(
-    sprintf(
-      __(
-        'Automation "%s" and all associated data were permanently deleted.',
-        'mailpoet',
+  if (shouldShowSuccessNotice(options)) {
+    void createSuccessNotice(
+      sprintf(
+        __(
+          'Automation "%s" and all associated data were permanently deleted.',
+          'mailpoet',
+        ),
+        automation.name,
       ),
-      automation.name,
-    ),
-  );
+    );
+  }
 
   return {
     type: 'DELETE_LEGACY_AUTOMATION',
