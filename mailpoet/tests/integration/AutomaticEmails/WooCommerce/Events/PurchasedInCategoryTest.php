@@ -192,7 +192,6 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $queue1 = $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
     verify($queue1)->arrayCount(1);
 
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->updateEmailTriggerIds($newsletter, ['16']);
     $order = $this->getOrderMock(['16']);
     $this->woocommerceHelper = $this->createMock(WCHelper::class);

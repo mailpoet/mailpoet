@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Doctrine\WPDB;
 
 use MailPoet\Doctrine\WPDB\Connection;
-use MailPoet\Doctrine\WPDB\Result;
 use MailPoetTest;
 
 class ResultTest extends MailPoetTest {
@@ -23,7 +22,6 @@ class ResultTest extends MailPoetTest {
   public function testInsert(): void {
     $connection = new Connection();
     $result = $connection->query(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(1, $result->rowCount());
     $this->assertSame(0, $result->columnCount());
     $this->assertSame([], $result->fetchAllAssociative());
@@ -33,7 +31,6 @@ class ResultTest extends MailPoetTest {
     $connection = new Connection();
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
     $result = $connection->query(sprintf("UPDATE %s SET value = 'updated' WHERE id = %d", self::TEST_TABLE_NAME, $connection->lastInsertId()));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(1, $result->rowCount());
     $this->assertSame(0, $result->columnCount());
     $this->assertSame([], $result->fetchAllAssociative());
@@ -46,7 +43,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(['1', 'aaa'], $result->fetchNumeric());
     $this->assertSame(['2', 'bbb'], $result->fetchNumeric());
     $this->assertSame(['3', 'ccc'], $result->fetchNumeric());
@@ -60,7 +56,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(['id' => '1', 'value' => 'aaa'], $result->fetchAssociative());
     $this->assertSame(['id' => '2', 'value' => 'bbb'], $result->fetchAssociative());
     $this->assertSame(['id' => '3', 'value' => 'ccc'], $result->fetchAssociative());
@@ -74,7 +69,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame('1', $result->fetchOne());
     $this->assertSame('2', $result->fetchOne());
     $this->assertSame('3', $result->fetchOne());
@@ -88,7 +82,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame([['1', 'aaa'], ['2', 'bbb'], ['3', 'ccc']], $result->fetchAllNumeric());
   }
 
@@ -99,7 +92,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame([
       ['id' => '1', 'value' => 'aaa'],
       ['id' => '2', 'value' => 'bbb'],
@@ -114,7 +106,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(['1', '2', '3'], $result->fetchFirstColumn());
   }
 
@@ -125,7 +116,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(3, $result->rowCount());
   }
 
@@ -136,7 +126,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame(2, $result->columnCount());
   }
 
@@ -147,7 +136,6 @@ class ResultTest extends MailPoetTest {
     $connection->query(sprintf("INSERT INTO %s (value) VALUES ('ccc')", self::TEST_TABLE_NAME));
 
     $result = $connection->query(sprintf("SELECT * FROM %s", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame('1', $result->fetchOne());
     $this->assertSame('2', $result->fetchOne());
     $this->assertSame('3', $result->fetchOne());

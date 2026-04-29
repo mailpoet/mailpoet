@@ -75,7 +75,6 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       ->findOneBy(['email' => $wpUserEmail]);
     $this->assertInstanceOf(SubscriberEntity::class, $wpUserSubscriber);
     $wpUserSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->assertInstanceOf(SubscriberEntity::class, $wpUserSubscriber);
     $subscriberNoList = $this->createSubscriberEntity(); // Subscriber without segment
     $this->entityManager->flush();
 

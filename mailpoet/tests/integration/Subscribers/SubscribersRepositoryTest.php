@@ -165,8 +165,8 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberThree);
 
     verify($subscriberOne->getEngagementScoreUpdatedAt())->null();
-    $this->assertInstanceOf(DateTimeInterface::class, $subscriberTwo->getEngagementScoreUpdatedAt());
-    verify($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberTwo->getEngagementScoreUpdatedAt())->notNull();
+    verify($subscriberThree->getEngagementScoreUpdatedAt())->null();
   }
 
   public function testItBulkDeleteSubscribers(): void {

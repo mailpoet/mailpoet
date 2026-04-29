@@ -185,7 +185,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     // update subscriber to non-subscribed status
     $count = 0;
     $this->saveController->save(array_merge($data, ['status' => SubscriberEntity::STATUS_UNCONFIRMED]));
-    $this->assertSame(0, $count);
+    $this->assertSame(0, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
 
     // update subscriber to subscribed status
     $count = 0;

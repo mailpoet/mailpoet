@@ -101,6 +101,8 @@ class DisabledMailFunctionNotice {
   }
 
   public function isFunctionDisabled(string $function): bool {
+    // is_callable() returns false when the function is listed in disable_functions, which PHPStan can't see statically.
+    // @phpstan-ignore-next-line function.alreadyNarrowedType
     $result = function_exists($function) && is_callable($function, false);
     return !$result;
   }

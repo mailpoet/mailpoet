@@ -35,7 +35,6 @@ class SendingQueuesResponseBuilderTest extends \MailPoetTest {
     $this->newsletter = $newsletterFactory->create();
     $this->scheduledTask = $scheduledTaskFactory->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $scheduledAt);
     $this->sendingQueue = $sendingQueueFactory->create($this->scheduledTask, $this->newsletter);
-    $this->assertInstanceOf(SendingQueueEntity::class, $this->sendingQueue);
   }
 
   public function testBuildReturnsExpectedResult() {

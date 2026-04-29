@@ -104,7 +104,6 @@ class DynamicSegmentsTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
-    $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
     verify($dynamicSegment->getDeletedAt())->notNull();
   }
 
@@ -134,7 +133,6 @@ class DynamicSegmentsTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
-    $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
     verify($dynamicSegment->getDeletedAt())->null();
   }
 

@@ -311,11 +311,9 @@ class NewsletterDeleteControllerTest extends \MailPoetTest {
     $scheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $scheduledTask]);
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscriber);
     $link = $this->createNewsletterLink($newsletter, $queue);
-    $this->assertInstanceOf(NewsletterLinkEntity::class, $link);
     $subscriber = $scheduledTaskSubscriber->getSubscriber();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $statisticsClick = $this->createClickStatistics($newsletter, $queue, $subscriber, $link);
-    $this->assertInstanceOf(StatisticsClickEntity::class, $statisticsClick);
     return $this->createPurchaseStatistics($newsletter, $queue, $statisticsClick, $subscriber);
   }
 }

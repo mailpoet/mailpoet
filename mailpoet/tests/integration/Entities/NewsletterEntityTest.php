@@ -82,10 +82,9 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter = $this->newsletterRepository->findOneById($newsletterId);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $newsletterOptionField = $newsletter->getOption($optionField->getName());
-    $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterOption);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterOptionField);
 
-    verify($newsletterOptionField)->notNull();
-    verify($newsletterOption->getValue())->equals($optionValue);
+    verify($newsletterOptionField->getValue())->equals($optionValue);
     verify($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
   }
 

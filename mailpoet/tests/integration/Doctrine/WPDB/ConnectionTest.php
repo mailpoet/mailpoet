@@ -51,22 +51,18 @@ class ConnectionTest extends MailPoetTest {
 
     // select
     $result = $connection->query('SELECT 123');
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertSame('123', $result->fetchOne());
 
     // insert
     $result = $connection->query(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertFalse($result->fetchOne());
 
     // update
     $result = $connection->query(sprintf("UPDATE %s SET value = 'updated' WHERE id = %d", self::TEST_TABLE_NAME, $connection->lastInsertId()));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertFalse($result->fetchOne());
 
     // delete
     $result = $connection->query(sprintf("DELETE FROM %s WHERE id = %d", self::TEST_TABLE_NAME, $connection->lastInsertId()));
-    $this->assertInstanceOf(Result::class, $result);
     $this->assertFalse($result->fetchOne());
   }
 

@@ -29,10 +29,7 @@ class RequirementsChecker {
     ];
     $results = [];
     foreach ($availableTests as $test) {
-      $callback = [$this, 'check' . $test];
-      if (is_callable($callback)) {
-        $results[$test] = call_user_func($callback);
-      }
+      $results[$test] = call_user_func([$this, 'check' . $test]);
     }
     return $results;
   }
