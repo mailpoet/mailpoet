@@ -34,6 +34,7 @@ export * as WordPressAPIFetch from '@wordpress/api-fetch';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressDate from '@wordpress/date';
 export * as WordPressUrl from '@wordpress/url';
+export * as WordPressElement from '@wordpress/element';
 export * as WordPressI18n from '@wordpress/i18n';
 export * as WordPressIcons from '@wordpress/icons';
 export * as WordPressDataControls from '@wordpress/data-controls';
