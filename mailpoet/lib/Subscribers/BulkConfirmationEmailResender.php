@@ -127,6 +127,7 @@ class BulkConfirmationEmailResender {
       $entityManager->persist($task);
 
       foreach ($queuedIds as $subscriberId) {
+        /** @var SubscriberEntity $subscriberReference */
         $subscriberReference = $entityManager->getReference(SubscriberEntity::class, $subscriberId);
         $entityManager->persist(new ScheduledTaskSubscriberEntity(
           $task,
