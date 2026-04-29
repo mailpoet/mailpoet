@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   __experimentalConfirmDialog as ConfirmDialog,
@@ -21,11 +21,12 @@ import {
 import { segmentFields } from './fields';
 
 type Group = 'all' | 'trash';
+type SelectAllParams = Partial<ListingQueryParams> & { select_all?: boolean };
 
 type PendingAction = {
   action: SegmentBulkAction;
   targets: SegmentListingItem[];
-  params?: Partial<ListingQueryParams> & { select_all?: boolean };
+  params?: SelectAllParams;
   count: number;
 } | null;
 
@@ -253,6 +254,9 @@ function SegmentListComponent(): JSX.Element {
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [selectAllMatching, setSelectAllMatching] = useState(false);
+  const selectAllMatchingRef = useRef(false);
+  const selectAllParamsRef = useRef<SelectAllParams>();
+  const totalMatchingCountRef = useRef(0);
   const [initialView] = useState<View>(() => ({
     ...DEFAULT_VIEW,
     page: hashState.page ?? DEFAULT_VIEW.page,
@@ -298,12 +302,40 @@ function SegmentListComponent(): JSX.Element {
     }),
     [group, view],
   );
+  selectAllMatchingRef.current = selectAllMatching;
+  selectAllParamsRef.current = selectAllParams;
+  totalMatchingCountRef.current = meta.count;
+
+  const updateSelectAllMatching = useCallback((value: boolean): void => {
+    selectAllMatchingRef.current = value;
+    setSelectAllMatching(value);
+  }, []);
+
+  const getBulkSelection = useCallback(
+    (
+      targets: SegmentListingItem[],
+    ): {
+      targets: SegmentListingItem[];
+      params?: SelectAllParams;
+      count: number;
+    } => {
+      if (!selectAllMatchingRef.current) {
+        return { targets, count: targets.length };
+      }
+      return {
+        targets: [],
+        params: selectAllParamsRef.current,
+        count: totalMatchingCountRef.current,
+      };
+    },
+    [],
+  );
 
   const handleBulkAction = useCallback(
     async (
       action: SegmentBulkAction,
       targets: SegmentListingItem[],
-      params?: Partial<ListingQueryParams> & { select_all?: boolean },
+      params?: SelectAllParams,
     ) => {
       const ids = targets.map((segment) => Number(segment.id));
       if (!params?.select_all && action !== 'empty_trash' && ids.length === 0) {
@@ -314,7 +346,7 @@ function SegmentListComponent(): JSX.Element {
         const result = await bulkAction(action, ids, params);
         const count = countForAction(action, result);
         setSelection([]);
-        setSelectAllMatching(false);
+        updateSelectAllMatching(false);
         setGlobalError(
           result.errors.length
             ? result.errors.map((error) => error.message).join('\n')
@@ -335,7 +367,7 @@ function SegmentListComponent(): JSX.Element {
         );
       }
     },
-    [refresh],
+    [refresh, updateSelectAllMatching],
   );
 
   const handleDuplicate = useCallback(
@@ -468,10 +500,11 @@ function SegmentListComponent(): JSX.Element {
           !isWPUsersSegment(item) &&
           !isWooCommerceCustomersSegment(item),
         callback: (targets) => {
+          const bulkSelection = getBulkSelection(targets);
           void handleBulkAction(
             'trash',
-            selectAllMatching ? [] : targets,
-            selectAllMatching ? selectAllParams : undefined,
+            bulkSelection.targets,
+            bulkSelection.params,
           );
         },
       },
@@ -490,10 +523,11 @@ function SegmentListComponent(): JSX.Element {
         supportsBulk: true,
         isEligible: (item) => !!item.deleted_at && !isWPUsersSegment(item),
         callback: (targets) => {
+          const bulkSelection = getBulkSelection(targets);
           void handleBulkAction(
             'restore',
-            selectAllMatching ? [] : targets,
-            selectAllMatching ? selectAllParams : undefined,
+            bulkSelection.targets,
+            bulkSelection.params,
           );
         },
       },
@@ -504,23 +538,17 @@ function SegmentListComponent(): JSX.Element {
         isDestructive: true,
         isEligible: (item) => !!item.deleted_at && !isSpecialSegment(item),
         callback: (targets) => {
+          const bulkSelection = getBulkSelection(targets);
           setPendingAction({
             action: 'delete',
-            targets: selectAllMatching ? [] : targets,
-            count: selectAllMatching ? meta.count : targets.length,
-            params: selectAllMatching ? selectAllParams : undefined,
+            targets: bulkSelection.targets,
+            count: bulkSelection.count,
+            params: bulkSelection.params,
           });
         },
       },
     ],
-    [
-      handleBulkAction,
-      handleDuplicate,
-      handleSynchronize,
-      meta.count,
-      selectAllMatching,
-      selectAllParams,
-    ],
+    [getBulkSelection, handleBulkAction, handleDuplicate, handleSynchronize],
   );
 
   const paginationInfo = useMemo(
@@ -564,7 +592,7 @@ function SegmentListComponent(): JSX.Element {
     if (tabName === group) return;
     setGroup(tabName);
     setSelection([]);
-    setSelectAllMatching(false);
+    updateSelectAllMatching(false);
     setGlobalError(null);
     setGlobalSuccess(null);
     clearLoadError();
@@ -580,14 +608,22 @@ function SegmentListComponent(): JSX.Element {
     ) {
       setGroup('all');
       setSelection([]);
-      setSelectAllMatching(false);
+      updateSelectAllMatching(false);
       setView({ ...view, page: 1 });
     }
-  }, [group, groupCounts.trash, isLoading, loadError, setView, view]);
+  }, [
+    group,
+    groupCounts.trash,
+    isLoading,
+    loadError,
+    setView,
+    updateSelectAllMatching,
+    view,
+  ]);
 
   const handleSelectionChange = (nextSelection: string[]): void => {
     setSelection(nextSelection);
-    setSelectAllMatching(false);
+    updateSelectAllMatching(false);
   };
 
   const hasSelectedCurrentPage =
@@ -636,6 +672,9 @@ function SegmentListComponent(): JSX.Element {
             data-automation-id="segments_listing"
           >
             <DataViews<SegmentListingItem>
+              key={`${group}-${
+                selectAllMatching ? 'all-matching' : 'page-selection'
+              }`}
               data={items}
               fields={segmentFields}
               view={view}
@@ -658,7 +697,7 @@ function SegmentListComponent(): JSX.Element {
                       type="button"
                       className="button-link"
                       data-automation-id="select_all_items_all_pages"
-                      onClick={() => setSelectAllMatching(true)}
+                      onClick={() => updateSelectAllMatching(true)}
                     >
                       {sprintf(
                         /* translators: %d is the total number of lists. */
@@ -679,29 +718,30 @@ function SegmentListComponent(): JSX.Element {
                       )}
                     </span>
                   )}
-                  <button
-                    type="button"
-                    className="button"
-                    data-automation-id="empty_trash"
-                    hidden={group !== 'trash' || (groupCounts.trash ?? 0) === 0}
-                    onClick={() => {
-                      setPendingAction({
-                        action: 'empty_trash',
-                        targets: [],
-                        count: groupCounts.trash ?? 0,
-                        params: {
-                          select_all: true,
-                          group: 'trash',
-                          page: view.page ?? 1,
-                          per_page: view.perPage ?? listingPerPage,
-                          orderby: view.sort?.field,
-                          order: view.sort?.direction,
-                        },
-                      });
-                    }}
-                  >
-                    {__('Empty Trash', 'mailpoet')}
-                  </button>
+                  {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
+                    <button
+                      type="button"
+                      className="button"
+                      data-automation-id="empty_trash"
+                      onClick={() => {
+                        setPendingAction({
+                          action: 'empty_trash',
+                          targets: [],
+                          count: groupCounts.trash ?? 0,
+                          params: {
+                            select_all: true,
+                            group: 'trash',
+                            page: view.page ?? 1,
+                            per_page: view.perPage ?? listingPerPage,
+                            orderby: view.sort?.field,
+                            order: view.sort?.direction,
+                          },
+                        });
+                      }}
+                    >
+                      {__('Empty Trash', 'mailpoet')}
+                    </button>
+                  )}
                 </div>
               )}
               <DataViews.Layout />
