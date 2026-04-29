@@ -346,6 +346,50 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'))->equals($newerClaimTime);
   }
 
+  public function testFailedAdminConfirmationEmailReleasesClaimedCountAndTimestamp(): void {
+    wp_set_current_user(1);
+    $previousSentAt = Carbon::now()->subDays(8)->millisecond(0);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscriber->setLastConfirmationEmailSentAt($previousSentAt);
+    $this->subscribersRepository->flush();
+
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::once(function() use ($previousSentAt) {
+        $this->subscribersRepository->refresh($this->subscriber);
+        verify($this->subscriber->getConfirmationsCount())->equals(2);
+        $claimedSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+        $this->assertNotNull($claimedSentAt);
+        $this->assertNotSame($previousSentAt->format('Y-m-d H:i:s'), $claimedSentAt->format('Y-m-d H:i:s'));
+        throw new \Exception('send error');
+      }),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    try {
+      $sender->sendAdminConfirmationEmail($this->subscriber);
+      $this->fail('Expected admin confirmation send to fail.');
+    } catch (\Exception $e) {
+      verify($e->getMessage())->equals(
+        __('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet')
+      );
+    }
+
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
+    $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+    $this->assertNotNull($lastConfirmationEmailSentAt);
+    verify($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'))->equals($previousSentAt->format('Y-m-d H:i:s'));
+  }
+
   public function testItLimitsAndRecordsPublicConfirmationEmailsForLoggedInUsers() {
     wp_set_current_user(1);
     verify((new WPFunctions)->isUserLoggedIn())->true();

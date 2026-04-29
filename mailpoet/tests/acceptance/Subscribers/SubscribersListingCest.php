@@ -470,10 +470,9 @@ class SubscribersListingCest {
         'return document.querySelector(".mailpoet_notice.error a").getAttribute("href");'
       )
     );
-    Assert::assertStringNotContainsString(
-      '&lt;a',
-      $i->executeJS('return document.querySelector(".mailpoet_notice.error").innerHTML;')
-    );
+    $noticeHtml = $i->executeJS('return document.querySelector(".mailpoet_notice.error").innerHTML;');
+    Assert::assertIsString($noticeHtml);
+    Assert::assertStringNotContainsString('&lt;a', $noticeHtml);
 
     $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
   }
