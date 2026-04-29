@@ -9,6 +9,7 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\User;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\Assert;
 
 class ManageListsCest {
@@ -137,6 +138,44 @@ class ManageListsCest {
     $i->seeNoJSErrors();
     $i->changeGroupInListingFilter('all');
     $i->see('List to keep');
+  }
+
+  public function bulkTrashAllListsOnAllPages(\AcceptanceTester $i) {
+    $i->wantTo('Trash all lists across pages using the all-pages selection');
+    $listNames = [
+      '00 Select All Pages List A',
+      '00 Select All Pages List B',
+      '00 Select All Pages List C',
+    ];
+    $listIds = [];
+    foreach ($listNames as $listName) {
+      $segment = (new Segment())
+        ->withName($listName)
+        ->withDescription('Description')
+        ->create();
+      $listIds[] = $segment->getId();
+    }
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-lists#/lists/limit[2]');
+    $i->waitForText($listNames[0], 5, '[data-automation-id="segments_listing"]');
+    $i->waitForText($listNames[1], 5, '[data-automation-id="segments_listing"]');
+    $i->dontSee($listNames[2], '[data-automation-id="segments_listing"]');
+
+    $i->checkWooTableCheckboxForItemName($listNames[0]);
+    $i->checkWooTableCheckboxForItemName($listNames[1]);
+    $i->waitForElement('[data-automation-id="select_all_items_all_pages"]');
+    $i->dontSeeElement('[data-automation-id="empty_trash"]');
+    $i->click('[data-automation-id="select_all_items_all_pages"]');
+    $i->waitForElement('[data-automation-id="all_items_all_pages_selected"]');
+    $i->selectListingBulkAction('Move to trash');
+
+    $i->waitForText('lists were moved to the trash.');
+    ContainerWrapper::getInstance()->get(EntityManager::class)->clear();
+    $segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
+    $listOnAnotherPage = $segmentsRepository->findOneById($listIds[2]);
+    Assert::assertInstanceOf(SegmentEntity::class, $listOnAnotherPage);
+    Assert::assertNotNull($listOnAnotherPage->getDeletedAt());
   }
 
   public function disableAndEnableWPUserList(\AcceptanceTester $i) {
