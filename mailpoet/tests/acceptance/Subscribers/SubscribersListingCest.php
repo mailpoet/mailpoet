@@ -209,6 +209,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailModalAndNotice(\AcceptanceTester $i) {
     $i->wantTo('Queue bulk confirmation email resends with a gated accessible modal');
 
+    (new Settings())->withConfirmationEmailEnabled();
     $eligibleSubscriber = (new Subscriber())
       ->withEmail('bulk-resend-eligible@example.com')
       ->withStatus('unconfirmed')
@@ -269,6 +270,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailPreventsDuplicateSubmits(\AcceptanceTester $i) {
     $i->wantTo('Prevent duplicate bulk confirmation resend requests while queueing is pending');
 
+    (new Settings())->withConfirmationEmailEnabled();
     $subscriber = (new Subscriber())
       ->withEmail('bulk-resend-pending@example.com')
       ->withStatus('unconfirmed')
@@ -321,6 +323,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailSelectAllKeepsListingScope(\AcceptanceTester $i) {
     $i->wantTo('Queue bulk confirmation resends for all pages without sending an explicit empty selection');
 
+    (new Settings())->withConfirmationEmailEnabled();
     for ($index = 1; $index <= 31; $index++) {
       (new Subscriber())
         ->withEmail(sprintf('bulk-resend-all-pages-%02d@example.com', $index))
@@ -388,6 +391,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailFailureClearsLoading(\AcceptanceTester $i) {
     $i->wantTo('Clear the subscribers listing loading state after a failed bulk confirmation resend');
 
+    (new Settings())->withConfirmationEmailEnabled();
     $subscriber = (new Subscriber())
       ->withEmail('bulk-resend-failed@example.com')
       ->withStatus('unconfirmed')
@@ -431,6 +435,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailSettingsErrorShowsSafeLink(\AcceptanceTester $i) {
     $i->wantTo('Show the confirmation-disabled error with a safe settings link');
 
+    (new Settings())->withConfirmationEmailEnabled();
     $subscriber = (new Subscriber())
       ->withEmail('bulk-resend-settings-link@example.com')
       ->withStatus('unconfirmed')
@@ -488,6 +493,7 @@ class SubscribersListingCest {
   public function bulkResendConfirmationEmailShowsZeroEligibleNotice(\AcceptanceTester $i) {
     $i->wantTo('Show a zero eligible notice for bulk confirmation resends');
 
+    (new Settings())->withConfirmationEmailEnabled();
     $subscriber = (new Subscriber())
       ->withEmail('bulk-resend-zero@example.com')
       ->withStatus('unconfirmed')
