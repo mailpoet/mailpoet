@@ -6,8 +6,11 @@ use AcceptanceTester;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories;
+use PHPUnit\Framework\Assert;
 use Symfony\Component\CssSelector\XPath\Translator;
 
 class AutomationListingCest {
@@ -150,6 +153,71 @@ class AutomationListingCest {
     $productPurchasedInCategoryRow = $this->getAutomationRow('Product purchased in category');
     $i->see('Product purchased in category', $productPurchasedInCategoryRow);
     $i->see('Email sent when a customer buys a product in category: Uncategorized.', $productPurchasedInCategoryRow);
+  }
+
+  public function bulkAutomationActions(AcceptanceTester $i): void {
+    $i->wantTo('Duplicate, trash, restore, and delete automations in bulk');
+    $uniqueId = uniqid();
+    $automation1Name = 'Bulk automation 1 ' . $uniqueId;
+    $automation2Name = 'Bulk automation 2 ' . $uniqueId;
+
+    $automation1 = (new DataFactories\Automation())->withName($automation1Name)->create();
+    $automation2 = (new DataFactories\Automation())->withName($automation2Name)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Automation');
+    $i->waitForText($automation1Name, 20, '[data-automation-id="automation_listing"]');
+    $i->waitForText($automation2Name, 20, '[data-automation-id="automation_listing"]');
+
+    $i->wantTo('Bulk duplicate selected automations');
+    $i->checkWooTableCheckboxForItemName($automation1Name);
+    $i->checkWooTableCheckboxForItemName($automation2Name);
+    $i->selectListingBulkAction('Duplicate');
+    $i->waitForText('2 automations were duplicated.');
+    $i->waitForText('Copy of ' . $automation1Name, 20, '[data-automation-id="automation_listing"]');
+    $i->waitForText('Copy of ' . $automation2Name, 20, '[data-automation-id="automation_listing"]');
+
+    $i->wantTo('Bulk trash selected automations');
+    $i->checkWooTableCheckboxForItemName($automation1Name);
+    $i->checkWooTableCheckboxForItemName($automation2Name);
+    $i->selectListingBulkAction('Trash');
+    $i->waitForText('Are you sure you want to move the automations');
+    $i->clickModalButton('Yes, move to trash');
+    $i->waitForText('2 automations were moved to the trash.');
+
+    $i->wantTo('Bulk restore selected automations from trash');
+    $i->changeWooTableTab('trash');
+    $i->waitForText($automation1Name, 20, '[data-automation-id="automation_listing"]');
+    $i->waitForText($automation2Name, 20, '[data-automation-id="automation_listing"]');
+    $i->checkWooTableCheckboxForItemName($automation1Name);
+    $i->checkWooTableCheckboxForItemName($automation2Name);
+    $i->selectListingBulkAction('Restore');
+    $i->waitForText('2 automations were restored from the trash.');
+    $i->waitForText('Trash is empty.', 20, '[data-automation-id="automation_listing"]');
+
+    $i->wantTo('Bulk delete selected automations permanently');
+    $i->changeWooTableTab('all');
+    $i->waitForText($automation1Name, 20, '[data-automation-id="automation_listing"]');
+    $i->waitForText($automation2Name, 20, '[data-automation-id="automation_listing"]');
+    $i->checkWooTableCheckboxForItemName($automation1Name);
+    $i->checkWooTableCheckboxForItemName($automation2Name);
+    $i->selectListingBulkAction('Trash');
+    $i->clickModalButton('Yes, move to trash');
+    $i->waitForText('2 automations were moved to the trash.');
+    $i->changeWooTableTab('trash');
+    $i->waitForText($automation1Name, 20, '[data-automation-id="automation_listing"]');
+    $i->checkWooTableCheckboxForItemName($automation1Name);
+    $i->checkWooTableCheckboxForItemName($automation2Name);
+    $i->selectListingBulkAction('Delete permanently');
+    $i->waitForText('Are you sure you want to permanently delete');
+    $i->clickModalButton('Yes, permanently delete');
+    $i->waitForText('2 automations were permanently deleted.');
+    $i->waitForText('Trash is empty.', 20, '[data-automation-id="automation_listing"]');
+
+    $automationStorage = ContainerWrapper::getInstance()->get(AutomationStorage::class);
+    Assert::assertNull($automationStorage->getAutomation($automation1->getId()));
+    Assert::assertNull($automationStorage->getAutomation($automation2->getId()));
+    $i->seeNoJSErrors();
   }
 
   private function getAutomationRow(string $automationName): string {
