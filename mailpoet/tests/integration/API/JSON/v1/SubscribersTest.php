@@ -869,6 +869,45 @@ class SubscribersTest extends \MailPoetTest {
     verify($this->countBulkConfirmationEmailResendTasks())->equals(0);
   }
 
+  public function testBulkConfirmationEmailResendCountsExplicitSelectionOutsideActiveScope(): void {
+    wp_set_current_user(1);
+    $segment = (new SegmentFactory())
+      ->withName('Bulk resend scoped segment')
+      ->create();
+    $inScope = (new SubscriberFactory())
+      ->withEmail('bulk-resend-in-segment@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    $outsideScope = (new SubscriberFactory())
+      ->withEmail('bulk-resend-outside-segment@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+
+    $response = $this->endpoint->bulkAction([
+      'action' => 'resendConfirmationEmails',
+      'listing' => [
+        'group' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'filter' => [
+          'segment' => (string)$segment->getId(),
+        ],
+        'selection' => [
+          $inScope->getId(),
+          $outsideScope->getId(),
+        ],
+      ],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['selected_count'])->equals(2);
+    verify($response->data['eligible_count'])->equals(1);
+    verify($response->data['queued_count'])->equals(1);
+    verify($response->data['skipped_count'])->equals(1);
+    verify($response->data['skipped_by_reason']['outside_scope'])->equals(1);
+    verify($response->data['skipped_by_reason']['not_found'])->equals(0);
+    verify($this->getTaskSubscriberIds((int)$response->data['task_id']))->equals([$inScope->getId()]);
+  }
+
   public function testBulkConfirmationEmailResendHonorsListingFiltersAndEligibilityBoundaries(): void {
     wp_set_current_user(1);
     $now = Carbon::now()->millisecond(0);
