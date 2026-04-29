@@ -600,6 +600,12 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
         return;
       },
     }),
+    // Substitute the `__i18n_text_domain__` identifier used by the
+    // @woocommerce/email-editor package so its translation strings extract
+    // and translate under the MailPoet text domain instead of `woocommerce`.
+    new webpack.DefinePlugin({
+      __i18n_text_domain__: JSON.stringify('mailpoet'),
+    }),
     ...(PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()]),
   ],
 });
