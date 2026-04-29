@@ -12,20 +12,25 @@ use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Config\Populator;
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberListingRepository;
@@ -100,7 +105,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscriberSaveController::class),
       $container->get(SubscriberSubscribeController::class),
       $container->get(SettingsController::class),
-      $container->get(Unsubscribes::class)
+      $container->get(Unsubscribes::class),
+      $container->get(BulkConfirmationEmailResender::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -687,6 +693,101 @@ class SubscribersTest extends \MailPoetTest {
     }
   }
 
+  public function testItQueuesBulkConfirmationEmailResendsWithEligibilityCounts() {
+    wp_set_current_user(1);
+    $eligibleIds = [];
+    for ($i = 0; $i < BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT + 2; $i++) {
+      $eligibleIds[] = (new SubscriberFactory())
+        ->withEmail("eligible-$i@mailpoet.com")
+        ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+        ->withCreatedAt(Carbon::now()->subDays(10))
+        ->withLastSubscribedAt(Carbon::now()->subDays(10))
+        ->create()
+        ->getId();
+    }
+    $recent = (new SubscriberFactory())
+      ->withEmail('recent@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withLastConfirmationEmailSentAt(Carbon::now()->subDays(6))
+      ->create();
+    $tooOld = (new SubscriberFactory())
+      ->withEmail('old@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt(Carbon::now()->subDays(BulkConfirmationEmailResender::BULK_CONFIRMATION_MAX_SUBSCRIBER_AGE_DAYS + 1))
+      ->withLastSubscribedAt(Carbon::now()->subDays(BulkConfirmationEmailResender::BULK_CONFIRMATION_MAX_SUBSCRIBER_AGE_DAYS + 1))
+      ->create();
+    $maxed = (new SubscriberFactory())
+      ->withEmail('maxed@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
+      ->create();
+    $subscribed = (new SubscriberFactory())
+      ->withEmail('subscribed@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $deleted = (new SubscriberFactory())
+      ->withEmail('deleted@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withDeletedAt(Carbon::now())
+      ->create();
+
+    $selection = array_merge($eligibleIds, [
+      $recent->getId(),
+      $tooOld->getId(),
+      $maxed->getId(),
+      $subscribed->getId(),
+      $deleted->getId(),
+      99999999,
+    ]);
+    $response = $this->endpoint->bulkAction([
+      'action' => 'resendConfirmationEmails',
+      'listing' => [
+        'group' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'selection' => $selection,
+      ],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['selected_count'])->equals(count($selection));
+    verify($response->data['eligible_count'])->equals(BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT + 2);
+    verify($response->data['queued_count'])->equals(BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT);
+    verify($response->data['skipped_by_reason']['batch_limit'])->equals(2);
+    verify($response->data['skipped_by_reason']['recently_sent'])->equals(1);
+    verify($response->data['skipped_by_reason']['too_old'])->equals(1);
+    verify($response->data['skipped_by_reason']['max_confirmations_reached'])->equals(1);
+    verify($response->data['skipped_by_reason']['not_unconfirmed'])->equals(1);
+    verify($response->data['skipped_by_reason']['deleted'])->equals(1);
+    verify($response->data['skipped_by_reason']['not_found'])->equals(1);
+    verify($response->data['task_id'])->notNull();
+
+    $task = $this->diContainer->get(ScheduledTasksRepository::class)->findOneById((int)$response->data['task_id']);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify($task->getType())->equals(BulkConfirmationEmailResend::TASK_TYPE);
+    $taskMeta = $task->getMeta();
+    $this->assertIsArray($taskMeta);
+    verify($taskMeta['queued_count'])->equals(BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT);
+    verify($this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count(['task' => $task]))
+      ->equals(BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT);
+  }
+
+  public function testBulkConfirmationEmailResendRejectsInvalidScopeAndDisabledConfirmation() {
+    wp_set_current_user(1);
+    $response = $this->endpoint->bulkAction([
+      'action' => 'resendConfirmationEmails',
+      'listing' => ['group' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals('invalid_group');
+
+    $this->settings->set('signup_confirmation.enabled', false);
+    $response = $this->endpoint->bulkAction([
+      'action' => 'resendConfirmationEmails',
+      'listing' => ['group' => SubscriberEntity::STATUS_UNCONFIRMED],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals('confirmation_disabled');
+  }
+
   public function testItFailsWithEmailFilled() {
     $response = $this->endpoint->subscribe([
       'form_id' => $this->form->getId(),
@@ -1015,7 +1116,8 @@ class SubscribersTest extends \MailPoetTest {
     $this->subscriber1->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     $this->entityManager->flush();
     $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
-    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('The maximum number of confirmation emails has already been reached for this subscriber.');
   }
 
   public function testItDisplaysProperErrorMessageWhenConfirmationEmailsAreDisabled() {

@@ -24,6 +24,7 @@ use MailPoetVendor\Carbon\Carbon;
 class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
+  const ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS = 7;
   protected const WC_CONFIRMATION_UNAVAILABLE = 'unavailable';
   protected const WC_CONFIRMATION_SENT = 'sent';
   protected const WC_CONFIRMATION_FAILED = 'failed';
@@ -60,15 +61,15 @@ class ConfirmationEmailMailer {
 
   public function __construct(
     MailerFactory $mailerFactory,
-    WPFunctions $wp,
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     ConfirmationEmailCustomizer $confirmationEmailCustomizer,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    ?WPFunctions $wp = null
   ) {
     $this->mailerFactory = $mailerFactory;
-    $this->wp = $wp;
+    $this->wp = $wp ?? new WPFunctions();
     $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
@@ -252,7 +253,9 @@ class ConfirmationEmailMailer {
           return $sent;
         }
       );
-    } else if (
+    }
+
+    if (
       !$this->wp->isUserLoggedIn()
       && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS
     ) {
@@ -268,6 +271,56 @@ class ConfirmationEmailMailer {
     $this->sentEmails[$subscriber->getId()] = true;
 
     return true;
+  }
+
+  /**
+   * @return array{status: 'sent'|'skipped'|'send_failed', reason?: string}
+   * @throws \Exception if unable to send the email.
+   */
+  public function sendAdminConfirmationEmail(SubscriberEntity $subscriber, ?\DateTimeInterface $oldestLifecycleDate = null): array {
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+    if ((bool)$signupConfirmation['enabled'] === false) {
+      return ['status' => 'skipped', 'reason' => 'confirmation_disabled'];
+    }
+
+    $claim = $this->subscribersRepository->claimAdminConfirmationEmailResend(
+      $subscriber,
+      self::MAX_CONFIRMATION_EMAILS,
+      Carbon::now()->subDays(self::ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS)->millisecond(0),
+      $oldestLifecycleDate
+    );
+    if (!$claim['claimed']) {
+      return ['status' => 'skipped', 'reason' => $claim['reason'] ?? 'not_found'];
+    }
+
+    try {
+      $sent = $this->sendConfirmationEmailMessage($subscriber, $signupConfirmation);
+    } catch (\Throwable $throwable) {
+      $this->releaseAdminConfirmationEmailClaim($subscriber, $claim);
+      throw $throwable;
+    }
+
+    if (!$sent) {
+      $this->releaseAdminConfirmationEmailClaim($subscriber, $claim);
+      return ['status' => 'send_failed', 'reason' => 'sending_method'];
+    }
+
+    $this->subscribersRepository->refresh($subscriber);
+    $this->sentEmails[$subscriber->getId()] = true;
+    return ['status' => 'sent'];
+  }
+
+  /** @param array{claim_time?: string, previous_last_confirmation_email_sent_at?: string|null, previous_count_confirmations?: int} $claim */
+  private function releaseAdminConfirmationEmailClaim(SubscriberEntity $subscriber, array $claim): void {
+    if (!isset($claim['claim_time'], $claim['previous_count_confirmations'])) {
+      return;
+    }
+    $this->subscribersRepository->releaseAdminConfirmationEmailResendClaim(
+      $subscriber,
+      (string)$claim['claim_time'],
+      $claim['previous_last_confirmation_email_sent_at'] ?? null,
+      (int)$claim['previous_count_confirmations']
+    );
   }
 
   /**

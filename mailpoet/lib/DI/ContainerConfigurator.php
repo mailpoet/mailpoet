@@ -314,6 +314,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\BulkConfirmationEmailResend::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository::class)->setPublic(true);
@@ -471,6 +472,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Subscribers
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\BulkConfirmationEmailResender::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberActions::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscribersEmailCountsController::class);

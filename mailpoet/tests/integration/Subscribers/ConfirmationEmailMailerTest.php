@@ -83,7 +83,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $subscriptionUrlFactoryMock,
@@ -104,6 +103,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   public function testItThrowsExceptionWhenConfirmationEmailCannotBeSent() {
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
+
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
         Stub\Expected::once(function () {
@@ -115,7 +117,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -130,6 +131,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testSendConfirmationEmailThrowsAndLogHardErrorWhenSendReturnsFalse() {
     MailerLog::resetMailerLog();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
+
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => ['response' => false, 'error' => new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, 'Error message')],
     ], $this);
@@ -138,7 +142,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -160,6 +163,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testSendConfirmationEmailThrowsAndIgnoresSoftErrorWhenSendReturnsFalse() {
     MailerLog::resetMailerLog();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
+
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => ['response' => false, 'error' => new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_SOFT, 'Error message')],
     ], $this);
@@ -168,7 +174,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -197,7 +202,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -210,20 +214,20 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
-  public function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
+  public function testItDoesNotSendAdminConfirmationEmailWhenMaxCountIsReached() {
     wp_set_current_user(0);
     verify((new WPFunctions)->isUserLoggedIn())->false();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => function() {
-        return ['response' => true];
-      },
+      'send' => Stub\Expected::never(),
     ], $this);
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -231,26 +235,24 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class)
     );
 
-    for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
-      verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
-    }
     verify($sender->sendConfirmationEmail($this->subscriber))->equals(false);
   }
 
-  public function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
+  public function testItRecordsAndThrottlesAdminConfirmationEmailsForLoggedInUser() {
     wp_set_current_user(1);
     verify((new WPFunctions)->isUserLoggedIn())->true();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => function() {
+      'send' => Stub\Expected::once(function() {
         return ['response' => true];
-      },
+      }),
     ], $this);
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -258,13 +260,14 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class)
     );
 
-    for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
-      verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
-    }
     verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(0);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
     verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
+
+    verify($sender->sendConfirmationEmail($this->subscriber))->equals(false);
+    $this->subscribersRepository->refresh($this->subscriber);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
   }
 
   public function testItLimitsAndRecordsPublicConfirmationEmailsForLoggedInUsers() {
@@ -282,7 +285,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -315,7 +317,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -353,7 +354,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -379,7 +379,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new class(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -408,7 +407,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new class(
       $mailerFactory,
-      $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
@@ -477,7 +475,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $sender = new ConfirmationEmailMailer(
       $this->createMock(MailerFactory::class),
-      $this->diContainer->get(WPFunctions::class),
       $settings,
       $this->diContainer->get(SubscribersRepository::class),
       $subscriptionUrlFactoryMock,

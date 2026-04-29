@@ -4,12 +4,16 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -28,6 +32,16 @@ class SubscriberListingRepository extends ListingRepository {
   private const ENGAGEMENT_SCORE_GOOD_MIN = 20;
   private const ENGAGEMENT_SCORE_GOOD_MAX = 50;
   private const ENGAGEMENT_SCORE_EXCELLENT_MIN = 50;
+  private const BULK_RESEND_REASONS = [
+    'batch_limit',
+    'not_unconfirmed',
+    'deleted',
+    'max_confirmations_reached',
+    'recently_sent',
+    'too_old',
+    'outside_scope',
+    'not_found',
+  ];
 
   private static $supportedStatuses = [
     SubscriberEntity::STATUS_SUBSCRIBED,
@@ -110,6 +124,271 @@ class SubscriberListingRepository extends ListingRepository {
     $idsStatement = $subscribersIdsQuery->execute();
     $result = $idsStatement->fetchAll();
     return array_column($result, 'id');
+  }
+
+  /**
+   * @return array{selected_count: int, eligible_count: int, queued_ids: int[], skipped_by_reason: array<string, int>}
+   */
+  public function getConfirmationEmailResendQueueData(
+    ListingDefinition $definition,
+    \DateTimeInterface $recentCutoff,
+    \DateTimeInterface $oldestLifecycleDate,
+    int $maxConfirmationEmails,
+    int $limit
+  ): array {
+    $selectedIds = $this->normalizeSelectedIds($definition->getSelection());
+    $skippedByReason = array_fill_keys(self::BULK_RESEND_REASONS, 0);
+    $base = $this->createBulkResendBaseQuery($definition);
+    $idColumn = $base['id_column'];
+
+    if ($selectedIds) {
+      $selectedCount = count($selectedIds);
+      $skippedByReason = $this->getExplicitSelectionScopeSkippedCounts($selectedIds, $skippedByReason);
+      $scopeSkippedCount = $skippedByReason['deleted'] + $skippedByReason['not_unconfirmed'] + $skippedByReason['not_found'];
+      $base['query']->andWhere("$idColumn IN (:selected_ids)")
+        ->setParameter('selected_ids', $selectedIds, ArrayParameterType::INTEGER);
+    } else {
+      $selectedCount = $this->countBulkResendQuery($base['query'], $idColumn);
+      $scopeSkippedCount = 0;
+    }
+
+    $inScopeCount = $this->countBulkResendQuery($base['query'], $idColumn);
+    $skippedByReason['max_confirmations_reached'] = $this->countBulkResendQuery(
+      $this->addMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
+      $idColumn
+    );
+    $skippedByReason['recently_sent'] = $this->countBulkResendQuery(
+      $this->addRecentPredicate(
+        $this->addBelowMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
+        $idColumn,
+        $recentCutoff
+      ),
+      $idColumn
+    );
+    $skippedByReason['too_old'] = $this->countBulkResendQuery(
+      $this->addTooOldPredicate(
+        $this->addNotRecentPredicate(
+          $this->addBelowMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
+          $idColumn,
+          $recentCutoff
+        ),
+        $idColumn,
+        $oldestLifecycleDate
+      ),
+      $idColumn
+    );
+
+    $eligibleQuery = $this->addEligiblePredicates(clone $base['query'], $idColumn, $recentCutoff, $oldestLifecycleDate, $maxConfirmationEmails);
+    $eligibleCount = $this->countBulkResendQuery($eligibleQuery, $idColumn);
+    $queuedIds = $this->fetchBulkResendIds($eligibleQuery, $idColumn, $limit);
+    $skippedByReason['batch_limit'] = max(0, $eligibleCount - count($queuedIds));
+
+    if ($selectedIds) {
+      $skippedByReason['outside_scope'] += max(0, $selectedCount - $inScopeCount - $scopeSkippedCount);
+    }
+
+    return [
+      'selected_count' => $selectedCount,
+      'eligible_count' => $eligibleCount,
+      'queued_ids' => $queuedIds,
+      'skipped_by_reason' => $skippedByReason,
+    ];
+  }
+
+  /**
+   * @param int[] $selectedIds
+   * @param array<string, int> $skippedByReason
+   * @return array<string, int>
+   */
+  private function getExplicitSelectionScopeSkippedCounts(array $selectedIds, array $skippedByReason): array {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $rows = $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`, `status`, `deleted_at`
+       FROM $subscribersTable
+       WHERE `id` IN (:selected_ids)",
+      ['selected_ids' => $selectedIds],
+      ['selected_ids' => ArrayParameterType::INTEGER]
+    )->fetchAllAssociative();
+
+    $existingIds = [];
+    foreach ($rows as $row) {
+      $existingIds[] = $this->toInt($row['id'] ?? 0);
+      if (!empty($row['deleted_at'])) {
+        $skippedByReason['deleted']++;
+      } elseif (($row['status'] ?? null) !== SubscriberEntity::STATUS_UNCONFIRMED) {
+        $skippedByReason['not_unconfirmed']++;
+      }
+    }
+    $skippedByReason['not_found'] = count(array_diff($selectedIds, $existingIds));
+
+    return $skippedByReason;
+  }
+
+  /**
+   * @return array{query: DBALQueryBuilder, id_column: string}
+   */
+  private function createBulkResendBaseQuery(ListingDefinition $definition): array {
+    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
+    if ($dynamicSegment instanceof SegmentEntity) {
+      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $query = $this->entityManager->getConnection()->createQueryBuilder()
+        ->select("DISTINCT $subscribersTable.id")
+        ->from($subscribersTable);
+      $query = $this->applyConstraintsForDynamicSegment($query, $definition, $dynamicSegment);
+      return ['query' => $query, 'id_column' => "$subscribersTable.id"];
+    }
+
+    $query = $this->entityManager->getConnection()->createQueryBuilder();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $query->select('DISTINCT s.id')
+      ->from($subscribersTable, 's');
+
+    $this->applyBulkResendListingConstraints($query, $definition);
+    return ['query' => $query, 'id_column' => 's.id'];
+  }
+
+  private function applyBulkResendListingConstraints(DBALQueryBuilder $query, ListingDefinition $definition): void {
+    $group = $definition->getGroup();
+    if ($group === 'trash') {
+      $query->andWhere('s.deleted_at IS NOT NULL');
+    } else {
+      $query->andWhere('s.deleted_at IS NULL');
+    }
+    if ($group && in_array($group, self::$supportedStatuses, true)) {
+      $query->andWhere('s.status = :listing_status')
+        ->setParameter('listing_status', $group);
+    }
+
+    $search = $definition->getSearch();
+    if ($search && strlen(trim($search)) > 0) {
+      $search = Helpers::escapeSearch($search);
+      $query
+        ->andWhere('s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search')
+        ->setParameter('search', "%$search%");
+    }
+
+    $filters = $definition->getFilters();
+    if (isset($filters['segment'])) {
+      if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
+        $this->segmentSubscribersRepository->addConstraintsForSubscribersWithoutSegmentToDBAL($query);
+      } else {
+        $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
+        if ($segment instanceof SegmentEntity && $segment->isStatic()) {
+          $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+          $query->join('s', $subscriberSegmentsTable, 'ss', 'ss.subscriber_id = s.id AND ss.segment_id = :segment_id')
+            ->setParameter('segment_id', $segment->getId(), ParameterType::INTEGER);
+        }
+      }
+    }
+
+    if (isset($filters['tag'])) {
+      $tag = $this->entityManager->find(TagEntity::class, (int)$filters['tag']);
+      if ($tag instanceof TagEntity) {
+        $subscriberTagsTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+        $query->join('s', $subscriberTagsTable, 'st', 'st.subscriber_id = s.id AND st.tag_id = :tag_id')
+          ->setParameter('tag_id', $tag->getId(), ParameterType::INTEGER);
+      }
+    }
+  }
+
+  private function countBulkResendQuery(DBALQueryBuilder $query, string $idColumn): int {
+    $countQuery = clone $query;
+    $countQuery->select("COUNT(DISTINCT $idColumn)");
+    return $this->toInt($countQuery->executeQuery()->fetchOne());
+  }
+
+  /**
+   * @return int[]
+   */
+  private function fetchBulkResendIds(DBALQueryBuilder $query, string $idColumn, int $limit): array {
+    $query->select("DISTINCT $idColumn AS id")
+      ->orderBy($idColumn, 'ASC')
+      ->setMaxResults($limit);
+    return array_map(function($id): int {
+      return $this->toInt($id);
+    }, $query->executeQuery()->fetchFirstColumn());
+  }
+
+  private function addEligiblePredicates(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $recentCutoff, \DateTimeInterface $oldestLifecycleDate, int $maxConfirmationEmails): DBALQueryBuilder {
+    return $this->addNotTooOldPredicate(
+      $this->addNotRecentPredicate(
+        $this->addBelowMaxConfirmationPredicate($query, $idColumn, $maxConfirmationEmails),
+        $idColumn,
+        $recentCutoff
+      ),
+      $idColumn,
+      $oldestLifecycleDate
+    );
+  }
+
+  private function addBelowMaxConfirmationPredicate(DBALQueryBuilder $query, string $idColumn, int $maxConfirmationEmails): DBALQueryBuilder {
+    $query->andWhere($this->column($idColumn, 'count_confirmations') . ' < :max_confirmation_emails')
+      ->setParameter('max_confirmation_emails', $maxConfirmationEmails, ParameterType::INTEGER);
+    return $query;
+  }
+
+  private function addMaxConfirmationPredicate(DBALQueryBuilder $query, string $idColumn, int $maxConfirmationEmails): DBALQueryBuilder {
+    $query->andWhere($this->column($idColumn, 'count_confirmations') . ' >= :max_confirmation_emails')
+      ->setParameter('max_confirmation_emails', $maxConfirmationEmails, ParameterType::INTEGER);
+    return $query;
+  }
+
+  private function addRecentPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $recentCutoff): DBALQueryBuilder {
+    $query->andWhere($this->column($idColumn, 'last_confirmation_email_sent_at') . ' IS NOT NULL')
+      ->andWhere($this->column($idColumn, 'last_confirmation_email_sent_at') . ' > :recent_cutoff')
+      ->setParameter('recent_cutoff', $recentCutoff->format('Y-m-d H:i:s'), ParameterType::STRING);
+    return $query;
+  }
+
+  private function addNotRecentPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $recentCutoff): DBALQueryBuilder {
+    $column = $this->column($idColumn, 'last_confirmation_email_sent_at');
+    $query->andWhere("($column IS NULL OR $column <= :recent_cutoff)")
+      ->setParameter('recent_cutoff', $recentCutoff->format('Y-m-d H:i:s'), ParameterType::STRING);
+    return $query;
+  }
+
+  private function addTooOldPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $oldestLifecycleDate): DBALQueryBuilder {
+    $query->andWhere('COALESCE(' . $this->column($idColumn, 'last_subscribed_at') . ', ' . $this->column($idColumn, 'created_at') . ') < :oldest_lifecycle_date')
+      ->setParameter('oldest_lifecycle_date', $oldestLifecycleDate->format('Y-m-d H:i:s'), ParameterType::STRING);
+    return $query;
+  }
+
+  private function addNotTooOldPredicate(DBALQueryBuilder $query, string $idColumn, \DateTimeInterface $oldestLifecycleDate): DBALQueryBuilder {
+    $query->andWhere('COALESCE(' . $this->column($idColumn, 'last_subscribed_at') . ', ' . $this->column($idColumn, 'created_at') . ') >= :oldest_lifecycle_date')
+      ->setParameter('oldest_lifecycle_date', $oldestLifecycleDate->format('Y-m-d H:i:s'), ParameterType::STRING);
+    return $query;
+  }
+
+  private function column(string $idColumn, string $column): string {
+    if ($idColumn === 's.id') {
+      return "s.$column";
+    }
+    $table = substr($idColumn, 0, -3);
+    return "$table.$column";
+  }
+
+  /**
+   * @param mixed[] $ids
+   * @return int[]
+   */
+  private function normalizeSelectedIds(array $ids): array {
+    $ids = array_map(function($id): int {
+      return $this->toInt($id);
+    }, $ids);
+    $ids = array_filter($ids, static function(int $id): bool {
+      return $id > 0;
+    });
+    return array_values(array_unique($ids));
+  }
+
+  private function toInt($value): int {
+    if (is_int($value)) {
+      return $value;
+    }
+    if (is_string($value) || is_float($value) || is_bool($value)) {
+      return (int)$value;
+    }
+    return 0;
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
