@@ -36,6 +36,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Start building');
 
     $i->waitForText('Inactive');
+    $automationId = $this->grabAutomationIdFromCurrentUrl($i);
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
@@ -73,8 +74,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     // Check automation is activated
     $i->waitForText('"Welcome new subscribers" is now live.');
     $i->click('View all automations');
-    $i->waitForText('Name');
-    $i->see('Welcome new subscribers');
+    $this->waitForAutomationListingRow($i, $automationId, 'Welcome new subscribers');
     $i->see('Active');
     $i->see('Entered 0', ['css' => '.mailpoet-automation-stats-item']); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step']);
@@ -99,9 +99,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->triggerAutomationActionScheduler(); // Initialize the run, creates the delay step
 
     // Check that the send email step waits for email to be sent.
-    $i->moveBack();
-    $i->waitForText('Analytics', 10, '.mailpoet-automation-listing');
-    $i->click('Analytics', '.mailpoet-automation-listing');
+    $this->openAutomationAnalytics($i, $automationId);
     $emailStatsContainer = Locator::contains('.mailpoet-automation-editor-step-wrapper', 'Send email');
     $i->see('Sent 0', $emailStatsContainer);
     $i->triggerAutomationActionScheduler(); // Set delay scheduled at to now, runs delay and send email
@@ -125,5 +123,28 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->amOnMailboxAppPage();
     $i->see('Inbox (1)');
     $i->see('Automation-Test-Subject');
+  }
+
+  private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {
+    $automationId = $i->grabFromCurrentUrl('~[?&]id=(\d+)~');
+    if (!is_string($automationId)) {
+      throw new \RuntimeException('Automation ID was not found in the current URL.');
+    }
+    return $automationId;
+  }
+
+  private function openAutomationAnalytics(\AcceptanceTester $i, string $automationId): void {
+    $i->amOnUrl(
+      \AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-automation-analytics&id=' . $automationId
+    );
+  }
+
+  private function waitForAutomationListingRow(\AcceptanceTester $i, string $automationId, string $automationName): void {
+    $automationTitleLink = sprintf(
+      '[data-automation-id="automation_listing"] a[href*="page=mailpoet-automation-editor"][href*="id=%d"]',
+      $automationId
+    );
+    $i->waitForElementVisible($automationTitleLink);
+    $i->see($automationName, $automationTitleLink);
   }
 }

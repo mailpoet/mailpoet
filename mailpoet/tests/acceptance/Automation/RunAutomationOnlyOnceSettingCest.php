@@ -64,10 +64,10 @@ class RunAutomationOnlyOnceSettingCest {
     $i->wantTo('Ensure that a subscriber enters an automation only once when the setting is set');
     $i->login();
     $i->amOnMailpoetPage('automation');
-    $i->waitForText('Edit');
+    $i->waitForText($this->automation->getName());
     $i->dontSee('Entered 1');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->click($this->automation->getName());
+    $this->openAutomationEditor($i);
     $i->waitForText('Automation settings');
     $i->waitForText('Run automation once per subscriber');
     $i->see('Use this for automations that should only run once, like a welcome email. Turn it off for automations that should run every time, like abandoned cart reminders.');
@@ -123,11 +123,11 @@ class RunAutomationOnlyOnceSettingCest {
     $i->wantTo('Ensure that a subscriber enters an automation only once when the setting is set');
     $i->login();
     $i->amOnMailpoetPage('automation');
-    $i->waitForText('Edit');
+    $i->waitForText($this->automation->getName());
     $i->dontSee('Entered 1');
     $i->dontSee('Entered 2');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->click($this->automation->getName());
+    $this->openAutomationEditor($i);
     $i->waitForText('Run automation once per subscriber');
     $i->click('.mailpoet-automation-run-only-once label'); //yes
     $i->click('.mailpoet-automation-run-only-once label'); //no
@@ -174,5 +174,14 @@ class RunAutomationOnlyOnceSettingCest {
     $this->automationStorage->truncate();
     $this->automationRunStorage->truncate();
     $this->automationRunLogStorage->truncate();
+  }
+
+  private function openAutomationEditor(\AcceptanceTester $i): void {
+    $automationTitle = sprintf(
+      '[data-automation-id="automation_listing"] a[href*="page=mailpoet-automation-editor"][href*="id=%d"]',
+      $this->automation->getId()
+    );
+    $i->waitForElementVisible($automationTitle);
+    $i->click($automationTitle);
   }
 }

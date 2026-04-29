@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories;
+use Symfony\Component\CssSelector\XPath\Translator;
 
 class AutomationListingCest {
   public function automationListing(AcceptanceTester $i): void {
@@ -51,24 +52,20 @@ class AutomationListingCest {
     $i->waitForText('Build your own automations');
 
     // check automation 1
-    $automation1row = '.mailpoet-automation-listing tr:nth-child(3)';
+    $automation1row = $this->getAutomationRow('Test Automation 1');
     $i->see('Test Automation 1', $automation1row);
     $i->see('Entered 0', $automation1row);
     $i->see('Processing 0', $automation1row);
     $i->see('Exited 0', $automation1row);
     $i->see('Inactive', $automation1row);
-    $i->see('Analytics', $automation1row);
-    $i->see('Edit', $automation1row);
 
     // check automation 2
-    $automation2row = '.mailpoet-automation-listing tr:nth-child(2)';
+    $automation2row = $this->getAutomationRow('Test Automation 2');
     $i->see('Test Automation 2', $automation2row);
     $i->see('Entered 5', $automation2row);
     $i->see('Processing 1', $automation2row);
     $i->see('Exited 4', $automation2row);
     $i->see('Active', $automation2row);
-    $i->see('Analytics', $automation2row);
-    $i->see('Edit', $automation2row);
   }
 
   public function legacyAutomaticEmailListing(AcceptanceTester $i): void {
@@ -127,7 +124,7 @@ class AutomationListingCest {
     $i->waitForText('Product purchased in category');
 
     // welcome email
-    $welcomeRow = '.mailpoet-automation-listing tr:nth-child(2)';
+    $welcomeRow = $this->getAutomationRow('Welcome');
     $i->see('Welcome', $welcomeRow);
     $i->see('Sent when someone subscribes to the list: WooCommerce Customers.', $welcomeRow);
     $i->see('Entered 3', $welcomeRow);
@@ -135,23 +132,30 @@ class AutomationListingCest {
     $i->see('Exited 1', $welcomeRow);
 
     // abandoned cart email
-    $abandonedCartRow = '.mailpoet-automation-listing tr:nth-child(3)';
+    $abandonedCartRow = $this->getAutomationRow('Abandoned cart');
     $i->see('Abandoned cart', $abandonedCartRow);
     $i->see('Send the email when a customer abandons their cart. 1 week(s) later', $abandonedCartRow);
 
     // first purchase email
-    $firstPurchaseRow = '.mailpoet-automation-listing tr:nth-child(4)';
+    $firstPurchaseRow = $this->getAutomationRow('First purchase');
     $i->see('First purchase', $firstPurchaseRow);
     $i->see('Email sent when a customer makes their first purchase.', $firstPurchaseRow);
 
     // product purchased email
-    $productPurchasedRow = '.mailpoet-automation-listing tr:nth-child(5)';
+    $productPurchasedRow = $this->getAutomationRow('Product purchased');
     $i->see('Product purchased', $productPurchasedRow);
     $i->see('Email sent when a customer buys product: Test product.', $productPurchasedRow);
 
     // product purchased in category email
-    $productPurchasedInCategoryRow = '.mailpoet-automation-listing tr:nth-child(6)';
+    $productPurchasedInCategoryRow = $this->getAutomationRow('Product purchased in category');
     $i->see('Product purchased in category', $productPurchasedInCategoryRow);
     $i->see('Email sent when a customer buys a product in category: Uncategorized.', $productPurchasedInCategoryRow);
+  }
+
+  private function getAutomationRow(string $automationName): string {
+    return sprintf(
+      '//*[@data-automation-id="automation_listing"]//tr[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table__row ")][.//div[contains(concat(" ", normalize-space(@class), " "), " dataviews-title-field ")]//a[normalize-space()=%s]]',
+      Translator::getXpathLiteral($automationName)
+    );
   }
 }

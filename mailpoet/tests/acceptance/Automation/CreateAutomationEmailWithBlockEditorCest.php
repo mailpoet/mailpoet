@@ -39,6 +39,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('Start building');
 
     $i->waitForText('Inactive');
+    $automationId = $this->grabAutomationIdFromCurrentUrl($i);
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
 
@@ -93,13 +94,11 @@ class CreateAutomationEmailWithBlockEditorCest {
     // Check automation is activated
     $i->waitForText('"Welcome new subscribers" is now live.');
     $i->click('View all automations');
-    $i->waitForText('Name');
-    $i->see('Welcome new subscribers');
+    $this->waitForAutomationListingRow($i, $automationId, 'Welcome new subscribers');
     $i->see('Active');
 
     $i->wantTo('Test editing existing automation email with block editor');
-    $i->waitForText('Edit', 10, '.mailpoet-automation-listing');
-    $i->click('Edit', '.mailpoet-automation-listing');
+    $this->openAutomationEditor($i, $automationId);
     $i->waitForText('Active');
     $i->click('Send email');
     $i->click('Edit content');
@@ -158,5 +157,32 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('[aria-label="Newsletter"]');
     $i->waitForElementVisible('.block-editor-block-preview__container');
     $i->click('[aria-label="Close"]');
+  }
+
+  private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {
+    $automationId = $i->grabFromCurrentUrl('~[?&]id=(\d+)~');
+    if (!is_string($automationId)) {
+      throw new \RuntimeException('Automation ID was not found in the current URL.');
+    }
+    return $automationId;
+  }
+
+  private function waitForAutomationListingRow(\AcceptanceTester $i, string $automationId, string $automationName): void {
+    $automationTitleLink = $this->getAutomationTitleLink($automationId);
+    $i->waitForElementVisible($automationTitleLink);
+    $i->see($automationName, $automationTitleLink);
+  }
+
+  private function openAutomationEditor(\AcceptanceTester $i, string $automationId): void {
+    $automationTitleLink = $this->getAutomationTitleLink($automationId);
+    $i->waitForElementVisible($automationTitleLink);
+    $i->click($automationTitleLink);
+  }
+
+  private function getAutomationTitleLink(string $automationId): string {
+    return sprintf(
+      '[data-automation-id="automation_listing"] a[href*="page=mailpoet-automation-editor"][href*="id=%d"]',
+      $automationId
+    );
   }
 }
