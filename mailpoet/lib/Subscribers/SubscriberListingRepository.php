@@ -134,14 +134,25 @@ class SubscriberListingRepository extends ListingRepository {
     \DateTimeInterface $recentCutoff,
     \DateTimeInterface $oldestLifecycleDate,
     int $maxConfirmationEmails,
-    int $limit
+    int $limit,
+    bool $hasExplicitSelection = false
   ): array {
     $selectedIds = $this->normalizeSelectedIds($definition->getSelection());
     $skippedByReason = array_fill_keys(self::BULK_RESEND_REASONS, 0);
     $base = $this->createBulkResendBaseQuery($definition);
     $idColumn = $base['id_column'];
 
-    if ($selectedIds) {
+    if ($hasExplicitSelection) {
+      if (!$selectedIds) {
+        $selectedCount = count($definition->getSelection());
+        $skippedByReason['not_found'] = $selectedCount;
+        return [
+          'selected_count' => $selectedCount,
+          'eligible_count' => 0,
+          'queued_ids' => [],
+          'skipped_by_reason' => $skippedByReason,
+        ];
+      }
       $selectedCount = count($selectedIds);
       $skippedByReason = $this->getExplicitSelectionScopeSkippedCounts($selectedIds, $skippedByReason);
       $scopeSkippedCount = $skippedByReason['deleted'] + $skippedByReason['not_unconfirmed'] + $skippedByReason['not_found'];
@@ -152,7 +163,7 @@ class SubscriberListingRepository extends ListingRepository {
       $scopeSkippedCount = 0;
     }
 
-    $inScopeCount = $this->countBulkResendQuery($base['query'], $idColumn);
+    $inScopeCount = $hasExplicitSelection ? $this->countBulkResendQuery($base['query'], $idColumn) : $selectedCount;
     $skippedByReason['max_confirmations_reached'] = $this->countBulkResendQuery(
       $this->addMaxConfirmationPredicate(clone $base['query'], $idColumn, $maxConfirmationEmails),
       $idColumn
@@ -289,6 +300,91 @@ class SubscriberListingRepository extends ListingRepository {
           ->setParameter('tag_id', $tag->getId(), ParameterType::INTEGER);
       }
     }
+
+    if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
+      $query->andWhere('s.updated_at >= :updated_at')
+        ->setParameter('updated_at', $filters['minUpdatedAt']->format('Y-m-d H:i:s'), ParameterType::STRING);
+    }
+
+    $statusInclude = $this->sanitizeStatusFilter($filters['statusInclude'] ?? []);
+    if ($statusInclude) {
+      $query->andWhere('s.status IN (:status_include)')
+        ->setParameter('status_include', $statusInclude, ArrayParameterType::STRING);
+    }
+
+    $statusExclude = $this->sanitizeStatusFilter($filters['statusExclude'] ?? []);
+    if ($statusExclude) {
+      $query->andWhere('s.status NOT IN (:status_exclude)')
+        ->setParameter('status_exclude', $statusExclude, ArrayParameterType::STRING);
+    }
+
+    $createdAtFrom = $filters['createdAtFrom'] ?? null;
+    if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
+      $query->andWhere('s.created_at >= :created_at_from')
+        ->setParameter('created_at_from', $createdAtFrom, ParameterType::STRING);
+    }
+
+    $createdAtTo = $filters['createdAtTo'] ?? null;
+    if ($createdAtTo && is_string($createdAtTo) && $this->isValidDateTime($createdAtTo)) {
+      $query->andWhere('s.created_at <= :created_at_to')
+        ->setParameter('created_at_to', $createdAtTo, ParameterType::STRING);
+    }
+
+    $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
+    if (!empty($engagementScoreInclude)) {
+      $conditions = $this->getEngagementScoreConditions(is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude]);
+      if ($conditions) {
+        $query->andWhere('(' . implode(' OR ', $conditions) . ')');
+      }
+    }
+
+    $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
+    if (!empty($engagementScoreExclude)) {
+      foreach (is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude] as $score) {
+        if ($score === self::ENGAGEMENT_SCORE_UNKNOWN) {
+          $query->andWhere('s.engagement_score IS NOT NULL');
+        } elseif ($score === self::ENGAGEMENT_SCORE_LOW) {
+          $query->andWhere(sprintf('(s.engagement_score >= %d OR s.engagement_score IS NULL)', self::ENGAGEMENT_SCORE_LOW_MAX));
+        } elseif ($score === self::ENGAGEMENT_SCORE_GOOD) {
+          $query->andWhere(sprintf('(s.engagement_score < %d OR s.engagement_score >= %d OR s.engagement_score IS NULL)', self::ENGAGEMENT_SCORE_GOOD_MIN, self::ENGAGEMENT_SCORE_GOOD_MAX));
+        } elseif ($score === self::ENGAGEMENT_SCORE_EXCELLENT) {
+          $query->andWhere(sprintf('(s.engagement_score < %d OR s.engagement_score IS NULL)', self::ENGAGEMENT_SCORE_EXCELLENT_MIN));
+        }
+      }
+    }
+  }
+
+  /**
+   * @param mixed $statuses
+   * @return string[]
+   */
+  private function sanitizeStatusFilter($statuses): array {
+    $statuses = is_array($statuses) ? $statuses : [$statuses];
+    $statuses = array_filter($statuses, function($status) {
+      return is_string($status) && in_array($status, self::$supportedStatuses, true);
+    });
+    return array_values(array_unique($statuses));
+  }
+
+  /**
+   * @param mixed[] $scores
+   * @return string[]
+   */
+  private function getEngagementScoreConditions(array $scores): array {
+    $conditions = [];
+    if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $scores, true)) {
+      $conditions[] = '(s.engagement_score IS NULL)';
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_LOW, $scores, true)) {
+      $conditions[] = sprintf('(s.engagement_score < %d)', self::ENGAGEMENT_SCORE_LOW_MAX);
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_GOOD, $scores, true)) {
+      $conditions[] = sprintf('(s.engagement_score >= %d AND s.engagement_score < %d)', self::ENGAGEMENT_SCORE_GOOD_MIN, self::ENGAGEMENT_SCORE_GOOD_MAX);
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_EXCELLENT, $scores, true)) {
+      $conditions[] = sprintf('(s.engagement_score >= %d)', self::ENGAGEMENT_SCORE_EXCELLENT_MIN);
+    }
+    return $conditions;
   }
 
   private function countBulkResendQuery(DBALQueryBuilder $query, string $idColumn): int {
