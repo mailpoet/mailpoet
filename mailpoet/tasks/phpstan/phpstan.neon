@@ -29,6 +29,16 @@ parameters:
   ignoreErrors:
     - identifier: missingType.iterableValue
     - identifier: missingType.generics
+    # PHPStan 2.x emits unresolvableReturnType during template substitution
+    # before our CodeceptionExtension can resolve Codeception\Stub's
+    # @return MockObject & RealInstanceType into a concrete type. We accept
+    # this for Codeception-only call sites; non-Codeception cases stay strict.
+    -
+      identifier: staticMethod.unresolvableReturnType
+      message: '#Codeception\\Stub::#'
+    -
+      identifier: method.unresolvableReturnType
+      message: '#Codeception\\Test\\Unit::#'
     - '#Function members_register_.+ not found#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
 
@@ -49,10 +59,6 @@ parameters:
     -
       message: '/^Call to static method get_addresses_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
       count: 1
-      path: ../../lib/WooCommerce/Helper.php
-    -
-      message: '/^Call to function method_exists\(\) with/'
-      count: 2
       path: ../../lib/WooCommerce/Helper.php
     -
       message: '/^Cannot call method get\(\) on mixed.$/'

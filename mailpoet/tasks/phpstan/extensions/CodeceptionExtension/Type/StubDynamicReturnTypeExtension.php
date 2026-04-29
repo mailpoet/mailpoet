@@ -10,6 +10,7 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 
 class StubDynamicReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension {
   public function getClass(): string {
@@ -33,10 +34,14 @@ class StubDynamicReturnTypeExtension implements DynamicStaticMethodReturnTypeExt
     if (!isset($args[0])) {
       return null;
     }
-    $type = $scope->getType($args[0]->value);
-    if ($type instanceof ConstantStringType) {
-      return new ObjectType($type->getValue()); // $type is class name
+    $argType = $scope->getType($args[0]->value);
+    if ($argType instanceof ConstantStringType) {
+      $targetType = new ObjectType($argType->getValue());
+    } elseif ($argType instanceof ObjectType) {
+      $targetType = $argType;
+    } else {
+      return null;
     }
-    return null;
+    return TypeCombinator::intersect($targetType, new ObjectType(\PHPUnit\Framework\MockObject\MockObject::class));
   }
 }
