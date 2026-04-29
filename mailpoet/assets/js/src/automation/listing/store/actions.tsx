@@ -1,9 +1,11 @@
 import { dispatch } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import { Button } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { Automation, AutomationStatus } from '../automation';
-import { EditAutomation, UndoTrashButton } from '../components/actions';
+import { UndoTrashButton } from '../components/actions';
+import { getAutomationEditorUrl } from '../urls';
 
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore).createSuccessNotice(content, options);
@@ -92,10 +94,9 @@ export function* restoreAutomation(
     __unstableHTML: (
       <p>
         {message}{' '}
-        <EditAutomation
-          automation={automation}
-          label={__('Edit automation', 'mailpoet')}
-        />
+        <Button variant="link" href={getAutomationEditorUrl(automation)}>
+          {__('Edit automation', 'mailpoet')}
+        </Button>
       </p>
     ),
   });

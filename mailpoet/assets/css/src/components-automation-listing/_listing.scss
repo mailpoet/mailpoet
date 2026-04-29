@@ -1,5 +1,3 @@
-@import '../mailpoet-listing';
-
 #mailpoet_automation * {
   box-sizing: border-box;
 }
@@ -10,10 +8,6 @@
   }
 }
 
-.mailpoet-automation-listing-cell-name.woocommerce-table__item {
-  width: 100%;
-
-  > a:only-child {
-    display: inline-flex;
-  }
+.mailpoet-automation-dataviews .dataviews-title-field a {
+  display: inline-flex;
 }

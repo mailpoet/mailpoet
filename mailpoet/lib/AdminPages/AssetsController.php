@@ -70,6 +70,7 @@ class AssetsController {
 
   public function setupAutomationListingDependencies(): void {
     $this->enqueueJsEntrypoint('automation');
+    $this->setupDataViewsDependencies();
     $this->wp->wpEnqueueStyle('mailpoet_automation', $this->getCssUrl('mailpoet-automation.css'));
   }
 

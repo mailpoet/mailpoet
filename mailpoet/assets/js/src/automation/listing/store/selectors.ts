@@ -1,16 +1,17 @@
-import { State } from './types';
-import { Automation } from '../automation';
+import { AutomationItem, State } from './types';
 import { automationCount, legacyAutomationCount } from '../../config';
 
-export function getAutomations(state: State): Automation[] {
+export function getAutomations(state: State): AutomationItem[] | undefined {
   return state.automations;
 }
 
-export function getLegacyAutomations(state: State): Automation[] {
+export function getLegacyAutomations(
+  state: State,
+): AutomationItem[] | undefined {
   return state.legacyAutomations;
 }
 
-export function getAllAutomations(state: State): Automation[] {
+export function getAllAutomations(state: State): AutomationItem[] | undefined {
   return state.automations && state.legacyAutomations
     ? [...state.automations, ...state.legacyAutomations]
     : undefined;
