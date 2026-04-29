@@ -136,6 +136,7 @@ interface Window {
   mailpoet_date_format: string;
   mailpoet_listing_per_page: string;
   mailpoet_signup_confirmation_enabled: boolean;
+  mailpoet_bulk_confirmation_resend_limit: number;
   mailpoet_3rd_party_libs_enabled: string;
   mailpoet_analytics_enabled: boolean;
   mailpoet_datetime_format: string;

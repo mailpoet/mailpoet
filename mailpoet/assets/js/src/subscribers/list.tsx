@@ -70,7 +70,8 @@ type Response = {
 };
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
-const bulkConfirmationResendLimit = 20;
+const bulkConfirmationResendLimit =
+  window.mailpoet_bulk_confirmation_resend_limit;
 const bulkConfirmationCheckboxId = 'bulk-resend-confirmation-checkbox-input';
 const bulkConfirmationConfirmHelpId = 'bulk-resend-confirmation-confirm-help';
 
@@ -241,12 +242,14 @@ function BulkResendConfirmationEmailsModal({
     >
       <VStack spacing={3}>
         <Text as="p">
-          {__(
-            'You selected %1$s subscribers. MailPoet will queue confirmation emails for up to %2$s eligible unconfirmed subscribers.',
-            'mailpoet',
-          )
-            .replace('%1$s', Number(count).toLocaleString())
-            .replace('%2$s', bulkConfirmationResendLimit.toLocaleString())}
+          {sprintf(
+            __(
+              'You selected %1$s subscribers. MailPoet will queue confirmation emails for up to %2$s eligible unconfirmed subscribers.',
+              'mailpoet',
+            ),
+            Number(count).toLocaleString(),
+            bulkConfirmationResendLimit.toLocaleString(),
+          )}
         </Text>
         <Text as="p">
           {__(
