@@ -2,7 +2,7 @@ parameters:
   level: 9
   phpVersion:
     min: 70400
-    max: 80300
+    max: 80500
   tmpDir: ../../temp/phpstan
   bootstrapFiles:
     - ../../vendor/autoload.php
