@@ -275,9 +275,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testGenericConfirmationEmailKeepsApiCompatibilityWithoutAdminThrottle(): void {
     wp_set_current_user(1);
+    $previousSentAt = Carbon::now()->subDay()->millisecond(0);
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscriber->setConfirmationsCount(1);
-    $this->subscriber->setLastConfirmationEmailSentAt(Carbon::now()->subDay());
+    $this->subscriber->setLastConfirmationEmailSentAt($previousSentAt);
     $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -300,7 +301,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($this->subscriber->getConfirmationsCount())->equals(1);
     $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
     $this->assertNotNull($lastConfirmationEmailSentAt);
-    $this->assertGreaterThan(Carbon::now()->subMinute()->getTimestamp(), $lastConfirmationEmailSentAt->getTimestamp());
+    verify($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'))->equals($previousSentAt->format('Y-m-d H:i:s'));
   }
 
   public function testAdminConfirmationEmailReleaseDoesNotEraseNewerClaim(): void {
