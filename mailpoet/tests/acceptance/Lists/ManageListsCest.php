@@ -140,8 +140,8 @@ class ManageListsCest {
     $i->see('List to keep');
   }
 
-  public function bulkTrashAllListsOnAllPages(\AcceptanceTester $i) {
-    $i->wantTo('Trash all lists across pages using the all-pages selection');
+  public function bulkTrashSelectedListsOnCurrentPage(\AcceptanceTester $i) {
+    $i->wantTo('Trash selected lists without offering all-pages selection');
     $listNames = [
       '00 Select All Pages List A',
       '00 Select All Pages List B',
@@ -164,18 +164,16 @@ class ManageListsCest {
 
     $i->checkWooTableCheckboxForItemName($listNames[0]);
     $i->checkWooTableCheckboxForItemName($listNames[1]);
-    $i->waitForElement('[data-automation-id="select_all_items_all_pages"]');
+    $i->dontSeeElement('[data-automation-id="select_all_items_all_pages"]');
     $i->dontSeeElement('[data-automation-id="empty_trash"]');
-    $i->click('[data-automation-id="select_all_items_all_pages"]');
-    $i->waitForElement('[data-automation-id="all_items_all_pages_selected"]');
     $i->selectListingBulkAction('Move to trash');
 
-    $i->waitForText('lists were moved to the trash.');
+    $i->waitForText('2 lists were moved to the trash.');
     ContainerWrapper::getInstance()->get(EntityManager::class)->clear();
     $segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $listOnAnotherPage = $segmentsRepository->findOneById($listIds[2]);
     Assert::assertInstanceOf(SegmentEntity::class, $listOnAnotherPage);
-    Assert::assertNotNull($listOnAnotherPage->getDeletedAt());
+    Assert::assertNull($listOnAnotherPage->getDeletedAt());
   }
 
   public function disableAndEnableWPUserList(\AcceptanceTester $i) {
