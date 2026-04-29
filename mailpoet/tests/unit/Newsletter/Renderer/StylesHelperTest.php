@@ -108,6 +108,9 @@ class StylesHelperTest extends \MailPoetUnitTest {
     $block = ['styles' => ['block' => ['textAlign' => 'left']]];
     verify(StylesHelper::applyTextAlignment($block, 'right'))->equals(['styles' => ['block' => ['textAlign' => 'right']]]);
 
+    $block = ['styles' => ['block' => ['textAlign' => 'bright']]];
+    verify(StylesHelper::applyTextAlignment($block, 'right'))->equals(['styles' => ['block' => ['textAlign' => 'right']]]);
+
     foreach (['center', 'right', 'justify'] as $alignment) {
       $block = ['styles' => ['block' => ['textAlign' => $alignment]]];
       verify(StylesHelper::applyTextAlignment($block, 'right'))->equals($block);
@@ -119,6 +122,8 @@ class StylesHelperTest extends \MailPoetUnitTest {
       ->equals('color: #000000;text-align:right;');
     verify(StylesHelper::applyTextAlignment('text-align:left;', 'right'))
       ->equals('text-align:left;text-align:right;');
+    verify(StylesHelper::applyTextAlignment('text-align:rightly;', 'right'))
+      ->equals('text-align:rightly;text-align:right;');
 
     foreach (['center', 'right', 'justify'] as $alignment) {
       $style = 'text-align:' . $alignment . ';';
