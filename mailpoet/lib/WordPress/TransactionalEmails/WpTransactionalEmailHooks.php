@@ -2,6 +2,7 @@
 
 namespace MailPoet\WordPress\TransactionalEmails;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WpTransactionalEmailHooks {
@@ -13,6 +14,9 @@ class WpTransactionalEmailHooks {
 
   /** @var WpTransactionalEmailRenderer */
   private $renderer;
+
+  /** @var WpTransactionalEmailTemplates */
+  private $templates;
 
   /** @var WPFunctions */
   private $wp;
@@ -28,11 +32,13 @@ class WpTransactionalEmailHooks {
     WpTransactionalEmails $wpTransactionalEmails,
     WpTransactionalEmailContext $context,
     WpTransactionalEmailRenderer $renderer,
+    WpTransactionalEmailTemplates $templates,
     WPFunctions $wp
   ) {
     $this->wpTransactionalEmails = $wpTransactionalEmails;
     $this->context = $context;
     $this->renderer = $renderer;
+    $this->templates = $templates;
     $this->wp = $wp;
   }
 
@@ -170,14 +176,60 @@ class WpTransactionalEmailHooks {
     return $this->buildHtmlEmail($email, $rendered);
   }
 
-  /**
-   * @return \MailPoet\Entities\NewsletterEntity|null
-   */
-  private function getActiveNewsletterFor(string $kind) {
+  private function getActiveNewsletterFor(string $kind): ?NewsletterEntity {
     if (!$this->wpTransactionalEmails->isActive($kind)) {
       return null;
     }
-    return $this->wpTransactionalEmails->findByKind($kind);
+    $newsletter = $this->wpTransactionalEmails->findByKind($kind);
+    if ($newsletter === null) {
+      return null;
+    }
+    if (!$this->hasRequiredTokens($newsletter, $kind)) {
+      // The user removed the action link (e.g. password reset URL) from
+      // the template. Fall through so WordPress sends its plaintext
+      // default — better than a broken email the recipient cannot act on.
+      return null;
+    }
+    return $newsletter;
+  }
+
+  /**
+   * Each kind has a list of required token rules. A rule may be a single
+   * token or a pipe-separated alternatives string ("a|b" — at least one).
+   * The post content (block markup) is the source of truth, not the
+   * rendered HTML, because tokens are already substituted by the time
+   * the renderer returns.
+   */
+  private function hasRequiredTokens(NewsletterEntity $newsletter, string $kind): bool {
+    $required = $this->templates->getRequiredTokens($kind);
+    if ($required === []) {
+      return true;
+    }
+
+    $postEntity = $newsletter->getWpPost();
+    if ($postEntity === null) {
+      return false;
+    }
+    $post = $postEntity->getWpPostInstance();
+    if (!($post instanceof \WP_Post)) {
+      return false;
+    }
+    $content = (string)$post->post_content;
+
+    foreach ($required as $rule) {
+      $alternatives = explode('|', $rule);
+      $matched = false;
+      foreach ($alternatives as $token) {
+        if (strpos($content, '[' . $token . ']') !== false) {
+          $matched = true;
+          break;
+        }
+      }
+      if (!$matched) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
