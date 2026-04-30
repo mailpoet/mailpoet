@@ -7,7 +7,7 @@
       <p>
         <label>
           <input type="radio" name="reason" value="<%= reason|escape('html_attr') %>" required>
-          <%= label %>
+          <%= label|escape %>
         </label>
       </p>
       <% if allowOtherText and reason == otherReason %>
