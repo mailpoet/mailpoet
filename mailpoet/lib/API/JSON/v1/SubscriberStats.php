@@ -6,7 +6,10 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\Statistics\SubscriberStatistics;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
@@ -32,16 +35,26 @@ class SubscriberStats extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
+  /** @var UnsubscribeReasonTracker */
+  private $unsubscribeReasonTracker;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
     SubscriberStatisticsRepository $subscribersStatisticsRepository,
     Helper $wooCommerceHelper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
+    UnsubscribeReasonTracker $unsubscribeReasonTracker
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersStatisticsRepository = $subscribersStatisticsRepository;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->wp = $wp;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
+    $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
   }
 
   public function get($data) {
@@ -181,6 +194,7 @@ class SubscriberStats extends APIEndpoint {
 
   private function getProfile(SubscriberEntity $subscriber, bool $isWooActive): array {
     return [
+      'status' => $subscriber->getStatus(),
       'first_name' => $subscriber->getFirstName(),
       'last_name' => $subscriber->getLastName(),
       'email' => $subscriber->getEmail(),
@@ -188,7 +202,26 @@ class SubscriberStats extends APIEndpoint {
       'tags' => $this->getTags($subscriber),
       'segments' => $this->getSegments($subscriber),
       'custom_fields' => $this->getCustomFields($subscriber),
+      'unsubscribe_reason' => $this->getProfileUnsubscribeReason($subscriber),
     ];
+  }
+
+  private function getProfileUnsubscribeReason(SubscriberEntity $subscriber): ?string {
+    $latest = $this->statisticsUnsubscribesRepository->findLatestForSubscriber($subscriber);
+    if (!$latest instanceof StatisticsUnsubscribeEntity) {
+      return null;
+    }
+    $reason = $latest->getReason();
+    $reasonText = $latest->getReasonText();
+    $trimmedText = $reasonText !== null ? trim($reasonText) : '';
+    if ($trimmedText !== '') {
+      return $trimmedText;
+    }
+    $labels = $this->unsubscribeReasonTracker->getReasonLabels();
+    if ($reason !== null && isset($labels[$reason])) {
+      return $labels[$reason];
+    }
+    return __('No reason provided', 'mailpoet');
   }
 
   private function getTags(SubscriberEntity $subscriber): array {

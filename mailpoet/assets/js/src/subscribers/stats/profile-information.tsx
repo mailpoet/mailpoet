@@ -26,6 +26,23 @@ function TextValue({ value }: { value: string | null | undefined }) {
   return <>{value}</>;
 }
 
+function getSubscriberStatusLabel(status: string): string {
+  switch (status) {
+    case 'subscribed':
+      return __('Subscribed', 'mailpoet');
+    case 'unconfirmed':
+      return __('Unconfirmed', 'mailpoet');
+    case 'unsubscribed':
+      return __('Unsubscribed', 'mailpoet');
+    case 'inactive':
+      return __('Inactive', 'mailpoet');
+    case 'bounced':
+      return __('Bounced', 'mailpoet');
+    default:
+      return status;
+  }
+}
+
 function ProfileRow({
   label,
   children,
@@ -71,6 +88,14 @@ export function ProfileInformation({
       </CardHeader>
       <CardBody>
         <dl className="mailpoet-subscriber-stats-profile-list">
+          <ProfileRow label={__('Status', 'mailpoet')}>
+            <TextValue value={getSubscriberStatusLabel(profile.status)} />
+          </ProfileRow>
+          {profile.status === 'unsubscribed' && (
+            <ProfileRow label={__('Unsubscribe reason', 'mailpoet')}>
+              <TextValue value={profile.unsubscribe_reason ?? undefined} />
+            </ProfileRow>
+          )}
           <ProfileRow label={__('First name', 'mailpoet')}>
             <TextValue value={profile.first_name} />
           </ProfileRow>
@@ -92,7 +117,7 @@ export function ProfileInformation({
               <TextValue value={field.value} />
             </ProfileRow>
           ))}
-          <ProfileRow label={__('Subscriber tags', 'mailpoet')}>
+          <ProfileRow label={__('Tags', 'mailpoet')}>
             {profile.tags.length > 0 ? (
               <SubscriberTags
                 subscribers={profile.tags}

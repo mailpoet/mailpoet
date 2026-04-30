@@ -48,6 +48,7 @@ export type StatsPeriodKey =
   | 'lifetime';
 
 export type SubscriberProfile = {
+  status: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -55,6 +56,7 @@ export type SubscriberProfile = {
   tags: SubscriberTag[];
   segments: SubscriberSegment[];
   custom_fields: SubscriberCustomField[];
+  unsubscribe_reason: string | null;
 };
 
 export type SubscriberTag = {
