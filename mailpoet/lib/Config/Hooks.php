@@ -7,6 +7,7 @@ use MailPoet\Captcha\ReCaptchaHooks;
 use MailPoet\Captcha\TurnstileHooks;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -23,6 +24,7 @@ use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\WooSystemInfoController;
+use MailPoet\WordPress\TransactionalEmails\WpTransactionalEmailHooks;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomLicenseProvisioner;
 
@@ -113,6 +115,10 @@ class Hooks {
 
   private CouponBlockGenerator $couponBlockGenerator;
 
+  private FeaturesController $featuresController;
+
+  private WpTransactionalEmailHooks $wpTransactionalEmailHooks;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -137,7 +143,9 @@ class Hooks {
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
     AdminUserSubscription $adminUserSubscription,
-    CouponBlockGenerator $couponBlockGenerator
+    CouponBlockGenerator $couponBlockGenerator,
+    FeaturesController $featuresController,
+    WpTransactionalEmailHooks $wpTransactionalEmailHooks
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -163,6 +171,8 @@ class Hooks {
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
     $this->couponBlockGenerator = $couponBlockGenerator;
+    $this->featuresController = $featuresController;
+    $this->wpTransactionalEmailHooks = $wpTransactionalEmailHooks;
   }
 
   public function init() {
@@ -187,6 +197,14 @@ class Hooks {
     $this->setupCaptchaOnRegisterForm();
     $this->adminUserSubscription->setupHooks();
     $this->deactivateMailPoetCronBeforePluginUpgrade();
+    $this->setupWpTransactionalEmails();
+  }
+
+  private function setupWpTransactionalEmails(): void {
+    if (!$this->featuresController->isSupported(FeaturesController::FEATURE_WP_TRANSACTIONAL_EMAILS)) {
+      return;
+    }
+    $this->wpTransactionalEmailHooks->initialize();
   }
 
   public function initEarlyHooks() {
