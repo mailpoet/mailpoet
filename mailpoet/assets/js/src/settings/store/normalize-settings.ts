@@ -97,7 +97,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
         confirm_unsubscribe: text,
       }),
       unsubscribe_survey: asObject({
-        enabled: disabledCheckbox,
+        enabled: enabledCheckbox,
         allow_other_text: disabledCheckbox,
       }),
       segments: emptyArray,

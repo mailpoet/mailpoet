@@ -42,6 +42,11 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals('default', $this->controller->get('test_key.wrong_subkey', 'default'));
   }
 
+  public function testItEnablesUnsubscribeSurveyDefaults(): void {
+    $this->assertTrue($this->controller->get('subscription.unsubscribe_survey.enabled'));
+    $this->assertFalse($this->controller->get('subscription.unsubscribe_survey.allow_other_text'));
+  }
+
   public function testItCanFetchValuesFromDB() {
     $this->assertNull($this->controller->fetch('test_key'));
     $this->assertNull($this->controller->fetch('test_key.sub_key'));
