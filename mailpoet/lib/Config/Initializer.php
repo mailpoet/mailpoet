@@ -14,6 +14,7 @@ use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
+use MailPoet\CustomFields\RestApi\Api as CustomFieldsRestApi;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
@@ -115,6 +116,9 @@ class Initializer {
   /** @var TagsRestApi */
   private $tagsRestApi;
 
+  /** @var CustomFieldsRestApi */
+  private $customFieldsRestApi;
+
   /** @var FormsRestApi */
   private $formsRestApi;
 
@@ -183,6 +187,7 @@ class Initializer {
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     Url $urlHelper,
     TagsRestApi $tagsRestApi,
+    CustomFieldsRestApi $customFieldsRestApi,
     FormsRestApi $formsRestApi,
     SegmentsRestApi $segmentsRestApi
   ) {
@@ -218,6 +223,7 @@ class Initializer {
     $this->blockTypesController = $blockTypesController;
     $this->urlHelper = $urlHelper;
     $this->tagsRestApi = $tagsRestApi;
+    $this->customFieldsRestApi = $customFieldsRestApi;
     $this->formsRestApi = $formsRestApi;
     $this->segmentsRestApi = $segmentsRestApi;
 
@@ -387,6 +393,7 @@ class Initializer {
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
       $this->tagsRestApi->initialize();
+      $this->customFieldsRestApi->initialize();
       $this->formsRestApi->initialize();
       $this->segmentsRestApi->initialize();
       $this->blockTypesController->initialize();

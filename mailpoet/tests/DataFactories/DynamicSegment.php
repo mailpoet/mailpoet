@@ -3,8 +3,10 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
@@ -33,6 +35,16 @@ class DynamicSegment extends Segment {
     $this->filterData['value'] = $score;
     $this->filterData['operator'] = $operator;
     $this->filterData['action'] = SubscriberScore::TYPE;
+    return $this;
+  }
+
+  public function withCustomFieldFilter(CustomFieldEntity $customField) {
+    $this->filterData['segmentType'] = 'userRole';
+    $this->filterData['action'] = MailPoetCustomFields::TYPE;
+    $this->filterData['custom_field_id'] = $customField->getId();
+    $this->filterData['custom_field_type'] = $customField->getType();
+    $this->filterData['operator'] = DynamicSegmentFilterData::IS_NOT_BLANK;
+    $this->filterData['value'] = '';
     return $this;
   }
 
