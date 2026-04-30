@@ -7,6 +7,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
@@ -48,6 +49,9 @@ class Settings {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
@@ -58,7 +62,8 @@ class Settings {
     SegmentsSimpleListRepository $segmentsListRepository,
     Bridge $bridge,
     AuthorizedSenderDomainController $senderDomainController,
-    AuthorizedEmailsController $authorizedEmailsController
+    AuthorizedEmailsController $authorizedEmailsController,
+    FeaturesController $featuresController
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
@@ -70,6 +75,7 @@ class Settings {
     $this->bridge = $bridge;
     $this->senderDomainController = $senderDomainController;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->featuresController = $featuresController;
   }
 
   public function render() {
@@ -97,6 +103,7 @@ class Settings {
       ],
       'current_site_title' => $this->wp->getBloginfo('name'),
       'built_in_captcha_supported' => $this->captchaRenderer->isSupported(),
+      'wp_transactional_emails_enabled' => $this->featuresController->isSupported(FeaturesController::FEATURE_WP_TRANSACTIONAL_EMAILS),
     ];
 
     $data['authorized_emails'] = [];

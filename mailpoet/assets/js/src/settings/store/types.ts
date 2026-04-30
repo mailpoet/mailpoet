@@ -309,6 +309,7 @@ export type SettingsWindow = {
   mailpoet_woocommerce_active: string;
   mailpoet_members_plugin_active: string;
   mailpoet_built_in_captcha_supported: boolean;
+  mailpoet_wp_transactional_emails_enabled: boolean;
   mailpoet_mss_key_valid: string;
   mailpoet_premium_key_valid: string;
   mailpoet_premium_plugin_installed: string;

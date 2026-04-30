@@ -16,6 +16,7 @@ import {
   SendWith,
   SignupConfirmation,
   WooCommerce,
+  WpEmails,
 } from './pages';
 import { useSelector } from './store/hooks';
 import { SendingMethodConfirmationModal } from './components/sending-method-confirmation-modal';
@@ -25,6 +26,8 @@ const isOnSendWithPage = window.location.href.includes('/mta');
 export function Settings() {
   const isSaving = useSelector('isSaving');
   const hasWooCommerce = useSelector('hasWooCommerce');
+  const wpTransactionalEmailsEnabled =
+    !!window.mailpoet_wp_transactional_emails_enabled;
   return (
     <>
       <TopBar />
@@ -65,6 +68,15 @@ export function Settings() {
             automationId="woocommerce_settings_tab"
           >
             <WooCommerce />
+          </Tab>
+        )}
+        {wpTransactionalEmailsEnabled && (
+          <Tab
+            key="wp-emails"
+            title={t('wpEmailsTab')}
+            automationId="wp_emails_settings_tab"
+          >
+            <WpEmails />
           </Tab>
         )}
         <Tab
