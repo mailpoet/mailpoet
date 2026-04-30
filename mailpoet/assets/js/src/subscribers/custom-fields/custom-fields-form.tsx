@@ -12,27 +12,32 @@ import type {
   CustomField,
   CustomFieldDateSettings,
 } from './types';
-import { createCustomField } from './api';
+import { createCustomField, updateCustomField } from './api';
 import {
   buildCustomFieldPayload,
   CustomFieldFormFields,
+  getCustomFieldFormDataFromCustomField,
   getInitialCustomFieldFormData,
   validateCustomFieldFormData,
 } from './custom-field-form-fields';
 
 type Props = {
+  customField?: CustomField;
   dateSettings: CustomFieldDateSettings;
   onClose: () => void;
   onSuccess: (customField: CustomField) => void;
 };
 
 export function CustomFieldsForm({
+  customField,
   dateSettings,
   onClose,
   onSuccess,
 }: Props): JSX.Element {
   const [data, setData] = useState(() =>
-    getInitialCustomFieldFormData(dateSettings),
+    customField
+      ? getCustomFieldFormDataFromCustomField(customField, dateSettings)
+      : getInitialCustomFieldFormData(dateSettings),
   );
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +53,12 @@ export function CustomFieldsForm({
     setIsSaving(true);
     setError(null);
     try {
-      onSuccess(await createCustomField(buildCustomFieldPayload(data)));
+      const payload = buildCustomFieldPayload(data);
+      onSuccess(
+        customField
+          ? await updateCustomField(customField.id, payload)
+          : await createCustomField(payload),
+      );
     } catch (err) {
       const apiError = err as ApiErrorResponse;
       setError(
@@ -62,7 +72,11 @@ export function CustomFieldsForm({
 
   return (
     <Modal
-      title={__('Add new custom field', 'mailpoet')}
+      title={
+        customField
+          ? __('Edit custom field', 'mailpoet')
+          : __('Add new custom field', 'mailpoet')
+      }
       onRequestClose={onClose}
       className="mailpoet-custom-fields-form-modal"
       focusOnMount
@@ -103,7 +117,9 @@ export function CustomFieldsForm({
               disabled={isSaving}
               __next40pxDefaultSize
             >
-              {__('Create custom field', 'mailpoet')}
+              {customField
+                ? __('Save custom field', 'mailpoet')
+                : __('Create custom field', 'mailpoet')}
             </Button>
           </FlexItem>
         </Flex>

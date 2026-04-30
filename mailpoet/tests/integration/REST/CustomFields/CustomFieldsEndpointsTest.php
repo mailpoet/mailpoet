@@ -166,6 +166,94 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertSame('rest_forbidden', $data['code']);
   }
 
+  public function testPutUpdatesCustomField(): void {
+    $field = (new CustomFieldFactory())
+      ->withName('Favorite trail')
+      ->withType('select')
+      ->withParams([
+        'label' => 'Favorite trail',
+        'values' => [
+          ['value' => 'Alpine Loop'],
+          ['value' => 'River Walk'],
+        ],
+      ])
+      ->create();
+
+    $data = $this->put(self::BASE_PATH . '/' . $field->getId(), [
+      'json' => [
+        'name' => 'Preferred trail',
+        'type' => 'radio',
+        'params' => [
+          'label' => 'Preferred trail label',
+          'required' => '1',
+          'values' => [
+            ['value' => 'Forest Path', 'is_checked' => '1'],
+            ['value' => 'Mountain Pass'],
+          ],
+        ],
+      ],
+    ]);
+
+    $customField = $data['data'];
+    $this->assertSame((int)$field->getId(), $customField['id']);
+    $this->assertSame('Preferred trail', $customField['name']);
+    $this->assertSame('radio', $customField['type']);
+    $this->assertSame('Preferred trail label', $customField['label']);
+    $this->assertSame('Forest Path', $customField['params']['values'][0]['value']);
+
+    $entity = $this->repository->findOneById($field->getId());
+    $this->assertNotNull($entity);
+    $this->assertSame('Preferred trail', $entity->getName());
+    $this->assertSame('radio', $entity->getType());
+  }
+
+  public function testPutRejectsDuplicateCustomFieldName(): void {
+    (new CustomFieldFactory())->withName('Existing')->create();
+    $field = (new CustomFieldFactory())->withName('Editable')->create();
+
+    $data = $this->put(self::BASE_PATH . '/' . $field->getId(), [
+      'json' => [
+        'name' => 'Existing',
+        'type' => 'text',
+        'params' => [
+          'label' => 'Existing',
+        ],
+      ],
+    ]);
+
+    $this->assertSame('mailpoet_custom_fields_duplicate', $data['code']);
+    $this->assertSame(409, $data['data']['status']);
+  }
+
+  public function testPutRejectsMissingCustomField(): void {
+    $data = $this->put(self::BASE_PATH . '/999999', [
+      'json' => [
+        'name' => 'Missing',
+        'type' => 'text',
+        'params' => [
+          'label' => 'Missing',
+        ],
+      ],
+    ]);
+
+    $this->assertSame('mailpoet_custom_fields_not_found', $data['code']);
+    $this->assertSame(404, $data['data']['status']);
+  }
+
+  public function testPutRejectsGuest(): void {
+    $field = (new CustomFieldFactory())->withName('Keep')->create();
+    wp_set_current_user(0);
+
+    $data = $this->put(self::BASE_PATH . '/' . $field->getId(), [
+      'json' => [
+        'name' => 'Guest update',
+        'type' => 'text',
+      ],
+    ]);
+
+    $this->assertSame('rest_forbidden', $data['code']);
+  }
+
   public function testGetSupportsTrashGroup(): void {
     $active = (new CustomFieldFactory())->withName('Active')->create();
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();

@@ -95,6 +95,8 @@ function bulkActionSuccessMessage(
 export function CustomFieldsPage() {
   const [group, setGroup] = useState<Group>('all');
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [editingCustomField, setEditingCustomField] =
+    useState<CustomField | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const [view, setView] = useState<View>(DEFAULT_VIEW);
   const [items, setItems] = useState<CustomField[]>([]);
@@ -214,6 +216,17 @@ export function CustomFieldsPage() {
   const actions = useMemo<Action<CustomField>[]>(
     () => [
       {
+        id: 'edit',
+        label: __('Edit', 'mailpoet'),
+        isEligible: (item) => !item.deleted_at,
+        callback: (selected) => {
+          const [customField] = selected;
+          if (customField) {
+            setEditingCustomField(customField);
+          }
+        },
+      },
+      {
         id: 'trash',
         label: __('Move to trash', 'mailpoet'),
         supportsBulk: true,
@@ -319,6 +332,14 @@ export function CustomFieldsPage() {
     setRefreshToken((current) => current + 1);
   };
 
+  const handleEditSuccess = (customField: CustomField): void => {
+    setEditingCustomField(null);
+    setGlobalSuccess(
+      sprintf(__('Custom field "%s" updated.', 'mailpoet'), customField.name),
+    );
+    setRefreshToken((current) => current + 1);
+  };
+
   return (
     <>
       <TopBarWithBoundary />
@@ -411,6 +432,15 @@ export function CustomFieldsPage() {
           dateSettings={dateSettings}
           onClose={() => setIsCreateFormOpen(false)}
           onSuccess={handleCreateSuccess}
+        />
+      )}
+
+      {editingCustomField && (
+        <CustomFieldsForm
+          customField={editingCustomField}
+          dateSettings={dateSettings}
+          onClose={() => setEditingCustomField(null)}
+          onSuccess={handleEditSuccess}
         />
       )}
     </>
