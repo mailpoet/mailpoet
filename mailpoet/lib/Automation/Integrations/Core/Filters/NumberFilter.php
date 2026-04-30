@@ -166,7 +166,10 @@ class NumberFilter implements Filter {
     }
   }
 
-  /** @param mixed $value */
+  /**
+   * @param mixed $value
+   * @phpstan-assert-if-true int|float $value
+   */
   private function isNumber($value): bool {
     return is_integer($value) || is_float($value);
   }

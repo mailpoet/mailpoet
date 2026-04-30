@@ -160,16 +160,14 @@ class CronHelper {
   }
 
   public function queryCronUrl($url) {
-    $args = $this->wp->applyFilters(
-      'mailpoet_cron_request_args',
-      [
-        'blocking' => true,
-        'sslverify' => false,
-        'timeout' => self::DAEMON_REQUEST_TIMEOUT,
-        'user-agent' => 'MailPoet Cron',
-      ]
-    );
-    return $this->wp->wpRemotePost($url, $args);
+    $defaultArgs = [
+      'blocking' => true,
+      'sslverify' => false,
+      'timeout' => self::DAEMON_REQUEST_TIMEOUT,
+      'user-agent' => 'MailPoet Cron',
+    ];
+    $args = $this->wp->applyFilters('mailpoet_cron_request_args', $defaultArgs);
+    return $this->wp->wpRemotePost($url, is_array($args) ? $args : $defaultArgs);
   }
 
   public function getCronUrl($action, $data = false) {
@@ -178,10 +176,12 @@ class CronHelper {
       $action,
       $data
     );
+    $url = is_string($url) ? $url : '';
     $customCronUrl = $this->wp->applyFilters('mailpoet_cron_request_url', $url);
-    return ($customCronUrl === $url) ?
-      str_replace(home_url(), $this->getSiteUrl(), $url) :
-      $customCronUrl;
+    if ($customCronUrl === $url) {
+      return str_replace(home_url(), $this->getSiteUrl(), $url);
+    }
+    return is_string($customCronUrl) ? $customCronUrl : $url;
   }
 
   public function getSiteUrl($siteUrl = false) {

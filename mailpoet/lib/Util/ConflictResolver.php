@@ -5,6 +5,7 @@ namespace MailPoet\Util;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConflictResolver {
+  /** @var array{styles: string[], scripts: string[]} */
   public $permittedAssetsLocations = [
     'styles' => [
       'mailpoet',
@@ -91,7 +92,10 @@ class ConflictResolver {
 
   public function resolveStylesConflict() {
     $_this = $this;
-    $_this->permittedAssetsLocations['styles'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permittedAssetsLocations['styles']);
+    $filteredStyles = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permittedAssetsLocations['styles']);
+    if (is_array($filteredStyles)) {
+      $_this->permittedAssetsLocations['styles'] = array_values(array_filter($filteredStyles, 'is_string'));
+    }
     // unload all styles except from the list of allowed
     $dequeueStyles = function() use($_this) {
       global $wp_styles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -122,7 +126,10 @@ class ConflictResolver {
 
   public function resolveScriptsConflict() {
     $_this = $this;
-    $_this->permittedAssetsLocations['scripts'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permittedAssetsLocations['scripts']);
+    $filteredScripts = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permittedAssetsLocations['scripts']);
+    if (is_array($filteredScripts)) {
+      $_this->permittedAssetsLocations['scripts'] = array_values(array_filter($filteredScripts, 'is_string'));
+    }
     // unload all scripts except from the list of allowed
     $dequeueScripts = function() use($_this) {
       global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

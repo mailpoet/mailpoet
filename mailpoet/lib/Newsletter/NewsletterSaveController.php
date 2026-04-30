@@ -125,7 +125,8 @@ class NewsletterSaveController {
     if (!empty($data['body'])) {
       $newslettersTableName = $this->newslettersRepository->getTableName();
       $body = $this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']);
-      $body = $this->dataSanitizer->sanitizeBody(json_decode($body, true));
+      $decodedBody = json_decode($body, true);
+      $body = $this->dataSanitizer->sanitizeBody(is_array($decodedBody) ? $decodedBody : []);
       $data['body'] = json_encode($body);
     }
 
@@ -330,7 +331,8 @@ class NewsletterSaveController {
     }
 
     if (array_key_exists('body', $data)) {
-      $newsletter->setBody(json_decode($data['body'], true));
+      $decodedBody = json_decode($data['body'], true);
+      $newsletter->setBody(is_array($decodedBody) ? $decodedBody : null);
     }
 
     if (array_key_exists('ga_campaign', $data)) {

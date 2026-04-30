@@ -76,59 +76,9 @@ parameters:
 			path: ../../lib/Analytics/Reporter.php
 
 		-
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
-
-		-
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
-
-		-
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
-
-		-
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
-
-		-
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
-
-		-
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationStorage.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Automation/Integrations/Core/Filters/EnumArrayFilter.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Automation/Integrations/Core/Filters/NumberFilter.php
 
 		-
 			identifier: function.notFound
@@ -186,19 +136,9 @@ parameters:
 			path: ../../lib/Config/Populator.php
 
 		-
-			identifier: binaryOp.invalid
-			count: 3
-			path: ../../lib/Config/Shortcodes.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Config/TranslationUpdater.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Cron/CronHelper.php
 
 		-
 			identifier: empty.expr
@@ -262,11 +202,6 @@ parameters:
 
 		-
 			identifier: argument.type
-			count: 2
-			path: ../../lib/Doctrine/Types/JsonOrSerializedType.php
-
-		-
-			identifier: argument.type
 			count: 1
 			path: ../../lib/Doctrine/Types/JsonType.php
 
@@ -321,26 +256,6 @@ parameters:
 			path: ../../lib/Entities/SegmentEntity.php
 
 		-
-			identifier: encapsedStringPart.nonString
-			count: 4
-			path: ../../lib/Form/Block/Column.php
-
-		-
-			identifier: encapsedStringPart.nonString
-			count: 4
-			path: ../../lib/Form/Block/Columns.php
-
-		-
-			identifier: encapsedStringPart.nonString
-			count: 4
-			path: ../../lib/Form/Block/Heading.php
-
-		-
-			identifier: encapsedStringPart.nonString
-			count: 4
-			path: ../../lib/Form/Block/Paragraph.php
-
-		-
 			identifier: empty.variable
 			count: 1
 			path: ../../lib/Form/Block/Paragraph.php
@@ -389,11 +304,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Editor/PostTransformerContentsExtractor.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Newsletter/NewsletterSaveController.php
 
 		-
 			identifier: return.type
@@ -531,18 +441,8 @@ parameters:
 			path: ../../lib/Subscribers/NewSubscriberNotificationMailer.php
 
 		-
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../lib/Subscribers/SubscribersRepository.php
-
-		-
 			identifier: return.type
 			count: 2
-			path: ../../lib/Subscribers/SubscribersRepository.php
-
-		-
-			identifier: argument.type
-			count: 3
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
@@ -562,11 +462,6 @@ parameters:
 
 		-
 			identifier: argument.type
-			count: 2
-			path: ../../lib/Subscription/Throttling.php
-
-		-
-			identifier: argument.type
 			count: 1
 			path: ../../lib/SystemReport/SystemReportCollector.php
 
@@ -581,34 +476,14 @@ parameters:
 			path: ../../lib/Tasks/Subscribers/BatchIterator.php
 
 		-
-			identifier: method.nonObject
+			identifier: method.notFound
 			count: 1
-			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
-			identifier: argument.type
-			count: 3
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
 			identifier: parameterByRef.type
 			count: 1
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Util/ConflictResolver.php
-
-		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Util/DBCollationChecker.php
-
-		-
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Util/DBCollationChecker.php
 
 		-
 			identifier: return.type

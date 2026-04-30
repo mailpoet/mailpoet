@@ -156,19 +156,21 @@ class Shortcodes {
       );
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');
-      if (!empty($title)) {
-        $html .= '<h3 class="mailpoet_archive_title">' . $title . '</h3>';
+      if (!empty($title) && is_scalar($title)) {
+        $html .= '<h3 class="mailpoet_archive_title">' . (string)$title . '</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';
       foreach ($newsletters as $newsletter) {
         $queue = $newsletter->getLatestQueue();
+        $processedDate = $this->wp->applyFilters('mailpoet_archive_email_processed_date', $newsletter);
+        $subjectLine = $this->wp->applyFilters('mailpoet_archive_email_subject_line', $newsletter, $subscriber, $queue);
 
         $html .= '<li>' .
           '<span class="mailpoet_archive_date">' .
-            $this->wp->applyFilters('mailpoet_archive_email_processed_date', $newsletter) .
+            (is_scalar($processedDate) ? (string)$processedDate : '') .
           '</span>
           <span class="mailpoet_archive_subject">' .
-            $this->wp->applyFilters('mailpoet_archive_email_subject_line', $newsletter, $subscriber, $queue) .
+            (is_scalar($subjectLine) ? (string)$subjectLine : '') .
           '</span>
         </li>';
       }

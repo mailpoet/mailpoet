@@ -60,8 +60,14 @@ class FirstPurchase {
 
     // We have to use a set of states because an order state after checkout differs for different payment methods
     $acceptedOrderStates = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
+    if (!is_array($acceptedOrderStates)) {
+      $acceptedOrderStates = ['completed', 'processing'];
+    }
 
     foreach ($acceptedOrderStates as $state) {
+      if (!is_string($state)) {
+        continue;
+      }
       WPFunctions::get()->addAction('woocommerce_order_status_' . $state, [
         $this,
         'scheduleEmailWhenOrderIsPlaced',
