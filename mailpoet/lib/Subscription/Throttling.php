@@ -63,7 +63,8 @@ class Throttling {
 
   public function purge(): void {
     $interval = $this->wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
-    $this->subscriberIPsRepository->deleteCreatedAtBeforeTimeInSeconds(is_int($interval) ? $interval : MONTH_IN_SECONDS);
+    $purgeWindow = is_numeric($interval) ? (int)$interval : MONTH_IN_SECONDS;
+    $this->subscriberIPsRepository->deleteCreatedAtBeforeTimeInSeconds($purgeWindow);
   }
 
   public function secondsToTimeString($seconds): string {

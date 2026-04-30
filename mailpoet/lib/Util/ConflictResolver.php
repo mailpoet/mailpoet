@@ -94,7 +94,11 @@ class ConflictResolver {
     $_this = $this;
     $filteredStyles = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permittedAssetsLocations['styles']);
     if (is_array($filteredStyles)) {
-      $_this->permittedAssetsLocations['styles'] = array_values(array_filter($filteredStyles, 'is_string'));
+      // Reject empty/whitespace-only entries: an empty branch in the imploded
+      // regex would match every URL at position zero and disable the resolver.
+      $_this->permittedAssetsLocations['styles'] = array_values(array_filter($filteredStyles, static function ($pattern): bool {
+        return is_string($pattern) && trim($pattern) !== '';
+      }));
     }
     // unload all styles except from the list of allowed
     $dequeueStyles = function() use($_this) {
@@ -128,7 +132,11 @@ class ConflictResolver {
     $_this = $this;
     $filteredScripts = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permittedAssetsLocations['scripts']);
     if (is_array($filteredScripts)) {
-      $_this->permittedAssetsLocations['scripts'] = array_values(array_filter($filteredScripts, 'is_string'));
+      // Reject empty/whitespace-only entries: an empty branch in the imploded
+      // regex would match every URL at position zero and disable the resolver.
+      $_this->permittedAssetsLocations['scripts'] = array_values(array_filter($filteredScripts, static function ($pattern): bool {
+        return is_string($pattern) && trim($pattern) !== '';
+      }));
     }
     // unload all scripts except from the list of allowed
     $dequeueScripts = function() use($_this) {
