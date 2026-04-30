@@ -73,6 +73,99 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertSame('rest_forbidden', $data['code']);
   }
 
+  public function testPostCreatesCustomField(): void {
+    $data = $this->post(self::BASE_PATH, [
+      'json' => [
+        'name' => 'Favorite trail',
+        'type' => 'select',
+        'params' => [
+          'label' => 'Favorite trail label',
+          'required' => '1',
+          'values' => [
+            ['value' => 'Alpine Loop'],
+            ['value' => 'River Walk', 'is_checked' => '1'],
+          ],
+        ],
+      ],
+    ]);
+
+    $customField = $data['data'];
+    $this->assertSame('Favorite trail', $customField['name']);
+    $this->assertSame('select', $customField['type']);
+    $this->assertSame('Favorite trail label', $customField['label']);
+    $this->assertSame('1', $customField['params']['required']);
+    $this->assertSame('River Walk', $customField['params']['values'][1]['value']);
+
+    $entity = $this->repository->findOneById($customField['id']);
+    $this->assertNotNull($entity);
+    $this->assertSame('Favorite trail', $entity->getName());
+  }
+
+  public function testPostCreatesDateCustomField(): void {
+    $data = $this->post(self::BASE_PATH, [
+      'json' => [
+        'name' => 'Anniversary',
+        'type' => 'date',
+        'params' => [
+          'date_type' => 'year_month',
+          'date_format' => 'MM/YYYY',
+          'is_default_today' => '1',
+        ],
+      ],
+    ]);
+
+    $customField = $data['data'];
+    $this->assertSame('date', $customField['type']);
+    $this->assertSame('year_month', $customField['params']['date_type']);
+    $this->assertSame('MM/YYYY', $customField['params']['date_format']);
+    $this->assertSame('1', $customField['params']['is_default_today']);
+  }
+
+  public function testPostRejectsDuplicateCustomFieldName(): void {
+    (new CustomFieldFactory())->withName('Duplicate')->create();
+
+    $data = $this->post(self::BASE_PATH, [
+      'json' => [
+        'name' => 'Duplicate',
+        'type' => 'text',
+        'params' => [
+          'label' => 'Duplicate',
+        ],
+      ],
+    ]);
+
+    $this->assertSame('mailpoet_custom_fields_duplicate', $data['code']);
+    $this->assertSame(409, $data['data']['status']);
+  }
+
+  public function testPostRejectsInvalidCustomFieldData(): void {
+    $data = $this->post(self::BASE_PATH, [
+      'json' => [
+        'name' => 'Bad field',
+        'type' => 'select',
+        'params' => [
+          'values' => [],
+        ],
+      ],
+    ]);
+
+    $this->assertSame('mailpoet_custom_fields_invalid_data', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
+  }
+
+  public function testPostRejectsGuest(): void {
+    wp_set_current_user(0);
+
+    $data = $this->post(self::BASE_PATH, [
+      'json' => [
+        'name' => 'Guest field',
+        'type' => 'text',
+      ],
+    ]);
+
+    $this->assertSame('rest_forbidden', $data['code']);
+  }
+
   public function testGetSupportsTrashGroup(): void {
     $active = (new CustomFieldFactory())->withName('Active')->create();
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();

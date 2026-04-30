@@ -12,6 +12,25 @@ export type CustomField = {
   deleted_at: string | null;
 };
 
+export type CustomFieldType =
+  | 'text'
+  | 'textarea'
+  | 'radio'
+  | 'checkbox'
+  | 'select'
+  | 'date';
+
+export type CustomFieldPayload = {
+  name: string;
+  type: CustomFieldType;
+  params: Record<string, unknown>;
+};
+
+export type CustomFieldDateSettings = {
+  dateTypes: Array<{ label: string; value: string }>;
+  dateFormats: Record<string, string[]>;
+};
+
 export type CustomFieldListMeta = {
   count: number;
   pages: number;

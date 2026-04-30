@@ -4,6 +4,7 @@ import { Notice, TabPanel } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
+import { CustomFieldsForm } from './custom-fields-form';
 import { listFields } from './fields';
 import {
   bulkAction,
@@ -14,11 +15,19 @@ import {
 import type {
   ApiErrorResponse,
   CustomField,
+  CustomFieldDateSettings,
   CustomFieldListGroup,
   CustomFieldListMeta,
 } from './types';
 
 type Group = 'all' | 'trash';
+
+declare global {
+  interface Window {
+    mailpoet_custom_fields_date_types?: CustomFieldDateSettings['dateTypes'];
+    mailpoet_custom_fields_date_formats?: CustomFieldDateSettings['dateFormats'];
+  }
+}
 
 const DEFAULT_VIEW: View = {
   type: 'table',
@@ -85,6 +94,8 @@ function bulkActionSuccessMessage(
 
 export function CustomFieldsPage() {
   const [group, setGroup] = useState<Group>('all');
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
   const [view, setView] = useState<View>(DEFAULT_VIEW);
   const [items, setItems] = useState<CustomField[]>([]);
   const [meta, setMeta] = useState<CustomFieldListMeta>({
@@ -146,7 +157,7 @@ export function CustomFieldsPage() {
 
   useEffect(() => {
     void loadCustomFields();
-  }, [loadCustomFields]);
+  }, [loadCustomFields, refreshToken]);
 
   const handleBulkAction = useCallback(
     async (
@@ -289,6 +300,25 @@ export function CustomFieldsPage() {
       ? __('Trash is empty.', 'mailpoet')
       : __('No custom fields yet.', 'mailpoet');
 
+  const dateSettings = useMemo<CustomFieldDateSettings>(
+    () => ({
+      dateTypes: window.mailpoet_custom_fields_date_types ?? [],
+      dateFormats: window.mailpoet_custom_fields_date_formats ?? {},
+    }),
+    [],
+  );
+
+  const handleCreateSuccess = (customField: CustomField): void => {
+    setIsCreateFormOpen(false);
+    setGlobalSuccess(
+      sprintf(__('Custom field "%s" created.', 'mailpoet'), customField.name),
+    );
+    setGroup('all');
+    setSelection([]);
+    setView((currentView) => ({ ...currentView, page: 1 }));
+    setRefreshToken((current) => current + 1);
+  };
+
   return (
     <>
       <TopBarWithBoundary />
@@ -301,7 +331,16 @@ export function CustomFieldsPage() {
             aria-label={__('Back to subscribers list', 'mailpoet')}
           />
         }
-      />
+      >
+        <button
+          type="button"
+          className="page-title-action"
+          onClick={() => setIsCreateFormOpen(true)}
+          data-automation-id="add-new-custom-field-button"
+        >
+          {__('Add new custom field', 'mailpoet')}
+        </button>
+      </PageHeader>
 
       {globalError && (
         <Notice status="error" onRemove={() => setGlobalError(null)}>
@@ -366,6 +405,14 @@ export function CustomFieldsPage() {
           </div>
         )}
       </TabPanel>
+
+      {isCreateFormOpen && (
+        <CustomFieldsForm
+          dateSettings={dateSettings}
+          onClose={() => setIsCreateFormOpen(false)}
+          onSuccess={handleCreateSuccess}
+        />
+      )}
     </>
   );
 }

@@ -4,6 +4,7 @@ namespace MailPoet\CustomFields\RestApi\Endpoints;
 
 use MailPoet\API\REST\Endpoint;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class CustomFieldsEndpoint extends Endpoint {
@@ -11,6 +12,24 @@ abstract class CustomFieldsEndpoint extends Endpoint {
 
   public function checkPermissions(): bool {
     return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_FORMS);
+  }
+
+  protected function buildItem(CustomFieldEntity $customField): array {
+    $params = $customField->getParams();
+    $label = isset($params['label']) && is_scalar($params['label']) ? (string)$params['label'] : $customField->getName();
+    return [
+      'id' => (int)$customField->getId(),
+      'name' => $customField->getName(),
+      'label' => $label,
+      'type' => $customField->getType(),
+      'params' => $params,
+      'subscribers_count' => 0,
+      'forms_count' => 0,
+      'dynamic_segments_count' => 0,
+      'created_at' => ($createdAt = $customField->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
+      'updated_at' => ($updatedAt = $customField->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
+      'deleted_at' => ($deletedAt = $customField->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
+    ];
   }
 
   /**
