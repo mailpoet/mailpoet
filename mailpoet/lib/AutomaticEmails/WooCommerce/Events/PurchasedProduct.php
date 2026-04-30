@@ -59,7 +59,13 @@ class PurchasedProduct {
 
 
     $acceptedOrderStates = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
+    if (!is_array($acceptedOrderStates)) {
+      $acceptedOrderStates = ['completed', 'processing'];
+    }
     foreach ($acceptedOrderStates as $state) {
+      if (!is_string($state)) {
+        continue;
+      }
       WPFunctions::get()->addAction('woocommerce_order_status_' . $state, [
         $this,
         'scheduleEmailWhenProductIsPurchased',
@@ -207,7 +213,7 @@ class PurchasedProduct {
     $automaticEmailMetaValue = $automaticEmail->getOptionValue(NewsletterOptionFieldEntity::NAME_META);
     $optionValue = Helpers::isJson($automaticEmailMetaValue) ? json_decode($automaticEmailMetaValue, true) : $automaticEmailMetaValue;
 
-    if (!is_array($optionValue) || empty($optionValue['option'])) {
+    if (!is_array($optionValue) || empty($optionValue['option']) || !is_array($optionValue['option'])) {
       return [];
     }
     $emailTriggeringProductIds = array_column($optionValue['option'], 'id');

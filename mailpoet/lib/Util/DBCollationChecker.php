@@ -27,9 +27,11 @@ class DBCollationChecker {
   public function getCollateIfNeeded(string $sourceTable, string $sourceColumn, string $targetTable, string $targetColumn): string {
     $connection = $this->entityManager->getConnection();
     $sourceColumnData = $connection->executeQuery("SHOW FULL COLUMNS FROM $sourceTable WHERE Field = '$sourceColumn';")->fetchAllAssociative();
-    $sourceCollation = $sourceColumnData[0]['Collation'] ?? '';
+    $sourceCollationRaw = $sourceColumnData[0]['Collation'] ?? '';
+    $sourceCollation = is_string($sourceCollationRaw) ? $sourceCollationRaw : '';
     $targetColumnData = $connection->executeQuery("SHOW FULL COLUMNS FROM $targetTable WHERE Field = '$targetColumn';")->fetchAllAssociative();
-    $targetCollation = $targetColumnData[0]['Collation'] ?? '';
+    $targetCollationRaw = $targetColumnData[0]['Collation'] ?? '';
+    $targetCollation = is_string($targetCollationRaw) ? $targetCollationRaw : '';
     if ($sourceCollation === $targetCollation) {
       return '';
     }

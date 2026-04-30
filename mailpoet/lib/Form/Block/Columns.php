@@ -30,10 +30,10 @@ class Columns {
       $styles[] = "background:{$params['gradient']};";
     }
     if (!empty($params['padding']) && is_array($params['padding'])) {
-      $top = $params['padding']['top'] ?? 0;
-      $right = $params['padding']['right'] ?? 0;
-      $bottom = $params['padding']['bottom'] ?? 0;
-      $left = $params['padding']['left'] ?? 0;
+      $top = is_scalar($params['padding']['top'] ?? null) ? (string)$params['padding']['top'] : '0';
+      $right = is_scalar($params['padding']['right'] ?? null) ? (string)$params['padding']['right'] : '0';
+      $bottom = is_scalar($params['padding']['bottom'] ?? null) ? (string)$params['padding']['bottom'] : '0';
+      $left = is_scalar($params['padding']['left'] ?? null) ? (string)$params['padding']['left'] : '0';
       $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
     }
     if (count($styles)) {

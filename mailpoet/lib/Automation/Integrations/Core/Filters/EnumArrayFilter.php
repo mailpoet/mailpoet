@@ -61,11 +61,11 @@ class EnumArrayFilter implements Filter {
       return false;
     }
 
-    $filterValue = array_unique($filterValue, SORT_REGULAR);
-    $value = array_unique($value, SORT_REGULAR);
+    $filterValue = array_values(array_filter(array_unique($filterValue, SORT_REGULAR), 'is_scalar'));
+    $value = array_values(array_filter(array_unique($value, SORT_REGULAR), 'is_scalar'));
 
     $filterCount = count($filterValue);
-    $matchedCount = count(array_intersect($value, $filterValue));
+    $matchedCount = count(array_intersect(array_map('strval', $value), array_map('strval', $filterValue)));
     switch ($data->getCondition()) {
       case self::CONDITION_MATCHES_ANY_OF:
         return $filterCount > 0 && $matchedCount > 0;

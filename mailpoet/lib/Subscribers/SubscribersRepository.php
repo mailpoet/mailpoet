@@ -499,7 +499,7 @@ class SubscribersRepository extends Repository {
       ->setMaxResults(1)
       ->execute();
 
-    return count($subscribers) > 0;
+    return is_array($subscribers) && count($subscribers) > 0;
   }
 
    /**
@@ -878,6 +878,10 @@ class SubscribersRepository extends Repository {
       ->setParameter('ids', $ids)
       ->setParameter('segment', $segment)
       ->getQuery()->execute();
+
+    $subscribers = is_array($subscribers) ? array_values(array_filter($subscribers, function ($s) {
+      return $s instanceof SubscriberEntity;
+    })) : [];
 
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($subscribers, $segment) {
       foreach ($subscribers as $subscriber) {

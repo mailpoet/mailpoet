@@ -16,7 +16,7 @@ class JsonOrSerializedType extends JsonType {
       $value = stream_get_contents($value);
     }
 
-    if (is_serialized($value)) {
+    if (is_string($value) && is_serialized($value)) {
       return unserialize($value);
     }
     return parent::convertToPHPValue($value, $platform);

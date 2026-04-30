@@ -63,6 +63,9 @@ class DIPanel implements IBarPanel {
       $reflection->setAccessible(true);
     }
     $container = $reflection->getValue($containerWrapper);
+    if (!is_object($container)) {
+      return [[], []];
+    }
     $reflection = new \ReflectionProperty(get_class($container), 'services');
     if (PHP_VERSION_ID <= 80100) {
       $reflection->setAccessible(true);
