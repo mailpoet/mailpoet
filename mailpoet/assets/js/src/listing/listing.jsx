@@ -542,7 +542,7 @@ class ListingComponent extends Component {
 
   handleRenderItem = (item, actions) => {
     const { onRenderItem } = this.props;
-    const render = onRenderItem(item, actions, this.state.meta);
+    const render = onRenderItem(item, actions, this.state.meta, this.state);
     return render.props.children;
   };
 
@@ -571,9 +571,12 @@ class ListingComponent extends Component {
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter(
-      (column) => column.display === undefined || !!column.display === true,
-    );
+    columns = columns.filter((column) => {
+      if (typeof column.display === 'function') {
+        return column.display(this.state);
+      }
+      return column.display === undefined || !!column.display === true;
+    });
 
     // bulk actions
     let bulkActions = this.props.bulk_actions || [];
