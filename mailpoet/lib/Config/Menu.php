@@ -8,6 +8,7 @@ use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationFlowEmbed;
 use MailPoet\AdminPages\Pages\AutomationPreviewEmbed;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
+use MailPoet\AdminPages\Pages\CustomFields as CustomFieldsPage;
 use MailPoet\AdminPages\Pages\DynamicSegments;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
@@ -48,6 +49,7 @@ class Menu {
   const IMPORT_PAGE_SLUG = 'mailpoet-import';
   const EXPORT_PAGE_SLUG = 'mailpoet-export';
   const TAGS_PAGE_SLUG = 'mailpoet-tags';
+  const CUSTOM_FIELDS_PAGE_SLUG = 'mailpoet-custom-fields';
   const LISTS_PAGE_SLUG = 'mailpoet-lists';
   const SEGMENTS_PAGE_SLUG = 'mailpoet-segments';
   const SETTINGS_PAGE_SLUG = 'mailpoet-settings';
@@ -400,6 +402,19 @@ class Menu {
       ]
     );
 
+    // custom fields
+    $this->wp->addSubmenuPage(
+      self::SUBSCRIBERS_PAGE_SLUG,
+      $this->setPageTitle(__('Custom Fields', 'mailpoet')),
+      esc_html__('Custom Fields', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_FORMS,
+      self::CUSTOM_FIELDS_PAGE_SLUG,
+      [
+        $this,
+        'customFields',
+      ]
+    );
+
     // Lists page
     $listsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
@@ -733,6 +748,10 @@ class Menu {
 
   public function tags() {
     $this->container->get(TagsPage::class)->render();
+  }
+
+  public function customFields() {
+    $this->container->get(CustomFieldsPage::class)->render();
   }
 
   public function formEditor() {
