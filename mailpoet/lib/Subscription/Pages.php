@@ -285,6 +285,11 @@ class Pages {
     }
   }
 
+  public function isSubscriberUnsubscribed(): bool {
+    return $this->subscriber instanceof SubscriberEntity
+      && $this->subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED;
+  }
+
   public function setMetaRobots() {
     echo '<meta name="robots" content="noindex,nofollow">';
   }
@@ -463,7 +468,7 @@ class Pages {
     }
     if ($this->shouldRenderUnsubscribeReasonSurvey()) {
       if ($this->isUnsubscribeReasonSaved()) {
-        $content .= '<p class="mailpoet_unsubscribe_reason_success">' . __('Thank you for your feedback.', 'mailpoet') . '</p>';
+        $content .= '<p class="mailpoet_unsubscribe_reason_success">' . __('Thank you for letting us know why you unsubscribed.', 'mailpoet') . '</p>';
       } else {
         $content .= $this->renderUnsubscribeReasonSurvey();
       }

@@ -324,6 +324,27 @@ class PagesTest extends \MailPoetTest {
     verify($unsubscriptionStat->getReasonText())->equals('Not for me');
   }
 
+  public function testItShowsThankYouMessageAfterSavingUnsubscribeReason() {
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+    $pages->saveUnsubscribeReason(
+      StatisticsUnsubscribeEntity::REASON_NO_LONGER_INTERESTED,
+      null
+    );
+
+    $_GET['unsubscribe_reason_saved'] = '1';
+    try {
+      $content = $pages->setPageContent('[mailpoet_page]');
+    } finally {
+      unset($_GET['unsubscribe_reason_saved']);
+    }
+
+    verify($content)->stringContainsString('Thank you for for letting us know why you unsubscribed.');
+    verify($content)->stringNotContainsString('Please let us know why you unsubscribed:');
+  }
+
   public function testItDoesNotSaveUnsubscribeReasonForPreview() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     $this->testData['preview'] = 1;
