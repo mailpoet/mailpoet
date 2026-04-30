@@ -280,6 +280,14 @@ class Functions {
     return get_plugins($pluginFolder);
   }
 
+  /**
+   * @param \WP_User $user
+   * @return string|\WP_Error
+   */
+  public function getPasswordResetKey($user) {
+    return get_password_reset_key($user);
+  }
+
   public function getPost($post = null, $output = OBJECT, $filter = 'raw') {
     return get_post($post, $output, $filter);
   }

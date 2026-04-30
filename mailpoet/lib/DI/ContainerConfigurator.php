@@ -690,6 +690,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelDataController::class)->setPublic(true);
     // WordPress core email customization
     $container->autowire(\MailPoet\WordPress\TransactionalEmails\WpTransactionalEmails::class)->setPublic(true);
+    $container->autowire(\MailPoet\WordPress\TransactionalEmails\WpTransactionalEmailContext::class)->setPublic(true);
     $container->autowire(\MailPoet\WordPress\TransactionalEmails\PersonalizationTags\WpUser::class)->setPublic(true);
     $container->autowire(\MailPoet\WordPress\TransactionalEmails\PersonalizationTags\WpLink::class)->setPublic(true);
     // CAPTCHA
