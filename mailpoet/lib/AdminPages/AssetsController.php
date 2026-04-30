@@ -50,6 +50,12 @@ class AssetsController {
     $this->wp->wpEnqueueStyle('mailpoet_tags', $this->getCssUrl('mailpoet-tags.css'));
   }
 
+  public function setupCustomFieldsDependencies(): void {
+    $this->enqueueJsEntrypoint('custom_fields');
+    $this->setupDataViewsDependencies();
+    $this->wp->wpEnqueueStyle('mailpoet_custom_fields', $this->getCssUrl('mailpoet-custom-fields.css'));
+  }
+
   /**
    * Enqueue the WordPress component + DataViews styles required by listings
    * that render `@wordpress/dataviews`. Listings already shipped via the

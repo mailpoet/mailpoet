@@ -51,6 +51,13 @@ export function SubscribersHeading() {
         >
           {__('Tags', 'mailpoet')}
         </a>
+        <a
+          className="page-title-action not-small-screen"
+          href="?page=mailpoet-custom-fields"
+          data-automation-id="manage-custom-fields-button"
+        >
+          {__('Custom fields', 'mailpoet')}
+        </a>
       </PageHeader>
       <div className="mailpoet-segment-subscriber-count">
         <SubscribersInPlan

@@ -266,6 +266,7 @@ const adminConfig = {
     form_editor: 'form-editor/form-editor.jsx',
     settings: 'settings/index.tsx',
     tags: 'subscribers/tags/index.tsx',
+    custom_fields: 'subscribers/custom-fields/index.tsx',
   },
   plugins: [
     ...baseConfig.plugins,

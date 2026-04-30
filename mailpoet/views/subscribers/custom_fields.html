@@ -1,0 +1,10 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="mailpoet_custom_fields_container"></div>
+
+<script type="text/javascript">
+  var mailpoet_custom_fields_api = <%= json_encode(api) %>;
+  var mailpoet_custom_fields_subscribers_listing_url = <%= json_encode(subscribers_listing_url) %>;
+</script>
+<% endblock %>
