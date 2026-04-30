@@ -3,6 +3,7 @@
 namespace MailPoet\Tracy\DIPanel;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
 use MailPoetVendor\Symfony\Component\DependencyInjection\TypedReference;
 use Tracy\Debugger;
@@ -63,7 +64,10 @@ class DIPanel implements IBarPanel {
       $reflection->setAccessible(true);
     }
     $container = $reflection->getValue($containerWrapper);
-    if (!is_object($container)) {
+    // getDefinitions() lives on ContainerBuilder, not Container. The Tracy
+    // panel is dev-only and the dev container is uncompiled (a ContainerBuilder),
+    // but bail out cleanly if a compiled container ever lands here.
+    if (!$container instanceof ContainerBuilder) {
       return [[], []];
     }
     $reflection = new \ReflectionProperty(get_class($container), 'services');
@@ -76,42 +80,47 @@ class DIPanel implements IBarPanel {
   /**
    * For each service finds all of its arguments recursively and makes them an array
    * @param array<int, int|string> $services
-   * @return array
+   * @return array<int|string, array<string, string>>
    */
   private function flattenArguments($services) {
     $result = [];
     foreach ($services as $service) {
-      $result[$service] = [];
-      $this->getAllArguments($service, $result[$service]);
+      $result[$service] = $this->collectArguments($service, []);
     }
     return $result;
   }
 
   /**
-   * Find all argument of each service and adds them to $results array, repeats recursively
+   * Find all argument of each service and merges them into $accumulator,
+   * repeats recursively. Pure return-style avoids by-ref type drift.
+   *
    * @param int|string $service
-   * @param string[] $results
+   * @param array<string, string> $accumulator
+   * @return array<string, string>
    */
-  private function getAllArguments($service, &$results) {
-    if (array_key_exists($service, $this->definitions)) {
-      $arguments = $this->definitions[$service]->getArguments();
-      if (!empty($arguments)) {
-        foreach ($arguments as $argument) {
-          if (is_null($argument)) continue;
-          if ($argument instanceof TypedReference) {
-            $argumentName = $argument->getType();
-          } elseif ($argument instanceof Reference) {
-            $argumentName = (string)$argument;
-          } else {
-            continue;
-          }
-          $results[$argumentName] = $argumentName;
-          if ($argumentName !== 'MailPoet\DI\ContainerWrapper') {
-            $this->getAllArguments($argumentName, $results);
-          }
-        }
+  private function collectArguments($service, array $accumulator): array {
+    if (!array_key_exists($service, $this->definitions)) {
+      return $accumulator;
+    }
+    $arguments = $this->definitions[$service]->getArguments();
+    if (empty($arguments)) {
+      return $accumulator;
+    }
+    foreach ($arguments as $argument) {
+      if (is_null($argument)) continue;
+      if ($argument instanceof TypedReference) {
+        $argumentName = $argument->getType();
+      } elseif ($argument instanceof Reference) {
+        $argumentName = (string)$argument;
+      } else {
+        continue;
+      }
+      $accumulator[$argumentName] = $argumentName;
+      if ($argumentName !== 'MailPoet\DI\ContainerWrapper') {
+        $accumulator = $this->collectArguments($argumentName, $accumulator);
       }
     }
+    return $accumulator;
   }
 
   /**
