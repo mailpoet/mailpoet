@@ -551,11 +551,6 @@ parameters:
 			path: ../../lib/Subscription/AdminUserSubscription.php
 
 		-
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../lib/Subscription/Manage.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php

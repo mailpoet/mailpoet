@@ -176,6 +176,20 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result)->stringNotContainsString('Newsletter 2');
   }
 
+  public function testArchiveIgnoresNegativeLastNDays(): void {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    $parsed = $shortcodes->getParsedArchiveParams(['in_the_last_days' => '-5']);
+    verify($parsed['startDate'])->null();
+    verify($parsed['endDate'])->null();
+  }
+
+  public function testArchiveIgnoresNonScalarLastNDays(): void {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    $parsed = $shortcodes->getParsedArchiveParams(['in_the_last_days' => ['7']]);
+    verify($parsed['startDate'])->null();
+    verify($parsed['endDate'])->null();
+  }
+
   public function testArchiveAcceptsSegments(): void {
     $segment1 = (new Segment())->create();
     $segment2 = (new Segment())->create();
