@@ -221,7 +221,7 @@ class SystemReportCollector {
       $pluginUpdate = $updateResponses[$pluginFile] ?? null;
       if (is_object($pluginUpdate) && !empty($pluginUpdate->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $latestVersion = (string)$pluginUpdate->new_version; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      } elseif (is_array($pluginUpdate) && isset($pluginUpdate['new_version']) && is_scalar($pluginUpdate['new_version']) && $pluginUpdate['new_version'] !== '') {
+      } elseif (is_array($pluginUpdate) && isset($pluginUpdate['new_version']) && (is_string($pluginUpdate['new_version']) || is_int($pluginUpdate['new_version']) || is_float($pluginUpdate['new_version'])) && $pluginUpdate['new_version'] !== '') {
         $latestVersion = (string)$pluginUpdate['new_version'];
       }
 
