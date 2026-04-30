@@ -70,6 +70,9 @@ class Migration_20230215_050813 extends DbMigration {
         $key = is_string($subject['key'] ?? null) ? $subject['key'] : '';
         $values[] = (string)$wpdb->prepare("(%d,%s,%s)", $resultId, $key, (string)json_encode($subject['args'] ?? null));
       }
+      if (!$values) {
+        continue;
+      }
       if ($wpdb->query($wpdb->prepare("INSERT INTO %i (`automation_run_id`, `key`, `args`) VALUES %s", $subjectTable, implode(',', $values))) === false) {
         continue;
       }
