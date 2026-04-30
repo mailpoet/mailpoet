@@ -49,10 +49,13 @@ class WpTransactionalEmailRenderer {
       }
     }
 
+    $html = $rendered['html'] ?? '';
+    $text = $rendered['text'] ?? '';
+
     return [
-      'html' => (string)($rendered['html'] ?? ''),
-      'text' => (string)($rendered['text'] ?? ''),
-      'subject' => (string)$newsletter->getSubject(),
+      'html' => is_string($html) ? $html : '',
+      'text' => is_string($text) ? $text : '',
+      'subject' => $newsletter->getSubject(),
     ];
   }
 }
