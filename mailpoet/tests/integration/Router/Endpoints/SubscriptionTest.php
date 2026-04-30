@@ -102,7 +102,9 @@ class SubscriptionTest extends \MailPoetTest {
 
   public function testItSavesUnsubscribeReasonWithValidNonce() {
     $saved = false;
+    $wp = $this->createMock(WPFunctions::class);
     $pages = Stub::make(Pages::class, [
+      'wp' => $wp,
       'saveUnsubscribeReason' => Expected::once(function($reason, $reasonText) use (&$saved) {
         verify($reason)->equals('spam');
         verify($reasonText)->equals('Too many emails');
@@ -122,19 +124,29 @@ class SubscriptionTest extends \MailPoetTest {
     ]);
     $request->method('getTextareaParam')->with('reason_text')->willReturn('Too many emails');
 
-    $wp = $this->createMock(WPFunctions::class);
     $wp->method('wpVerifyNonce')->with('valid_nonce', 'mailpoet_unsubscribe_reason')->willReturn(true);
-    $wp->expects($this->once())->method('wpSafeRedirect')->with('http://example.com/unsubscribe?saved=1');
     $wp->method('sanitizeKey')->willReturnArgument(0);
+    // Throw to interrupt the exit; that lets us assert wpSafeRedirect was called with the right URL.
+    $wp->expects($this->once())
+      ->method('wpSafeRedirect')
+      ->with('http://example.com/unsubscribe?saved=1')
+      ->willThrowException(new \RuntimeException('exit_redirect'));
 
     $subscription = new Subscription($pages, $wp, $request);
-    $subscription->unsubscribeReason($this->data);
+    try {
+      $subscription->unsubscribeReason($this->data);
+      $this->fail('Expected redirect to interrupt execution');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('exit_redirect');
+    }
 
     verify($saved)->true();
   }
 
   public function testItRejectsUnsubscribeReasonWithInvalidNonce() {
+    $wp = $this->createMock(WPFunctions::class);
     $pages = Stub::make(Pages::class, [
+      'wp' => $wp,
       'saveUnsubscribeReason' => Expected::never(),
     ], $this);
 
@@ -145,31 +157,43 @@ class SubscriptionTest extends \MailPoetTest {
       ['_wpnonce', 'invalid_nonce'],
     ]);
 
-    $wp = $this->createMock(WPFunctions::class);
     $wp->method('wpVerifyNonce')->with('invalid_nonce', 'mailpoet_unsubscribe_reason')->willReturn(false);
-    $wp->expects($this->once())->method('wpDie')->with(
-      $this->anything(),
-      '',
-      ['response' => 403]
-    );
+    $wp->expects($this->once())
+      ->method('wpDie')
+      ->with($this->anything(), '', ['response' => 403])
+      ->willThrowException(new \RuntimeException('exit_die'));
 
     $subscription = new Subscription($pages, $wp, $request);
-    $subscription->unsubscribeReason($this->data);
+    try {
+      $subscription->unsubscribeReason($this->data);
+      $this->fail('Expected wpDie to interrupt execution');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('exit_die');
+    }
   }
 
   public function testItRedirectsGetRequestToHomeUrl() {
+    $wp = $this->createMock(WPFunctions::class);
     $pages = Stub::make(Pages::class, [
+      'wp' => $wp,
       'saveUnsubscribeReason' => Expected::never(),
     ], $this);
 
     $request = $this->createMock(Request::class);
     $request->method('isPost')->willReturn(false);
 
-    $wp = $this->createMock(WPFunctions::class);
     $wp->method('homeUrl')->willReturn('http://example.com');
-    $wp->expects($this->once())->method('wpSafeRedirect')->with('http://example.com');
+    $wp->expects($this->once())
+      ->method('wpSafeRedirect')
+      ->with('http://example.com')
+      ->willThrowException(new \RuntimeException('exit_redirect'));
 
     $subscription = new Subscription($pages, $wp, $request);
-    $subscription->unsubscribeReason($this->data);
+    try {
+      $subscription->unsubscribeReason($this->data);
+      $this->fail('Expected redirect to interrupt execution');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('exit_redirect');
+    }
   }
 }

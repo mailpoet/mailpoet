@@ -141,4 +141,22 @@ class SubscriberExporterTest extends \MailPoetTest {
     verify($result['data'][0]['data'])->arrayContains(['name' => 'Unsubscribe reason', 'value' => 'Other']);
     verify($result['data'][0]['data'])->arrayContains(['name' => 'Unsubscribe reason details', 'value' => 'Personal detail']);
   }
+
+  public function testExportSubscriberWithUnspecifiedUnsubscribeReason(): void {
+    $email = 'email.that@has.unspecified.reason';
+    $subscriber = $this->subscriberFactory
+      ->withEmail($email)
+      ->create();
+
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $subscriber);
+    $unsubscribe->setReason(StatisticsUnsubscribeEntity::REASON_UNSPECIFIED);
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+
+    $result = $this->exporter->export($email);
+    verify($result['data'][0]['data'])->arrayContains([
+      'name' => 'Unsubscribe reason',
+      'value' => __('No reason provided', 'mailpoet'),
+    ]);
+  }
 }
