@@ -715,6 +715,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Custom fields REST API
     $container->autowire(\MailPoet\CustomFields\RestApi\Api::class)->setPublic(true);
     $container->autowire(\MailPoet\CustomFields\RestApi\Endpoints\CustomFieldsGetEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\CustomFields\RestApi\Endpoints\CustomFieldsBulkActionEndpoint::class)->setPublic(true);
     // Forms REST API
     $container->autowire(\MailPoet\Form\RestApi\Api::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\RestApi\Endpoints\FormsListingEndpoint::class)->setPublic(true);

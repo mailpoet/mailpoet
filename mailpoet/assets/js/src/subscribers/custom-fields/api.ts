@@ -1,6 +1,10 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import type { CustomField, CustomFieldListMeta } from './types';
+import type {
+  CustomField,
+  CustomFieldListGroup,
+  CustomFieldListMeta,
+} from './types';
 
 type WindowApi = {
   mailpoet_custom_fields_api: {
@@ -27,6 +31,7 @@ type ListParams = {
   order?: 'asc' | 'desc';
   page?: number;
   per_page?: number;
+  group?: 'all' | 'trash';
 };
 
 type ApiEnvelope<T> = {
@@ -36,11 +41,13 @@ type ApiEnvelope<T> = {
 type ListResponse = ApiEnvelope<{
   items: CustomField[];
   meta: CustomFieldListMeta;
+  groups: CustomFieldListGroup[];
 }>;
 
 export async function getCustomFields(params: ListParams = {}): Promise<{
   items: CustomField[];
   meta: CustomFieldListMeta;
+  groups: CustomFieldListGroup[];
 }> {
   ensureInitialized();
   const response = await apiFetch<ListResponse>({
@@ -48,6 +55,25 @@ export async function getCustomFields(params: ListParams = {}): Promise<{
     method: 'GET',
   });
   return response.data;
+}
+
+export type CustomFieldBulkAction =
+  | 'trash'
+  | 'restore'
+  | 'delete'
+  | 'empty_trash';
+
+export async function bulkAction(
+  action: CustomFieldBulkAction,
+  ids: number[] = [],
+): Promise<number> {
+  ensureInitialized();
+  const response = await apiFetch<ApiEnvelope<{ count: number }>>({
+    path: '/mailpoet/v1/custom-fields/bulk-action',
+    method: 'POST',
+    data: action === 'empty_trash' ? { action } : { action, ids },
+  });
+  return response.data.count;
 }
 
 export function getSubscribersListingUrl(): string {

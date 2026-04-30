@@ -14,7 +14,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
   }
 
   /**
-   * @param array{id: int, name: string, label: string, type: string, params: array, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface} $row
+   * @param array{id: int, name: string, label: string, type: string, params: array, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface, deleted_at: ?\DateTimeInterface} $row
    */
   protected function buildItemFromRow(array $row): array {
     return [
@@ -28,6 +28,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
       'dynamic_segments_count' => (int)$row['dynamic_segments_count'],
       'created_at' => $row['created_at'] instanceof \DateTimeInterface ? $row['created_at']->format(self::DATE_FORMAT) : null,
       'updated_at' => $row['updated_at'] instanceof \DateTimeInterface ? $row['updated_at']->format(self::DATE_FORMAT) : null,
+      'deleted_at' => $row['deleted_at'] instanceof \DateTimeInterface ? $row['deleted_at']->format(self::DATE_FORMAT) : null,
     ];
   }
 }

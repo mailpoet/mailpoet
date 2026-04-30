@@ -137,7 +137,7 @@ class SubscribersResponseBuilder {
   }
 
   private function buildCustomFields(SubscriberEntity $subscriberEntity, array $data): array {
-    $customFields = $this->customFieldsRepository->findAll();
+    $customFields = $this->customFieldsRepository->findAllActive();
 
     foreach ($customFields as $customField) {
       $subscriberCustomField = $this->subscriberCustomFieldRepository->findOneBy(

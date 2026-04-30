@@ -23,6 +23,7 @@ class CustomFieldsGetEndpoint extends CustomFieldsEndpoint {
     $order = is_string($request->getParam('order')) ? (string)$request->getParam('order') : 'asc';
     $page = is_numeric($request->getParam('page')) ? max(1, (int)$request->getParam('page')) : 1;
     $perPage = is_numeric($request->getParam('per_page')) ? max(1, min(100, (int)$request->getParam('per_page'))) : 25;
+    $group = is_string($request->getParam('group')) ? (string)$request->getParam('group') : 'all';
 
     $result = $this->customFieldsRepository->listWithCounts([
       'search' => $search,
@@ -30,6 +31,7 @@ class CustomFieldsGetEndpoint extends CustomFieldsEndpoint {
       'order' => $order,
       'page' => $page,
       'per_page' => $perPage,
+      'group' => $group,
     ]);
 
     $items = array_map([$this, 'buildItemFromRow'], $result['items']);
@@ -41,6 +43,7 @@ class CustomFieldsGetEndpoint extends CustomFieldsEndpoint {
         'count' => $result['total'],
         'pages' => $pages,
       ],
+      'groups' => $result['groups'],
     ]);
   }
 
@@ -51,6 +54,7 @@ class CustomFieldsGetEndpoint extends CustomFieldsEndpoint {
       'order' => Builder::string(),
       'page' => Builder::integer(),
       'per_page' => Builder::integer(),
+      'group' => Builder::string(),
     ];
   }
 }

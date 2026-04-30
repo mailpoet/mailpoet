@@ -2,8 +2,19 @@
   margin: 8px 0 0;
 }
 
-.mailpoet-custom-fields-dataviews {
+.mailpoet-custom-fields-dataviews__tabs {
   margin-top: 8px;
+
+  > [role='tablist'] {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
+    padding: 0 8px;
+  }
+}
+
+.mailpoet-custom-fields-dataviews {
+  margin-top: 0;
 
   .dataviews-wrapper {
     min-height: 200px;
@@ -11,5 +22,9 @@
 }
 
 .mailpoet-custom-fields-dataviews__toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 8px;
 }
