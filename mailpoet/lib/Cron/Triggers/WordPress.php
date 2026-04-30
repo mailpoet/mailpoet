@@ -28,7 +28,8 @@ class WordPress {
   const RUN_INTERVAL = -1; // seconds
   const LAST_RUN_AT_SETTING = 'cron_trigger_wordpress.last_run_at';
 
-  private $tasksCounts;
+  /** @var array<string, array<string, array<string, int>>> */
+  private $tasksCounts = [];
 
   /** @var CronHelper */
   private $cronHelper;
@@ -244,16 +245,23 @@ class WordPress {
 
     $this->tasksCounts = [];
     foreach ($rows as $r) {
-      if (empty($this->tasksCounts[$r['type']])) {
-        $this->tasksCounts[$r['type']] = [];
+      $type = is_string($r['type']) ? $r['type'] : '';
+      $scheduledIn = is_string($r['scheduled_in']) ? $r['scheduled_in'] : '';
+      $status = is_string($r['status']) && $r['status'] !== '' ? $r['status'] : 'null';
+      $count = is_numeric($r['count']) ? (int)$r['count'] : 0;
+      if (empty($this->tasksCounts[$type])) {
+        $this->tasksCounts[$type] = [];
       }
-      if (empty($this->tasksCounts[$r['type']][$r['scheduled_in']])) {
-        $this->tasksCounts[$r['type']][$r['scheduled_in']] = [];
+      if (empty($this->tasksCounts[$type][$scheduledIn])) {
+        $this->tasksCounts[$type][$scheduledIn] = [];
       }
-      $this->tasksCounts[$r['type']][$r['scheduled_in']][$r['status'] ?: 'null'] = $r['count'];
+      $this->tasksCounts[$type][$scheduledIn][$status] = $count;
     }
   }
 
+  /**
+   * @param array{type: string, scheduled_in: list<string>, status: list<string>} $options
+   */
   private function getTasksCount(array $options): int {
     $count = 0;
     $type = $options['type'];

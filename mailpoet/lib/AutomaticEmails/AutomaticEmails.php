@@ -46,7 +46,9 @@ class AutomaticEmails {
       $automaticEmail = $this->wp->applyFilters($group, []);
 
       if (
+        !is_array($automaticEmail) ||
         !$this->validateAutomaticEmailDataFields($automaticEmail) ||
+        !is_array($automaticEmail['events']) ||
         !$this->validateAutomaticEmailEventsDataFields($automaticEmail['events'])
       ) {
         continue;
@@ -55,7 +57,8 @@ class AutomaticEmails {
       // keys associative events array by slug
       $automaticEmail['events'] = array_column($automaticEmail['events'], null, 'slug');
       // keys associative automatic email array by slug
-      $automaticEmails[$automaticEmail['slug']] = $automaticEmail;
+      $slug = is_string($automaticEmail['slug']) ? $automaticEmail['slug'] : '';
+      $automaticEmails[$slug] = $automaticEmail;
     }
 
     $this->automaticEmails = $automaticEmails;

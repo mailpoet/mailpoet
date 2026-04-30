@@ -11,7 +11,7 @@ use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
  */
 class ArrayCache extends CacheProvider {
 
-  /** @var mixed[] */
+  /** @var array<string, array{0: mixed, 1: int|false}> */
   private $data = [];
 
   /** @var int */

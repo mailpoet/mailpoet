@@ -419,7 +419,12 @@ class WooCommerce {
       if (!$row['meta_value']) {
         continue;
       }
-      $subscribersData[$row['post_id']][$row['meta_key']] = $row['meta_value'];
+      $postId = is_numeric($row['post_id']) ? (int)$row['post_id'] : 0;
+      $metaKey = is_string($row['meta_key']) ? $row['meta_key'] : '';
+      if ($postId === 0 || $metaKey === '') {
+        continue;
+      }
+      $subscribersData[$postId][$metaKey] = $row['meta_value'];
     }
 
     $now = (Carbon::now())->format('Y-m-d H:i:s');

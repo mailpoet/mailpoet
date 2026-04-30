@@ -93,18 +93,28 @@ class SegmentsSimpleListRepository {
 
     // Fetch subscribers counts for static and dynamic segments and correct data types
     $statisticsKey = $subscriberGlobalStatus ?: 'all';
-    foreach ($segments as $key => $segment) {
+    /** @var array<array{id: string, name: string, type: string, subscribers: int}> $normalized */
+    $normalized = [];
+    foreach ($segments as $segment) {
+      if (!is_array($segment)) {
+        continue;
+      }
       // BC compatibility fix. PHP8.1+ returns integer but JS apps expect string
-      $id = is_scalar($segment['id']) ? (string)$segment['id'] : '';
-      $segments[$key]['id'] = $id;
+      $id = is_scalar($segment['id'] ?? null) ? (string)$segment['id'] : '';
       $subscribers = 0;
       if (is_numeric($id) && (int)$id > 0) {
         $stats = $this->subscribersCountsController->getSegmentStatisticsCountById((int)$id);
         $subscribers = isset($stats[$statisticsKey]) && is_numeric($stats[$statisticsKey]) ? (int)$stats[$statisticsKey] : 0;
       }
-      $segments[$key]['subscribers'] = $subscribers;
+      $segment['id'] = $id;
+      $segment['subscribers'] = $subscribers;
+      $normalized[] = [
+        'id' => $id,
+        'name' => is_string($segment['name'] ?? null) ? $segment['name'] : '',
+        'type' => is_string($segment['type'] ?? null) ? $segment['type'] : '',
+        'subscribers' => $subscribers,
+      ];
     }
-    /* @var array<array{id: string, name: string, type: string, subscribers: int}> */
-    return $segments;
+    return $normalized;
   }
 }

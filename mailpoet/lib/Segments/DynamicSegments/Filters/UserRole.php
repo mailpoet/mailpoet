@@ -85,6 +85,9 @@ class UserRole implements Filter {
       throw new InvalidStateException();
     }
     foreach ($roles as $roleSlug) {
+      if (!is_string($roleSlug)) {
+        continue;
+      }
       $roleData = $wp_roles->roles[$roleSlug] ?? null;
       if (is_array($roleData)) {
         $lookupData['roles'][$roleSlug] = $roleData['name'];

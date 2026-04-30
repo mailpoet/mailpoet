@@ -180,12 +180,18 @@ class Newsletters extends APIEndpoint {
         NewslettersResponseBuilder::RELATION_STATISTICS,
     ]);
     $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
+    if (!is_array($response)) {
+      $response = [];
+    }
     $response['preview_url'] = $this->getViewInBrowserUrl($newsletter);
     return $this->successResponse($response);
   }
 
   public function save($data = []) {
     $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
+    if (!is_array($data)) {
+      $data = [];
+    }
     $newsletter = $this->newsletterSaveController->save($data);
     $response = $this->newslettersResponseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_SEGMENTS,

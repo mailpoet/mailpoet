@@ -36,16 +36,6 @@ parameters:
 			path: ../../lib/API/JSON/v1/NewsletterTemplates.php
 
 		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/API/JSON/v1/Newsletters.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/API/JSON/v1/Newsletters.php
-
-		-
 			identifier: property.onlyWritten
 			count: 1
 			path: ../../lib/API/JSON/v1/Segments.php
@@ -91,21 +81,6 @@ parameters:
 			path: ../../lib/Analytics/Reporter.php
 
 		-
-			identifier: argument.type
-			count: 3
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			identifier: offsetAccess.invalidOffset
-			count: 1
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../../lib/AutomaticEmails/AutomaticEmails.php
-
-		-
 			identifier: binaryOp.invalid
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
@@ -144,26 +119,11 @@ parameters:
 			identifier: foreach.nonIterable
 			count: 1
 			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
 
 		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Automation/Engine/Storage/AutomationStorage.php
-
-		-
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../lib/Automation/Engine/Validation/AutomationRules/ValidStepRule.php
 
 		-
 			identifier: argument.type
@@ -296,11 +256,6 @@ parameters:
 			path: ../../lib/Cron/DaemonHttpRunner.php
 
 		-
-			identifier: offsetAccess.invalidOffset
-			count: 9
-			path: ../../lib/Cron/Triggers/WordPress.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Cron/Workers/SendingQueue/SendingThrottlingHandler.php
@@ -329,16 +284,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../../lib/DI/ContainerConfigurator.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Doctrine/ArrayCache.php
-
-		-
-			identifier: offsetAccess.nonArray
-			count: 1
-			path: ../../lib/Doctrine/EventListeners/LastSubscribedAtListener.php
 
 		-
 			identifier: catch.neverThrown
@@ -402,26 +347,6 @@ parameters:
 
 		-
 			identifier: argument.type
-			count: 2
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			identifier: assign.propertyType
-			count: 1
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			identifier: offsetAccess.invalidOffset
-			count: 3
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
-
-		-
-			identifier: return.type
 			count: 1
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
 
@@ -496,36 +421,6 @@ parameters:
 			path: ../../lib/Logging/LogHandler.php
 
 		-
-			identifier: argument.type
-			count: 3
-			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Migrations/Db/Migration_20221028_105818.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 5
-			path: ../../lib/Migrations/Db/Migration_20230215_050813.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Migrations/Db/Migration_20241108_103249_Db.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Migrations/Db/Migration_20241108_103249_Db.php
-
-		-
 			identifier: empty.variable
 			count: 1
 			path: ../../lib/Newsletter/BlockPostQuery.php
@@ -556,34 +451,9 @@ parameters:
 			path: ../../lib/Newsletter/Renderer/Blocks/Renderer.php
 
 		-
-			identifier: argument.type
-			count: 3
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			identifier: binaryOp.invalid
-			count: 2
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 5
-			path: ../../lib/Newsletter/Renderer/Blocks/Social.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Newsletter/Renderer/Renderer.php
-
-		-
-			identifier: argument.type
-			count: 1
-			path: ../../lib/Newsletter/Renderer/StylesHelper.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: ../../lib/Newsletter/Renderer/StylesHelper.php
 
 		-
 			identifier: property.onlyWritten
@@ -661,11 +531,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
 
 		-
-			identifier: offsetAccess.invalidOffset
-			count: 2
-			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
-
-		-
 			identifier: argument.type
 			count: 2
 			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
@@ -682,11 +547,6 @@ parameters:
 
 		-
 			identifier: binaryOp.invalid
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
-
-		-
-			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
 
@@ -721,26 +581,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceUsedCouponCode.php
 
 		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			identifier: return.type
-			count: 1
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Segments/WP.php
-
-		-
-			identifier: offsetAccess.invalidOffset
-			count: 2
-			path: ../../lib/Segments/WooCommerce.php
-
-		-
 			identifier: argument.type
 			count: 7
 			path: ../../lib/Services/Bridge/API.php
@@ -771,24 +611,9 @@ parameters:
 			path: ../../lib/Subscribers/ImportExport/Import/MailChimpDataMapper.php
 
 		-
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
-
-		-
 			identifier: phpDoc.parseError
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SegmentsExporter.php
-
-		-
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SubscriberExporter.php
 
 		-
 			identifier: phpDoc.parseError
@@ -804,11 +629,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscribers/NewSubscriberNotificationMailer.php
-
-		-
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../lib/Subscribers/SubscriberSaveController.php
 
 		-
 			identifier: argument.type
@@ -831,11 +651,6 @@ parameters:
 			path: ../../lib/Subscription/AdminUserSubscription.php
 
 		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../../lib/Subscription/Comment.php
-
-		-
 			identifier: argument.type
 			count: 4
 			path: ../../lib/Subscription/Manage.php
@@ -849,11 +664,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscription/Pages.php
-
-		-
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../../lib/Subscription/Registration.php
 
 		-
 			identifier: argument.type

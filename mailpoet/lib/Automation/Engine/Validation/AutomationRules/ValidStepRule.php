@@ -14,7 +14,7 @@ class ValidStepRule implements AutomationNodeVisitor {
   /** @var AutomationNodeVisitor[] */
   private $rules;
 
-  /** @var array<string, array{step_id: string, fields: array<string,string>}> */
+  /** @var array<string, array{step_id: string, message?: string, fields: array<string, string>, filters: array<string, string>}> */
   private $errors = [];
 
   /** @param AutomationNodeVisitor[] $rules */
@@ -57,7 +57,6 @@ class ValidStepRule implements AutomationNodeVisitor {
         }
 
         $key = $rule instanceof ValidStepFiltersRule ? 'filters' : 'fields';
-        /** @phpstan-ignore-next-line - PHPStan detects inconsistency in merged array */
         $this->errors[$stepId][$key] = array_merge(
           $this->mapErrorCodesToErrorMessages($e->getErrors()),
           $this->errors[$stepId][$key]

@@ -284,9 +284,13 @@ class ImportExportRepository {
     $customFields = $customFields->fetchAll();
 
     foreach ($customFields as $customField) {
-      $customFieldId = "customFieldId{$customField['id']}export";
+      if (!is_array($customField) || !is_numeric($customField['id'] ?? null)) {
+        continue;
+      }
+      $rawId = (int)$customField['id'];
+      $customFieldId = "customFieldId{$rawId}export";
       $qb->addSelect("MAX(CASE WHEN {$customFieldsTable}.id = :{$customFieldId} THEN {$subscriberCustomFieldTable}.value END) AS :{$customFieldId}")
-        ->setParameter($customFieldId, $customField['id']);
+        ->setParameter($customFieldId, $rawId);
     }
 
     $qb->leftJoin($segmentsTable, $subscriberCustomFieldTable, $subscriberCustomFieldTable, "{$segmentsTable}.id = {$subscriberCustomFieldTable}.subscriber_id")

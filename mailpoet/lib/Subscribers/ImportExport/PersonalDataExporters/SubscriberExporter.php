@@ -101,7 +101,7 @@ class SubscriberExporter {
         continue;
       }
       $customFieldId = $customField->getId();
-      if (isset($this->getCustomFields()[$customFieldId])) {
+      if ($customFieldId !== null && isset($customFields[$customFieldId])) {
         $result[] = [
           'name' => $customFields[$customFieldId],
           'value' => $subscriberCustomField->getValue(),

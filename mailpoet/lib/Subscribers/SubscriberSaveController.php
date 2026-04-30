@@ -315,7 +315,11 @@ class SubscriberSaveController {
 
     $customFields = $this->customFieldsRepository->findBy(['id' => array_keys($customFieldsMap)]);
     foreach ($customFields as $customField) {
-      $this->subscriberCustomFieldRepository->createOrUpdate($subscriber, $customField, $customFieldsMap[$customField->getId()]);
+      $customFieldId = $customField->getId();
+      if ($customFieldId === null || !array_key_exists($customFieldId, $customFieldsMap)) {
+        continue;
+      }
+      $this->subscriberCustomFieldRepository->createOrUpdate($subscriber, $customField, $customFieldsMap[$customFieldId]);
     }
   }
 
