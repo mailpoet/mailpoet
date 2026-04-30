@@ -29,5 +29,13 @@ class Migration_20260428_120000 extends DbMigration {
           ADD COLUMN `reason_submitted_at` timestamp NULL DEFAULT NULL AFTER `reason_text`
       ");
     }
+
+    // Add composite index for efficient reason count queries
+    if (!$this->indexExists($tableName, 'newsletter_id_reason')) {
+      $this->connection->executeStatement("
+        ALTER TABLE `{$tableName}`
+          ADD INDEX `newsletter_id_reason` (`newsletter_id`, `reason`)
+      ");
+    }
   }
 }

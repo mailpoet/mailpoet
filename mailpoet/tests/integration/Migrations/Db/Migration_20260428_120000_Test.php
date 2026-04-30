@@ -24,6 +24,11 @@ class Migration_20260428_120000_Test extends \MailPoetTest {
     $this->migration = new Migration_20260428_120000($this->diContainer);
     $this->tableName = $this->entityManager->getClassMetadata(StatisticsUnsubscribeEntity::class)->getTableName();
 
+    // Drop index if it exists
+    if ($this->indexExists('newsletter_id_reason')) {
+      $this->entityManager->getConnection()->executeStatement("ALTER TABLE `{$this->tableName}` DROP INDEX `newsletter_id_reason`");
+    }
+
     foreach (self::COLUMNS as $column) {
       if ($this->columnExists($column)) {
         $this->entityManager->getConnection()->executeStatement("ALTER TABLE `{$this->tableName}` DROP COLUMN `{$column}`");
@@ -39,6 +44,24 @@ class Migration_20260428_120000_Test extends \MailPoetTest {
     verify($this->columnExists('reason_submitted_at'))->true();
   }
 
+  public function testItCreatesIndex(): void {
+    $this->migration->run();
+
+    verify($this->indexExists('newsletter_id_reason'))->true();
+  }
+
+  public function testItCanBeRerunSafely(): void {
+    $this->migration->run();
+
+    // Run again - should not error
+    $this->migration->run();
+
+    verify($this->columnExists('reason'))->true();
+    verify($this->columnExists('reason_text'))->true();
+    verify($this->columnExists('reason_submitted_at'))->true();
+    verify($this->indexExists('newsletter_id_reason'))->true();
+  }
+
   private function columnExists(string $column): bool {
     if (!in_array($column, self::COLUMNS, true)) {
       throw new \InvalidArgumentException('Unsupported column name.');
@@ -46,5 +69,10 @@ class Migration_20260428_120000_Test extends \MailPoetTest {
 
     return (bool)$this->entityManager->getConnection()
       ->fetchAssociative("SHOW COLUMNS FROM `{$this->tableName}` LIKE '{$column}'");
+  }
+
+  private function indexExists(string $index): bool {
+    return (bool)$this->entityManager->getConnection()
+      ->fetchAssociative("SHOW INDEX FROM `{$this->tableName}` WHERE Key_name = '{$index}'");
   }
 }
