@@ -476,16 +476,6 @@ parameters:
 			path: ../../lib/Tasks/Subscribers/BatchIterator.php
 
 		-
-			identifier: method.notFound
-			count: 1
-			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
-			identifier: parameterByRef.type
-			count: 1
-			path: ../../lib/Tracy/DIPanel/DIPanel.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Util/Security.php
