@@ -603,6 +603,14 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
     // Substitute the `__i18n_text_domain__` identifier used by the
     // @woocommerce/email-editor package so its translation strings extract
     // and translate under the MailPoet text domain instead of `woocommerce`.
+    //
+    // `DefinePlugin` does a literal source-code substitution: every
+    // occurrence of the key in the bundled source is replaced by the
+    // value's JS source text verbatim. `JSON.stringify('mailpoet')`
+    // returns the seven-character string `"mailpoet"` (quotes included),
+    // which becomes a string literal in the output. Passing `'mailpoet'`
+    // directly would inject the bare identifier `mailpoet`, which
+    // webpack would then try to resolve as a variable reference.
     new webpack.DefinePlugin({
       __i18n_text_domain__: JSON.stringify('mailpoet'),
     }),
