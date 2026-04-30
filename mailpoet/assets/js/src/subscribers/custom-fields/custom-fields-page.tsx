@@ -240,6 +240,9 @@ export function CustomFieldsPage() {
       {
         id: 'edit',
         label: __('Edit', 'mailpoet'),
+        isPrimary: true,
+        icon: 'edit',
+        supportsBulk: false,
         isEligible: (item) => !item.deleted_at,
         callback: (selected) => {
           const [customField] = selected;
