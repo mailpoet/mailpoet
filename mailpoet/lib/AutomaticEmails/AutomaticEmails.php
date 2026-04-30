@@ -114,6 +114,7 @@ class AutomaticEmails {
     ];
 
     foreach ($automaticEmailEvents as $event) {
+      if (!is_array($event)) return false;
       $validEvent = array_diff($requiredFields, array_keys($event));
       if (!empty($validEvent)) return false;
     }
