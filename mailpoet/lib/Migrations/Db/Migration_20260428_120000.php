@@ -9,33 +9,29 @@ class Migration_20260428_120000 extends DbMigration {
   public function run(): void {
     $tableName = $this->getTableName(StatisticsUnsubscribeEntity::class);
 
+    // Combine into a single ALTER TABLE so large `statistics_unsubscribes` tables only get one
+    // metadata-lock acquisition. Column placement is left to MySQL (no AFTER clauses) so MySQL 8.0+
+    // can use the INSTANT algorithm for the column adds.
+    $alterations = [];
     if (!$this->columnExists($tableName, 'reason')) {
-      $this->connection->executeStatement("
-        ALTER TABLE `{$tableName}`
-          ADD COLUMN `reason` varchar(80) NULL DEFAULT NULL AFTER `method`
-      ");
+      $alterations[] = 'ADD COLUMN `reason` varchar(80) NULL DEFAULT NULL';
     }
-
     if (!$this->columnExists($tableName, 'reason_text')) {
-      $this->connection->executeStatement("
-        ALTER TABLE `{$tableName}`
-          ADD COLUMN `reason_text` text NULL DEFAULT NULL AFTER `reason`
-      ");
+      $alterations[] = 'ADD COLUMN `reason_text` text NULL DEFAULT NULL';
     }
-
     if (!$this->columnExists($tableName, 'reason_submitted_at')) {
-      $this->connection->executeStatement("
-        ALTER TABLE `{$tableName}`
-          ADD COLUMN `reason_submitted_at` timestamp NULL DEFAULT NULL AFTER `reason_text`
-      ");
+      $alterations[] = 'ADD COLUMN `reason_submitted_at` timestamp NULL DEFAULT NULL';
+    }
+    if (!$this->indexExists($tableName, 'newsletter_id_reason')) {
+      $alterations[] = 'ADD INDEX `newsletter_id_reason` (`newsletter_id`, `reason`)';
     }
 
-    // Add composite index for efficient reason count queries
-    if (!$this->indexExists($tableName, 'newsletter_id_reason')) {
-      $this->connection->executeStatement("
-        ALTER TABLE `{$tableName}`
-          ADD INDEX `newsletter_id_reason` (`newsletter_id`, `reason`)
-      ");
+    if ($alterations === []) {
+      return;
     }
+
+    $this->connection->executeStatement(
+      "ALTER TABLE `{$tableName}` " . implode(', ', $alterations)
+    );
   }
 }
