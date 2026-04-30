@@ -306,6 +306,19 @@ class PagesTest extends \MailPoetTest {
     verify($content)->stringContainsString('Please let us know why you unsubscribed:');
   }
 
+  public function testItRendersSimpleOtherReasonWhenOtherTextIsDisabled() {
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
+    SettingsController::getInstance()->set('subscription.unsubscribe_survey.allow_other_text', false);
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+    $content = $pages->setPageContent('[mailpoet_page]');
+
+    verify($content)->stringContainsString('Other');
+    verify($content)->stringNotContainsString('Other (fill in reason below)');
+    verify($content)->stringNotContainsString('name="reason_text"');
+  }
+
   public function testItSavesUnsubscribeReason() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.allow_other_text', '1');
