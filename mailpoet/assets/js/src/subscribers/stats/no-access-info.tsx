@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { Icon } from '@wordpress/components';
-import { cart, link as linkIcon, seen } from '@wordpress/icons';
+import { cart, closeSmall, link as linkIcon, seen } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PremiumBannerWithUpgrade } from 'common/premium-banner-with-upgrade/premium-banner-with-upgrade';
@@ -59,6 +59,14 @@ function getSampleActivityItems(): SampleActivityItem[] {
       title: __('Completed purchase', 'mailpoet'),
       description: __('Revenue tracked from an email click.', 'mailpoet'),
       date: getSampleDate(1),
+    },
+    {
+      key: 'unsubscribed',
+      eventType: 'unsubscribe',
+      icon: closeSmall,
+      title: __('Unsubscribed', 'mailpoet'),
+      description: __('Reason: No reason provided', 'mailpoet'),
+      date: getSampleDate(1, 2),
     },
   ];
 }
