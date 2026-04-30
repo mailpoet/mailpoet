@@ -9,6 +9,7 @@ import { listFields } from './fields';
 import {
   bulkAction,
   type CustomFieldBulkAction,
+  duplicateCustomField,
   getCustomFields,
   getSubscribersListingUrl,
 } from './api';
@@ -213,6 +214,27 @@ export function CustomFieldsPage() {
     [loadCustomFields],
   );
 
+  const handleDuplicate = useCallback(async (customField: CustomField) => {
+    try {
+      const duplicate = await duplicateCustomField(customField.id);
+      setSelection([]);
+      setGroup('all');
+      setGlobalSuccess(
+        sprintf(
+          __('Custom field "%s" duplicated.', 'mailpoet'),
+          duplicate.name,
+        ),
+      );
+      setRefreshToken((current) => current + 1);
+    } catch (err) {
+      const apiError = err as ApiErrorResponse;
+      setGlobalError(
+        apiError?.message ||
+          __('The custom field could not be duplicated.', 'mailpoet'),
+      );
+    }
+  }, []);
+
   const actions = useMemo<Action<CustomField>[]>(
     () => [
       {
@@ -223,6 +245,17 @@ export function CustomFieldsPage() {
           const [customField] = selected;
           if (customField) {
             setEditingCustomField(customField);
+          }
+        },
+      },
+      {
+        id: 'duplicate',
+        label: __('Duplicate', 'mailpoet'),
+        isEligible: (item) => !item.deleted_at,
+        callback: (selected) => {
+          const [customField] = selected;
+          if (customField) {
+            void handleDuplicate(customField);
           }
         },
       },
@@ -264,7 +297,7 @@ export function CustomFieldsPage() {
         },
       },
     ],
-    [handleBulkAction],
+    [handleBulkAction, handleDuplicate],
   );
 
   const paginationInfo = useMemo(

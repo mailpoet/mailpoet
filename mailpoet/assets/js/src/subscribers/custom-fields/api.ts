@@ -85,6 +85,15 @@ export async function updateCustomField(
   return response.data;
 }
 
+export async function duplicateCustomField(id: number): Promise<CustomField> {
+  ensureInitialized();
+  const response = await apiFetch<ItemResponse>({
+    path: `/mailpoet/v1/custom-fields/${id}/duplicate`,
+    method: 'POST',
+  });
+  return response.data;
+}
+
 export type CustomFieldBulkAction =
   | 'trash'
   | 'restore'

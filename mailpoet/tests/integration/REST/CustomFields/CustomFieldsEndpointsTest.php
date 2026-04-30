@@ -254,6 +254,64 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertSame('rest_forbidden', $data['code']);
   }
 
+  public function testPostDuplicatesCustomField(): void {
+    $field = (new CustomFieldFactory())
+      ->withName('Favorite trail')
+      ->withType('select')
+      ->withParams([
+        'label' => 'Favorite trail label',
+        'required' => '1',
+        'values' => [
+          ['value' => 'Alpine Loop'],
+          ['value' => 'River Walk', 'is_checked' => '1'],
+        ],
+      ])
+      ->create();
+
+    $data = $this->post(self::BASE_PATH . '/' . $field->getId() . '/duplicate');
+
+    $duplicate = $data['data'];
+    $this->assertNotSame((int)$field->getId(), $duplicate['id']);
+    $this->assertSame('Favorite trail copy', $duplicate['name']);
+    $this->assertSame('select', $duplicate['type']);
+    $this->assertSame('Favorite trail label copy', $duplicate['label']);
+    $this->assertSame('1', $duplicate['params']['required']);
+    $this->assertSame('River Walk', $duplicate['params']['values'][1]['value']);
+    $this->assertSame(0, $duplicate['subscribers_count']);
+
+    $entity = $this->repository->findOneById($duplicate['id']);
+    $this->assertNotNull($entity);
+    $this->assertSame('Favorite trail copy', $entity->getName());
+  }
+
+  public function testPostDuplicateGeneratesUniqueName(): void {
+    $field = (new CustomFieldFactory())->withName('Favorite trail')->create();
+    (new CustomFieldFactory())->withName('Favorite trail copy')->create();
+
+    $data = $this->post(self::BASE_PATH . '/' . $field->getId() . '/duplicate');
+
+    $this->assertSame('Favorite trail copy 2', $data['data']['name']);
+  }
+
+  public function testPostDuplicateRejectsTrashedCustomField(): void {
+    $field = (new CustomFieldFactory())->withName('Trashed duplicate')->create();
+    $this->repository->bulkTrash([(int)$field->getId()]);
+
+    $data = $this->post(self::BASE_PATH . '/' . $field->getId() . '/duplicate');
+
+    $this->assertSame('mailpoet_custom_fields_not_found', $data['code']);
+    $this->assertSame(404, $data['data']['status']);
+  }
+
+  public function testPostDuplicateRejectsGuest(): void {
+    $field = (new CustomFieldFactory())->withName('Guest duplicate')->create();
+    wp_set_current_user(0);
+
+    $data = $this->post(self::BASE_PATH . '/' . $field->getId() . '/duplicate');
+
+    $this->assertSame('rest_forbidden', $data['code']);
+  }
+
   public function testGetSupportsTrashGroup(): void {
     $active = (new CustomFieldFactory())->withName('Active')->create();
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();
