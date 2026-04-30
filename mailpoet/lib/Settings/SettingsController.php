@@ -80,7 +80,7 @@ class SettingsController {
         ],
         'subscription' => [
           'unsubscribe_survey' => [
-            'enabled' => false,
+            'enabled' => true,
             'allow_other_text' => false,
           ],
         ],
