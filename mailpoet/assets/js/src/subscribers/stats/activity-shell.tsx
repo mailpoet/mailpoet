@@ -12,7 +12,12 @@ import { Location, Params } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { OpenedEmailsStats } from './opened-email-stats';
 
-export type ActivityEventType = 'all' | 'open' | 'click' | 'purchase';
+export type ActivityEventType =
+  | 'all'
+  | 'open'
+  | 'click'
+  | 'purchase'
+  | 'unsubscribe';
 
 type Props = {
   lastEngagementAt?: string;
@@ -25,6 +30,7 @@ const EVENT_TYPE_OPTIONS: Array<{ label: string; value: ActivityEventType }> = [
   { label: __('Email opens', 'mailpoet'), value: 'open' },
   { label: __('Link clicks', 'mailpoet'), value: 'click' },
   { label: __('Purchases', 'mailpoet'), value: 'purchase' },
+  { label: __('Unsubscribes', 'mailpoet'), value: 'unsubscribe' },
 ];
 
 export function ActivityShell({
