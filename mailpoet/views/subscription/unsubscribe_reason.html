@@ -1,5 +1,6 @@
 <% block content %>
 <form class="mailpoet-unsubscribe-reason" action="<%= actionUrl|escape %>" method="post">
+  <input type="hidden" name="_wpnonce" value="<%= nonce|escape('html_attr') %>">
   <fieldset>
     <legend><%= __('Please let us know why you unsubscribed:', 'mailpoet') %></legend>
     <% for reason, label in reasons %>

@@ -537,6 +537,7 @@ class Pages {
       'allowOtherText' => $allowOtherText,
       'reasons' => $reasons,
       'otherReason' => StatisticsUnsubscribeEntity::REASON_OTHER,
+      'nonce' => $this->wp->wpCreateNonce('mailpoet_unsubscribe_reason'),
     ]);
   }
 
