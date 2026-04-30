@@ -146,6 +146,7 @@ class EmailAction implements Filter {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
     $newsletters = $filterData->getParam('newsletters');
+    $newsletters = is_array($newsletters) ? $newsletters : [];
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

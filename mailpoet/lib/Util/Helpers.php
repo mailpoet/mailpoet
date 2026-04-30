@@ -98,7 +98,7 @@ class Helpers {
   }
 
   public static function getIP() {
-    return (isset($_SERVER['REMOTE_ADDR']))
+    return (isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR']))
       ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']))
       : null;
   }

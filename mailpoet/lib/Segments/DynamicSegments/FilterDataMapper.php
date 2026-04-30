@@ -341,14 +341,16 @@ class FilterDataMapper {
         throw new InvalidFilterException('Missing newsletter', InvalidFilterException::MISSING_NEWSLETTER_ID);
       }
       $filterData['newsletters'] = array_map(function ($segmentId) {
-        return intval($segmentId);
+        return is_scalar($segmentId) ? intval($segmentId) : 0;
       }, $data['newsletters']);
     }
 
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
     $action = $data['action'];
     if (isset($data['link_ids']) && is_array($data['link_ids'])) {
-      $filterData['link_ids'] = array_map('intval', $data['link_ids']);
+      $filterData['link_ids'] = array_map(function ($linkId) {
+        return is_scalar($linkId) ? intval($linkId) : 0;
+      }, $data['link_ids']);
       if (!isset($data['operator'])) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       }

@@ -35,9 +35,8 @@ class UserRole implements Filter {
       // compatibility with the older segment before multiple roles were added
       $role = [$role];
     }
-    if (!$operator) {
-      $operator = DynamicSegmentFilterData::OPERATOR_ANY;
-    }
+    $role = array_values(array_map('strval', array_filter($role, 'is_scalar')));
+    $operator = is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::OPERATOR_ANY;
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $parameterSuffix = ((string)$filter->getId()) . Security::generateRandomString();

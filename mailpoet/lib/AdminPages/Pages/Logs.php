@@ -22,11 +22,11 @@ class Logs {
   }
 
   public function render() {
-    $search = isset($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : null;
-    $from = isset($_GET['from']) ? sanitize_text_field(wp_unslash($_GET['from'])) : null;
-    $to = isset($_GET['to']) ? sanitize_text_field(wp_unslash($_GET['to'])) : null;
-    $offset = isset($_GET['offset']) ? sanitize_text_field(wp_unslash($_GET['offset'])) : null;
-    $limit = isset($_GET['limit']) ? sanitize_text_field(wp_unslash($_GET['limit'])) : null;
+    $search = isset($_GET['search']) && is_string($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : null;
+    $from = isset($_GET['from']) && is_string($_GET['from']) ? sanitize_text_field(wp_unslash($_GET['from'])) : null;
+    $to = isset($_GET['to']) && is_string($_GET['to']) ? sanitize_text_field(wp_unslash($_GET['to'])) : null;
+    $offset = isset($_GET['offset']) && is_string($_GET['offset']) ? sanitize_text_field(wp_unslash($_GET['offset'])) : null;
+    $limit = isset($_GET['limit']) && is_string($_GET['limit']) ? sanitize_text_field(wp_unslash($_GET['limit'])) : null;
     $dateFrom = (new Carbon())->subDays(7);
     $defaultFrom = $dateFrom->format('Y-m-d');
     if (isset($from)) {

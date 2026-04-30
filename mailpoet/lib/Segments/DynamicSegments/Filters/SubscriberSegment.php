@@ -32,6 +32,7 @@ class SubscriberSegment implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $segments = $filterData->getParam('segments');
+    $segments = is_array($segments) ? $segments : [];
     $operator = $filterData->getParam('operator');
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $statusSubscribedParam = 'subscribed' . $parameterSuffix;
