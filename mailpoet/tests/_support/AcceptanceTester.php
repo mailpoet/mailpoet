@@ -149,11 +149,14 @@ class AcceptanceTester extends \Codeception\Actor {
     // open it first and then click the matching role="menuitem".
     $dataViewsActionsToggleXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[@aria-label="Actions" and @aria-haspopup="menu"]'];
     $dataViewsMenuItemXpath = ['xpath' => '//*[@role="menuitem" and normalize-space(.)="' . $link . '"]'];
+    $lastException = null;
 
     for ($x = 1; $x <= 3; $x++) {
       try {
+        $i->scrollListingRowIntoViewByItemName($itemName);
         $i->moveMouseOver($rowCellXpath);
       } catch (Exception $hoverException) {
+        $lastException = $hoverException;
         $this->wait(1);
         continue;
       }
@@ -164,6 +167,7 @@ class AcceptanceTester extends \Codeception\Actor {
         $i->click($legacyActionXpath);
         return;
       } catch (Exception $legacyException) {
+        $lastException = $legacyException;
         // ignore and fall through to DataViews variants
       }
 
@@ -173,6 +177,7 @@ class AcceptanceTester extends \Codeception\Actor {
         $i->click($dataViewsPrimaryXpath);
         return;
       } catch (Exception $primaryException) {
+        $lastException = $primaryException;
         // ignore and try the dropdown menu
       }
 
@@ -184,10 +189,13 @@ class AcceptanceTester extends \Codeception\Actor {
         $i->click($dataViewsMenuItemXpath);
         return;
       } catch (Exception $menuException) {
+        $lastException = $menuException;
         $this->wait(1);
         continue;
       }
     }
+
+    throw $lastException;
   }
 
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
@@ -213,6 +221,7 @@ class AcceptanceTester extends \Codeception\Actor {
       return;
     } catch (Exception $exception) {
       $dataViewsActionsToggleXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[@aria-label="Actions" and @aria-haspopup="menu"]'];
+      $i->scrollListingRowIntoViewByItemName($itemName);
       $i->waitForElementClickable($dataViewsActionsToggleXpath);
       $i->click($dataViewsActionsToggleXpath);
     }
@@ -1057,7 +1066,21 @@ class AcceptanceTester extends \Codeception\Actor {
   public function checkWooTableCheckboxForItemName(string $itemName): void {
     $i = $this;
     $xpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//input[@type="checkbox"]'];
+    $i->scrollListingRowIntoViewByItemName($itemName);
     $i->click($xpath);
+  }
+
+  private function scrollListingRowIntoViewByItemName(string $itemName): void {
+    $encodedItemName = json_encode($itemName);
+    $this->executeJS(
+      <<<JS
+      const itemName = {$encodedItemName};
+      const rows = Array.from(document.querySelectorAll('tr'));
+      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      if (row) row.scrollIntoView({ block: 'center', inline: 'nearest' });
+      JS
+    );
+    $this->wait(0.1);
   }
 
   public function selectListingBulkAction(string $actionName): void {
