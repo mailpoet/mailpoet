@@ -43,6 +43,7 @@ class WooCommerceProduct implements Filter {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getOperator();
     $productIds = $filterData->getParam('product_ids');
+    $productIds = is_array($productIds) ? $productIds : [];
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
 

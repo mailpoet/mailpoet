@@ -72,6 +72,7 @@ class MailPoetCustomFields implements Filter {
     $dateType = $filterData->getParam('date_type');
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
+    $operator = is_string($operator) ? $operator : null;
     $queryBuilder->setParameter($valueParam, $value);
     if ($operator === DynamicSegmentFilterData::IS_BLANK) {
       $queryBuilder->andWhere("subscribers_custom_field.value IS NULL OR subscribers_custom_field.value = ''");

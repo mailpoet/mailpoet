@@ -35,9 +35,7 @@ class WooCommerceCountry implements Filter {
       $countryCode = [is_scalar($countryCode) ? (string)$countryCode : ''];
     }
     $operator = $filterData->getParam('operator');
-    if (!$operator) {
-      $operator = DynamicSegmentFilterData::OPERATOR_ANY;
-    }
+    $operator = is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::OPERATOR_ANY;
 
     $countryFilterParam = ((string)$filter->getId()) . Security::generateRandomString();
     $condition = $this->createCondition($countryCode, $operator, $countryFilterParam);

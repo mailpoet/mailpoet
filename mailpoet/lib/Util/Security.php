@@ -38,7 +38,7 @@ class Security {
     $string = base_convert(
       bin2hex(
         random_bytes( // phpcs:ignore
-          (int)ceil(3 * $length / 4)
+          max(1, (int)ceil(3 * $length / 4))
         )
       ),
       16,

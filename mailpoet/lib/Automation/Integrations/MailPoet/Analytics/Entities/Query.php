@@ -108,12 +108,13 @@ class Query {
       throw new UnexpectedValueException('Invalid query parameters');
     }
 
-    $limit = $query['limit'] ?? 25;
-    $orderBy = $query['order_by'] ?? '';
-    $orderDirection = isset($query['order']) && strtolower($query['order']) === 'asc' ? 'asc' : 'desc';
-    $page = $query['page'] ?? 1;
-    $filter = $query['filter'] ?? [];
-    $search = $query['search'] ?? null;
+    $limit = is_int($query['limit'] ?? null) ? $query['limit'] : 25;
+    $orderBy = is_string($query['order_by'] ?? null) ? $query['order_by'] : '';
+    $order = $query['order'] ?? null;
+    $orderDirection = is_string($order) && strtolower($order) === 'asc' ? 'asc' : 'desc';
+    $page = is_int($query['page'] ?? null) ? $query['page'] : 1;
+    $filter = is_array($query['filter'] ?? null) ? $query['filter'] : [];
+    $search = isset($query['search']) && is_string($query['search']) ? $query['search'] : null;
 
     return new self(
       new \DateTimeImmutable($primaryAfter),

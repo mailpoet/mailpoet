@@ -152,6 +152,7 @@ class Menu {
 
     if (
       !isset($_REQUEST['page'])
+      || !is_string($_REQUEST['page'])
       || sanitize_text_field(wp_unslash($_REQUEST['page'])) !== 'mailpoet-newsletter-editor'
     ) {
       return;
@@ -793,7 +794,7 @@ class Menu {
   }
 
   public static function isOnMailPoetAutomationPage(): bool {
-    $screenId = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
+    $screenId = isset($_REQUEST['page']) && is_string($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
     $automationPages = [
         'mailpoet-automation',
         'mailpoet-automation-templates',
@@ -808,7 +809,7 @@ class Menu {
 
   public static function isOnMailPoetAdminPage(?array $exclude = null, $screenId = null) {
     if (is_null($screenId)) {
-      if (empty($_REQUEST['page'])) {
+      if (empty($_REQUEST['page']) || !is_string($_REQUEST['page'])) {
         return false;
       }
       $screenId = sanitize_text_field(wp_unslash($_REQUEST['page']));
@@ -828,7 +829,7 @@ class Menu {
    * to display admin notices only
    */
   public static function addErrorPage(AccessControl $accessControl) {
-    if (!self::isOnMailPoetAdminPage() || !isset($_REQUEST['page'])) {
+    if (!self::isOnMailPoetAdminPage() || !isset($_REQUEST['page']) || !is_string($_REQUEST['page'])) {
       return false;
     }
 
@@ -858,14 +859,14 @@ class Menu {
   }
 
   public function checkPremiumKey(?ServicesChecker $checker = null) {
-    $showNotices = self::isOnMailPoetAdminPage() || (isset($_SERVER['SCRIPT_NAME'])
+    $showNotices = self::isOnMailPoetAdminPage() || (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME'])
       && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false);
     $checker = $checker ?: $this->servicesChecker;
     $this->premiumKeyValid = $checker->isPremiumKeyValid($showNotices);
   }
 
   public function getPageFromContext(): ?string {
-    $context = isset($_GET['context']) ? sanitize_text_field(wp_unslash($_GET['context'])) : null;
+    $context = isset($_GET['context']) && is_string($_GET['context']) ? sanitize_text_field(wp_unslash($_GET['context'])) : null;
     if ($context === 'automation') {
       return self::AUTOMATIONS_PAGE_SLUG;
     }

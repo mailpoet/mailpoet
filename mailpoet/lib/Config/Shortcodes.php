@@ -190,13 +190,13 @@ class Shortcodes {
       return $parsedParams;
     }
 
-    if (!empty($params['segments'])) {
+    if (!empty($params['segments']) && is_string($params['segments'])) {
       $parsedParams['segmentIds'] = array_map(function($segmentId) {
         return (int)trim($segmentId);
       }, explode(',', $params['segments']));
     }
 
-    if ($params['start_date'] ?? null) {
+    if (isset($params['start_date']) && is_string($params['start_date']) && $params['start_date'] !== '') {
       try {
         $parsedParams['startDate'] = new CarbonImmutable(trim($params['start_date']));
       } catch (\Throwable $throwable) {
@@ -204,7 +204,7 @@ class Shortcodes {
       }
     }
 
-    if ($params['end_date'] ?? null) {
+    if (isset($params['end_date']) && is_string($params['end_date']) && $params['end_date'] !== '') {
       try {
         $parsedParams['endDate'] = new CarbonImmutable(trim($params['end_date']));
       } catch (\Throwable $throwable) {
@@ -213,17 +213,17 @@ class Shortcodes {
     }
 
     $lastDays = $params['in_the_last_days'] ?? null;
-    if ($lastDays && intval(($lastDays) > 0)) {
+    if (is_scalar($lastDays) && $lastDays > 0) {
       $parsedParams['endDate'] = null;
       $parsedParams['startDate'] = CarbonImmutable::now()->subDays(intval($lastDays))->startOfDay();
     }
 
-    if ($params['subject_contains'] ?? null) {
+    if (isset($params['subject_contains']) && is_string($params['subject_contains']) && $params['subject_contains'] !== '') {
       $parsedParams['subjectContains'] = trim($params['subject_contains']);
     }
 
     $limit = $params['limit'] ?? null;
-    if ($limit && intval($limit) > 0) {
+    if (is_scalar($limit) && intval($limit) > 0) {
       $parsedParams['limit'] = intval($limit);
     }
 

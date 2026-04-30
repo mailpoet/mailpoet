@@ -89,9 +89,9 @@ class WooCommerceUsedCouponCode implements Filter {
     $this->applyForAnyOperator($queryBuilder, $filter);
 
     $filterData = $filter->getFilterData();
-    $couponIds = (array)$filterData->getParam(self::COUPON_CODE_IDS_KEY);
+    $couponIds = array_filter((array)$filterData->getParam(self::COUPON_CODE_IDS_KEY), 'is_scalar');
     $queryBuilder->groupBy('inner_subscriber_id')
-      ->having("COUNT(DISTINCT couponLookup.coupon_id) = " . count(array_unique($couponIds)));
+      ->having("COUNT(DISTINCT couponLookup.coupon_id) = " . count(array_unique(array_map('strval', $couponIds))));
   }
 
   public function validateFilterData(array $data): void {
