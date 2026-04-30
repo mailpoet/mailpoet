@@ -73,6 +73,9 @@ class SubscriptionTest extends \MailPoetTest {
     ]);
   }
 
+  /**
+   * @return Pages&object{initCalls: list<array{0: mixed, 1: mixed, 2: bool, 3: bool}>}
+   */
   private function makeSubscriptionPagesStub(bool $isSubscriberUnsubscribed): Pages {
     return new class($isSubscriberUnsubscribed) extends Pages {
       public $initCalls = [];
