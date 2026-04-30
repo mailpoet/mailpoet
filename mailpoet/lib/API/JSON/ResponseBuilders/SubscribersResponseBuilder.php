@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
@@ -133,9 +134,7 @@ class SubscribersResponseBuilder {
         'meta' => $unsubscribe->getMeta(),
         'createdAt' => $unsubscribe->getCreatedAt(),
         'reason' => $unsubscribe->getReason(),
-        'reasonLabel' => $unsubscribe->getReason() !== null
-          ? ($reasonLabels[$unsubscribe->getReason()] ?? $unsubscribe->getReason())
-          : null,
+        'reasonLabel' => $this->getUnsubscribeReasonLabel($unsubscribe->getReason(), $reasonLabels),
         'reasonText' => $unsubscribe->getReasonText(),
         'reasonSubmittedAt' => $unsubscribe->getReasonSubmittedAt(),
       ];
@@ -147,6 +146,19 @@ class SubscribersResponseBuilder {
       $result[] = $mapped;
     }
     return $result;
+  }
+
+  /**
+   * @param array<string, string> $reasonLabels
+   */
+  private function getUnsubscribeReasonLabel(?string $reason, array $reasonLabels): ?string {
+    if ($reason === null) {
+      return null;
+    }
+    if ($reason === '' || $reason === StatisticsUnsubscribeEntity::REASON_UNSPECIFIED) {
+      return __('No reason provided', 'mailpoet');
+    }
+    return $reasonLabels[$reason] ?? $reason;
   }
 
   private function buildCustomFields(SubscriberEntity $subscriberEntity, array $data): array {

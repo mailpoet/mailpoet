@@ -151,9 +151,13 @@ class SubscriberExporter {
         continue;
       }
 
+      $reason = $unsubscribe->getReason();
+      $reasonValue = ($reason === '' || $reason === StatisticsUnsubscribeEntity::REASON_UNSPECIFIED)
+        ? __('No reason provided', 'mailpoet')
+        : ($reasonLabels[$reason] ?? $reason);
       $result[] = [
         'name' => __('Unsubscribe reason', 'mailpoet'),
-        'value' => $reasonLabels[$unsubscribe->getReason()] ?? $unsubscribe->getReason(),
+        'value' => $reasonValue,
       ];
       if ($unsubscribe->getReasonText() !== null) {
         $result[] = [

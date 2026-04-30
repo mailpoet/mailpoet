@@ -40,7 +40,7 @@ class UnsubscribeReasonTracker {
       StatisticsUnsubscribeEntity::REASON_DID_NOT_SIGN_UP => __('I never signed up for this mailing list', 'mailpoet'),
       StatisticsUnsubscribeEntity::REASON_INAPPROPRIATE_CONTENT => __('The emails are inappropriate', 'mailpoet'),
       StatisticsUnsubscribeEntity::REASON_SPAM => __('The emails are spam and should be reported', 'mailpoet'),
-      StatisticsUnsubscribeEntity::REASON_OTHER => __('Other (fill in reason below)', 'mailpoet'),
+      StatisticsUnsubscribeEntity::REASON_OTHER => __('Other', 'mailpoet'),
     ];
   }
 
