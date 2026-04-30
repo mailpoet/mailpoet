@@ -12,12 +12,16 @@ use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortc
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\WordPress\TransactionalEmails\PersonalizationTags\WpLink;
+use MailPoet\WordPress\TransactionalEmails\PersonalizationTags\WpUser;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalizationTagManager {
   private Subscriber $subscriber;
   private Site $site;
   private Link $link;
+  private WpUser $wpUser;
+  private WpLink $wpLink;
   private WPFunctions $wp;
   private LinksToShortcodesConvertor $linksToShortcodesConvertor;
   private AutomationStorage $automationStorage;
@@ -28,6 +32,8 @@ class PersonalizationTagManager {
     Subscriber $subscriber,
     Site $site,
     Link $link,
+    WpUser $wpUser,
+    WpLink $wpLink,
     WPFunctions $wp,
     LinksToShortcodesConvertor $linksToShortcodesConvertor,
     AutomationStorage $automationStorage,
@@ -37,6 +43,8 @@ class PersonalizationTagManager {
     $this->subscriber = $subscriber;
     $this->site = $site;
     $this->link = $link;
+    $this->wpUser = $wpUser;
+    $this->wpLink = $wpLink;
     $this->wp = $wp;
     $this->linksToShortcodesConvertor = $linksToShortcodesConvertor;
     $this->automationStorage = $automationStorage;
@@ -176,6 +184,82 @@ class PersonalizationTagManager {
         'mailpoet/newsletter-view-in-browser-url',
         __('Link', 'mailpoet'),
         [$this->link, 'getNewsletterViewInBrowserUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+
+      // WordPress core email customization (password reset, new user, etc.).
+      // Registered for all mailpoet_email posts; values resolve from the
+      // render context populated by the WP email filter interceptor.
+      $registry->register(new Personalization_Tag(
+        __('Display Name', 'mailpoet'),
+        'mailpoet/wp-user-display-name',
+        __('WordPress User', 'mailpoet'),
+        [$this->wpUser, 'getDisplayName'],
+        ['default' => __('there', 'mailpoet')],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Username', 'mailpoet'),
+        'mailpoet/wp-user-login',
+        __('WordPress User', 'mailpoet'),
+        [$this->wpUser, 'getLogin'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('User Email', 'mailpoet'),
+        'mailpoet/wp-user-email',
+        __('WordPress User', 'mailpoet'),
+        [$this->wpUser, 'getEmail'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('New Email Address', 'mailpoet'),
+        'mailpoet/wp-user-new-email',
+        __('WordPress User', 'mailpoet'),
+        [$this->wpUser, 'getNewEmailAddress'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Password Reset Link', 'mailpoet'),
+        'mailpoet/wp-link-password-reset',
+        __('WordPress Link', 'mailpoet'),
+        [$this->wpLink, 'getPasswordResetLink'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Login URL', 'mailpoet'),
+        'mailpoet/wp-link-login',
+        __('WordPress Link', 'mailpoet'),
+        [$this->wpLink, 'getLoginUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Set Password Link', 'mailpoet'),
+        'mailpoet/wp-link-set-password',
+        __('WordPress Link', 'mailpoet'),
+        [$this->wpLink, 'getSetPasswordLink'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Email Change Confirmation Link', 'mailpoet'),
+        'mailpoet/wp-link-email-change-confirm',
+        __('WordPress Link', 'mailpoet'),
+        [$this->wpLink, 'getEmailChangeConfirmLink'],
         [],
         null,
         [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
