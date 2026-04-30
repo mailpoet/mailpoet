@@ -354,7 +354,7 @@ class PagesTest extends \MailPoetTest {
       unset($_GET['unsubscribe_reason_saved']);
     }
 
-    verify($content)->stringContainsString('Thank you for for letting us know why you unsubscribed.');
+    verify($content)->stringContainsString('Thank you for letting us know why you unsubscribed.');
     verify($content)->stringNotContainsString('Please let us know why you unsubscribed:');
   }
 

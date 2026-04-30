@@ -3,6 +3,7 @@
 namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -89,6 +90,20 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->checkSubscription($response, $subscriber);
     // check tags
     $this->checkTag($response, $subscriber);
+  }
+
+  public function testItMapsUnspecifiedUnsubscribeReasonToHumanReadableLabel(): void {
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $this->subscriber1);
+    $unsubscribe->setReason(StatisticsUnsubscribeEntity::REASON_UNSPECIFIED);
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+
+    $response = $this->responseBuilder->build($this->subscriber1);
+
+    $this->assertCount(1, $response['unsubscribes']);
+    $row = $response['unsubscribes'][0];
+    $this->assertSame(StatisticsUnsubscribeEntity::REASON_UNSPECIFIED, $row['reason']);
+    $this->assertSame(__('No reason provided', 'mailpoet'), $row['reasonLabel']);
   }
 
   public function testItBuildsListingResponse(): void {

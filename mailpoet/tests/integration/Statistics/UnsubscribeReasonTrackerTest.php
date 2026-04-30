@@ -123,4 +123,64 @@ class UnsubscribeReasonTrackerTest extends \MailPoetTest {
 
     verify($this->statisticsUnsubscribesRepository->findBy(['subscriber' => $this->subscriber]))->arrayCount(1);
   }
+
+  public function testItReturnsNullForManipulatedQueueId(): void {
+    $otherSubscriber = (new SubscriberFactory())->create();
+    $otherNewsletter = (new NewsletterFactory())->withSendingQueue()->create();
+    $otherQueue = $otherNewsletter->getLatestQueue();
+    $this->assertNotNull($otherQueue);
+    $otherQueueId = (int)$otherQueue->getId();
+
+    $this->diContainer->get(Unsubscribes::class)->track(
+      (int)$otherSubscriber->getId(),
+      StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
+      $otherQueueId
+    );
+
+    $unsubscribe = $this->unsubscribeReasonTracker->findTargetUnsubscribe($this->subscriber, $otherQueueId);
+
+    verify($unsubscribe)->null();
+  }
+
+  public function testItReturnsNullWhenUnsubscribeRecordDoesNotExist(): void {
+    $subscriber = (new SubscriberFactory())->create();
+
+    $result = $this->unsubscribeReasonTracker->saveReason(
+      $subscriber,
+      $this->queueId,
+      StatisticsUnsubscribeEntity::REASON_OTHER,
+      'Some reason',
+      true
+    );
+
+    verify($result)->null();
+  }
+
+  public function testItConvertsEmptyReasonTextToNull(): void {
+    $unsubscribe = $this->unsubscribeReasonTracker->saveReason(
+      $this->subscriber,
+      $this->queueId,
+      StatisticsUnsubscribeEntity::REASON_OTHER,
+      '   ',
+      true
+    );
+
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscribe);
+    verify($unsubscribe->getReason())->equals(StatisticsUnsubscribeEntity::REASON_OTHER);
+    verify($unsubscribe->getReasonText())->null();
+  }
+
+  public function testItConvertsNullReasonTextToNull(): void {
+    $unsubscribe = $this->unsubscribeReasonTracker->saveReason(
+      $this->subscriber,
+      $this->queueId,
+      StatisticsUnsubscribeEntity::REASON_OTHER,
+      null,
+      true
+    );
+
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscribe);
+    verify($unsubscribe->getReason())->equals(StatisticsUnsubscribeEntity::REASON_OTHER);
+    verify($unsubscribe->getReasonText())->null();
+  }
 }
