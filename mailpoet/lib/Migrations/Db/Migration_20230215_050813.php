@@ -50,23 +50,31 @@ class Migration_20230215_050813 extends DbMigration {
     }
 
     foreach ($results as $result) {
-      $subjects = $result['subjects'];
-      if (!$subjects) {
+      if (!is_array($result)) {
+        continue;
+      }
+      $subjects = $result['subjects'] ?? null;
+      if (!is_string($subjects) || $subjects === '') {
         continue;
       }
       $subjects = json_decode($subjects, true);
       if (!is_array($subjects) || !$subjects) {
         continue;
       }
+      $resultId = is_numeric($result['id'] ?? null) ? (int)$result['id'] : 0;
       $values = [];
       foreach ($subjects as $subject) {
-        $values[] = (string)$wpdb->prepare("(%d,%s,%s)", $result['id'], $subject['key'], json_encode($subject['args']));
+        if (!is_array($subject)) {
+          continue;
+        }
+        $key = is_string($subject['key'] ?? null) ? $subject['key'] : '';
+        $values[] = (string)$wpdb->prepare("(%d,%s,%s)", $resultId, $key, (string)json_encode($subject['args'] ?? null));
       }
       if ($wpdb->query($wpdb->prepare("INSERT INTO %i (`automation_run_id`, `key`, `args`) VALUES %s", $subjectTable, implode(',', $values))) === false) {
         continue;
       }
 
-      $wpdb->query($wpdb->prepare("UPDATE %i SET subjects = NULL WHERE id = %d", $runTable, $result['id']));
+      $wpdb->query($wpdb->prepare("UPDATE %i SET subjects = NULL WHERE id = %d", $runTable, $resultId));
     }
   }
 

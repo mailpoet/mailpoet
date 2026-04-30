@@ -61,10 +61,11 @@ class PatternsController {
           'properties' => $pattern->get_properties(),
         ], $pattern);
 
-        if (!is_array($patternData) || !isset($patternData['properties'])) {
+        if (!is_array($patternData) || !isset($patternData['properties']) || !is_array($patternData['properties'])) {
           return null;
         }
-        return $patternData['properties']['content'] ?? null;
+        $content = $patternData['properties']['content'] ?? null;
+        return is_string($content) ? $content : null;
       }
     }
 
@@ -131,15 +132,19 @@ class PatternsController {
         'email_content' => $pattern->get_email_content(),
       ], $pattern);
 
-      if (!is_array($patternData) || !isset($patternData['name']) || !isset($patternData['properties'])) {
+      if (
+        !is_array($patternData)
+        || !isset($patternData['name']) || !is_string($patternData['name'])
+        || !isset($patternData['properties']) || !is_array($patternData['properties'])
+      ) {
         continue;
       }
 
       register_block_pattern($patternData['name'], $patternData['properties']);
 
       // Build email content registry: store email_content when it differs from preview content
-      $previewContent = $patternData['properties']['content'] ?? '';
-      $emailContent = $patternData['email_content'] ?? $previewContent;
+      $previewContent = isset($patternData['properties']['content']) && is_string($patternData['properties']['content']) ? $patternData['properties']['content'] : '';
+      $emailContent = isset($patternData['email_content']) && is_string($patternData['email_content']) ? $patternData['email_content'] : $previewContent;
       if ($emailContent !== $previewContent) {
         $this->emailContentRegistry[$patternData['name']] = $emailContent;
       }
@@ -182,9 +187,13 @@ class PatternsController {
 
     $modified = false;
     foreach ($data as $index => $pattern) {
-      $patternName = $pattern['name'] ?? '';
-      if (isset($this->emailContentRegistry[$patternName])) {
-        $data[$index]['email_content'] = $this->emailContentRegistry[$patternName];
+      if (!is_array($pattern)) {
+        continue;
+      }
+      $patternName = isset($pattern['name']) && is_string($pattern['name']) ? $pattern['name'] : '';
+      if ($patternName !== '' && isset($this->emailContentRegistry[$patternName])) {
+        $pattern['email_content'] = $this->emailContentRegistry[$patternName];
+        $data[$index] = $pattern;
         $modified = true;
       }
     }

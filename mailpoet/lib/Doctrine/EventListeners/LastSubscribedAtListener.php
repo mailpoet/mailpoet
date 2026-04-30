@@ -23,7 +23,7 @@ class LastSubscribedAtListener {
 
     $unitOfWork = $eventArgs->getEntityManager()->getUnitOfWork();
     $changeSet = $unitOfWork->getEntityChangeSet($entity);
-    if (!isset($changeSet['status'])) {
+    if (!isset($changeSet['status']) || !is_array($changeSet['status'])) {
       return;
     }
 

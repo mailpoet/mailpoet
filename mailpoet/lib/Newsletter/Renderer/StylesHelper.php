@@ -101,10 +101,15 @@ class StylesHelper {
 
   public static function applyTextAlignment($block) {
     if (is_array($block)) {
-      $textAlignment = isset($block['styles']['block']['textAlign']) ?
-        strtolower($block['styles']['block']['textAlign']) :
-        '';
-      if (preg_match('/center|right|justify/i', (string)$textAlignment)) {
+      if (!isset($block['styles']) || !is_array($block['styles'])) {
+        $block['styles'] = [];
+      }
+      if (!isset($block['styles']['block']) || !is_array($block['styles']['block'])) {
+        $block['styles']['block'] = [];
+      }
+      $rawTextAlign = $block['styles']['block']['textAlign'] ?? null;
+      $textAlignment = is_string($rawTextAlign) ? strtolower($rawTextAlign) : '';
+      if (preg_match('/center|right|justify/i', $textAlignment)) {
         return $block;
       }
       $block['styles']['block']['textAlign'] = 'left';

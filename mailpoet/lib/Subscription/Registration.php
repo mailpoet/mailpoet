@@ -66,9 +66,11 @@ class Registration {
 
   public function onMultiSiteRegister($result) {
     if (empty($result['errors']->errors)) {
+      // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- type narrowing only, value is read as bool
+      $mailpoetPost = isset($_POST['mailpoet']) && is_array($_POST['mailpoet']) ? $_POST['mailpoet'] : [];
       if (
-        isset($_POST['mailpoet']['subscribe_on_register'])
-        && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
+        isset($mailpoetPost['subscribe_on_register'])
+        && (bool)$mailpoetPost['subscribe_on_register'] === true
         && !empty($result['user_email'])
       ) {
         $this->subscribeNewUser(
@@ -85,10 +87,12 @@ class Registration {
     $userLogin,
     $userEmail = null
   ) {
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- type narrowing only, value is read as bool
+    $mailpoetPost = isset($_POST['mailpoet']) && is_array($_POST['mailpoet']) ? $_POST['mailpoet'] : [];
     if (
       empty($errors->errors)
-      && isset($_POST['mailpoet']['subscribe_on_register'])
-      && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
+      && isset($mailpoetPost['subscribe_on_register'])
+      && (bool)$mailpoetPost['subscribe_on_register'] === true
       && !empty($userEmail)
     ) {
       $this->subscribeNewUser(

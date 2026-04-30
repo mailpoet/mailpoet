@@ -36,6 +36,9 @@ class Migration_20241108_103249_Db extends DbMigration {
 
       // Iterate over each automation step
       foreach ($jsonData as $key => &$item) {
+        if (!is_array($item) || !isset($item['filters']) || !is_array($item['filters'])) {
+          continue;
+        }
         if (!isset($item['filters']['groups']) || !is_array($item['filters']['groups'])) {
           continue;
         }
@@ -43,7 +46,7 @@ class Migration_20241108_103249_Db extends DbMigration {
         // Iterate over each step filter group
         // This can be e.g. a trigger filter, or if/else condition
         foreach ($item['filters']['groups'] as &$group) {
-          if (!isset($group['filters']) || !is_array($group['filters'])) {
+          if (!is_array($group) || !isset($group['filters']) || !is_array($group['filters'])) {
             continue;
           }
           foreach ($group['filters'] as &$filter_item) {
@@ -88,7 +91,7 @@ class Migration_20241108_103249_Db extends DbMigration {
     }
     if (isset($filter_item['args']['value']) && is_array($filter_item['args']['value'])) {
       $filter_item['args']['value'] = array_map(function($value) {
-        return preg_replace('/^wc-/', '', $value);
+        return is_string($value) ? preg_replace('/^wc-/', '', $value) : $value;
       }, $filter_item['args']['value']);
     }
   }

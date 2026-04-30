@@ -253,16 +253,24 @@ class EmailAction implements Filter {
     }
 
     foreach ($newsletterIds as $newsletterId) {
-      $newsletter = $this->newslettersRepository->findOneById($newsletterId);
+      if (!is_numeric($newsletterId)) {
+        continue;
+      }
+      $newsletterIdInt = (int)$newsletterId;
+      $newsletter = $this->newslettersRepository->findOneById($newsletterIdInt);
       if ($newsletter instanceof NewsletterEntity) {
-        $lookupData['newsletters'][$newsletterId] = $newsletter->getSubject();
+        $lookupData['newsletters'][$newsletterIdInt] = $newsletter->getSubject();
       }
     }
 
     foreach ($linkIds as $linkId) {
-      $link = $this->newsletterLinkRepository->findOneById($linkId);
+      if (!is_numeric($linkId)) {
+        continue;
+      }
+      $linkIdInt = (int)$linkId;
+      $link = $this->newsletterLinkRepository->findOneById($linkIdInt);
       if ($link instanceof NewsletterLinkEntity) {
-        $lookupData['links'][$linkId] = $link->getUrl();
+        $lookupData['links'][$linkIdInt] = $link->getUrl();
       }
     }
 

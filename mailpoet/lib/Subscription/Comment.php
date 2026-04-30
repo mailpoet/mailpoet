@@ -62,9 +62,11 @@ class Comment {
   public function onSubmit($commentId, $commentStatus) {
     if ($commentStatus === Comment::SPAM) return;
 
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- type narrowing only, value is read as bool
+    $mailpoetPost = isset($_POST['mailpoet']) && is_array($_POST['mailpoet']) ? $_POST['mailpoet'] : [];
     if (
-      isset($_POST['mailpoet']['subscribe_on_comment'])
-      && (bool)$_POST['mailpoet']['subscribe_on_comment'] === true
+      isset($mailpoetPost['subscribe_on_comment'])
+      && (bool)$mailpoetPost['subscribe_on_comment'] === true
     ) {
       if ($commentStatus === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user

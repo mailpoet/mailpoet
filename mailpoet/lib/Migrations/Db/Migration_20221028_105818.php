@@ -900,7 +900,8 @@ class Migration_20221028_105818 extends DbMigration {
       if (!is_array($dynamicSegmentFilter)) {
         continue;
       }
-      $filterData = unserialize($dynamicSegmentFilter['filter_data']);
+      $serialized = is_string($dynamicSegmentFilter['filter_data']) ? $dynamicSegmentFilter['filter_data'] : '';
+      $filterData = $serialized !== '' ? unserialize($serialized) : false;
       if (!is_array($filterData)) {
         continue;
       }
@@ -914,7 +915,7 @@ class Migration_20221028_105818 extends DbMigration {
 
       // Clicked link filter is refactored to work with multiple link ids
       if ($action === EmailAction::ACTION_CLICKED) {
-        if (!isset($filterData['link_ids'])) {
+        if (!isset($filterData['link_ids']) || !is_array($filterData['link_ids'])) {
           $filterData['link_ids'] = [];
         }
 
@@ -932,7 +933,7 @@ class Migration_20221028_105818 extends DbMigration {
 
       // Opened and Machine opened filters are refactored to work with multiple newsletters
       if (($action === EmailAction::ACTION_OPENED) || ($action === EmailAction::ACTION_MACHINE_OPENED)) {
-        if (!isset($filterData['newsletters'])) {
+        if (!isset($filterData['newsletters']) || !is_array($filterData['newsletters'])) {
           $filterData['newsletters'] = [];
         }
 
