@@ -611,11 +611,6 @@ parameters:
 			path: ../../lib/Util/DBCollationChecker.php
 
 		-
-			identifier: argument.type
-			count: 2
-			path: ../../lib/Util/Request.php
-
-		-
 			identifier: return.type
 			count: 1
 			path: ../../lib/Util/Security.php
