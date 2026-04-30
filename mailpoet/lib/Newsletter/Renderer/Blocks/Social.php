@@ -16,7 +16,7 @@ class Social {
         // Width/height typically arrive as CSS strings like "32px"; PHP's lenient string-to-int strips the unit.
         $width = is_scalar($icon['width']) ? (int)$icon['width'] : 0;
         $height = is_scalar($icon['height']) ? (int)$icon['height'] : 0;
-        $style = 'width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
+        $style = 'width:' . $icon['width'] . ';height:' . $icon['height'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
         $iconsBlock .= '<a href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
         ><img
           src="' . EHelper::escapeHtmlLinkAttr($icon['image']) . '"

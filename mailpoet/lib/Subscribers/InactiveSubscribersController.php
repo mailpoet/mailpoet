@@ -129,12 +129,7 @@ class InactiveSubscribersController {
 
     $connection->executeQuery("DROP TABLE {$inactiveSubscriberIdsTmpTable}");
 
-    $idsToDeactivate = array_map(
-      function (array $id): int {
-        return isset($id['id']) && is_numeric($id['id']) ? (int)$id['id'] : 0;
-      },
-      $idsToDeactivate
-    );
+    $idsToDeactivate = $this->extractIds($idsToDeactivate);
     if (!count($idsToDeactivate)) {
       return 0;
     }
@@ -168,12 +163,7 @@ class InactiveSubscribersController {
       'batchSize' => $batchSize,
     ], ['batchSize' => ParameterType::INTEGER])->fetchAllAssociative();
 
-    $idsToActivate = array_map(
-      function (array $id): int {
-        return isset($id['id']) && is_numeric($id['id']) ? (int)$id['id'] : 0;
-      },
-      $idsToActivate
-    );
+    $idsToActivate = $this->extractIds($idsToActivate);
     if (!count($idsToActivate)) {
       return 0;
     }
@@ -182,5 +172,19 @@ class InactiveSubscribersController {
       'idsToActivate' => $idsToActivate,
     ], ['idsToActivate' => ArrayParameterType::INTEGER]);
     return count($idsToActivate);
+  }
+
+  /**
+   * @param array<array<string, mixed>> $rows
+   * @return int[]
+   */
+  private function extractIds(array $rows): array {
+    $ids = [];
+    foreach ($rows as $row) {
+      if (isset($row['id']) && is_numeric($row['id'])) {
+        $ids[] = (int)$row['id'];
+      }
+    }
+    return $ids;
   }
 }
