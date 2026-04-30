@@ -528,9 +528,6 @@ class Pages {
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
     $allowOtherText = $this->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text');
     $reasons = $this->unsubscribeReasonTracker->getReasonLabels();
-    if (!$allowOtherText) {
-      $reasons[StatisticsUnsubscribeEntity::REASON_OTHER] = __('Other', 'mailpoet');
-    }
 
     return $this->templateRenderer->render('subscription/unsubscribe_reason.html', [
       'actionUrl' => $this->subscriptionUrlFactory->getUnsubscribeReasonUrl($this->subscriber, $queueId),
