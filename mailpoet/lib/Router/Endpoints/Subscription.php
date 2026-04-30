@@ -101,6 +101,12 @@ class Subscription {
       exit;
     }
 
+    $nonce = $this->request->getStringParam('_wpnonce');
+    if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet_unsubscribe_reason')) {
+      $this->wp->wpDie(__('Security check failed.', 'mailpoet'), '', ['response' => 403]);
+      exit;
+    }
+
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
     $reason = strtolower($this->wp->sanitizeKey((string)$this->request->getStringParam('reason')));
     $reasonText = $this->request->getTextareaParam('reason_text');
