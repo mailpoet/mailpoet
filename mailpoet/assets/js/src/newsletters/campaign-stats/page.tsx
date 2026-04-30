@@ -12,7 +12,6 @@ import { NewsletterGeneralStats } from './newsletter-general-stats';
 import { NewsletterType } from './newsletter-type';
 import { NewsletterStatsInfo } from './newsletter-stats-info';
 import { PremiumBanner } from './premium-banner';
-import { UnsubscribeReasonStats } from './unsubscribe-reason-stats';
 
 type State = {
   item?: NewsletterType;
@@ -100,10 +99,6 @@ export function CampaignStatsPage() {
           />
         </ErrorBoundary>
 
-        <ErrorBoundary>
-          <UnsubscribeReasonStats newsletter={newsletter} />
-        </ErrorBoundary>
-
         <Tabs activeKey="clicked">
           <Tab key="clicked" title={__('Clicked Links', 'mailpoet')}>
             {Hooks.applyFilters(
@@ -155,6 +150,18 @@ export function CampaignStatsPage() {
               <PremiumBanner />,
               location,
               params,
+            )}
+          </Tab>
+
+          <Tab
+            key="unsubscribe-reasons"
+            title={__('Unsubscribe reasons', 'mailpoet')}
+            automationId="unsubscribe-reasons-tab"
+          >
+            {Hooks.applyFilters(
+              'mailpoet_newsletters_unsubscribe_reasons',
+              <PremiumBanner />,
+              newsletter.statistics.unsubscribeReasons,
             )}
           </Tab>
         </Tabs>
