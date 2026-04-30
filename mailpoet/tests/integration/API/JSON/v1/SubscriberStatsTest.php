@@ -5,7 +5,11 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SubscriberStats;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -55,6 +59,8 @@ class SubscriberStatsTest extends \MailPoetTest {
     verify($response->data['last_engagement'])->equals($lastEngagementAt->format('Y-m-d H:i:s'));
     verify($response->data['source_label'])->equals('WooCommerce checkout');
     verify($response->data['avatar_url'])->stringContainsString('gravatar.com');
+    verify($response->data['profile']['status'])->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($response->data['profile']['unsubscribe_reason'])->null();
     verify($response->data['profile']['first_name'])->equals('John');
     verify($response->data['profile']['last_name'])->equals('Geller');
     verify($response->data['profile']['email'])->equals('john.geller@example.com');
@@ -153,12 +159,32 @@ class SubscriberStatsTest extends \MailPoetTest {
     verify($response->data['profile']['shipping_address'])->equals([]);
   }
 
+  public function testItReturnsLatestUnsubscribeReasonInProfile(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('unsub.reason@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $subscriber);
+    $unsubscribe->setReasonData(StatisticsUnsubscribeEntity::REASON_SPAM, null);
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->get(['subscriber_id' => $subscriber->getId()]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $expectedLabel = $this->diContainer->get(UnsubscribeReasonTracker::class)
+      ->getReasonLabels()[StatisticsUnsubscribeEntity::REASON_SPAM];
+    verify($response->data['profile']['unsubscribe_reason'])->equals($expectedLabel);
+  }
+
   private function buildEndpoint(WooCommerceHelper $wooHelper): SubscriberStats {
     return new SubscriberStats(
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriberStatisticsRepository::class),
       $wooHelper,
-      $this->diContainer->get(WPFunctions::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(StatisticsUnsubscribesRepository::class),
+      $this->diContainer->get(UnsubscribeReasonTracker::class)
     );
   }
 
