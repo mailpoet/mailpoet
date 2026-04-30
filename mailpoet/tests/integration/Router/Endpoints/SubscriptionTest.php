@@ -46,13 +46,54 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function testItDisplaysConfirmationPageOnGetRequest() {
-    $pages = Stub::make(Pages::class, [
-      'wp' => new WPFunctions,
-      'confirmUnsubscribe' => Expected::exactly(1),
-    ], $this);
+    $pages = $this->makeSubscriptionPagesStub(false);
     $request = $this->createMock(Request::class);
     $request->method('isPost')->willReturn(false);
-    $subscription = new Subscription($pages, $this->wp, $this->request);
+    $request->method('getStringParam')->willReturn(null);
+    $subscription = new Subscription($pages, $this->wp, $request);
     $subscription->unsubscribe($this->data);
+
+    verify($pages->initCalls)->equals([
+      [Pages::ACTION_UNSUBSCRIBE, $this->data, false, false],
+      [Pages::ACTION_CONFIRM_UNSUBSCRIBE, $this->data, true, true],
+    ]);
+  }
+
+  public function testItDisplaysUnsubscribePageOnGetRequestForAlreadyUnsubscribedSubscriber() {
+    $pages = $this->makeSubscriptionPagesStub(true);
+    $request = $this->createMock(Request::class);
+    $request->method('isPost')->willReturn(false);
+    $request->method('getStringParam')->willReturn(null);
+    $subscription = new Subscription($pages, $this->wp, $request);
+    $subscription->unsubscribe($this->data);
+
+    verify($pages->initCalls)->equals([
+      [Pages::ACTION_UNSUBSCRIBE, $this->data, false, false],
+      [Pages::ACTION_UNSUBSCRIBE, $this->data, true, true],
+    ]);
+  }
+
+  private function makeSubscriptionPagesStub(bool $isSubscriberUnsubscribed): Pages {
+    return new class($isSubscriberUnsubscribed) extends Pages {
+      public $initCalls = [];
+
+      /** @var bool */
+      private $isSubscriberUnsubscribed;
+
+      public function __construct(
+        bool $isSubscriberUnsubscribed
+      ) {
+        $this->isSubscriberUnsubscribed = $isSubscriberUnsubscribed;
+      }
+
+      public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
+        $this->initCalls[] = [$action, $data, $initShortcodes, $initPageFilters];
+        return $this;
+      }
+
+      public function isSubscriberUnsubscribed(): bool {
+        return $this->isSubscriberUnsubscribed;
+      }
+    };
   }
 }

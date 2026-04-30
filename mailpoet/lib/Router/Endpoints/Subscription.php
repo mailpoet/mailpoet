@@ -84,8 +84,11 @@ class Subscription {
       }
     } else {
       // For GET requests, we render the confirmUnsubscribe page, unless it is preview request of successful unsubscribe
+      // or the subscriber is already unsubscribed.
       if (isset($data['preview']) && $data['preview'] && !isset($data['token'])) {
         $this->performUnsubscribe($data, StatisticsUnsubscribeEntity::METHOD_LINK);
+      } elseif ($this->renderUnsubscribePageForAlreadyUnsubscribedSubscriber($data)) {
+        return;
       } else {
         $this->confirmUnsubscribe($data);
       }
@@ -113,6 +116,16 @@ class Subscription {
 
   private function initSubscriptionPage($action, $data) {
     return $this->subscriptionPages->init($action, $data, true, true);
+  }
+
+  private function renderUnsubscribePageForAlreadyUnsubscribedSubscriber($data): bool {
+    $subscription = $this->subscriptionPages->init(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data, false, false);
+    if (!$subscription->isSubscriberUnsubscribed()) {
+      return false;
+    }
+
+    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
+    return true;
   }
 
   private function performUnsubscribe($data, string $method): void {
