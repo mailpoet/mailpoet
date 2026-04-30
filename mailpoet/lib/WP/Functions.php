@@ -380,6 +380,17 @@ class Functions {
     return get_userdata($userId);
   }
 
+  public function switchToUserLocale(int $userId): bool {
+    return switch_to_user_locale($userId);
+  }
+
+  /**
+   * @return string|false
+   */
+  public function restorePreviousLocale() {
+    return restore_previous_locale();
+  }
+
   public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }
