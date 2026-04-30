@@ -72,6 +72,19 @@ export async function createCustomField(
   return response.data;
 }
 
+export async function updateCustomField(
+  id: number,
+  data: CustomFieldPayload,
+): Promise<CustomField> {
+  ensureInitialized();
+  const response = await apiFetch<ItemResponse>({
+    path: `/mailpoet/v1/custom-fields/${id}`,
+    method: 'PUT',
+    data,
+  });
+  return response.data;
+}
+
 export type CustomFieldBulkAction =
   | 'trash'
   | 'restore'

@@ -10,6 +10,7 @@ import {
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
 import type {
+  CustomField,
   CustomFieldDateSettings,
   CustomFieldPayload,
   CustomFieldType,
@@ -58,11 +59,43 @@ const validationOptions = [
   { label: __('Phone number', 'mailpoet'), value: 'phone' },
 ];
 
+const customFieldTypes = fieldTypeOptions.map((option) => option.value);
+
 function createOption(value = ''): CustomFieldFormOption {
   return {
     id: `${Date.now()}-${Math.random()}`,
     value,
     isChecked: false,
+  };
+}
+
+function isCustomFieldType(type: string): type is CustomFieldType {
+  return customFieldTypes.includes(type as CustomFieldType);
+}
+
+function getStringParam(
+  params: Record<string, unknown>,
+  key: string,
+  fallback = '',
+): string {
+  const value = params[key];
+  return typeof value === 'string' ? value : fallback;
+}
+
+function isTruthyParam(value: unknown): boolean {
+  return value === true || value === '1' || value === 1;
+}
+
+function getOptionValue(value: unknown, index: number): CustomFieldFormOption {
+  if (!value || typeof value !== 'object') {
+    return createOption(sprintf(__('Option %d', 'mailpoet'), index + 1));
+  }
+
+  const option = value as Record<string, unknown>;
+  return {
+    id: `${Date.now()}-${index}-${Math.random()}`,
+    value: getStringParam(option, 'value'),
+    isChecked: isTruthyParam(option.is_checked),
   };
 }
 
@@ -83,6 +116,38 @@ export function getInitialCustomFieldFormData(
     dateType,
     dateFormat,
     defaultToday: false,
+  };
+}
+
+export function getCustomFieldFormDataFromCustomField(
+  customField: CustomField,
+  dateSettings: CustomFieldDateSettings,
+): CustomFieldFormData {
+  const initialData = getInitialCustomFieldFormData(dateSettings);
+  const type = isCustomFieldType(customField.type) ? customField.type : 'text';
+  const params = customField.params;
+  const values = Array.isArray(params.values)
+    ? params.values.map(getOptionValue).filter((option) => option.value !== '')
+    : [];
+  const dateType = getStringParam(params, 'date_type', initialData.dateType);
+
+  return {
+    ...initialData,
+    name: customField.name,
+    type,
+    label: getStringParam(params, 'label', customField.label),
+    required: isTruthyParam(params.required),
+    validate: getStringParam(params, 'validate'),
+    checkboxValue: values[0]?.value ?? '',
+    checkboxChecked: values[0]?.isChecked ?? false,
+    options: values.length > 0 ? values : initialData.options,
+    dateType,
+    dateFormat: getStringParam(
+      params,
+      'date_format',
+      dateSettings.dateFormats[dateType]?.[0] ?? initialData.dateFormat,
+    ),
+    defaultToday: isTruthyParam(params.is_default_today),
   };
 }
 
