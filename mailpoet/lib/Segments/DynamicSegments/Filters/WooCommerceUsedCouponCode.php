@@ -59,7 +59,7 @@ class WooCommerceUsedCouponCode implements Filter {
 
   private function applyForAnyOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): void {
     $filterData = $filter->getFilterData();
-    $couponIds = (array)$filterData->getParam(self::COUPON_CODE_IDS_KEY);
+    $couponIds = $this->getNormalizedCouponIds($filterData);
     $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
 
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
@@ -88,10 +88,18 @@ class WooCommerceUsedCouponCode implements Filter {
   private function applyForAllOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): void {
     $this->applyForAnyOperator($queryBuilder, $filter);
 
-    $filterData = $filter->getFilterData();
-    $couponIds = array_filter((array)$filterData->getParam(self::COUPON_CODE_IDS_KEY), 'is_scalar');
+    $couponIds = $this->getNormalizedCouponIds($filter->getFilterData());
     $queryBuilder->groupBy('inner_subscriber_id')
-      ->having("COUNT(DISTINCT couponLookup.coupon_id) = " . count(array_unique(array_map('strval', $couponIds))));
+      ->having("COUNT(DISTINCT couponLookup.coupon_id) = " . count(array_unique($couponIds)));
+  }
+
+  /**
+   * @return int[]
+   */
+  private function getNormalizedCouponIds(DynamicSegmentFilterData $filterData): array {
+    return array_values(
+      array_map('intval', array_filter((array)$filterData->getParam(self::COUPON_CODE_IDS_KEY), 'is_scalar'))
+    );
   }
 
   public function validateFilterData(array $data): void {

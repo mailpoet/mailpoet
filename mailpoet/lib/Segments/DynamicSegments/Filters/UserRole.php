@@ -36,6 +36,9 @@ class UserRole implements Filter {
       $role = [$role];
     }
     $role = array_values(array_map('strval', array_filter($role, 'is_scalar')));
+    if ($role === []) {
+      throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
+    }
     $operator = is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::OPERATOR_ANY;
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

@@ -89,7 +89,7 @@ class Manage {
     $sanitize = function ($value) {
       if (is_array($value)) {
         foreach ($value as $k => $v) {
-          $value[sanitize_text_field(is_scalar($k) ? (string)$k : '')] = sanitize_text_field(is_scalar($v) ? (string)$v : '');
+          $value[sanitize_text_field((string)$k)] = sanitize_text_field(is_scalar($v) ? (string)$v : '');
         }
         return $value;
       };
