@@ -48,7 +48,7 @@ class CustomFields {
       ],
     ];
 
-    $customFields = $this->customFieldsRepository->findAll();
+    $customFields = $this->customFieldsRepository->findAllActive();
     foreach ($customFields as $customField) {
       $result = [
         'id' => 'cf_' . $customField->getId(),
