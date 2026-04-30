@@ -31,6 +31,7 @@ class NewsletterEntity {
   const TYPE_RE_ENGAGEMENT = 're_engagement';
   const TYPE_WC_TRANSACTIONAL_EMAIL = 'wc_transactional';
   const TYPE_CONFIRMATION_EMAIL_CUSTOMIZER = 'confirmation_email';
+  const TYPE_WP_TRANSACTIONAL_EMAIL = 'wp_transactional';
 
   // legacy types, replaced by automations
   const TYPE_AUTOMATIC = 'automatic';
