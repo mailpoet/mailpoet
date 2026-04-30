@@ -1,0 +1,481 @@
+import { useMemo, useState } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+  Button,
+  CheckboxControl,
+  Dashicon,
+  SelectControl,
+  TextControl,
+  ToggleControl,
+  __experimentalSpacer as Spacer,
+} from '@wordpress/components';
+import type {
+  CustomFieldDateSettings,
+  CustomFieldPayload,
+  CustomFieldType,
+} from './types';
+
+export type CustomFieldFormOption = {
+  id: string;
+  value: string;
+  isChecked: boolean;
+};
+
+export type CustomFieldFormData = {
+  name: string;
+  type: CustomFieldType;
+  label: string;
+  required: boolean;
+  validate: string;
+  checkboxValue: string;
+  checkboxChecked: boolean;
+  options: CustomFieldFormOption[];
+  dateType: string;
+  dateFormat: string;
+  defaultToday: boolean;
+};
+
+type Props = {
+  data: CustomFieldFormData;
+  dateSettings: CustomFieldDateSettings;
+  disabled?: boolean;
+  onChange: (data: CustomFieldFormData) => void;
+};
+
+const fieldTypeOptions: Array<{ label: string; value: CustomFieldType }> = [
+  { label: __('Text', 'mailpoet'), value: 'text' },
+  { label: __('Textarea', 'mailpoet'), value: 'textarea' },
+  { label: __('Radio buttons', 'mailpoet'), value: 'radio' },
+  { label: __('Checkbox', 'mailpoet'), value: 'checkbox' },
+  { label: __('Select', 'mailpoet'), value: 'select' },
+  { label: __('Date', 'mailpoet'), value: 'date' },
+];
+
+const validationOptions = [
+  { label: __('None', 'mailpoet'), value: '' },
+  { label: __('Numbers only', 'mailpoet'), value: 'number' },
+  { label: __('Alphanumeric', 'mailpoet'), value: 'alphanum' },
+  { label: __('Phone number', 'mailpoet'), value: 'phone' },
+];
+
+function createOption(value = ''): CustomFieldFormOption {
+  return {
+    id: `${Date.now()}-${Math.random()}`,
+    value,
+    isChecked: false,
+  };
+}
+
+export function getInitialCustomFieldFormData(
+  dateSettings: CustomFieldDateSettings,
+): CustomFieldFormData {
+  const dateType = dateSettings.dateTypes[0]?.value ?? 'year_month_day';
+  const dateFormat = dateSettings.dateFormats[dateType]?.[0] ?? 'MM/DD/YYYY';
+  return {
+    name: '',
+    type: 'text',
+    label: '',
+    required: false,
+    validate: '',
+    checkboxValue: '',
+    checkboxChecked: false,
+    options: [createOption(__('Option 1', 'mailpoet'))],
+    dateType,
+    dateFormat,
+    defaultToday: false,
+  };
+}
+
+export function buildCustomFieldPayload(
+  data: CustomFieldFormData,
+): CustomFieldPayload {
+  const params: Record<string, unknown> = {
+    label: data.label.trim() || data.name.trim(),
+    required: data.required ? '1' : '',
+  };
+
+  if (data.type === 'text' || data.type === 'textarea') {
+    params.validate = data.validate;
+    if (data.type === 'textarea') {
+      params.lines = '1';
+    }
+  }
+
+  if (data.type === 'checkbox') {
+    params.values = [
+      {
+        value: data.checkboxValue.trim(),
+        is_checked: data.checkboxChecked ? '1' : '',
+      },
+    ];
+  }
+
+  if (data.type === 'radio' || data.type === 'select') {
+    params.values = data.options.map((option) => ({
+      value: option.value.trim(),
+      is_checked: option.isChecked ? '1' : '',
+    }));
+  }
+
+  if (data.type === 'date') {
+    params.date_type = data.dateType;
+    params.date_format = data.dateFormat;
+    params.is_default_today = data.defaultToday ? '1' : '';
+  }
+
+  return {
+    name: data.name.trim(),
+    type: data.type,
+    params,
+  };
+}
+
+export function validateCustomFieldFormData(
+  data: CustomFieldFormData,
+): string | null {
+  if (!data.name.trim()) {
+    return __('Field name is required.', 'mailpoet');
+  }
+  if (data.type === 'checkbox' && !data.checkboxValue.trim()) {
+    return __('Checkbox value is required.', 'mailpoet');
+  }
+  if (
+    (data.type === 'radio' || data.type === 'select') &&
+    data.options.some((option) => !option.value.trim())
+  ) {
+    return __('Every option needs a value.', 'mailpoet');
+  }
+  return null;
+}
+
+export function CustomFieldFormFields({
+  data,
+  dateSettings,
+  disabled = false,
+  onChange,
+}: Props): JSX.Element {
+  const [draggedOptionId, setDraggedOptionId] = useState<string | null>(null);
+  const [dragOverOptionId, setDragOverOptionId] = useState<string | null>(null);
+
+  const dateFormatOptions = useMemo(
+    () =>
+      (dateSettings.dateFormats[data.dateType] ?? []).map((format) => ({
+        label: format,
+        value: format,
+      })),
+    [data.dateType, dateSettings.dateFormats],
+  );
+
+  const updateData = (updates: Partial<CustomFieldFormData>): void => {
+    onChange({
+      ...data,
+      ...updates,
+    });
+  };
+
+  const setType = (type: CustomFieldType): void => {
+    const dateType = dateSettings.dateTypes[0]?.value ?? 'year_month_day';
+    onChange({
+      ...data,
+      type,
+      required: false,
+      validate: '',
+      checkboxValue: '',
+      checkboxChecked: false,
+      options: [createOption(__('Option 1', 'mailpoet'))],
+      dateType,
+      dateFormat: dateSettings.dateFormats[dateType]?.[0] ?? 'MM/DD/YYYY',
+      defaultToday: false,
+    });
+  };
+
+  const setOption = (
+    id: string,
+    updates: Partial<Pick<CustomFieldFormOption, 'value' | 'isChecked'>>,
+  ): void => {
+    updateData({
+      options: data.options.map((option) => {
+        if (option.id !== id) {
+          return updates.isChecked ? { ...option, isChecked: false } : option;
+        }
+        return { ...option, ...updates };
+      }),
+    });
+  };
+
+  const removeOption = (id: string): void => {
+    if (data.options.length === 1) {
+      return;
+    }
+    updateData({
+      options: data.options.filter((option) => option.id !== id),
+    });
+  };
+
+  const reorderOptions = (sourceId: string, targetId: string): void => {
+    if (sourceId === targetId) {
+      return;
+    }
+
+    const sourceIndex = data.options.findIndex(
+      (option) => option.id === sourceId,
+    );
+    const targetIndex = data.options.findIndex(
+      (option) => option.id === targetId,
+    );
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+      return;
+    }
+
+    const options = [...data.options];
+    const [movedOption] = options.splice(sourceIndex, 1);
+    options.splice(targetIndex, 0, movedOption);
+    updateData({ options });
+  };
+
+  return (
+    <>
+      <SelectControl
+        label={__('Field type', 'mailpoet')}
+        value={data.type}
+        options={fieldTypeOptions}
+        onChange={(value) => setType(value as CustomFieldType)}
+        disabled={disabled}
+        __nextHasNoMarginBottom
+      />
+      <Spacer marginTop={4} />
+      <TextControl
+        label={__('Field name', 'mailpoet')}
+        value={data.name}
+        onChange={(name) => {
+          onChange({
+            ...data,
+            name,
+            label: data.label === data.name ? name : data.label,
+          });
+        }}
+        disabled={disabled}
+        __nextHasNoMarginBottom
+      />
+      <Spacer marginTop={4} />
+      <TextControl
+        label={__('Label', 'mailpoet')}
+        value={data.label}
+        placeholder={data.name}
+        onChange={(label) => updateData({ label })}
+        disabled={disabled}
+        __nextHasNoMarginBottom
+      />
+      <Spacer marginTop={4} />
+      <ToggleControl
+        label={__('Mandatory field', 'mailpoet')}
+        checked={data.required}
+        onChange={(required) => updateData({ required })}
+        disabled={disabled}
+        __nextHasNoMarginBottom
+      />
+
+      {(data.type === 'text' || data.type === 'textarea') && (
+        <>
+          <Spacer marginTop={4} />
+          <SelectControl
+            label={__('Validate for', 'mailpoet')}
+            value={data.validate}
+            options={validationOptions}
+            onChange={(validate) => updateData({ validate })}
+            disabled={disabled}
+            __nextHasNoMarginBottom
+          />
+        </>
+      )}
+
+      {data.type === 'checkbox' && (
+        <>
+          <Spacer marginTop={4} />
+          <ToggleControl
+            label={__('Checked by default', 'mailpoet')}
+            checked={data.checkboxChecked}
+            onChange={(checkboxChecked) => updateData({ checkboxChecked })}
+            disabled={disabled}
+            __nextHasNoMarginBottom
+          />
+          <Spacer marginTop={4} />
+          <TextControl
+            label={__('Checkbox value', 'mailpoet')}
+            value={data.checkboxValue}
+            onChange={(checkboxValue) => updateData({ checkboxValue })}
+            disabled={disabled}
+            __nextHasNoMarginBottom
+          />
+        </>
+      )}
+
+      {(data.type === 'radio' || data.type === 'select') && (
+        <>
+          <Spacer marginTop={4} />
+          <div className="mailpoet-custom-fields-form-options">
+            <div className="mailpoet-custom-fields-form-options-label">
+              {__('Options', 'mailpoet')}
+            </div>
+            {data.options.map((option, index) => (
+              <div
+                key={option.id}
+                className={`mailpoet-custom-fields-form-option ${
+                  draggedOptionId === option.id ? 'is-dragging' : ''
+                } ${dragOverOptionId === option.id ? 'is-drag-over' : ''}`}
+                onDragOver={(event) => {
+                  if (!draggedOptionId || disabled) {
+                    return;
+                  }
+                  event.preventDefault();
+                  const { dataTransfer } = event;
+                  dataTransfer.dropEffect = 'move';
+                  setDragOverOptionId(option.id);
+                }}
+                onDragLeave={() => {
+                  if (dragOverOptionId === option.id) {
+                    setDragOverOptionId(null);
+                  }
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  const sourceId =
+                    draggedOptionId || event.dataTransfer.getData('text/plain');
+                  reorderOptions(sourceId, option.id);
+                  setDraggedOptionId(null);
+                  setDragOverOptionId(null);
+                }}
+              >
+                <div
+                  aria-label={__('Drag to reorder', 'mailpoet')}
+                  className="mailpoet-custom-fields-form-option-drag-handle"
+                  draggable={!disabled}
+                  onDragStart={(event) => {
+                    if (disabled) {
+                      event.preventDefault();
+                      return;
+                    }
+                    setDraggedOptionId(option.id);
+                    const { dataTransfer } = event;
+                    dataTransfer.effectAllowed = 'move';
+                    dataTransfer.setData('text/plain', option.id);
+
+                    const row = event.currentTarget.closest(
+                      '.mailpoet-custom-fields-form-option',
+                    );
+                    if (row instanceof HTMLElement) {
+                      dataTransfer.setDragImage(row, 18, 18);
+                    }
+                  }}
+                  onDragEnd={() => {
+                    setDraggedOptionId(null);
+                    setDragOverOptionId(null);
+                  }}
+                  role="button"
+                  tabIndex={disabled ? -1 : 0}
+                >
+                  <Dashicon icon="menu" />
+                </div>
+                <div className="mailpoet-custom-fields-form-option-input">
+                  <TextControl
+                    label={sprintf(__('Option %d', 'mailpoet'), index + 1)}
+                    hideLabelFromVision
+                    value={option.value}
+                    onChange={(value) => setOption(option.id, { value })}
+                    disabled={disabled}
+                    __nextHasNoMarginBottom
+                  />
+                </div>
+                <div>
+                  <CheckboxControl
+                    label={__('Default', 'mailpoet')}
+                    checked={option.isChecked}
+                    onChange={() =>
+                      setOption(option.id, {
+                        isChecked: !option.isChecked,
+                      })
+                    }
+                    disabled={disabled}
+                    __nextHasNoMarginBottom
+                  />
+                </div>
+                <div>
+                  <Button
+                    variant="tertiary"
+                    onClick={() => removeOption(option.id)}
+                    disabled={disabled || data.options.length === 1}
+                    __next40pxDefaultSize
+                  >
+                    {__('Remove', 'mailpoet')}
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <Button
+              variant="secondary"
+              onClick={() =>
+                updateData({
+                  options: [
+                    ...data.options,
+                    createOption(
+                      sprintf(
+                        __('Option %d', 'mailpoet'),
+                        data.options.length + 1,
+                      ),
+                    ),
+                  ],
+                })
+              }
+              disabled={disabled}
+              __next40pxDefaultSize
+            >
+              {__('Add option', 'mailpoet')}
+            </Button>
+          </div>
+        </>
+      )}
+
+      {data.type === 'date' && (
+        <>
+          <Spacer marginTop={4} />
+          <ToggleControl
+            label={__('Default to today', 'mailpoet')}
+            checked={data.defaultToday}
+            onChange={(defaultToday) => updateData({ defaultToday })}
+            disabled={disabled}
+            __nextHasNoMarginBottom
+          />
+          <Spacer marginTop={4} />
+          <SelectControl
+            label={__('Date type', 'mailpoet')}
+            value={data.dateType}
+            options={dateSettings.dateTypes}
+            onChange={(dateType) =>
+              updateData({
+                dateType,
+                dateFormat:
+                  dateSettings.dateFormats[dateType]?.[0] ?? 'MM/DD/YYYY',
+              })
+            }
+            disabled={disabled}
+            __nextHasNoMarginBottom
+          />
+          {dateFormatOptions.length > 1 && (
+            <>
+              <Spacer marginTop={4} />
+              <SelectControl
+                label={__('Date format', 'mailpoet')}
+                value={data.dateFormat}
+                options={dateFormatOptions}
+                onChange={(dateFormat) => updateData({ dateFormat })}
+                disabled={disabled}
+                __nextHasNoMarginBottom
+              />
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+}

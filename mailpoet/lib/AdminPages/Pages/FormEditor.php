@@ -240,7 +240,7 @@ class FormEditor {
       $idParam = $_GET['id'] ?? null;
       $form = $this->getFormData(is_numeric($idParam) ? (int)$idParam : 0);
     }
-    $customFields = $this->customFieldsRepository->findAll();
+    $customFields = $this->customFieldsRepository->findAllActive();
     if (!$form instanceof FormEntity) {
       throw new NotFoundException('Form does not exist');
     }

@@ -2,6 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import type {
   CustomField,
+  CustomFieldPayload,
   CustomFieldListGroup,
   CustomFieldListMeta,
 } from './types';
@@ -44,6 +45,8 @@ type ListResponse = ApiEnvelope<{
   groups: CustomFieldListGroup[];
 }>;
 
+type ItemResponse = ApiEnvelope<CustomField>;
+
 export async function getCustomFields(params: ListParams = {}): Promise<{
   items: CustomField[];
   meta: CustomFieldListMeta;
@@ -53,6 +56,18 @@ export async function getCustomFields(params: ListParams = {}): Promise<{
   const response = await apiFetch<ListResponse>({
     path: addQueryArgs('/mailpoet/v1/custom-fields', params),
     method: 'GET',
+  });
+  return response.data;
+}
+
+export async function createCustomField(
+  data: CustomFieldPayload,
+): Promise<CustomField> {
+  ensureInitialized();
+  const response = await apiFetch<ItemResponse>({
+    path: '/mailpoet/v1/custom-fields',
+    method: 'POST',
+    data,
   });
   return response.data;
 }

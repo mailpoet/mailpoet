@@ -109,6 +109,11 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     verify($result['params']['validate'])->same('alphanum');
   }
 
+  public function testItIgnoresEmptyValidate() {
+    $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['validate' => '']]);
+    verify($result['params'])->arrayHasNotKey('validate');
+  }
+
   public function testItThrowsIfNoValuesInRadio() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
@@ -232,13 +237,23 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     $result = $this->sanitizer->sanitize([
       'name' => 'Name',
       'type' => 'date',
-      'params' => ['date_format' => 'MM/DD/YYYY', 'date_type' => 'year_month_day'],
+      'params' => ['date_format' => 'MM/DD/YYYY', 'date_type' => 'year_month_day', 'is_default_today' => '1'],
     ]);
     verify($result['params'])->equals([
       'date_format' => 'MM/DD/YYYY',
       'date_type' => 'year_month_day',
+      'is_default_today' => '1',
       'label' => 'Name',
       'required' => '',
     ]);
+  }
+
+  public function testSanitizeYearMonthDateFormat() {
+    $result = $this->sanitizer->sanitize([
+      'name' => 'Name',
+      'type' => 'date',
+      'params' => ['date_format' => 'MM/YYYY', 'date_type' => 'year_month'],
+    ]);
+    verify($result['params']['date_format'])->same('MM/YYYY');
   }
 }
