@@ -5,6 +5,8 @@ namespace MailPoet\Test\Doctrine;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SettingEntity;
 
+require_once __DIR__ . '/SettingsRepository.php';
+
 class RepositoryTest extends \MailPoetTest {
   public function testItCanPersistAndFlush(): void {
     $repository = $this->createRepository();
@@ -141,12 +143,7 @@ class RepositoryTest extends \MailPoetTest {
 
   /** @return Repository<SettingEntity> */
   private function createRepository(): Repository {
-    return new /** @extends Repository<SettingEntity> */
-    class($this->entityManager) extends Repository {
-      protected function getEntityClassName(): string {
-        return SettingEntity::class;
-      }
-    };
+    return new SettingsRepository($this->entityManager);
   }
 
   private function getEntityFromIdentityMap(?int $id): ?SettingEntity {
