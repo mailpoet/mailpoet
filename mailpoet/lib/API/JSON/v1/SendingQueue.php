@@ -20,6 +20,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -63,6 +64,9 @@ class SendingQueue extends APIEndpoint {
   /** @var CronHelper */
   private $cronHelper;
 
+  /** @var TimeZoneCampaignScheduler */
+  private $timeZoneCampaignScheduler;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -74,7 +78,8 @@ class SendingQueue extends APIEndpoint {
     DaemonTrigger $actionSchedulerDaemonTriggerAction,
     NewsletterValidator $newsletterValidator,
     SendingQueuesResponseBuilder $sendingQueuesResponseBuilder,
-    CronHelper $cronHelper
+    CronHelper $cronHelper,
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -87,6 +92,7 @@ class SendingQueue extends APIEndpoint {
     $this->newsletterValidator = $newsletterValidator;
     $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
     $this->cronHelper = $cronHelper;
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
   public function add($data = []) {
@@ -120,6 +126,13 @@ class SendingQueue extends APIEndpoint {
     try {
       // check that the sending method has been configured properly by verifying that default mailer can be build
       $this->mailerFactory->getDefaultMailer();
+
+      if ((bool)$newsletter->getOptionValue('isScheduled') && $this->timeZoneCampaignScheduler->isSubscriberTimeZoneMode($newsletter)) {
+        $sendingQueue = $this->timeZoneCampaignScheduler->schedule($newsletter);
+        WordPress::resetRunInterval();
+        $this->triggerSending($newsletter);
+        return $this->successResponse($this->sendingQueuesResponseBuilder->build($sendingQueue));
+      }
 
       $sendingQueue = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus($newsletter, null);
 
@@ -190,9 +203,18 @@ class SendingQueue extends APIEndpoint {
         ($newsletter->getLatestQueue() instanceof SendingQueueEntity) ? $this->sendingQueuesResponseBuilder->build($newsletter->getLatestQueue()) : null
       );
     } catch (\Exception $e) {
+      $errorCode = APIError::UNKNOWN;
+      $statusCode = Response::STATUS_NOT_FOUND;
+      if ($e->getCode() === Response::STATUS_FORBIDDEN) {
+        $errorCode = APIError::FORBIDDEN;
+        $statusCode = Response::STATUS_FORBIDDEN;
+      } elseif ($e->getCode() === Response::STATUS_BAD_REQUEST) {
+        $errorCode = APIError::BAD_REQUEST;
+        $statusCode = Response::STATUS_BAD_REQUEST;
+      }
       return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+        $errorCode => $e->getMessage(),
+      ], [], $statusCode);
     }
   }
 
@@ -211,7 +233,11 @@ class SendingQueue extends APIEndpoint {
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
-        $this->sendingQueuesRepository->pause($queue);
+        if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+          $this->timeZoneCampaignScheduler->pauseCampaign($queue);
+        } else {
+          $this->sendingQueuesRepository->pause($queue);
+        }
         return $this->successResponse();
       }
     } else {
@@ -241,7 +267,11 @@ class SendingQueue extends APIEndpoint {
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
-        $this->sendingQueuesRepository->resume($queue);
+        if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+          $this->timeZoneCampaignScheduler->resumeCampaign($queue);
+        } else {
+          $this->sendingQueuesRepository->resume($queue);
+        }
         $this->triggerSending($newsletter);
         return $this->successResponse();
       }
