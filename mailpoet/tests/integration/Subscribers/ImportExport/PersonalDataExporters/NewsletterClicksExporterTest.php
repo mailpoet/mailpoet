@@ -71,7 +71,10 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
 
     $this->assertIsArray($result['data']);
     $this->assertCount(1, $result['data']);
-    $this->assertSame($result['data'][0]['data'][3], ['name' => 'User-agent', 'value' => 'Unknown']);
+    $entry = $result['data'][0];
+    $this->assertIsArray($entry);
+    $this->assertIsArray($entry['data']);
+    $this->assertSame($entry['data'][3], ['name' => 'User-agent', 'value' => 'Unknown']);
   }
 
   protected function prepareDataToBeExported(string $userEmail, ?string $userAgentName = null) {

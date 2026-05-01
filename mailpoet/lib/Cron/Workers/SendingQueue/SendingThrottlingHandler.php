@@ -40,7 +40,8 @@ class SendingThrottlingHandler {
   }
 
   private function getMaxBatchSize(): int {
-    return $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
+    $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
+    return is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
   }
 
   public function throttleBatchSize(): int {

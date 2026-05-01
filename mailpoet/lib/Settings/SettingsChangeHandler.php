@@ -80,7 +80,7 @@ class SettingsChangeHandler {
 
   public function onMSSActivate($newSettings) {
     // see mailpoet/assets/js/src/wizard/create_sender_settings.jsx:freeAddress
-    $httpHost = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
+    $httpHost = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
     $domain = str_replace('www.', '', $httpHost);
     if (
       isset($newSettings['sender']['address'])

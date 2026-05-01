@@ -338,7 +338,7 @@ class EmailFactory {
     }
 
     $templateArr = json_decode((string)$templateString, true);
-    if (!is_array($templateArr) || !isset($templateArr['body'])) {
+    if (!is_array($templateArr) || !isset($templateArr['body']) || !is_array($templateArr['body'])) {
       return null;
     }
 

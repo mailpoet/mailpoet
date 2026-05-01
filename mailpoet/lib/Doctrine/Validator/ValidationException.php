@@ -46,6 +46,7 @@ class ValidationException extends \RuntimeException {
   }
 
   private function formatError(ConstraintViolationInterface $violation) {
-    return '[' . $violation->getPropertyPath() . '] ' . $violation->getMessage();
+    $message = $violation->getMessage();
+    return '[' . $violation->getPropertyPath() . '] ' . (is_string($message) ? $message : $message->__toString());
   }
 }

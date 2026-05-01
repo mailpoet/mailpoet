@@ -15,28 +15,28 @@ class RegistrationTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscriber() {
-    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $_POST['mailpoet'] = ['subscribe_on_register' => true];
     $this->registration->onRegister(new \WP_Error(), 'login', 'tester@email.com');
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'tester@email.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
   }
 
   public function testItDoesntAddSubscriberWhenCheckboxIsNotChecked() {
-    $_POST['mailpoet']['subscribe_on_register'] = false;
+    $_POST['mailpoet'] = ['subscribe_on_register' => false];
     $this->registration->onRegister(new \WP_Error(), 'login', 'tester@email.com');
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'tester@email.com']);
     verify($subscriber)->null();
   }
 
   public function testItDoesntAddSubscriberWhenEmailIsEmpty() {
-    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $_POST['mailpoet'] = ['subscribe_on_register' => true];
     $initialCount = count($this->subscribersRepository->findAll());
     $this->registration->onRegister(new \WP_Error(), 'login', '');
     verify($initialCount)->equals(count($this->subscribersRepository->findAll()));
   }
 
   public function testItAddsSubscriberOnMultisite() {
-    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $_POST['mailpoet'] = ['subscribe_on_register' => true];
     $result = [
       'errors' => new \WP_Error(),
       'user_name' => 'login',
@@ -48,7 +48,7 @@ class RegistrationTest extends \MailPoetTest {
   }
 
   public function testItDoesntAddSubscriberWithEmptyOnMultisite() {
-    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $_POST['mailpoet'] = ['subscribe_on_register' => true];
     $result = [
       'errors' => new \WP_Error(),
       'user_name' => 'login',

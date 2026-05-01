@@ -343,7 +343,8 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    $siteUrl = get_option('siteurl');
+    $siteUrlOption = get_option('siteurl');
+    $siteUrl = is_string($siteUrlOption) ? $siteUrlOption : '';
     verify($renderedImage)->stringContainsString('src="' . $siteUrl . '/relative-path"');
 
     $image = [

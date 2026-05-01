@@ -22,7 +22,7 @@ class AssetsLoader {
 
   public function loadStyles(): void {
     // MailPoet plugin style should be loaded on all mailpoet sites
-    $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : null;
+    $page = isset($_GET['page']) && is_string($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : null;
     if ($page && strpos($page, 'mailpoet-') === 0) {
       $this->enqueueStyle('mailpoet-plugin', [
         'forms', // To prevent conflict in CSS with WP forms we need to add dependency

@@ -86,7 +86,12 @@ class FilterDataMapper {
     };
     $wpFilterName = 'mailpoet_dynamic_segments_filters_map';
     if ($this->wp->hasFilter($wpFilterName)) {
-      return $this->wp->applyFilters($wpFilterName, $data, $processFilter);
+      $filtered = $this->wp->applyFilters($wpFilterName, $data, $processFilter);
+      if (is_array($filtered)) {
+        return array_values(array_filter($filtered, function ($f) {
+          return $f instanceof DynamicSegmentFilterData;
+        }));
+      }
     }
     $filter = reset($data['filters']);
     return [$processFilter($filter, $data)];

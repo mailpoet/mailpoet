@@ -264,11 +264,11 @@ class Renderer {
       $anchor->href = $href;
     }
     $template = $templateDom->__toString();
-    $template = $this->wp->applyFilters(
+    $filtered = $this->wp->applyFilters(
       self::FILTER_POST_PROCESS,
       $template
     );
-    return $template;
+    return is_string($filtered) ? $filtered : $template;
   }
 
   /**

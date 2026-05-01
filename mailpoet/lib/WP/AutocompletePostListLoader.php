@@ -92,8 +92,11 @@ class AutocompletePostListLoader {
     if (!is_array($terms)) return []; // there can be instance of WP_Error instead of list of terms if woo commerce is not active
     $result = [];
     foreach ($terms as $term) {
+      if (!$term instanceof \WP_Term) {
+        continue;
+      }
       $result[] = [
-        'id' => (string)$term->term_id,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'id' => (string)$term->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'name' => $term->name,
       ];
     }

@@ -225,7 +225,8 @@ class Widget extends \WP_Widget {
     $settings = $form->getSettings();
 
     if (!empty($body) && is_array($settings)) {
-      $formId = $this->id_base . '_' . $form->getId(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $idBase = is_string($this->id_base) ? $this->id_base : 'mailpoet_form'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $formId = $idBase . '_' . $form->getId();
       $data = [
         'form_html_id' => $formId,
         'form_id' => $form->getId(),

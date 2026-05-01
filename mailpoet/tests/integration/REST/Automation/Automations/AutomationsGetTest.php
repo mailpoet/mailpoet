@@ -101,6 +101,7 @@ class AutomationsGetTest extends AutomationTest {
     $automation1Found = false;
     $automation2Found = false;
     foreach ($result['items'] as $item) {
+      $this->assertIsArray($item);
       if ($item['id'] === $expectedAutomation1Data['id']) {
         $this->assertAutomationRestData($expectedAutomation1Data, $item);
         $automation1Found = true;

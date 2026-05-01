@@ -25,7 +25,7 @@ class Log {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withCreatedAt(\DateTimeInterface $date): Log {
     return $this->update('created_at', $date);
@@ -42,7 +42,7 @@ class Log {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   private function update(string $item, $value): Log {
     $data = $this->data;

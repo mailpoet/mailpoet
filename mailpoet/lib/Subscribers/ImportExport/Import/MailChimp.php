@@ -199,6 +199,7 @@ class MailChimp {
     }
     fclose($connection);
 
-    return json_decode($response, true);
+    $decoded = json_decode($response, true);
+    return is_array($decoded) ? $decoded : null;
   }
 }

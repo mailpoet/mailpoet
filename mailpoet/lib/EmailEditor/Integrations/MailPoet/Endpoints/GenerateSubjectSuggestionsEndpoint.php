@@ -191,11 +191,11 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     $decoded = json_decode($json, true);
 
     if (is_array($decoded) && isset($decoded['suggestions']) && is_array($decoded['suggestions'])) {
-      return $decoded;
+      return ['suggestions' => array_values($decoded['suggestions'])];
     }
 
     if (is_array($decoded) && !isset($decoded['suggestions']) && isset($decoded[0])) {
-      return ['suggestions' => $decoded];
+      return ['suggestions' => array_values($decoded)];
     }
 
     return null;

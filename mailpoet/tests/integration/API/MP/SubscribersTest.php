@@ -338,12 +338,12 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriber->getStatus());
 
     foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
-      $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
+      $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
     }
 
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
   }
 
   public function testUnsubscribesSubscriberFromAllListsAndChangesItsStatusUsingEmailInsteadOfId() {
@@ -357,12 +357,12 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriber->getStatus());
 
     foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
-      $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
+      $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
     }
 
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
+    $this->assertEquals(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
   }
 
   public function testItDoesNotUnsubscribeWhenSubscriberIdNotPassedFromLists() {

@@ -62,6 +62,6 @@ class BatchIterator implements \Iterator, \Countable {
   }
 
   public function count(): int {
-    return $this->scheduledTaskSubscribersRepository->countSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId);
+    return max(0, $this->scheduledTaskSubscribersRepository->countSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId));
   }
 }

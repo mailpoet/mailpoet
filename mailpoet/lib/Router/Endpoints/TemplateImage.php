@@ -24,7 +24,7 @@ class TemplateImage {
   }
 
   public function getExternalImage($data = [], $return = false) {
-    if (empty($_GET['url'])) {
+    if (empty($_GET['url']) || !is_string($_GET['url'])) {
       return false;
     }
     $result = $this->templateImageLoader->loadExternalImage(

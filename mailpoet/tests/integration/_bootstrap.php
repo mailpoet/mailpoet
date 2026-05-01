@@ -163,7 +163,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
    */
   public function getServiceWithOverrides(string $id, array $overrides) {
     $instance = $this->diContainer->get($id);
-    return Stub::copy($instance, $overrides);
+    /** @var T $copy */
+    $copy = Stub::copy($instance, $overrides);
+    return $copy;
   }
 
   /**
@@ -220,10 +222,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     }
 
     foreach (self::BACKUP_GLOBALS_NAMES as $globalName) {
-      $GLOBALS[$globalName] = [];
+      $restored = [];
       foreach (self::$savedGlobals[$globalName] ?? [] as $key => $value) {
-        $GLOBALS[$globalName][$key] = is_object($value) ? clone $value : $value;
+        $restored[$key] = is_object($value) ? clone $value : $value;
       }
+      $GLOBALS[$globalName] = $restored;
     }
   }
 

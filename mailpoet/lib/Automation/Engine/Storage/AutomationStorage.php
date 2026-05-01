@@ -437,9 +437,10 @@ class AutomationStorage {
   public function getNameColumnLength(): int {
     global $wpdb;
     $nameColumnLengthInfo = $wpdb->get_col_length($this->automationsTable, 'name');
-    return is_array($nameColumnLengthInfo)
-      ? $nameColumnLengthInfo['length'] ?? 255
-      : 255;
+    if (is_array($nameColumnLengthInfo) && isset($nameColumnLengthInfo['length']) && is_int($nameColumnLengthInfo['length'])) {
+      return $nameColumnLengthInfo['length'];
+    }
+    return 255;
   }
 
   private function getAutomationHeaderData(Automation $automation): array {

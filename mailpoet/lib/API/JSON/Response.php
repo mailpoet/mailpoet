@@ -43,7 +43,8 @@ abstract class Response {
     }
     $response = array_merge($response, $data);
 
-    @header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+    $charset = get_option('blog_charset');
+    @header('Content-Type: application/json; charset=' . (is_string($charset) ? $charset : 'UTF-8'));
     echo wp_json_encode($response);
     die();
   }

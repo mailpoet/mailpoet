@@ -191,6 +191,9 @@ class API {
       }
 
       $endpoint = $this->container->get($this->requestEndpointClass);
+      if (!$endpoint instanceof Endpoint) {
+        throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
+      }
       if (!method_exists($endpoint, $this->requestMethod)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }
