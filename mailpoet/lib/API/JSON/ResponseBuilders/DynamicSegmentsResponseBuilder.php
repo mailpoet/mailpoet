@@ -6,7 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentDependencyValidator;
-use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WP\Functions;
 
@@ -19,9 +18,6 @@ class DynamicSegmentsResponseBuilder {
   /** @var Functions */
   private $wp;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscriberRepository;
-
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
@@ -30,13 +26,11 @@ class DynamicSegmentsResponseBuilder {
 
   public function __construct(
     Functions $wp,
-    SegmentSubscribersRepository $segmentSubscriberRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator,
     SubscribersCountsController $subscribersCountsController
   ) {
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
-    $this->segmentSubscriberRepository = $segmentSubscriberRepository;
     $this->wp = $wp;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->subscribersCountsController = $subscribersCountsController;

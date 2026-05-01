@@ -21,7 +21,6 @@ use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
-use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\UnexpectedValueException;
@@ -45,9 +44,6 @@ class Segments extends APIEndpoint {
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
-
-  /** @var WooCommerce */
-  private $wooCommerceSync;
 
   /** @var WP */
   private $wpSegment;
@@ -75,14 +71,12 @@ class Segments extends APIEndpoint {
     SegmentSaveController $segmentSavecontroller,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersRepository $subscribersRepository,
-    WooCommerce $wooCommerce,
     WP $wpSegment,
     NewsletterSegmentRepository $newsletterSegmentRepository,
     CronWorkerScheduler $cronWorkerScheduler,
     FormsRepository $formsRepository
   ) {
     $this->listingHandler = $listingHandler;
-    $this->wooCommerceSync = $wooCommerce;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentSavecontroller = $segmentSavecontroller;

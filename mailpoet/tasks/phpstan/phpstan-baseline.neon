@@ -6,11 +6,6 @@ parameters:
 			path: ../../lib/API/JSON/API.php
 
 		-
-			identifier: property.onlyWritten
-			count: 1
-			path: ../../lib/API/JSON/ResponseBuilders/DynamicSegmentsResponseBuilder.php
-
-		-
 			identifier: argument.type
 			count: 2
 			path: ../../lib/API/JSON/v1/ImportExport.php
@@ -19,11 +14,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/API/JSON/v1/NewsletterTemplates.php
-
-		-
-			identifier: property.onlyWritten
-			count: 1
-			path: ../../lib/API/JSON/v1/Segments.php
 
 		-
 			identifier: argument.type
@@ -176,11 +166,6 @@ parameters:
 			path: ../../lib/Newsletter/Renderer/Blocks/Renderer.php
 
 		-
-			identifier: property.onlyWritten
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Shortcodes.php
@@ -214,11 +199,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Tags/RestApi/Endpoints/TagsBulkDeleteEndpoint.php
-
-		-
-			identifier: property.phpDocType
-			count: 1
-			path: ../../lib/Util/pQuery/Html5Parser.php
 
 		-
 			identifier: function.void
@@ -261,26 +241,6 @@ parameters:
 			path: ../../tests/integration/Automation/Integrations/MailPoet/Actions/SendEmailActionTest.php
 
 		-
-			identifier: property.unusedType
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
-
-		-
-			identifier: property.onlyRead
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
-
-		-
-			identifier: property.unusedType
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/ValidatedEntity.php
-
-		-
-			identifier: property.onlyRead
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/ValidatedEntity.php
-
-		-
 			identifier: catch.neverThrown
 			count: 4
 			path: ../../tests/integration/Doctrine/EventListeners/ValidationTest.php
@@ -289,16 +249,6 @@ parameters:
 			identifier: varTag.nativeType
 			count: 1
 			path: ../../tests/integration/Doctrine/RepositoryTest.php
-
-		-
-			identifier: property.unusedType
-			count: 1
-			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
-
-		-
-			identifier: property.onlyRead
-			count: 1
-			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
 
 		-
 			identifier: argument.type
