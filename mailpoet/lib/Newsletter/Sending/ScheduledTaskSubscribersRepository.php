@@ -123,6 +123,41 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $stmt->executeQuery();
   }
 
+  /** @param int[] $subscriberIds */
+  public function addSubscribersByIds(ScheduledTaskEntity $task, array $subscriberIds): int {
+    $subscriberIds = array_values(array_unique(array_filter(array_map('intval', $subscriberIds))));
+    if ($subscriberIds === []) {
+      return 0;
+    }
+
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $result = $this->entityManager->getConnection()->executeQuery(
+      "INSERT IGNORE INTO $scheduledTaskSubscribersTable
+       (task_id, subscriber_id, processed)
+       SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
+       FROM $subscribersTable subscribers
+       WHERE subscribers.`deleted_at` IS NULL
+       AND subscribers.`status` = ?
+       AND subscribers.`id` IN (?)",
+      [
+        $task->getId(),
+        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+        SubscriberEntity::STATUS_SUBSCRIBED,
+        $subscriberIds,
+      ],
+      [
+        ParameterType::INTEGER,
+        ParameterType::INTEGER,
+        ParameterType::STRING,
+        ArrayParameterType::INTEGER,
+      ]
+    );
+
+    return (int)$result->rowCount();
+  }
+
   /** @param int[] $ids */
   public function deleteByTaskIds(array $ids): void {
     $this->entityManager->createQueryBuilder()
