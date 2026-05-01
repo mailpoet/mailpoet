@@ -83,3 +83,45 @@ Codes description:
 | 1008 | Incorrect `date_type` value                                                        |
 | 1009 | Missing `values` for select or radio types                                         |
 | 1010 | Empty `value` for select or radio types                                            |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // A simple required text field
+    $field = $mailpoet_api->addSubscriberField([
+      'name' => 'Country',
+      'type' => 'text',
+      'params' => [
+        'required' => '1',
+        'label' => 'Your country',
+        'validate' => 'alphanum',
+      ],
+    ]);
+    // $field['id'] looks like 'cf_5'
+
+    // A select field with two options
+    $select = $mailpoet_api->addSubscriberField([
+      'name' => 'T-shirt size',
+      'type' => 'select',
+      'params' => [
+        'required' => '1',
+        'values' => [
+          ['value' => 'S'],
+          ['value' => 'M', 'is_checked' => '1'],
+          ['value' => 'L'],
+        ],
+      ],
+    ]);
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    // Codes 1001-1010 cover the sanitizer's validation failures;
+    // code 1 is reserved for persistence failures.
+    error_log(sprintf('MailPoet addSubscriberField failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
