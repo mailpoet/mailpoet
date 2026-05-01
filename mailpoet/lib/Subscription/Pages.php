@@ -481,7 +481,7 @@ class Pages {
   public function saveUnsubscribeReason(string $reason, ?string $reasonText): bool {
     if (
       $this->isPreview()
-      || !$this->isSettingEnabled('subscription.unsubscribe_survey.enabled')
+      || !$this->settings->isSettingEnabled('subscription.unsubscribe_survey.enabled')
       || !($this->subscriber instanceof SubscriberEntity)
       || $this->subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
     ) {
@@ -494,7 +494,7 @@ class Pages {
       $queueId,
       $reason,
       $reasonText,
-      $this->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text')
+      $this->settings->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text')
     );
 
     return $result instanceof StatisticsUnsubscribeEntity;
@@ -515,7 +515,7 @@ class Pages {
   private function shouldRenderUnsubscribeReasonSurvey(): bool {
     if (
       $this->isPreview()
-      || !$this->isSettingEnabled('subscription.unsubscribe_survey.enabled')
+      || !$this->settings->isSettingEnabled('subscription.unsubscribe_survey.enabled')
       || !($this->subscriber instanceof SubscriberEntity)
       || $this->subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
     ) {
@@ -528,7 +528,7 @@ class Pages {
 
   private function renderUnsubscribeReasonSurvey(): string {
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
-    $allowOtherText = $this->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text');
+    $allowOtherText = $this->settings->isSettingEnabled('subscription.unsubscribe_survey.allow_other_text');
     $reasons = $this->unsubscribeReasonTracker->getReasonLabels();
 
     return $this->templateRenderer->render('subscription/unsubscribe_reason.html', [
@@ -538,11 +538,6 @@ class Pages {
       'otherReason' => StatisticsUnsubscribeEntity::REASON_OTHER,
       'nonce' => $this->wp->wpCreateNonce('mailpoet_unsubscribe_reason'),
     ]);
-  }
-
-  private function isSettingEnabled(string $key): bool {
-    $value = $this->settings->get($key);
-    return $value === true || $value === '1' || $value === 1;
   }
 
   private function isUnsubscribeReasonSaved(): bool {

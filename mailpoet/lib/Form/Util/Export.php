@@ -82,15 +82,13 @@ class Export {
           Env::$assetsUrl . '/dist/js/public.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
 
-        // (JS) variables...
-        $collectSubscriberTimeZones = SettingsController::getInstance()->get(
+        $collectSubscriberTimeZones = SettingsController::getInstance()->isSettingEnabled(
           'collect_subscriber_timezones.enabled'
         );
         $output[] = '<script type="text/javascript">';
         $output[] = '   var MailPoetForm = MailPoetForm || {';
         $output[] = '       is_rtl: ' . ((int)is_rtl()) . ",";
-        $output[] = '       collect_subscriber_timezones: ' .
-          (in_array($collectSubscriberTimeZones, [true, '1', 1], true) ? 'true' : 'false') . ',';
+        $output[] = '       collect_subscriber_timezones: ' . ($collectSubscriberTimeZones ? 'true' : 'false') . ',';
         $output[] = '       ajax_url: "' . admin_url('admin-ajax.php') . '"';
         $output[] = '   };';
         $output[] = '</script>';

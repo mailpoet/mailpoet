@@ -81,13 +81,8 @@ class ReCaptchaHooks {
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
       'is_rtl' => (function_exists('is_rtl') && is_rtl()),
       'ajax_common_error_message' => esc_js($ajaxFailedErrorMessage),
-      'collect_subscriber_timezones' => $this->shouldCollectSubscriberTimeZones(),
+      'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
     ]);
-  }
-
-  private function shouldCollectSubscriberTimeZones(): bool {
-    $enabled = $this->settings->get('collect_subscriber_timezones.enabled');
-    return $enabled === true || $enabled === '1' || $enabled === 1;
   }
 
   public function render() {

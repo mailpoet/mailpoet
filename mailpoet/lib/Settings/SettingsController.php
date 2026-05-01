@@ -211,6 +211,16 @@ class SettingsController {
     return $this->get($key, 'unset') !== 'unset';
   }
 
+  /**
+   * Returns true if the setting value is a truthy boolean. Settings are persisted as
+   * strings, integers, or booleans depending on how they were written, so this helper
+   * normalizes the check across all three representations.
+   */
+  public function isSettingEnabled(string $key): bool {
+    $value = $this->get($key);
+    return $value === true || $value === '1' || $value === 1;
+  }
+
   private function ensureLoaded() {
     if ($this->loaded) {
       return;
