@@ -41,3 +41,29 @@ Codes description:
 | 13   | The subscriber couldn’t be updated in the database.      |
 | 25   | A `tags` entry resolved to an empty/missing tag name.    |
 | 29   | A `tags` entry referenced a tag id that does not exist.  |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // Update the name and replace the entire tag set with two tags.
+    $subscriber = $mailpoet_api->updateSubscriber('jane.doe@example.com', [
+      'first_name' => 'Janet',
+      'tags' => ['VIP', 'Newsletter'],
+      'cf_1' => 'San Francisco',
+    ]);
+
+    // To leave tags untouched, simply omit the 'tags' key.
+    $mailpoet_api->updateSubscriber($subscriber['id'], [
+      'last_name' => 'Doe-Smith',
+    ]);
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet updateSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
