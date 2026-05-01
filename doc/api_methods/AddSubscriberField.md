@@ -54,14 +54,12 @@ The common properties for all types:
 
 ## Response
 
-| Property   | Type         | Limits   | Description                                                                                       |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------- |
-| id         | string       | 11 chars | Field Id                                                                                          |
-| name       | string       | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input.               |
-| type       | string       | -        | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
-| params     | array        | -        | Contains various information, see examples below.                                                 |
-| created_at | string\|null | -        | UTC time of creation in `Y-m-d H:i:s` format                                                      |
-| updated_at | string       | -        | UTC time of last update in `Y-m-d H:i:s` format                                                   |
+| Property | Type   | Limits   | Description                                                                                       |
+| -------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| id       | string | 11 chars | Field id, prefixed with `cf_` (e.g. `cf_5`)                                                       |
+| name     | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input.               |
+| type     | string | -        | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
+| params   | array  | -        | The sanitized params, see examples above.                                                         |
 
 ## Error handling
 
