@@ -34,3 +34,23 @@ Codes description:
 | 4    | The subscriber does not exist.          |
 | 25   | Missing tag name (empty string passed). |
 | 29   | A tag referenced by id does not exist.  |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // Use an existing tag id (must exist), or pass a name to auto-create one.
+    $mailpoet_api->tagSubscriber('jane.doe@example.com', 'VIP');
+    // Idempotent: a second call with the same tag is a no-op and does not
+    // re-fire the `mailpoet_subscriber_tag_added` action.
+    $mailpoet_api->tagSubscriber('jane.doe@example.com', 'VIP');
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet tagSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
