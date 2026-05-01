@@ -18,6 +18,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -71,6 +72,9 @@ class Scheduler {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var TimeZoneCampaignScheduler */
+  private $timeZoneCampaignScheduler;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
@@ -85,7 +89,8 @@ class Scheduler {
     Security $security,
     NewsletterScheduler $scheduler,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
@@ -101,6 +106,7 @@ class Scheduler {
     $this->scheduler = $scheduler;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
   public function process($timer = false) {
@@ -122,7 +128,11 @@ class Scheduler {
       try {
         if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
           $this->deleteByTask($task);
-        } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
+        } elseif (
+          $newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE
+          && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED
+          && !($newsletter->getStatus() === NewsletterEntity::STATUS_SENDING && $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue))
+        ) {
           $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
           $this->scheduledTasksRepository->flush();
           continue;
@@ -297,11 +307,13 @@ class Scheduler {
   }
 
   public function processScheduledStandardNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
-    $segments = $newsletter->getSegmentIds();
-    $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
+    $queue = $task->getSendingQueue();
+    if (!$queue || !$this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+      $segments = $newsletter->getSegmentIds();
+      $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
+    }
 
     $task->setStatus(null);
-    $queue = $task->getSendingQueue();
     if ($queue) {
       $this->sendingQueuesRepository->updateCounts($queue);
     }

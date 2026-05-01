@@ -18,6 +18,7 @@ use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -92,6 +93,9 @@ class SendingQueue {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var TimeZoneCampaignScheduler|null */
+  private $timeZoneCampaignScheduler;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -110,6 +114,7 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
+    ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -131,6 +136,7 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
   public function process($timer = false) {
@@ -685,6 +691,15 @@ class SendingQueue {
         'completed newsletter sending',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
+      $queue = $task->getSendingQueue();
+      if (
+        $queue
+        && $this->timeZoneCampaignScheduler
+        && $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)
+        && $this->timeZoneCampaignScheduler->hasIncompleteCampaignQueues($queue)
+      ) {
+        return;
+      }
       $this->newsletterTask->markNewsletterAsSent($newsletter);
       $this->statsNotificationsScheduler->schedule($newsletter);
     }
