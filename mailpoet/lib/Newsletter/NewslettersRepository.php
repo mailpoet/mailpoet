@@ -483,9 +483,11 @@ class NewslettersRepository extends Repository {
       $query->setMaxResults($limit);
     }
 
-    /** @var NewsletterEntity[] $result */
     $result = $query->getQuery()->getResult();
-
+    if (!is_array($result)) {
+      return [];
+    }
+    /** @var NewsletterEntity[] $result */
     return $result;
   }
 
@@ -510,9 +512,11 @@ class NewslettersRepository extends Repository {
       $query->setMaxResults($limit);
     }
 
-    /** @var NewsletterEntity[] $result */
     $result = $query->getQuery()->getResult();
-
+    if (!is_array($result)) {
+      return [];
+    }
+    /** @var NewsletterEntity[] $result */
     return $result;
   }
 
