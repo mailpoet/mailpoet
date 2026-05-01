@@ -43,13 +43,14 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                             |
-| ---- | ------------------------------------------------------- |
-| 3    | No lists provided                                       |
-| 4    | Invalid subscriber that does not exist                  |
-| 5    | Invalid list that does not exist                        |
-| 6    | Trying to subscribe to a WordPress Users list           |
-| 7    | Trying to subscribe to a WooCommerce Customers list     |
-| 8    | Trying to subscribe to a list that doesn’t support that |
-| 10   | Confirmation email failed to send                       |
-| 17   | Welcome email failed to send                            |
+| Code | Description                                                          |
+| ---- | -------------------------------------------------------------------- |
+| 3    | No lists provided                                                    |
+| 4    | Invalid subscriber that does not exist                               |
+| 5    | Invalid list that does not exist                                     |
+| 6    | Trying to subscribe to a WordPress Users list                        |
+| 7    | Trying to subscribe to a WooCommerce Customers list                  |
+| 8    | Trying to subscribe to a list that doesn’t support that              |
+| 10   | Confirmation email failed to send                                    |
+| 13   | Failed to save the subscriber's status when transitioning to the list |
+| 17   | Welcome email failed to send                                         |
