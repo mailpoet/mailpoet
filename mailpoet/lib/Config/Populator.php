@@ -494,6 +494,18 @@ class Populator {
         'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
       ],
       [
+        'name' => NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE,
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
+      [
+        'name' => NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE,
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
+      [
+        'name' => NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME,
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
+      [
         'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
       ],

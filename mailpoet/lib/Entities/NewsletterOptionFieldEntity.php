@@ -26,6 +26,9 @@ class NewsletterOptionFieldEntity {
   public const NAME_ROLE = 'role';
   public const NAME_SCHEDULE = 'schedule';
   public const NAME_SCHEDULED_AT = 'scheduledAt';
+  public const NAME_SCHEDULE_MODE = 'scheduleMode';
+  public const NAME_SCHEDULED_LOCAL_DATE = 'scheduledLocalDate';
+  public const NAME_SCHEDULED_LOCAL_TIME = 'scheduledLocalTime';
   public const NAME_SEGMENT = 'segment';
   public const NAME_SEND_TO = 'sendTo';
   public const NAME_TIME_OF_DAY = 'timeOfDay';
