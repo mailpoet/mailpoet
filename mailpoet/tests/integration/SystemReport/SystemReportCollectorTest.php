@@ -111,7 +111,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
   public function testItReturnsActivePlugins() {
     $activePlugins = get_option('active_plugins');
     $this->assertIsArray($activePlugins);
-    verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", $activePlugins));
+    verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $activePlugins)));
   }
 
   public function testItReturnsActivePluginsDetails() {
@@ -164,8 +164,9 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsWebserverInformation() {
+    $serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? '';
     verify($this->systemInfoData['Web server'])->equals(
-      (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A'
+      is_string($serverSoftware) && $serverSoftware !== '' ? sanitize_text_field(wp_unslash($serverSoftware)) : 'N/A'
     );
   }
 

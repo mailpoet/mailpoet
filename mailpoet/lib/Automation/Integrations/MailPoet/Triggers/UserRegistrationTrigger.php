@@ -97,6 +97,10 @@ class UserRegistrationTrigger implements Trigger {
 
     $triggerArgs = $args->getStep()->getArgs();
     $roles = $triggerArgs['roles'] ?? [];
-    return !is_array($roles) || !$roles || count(array_intersect($user->roles, $roles)) > 0;
+    if (!is_array($roles) || !$roles) {
+      return true;
+    }
+    $stringRoles = array_values(array_filter($roles, 'is_string'));
+    return count(array_intersect($user->roles, $stringRoles)) > 0;
   }
 }

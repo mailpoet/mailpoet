@@ -97,11 +97,12 @@ class PostTransformerContentsExtractor {
     $imageInfo = $this->getImageInfo($thumbnailId);
 
     // get alt text
-    $altText = trim(strip_tags(get_post_meta(
+    $rawAlt = get_post_meta(
       $thumbnailId,
       '_wp_attachment_image_alt',
       true
-    )));
+    );
+    $altText = trim(strip_tags(is_string($rawAlt) ? $rawAlt : ''));
     if (strlen($altText) === 0) {
       // if the alt text is empty then use the post title
       $altText = trim(strip_tags($postTitle));

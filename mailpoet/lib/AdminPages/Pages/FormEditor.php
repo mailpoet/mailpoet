@@ -232,7 +232,7 @@ class FormEditor {
       $this->renderTemplateSelection();
       return;
     }
-    if (isset($_GET['template_id'])) {
+    if (is_string($_GET['template_id'] ?? null)) {
       $template = $this->templatesRepository->getFormTemplate(sanitize_text_field(wp_unslash($_GET['template_id'])));
       $form = $template->toFormEntity();
     } else {

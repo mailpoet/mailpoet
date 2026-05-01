@@ -86,10 +86,13 @@ class NewsletterTemplates extends APIEndpoint {
         return $this->successResponse($data);
       }
     }
-    if (!empty($data['body'])) {
-      $body = $this->apiDataSanitizer->sanitizeBody(json_decode($data['body'], true));
-      $body = $this->newsletterCoupon->cleanupBodySensitiveData($body);
-      $data['body'] = json_encode($body);
+    if (!empty($data['body']) && is_string($data['body'])) {
+      $decodedBody = json_decode($data['body'], true);
+      if (is_array($decodedBody)) {
+        $body = $this->apiDataSanitizer->sanitizeBody($decodedBody);
+        $body = $this->newsletterCoupon->cleanupBodySensitiveData($body);
+        $data['body'] = json_encode($body);
+      }
     }
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);

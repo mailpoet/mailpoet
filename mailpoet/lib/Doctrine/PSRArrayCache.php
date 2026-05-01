@@ -19,7 +19,7 @@ class PSRArrayCache implements CacheItemPoolInterface {
     if (!$this->hasItem($key)) {
       return new PSRCacheItem($key, false);
     }
-    return new PSRCacheItem($key, $this->cache[$key]);
+    return (new PSRCacheItem($key, true))->set($this->cache[$key]);
   }
 
   public function getItems(array $keys = []) {

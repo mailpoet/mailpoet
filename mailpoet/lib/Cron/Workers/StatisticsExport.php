@@ -61,7 +61,7 @@ class StatisticsExport extends SimpleWorker {
         $result = $this->exporter->exportRecipients($newsletter, $format);
       } elseif ($jobType === self::JOB_TYPE_BULK) {
         $newsletterIds = isset($meta['newsletter_ids']) && is_array($meta['newsletter_ids'])
-          ? array_map('intval', $meta['newsletter_ids'])
+          ? array_map(static fn($id): int => is_scalar($id) ? (int)$id : 0, $meta['newsletter_ids'])
           : [];
         $newsletters = [];
         foreach ($newsletterIds as $id) {

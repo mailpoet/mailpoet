@@ -17,7 +17,7 @@ class AutomationPreviewEmbed extends AbstractAutomationEmbed {
 
   protected function getCustomData(): array {
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-    $templateSlug = isset($_GET['template']) ? sanitize_key(wp_unslash($_GET['template'])) : '';
+    $templateSlug = is_string($_GET['template'] ?? null) ? sanitize_key(wp_unslash($_GET['template'])) : '';
 
     return [
       'template_slug' => $templateSlug,
