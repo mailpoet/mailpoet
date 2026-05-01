@@ -18,11 +18,11 @@ This method returns a list of subscribers. To see the subscriber data structure,
 
 Filter argument supports following array keys.
 
-| Key          | Type         | Description                                                                                                       |
-| ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| status       | string       | Specific status of subscribers. One of values: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive` |
-| listId       | int          | List id or dynamic segment id                                                                                     |
-| minUpdatedAt | DateTimeInterface\|int | A `DateTime`/`DateTimeImmutable` instance, or a unix timestamp, for the minimal last-updated time of subscribers |
+| Key          | Type                   | Description                                                                                                       |
+| ------------ | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| status       | string                 | Specific status of subscribers. One of values: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive` |
+| listId       | int                    | List id or dynamic segment id                                                                                     |
+| minUpdatedAt | DateTimeInterface\|int | A `DateTime`/`DateTimeImmutable` instance, or a unix timestamp, for the minimal last-updated time of subscribers  |
 
 ## Example
 

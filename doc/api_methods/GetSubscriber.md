@@ -57,17 +57,17 @@ This method throws an `\Exception` in the event no subscriber matches the given 
 
 Each entry in `unsubscribes` describes a single unsubscribe event. `newsletterId` and `newsletterSubject` are only present when the unsubscribe is associated with a specific newsletter.
 
-| Property          | Type             | Description                                                                                                       |
-| ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| source            | string\|null     | Where the unsubscribe came from (`newsletter`, `manage`, `admin`, `mp_api`, …)                                    |
-| meta              | string\|null     | Free-form metadata stored alongside the event                                                                     |
-| createdAt         | DateTimeInterface\|null | When the unsubscribe was recorded                                                                          |
-| reason            | string\|null     | Internal reason key (e.g. `not_interested`, `spam`, `other`)                                                      |
-| reasonLabel       | string\|null     | Human-readable label for the reason; `"No reason provided"` when the reason is unspecified                        |
-| reasonText        | string\|null     | Free-form reason text submitted by the subscriber                                                                 |
-| reasonSubmittedAt | DateTimeInterface\|null | When the reason text was submitted                                                                         |
-| newsletterId      | int              | Id of the related newsletter (only present when applicable)                                                       |
-| newsletterSubject | string           | Subject of the related newsletter (only present when applicable)                                                  |
+| Property          | Type                    | Description                                                                                |
+| ----------------- | ----------------------- | ------------------------------------------------------------------------------------------ |
+| source            | string\|null            | Where the unsubscribe came from (`newsletter`, `manage`, `admin`, `mp_api`, …)             |
+| meta              | string\|null            | Free-form metadata stored alongside the event                                              |
+| createdAt         | DateTimeInterface\|null | When the unsubscribe was recorded                                                          |
+| reason            | string\|null            | Internal reason key (e.g. `not_interested`, `spam`, `other`)                               |
+| reasonLabel       | string\|null            | Human-readable label for the reason; `"No reason provided"` when the reason is unspecified |
+| reasonText        | string\|null            | Free-form reason text submitted by the subscriber                                          |
+| reasonSubmittedAt | DateTimeInterface\|null | When the reason text was submitted                                                         |
+| newsletterId      | int                     | Id of the related newsletter (only present when applicable)                                |
+| newsletterSubject | string                  | Subject of the related newsletter (only present when applicable)                           |
 
 ### Subscriber's tag
 
