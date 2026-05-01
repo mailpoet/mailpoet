@@ -25,30 +25,44 @@ Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by Wo
 
 ### Available API Methods
 
-- [Add List (addList)](api_methods/AddList.md)
-- [Add Subscriber (addSubscriber)](api_methods/AddSubscriber.md)
-- [Add Subscriber Field (addSubscriberField)](api_methods/AddSubscriberField.md)
-- [Add Tag (addTag)](api_methods/AddTag.md)
-- [Delete List (deleteList)](api_methods/DeleteList.md)
-- [Delete Tag (deleteTag)](api_methods/DeleteTag.md)
+#### Setup
+
+- [Is Setup Complete (isSetupComplete)](api_methods/IsSetupComplete.md)
+
+#### Lists
+
 - [Get Lists (getLists)](api_methods/GetLists.md)
+- [Add List (addList)](api_methods/AddList.md)
+- [Update List (updateList)](api_methods/UpdateList.md)
+- [Delete List (deleteList)](api_methods/DeleteList.md)
+
+#### Subscribers
+
 - [Get Subscriber (getSubscriber)](api_methods/GetSubscriber.md)
 - [Get Subscribers (getSubscribers)](api_methods/GetSubscribers.md)
 - [Get Subscribers Count (getSubscribersCount)](api_methods/GetSubscribersCount.md)
-- [Get Subscriber Fields (getSubscriberFields)](api_methods/GetSubscriberFields.md)
-- [Get Tag (getTag)](api_methods/GetTag.md)
-- [Get Tags (getTags)](api_methods/GetTags.md)
-- [Is Setup Complete (isSetupComplete)](api_methods/IsSetupComplete.md)
+- [Add Subscriber (addSubscriber)](api_methods/AddSubscriber.md)
+- [Update Subscriber (updateSubscriber)](api_methods/UpdateSubscriber.md)
 - [Subscribe to List (subscribeToList)](api_methods/SubscribeToList.md)
 - [Subscribe to Lists (subscribeToLists)](api_methods/SubscribeToLists.md)
-- [Tag Subscriber (tagSubscriber)](api_methods/TagSubscriber.md)
-- [Unsubscribe globally](api_methods/UnsubscribeGlobally.md)
 - [Unsubscribe from List (unsubscribeFromList)](api_methods/UnsubscribeFromList.md)
 - [Unsubscribe from Lists (unsubscribeFromLists)](api_methods/UnsubscribeFromLists.md)
-- [Untag Subscriber (untagSubscriber)](api_methods/UntagSubscriber.md)
-- [Update List (updateList)](api_methods/UpdateList.md)
-- [Update Subscriber (updateSubscriber)](api_methods/UpdateSubscriber.md)
+- [Unsubscribe globally (unsubscribe)](api_methods/UnsubscribeGlobally.md)
+
+#### Subscriber Fields
+
+- [Get Subscriber Fields (getSubscriberFields)](api_methods/GetSubscriberFields.md)
+- [Add Subscriber Field (addSubscriberField)](api_methods/AddSubscriberField.md)
+
+#### Tags
+
+- [Get Tag (getTag)](api_methods/GetTag.md)
+- [Get Tags (getTags)](api_methods/GetTags.md)
+- [Add Tag (addTag)](api_methods/AddTag.md)
 - [Update Tag (updateTag)](api_methods/UpdateTag.md)
+- [Delete Tag (deleteTag)](api_methods/DeleteTag.md)
+- [Tag Subscriber (tagSubscriber)](api_methods/TagSubscriber.md)
+- [Untag Subscriber (untagSubscriber)](api_methods/UntagSubscriber.md)
 
 ### Usage examples
 
