@@ -87,6 +87,9 @@ class SettingsController {
         'analytics' => [
           'enabled' => false,
         ],
+        'collect_subscriber_timezones' => [
+          'enabled' => true,
+        ],
         'display_nps_poll' => true,
         'deactivate_subscriber_after_inactive_days' => self::DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS,
         'delete_unconfirmed_subscribers_after_days' => self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS,

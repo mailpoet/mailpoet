@@ -8,6 +8,7 @@ import { Transactional } from './transactional';
 import { InactiveSubscribers } from './inactive-subscribers';
 import { SendingStatusRetention } from './sending-status-retention';
 import { SendingQueueBodyCleanup } from './sending-queue-body-cleanup';
+import { SubscriberTimeZoneData } from './subscriber-time-zone-data';
 import { ShareData } from './share-data';
 import { Libs3rdParty } from './libs-3rd-party';
 import { Captcha } from './captcha';
@@ -34,6 +35,7 @@ export function Advanced() {
       <InactiveSubscribers />
       <SendingStatusRetention />
       <SendingQueueBodyCleanup />
+      <SubscriberTimeZoneData />
       <ShareData />
       <Libs3rdParty />
       <Captcha />

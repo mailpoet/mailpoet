@@ -136,6 +136,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       '30',
     ),
     analytics: asObject({ enabled: disabledRadio }),
+    collect_subscriber_timezones: asObject({ enabled: enabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     use_block_email_editor_for_automation_emails: asObject({
       enabled: disabledRadio,

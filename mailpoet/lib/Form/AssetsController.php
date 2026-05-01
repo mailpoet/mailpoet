@@ -100,7 +100,13 @@ class AssetsController {
       'captcha_reload_title' => esc_js(__('Reload CAPTCHA', 'mailpoet')),
       'captcha_audio_title' => esc_js(__('Play CAPTCHA', 'mailpoet')),
       'assets_url' => Env::$assetsUrl,
+      'collect_subscriber_timezones' => $this->shouldCollectSubscriberTimeZones(),
     ]);
+  }
+
+  public function shouldCollectSubscriberTimeZones(): bool {
+    $enabled = $this->settings->get('collect_subscriber_timezones.enabled');
+    return $enabled === true || $enabled === '1' || $enabled === 1;
   }
 
   public function setupAdminWidgetPageDependencies() {
