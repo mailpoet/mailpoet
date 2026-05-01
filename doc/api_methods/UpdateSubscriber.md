@@ -35,7 +35,9 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                        |
-| ---- | -------------------------------------------------- |
-| 4    | Updating a subscriber that does not exist.         |
-| 13   | The subscriber couldn’t be updated in the database |
+| Code | Description                                              |
+| ---- | -------------------------------------------------------- |
+| 4    | Updating a subscriber that does not exist.               |
+| 13   | The subscriber couldn’t be updated in the database.      |
+| 25   | A `tags` entry resolved to an empty/missing tag name.    |
+| 29   | A `tags` entry referenced a tag id that does not exist.  |
