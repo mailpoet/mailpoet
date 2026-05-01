@@ -33,3 +33,23 @@ Codes description:
 | 25   | Missing tag name                            |
 | 26   | Trying to create a tag that already exists  |
 | 27   | The tag couldn’t be created in the database |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $tag = $mailpoet_api->addTag([
+      'name' => 'VIP',
+      'description' => 'High-value customers',
+    ]);
+    // $tag['id'] is the new tag id (string)
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet addTag failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
