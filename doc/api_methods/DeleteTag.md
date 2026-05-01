@@ -22,3 +22,19 @@ Codes description:
 | 28   | Tag id is empty                               |
 | 29   | Tag does not exist                            |
 | 31   | The tag couldn’t be deleted from the database |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $mailpoet_api->deleteTag('7'); // tag id as string
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet deleteTag failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
