@@ -97,7 +97,6 @@ class Bounce extends SimpleWorker {
       $this->cronHelper->enforceExecutionLimit($timer);
 
       $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
-      $subscriberEmails = array_column($subscriberEmails, 'email');
 
       $this->processEmails($task, $subscriberEmails);
 

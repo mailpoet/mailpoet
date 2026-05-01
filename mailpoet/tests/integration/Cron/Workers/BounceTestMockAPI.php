@@ -3,7 +3,11 @@
 namespace MailPoet\Cron\Workers\Bounce;
 
 class BounceTestMockAPI {
+  /** @var array<int, array<int, string>> */
+  public $checkBouncesCalls = [];
+
   public function checkBounces(array $emails) {
+    $this->checkBouncesCalls[] = $emails;
     return array_map(
       function ($email) {
         return [

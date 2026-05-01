@@ -39,7 +39,7 @@ class LinkTokens {
       if (defined('AUTH_KEY')) {
         $authKey = AUTH_KEY;
       }
-      $token = substr(md5(is_string($authKey) ? $authKey . $email : $email), 0, $length);
+      $token = substr(md5((string)$authKey . $email), 0, $length);
       return is_string($token) ? $token : null;
     }
     return null;
