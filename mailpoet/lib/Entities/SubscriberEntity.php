@@ -425,7 +425,10 @@ class SubscriberEntity {
     $this->timeZoneUpdatedAt = $timeZoneUpdatedAt;
   }
 
-  public static function sanitizeTimeZone(?string $timeZone): ?string {
+  /**
+   * @param mixed $timeZone
+   */
+  public static function sanitizeTimeZone($timeZone): ?string {
     if (!is_string($timeZone)) {
       return null;
     }
@@ -436,7 +439,10 @@ class SubscriberEntity {
     return self::isValidTimeZone($timeZone) ? $timeZone : null;
   }
 
-  public static function isValidTimeZone(?string $timeZone): bool {
+  /**
+   * @param mixed $timeZone
+   */
+  public static function isValidTimeZone($timeZone): bool {
     if (!is_string($timeZone) || $timeZone === '') {
       return false;
     }

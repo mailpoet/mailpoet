@@ -15,4 +15,13 @@ class SubscriberTimeZoneTest extends \MailPoetUnitTest {
     verify(SubscriberEntity::sanitizeTimeZone(''))->null();
     verify(SubscriberEntity::isValidTimeZone(null))->false();
   }
+
+  public function testItRejectsNonStringInputWithoutThrowing(): void {
+    verify(SubscriberEntity::sanitizeTimeZone(['Europe/Prague']))->null();
+    verify(SubscriberEntity::sanitizeTimeZone(123))->null();
+    verify(SubscriberEntity::sanitizeTimeZone(true))->null();
+    verify(SubscriberEntity::sanitizeTimeZone(null))->null();
+    verify(SubscriberEntity::isValidTimeZone(['Europe/Prague']))->false();
+    verify(SubscriberEntity::isValidTimeZone(123))->false();
+  }
 }
