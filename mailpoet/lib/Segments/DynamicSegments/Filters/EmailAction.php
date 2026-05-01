@@ -131,7 +131,7 @@ class EmailAction implements Filter {
           ->setParameter('newsletter_id', $newsletterId)
           ->execute()
           ->fetchOne();
-        $queryBuilder->having('COUNT(1) = ' . $linkCount);
+        $queryBuilder->having('COUNT(1) = ' . (is_scalar($linkCount) ? (int)$linkCount : 0));
       }
     }
     $queryBuilder = $queryBuilder->andWhere($where);

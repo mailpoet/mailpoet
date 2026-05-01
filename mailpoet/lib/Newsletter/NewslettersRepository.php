@@ -485,7 +485,9 @@ class NewslettersRepository extends Repository {
 
     $result = $query->getQuery()->getResult();
 
-    return is_array($result) ? $result : [];
+    return is_array($result) ? array_values(array_filter($result, function ($n) {
+      return $n instanceof NewsletterEntity;
+    })) : [];
   }
 
   /**
@@ -511,7 +513,9 @@ class NewslettersRepository extends Repository {
 
     $result = $query->getQuery()->getResult();
 
-    return is_array($result) ? $result : [];
+    return is_array($result) ? array_values(array_filter($result, function ($n) {
+      return $n instanceof NewsletterEntity;
+    })) : [];
   }
 
   public function prefetchOptions(array $newsletters) {

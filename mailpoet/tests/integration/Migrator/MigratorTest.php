@@ -201,8 +201,8 @@ class MigratorTest extends MailPoetTest {
     ];
 
     foreach ($processed as $i => $data) {
-      $this->assertSame(strval($i + 1), $data['id']);
-      $this->assertSame($migrations[$i], $data['name']);
+      $this->assertEquals(strval($i + 1), $data['id']);
+      $this->assertEquals($migrations[$i], $data['name']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
       $this->assertSame(0, (int)$data['retries']);

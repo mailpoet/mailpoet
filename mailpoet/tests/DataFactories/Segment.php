@@ -31,35 +31,35 @@ class Segment {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withName(string $name) {
     return $this->update('name', $name);
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withDescription(string $description) {
     return $this->update('description', $description);
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withDeleted() {
     return $this->update('deleted_at', Carbon::now());
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withType(string $type) {
     return $this->update('type', $type);
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withDisplayInManageSubscriptionPage(bool $state) {
     return $this->update('display_in_manage_subscription_page', $state);
@@ -82,7 +82,7 @@ class Segment {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   private function update(string $item, $value) {
     $data = $this->data;

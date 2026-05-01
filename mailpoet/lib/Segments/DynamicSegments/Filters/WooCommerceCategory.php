@@ -146,9 +146,12 @@ class WooCommerceCategory implements Filter {
     if (!is_array($subcategories) || empty($subcategories)) {
       return [$categoryId];
     }
-    $ids = array_map(function($category) {
-      return $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    }, $subcategories);
+    $ids = [];
+    foreach ($subcategories as $category) {
+      if ($category instanceof \WP_Term) {
+        $ids[] = $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
+    }
     $ids[] = $categoryId;
     return $ids;
   }

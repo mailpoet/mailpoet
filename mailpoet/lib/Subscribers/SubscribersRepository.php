@@ -582,13 +582,14 @@ class SubscribersRepository extends Repository {
    * @return int[]
    */
   public function findIdsOfDeletedByEmails(array $emails): array {
-    return $this->entityManager->createQueryBuilder()
+    $rows = $this->entityManager->createQueryBuilder()
     ->select('s.id')
     ->from(SubscriberEntity::class, 's')
     ->where('s.email IN (:emails)')
     ->andWhere('s.deletedAt IS NOT NULL')
     ->setParameter('emails', $emails)
     ->getQuery()->getResult();
+    return array_values(array_map('intval', array_column(is_array($rows) ? $rows : [], 'id')));
   }
 
   public function getCurrentWPUser(): ?SubscriberEntity {
@@ -672,7 +673,7 @@ class SubscribersRepository extends Repository {
    * @return string[]
    */
   public function getUndeletedSubscribersEmailsByIds(array $ids): array {
-    return $this->entityManager->createQueryBuilder()
+    $rows = $this->entityManager->createQueryBuilder()
       ->select('s.email')
       ->from(SubscriberEntity::class, 's')
       ->where('s.deletedAt IS NULL')
@@ -680,6 +681,7 @@ class SubscribersRepository extends Repository {
       ->setParameter('ids', $ids)
       ->getQuery()
       ->getArrayResult();
+    return array_values(array_filter(array_column(is_array($rows) ? $rows : [], 'email'), 'is_string'));
   }
 
   public function getMaxSubscriberId(): int {

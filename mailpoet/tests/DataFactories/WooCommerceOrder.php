@@ -118,7 +118,7 @@ class WooCommerceOrder {
 
     if (is_array($items)) {
       foreach ($items as $item) {
-        if (is_int($item['id'])) {
+        if (is_array($item) && isset($item['id']) && is_int($item['id'])) {
           $this->delete($item['id']);
         }
       }

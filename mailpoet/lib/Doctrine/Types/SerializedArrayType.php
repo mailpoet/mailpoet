@@ -21,6 +21,9 @@ class SerializedArrayType extends Type {
       return null;
     }
     $value = \is_resource($value) ? \stream_get_contents($value) : $value;
+    if (!\is_string($value)) {
+      return null;
+    }
     $val = \unserialize($value);
     if ($val === \false && $value !== 'b:0;') {
       return null;

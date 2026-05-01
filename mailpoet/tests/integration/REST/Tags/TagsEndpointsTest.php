@@ -40,16 +40,28 @@ class TagsEndpointsTest extends Test {
     (new TagFactory())->withName('Prospects')->create();
     (new SubscriberFactory())->withEmail('x@example.com')->withTags([$customers])->create();
 
-    $data = $this->get(self::BASE_PATH);
-    $this->assertIsArray($data);
-    $items = $data['data']['items'];
+    $payload = $this->getPayload($this->get(self::BASE_PATH));
+    $items = is_array($payload['items'] ?? null) ? $payload['items'] : [];
+    $meta = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
     $this->assertCount(2, $items);
-    $this->assertSame(2, $data['data']['meta']['count']);
-    $this->assertSame(1, $data['data']['meta']['pages']);
+    $this->assertSame(2, $meta['count']);
+    $this->assertSame(1, $meta['pages']);
 
     $byName = array_column($items, null, 'name');
     $this->assertSame(1, $byName['Customers']['subscribers_count']);
     $this->assertSame(0, $byName['Prospects']['subscribers_count']);
+  }
+
+  /**
+   * @param mixed $response
+   * @return array<string, mixed>
+   */
+  private function getPayload($response): array {
+    $this->assertIsArray($response);
+    $payload = $response['data'] ?? null;
+    $this->assertIsArray($payload);
+    /** @var array<string, mixed> $payload */
+    return $payload;
   }
 
   public function testGetSupportsSearchAndPagination(): void {

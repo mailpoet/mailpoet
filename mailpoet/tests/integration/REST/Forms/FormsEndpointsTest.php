@@ -45,7 +45,10 @@ class FormsEndpointsTest extends Test {
     // created from meta.count.
     $data = $this->get(self::BASE_PATH, ['query' => ['per_page' => 100]]);
     $this->assertIsArray($data);
-    $items = $data['data']['items'];
+    $payload = $data['data'];
+    $this->assertIsArray($payload);
+    $items = $payload['items'];
+    $this->assertIsArray($items);
     $names = array_column($items, 'name');
     $this->assertContains("Newsletter_{$suffix}", $names);
     $this->assertContains("Welcome_{$suffix}", $names);

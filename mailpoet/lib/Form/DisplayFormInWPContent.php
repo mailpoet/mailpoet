@@ -172,7 +172,7 @@ class DisplayFormInWPContent {
 
     $noFormsCache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if ($noFormsCache === '1') $result = false;
-    return $result;
+    return (bool)$result;
   }
 
   private function displayFormInProductListPage(): bool {

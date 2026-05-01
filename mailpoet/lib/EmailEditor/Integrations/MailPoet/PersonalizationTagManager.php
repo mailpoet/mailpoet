@@ -259,7 +259,17 @@ class PersonalizationTagManager {
      * @param array<string, string[]> $mapping Map of category names to required subject keys
      */
     $filtered = $this->wp->applyFilters('mailpoet_personalization_tags_category_subjects_mapping', $mapping);
-    return is_array($filtered) ? $filtered : $mapping;
+    if (!is_array($filtered)) {
+      return $mapping;
+    }
+    $normalized = [];
+    foreach ($filtered as $category => $subjects) {
+      if (!is_string($category) || !is_array($subjects)) {
+        continue;
+      }
+      $normalized[$category] = array_values(array_filter($subjects, 'is_string'));
+    }
+    return $normalized;
   }
 
   /**

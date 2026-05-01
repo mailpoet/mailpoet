@@ -54,7 +54,10 @@ class WooCommerceCountry implements Filter {
     )->where($condition);
 
     foreach ($countryCode as $key => $userCountryCode) {
-      $qb->setParameter('countryCode' . $key . $countryFilterParam, '%' . $userCountryCode . '%');
+      if (!is_scalar($userCountryCode)) {
+        continue;
+      }
+      $qb->setParameter('countryCode' . $key . $countryFilterParam, '%' . (string)$userCountryCode . '%');
     }
 
     return $qb;

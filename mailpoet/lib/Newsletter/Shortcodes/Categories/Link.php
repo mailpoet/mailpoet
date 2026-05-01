@@ -171,6 +171,9 @@ class Link implements CategoryInterface {
         $url = ($url !== $shortcode) ? $url : null;
         break;
     }
+    if (!is_string($url) && $url !== null) {
+      return null;
+    }
     return $url;
   }
 

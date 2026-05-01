@@ -110,7 +110,7 @@ class AdminUserSubscription {
     }
 
     // Check if our field was submitted
-    if (!isset($_POST['mailpoet_subscriber_status'])) {
+    if (!isset($_POST['mailpoet_subscriber_status']) || !is_string($_POST['mailpoet_subscriber_status'])) {
       return $data;
     }
 

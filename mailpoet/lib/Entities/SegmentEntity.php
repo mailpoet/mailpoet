@@ -188,6 +188,7 @@ class SegmentEntity {
     if (!$firstFilter || !$filterData) {
       return DynamicSegmentFilterData::CONNECT_TYPE_AND;
     }
-    return $filterData->getParam('connect') ?: DynamicSegmentFilterData::CONNECT_TYPE_AND;
+    $connect = $filterData->getParam('connect');
+    return is_string($connect) && $connect !== '' ? $connect : DynamicSegmentFilterData::CONNECT_TYPE_AND;
   }
 }

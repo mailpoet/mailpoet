@@ -144,7 +144,8 @@ class ConnectionTest extends MailPoetTest {
         self::TEST_TABLE_NAME
       )
     )->fetchOne();
-    $this->assertSame($autoIncrement - 1, $connection->lastInsertId());
+    $this->assertIsNumeric($autoIncrement);
+    $this->assertSame((int)$autoIncrement - 1, $connection->lastInsertId());
   }
 
   public function testGetServerVersion(): void {

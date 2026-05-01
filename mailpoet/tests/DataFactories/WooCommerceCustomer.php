@@ -74,7 +74,9 @@ class WooCommerceCustomer {
 
     if (is_array($items)) {
       foreach ($items as $item) {
-        $this->delete($item['id']);
+        if (is_array($item) && isset($item['id'])) {
+          $this->delete($item['id']);
+        }
       }
     }
   }

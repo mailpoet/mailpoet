@@ -232,7 +232,7 @@ class EditorPageRenderer {
       '/wp/v2/taxonomies?context=view',
     ];
 
-    if ($templateSlug) {
+    if (is_string($templateSlug) && $templateSlug !== '') {
       $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
     } else {
       $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent';

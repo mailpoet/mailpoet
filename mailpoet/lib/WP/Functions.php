@@ -70,7 +70,7 @@ class Functions {
    * @return bool
    */
   public function addAction($tag, $functionToAdd, $priority = 10, $acceptedArgs = 1) {
-    return call_user_func_array('add_action', func_get_args());
+    return (bool)call_user_func_array('add_action', func_get_args());
   }
 
   public function addCommentMeta($commentId, $metaKey, $metaValue, $unique = false) {

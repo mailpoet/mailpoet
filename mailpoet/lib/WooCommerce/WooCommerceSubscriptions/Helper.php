@@ -70,6 +70,8 @@ class Helper {
     if (!is_array($subscriptions)) {
       return [];
     }
-    return $subscriptions;
+    return array_values(array_filter($subscriptions, function ($s) {
+      return $s instanceof \WC_Subscription;
+    }));
   }
 }

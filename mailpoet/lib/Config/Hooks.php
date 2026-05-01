@@ -652,7 +652,7 @@ class Hooks {
       );
     }
 
-    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    $nonce = isset($_POST['nonce']) && is_string($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
     if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet-rated')) {
       $this->wp->wpDie(

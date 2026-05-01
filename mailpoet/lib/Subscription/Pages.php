@@ -449,7 +449,9 @@ class Pages {
       return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
-    $formStatus = isset($_GET['success']) && absint(wp_unslash($_GET['success']))
+    // Read+absint sanitizes the value; phpcs can't see that across the conditional.
+    $successParam = isset($_GET['success']) && is_scalar($_GET['success']) ? wp_unslash($_GET['success']) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+    $formStatus = is_scalar($successParam) && absint($successParam)
       ? ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS
       : ManageSubscriptionFormRenderer::FORM_STATE_NOT_SUBMITTED;
 

@@ -21,14 +21,14 @@ class Tag {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withName(string $name) {
     return $this->update('name', $name);
   }
 
   /**
-   * @return $this
+   * @return static
    */
   public function withDescription(string $description) {
     return $this->update('description', $description);
@@ -42,7 +42,7 @@ class Tag {
   }
 
   /**
-   * @return $this
+   * @return static
    */
   private function update(string $item, $value) {
     $data = $this->data;
