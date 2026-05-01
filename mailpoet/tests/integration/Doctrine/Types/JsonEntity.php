@@ -13,9 +13,9 @@ class JsonEntity {
    * @ORM\Column(type="integer")
    * @ORM\Id
    * @ORM\GeneratedValue
-   * @var int|null
+   * @phpstan-ignore property.unusedType (hydrated by Doctrine via reflection)
    */
-  private $id;
+  private ?int $id = null;
 
   /**
    * @ORM\Column(type="json")
