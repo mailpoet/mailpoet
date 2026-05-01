@@ -88,11 +88,14 @@ class NewsletterTemplates extends APIEndpoint {
     }
     if (!empty($data['body']) && is_string($data['body'])) {
       $decodedBody = json_decode($data['body'], true);
-      if (is_array($decodedBody)) {
-        $body = $this->apiDataSanitizer->sanitizeBody($decodedBody);
-        $body = $this->newsletterCoupon->cleanupBodySensitiveData($body);
-        $data['body'] = json_encode($body);
+      if (!is_array($decodedBody)) {
+        return $this->errorResponse([
+          APIError::BAD_REQUEST => __('Invalid template body payload.', 'mailpoet'),
+        ]);
       }
+      $body = $this->apiDataSanitizer->sanitizeBody($decodedBody);
+      $body = $this->newsletterCoupon->cleanupBodySensitiveData($body);
+      $data['body'] = json_encode($body);
     }
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);

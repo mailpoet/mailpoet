@@ -249,7 +249,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $actions = $actionScheduler->getScheduledActions();
     $this->assertCount(1, $actions);
     $action = reset($actions);
-    $this->assertNotFalse($action);
+    $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     $this->assertSame('mailpoet/automation/step', $action->get_hook());
     $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => 'step-id', 'run_number' => 3]], $action->get_args());
 
