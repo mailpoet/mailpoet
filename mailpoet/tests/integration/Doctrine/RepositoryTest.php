@@ -141,13 +141,12 @@ class RepositoryTest extends \MailPoetTest {
 
   /** @return Repository<SettingEntity> */
   private function createRepository(): Repository {
-    return new
-      /** @extends Repository<SettingEntity> */
-      class($this->entityManager) extends Repository {
-        protected function getEntityClassName(): string {
-          return SettingEntity::class;
-        }
-      };
+    return new /** @extends Repository<SettingEntity> */
+    class($this->entityManager) extends Repository {
+      protected function getEntityClassName(): string {
+        return SettingEntity::class;
+      }
+    };
   }
 
   private function getEntityFromIdentityMap(?int $id): ?SettingEntity {

@@ -30,7 +30,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
