@@ -18,6 +18,7 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -78,6 +79,9 @@ class NewsletterSaveController {
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
 
+  /** @var TimeZoneCampaignScheduler */
+  private $timeZoneCampaignScheduler;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -94,7 +98,8 @@ class NewsletterSaveController {
     WPFunctions $wp,
     ApiDataSanitizer $dataSanitizer,
     Scheduler $scheduler,
-    NewsletterCoupon $newsletterCoupon
+    NewsletterCoupon $newsletterCoupon,
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -112,6 +117,7 @@ class NewsletterSaveController {
     $this->dataSanitizer = $dataSanitizer;
     $this->scheduler = $scheduler;
     $this->newsletterCoupon = $newsletterCoupon;
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -463,9 +469,27 @@ class NewsletterSaveController {
 
     // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
     if ($newsletter->getStatus() === NewsletterEntity::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
+      if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+        $this->timeZoneCampaignScheduler->deleteScheduledCampaignQueues($newsletter);
+        $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+        $this->entityManager->flush();
+        return;
+      }
       $this->entityManager->remove($queue);
       $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     } else {
+      if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+        if (!$this->timeZoneCampaignScheduler->canReplaceScheduledCampaign($newsletter)) {
+          throw new InvalidStateException(__('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'));
+        }
+        foreach ($this->timeZoneCampaignScheduler->getCampaignQueues($queue) as $campaignQueue) {
+          $campaignQueue->setNewsletterRenderedSubject(null);
+          $campaignQueue->setNewsletterRenderedBody(null);
+          $this->entityManager->persist($campaignQueue);
+        }
+        $this->entityManager->flush();
+        return;
+      }
       $queue->setNewsletterRenderedSubject(null);
       $queue->setNewsletterRenderedBody(null);
       $this->entityManager->persist($queue);
