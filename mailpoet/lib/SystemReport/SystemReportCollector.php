@@ -109,6 +109,9 @@ class SystemReportCollector {
     $premiumKeyState = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME . '.state');
 
     $activePluginFiles = $this->wp->getOption('active_plugins', []);
+    $activePluginFiles = is_array($activePluginFiles)
+      ? array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $activePluginFiles)
+      : [];
 
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
@@ -198,6 +201,9 @@ class SystemReportCollector {
     }
 
     $activePluginFiles = $this->wp->getOption('active_plugins', []);
+    $activePluginFiles = is_array($activePluginFiles)
+      ? array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $activePluginFiles)
+      : [];
     $allPlugins = $this->wp->getPlugins();
     $updateTransient = $this->wp->getSiteTransient('update_plugins');
     $updateResponses = (

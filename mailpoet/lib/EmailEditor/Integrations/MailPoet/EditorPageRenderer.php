@@ -74,11 +74,10 @@ class EditorPageRenderer {
     $rawPostId = $_GET['post'] ?? null;
     $postId = is_numeric($rawPostId) ? intval($rawPostId) : 0;
     $post = $this->wp->getPost($postId);
-    $currentPostType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-    if (!$post instanceof \WP_Post || $currentPostType !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) {
+    if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return;
     }
+    $currentPostType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
     if (!$newsletter instanceof NewsletterEntity) {
       return;
