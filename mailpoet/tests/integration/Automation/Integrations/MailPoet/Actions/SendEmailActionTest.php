@@ -246,10 +246,12 @@ class SendEmailActionTest extends \MailPoetTest {
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
     $this->assertCount(0, $actionScheduler->getScheduledActions());
     $this->action->run($args, $controller);
-    $actions = array_values($actionScheduler->getScheduledActions());
+    $actions = $actionScheduler->getScheduledActions();
     $this->assertCount(1, $actions);
-    $this->assertSame('mailpoet/automation/step', $actions[0]->get_hook());
-    $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => 'step-id', 'run_number' => 3]], $actions[0]->get_args());
+    $action = reset($actions);
+    $this->assertNotFalse($action);
+    $this->assertSame('mailpoet/automation/step', $action->get_hook());
+    $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => 'step-id', 'run_number' => 3]], $action->get_args());
 
     // email was never sent (8th run is the last check after ~1 month)
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 8);

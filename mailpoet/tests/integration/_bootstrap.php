@@ -210,7 +210,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   protected function backupGlobals(): void {
     self::$savedGlobals = [];
     foreach (self::BACKUP_GLOBALS_NAMES as $globalName) {
-      foreach ($GLOBALS[$globalName] ?? [] as $key => $value) {
+      $current = $GLOBALS[$globalName] ?? [];
+      if (!is_array($current)) {
+        continue;
+      }
+      foreach ($current as $key => $value) {
         self::$savedGlobals[$globalName][$key] = is_object($value) ? clone $value : $value;
       }
     }

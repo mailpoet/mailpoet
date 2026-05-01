@@ -235,10 +235,10 @@ class Hosts {
   ];
 
   public static function getWebHosts() {
-    return static::$web;
+    return self::$web;
   }
 
   public static function getSMTPHosts() {
-    return static::$smtp;
+    return self::$smtp;
   }
 }

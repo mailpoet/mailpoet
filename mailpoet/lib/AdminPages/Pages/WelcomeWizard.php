@@ -43,7 +43,7 @@ class WelcomeWizard {
   }
 
   public function render() {
-    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    if (wp_doing_ajax()) return;
 
     $loadedViaWooCommerce = $this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME, false);
 

@@ -23,6 +23,7 @@ parameters:
   scanFiles:
     - PremiumContainerConfigurator.php
     - ../../vendor-prefixed/twig/twig/src/Extension/CoreExtension.php # phpstan can't find \MailPoetVendor\twig_include function
+    - ../../vendor-prefixed/symfony/polyfill-php80/bootstrap.php # str_contains/str_starts_with/str_ends_with on PHP 7.4
     - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - custom-stubs.php
   inferPrivatePropertyTypeFromConstructor: true
@@ -77,6 +78,10 @@ parameters:
     - message: '/Return type \(array\) of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) should be compatible with return type \(MailPoetVendor\\Monolog\\Processor\\Record\) of method MailPoetVendor\\Monolog\\Processor\\ProcessorInterface::__invoke\(\)/'
       count: 1
       path: ../../lib/Logging/PluginVersionProcessor.php
+    - # Monolog's AbstractProcessingHandler::write() inherits a docblock referencing Level/LevelName types that don't exist in our Monolog version.
+      message: '/Parameter \$record of method MailPoet\\Logging\\LogHandler::write\(\) has invalid type MailPoetVendor\\Monolog\\Handler\\(Level|LevelName)\./'
+      count: 2
+      path: ../../lib/Logging/LogHandler.php
     -
       # We don't allow seting properties for read-only entity WpPostEntity
       message: '#^Property MailPoet\\Entities\\WpPostEntity::\$postTitle is never written, only read\.$#'

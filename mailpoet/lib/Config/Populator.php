@@ -538,6 +538,7 @@ class Populator {
     foreach ($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
       $template = new $template(Env::$assetsUrl);
+      // @phpstan-ignore method.notFound (template classes live under PopulatorData/Templates which is excluded from analysis; each declares its own get())
       $templates[] = $template->get();
     }
 

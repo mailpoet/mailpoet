@@ -440,20 +440,20 @@ class Functions {
     return plugins_url($path, $plugin);
   }
 
-  public function registerActivationHook($file, $function) {
-    return register_activation_hook($file, $function);
+  public function registerActivationHook($file, $function): void {
+    register_activation_hook($file, $function);
   }
 
-  public function registerDeactivationHook($file, $function) {
-    return register_deactivation_hook($file, $function);
+  public function registerDeactivationHook($file, $function): void {
+    register_deactivation_hook($file, $function);
   }
 
   public function registerPostType($postType, $args = []) {
     return register_post_type($postType, $args);
   }
 
-  public function registerWidget($widget) {
-    return register_widget($widget);
+  public function registerWidget($widget): void {
+    register_widget($widget);
   }
 
     /**

@@ -107,7 +107,8 @@ class AutomationWalkerTest extends MailPoetUnitTest {
 
   private function walkAutomation(Automation $automation): array {
     $visitor = new class implements AutomationNodeVisitor {
-      public $nodes = [];
+      /** @var AutomationNode[] */
+      public array $nodes = [];
 
       public function initialize(Automation $automation): void {
         $this->nodes = [];

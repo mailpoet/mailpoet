@@ -737,7 +737,11 @@ class ContainerConfigurator implements IContainerConfigurator {
     if (!$container->has(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)) {
       return null;
     }
-    return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
+    $premiumContainer = $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG);
+    if (!$premiumContainer instanceof ContainerInterface) {
+      return null;
+    }
+    return $premiumContainer->get($id);
   }
 
   public static function getCdnAssetsUrl(): \MailPoet\Util\CdnAssetUrl {

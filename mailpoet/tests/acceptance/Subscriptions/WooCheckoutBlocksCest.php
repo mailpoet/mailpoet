@@ -10,6 +10,7 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
+use PHPUnit\Framework\Assert;
 
 /**
  * This class contains tests for subscriptions
@@ -44,7 +45,11 @@ class WooCheckoutBlocksCest {
         $checkoutPostId = $this->configureBlocksCheckoutPage($i);
         $postData = $i->cliToString(['post', 'get', $checkoutPostId, '--format=json']);
         $postData = json_decode($postData, true);
-        $this->checkoutPostContent = is_array($postData) ? $postData['post_content'] : '';
+        if (is_array($postData) && is_string($postData['post_content'] ?? null)) {
+          $this->checkoutPostContent = $postData['post_content'];
+        } else {
+          $this->checkoutPostContent = '';
+        }
         $this->checkoutPostId = $checkoutPostId;
       } else {
         $this->checkoutPostId = $this->createCheckoutPage($i, $this->checkoutPostContent);
@@ -298,6 +303,7 @@ class WooCheckoutBlocksCest {
 
     // Find the checkbox and verify it's checked
     $checkboxId = $i->grabAttributeFrom($locator, 'for');
+    Assert::assertIsString($checkboxId);
     $i->seeCheckboxIsChecked('#' . $checkboxId);
 
     $i->waitForElementVisible('.wc-block-components-textarea');
