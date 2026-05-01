@@ -847,6 +847,11 @@ jQuery(($) => {
         const formData =
           form.mailpoetSerializeObject() ||
           ({} as ReturnType<JQuery['mailpoetSerializeObject']>);
+        const browserTimeZone =
+          window.Intl?.DateTimeFormat().resolvedOptions().timeZone;
+        if (browserTimeZone && formData.data) {
+          formData.data.mailpoet_subscriber_timezone = browserTimeZone;
+        }
         const size = form
           .find('.mailpoet_recaptcha')
           .attr('data-size') as ReCaptchaV2.Size;
