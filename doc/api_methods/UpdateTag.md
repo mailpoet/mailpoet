@@ -36,3 +36,29 @@ Codes description:
 | 28   | Missing tag id                                       |
 | 29   | The tag was not found by id                          |
 | 30   | The tag couldn’t be updated in the database          |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // Rename the tag without touching the description
+    $tag = $mailpoet_api->updateTag([
+      'id' => '7',
+      'name' => 'VIP (legacy)',
+    ]);
+
+    // Clear the description by passing an empty string
+    $mailpoet_api->updateTag([
+      'id' => '7',
+      'description' => '',
+    ]);
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet updateTag failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
