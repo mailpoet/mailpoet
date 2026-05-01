@@ -6,4 +6,10 @@
 
 This method checks if the MailPoet is set up.
 
-It returns `false` if either Welcome Wizard, or WooCommerce setup, or MailPoet 2 migration is shown on the next MailPoet page visit. Otherwise it returns `true`.
+It returns `false` if any of the post-install onboarding screens would show up on the next MailPoet page visit:
+
+- the Welcome Wizard,
+- the WooCommerce list-import page,
+- the revenue tracking permission page.
+
+Otherwise it returns `true`.
