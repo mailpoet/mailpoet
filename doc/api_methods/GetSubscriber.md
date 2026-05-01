@@ -169,3 +169,28 @@ Codes description:
 | Code | Description                                  |
 | ---- | -------------------------------------------- |
 | 4    | Asking for a subscriber that does not exist. |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  // Look up by email
+  try {
+    $subscriber = $mailpoet_api->getSubscriber('jane.doe@example.com');
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    if ($e->getCode() === 4 /* SUBSCRIBER_NOT_EXISTS */) {
+      // Not found - show a sign-up prompt, etc.
+      $subscriber = null;
+    } else {
+      throw $e;
+    }
+  }
+
+  // Or by id (int or numeric string both work)
+  $subscriber = $mailpoet_api->getSubscriber(42);
+}
+```
