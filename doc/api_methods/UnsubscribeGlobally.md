@@ -27,3 +27,23 @@ Codes description:
 | ---- | -------------------------------------------- |
 | 4    | Invalid subscriber that does not exist       |
 | 24   | Subscriber already has 'unsubscribed' status |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $mailpoet_api->unsubscribe('jane.doe@example.com');
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    if ($e->getCode() === 24 /* SUBSCRIBER_ALREADY_UNSUBSCRIBED */) {
+      // Already unsubscribed - safe to ignore depending on the use case.
+      return;
+    }
+    error_log(sprintf('MailPoet unsubscribe failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
