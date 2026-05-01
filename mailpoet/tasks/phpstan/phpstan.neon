@@ -90,6 +90,9 @@ parameters:
     - # Tracy stubs declare an internal Tracy\mixed pseudo-type for log()'s $message; runtime accepts any value (string|object|throwable).
       identifier: argument.type
       message: '/Parameter #1 \$message of static method Tracy\\Debugger::log\(\) expects Tracy\\mixed/'
+      paths:
+        - ../../lib/API/JSON/API.php
+        - ../../lib/Config/TranslationUpdater.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
