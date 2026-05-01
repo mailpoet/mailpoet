@@ -67,8 +67,11 @@ class EnumArrayFilter implements Filter {
     $isStringOrInt = static function ($v): bool {
       return is_string($v) || is_int($v);
     };
-    $filterValue = array_values(array_filter(array_unique($filterValue, SORT_REGULAR), $isStringOrInt));
-    $value = array_values(array_filter(array_unique($value, SORT_REGULAR), $isStringOrInt));
+    // Filter by type before deduplicating: array_unique with SORT_REGULAR uses
+    // loose comparison, so [true, 1] collapses into a single bool and the int
+    // would then be dropped by the type filter.
+    $filterValue = array_values(array_unique(array_filter($filterValue, $isStringOrInt), SORT_REGULAR));
+    $value = array_values(array_unique(array_filter($value, $isStringOrInt), SORT_REGULAR));
 
     $toString = static function ($v): string {
       return (string)$v;
