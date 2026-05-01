@@ -61,11 +61,20 @@ class EnumArrayFilter implements Filter {
       return false;
     }
 
-    $filterValue = array_values(array_filter(array_unique($filterValue, SORT_REGULAR), 'is_scalar'));
-    $value = array_values(array_filter(array_unique($value, SORT_REGULAR), 'is_scalar'));
+    // Schema declares string[]|int[]; reject other scalar types so booleans
+    // (strval(false) === '') can't create phantom matches against empty values
+    // sourced from the field at runtime.
+    $isStringOrInt = static function ($v): bool {
+      return is_string($v) || is_int($v);
+    };
+    $filterValue = array_values(array_filter(array_unique($filterValue, SORT_REGULAR), $isStringOrInt));
+    $value = array_values(array_filter(array_unique($value, SORT_REGULAR), $isStringOrInt));
 
+    $toString = static function ($v): string {
+      return (string)$v;
+    };
     $filterCount = count($filterValue);
-    $matchedCount = count(array_intersect(array_map('strval', $value), array_map('strval', $filterValue)));
+    $matchedCount = count(array_intersect(array_map($toString, $value), array_map($toString, $filterValue)));
     switch ($data->getCondition()) {
       case self::CONDITION_MATCHES_ANY_OF:
         return $filterCount > 0 && $matchedCount > 0;
