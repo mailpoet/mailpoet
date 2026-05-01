@@ -2,15 +2,15 @@
 
 # Get Subscriber
 
-## `array getSubscriber(string $subscriber_email)`
+## `array getSubscriber($subscriberIdOrEmail)`
 
-This method throws an `\Exception` in the event a subscriber with a given email address doesn’t exist.
+This method throws an `\Exception` in the event no subscriber matches the given id or email.
 
 ## Arguments
 
-| Argument          | Type   | Description           |
-| ----------------- | ------ | --------------------- |
-| $subscriber_email | string | a valid email address |
+| Argument             | Type          | Description                                                          |
+| -------------------- | ------------- | -------------------------------------------------------------------- |
+| $subscriberIdOrEmail | int or string | An id (int or numeric string) or the email of an existing subscriber |
 
 ## A subscriber data structure
 
@@ -35,8 +35,11 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | unconfirmed_data         | string\|null | 65K chars | May contain serialized subscriber data in case when there are pending changes waiting for a confirmation from a subscriber     |
 | source                   | string\|null | -         | Possible values: `form`,`imported`,`administrator`,`api`,`wordpress_user`,`woocommerce_user`,`woocommerce_checkout`,`unknown`) |
 | count_confirmations      | string       | 11 chars  | Counter for confirmation emails                                                                                                |
-| subscriptions            | array        | -         | List of subcriber subscriptions                                                                                                |
-| tags                     | array        | -         | List of subcriber tags                                                                                                         |
+| unsubscribe_token        | string\|null | 15 chars  | Token used in unsubscribe links sent to the subscriber                                                                         |
+| link_token               | string\|null | 32 chars  | Token used to authenticate manage-subscription links sent to the subscriber                                                    |
+| subscriptions            | array        | -         | List of subscriber subscriptions                                                                                               |
+| unsubscribes             | array        | -         | History of unsubscribe events for the subscriber, ordered by `createdAt` desc                                                  |
+| tags                     | array        | -         | List of subscriber tags                                                                                                        |
 | cf\_{custom_field['id']} | string       | 65K chars | A custom subscriber field value (see [Get Subscriber Fields](GetSubscriberFields.md)                                           |
 
 ### Subscriber's subscription
@@ -49,6 +52,22 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | status        | string | -        | Status of a subscription for the list. Possible values: `subscribed`, `unsubscribed` |
 | created_at    | string | -        | UTC time of creation in 'Y-m-d H:i:s' format                                         |
 | updated_at    | string | -        | UTC time of last update in 'Y-m-d H:i:s' format                                      |
+
+### Subscriber's unsubscribe entry
+
+Each entry in `unsubscribes` describes a single unsubscribe event. `newsletterId` and `newsletterSubject` are only present when the unsubscribe is associated with a specific newsletter.
+
+| Property          | Type             | Description                                                                                                       |
+| ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| source            | string\|null     | Where the unsubscribe came from (`newsletter`, `manage`, `admin`, `mp_api`, …)                                    |
+| meta              | string\|null     | Free-form metadata stored alongside the event                                                                     |
+| createdAt         | DateTimeInterface\|null | When the unsubscribe was recorded                                                                          |
+| reason            | string\|null     | Internal reason key (e.g. `not_interested`, `spam`, `other`)                                                      |
+| reasonLabel       | string\|null     | Human-readable label for the reason; `"No reason provided"` when the reason is unspecified                        |
+| reasonText        | string\|null     | Free-form reason text submitted by the subscriber                                                                 |
+| reasonSubmittedAt | DateTimeInterface\|null | When the reason text was submitted                                                                         |
+| newsletterId      | int              | Id of the related newsletter (only present when applicable)                                                       |
+| newsletterSubject | string           | Subject of the related newsletter (only present when applicable)                                                  |
 
 ### Subscriber's tag
 
@@ -82,6 +101,8 @@ This method throws an `\Exception` in the event a subscriber with a given email 
   'unconfirmed_data' => NULL,
   'source' => 'woocommerce_user',
   'count_confirmations' => '0',
+  'unsubscribe_token' => 'a1b2c3d4e5f6g7h',
+  'link_token' => '0123456789abcdef0123456789abcdef',
   'subscriptions' => [
     0 => [
       'id' => '3',
@@ -98,6 +119,19 @@ This method throws an `\Exception` in the event a subscriber with a given email 
       'status' => 'unsubscribed',
       'created_at' => '2019-05-14 08:43:08',
       'updated_at' => '2019-05-14 08:43:08',
+    ],
+  ],
+  'unsubscribes' => [
+    0 => [
+      'source' => 'newsletter',
+      'meta' => NULL,
+      'createdAt' => /* DateTime */,
+      'reason' => 'not_interested',
+      'reasonLabel' => 'Not interested',
+      'reasonText' => NULL,
+      'reasonSubmittedAt' => NULL,
+      'newsletterId' => 42,
+      'newsletterSubject' => 'May newsletter',
     ],
   ],
   'tags' => [
