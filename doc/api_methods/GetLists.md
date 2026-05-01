@@ -43,3 +43,23 @@ In MailPoet, subscribers are organized into lists. This method returns an array 
   ],
 ]
 ```
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  $lists = $mailpoet_api->getLists();
+  // Filter out trashed lists; the API returns lists in trash with deleted_at set.
+  $active_lists = array_filter($lists, static function (array $list): bool {
+    return $list['deleted_at'] === null;
+  });
+
+  foreach ($active_lists as $list) {
+    printf("%s — %s\n", $list['id'], $list['name']);
+  }
+}
+```
