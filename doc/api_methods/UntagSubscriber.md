@@ -34,3 +34,22 @@ Codes description:
 | 4    | The subscriber does not exist.          |
 | 25   | Missing tag name (empty string passed). |
 | 29   | The tag does not exist.                 |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $mailpoet_api->untagSubscriber('jane.doe@example.com', 'VIP');
+    // Idempotent: calling again when the tag isn't attached is a no-op
+    // and does not re-fire `mailpoet_subscriber_tag_removed`.
+    $mailpoet_api->untagSubscriber('jane.doe@example.com', 'VIP');
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet untagSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
