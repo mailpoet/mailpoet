@@ -139,16 +139,47 @@ class BounceTest extends \MailPoetTest {
   public function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->countBy([
-      'task' => $task,
-      'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-    ]))->notEmpty();
+    verify($this->scheduledTaskSubscribersCount($task, ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->notEmpty();
 
     $this->worker->processTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->countBy([
+    verify($this->scheduledTaskSubscribersCount($task, ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->notEmpty();
+  }
+
+  /**
+   * Regression for STOMAIL-8000 wave 6: Bounce::processTaskStrategy must
+   * forward the resolved subscriber emails to the API. Earlier versions paired
+   * SubscribersRepository::getUndeletedSubscribersEmailsByIds (returned
+   * associative rows despite the docblock claiming string[]) with
+   * array_column(..., 'email') in the worker. Wave 6 cleaned the repository
+   * up to actually return string[] and dropped the array_column call. If the
+   * two sides of that contract ever drift again, processEmails() ends up
+   * called with [] and bounces silently stop being processed.
+   */
+  public function testItForwardsResolvedEmailsToBridgeApi() {
+    $task = $this->createRunningTask();
+    $this->worker->prepareTaskStrategy($task, microtime(true));
+
+    $api = $this->worker->api;
+    $this->assertInstanceOf(MockAPI::class, $api);
+    $api->checkBouncesCalls = [];
+
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $this->assertNotEmpty($api->checkBouncesCalls);
+    $forwarded = array_merge(...$api->checkBouncesCalls);
+    foreach ($this->emails as $email) {
+      $this->assertContains($email, $forwarded);
+    }
+  }
+
+  /**
+   * @param ScheduledTaskSubscriberEntity::STATUS_* $processedStatus
+   */
+  private function scheduledTaskSubscribersCount(ScheduledTaskEntity $task, int $processedStatus): int {
+    return $this->scheduledTaskSubscribersRepository->countBy([
       'task' => $task,
-      'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED,
-    ]))->notEmpty();
+      'processed' => $processedStatus,
+    ]);
   }
 
   public function testItSetsSubscriberStatusAsBounced() {

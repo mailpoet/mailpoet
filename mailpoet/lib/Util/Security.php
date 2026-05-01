@@ -61,7 +61,7 @@ class Security {
       $authKey = AUTH_KEY;
     }
     $hash = substr(
-      hash_hmac('sha512', self::generateRandomString(64), is_string($authKey) ? $authKey : ''),
+      hash_hmac('sha512', self::generateRandomString(64), (string)$authKey),
       0,
       $length
     );

@@ -483,11 +483,10 @@ class NewslettersRepository extends Repository {
       $query->setMaxResults($limit);
     }
 
+    /** @var NewsletterEntity[] $result */
     $result = $query->getQuery()->getResult();
 
-    return is_array($result) ? array_values(array_filter($result, function ($n) {
-      return $n instanceof NewsletterEntity;
-    })) : [];
+    return $result;
   }
 
   /**
@@ -511,11 +510,10 @@ class NewslettersRepository extends Repository {
       $query->setMaxResults($limit);
     }
 
+    /** @var NewsletterEntity[] $result */
     $result = $query->getQuery()->getResult();
 
-    return is_array($result) ? array_values(array_filter($result, function ($n) {
-      return $n instanceof NewsletterEntity;
-    })) : [];
+    return $result;
   }
 
   public function prefetchOptions(array $newsletters) {

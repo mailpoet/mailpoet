@@ -32,8 +32,14 @@ class WooCommerceCountry implements Filter {
     $filterData = $filter->getFilterData();
     $countryCode = $filterData->getParam('country_code');
     if (!is_array($countryCode)) {
-      $countryCode = [is_scalar($countryCode) ? (string)$countryCode : ''];
+      $countryCode = [$countryCode];
     }
+    // Drop non-scalar entries up front so createCondition() and setParameter()
+    // stay in sync; otherwise placeholders without setParameter() throw at exec.
+    $countryCode = array_values(array_map(static function ($code): string {
+      return (string)$code;
+    }, array_filter($countryCode, 'is_scalar')));
+
     $operator = $filterData->getParam('operator');
     $operator = is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::OPERATOR_ANY;
 
@@ -54,10 +60,7 @@ class WooCommerceCountry implements Filter {
     )->where($condition);
 
     foreach ($countryCode as $key => $userCountryCode) {
-      if (!is_scalar($userCountryCode)) {
-        continue;
-      }
-      $qb->setParameter('countryCode' . $key . $countryFilterParam, '%' . (string)$userCountryCode . '%');
+      $qb->setParameter('countryCode' . $key . $countryFilterParam, '%' . $userCountryCode . '%');
     }
 
     return $qb;
