@@ -230,6 +230,11 @@ class Subscriber {
     return $this;
   }
 
+  public function withTimeZone(string $timeZone): self {
+    $this->data['timeZone'] = $timeZone;
+    return $this;
+  }
+
   /**
    * @return $this
    */
@@ -282,6 +287,7 @@ class Subscriber {
     if (isset($this->data['wp_user_id'])) $subscriber->setWpUserId($this->data['wp_user_id']);
     if (isset($this->data['subscribedIp'])) $subscriber->setSubscribedIp($this->data['subscribedIp']);
     if (isset($this->data['confirmedIp'])) $subscriber->setConfirmedIp($this->data['confirmedIp']);
+    if (isset($this->data['timeZone'])) $subscriber->setTimeZone($this->data['timeZone']);
     if (isset($this->data['unconfirmedData'])) $subscriber->setUnconfirmedData($this->data['unconfirmedData']);
     if (isset($this->data['createdAt'])) $subscriber->setCreatedAt($this->data['createdAt']);
     if (isset($this->data['source'])) {
