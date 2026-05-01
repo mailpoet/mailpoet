@@ -101,3 +101,31 @@ See also [addSubscriberField function.](AddSubscriberField.md)
 ]
 
 ```
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  $fields = $mailpoet_api->getSubscriberFields();
+
+  // Render a form with the required fields, skipping the default email field
+  // which is always required and is typically already wired up.
+  foreach ($fields as $field) {
+    if ($field['id'] === 'email') {
+      continue;
+    }
+    $required = !empty($field['params']['required']);
+    printf(
+      '<label>%s%s<input name="%s" type="%s"></label>',
+      esc_html($field['name']),
+      $required ? ' *' : '',
+      esc_attr($field['id']),
+      esc_attr(in_array($field['type'], ['text', 'date'], true) ? $field['type'] : 'text')
+    );
+  }
+}
+```
