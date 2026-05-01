@@ -37,3 +37,17 @@ In MailPoet, tags can be attached to subscribers to label them. This method retu
   ],
 ]
 ```
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  $tags = $mailpoet_api->getTags();
+  // Build a name => id map for use with tagSubscriber()
+  $tags_by_name = array_column($tags, 'id', 'name');
+}
+```
