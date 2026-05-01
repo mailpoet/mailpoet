@@ -33,3 +33,23 @@ Codes description:
 | 14   | Missing list name                            |
 | 15   | Trying to create a list that already exists  |
 | 16   | The list couldn’t be created in the database |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $list = $mailpoet_api->addList([
+      'name' => 'VIP customers',
+      'description' => 'High-value customers, hand-picked.',
+    ]);
+    // $list['id'] is the new list id (string)
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet addList failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
