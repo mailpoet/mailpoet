@@ -37,3 +37,23 @@ Codes description:
 | 18   | Missing list id                                 |
 | 19   | The list couldn’t be updated in the database    |
 | 23   | Only lists of the type 'default' can be updated |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $list = $mailpoet_api->updateList([
+      'id' => '5',                       // required
+      'name' => 'VIP customers (renamed)',
+      'description' => 'High-value customers, hand-picked.',
+    ]);
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    error_log(sprintf('MailPoet updateList failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
