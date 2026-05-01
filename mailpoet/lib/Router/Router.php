@@ -111,9 +111,16 @@ class Router {
   }
 
   public function validatePermissions($endpointAction, $permissions) {
-    // validate action permission if defined, otherwise validate global permission
-    return(!empty($permissions['actions'][$endpointAction])) ?
-      $this->accessControl->validatePermission($permissions['actions'][$endpointAction]) :
-      $this->accessControl->validatePermission($permissions['global']);
+    if (!is_array($permissions)) {
+      return false;
+    }
+    $actionPermissions = $permissions['actions'] ?? null;
+    if (is_array($actionPermissions) && !empty($actionPermissions[$endpointAction])) {
+      return $this->accessControl->validatePermission($actionPermissions[$endpointAction]);
+    }
+    if (!isset($permissions['global'])) {
+      return false;
+    }
+    return $this->accessControl->validatePermission($permissions['global']);
   }
 }

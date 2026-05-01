@@ -111,10 +111,13 @@ class Renderer {
           throw NewsletterProcessingException::create()
             ->withMessage($this->couponBlockFailureTranslator->getFailureMessage($this->couponBlockFailureCollector));
         }
-        $renderedNewsletter['html'] = $this->wp->applyFilters(
+        $filteredHtml = $this->wp->applyFilters(
           self::FILTER_POST_PROCESS,
           $renderedNewsletter['html']
         );
+        if (is_string($filteredHtml)) {
+          $renderedNewsletter['html'] = $filteredHtml;
+        }
       } finally {
         $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
         $this->couponBlockFailureCollector->clear();
