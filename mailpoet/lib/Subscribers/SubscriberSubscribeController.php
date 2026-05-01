@@ -120,6 +120,8 @@ class SubscriberSubscribeController {
       return $meta;
     }
 
+    $submittedTimeZone = SubscriberEntity::sanitizeTimeZone($data[SubscriberEntity::TIME_ZONE_FIELD_NAME] ?? null);
+
     // only accept fields defined in the form
     $formFieldIds = array_filter(array_map(function (array $formField): ?string {
       if (!isset($formField['id'])) {
@@ -128,6 +130,9 @@ class SubscriberSubscribeController {
       return is_numeric($formField['id']) ? "cf_{$formField['id']}" : $formField['id'];
     }, $form->getBlocksByTypes(FormEntity::FORM_FIELD_TYPES)));
     $data = array_intersect_key($data, array_flip($formFieldIds));
+    if ($submittedTimeZone !== null) {
+      $data[SubscriberEntity::TIME_ZONE_FIELD_NAME] = $submittedTimeZone;
+    }
 
     // make sure we don't allow too many subscriptions with the same ip address
     $timeout = $this->throttling->throttle();

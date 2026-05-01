@@ -29,6 +29,7 @@ interface JQuery {
     api_version: string;
     data: {
       recaptchaResponseToken: string;
+      mailpoet_subscriber_timezone?: string;
     };
   };
   velocity: (selector: string, options?: Record<string, unknown>) => void;

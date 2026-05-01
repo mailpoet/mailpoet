@@ -235,6 +235,13 @@ class SubscriberSaveController {
     if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
     if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
     if (isset($data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser((bool)$data['is_woocommerce_user']);
+    $timeZone = SubscriberEntity::sanitizeTimeZone($data[SubscriberEntity::TIME_ZONE_FIELD_NAME] ?? null);
+    if ($timeZone !== null) {
+      $subscriber->setTimeZone($timeZone);
+      $subscriber->setTimeZoneSource(SubscriberEntity::TIME_ZONE_SOURCE_FORM);
+      $subscriber->setTimeZoneConfidence(SubscriberEntity::TIME_ZONE_CONFIDENCE_BROWSER);
+      $subscriber->setTimeZoneUpdatedAt(Carbon::now()->millisecond(0));
+    }
     $createdAt = isset($data['created_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']) : null;
     if ($createdAt) $subscriber->setCreatedAt($createdAt);
     $confirmedAt = isset($data['confirmed_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']) : null;
