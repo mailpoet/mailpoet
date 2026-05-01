@@ -13,12 +13,14 @@ class CapabilitiesManager {
   const MSS_DETAILED_ANALYTICS_SETTING_KEY = 'mta.mailpoet_api_key_state.data.detailed_analytics';
   const MSS_AUTOMATION_STEPS_SETTING_KEY = 'mta.mailpoet_api_key_state.data.automation_steps';
   const MSS_SEGMENT_FILTERS_SETTING_KEY = 'mta.mailpoet_api_key_state.data.segment_filters';
+  const MSS_SEND_BY_TIMEZONE_SETTING_KEY = 'mta.mailpoet_api_key_state.data.send_by_timezone';
   // Product capabilities mapping
   const MIN_TIER_LOGO_NOT_REQUIRED = 1;
   const MIN_TIER_ANALYTICS_ENABLED = 1;
   const MIN_TIER_NO_UPGRADE_PAGE = 2;
   const MIN_TIER_UNLIMITED_AUTOMATION_STEPS = 2;
   const MIN_TIER_UNLIMITED_SEGMENT_FILTERS = 2;
+  const MIN_TIER_SEND_BY_TIMEZONE_ENABLED = 1;
 
   private SettingsController $settings;
   private ServicesChecker $servicesChecker;
@@ -83,6 +85,24 @@ class CapabilitiesManager {
     return (isset($this->tier) && $this->tier >= self::MIN_TIER_ANALYTICS_ENABLED);
   }
 
+  private function isSendByTimezoneEnabled(): bool {
+    if (!$this->subscribersFeature->hasValidPremiumKey() || $this->subscribersFeature->check() || !$this->servicesChecker->isPremiumPluginActive()) {
+      return false;
+    }
+
+    $sendByTimezone = $this->settings->get(self::MSS_SEND_BY_TIMEZONE_SETTING_KEY);
+
+    if (!isset($this->tier) && !isset($sendByTimezone)) {
+      return true;
+    }
+
+    if (isset($sendByTimezone) && (bool)$sendByTimezone === true) {
+      return true;
+    }
+
+    return (isset($this->tier) && $this->tier >= self::MIN_TIER_SEND_BY_TIMEZONE_ENABLED);
+  }
+
   private function getLimit(string $settingKey, int $minTierForUnlimited): int {
     $capabilityValue = $this->settings->get($settingKey);
 
@@ -117,6 +137,7 @@ class CapabilitiesManager {
     $this->capabilities = [
       'mailpoetLogoInEmails' => new Capability('mailpoetLogoInEmails', Capability::TYPE_BOOLEAN, $this->isMailpoetLogoInEmailsRequired()),
       'detailedAnalytics' => new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, !$this->isDetailedAnalyticsEnabled()),
+      'sendByTimezone' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, !$this->isSendByTimezoneEnabled()),
       'automationSteps' => new Capability('automationSteps', Capability::TYPE_NUMBER, $automationSteps > 0, $automationSteps),
       'segmentFilters' => new Capability('segmentFilters', Capability::TYPE_NUMBER, $segmentFilters > 0, $segmentFilters),
     ];
