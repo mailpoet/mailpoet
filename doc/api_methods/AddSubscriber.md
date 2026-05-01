@@ -83,3 +83,39 @@ Codes description:
 | 17   | Welcome email failed to send.                                                         |
 | 25   | A `tags` entry resolved to an empty/missing tag name.                                 |
 | 29   | A `tags` entry referenced a tag id that does not exist.                               |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  $list_ids = [3]; // segment ids the new subscriber should be subscribed to
+  $options = [
+    'send_confirmation_email' => true,
+    'schedule_welcome_email' => true,
+    'skip_subscriber_notification' => false,
+  ];
+
+  try {
+    $subscriber = $mailpoet_api->addSubscriber(
+      [
+        'email' => 'jane.doe@example.com',
+        'first_name' => 'Jane',
+        'last_name' => 'Doe',
+        'tags' => ['VIP', ['id' => 5]], // mix of names and ids
+        'cf_1' => 'New York',           // custom subscriber field
+      ],
+      $list_ids,
+      $options
+    );
+    // $subscriber['id'] is the new subscriber id
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    // 11 = missing email, 12 = subscriber exists, 5/6/7/8 = invalid list,
+    // 10 = confirmation email failed, 17 = welcome email failed, 13 = save failed
+    error_log(sprintf('MailPoet addSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
