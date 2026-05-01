@@ -56,6 +56,34 @@ class SubscribersFinder {
     return $this->unique($result);
   }
 
+  /**
+   * @param int[] $newsletterSegmentsIds
+   * @return int[]
+   * @throws InvalidStateException
+   */
+  public function getSubscriberIdsFromSegments(array $newsletterSegmentsIds, ?int $filterSegmentId = null): array {
+    $result = [];
+    foreach ($newsletterSegmentsIds as $segmentId) {
+      $segment = $this->segmentsRepository->findOneById($segmentId);
+      if (!$segment instanceof SegmentEntity) {
+        continue;
+      }
+      try {
+        $result = array_merge($result, $this->segmentSubscriberRepository->getSubscriberIdsInSegment((int)$segment->getId()));
+      } catch (InvalidStateException $exception) {
+        continue;
+      }
+    }
+
+    if (is_int($filterSegmentId)) {
+      $filterSegment = $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
+      $filterSubscriberIds = $this->segmentSubscriberRepository->getSubscriberIdsInSegment((int)$filterSegment->getId());
+      $result = array_intersect($result, $filterSubscriberIds);
+    }
+
+    return array_values($this->unique($result));
+  }
+
   private function findSubscribersInSegment(SegmentEntity $segment, $subscribersToProcessIds): array {
     try {
       return $this->segmentSubscriberRepository->findSubscribersIdsInSegment((int)$segment->getId(), $subscribersToProcessIds);
