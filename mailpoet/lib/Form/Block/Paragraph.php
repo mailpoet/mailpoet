@@ -58,9 +58,6 @@ class Paragraph {
     if (!empty($block['params']['font_size'])) {
       $classes[] = 'mailpoet-has-font-size';
     }
-    if (empty($classes)) {
-      return null;
-    }
     return 'class="'
     . $this->wp->escAttr(join(' ', $classes))
     . '"';

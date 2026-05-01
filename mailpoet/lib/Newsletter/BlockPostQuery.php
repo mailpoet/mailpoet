@@ -113,15 +113,13 @@ class BlockPostQuery {
       }
 
       foreach ($taxonomies as $taxonomy => $terms) {
-        if (!empty($terms)) {
-          $tax = [
-            'taxonomy' => $taxonomy,
-            'field' => 'id',
-            'terms' => $terms,
-          ];
-          if (isset($this->args['inclusionType']) && $this->args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
-          $taxonomiesQuery[] = $tax;
-        }
+        $tax = [
+          'taxonomy' => $taxonomy,
+          'field' => 'id',
+          'terms' => $terms,
+        ];
+        if (isset($this->args['inclusionType']) && $this->args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
+        $taxonomiesQuery[] = $tax;
       }
       if (!empty($taxonomiesQuery)) {
         // With exclusion we want to use 'AND', because we want posts that

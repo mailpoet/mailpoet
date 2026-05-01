@@ -9,7 +9,7 @@ use MailPoet\WP\DateTime;
 
 class SegmentsExporter {
 
-  /*** @var SubscribersRepository */
+  /** @var SubscribersRepository */
   private $subscribersRepository;
 
   public function __construct(
@@ -20,7 +20,7 @@ class SegmentsExporter {
 
   /**
    * @param string $email
-   * @return array(data: mixed[], done: boolean)
+   * @return array{data: mixed[], done: bool}
    */
   public function export(string $email): array {
     return [

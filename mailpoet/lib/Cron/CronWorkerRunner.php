@@ -151,7 +151,7 @@ class CronWorkerRunner {
     }
 
     // If the task is running for too long consider it stuck and reschedule
-    if (!empty($task->getUpdatedAt()) && $updatedAt->diffInMinutes($currentTime, false) > self::TASK_RUN_TIMEOUT) {
+    if ($updatedAt->diffInMinutes($currentTime, false) > self::TASK_RUN_TIMEOUT) {
       $this->stopProgress($task);
       $this->cronWorkerScheduler->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
       return true;

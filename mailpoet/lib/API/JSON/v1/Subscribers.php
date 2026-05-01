@@ -40,7 +40,7 @@ class Subscribers extends APIEndpoint {
   /** @var Listing\Handler */
   private $listingHandler;
 
-  /** @var ConfirmationEmailMailer; */
+  /** @var ConfirmationEmailMailer */
   private $confirmationEmailMailer;
 
   /** @var SubscribersRepository */

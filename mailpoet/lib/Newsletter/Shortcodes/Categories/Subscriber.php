@@ -92,7 +92,7 @@ class Subscriber implements CategoryInterface {
           ) {
             $params = $customFieldDefinition->getParams();
             $label = (is_array($params) && isset($params['values'][0]['value'])) ? (string)$params['values'][0]['value'] : '';
-            return ($label !== '' && $label !== null) ? htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
+            return $label !== '' ? htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
           }
           return htmlspecialchars($customField->getValue(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
         }

@@ -129,7 +129,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param SubscriberEntity $subscriber
    * @param int|null $limit
    * @param int|null $offset
-   * @return array(newsletter_id: string, newsletter_rendered_subject: string, opened_at: string|null, sent_at: string)
+   * @return list<array{newsletter_id: mixed, newsletter_rendered_subject: string|null, opened_at: \DateTimeInterface|null, sent_at: \DateTimeInterface}>
    */
   public function getAllForSubscriber(
     SubscriberEntity $subscriber,
