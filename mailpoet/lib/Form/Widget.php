@@ -90,6 +90,7 @@ class Widget extends \WP_Widget {
       'mailpoet_form' => [
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
         'is_rtl' => $isRtl,
+        'collect_subscriber_timezones' => $this->assetsController->shouldCollectSubscriberTimeZones(),
       ],
       'fonts_link' => $this->customFonts->generateHtmlCustomFontLink(),
       'mailpoet_public_css_url' => Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css'),

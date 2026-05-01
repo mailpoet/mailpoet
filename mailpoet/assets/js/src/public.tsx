@@ -847,10 +847,17 @@ jQuery(($) => {
         const formData =
           form.mailpoetSerializeObject() ||
           ({} as ReturnType<JQuery['mailpoetSerializeObject']>);
-        const browserTimeZone =
-          window.Intl?.DateTimeFormat().resolvedOptions().timeZone;
-        if (browserTimeZone && formData.data) {
-          formData.data.mailpoet_subscriber_timezone = browserTimeZone;
+        const collectSubscriberTimeZones =
+          window.MailPoetForm.collect_subscriber_timezones;
+        if (
+          collectSubscriberTimeZones !== false &&
+          collectSubscriberTimeZones !== ''
+        ) {
+          const browserTimeZone =
+            window.Intl?.DateTimeFormat().resolvedOptions().timeZone;
+          if (browserTimeZone && formData.data) {
+            formData.data.mailpoet_subscriber_timezone = browserTimeZone;
+          }
         }
         const size = form
           .find('.mailpoet_recaptcha')

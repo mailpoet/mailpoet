@@ -69,6 +69,9 @@ export type Settings = {
   analytics: {
     enabled: '' | '1';
   };
+  collect_subscriber_timezones: {
+    enabled: '' | '1';
+  };
   captcha: {
     type: 'built-in' | 'recaptcha' | 'recaptcha-invisible' | '';
     recaptcha_site_token: string;

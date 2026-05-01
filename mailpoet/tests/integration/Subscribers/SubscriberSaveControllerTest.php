@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -21,11 +22,16 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
     $this->saveController = $this->diContainer->get(SubscriberSaveController::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->settings->set('collect_subscriber_timezones', ['enabled' => '1']);
   }
 
   public function testItCreatesNewSubscriber(): void {
@@ -68,6 +74,34 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getSegments())->arrayCount(2);
     verify($subscriber->getSubscriberSegments())->arrayCount(2);
     verify($subscriber->getSubscriberTags())->arrayCount(2);
+  }
+
+  public function testItSavesSubscriberTimeZoneWhenCollectionIsEnabled(): void {
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-enabled@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::TIME_ZONE_FIELD_NAME => 'Europe/Prague',
+    ]);
+
+    verify($subscriber->getTimeZone())->equals('Europe/Prague');
+    verify($subscriber->getTimeZoneSource())->equals(SubscriberEntity::TIME_ZONE_SOURCE_FORM);
+    verify($subscriber->getTimeZoneConfidence())->equals(SubscriberEntity::TIME_ZONE_CONFIDENCE_BROWSER);
+    verify($subscriber->getTimeZoneUpdatedAt())->notNull();
+  }
+
+  public function testItDoesNotSaveSubscriberTimeZoneWhenCollectionIsDisabled(): void {
+    $this->settings->set('collect_subscriber_timezones', ['enabled' => '']);
+
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-disabled@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::TIME_ZONE_FIELD_NAME => 'Europe/Prague',
+    ]);
+
+    verify($subscriber->getTimeZone())->null();
+    verify($subscriber->getTimeZoneSource())->null();
+    verify($subscriber->getTimeZoneConfidence())->null();
+    verify($subscriber->getTimeZoneUpdatedAt())->null();
   }
 
   public function testItCanUpdateASubscriber(): void {

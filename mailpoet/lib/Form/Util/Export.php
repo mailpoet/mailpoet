@@ -4,6 +4,7 @@ namespace MailPoet\Form\Util;
 
 use MailPoet\Config\Env;
 use MailPoet\Form\Widget;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
@@ -82,9 +83,14 @@ class Export {
         '"></script>';
 
         // (JS) variables...
+        $collectSubscriberTimeZones = SettingsController::getInstance()->get(
+          'collect_subscriber_timezones.enabled'
+        );
         $output[] = '<script type="text/javascript">';
         $output[] = '   var MailPoetForm = MailPoetForm || {';
         $output[] = '       is_rtl: ' . ((int)is_rtl()) . ",";
+        $output[] = '       collect_subscriber_timezones: ' .
+          (in_array($collectSubscriberTimeZones, [true, '1', 1], true) ? 'true' : 'false') . ',';
         $output[] = '       ajax_url: "' . admin_url('admin-ajax.php') . '"';
         $output[] = '   };';
         $output[] = '</script>';

@@ -179,6 +179,7 @@ interface Window {
     captcha_reload_title?: string;
     captcha_audio_title?: string;
     assets_url?: string;
+    collect_subscriber_timezones?: boolean | '' | '1';
     openPopup?: (formId: number | string) => boolean;
   };
   mailpoet_authorized_emails?: string[];

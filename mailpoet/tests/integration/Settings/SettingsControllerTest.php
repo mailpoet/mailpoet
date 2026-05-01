@@ -47,6 +47,10 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertFalse($this->controller->get('subscription.unsubscribe_survey.allow_other_text'));
   }
 
+  public function testItEnablesSubscriberTimeZoneCollectionByDefault(): void {
+    $this->assertTrue($this->controller->get('collect_subscriber_timezones.enabled'));
+  }
+
   public function testItCanFetchValuesFromDB() {
     $this->assertNull($this->controller->fetch('test_key'));
     $this->assertNull($this->controller->fetch('test_key.sub_key'));
