@@ -77,7 +77,18 @@ class Shortcodes {
   }
 
   public function extract($content, $categories = false) {
-    $categories = is_array($categories) ? implode('|', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $categories)) : false;
+    if (is_array($categories)) {
+      $normalizedCategories = array_values(array_filter(
+        array_map(
+          static fn($v): string => is_scalar($v) ? preg_quote((string)$v, '/') : '',
+          $categories
+        ),
+        static fn(string $v): bool => $v !== ''
+      ));
+      $categories = $normalizedCategories ? implode('|', $normalizedCategories) : false;
+    } else {
+      $categories = false;
+    }
     // match: [category:shortcode] or [category|category|...:shortcode]
     // dot not match: [category://shortcode] - avoids matching http/ftp links
     $regex = sprintf(
