@@ -92,13 +92,13 @@ class SubscriberEntity {
   private $status = self::STATUS_UNCONFIRMED;
 
   /**
-   * @ORM\Column(type="string", length=64, nullable=true)
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $subscribedIp;
 
   /**
-   * @ORM\Column(type="string", length=32, nullable=true)
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $confirmedIp;
