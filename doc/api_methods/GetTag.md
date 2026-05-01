@@ -26,3 +26,26 @@ Codes description:
 | Code | Description                           |
 | ---- | ------------------------------------- |
 | 29   | Asking for a tag that does not exist. |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // By id
+    $tag = $mailpoet_api->getTag(7);
+    // ...or by exact name (case sensitivity follows the database collation)
+    $tag = $mailpoet_api->getTag('VIP');
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    if ($e->getCode() === 29 /* TAG_NOT_EXISTS */) {
+      $tag = null;
+    } else {
+      throw $e;
+    }
+  }
+}
+```
