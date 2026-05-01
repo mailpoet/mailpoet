@@ -89,7 +89,7 @@ class NewsletterTemplates extends APIEndpoint {
     if (isset($data['body']) && is_string($data['body']) && $data['body'] !== '') {
       $decodedBody = json_decode($data['body'], true);
       if (!is_array($decodedBody)) {
-        return $this->errorResponse([
+        return $this->badRequest([
           APIError::BAD_REQUEST => __('Invalid template body payload.', 'mailpoet'),
         ]);
       }

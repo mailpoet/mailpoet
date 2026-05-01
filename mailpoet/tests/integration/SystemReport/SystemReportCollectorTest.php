@@ -111,7 +111,9 @@ class SystemReportCollectorTest extends \MailPoetTest {
   public function testItReturnsActivePlugins() {
     $activePlugins = get_option('active_plugins');
     $this->assertIsArray($activePlugins);
-    verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $activePlugins)));
+    $stringPlugins = array_filter($activePlugins, 'is_string');
+    $this->assertSame(count($activePlugins), count($stringPlugins));
+    verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", $stringPlugins));
   }
 
   public function testItReturnsActivePluginsDetails() {

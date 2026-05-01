@@ -133,11 +133,11 @@ class ImportExport extends APIEndpoint {
   public function processImport($data) {
     try {
       if (!is_string($data)) {
-        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid import payload.', 'mailpoet')]);
+        return $this->badRequest([APIError::BAD_REQUEST => __('Invalid import payload.', 'mailpoet')]);
       }
       $decoded = json_decode($data, true);
       if (!is_array($decoded)) {
-        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid import payload.', 'mailpoet')]);
+        return $this->badRequest([APIError::BAD_REQUEST => __('Invalid import payload.', 'mailpoet')]);
       }
       $import = new Import(
         $this->wpSegment,
@@ -161,11 +161,11 @@ class ImportExport extends APIEndpoint {
   public function processExport($data) {
     try {
       if (!is_string($data)) {
-        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid export payload.', 'mailpoet')]);
+        return $this->badRequest([APIError::BAD_REQUEST => __('Invalid export payload.', 'mailpoet')]);
       }
       $decoded = json_decode($data, true);
       if (!is_array($decoded)) {
-        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid export payload.', 'mailpoet')]);
+        return $this->badRequest([APIError::BAD_REQUEST => __('Invalid export payload.', 'mailpoet')]);
       }
       $export = new Export(
         $this->customFieldsRepository,
