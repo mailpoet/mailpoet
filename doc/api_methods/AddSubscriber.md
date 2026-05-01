@@ -70,9 +70,16 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                        |
-| ---- | -------------------------------------------------- |
-| 11   | Missing email address                              |
-| 12   | Trying to create a subscriber that already exists  |
-| 13   | The subscriber couldn’t be created in the database |
-| 17   | Welcome email failed to send                       |
+| Code | Description                                                                           |
+| ---- | ------------------------------------------------------------------------------------- |
+| 5    | One or more `$list_ids` do not exist (raised when the subscriber is added to lists).  |
+| 6    | One of `$list_ids` points to a WordPress Users list.                                  |
+| 7    | One of `$list_ids` points to a WooCommerce Customers list.                            |
+| 8    | One of `$list_ids` points to a list that does not support subscribing (e.g. dynamic). |
+| 10   | Confirmation email failed to send.                                                    |
+| 11   | Missing email address.                                                                |
+| 12   | Trying to create a subscriber that already exists.                                    |
+| 13   | The subscriber couldn’t be created in the database.                                   |
+| 17   | Welcome email failed to send.                                                         |
+| 25   | A `tags` entry resolved to an empty/missing tag name.                                 |
+| 29   | A `tags` entry referenced a tag id that does not exist.                               |
