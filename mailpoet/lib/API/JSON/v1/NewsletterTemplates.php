@@ -86,7 +86,7 @@ class NewsletterTemplates extends APIEndpoint {
         return $this->successResponse($data);
       }
     }
-    if (!empty($data['body']) && is_string($data['body'])) {
+    if (isset($data['body']) && is_string($data['body']) && $data['body'] !== '') {
       $decodedBody = json_decode($data['body'], true);
       if (!is_array($decodedBody)) {
         return $this->errorResponse([
