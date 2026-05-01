@@ -39,7 +39,7 @@ class MetaInformationManager {
       if (!empty($text)) {
         $text = '<p>' . implode('<br />', $text) . '</p>';
         if ($position === 'above') $content = $text . $content;
-        else if ($position === 'below') $content .= $text;
+        else $content .= $text;
       }
     }
 

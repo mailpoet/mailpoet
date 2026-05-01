@@ -13,10 +13,10 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\DateTime;
 
 class SubscriberExporter {
-  /*** @var SubscribersRepository */
+  /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /*** @var CustomFieldsRepository */
+  /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
   /** @var StatisticsUnsubscribesRepository */
@@ -25,7 +25,7 @@ class SubscriberExporter {
   /** @var UnsubscribeReasonTracker */
   private $unsubscribeReasonTracker;
 
-  /*** @var array<int, string> */
+  /** @var array<int, string> */
   private $customFields = [];
 
   public function __construct(
@@ -42,7 +42,7 @@ class SubscriberExporter {
 
   /**
    * @param string $email
-   * @return array(data: mixed[], done: boolean)
+   * @return array{data: array<int, array<string, mixed>>, done: bool}
    */
   public function export(string $email): array {
     return [

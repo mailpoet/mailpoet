@@ -480,12 +480,10 @@ class Newsletter {
     // campaign IDs change when images change, we should consider all image URLs.
     if (isset($renderedNewsletters['html'])) {
       $html = pQuery::parseStr($renderedNewsletters['html']);
-      if ($html instanceof DomNode) {
-        foreach ($html->query('img') as $imageNode) {
-          $src = $imageNode->getAttribute('src');
-          if (is_string($src)) {
-            $relevantContent[] = $src;
-          }
+      foreach ($html->query('img') as $imageNode) {
+        $src = $imageNode->getAttribute('src');
+        if (is_string($src)) {
+          $relevantContent[] = $src;
         }
       }
     }

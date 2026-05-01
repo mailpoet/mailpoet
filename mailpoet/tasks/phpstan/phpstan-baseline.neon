@@ -26,11 +26,6 @@ parameters:
 			path: ../../lib/API/JSON/v1/Segments.php
 
 		-
-			identifier: phpDoc.parseError
-			count: 1
-			path: ../../lib/API/JSON/v1/Subscribers.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/AdminPages/PageRenderer.php
@@ -71,11 +66,6 @@ parameters:
 			path: ../../lib/Automation/Integrations/MailPoet/Triggers/UserRegistrationTrigger.php
 
 		-
-			identifier: nullCoalesce.expr
-			count: 1
-			path: ../../lib/Cache/TransientCache.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Captcha/CaptchaHooks.php
@@ -106,19 +96,9 @@ parameters:
 			path: ../../lib/Config/TranslationUpdater.php
 
 		-
-			identifier: empty.expr
-			count: 1
-			path: ../../lib/Cron/CronWorkerRunner.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Cron/Daemon.php
-
-		-
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: ../../lib/Cron/Workers/SendingQueue/Tasks/Newsletter.php
 
 		-
 			identifier: argument.type
@@ -171,19 +151,9 @@ parameters:
 			path: ../../lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php
 
 		-
-			identifier: empty.variable
-			count: 1
-			path: ../../lib/Form/Block/Paragraph.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Form/DisplayFormInWPContent.php
-
-		-
-			identifier: nullCoalesce.expr
-			count: 1
-			path: ../../lib/Form/Renderer.php
 
 		-
 			identifier: argument.type
@@ -194,16 +164,6 @@ parameters:
 			identifier: class.notFound
 			count: 2
 			path: ../../lib/Logging/LogHandler.php
-
-		-
-			identifier: empty.variable
-			count: 1
-			path: ../../lib/Newsletter/BlockPostQuery.php
-
-		-
-			identifier: identical.alwaysTrue
-			count: 1
-			path: ../../lib/Newsletter/Editor/MetaInformationManager.php
 
 		-
 			identifier: argument.type
@@ -221,29 +181,14 @@ parameters:
 			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
 
 		-
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Subscriber.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Newsletter/Shortcodes/Shortcodes.php
 
 		-
-			identifier: phpDoc.parseError
-			count: 1
-			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
-
-		-
 			identifier: argument.type
 			count: 1
 			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
-
-		-
-			identifier: nullCoalesce.variable
-			count: 1
-			path: ../../lib/NewsletterTemplates/ThumbnailSaver.php
 
 		-
 			identifier: staticClassAccess.privateProperty
@@ -254,16 +199,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/Import/MailChimpDataMapper.php
-
-		-
-			identifier: phpDoc.parseError
-			count: 1
-			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SegmentsExporter.php
-
-		-
-			identifier: phpDoc.parseError
-			count: 1
-			path: ../../lib/Subscribers/ImportExport/PersonalDataExporters/SubscriberExporter.php
 
 		-
 			identifier: argument.type
@@ -379,11 +314,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: ../../tests/integration/SystemReport/SystemReportCollectorTest.php
-
-		-
-			identifier: empty.offset
-			count: 3
-			path: ../../tests/integration/Util/ConflictResolverTest.php
 
 		-
 			identifier: new.resultUnused

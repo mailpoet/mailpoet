@@ -53,7 +53,7 @@ class ThumbnailSaver {
     $savedFilename = null;
     $savedBaseUrl = null;
     if ($thumbnailUrl && strpos($thumbnailUrl, self::THUMBNAIL_DIRECTORY) !== false) {
-      [$savedBaseUrl, $savedFilename] = explode('/' . self::THUMBNAIL_DIRECTORY . '/', $thumbnailUrl ?? '');
+      [$savedBaseUrl, $savedFilename] = explode('/' . self::THUMBNAIL_DIRECTORY . '/', $thumbnailUrl);
     }
     $file = $this->baseDirectory . '/' . self::THUMBNAIL_DIRECTORY . '/' . $savedFilename;
     if (!$savedFilename || !file_exists($file)) {

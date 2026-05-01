@@ -22,9 +22,10 @@ class ConflictResolverTest extends \MailPoetTest {
     // it should unset action & endpoint GET variables
     $_GET['endpoint'] = $_GET['action'] = $_GET['test'] = 'test';
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
-    verify(empty($_GET['endpoint']))->true();
-    verify(empty($_GET['action']))->true();
-    verify(empty($_GET['test']))->false();
+    $remainingKeys = array_keys($_GET);
+    verify(in_array('endpoint', $remainingKeys, true))->false();
+    verify(in_array('action', $remainingKeys, true))->false();
+    verify(in_array('test', $remainingKeys, true))->true();
   }
 
   public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {

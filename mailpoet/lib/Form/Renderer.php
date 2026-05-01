@@ -43,7 +43,7 @@ class Renderer {
 
   public function renderHTML(?FormEntity $form = null): string {
     if (($form instanceof FormEntity) && !empty($form->getBody()) && is_array($form->getSettings())) {
-      return $this->renderBlocks($form->getBody(), $form->getSettings() ?? [], $form->getId());
+      return $this->renderBlocks($form->getBody(), $form->getSettings(), $form->getId());
     }
     return '';
   }
