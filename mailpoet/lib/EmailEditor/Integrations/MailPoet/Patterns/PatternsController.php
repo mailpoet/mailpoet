@@ -140,7 +140,7 @@ class PatternsController {
         continue;
       }
 
-      register_block_pattern($patternData['name'], $patternData['properties']);
+      register_block_pattern($patternData['name'], $patternData['properties']); // @phpstan-ignore argument.type (validated as array<string, mixed> just above; register_block_pattern's strict shape is enforced at runtime)
 
       // Build email content registry: store email_content when it differs from preview content
       $previewContent = isset($patternData['properties']['content']) && is_string($patternData['properties']['content']) ? $patternData['properties']['content'] : '';

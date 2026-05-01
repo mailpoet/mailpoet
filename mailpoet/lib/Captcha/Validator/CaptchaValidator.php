@@ -130,7 +130,8 @@ class CaptchaValidator {
     }
     $user = $this->wp->wpGetCurrentUser();
     $roles = $this->wp->applyFilters('mailpoet_subscription_captcha_exclude_roles', ['administrator', 'editor']);
-    return !empty(array_intersect((array)$roles, $user->roles));
+    $stringRoles = is_array($roles) ? array_values(array_filter($roles, 'is_string')) : [];
+    return !empty(array_intersect($stringRoles, $user->roles));
   }
 
   /**

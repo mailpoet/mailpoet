@@ -64,7 +64,8 @@ class Daemon {
       } catch (\Exception $e) {
         Helpers::mySqlGoneAwayExceptionHandler($e);
 
-        $workerClassNameParts = explode('\\', get_class($worker));
+        $workerClass = is_object($worker) ? get_class($worker) : '';
+        $workerClassNameParts = explode('\\', $workerClass);
         $workerName = end($workerClassNameParts);
         $errors[] = [
           'worker' => $workerName,

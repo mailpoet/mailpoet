@@ -70,7 +70,8 @@ class EditorPageRenderer {
   }
 
   public function render() {
-    $postId = isset($_GET['post']) ? intval($_GET['post']) : 0;
+    $rawPostId = $_GET['post'] ?? null;
+    $postId = is_numeric($rawPostId) ? intval($rawPostId) : 0;
     $post = $this->wp->getPost($postId);
     $currentPostType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 

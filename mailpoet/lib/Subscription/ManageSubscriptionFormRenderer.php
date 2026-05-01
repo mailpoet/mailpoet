@@ -84,7 +84,10 @@ class ManageSubscriptionFormRenderer {
       ]
     );
 
-    $form = $this->wp->applyFilters('mailpoet_manage_subscription_page_form_fields', $form);
+    $filteredForm = $this->wp->applyFilters('mailpoet_manage_subscription_page_form_fields', $form);
+    if (is_array($filteredForm)) {
+      $form = $filteredForm;
+    }
 
     $templateData = [
       'actionUrl' => admin_url('admin-post.php'),

@@ -422,7 +422,7 @@ class ShortcodesTest extends \MailPoetTest {
     $parsedUrlQuery = parse_url($link, PHP_URL_QUERY);
     $queryData = [];
     parse_str((string)$parsedUrlQuery, $queryData);
-    $queryData['data'] = is_string($queryData['data']) ? $queryData['data'] : implode('', $queryData['data']);
+    $queryData['data'] = is_string($queryData['data']) ? $queryData['data'] : implode('', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $queryData['data']));
     return $this->newsletterUrl->transformUrlDataObject(json_decode(base64_decode($queryData['data']), true));
   }
 

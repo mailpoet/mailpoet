@@ -365,7 +365,9 @@ class Helper {
    * @return bool
    */
   public function isCheckoutRequest(): bool {
-    $requestUri = !empty($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    $requestUri = is_string($_SERVER['REQUEST_URI'] ?? null) && $_SERVER['REQUEST_URI'] !== ''
+      ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))
+      : '';
     $isRegularCheckout = is_checkout();
     $isBlockCheckout = WC()->is_rest_api_request()
       && (strpos($requestUri, 'wc/store/checkout') !== false || strpos($requestUri, 'wc/store/v1/checkout') !== false);

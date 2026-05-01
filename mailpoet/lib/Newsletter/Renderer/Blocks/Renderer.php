@@ -97,7 +97,7 @@ class Renderer {
         $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth);
         // nested vertical column container is rendered as an array
         if (is_array($renderedBlockElement)) {
-          $renderedBlockElement = implode('', $renderedBlockElement);
+          $renderedBlockElement = implode('', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $renderedBlockElement));
         }
       }
 

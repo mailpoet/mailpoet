@@ -85,10 +85,7 @@ class Scheduler {
     if (!isset($settings['enabled'])) {
       return true;
     }
-    if (!isset($settings['address'])) {
-      return true;
-    }
-    if (empty(trim($settings['address']))) {
+    if (!is_string($settings['address'] ?? null) || trim($settings['address']) === '') {
       return true;
     }
     if (!$this->trackingConfig->isEmailTrackingEnabled()) {

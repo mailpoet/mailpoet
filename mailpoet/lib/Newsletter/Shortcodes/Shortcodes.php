@@ -77,7 +77,7 @@ class Shortcodes {
   }
 
   public function extract($content, $categories = false) {
-    $categories = (is_array($categories)) ? implode('|', $categories) : false;
+    $categories = is_array($categories) ? implode('|', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $categories)) : false;
     // match: [category:shortcode] or [category|category|...:shortcode]
     // dot not match: [category://shortcode] - avoids matching http/ftp links
     $regex = sprintf(

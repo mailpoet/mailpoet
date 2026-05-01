@@ -118,7 +118,7 @@ class SystemReportCollector {
       'MailPoet Premium/MSS key' => $premiumKey,
       'WordPress version' => $this->wp->getBloginfo('version'),
       'Database version' => $dbVersion,
-      'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
+      'Web server' => is_string($_SERVER['SERVER_SOFTWARE'] ?? null) && $_SERVER['SERVER_SOFTWARE'] !== '' ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
       'WP info' => $this->formatCompositeField([
         'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,

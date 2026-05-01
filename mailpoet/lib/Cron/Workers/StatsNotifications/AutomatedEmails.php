@@ -86,10 +86,7 @@ class AutomatedEmails extends SimpleWorker {
     if (!isset($settings['automated'])) {
       return false;
     }
-    if (!isset($settings['address'])) {
-      return false;
-    }
-    if (empty(trim($settings['address']))) {
+    if (!is_string($settings['address'] ?? null) || trim($settings['address']) === '') {
       return false;
     }
     if (!$this->trackingConfig->isEmailTrackingEnabled()) {

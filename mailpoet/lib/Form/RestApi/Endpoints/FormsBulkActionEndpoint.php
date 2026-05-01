@@ -49,7 +49,7 @@ class FormsBulkActionEndpoint extends FormsEndpoint {
     }
 
     $ids = array_values(array_filter(
-      array_map('intval', $rawIds),
+      array_map(static fn($id): int => is_scalar($id) ? (int)$id : 0, $rawIds),
       static function (int $id): bool {
         return $id > 0;
       }

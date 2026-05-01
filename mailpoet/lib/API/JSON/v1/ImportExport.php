@@ -132,6 +132,10 @@ class ImportExport extends APIEndpoint {
 
   public function processImport($data) {
     try {
+      $decoded = json_decode($data, true);
+      if (!is_array($decoded)) {
+        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid import payload.', 'mailpoet')]);
+      }
       $import = new Import(
         $this->wpSegment,
         $this->customFieldsRepository,
@@ -140,7 +144,7 @@ class ImportExport extends APIEndpoint {
         $this->subscriberRepository,
         $this->tagRepository,
         $this->validator,
-        json_decode($data, true)
+        $decoded
       );
       $process = $import->process();
       return $this->successResponse($process);
@@ -153,11 +157,15 @@ class ImportExport extends APIEndpoint {
 
   public function processExport($data) {
     try {
+      $decoded = json_decode($data, true);
+      if (!is_array($decoded)) {
+        return $this->errorResponse([APIError::BAD_REQUEST => __('Invalid export payload.', 'mailpoet')]);
+      }
       $export = new Export(
         $this->customFieldsRepository,
         $this->importExportRepository,
         $this->segmentsRepository,
-        json_decode($data, true)
+        $decoded
       );
       $process = $export->process();
       return $this->successResponse($process);

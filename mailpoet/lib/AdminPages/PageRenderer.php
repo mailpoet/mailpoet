@@ -149,7 +149,7 @@ class PageRenderer {
     }
 
     $defaults = [
-      'current_page' => sanitize_text_field(wp_unslash($_GET['page'] ?? '')),
+      'current_page' => sanitize_text_field(wp_unslash(is_string($_GET['page'] ?? null) ? $_GET['page'] : '')),
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'main_page' => Menu::MAIN_PAGE_SLUG,
       'site_url' => $this->wp->siteUrl(),

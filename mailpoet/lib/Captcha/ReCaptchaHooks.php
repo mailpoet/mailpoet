@@ -93,7 +93,7 @@ class ReCaptchaHooks {
     try {
       // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
       $responseToken = $_POST['g-recaptcha-response'] ?? '';
-      $this->reCaptchaValidator->validate($responseToken);
+      $this->reCaptchaValidator->validate(is_string($responseToken) ? $responseToken : '');
     } catch (\Throwable $e) {
       $errors->add('recaptcha_failed', $e->getMessage());
     }

@@ -37,7 +37,7 @@ class MailChimpDataMapper {
       $member['status'],
       $member['merge_fields']['FNAME'] ?? '',
       $member['merge_fields']['LNAME'] ?? '',
-      is_array($member['merge_fields']['ADDRESS']) ? implode(' ', $member['merge_fields']['ADDRESS'] ?? []) : $member['merge_fields']['ADDRESS'],
+      is_array($member['merge_fields']['ADDRESS']) ? implode(' ', array_map(static fn($v): string => is_scalar($v) ? (string)$v : '', $member['merge_fields']['ADDRESS'])) : $member['merge_fields']['ADDRESS'],
       $member['merge_fields']['PHONE'] ?? '',
       $member['merge_fields']['BIRTHDAY'] ?? '',
       $member['ip_signup'],
