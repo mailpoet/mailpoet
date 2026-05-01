@@ -70,6 +70,7 @@ class EditorPageRenderer {
   }
 
   public function render() {
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- is_numeric guard plus int cast is the sanitization
     $rawPostId = $_GET['post'] ?? null;
     $postId = is_numeric($rawPostId) ? intval($rawPostId) : 0;
     $post = $this->wp->getPost($postId);
