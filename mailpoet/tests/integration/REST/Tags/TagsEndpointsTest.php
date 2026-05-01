@@ -48,6 +48,8 @@ class TagsEndpointsTest extends Test {
     $this->assertSame(1, $meta['pages']);
 
     $byName = array_column($items, null, 'name');
+    $this->assertIsArray($byName['Customers']);
+    $this->assertIsArray($byName['Prospects']);
     $this->assertSame(1, $byName['Customers']['subscribers_count']);
     $this->assertSame(0, $byName['Prospects']['subscribers_count']);
   }

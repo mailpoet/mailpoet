@@ -47,7 +47,7 @@ class ValidationTest extends \MailPoetTest {
     try {
       $this->entityManager->flush();
       $this->fail('Validation exception was not thrown.');
-    } catch (ValidationException $e) {
+    } catch (ValidationException $e) { // @phpstan-ignore catch.neverThrown (thrown from a Doctrine preFlush event listener; PHPStan can't trace event-driven throws)
       $entityClass = get_class($entity);
       verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value should not be blank.");
     }
@@ -64,7 +64,7 @@ class ValidationTest extends \MailPoetTest {
     try {
       $this->entityManager->flush();
       $this->fail('Validation exception was not thrown.');
-    } catch (ValidationException $e) {
+    } catch (ValidationException $e) { // @phpstan-ignore catch.neverThrown (thrown from a Doctrine preFlush event listener; PHPStan can't trace event-driven throws)
       $entityClass = get_class($entity);
       verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value is too short. It should have 3 characters or more.");
     }
@@ -83,7 +83,7 @@ class ValidationTest extends \MailPoetTest {
     // Validation group is Default, no email validation
     try {
       $this->entityManager->flush();
-    } catch (ValidationException $e) {
+    } catch (ValidationException $e) { // @phpstan-ignore catch.neverThrown (thrown from a Doctrine preFlush event listener; PHPStan can't trace event-driven throws)
       $this->fail('Validation exception was thrown.');
     }
 
@@ -94,7 +94,7 @@ class ValidationTest extends \MailPoetTest {
     try {
       $this->entityManager->flush();
       $this->fail('Validation exception was not thrown.');
-    } catch (ValidationException $e) {
+    } catch (ValidationException $e) { // @phpstan-ignore catch.neverThrown (thrown from a Doctrine preFlush event listener; PHPStan can't trace event-driven throws)
       $entityClass = get_class($entity);
       verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [email] This value is not a valid email address.");
     }

@@ -28,7 +28,7 @@ class WooCommerceSetup {
   }
 
   public function render() {
-    if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    if (wp_doing_ajax()) return;
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
       'show_customers_import' => $this->wooCommerceHelper->getCustomersCount() > 0,

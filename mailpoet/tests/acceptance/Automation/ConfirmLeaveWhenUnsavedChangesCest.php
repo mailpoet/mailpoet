@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use PHPUnit\Framework\Assert;
+
 /**
  * This test contains active AutomateWoo plugin
  * in order to potentially catch issue with
@@ -46,6 +48,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
 
     $i->wantTo('Leave the page after saving.');
     $automationId = $i->grabFromCurrentUrl('~(\d+)$~');
+    Assert::assertIsString($automationId);
     $i->click('Save');
     $i->waitForText('saved');
     $i->amOnMailpoetPage('Automation');

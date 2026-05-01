@@ -229,13 +229,14 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       },
     ]);
 
-    new TransactionalEmailHooks(
+    $hooks = new TransactionalEmailHooks(
       $wp,
       $this->settings,
       $this->diContainer->get(Renderer::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(TransactionalEmails::class)
     );
+    unset($hooks); // construction registers hooks via the WP mock; the instance itself is unused.
 
   }
 }

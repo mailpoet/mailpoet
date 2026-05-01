@@ -39,10 +39,8 @@ class Changelog {
   }
 
   public function init() {
-    $doingAjax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-
     // don't run any check when it's an ajax request
-    if ($doingAjax) {
+    if (wp_doing_ajax()) {
       return;
     }
 
