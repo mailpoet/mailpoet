@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Migrations\Db;
 
-require_once __DIR__ . '/../../../../lib/Migrations/Db/Migration_20260430_120000.php';
-
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Migrations\Db\Migration_20260430_120000;
 
