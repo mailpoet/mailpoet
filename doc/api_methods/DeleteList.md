@@ -25,3 +25,21 @@ Codes description:
 | 21   | List cannot be deleted because it’s used for a form             |
 | 22   | The list couldn’t be deleted from the database                  |
 | 23   | Only lists of the type 'default' can be deleted                 |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $mailpoet_api->deleteList('5'); // list id as string
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    // 18 = empty id, 5 = list not found, 20/21 = list still in use,
+    // 23 = list type is not 'default' (e.g. dynamic), 22 = delete failed
+    error_log(sprintf('MailPoet deleteList failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
