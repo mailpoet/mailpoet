@@ -35,3 +35,25 @@ Codes description:
 | 6    | Trying to unsubscribe from a WordPress Users list           |
 | 7    | Trying to unsubscribe from a WooCommerce Customers list     |
 | 8    | Trying to unsubscribe from a list that doesn’t support that |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    $mailpoet_api->unsubscribeFromLists(
+      'jane.doe@example.com',
+      [3, 7] // list ids
+    );
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    // Note: this only removes the per-list subscription. To unsubscribe
+    // the subscriber from everything and flip their global status, use
+    // unsubscribe() (see UnsubscribeGlobally.md).
+    error_log(sprintf('MailPoet unsubscribeFromLists failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
