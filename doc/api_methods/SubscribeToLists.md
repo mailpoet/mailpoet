@@ -54,3 +54,28 @@ Codes description:
 | 10   | Confirmation email failed to send                                    |
 | 13   | Failed to save the subscriber's status when transitioning to the list |
 | 17   | Welcome email failed to send                                         |
+
+## Example
+
+```php
+<?php
+
+if (class_exists(\MailPoet\API\API::class)) {
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+  try {
+    // Add an existing subscriber to two lists, suppressing the admin
+    // notification email but keeping confirmation/welcome emails on.
+    $subscriber = $mailpoet_api->subscribeToLists(
+      'jane.doe@example.com',
+      [3, 7],
+      ['skip_subscriber_notification' => true]
+    );
+  } catch (\MailPoet\API\MP\v1\APIException $e) {
+    // Common codes: 4 (subscriber not found), 5 (list not found),
+    // 6/7/8 (list type not allowed), 10 (confirmation send failed),
+    // 17 (welcome send failed).
+    error_log(sprintf('MailPoet subscribeToLists failed [%d]: %s', $e->getCode(), $e->getMessage()));
+  }
+}
+```
