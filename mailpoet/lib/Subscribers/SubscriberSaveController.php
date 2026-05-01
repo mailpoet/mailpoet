@@ -235,7 +235,7 @@ class SubscriberSaveController {
     if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
     if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
     if (isset($data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser((bool)$data['is_woocommerce_user']);
-    if ($this->shouldCollectSubscriberTimeZones()) {
+    if ($this->settings->isSettingEnabled('collect_subscriber_timezones.enabled')) {
       $timeZone = SubscriberEntity::sanitizeTimeZone($data[SubscriberEntity::TIME_ZONE_FIELD_NAME] ?? null);
       if ($timeZone !== null) {
         $subscriber->setTimeZone($timeZone);
@@ -379,10 +379,5 @@ class SubscriberSaveController {
     foreach ($removedTags as $subscriberTag) {
       $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
     }
-  }
-
-  private function shouldCollectSubscriberTimeZones(): bool {
-    $enabled = $this->settings->get('collect_subscriber_timezones.enabled');
-    return $enabled === true || $enabled === '1' || $enabled === 1;
   }
 }

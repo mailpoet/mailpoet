@@ -29,6 +29,9 @@ class Widget extends \WP_Widget {
   /** @var CustomFonts */
   private $customFonts;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -38,7 +41,8 @@ class Widget extends \WP_Widget {
     $this->wp = new WPFunctions;
 
     $this->renderer = (new RendererFactory())->getRenderer();
-    $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
+    $this->settings = SettingsController::getInstance();
+    $this->assetsController = new AssetsController($this->wp, $this->renderer, $this->settings);
     $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     $this->customFonts = ContainerWrapper::getInstance()->get(CustomFonts::class);
@@ -90,7 +94,7 @@ class Widget extends \WP_Widget {
       'mailpoet_form' => [
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
         'is_rtl' => $isRtl,
-        'collect_subscriber_timezones' => $this->assetsController->shouldCollectSubscriberTimeZones(),
+        'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
       ],
       'fonts_link' => $this->customFonts->generateHtmlCustomFontLink(),
       'mailpoet_public_css_url' => Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css'),
