@@ -143,6 +143,35 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertTrue($this->controller->hasSavedValue('test_key'));
   }
 
+  public function testItChecksIfSettingIsEnabledAcrossStoredRepresentations(): void {
+    // Settings may be persisted as string, integer, or boolean depending on how
+    // they were written, so the helper must accept all three truthy forms.
+    $this->controller->set('truthy_bool', true);
+    $this->controller->set('truthy_string', '1');
+    $this->controller->set('truthy_int', 1);
+    $this->controller->set('falsy_bool', false);
+    $this->controller->set('falsy_string', '');
+    $this->controller->set('falsy_int', 0);
+    $this->controller->set('falsy_zero_string', '0');
+
+    $this->assertTrue($this->controller->isSettingEnabled('truthy_bool'));
+    $this->assertTrue($this->controller->isSettingEnabled('truthy_string'));
+    $this->assertTrue($this->controller->isSettingEnabled('truthy_int'));
+    $this->assertFalse($this->controller->isSettingEnabled('falsy_bool'));
+    $this->assertFalse($this->controller->isSettingEnabled('falsy_string'));
+    $this->assertFalse($this->controller->isSettingEnabled('falsy_int'));
+    $this->assertFalse($this->controller->isSettingEnabled('falsy_zero_string'));
+    $this->assertFalse($this->controller->isSettingEnabled('unknown_key'));
+  }
+
+  public function testItChecksIfNestedSettingIsEnabled(): void {
+    $this->controller->set('group.enabled', '1');
+    $this->assertTrue($this->controller->isSettingEnabled('group.enabled'));
+
+    $this->controller->set('group.enabled', '');
+    $this->assertFalse($this->controller->isSettingEnabled('group.enabled'));
+  }
+
   public function testItSkipsDbWriteWhenValueUnchanged() {
     // Same scalar value — second set() should skip DB write
     $this->controller->set('skip_test', 1);
