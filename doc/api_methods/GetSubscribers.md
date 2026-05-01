@@ -22,4 +22,4 @@ Filter argument supports following array keys.
 | ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
 | status       | string       | Specific status of subscribers. One of values: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive` |
 | listId       | int          | List id or dynamic segment id                                                                                     |
-| minUpdatedAt | DateTime\int | DateTime object or timestamp of the minimal last update of subscribers                                            |
+| minUpdatedAt | DateTimeInterface\|int | A `DateTime`/`DateTimeImmutable` instance, or a unix timestamp, for the minimal last-updated time of subscribers |

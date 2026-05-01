@@ -435,9 +435,9 @@ class Subscribers {
    * @param array $filter {
    *     Filters to retrieve subscribers.
    *
-   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
-   *     @type int           $listId       id of a list or dynamic segment
-   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
+   *     @type string                 $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
+   *     @type int                    $listId       id of a list or dynamic segment
+   *     @type \DateTimeInterface|int $minUpdatedAt DateTime/DateTimeImmutable instance or timestamp of last update of subscriber.
    * }
    */
   private function buildListingDefinition(array $filter, int $limit = 50, int $offset = 0): ListingDefinition {
@@ -449,7 +449,7 @@ class Subscribers {
     }
     // Set filtering by minimal updatedAt
     if (isset($filter['minUpdatedAt'])) {
-      if ($filter['minUpdatedAt'] instanceof \DateTime) {
+      if ($filter['minUpdatedAt'] instanceof \DateTimeInterface) {
         $listingFilters['minUpdatedAt'] = $filter['minUpdatedAt'];
       } elseif (is_int($filter['minUpdatedAt'])) {
         $listingFilters['minUpdatedAt'] = Carbon::createFromTimestamp($filter['minUpdatedAt']);
