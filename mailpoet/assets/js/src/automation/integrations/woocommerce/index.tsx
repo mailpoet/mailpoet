@@ -13,6 +13,7 @@ import { step as MadeAReview } from './steps/made-a-review';
 import { step as CustomerWinBack } from './steps/customer-win-back';
 import { step as ChangeOrderStatus } from './steps/change-order-status';
 import { step as AddOrderNote } from './steps/add-order-note';
+import { step as SavedCardExpires } from './steps/saved-card-expires';
 // Insert new imports here
 
 export const initialize = (): void => {
@@ -32,5 +33,6 @@ export const initialize = (): void => {
   registerStepType(CustomerWinBack);
   registerStepType(ChangeOrderStatus);
   registerStepType(AddOrderNote);
+  registerStepType(SavedCardExpires);
   // Insert new steps here
 };
