@@ -538,6 +538,83 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertContains($tagId, $value);
   }
 
+  public function testProductTypesField(): void {
+    $simple = $this->tester->createWooCommerceProduct(['name' => 'OF Simple']);
+    $grouped = new \WC_Product_Grouped();
+    $grouped->set_name('OF Grouped');
+    $grouped->save();
+
+    $fields = $this->getFieldsMap();
+    $productTypes = $fields['woocommerce:order:product-types'];
+
+    $this->assertSame('Product types', $productTypes->getName());
+    $this->assertSame('enum_array', $productTypes->getType());
+
+    $args = $productTypes->getArgs();
+    $this->assertArrayHasKey('options', $args);
+    $optionIds = array_column($args['options'], 'id');
+    // Core WooCommerce types must always be present.
+    $this->assertContains('simple', $optionIds);
+    $this->assertContains('variable', $optionIds);
+    $this->assertContains('grouped', $optionIds);
+    $this->assertContains('external', $optionIds);
+    foreach ($args['options'] as $option) {
+      $this->assertArrayHasKey('id', $option);
+      $this->assertArrayHasKey('name', $option);
+    }
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($simple);
+    $order->add_product($grouped);
+
+    $payload = new OrderPayload($order);
+    $value = $productTypes->getValue($payload);
+    $this->assertIsArray($value);
+    $this->assertEqualsCanonicalizing(['simple', 'grouped'], $value);
+  }
+
+  public function testProductTypesFieldWithVariableProduct(): void {
+    $variable = new \WC_Product_Variable();
+    $variable->set_name('OF Variable');
+    $variable->save();
+    $variation = new \WC_Product_Variation();
+    $variation->set_parent_id($variable->get_id());
+    $variation->set_name('OF Variable Variation 1');
+    $variation->save();
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($variation);
+
+    $payload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $value = $fields['woocommerce:order:product-types']->getValue($payload);
+    $this->assertIsArray($value);
+    $this->assertSame(['variable'], $value);
+    $this->assertNotContains('variation', $value);
+  }
+
+  public function testProductTypesFieldDeduplicatesAcrossLineItems(): void {
+    $product1 = $this->tester->createWooCommerceProduct(['name' => 'OF Simple 1']);
+    $product2 = $this->tester->createWooCommerceProduct(['name' => 'OF Simple 2']);
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($product1);
+    $order->add_product($product2);
+
+    $payload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $value = $fields['woocommerce:order:product-types']->getValue($payload);
+    $this->assertSame(['simple'], $value);
+  }
+
+  public function testProductTypesFieldEmptyOrder(): void {
+    $order = $this->tester->createWooCommerceOrder();
+    $payload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $value = $fields['woocommerce:order:product-types']->getValue($payload);
+    $this->assertSame([], $value);
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
