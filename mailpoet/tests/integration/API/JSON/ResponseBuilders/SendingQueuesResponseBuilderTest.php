@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
@@ -61,5 +62,41 @@ class SendingQueuesResponseBuilderTest extends \MailPoetTest {
     ];
 
     $this->assertSame($expectedResult, $this->sendingQueuesResponseBuilder->build($this->sendingQueue));
+  }
+
+  public function testBuildAggregatesTimeZoneCampaignQueues() {
+    $campaignId = 'timezone-campaign';
+    $this->sendingQueue->setCountTotal(1);
+    $this->sendingQueue->setCountToProcess(1);
+    $this->sendingQueue->setMeta([
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+      TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'Europe/Bratislava',
+      TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+    ]);
+    $secondTask = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new Carbon('2018-10-11 10:00:00')
+    );
+    $secondQueue = (new SendingQueueFactory())->create($secondTask, $this->newsletter);
+    $secondQueue->setCountTotal(2);
+    $secondQueue->setCountToProcess(2);
+    $secondQueue->setMeta([
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+      TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'America/New_York',
+      TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+    ]);
+    $this->entityManager->flush();
+
+    $result = $this->sendingQueuesResponseBuilder->build($this->sendingQueue);
+
+    verify($result['status'])->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($result['scheduled_at'])->equals('2018-10-10 10:00:00');
+    verify($result['count_total'])->equals(3);
+    verify($result['count_processed'])->equals(0);
+    verify($result['count_to_process'])->equals(3);
+    verify(count($result['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]))->equals(2);
   }
 }

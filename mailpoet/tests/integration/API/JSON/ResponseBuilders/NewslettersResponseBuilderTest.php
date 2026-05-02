@@ -10,6 +10,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
@@ -108,5 +109,49 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     /** @var string[] $renderedQueue */
     $renderedQueue = $response[0]['queue'];
     verify($renderedQueue['newsletter_rendered_subject'])->equals('Hello [mailpoet/subscriber-firstname default="subscriber"]!');
+  }
+
+  public function testItAggregatesTimeZoneCampaignQueueForListing() {
+    $em = $this->diContainer->get(EntityManager::class);
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $campaignId = 'timezone-campaign';
+    $em->persist($newsletter = new NewsletterEntity);
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $newsletter->setSubject('Subject');
+
+    $groups = [
+      ['Europe/Bratislava', '2018-10-10 10:00:00', 1],
+      ['America/New_York', '2018-10-11 10:00:00', 2],
+    ];
+    foreach ($groups as [$timeZone, $scheduledAt, $count]) {
+      $em->persist($task = new ScheduledTaskEntity());
+      $task->setType(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::TASK_TYPE);
+      $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+      $task->setScheduledAt(new \DateTimeImmutable($scheduledAt));
+      $em->persist($queue = new SendingQueueEntity());
+      $queue->setNewsletter($newsletter);
+      $queue->setTask($task);
+      $queue->setCountTotal($count);
+      $queue->setCountToProcess($count);
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+        TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => $timeZone,
+        TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+      ]);
+    }
+    $em->flush();
+
+    $response = $responseBuilder->buildForListing([$newsletter]);
+
+    /** @var array<string, mixed> $queue */
+    $queue = $response[0]['queue'];
+    verify($queue['scheduled_at'])->equals('2018-10-10 10:00:00');
+    verify($queue['count_total'])->equals('3');
+    verify($queue['count_to_process'])->equals('3');
+    $this->assertIsArray($queue['meta']);
+    $this->assertIsArray($queue['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]);
+    verify(count($queue['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]))->equals(2);
   }
 }

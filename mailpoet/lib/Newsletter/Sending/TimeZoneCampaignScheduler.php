@@ -83,7 +83,7 @@ class TimeZoneCampaignScheduler {
     if ($capability && $capability->isRestricted) {
       throw new \Exception(__('Send by subscriber time zone requires a paid MailPoet plan.', 'mailpoet'), 403);
     }
-    if (!$this->canReplaceScheduledCampaign($newsletter)) {
+    if (!$this->canReplaceScheduledQueues($newsletter)) {
       throw new \Exception(__('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'), 400);
     }
 
@@ -113,7 +113,7 @@ class TimeZoneCampaignScheduler {
 
     $this->entityManager->beginTransaction();
     try {
-      $this->deleteScheduledCampaignQueues($newsletter);
+      $this->deleteReplaceableScheduledQueues($newsletter);
       $createdQueues = [];
 
       foreach ($schedule as $group) {
@@ -426,39 +426,84 @@ class TimeZoneCampaignScheduler {
 
   public function canReplaceScheduledCampaign(NewsletterEntity $newsletter): bool {
     foreach ($this->getTimeZoneQueuesForNewsletter($newsletter) as $queue) {
-      $task = $queue->getTask();
-      if (!$task instanceof ScheduledTaskEntity) {
-        continue;
-      }
-      if ($queue->getCountProcessed() > 0 || $task->getInProgress()) {
-        return false;
-      }
-      if (!in_array($task->getStatus(), [ScheduledTaskEntity::STATUS_SCHEDULED, ScheduledTaskEntity::STATUS_PAUSED], true)) {
+      if (!$this->isReplaceableScheduledQueue($queue)) {
         return false;
       }
     }
     return true;
   }
 
-  public function deleteScheduledCampaignQueues(NewsletterEntity $newsletter): void {
-    foreach ($this->getTimeZoneQueuesForNewsletter($newsletter) as $queue) {
-      $task = $queue->getTask();
-      if ($task instanceof ScheduledTaskEntity) {
-        $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
+  public function canReplaceScheduledQueues(NewsletterEntity $newsletter): bool {
+    foreach ($this->getQueuesForNewsletter($newsletter) as $queue) {
+      if ($this->isTerminalQueue($queue)) {
+        continue;
       }
-      $this->sendingQueuesRepository->remove($queue);
-      if ($task instanceof ScheduledTaskEntity) {
-        $this->scheduledTasksRepository->remove($task);
+      if (!$this->isReplaceableScheduledQueue($queue)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public function deleteReplaceableScheduledQueues(NewsletterEntity $newsletter): void {
+    foreach ($this->getQueuesForNewsletter($newsletter) as $queue) {
+      if ($this->isReplaceableScheduledQueue($queue)) {
+        $this->deleteQueue($queue);
       }
     }
     $this->entityManager->flush();
   }
 
+  public function deleteScheduledCampaignQueues(NewsletterEntity $newsletter): void {
+    foreach ($this->getTimeZoneQueuesForNewsletter($newsletter) as $queue) {
+      $this->deleteQueue($queue);
+    }
+    $this->entityManager->flush();
+  }
+
+  /** @return SendingQueueEntity[] */
+  private function getQueuesForNewsletter(NewsletterEntity $newsletter): array {
+    return $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
+  }
+
   /** @return SendingQueueEntity[] */
   private function getTimeZoneQueuesForNewsletter(NewsletterEntity $newsletter): array {
-    return array_values(array_filter($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]), function(SendingQueueEntity $queue): bool {
+    return array_values(array_filter($this->getQueuesForNewsletter($newsletter), function(SendingQueueEntity $queue): bool {
       return $this->isTimeZoneQueue($queue);
     }));
+  }
+
+  private function isReplaceableScheduledQueue(SendingQueueEntity $queue): bool {
+    $task = $queue->getTask();
+    return $task instanceof ScheduledTaskEntity
+      && $queue->getCountProcessed() === 0
+      && !$task->getInProgress()
+      && in_array($task->getStatus(), [ScheduledTaskEntity::STATUS_SCHEDULED, ScheduledTaskEntity::STATUS_PAUSED], true);
+  }
+
+  private function isTerminalQueue(SendingQueueEntity $queue): bool {
+    $task = $queue->getTask();
+    return $task instanceof ScheduledTaskEntity
+      && in_array(
+        $task->getStatus(),
+        [
+          ScheduledTaskEntity::STATUS_COMPLETED,
+          ScheduledTaskEntity::STATUS_CANCELLED,
+          ScheduledTaskEntity::STATUS_INVALID,
+        ],
+        true
+      );
+  }
+
+  private function deleteQueue(SendingQueueEntity $queue): void {
+    $task = $queue->getTask();
+    if ($task instanceof ScheduledTaskEntity) {
+      $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
+    }
+    $this->sendingQueuesRepository->remove($queue);
+    if ($task instanceof ScheduledTaskEntity) {
+      $this->scheduledTasksRepository->remove($task);
+    }
   }
 
   /** @return SendingQueueEntity[] */

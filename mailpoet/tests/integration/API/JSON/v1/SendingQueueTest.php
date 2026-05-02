@@ -9,10 +9,13 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
@@ -137,6 +140,52 @@ class SendingQueueTest extends \MailPoetTest {
     $scheduled = $rescheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     verify($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
+  }
+
+  public function testItReplacesTimezoneQueuesWhenSchedulingByWebsiteTime(): void {
+    $newsletter = $this->newsletter;
+    $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => 1,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => '2030-10-10 10:00:00',
+    ]);
+    $campaignId = 'timezone-campaign';
+    $oldTask1 = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new \DateTimeImmutable('2030-10-09 10:00:00')
+    );
+    $oldTask2 = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new \DateTimeImmutable('2030-10-09 11:00:00')
+    );
+    $oldQueue1 = (new SendingQueueFactory())->create($oldTask1, $newsletter);
+    $oldQueue2 = (new SendingQueueFactory())->create($oldTask2, $newsletter);
+    foreach ([$oldQueue1, $oldQueue2] as $oldQueue) {
+      $oldQueue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+      ]);
+    }
+    $this->entityManager->flush();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    verify($result->status)->equals(APIResponse::STATUS_OK);
+    verify($sendingQueuesRepository->findOneById((int)$oldQueue1->getId()))->null();
+    verify($sendingQueuesRepository->findOneById((int)$oldQueue2->getId()))->null();
+    verify($scheduledTasksRepository->findOneById((int)$oldTask1->getId()))->null();
+    verify($scheduledTasksRepository->findOneById((int)$oldTask2->getId()))->null();
+    $newTask = $scheduledTasksRepository->findOneById((int)$result->data['task_id']);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newTask);
+    $scheduled = $newTask->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
+    verify($scheduled->format('Y-m-d H:i:s'))->equals('2030-10-10 10:00:00');
   }
 
   public function testAddReturnsErrorIfThereAreNoSubscribersAssociatedWithTheNewsletter() {
