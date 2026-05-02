@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Newsletter\Sending;
 
 use Codeception\Util\Stub;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -16,7 +17,9 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
@@ -76,6 +79,34 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     verify($perTimezone['America/New_York'] ?? 0)->equals(1);
     verify($perTimezone['Europe/Bratislava'] ?? 0)->equals(2);
     verify($totalSubscribers)->equals(3);
+  }
+
+  public function testItReplacesExistingWebsiteTimeQueueWhenSchedulingByTimeZone(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    $newsletter = (new NewsletterFactory())
+      ->withDefaultBody()
+      ->withSegments([$segment])
+      ->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+    $oldTask = (new ScheduledTaskFactory())->create(
+      SendingQueueWorker::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      $this->getUtcDateTime('+2 days')
+    );
+    $oldQueue = (new SendingQueueFactory())->create($oldTask, $newsletter);
+    $oldTaskId = (int)$oldTask->getId();
+    $oldQueueId = (int)$oldQueue->getId();
+
+    $this->getScheduler()->schedule($newsletter);
+
+    $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    verify($sendingQueuesRepository->findOneById($oldQueueId))->null();
+    verify($scheduledTasksRepository->findOneById($oldTaskId))->null();
+    foreach ($sendingQueuesRepository->findBy(['newsletter' => $newsletter]) as $queue) {
+      verify($this->getScheduler()->isTimeZoneQueue($queue))->true();
+    }
   }
 
   public function testItMarksFallbackGroupExplicitly(): void {

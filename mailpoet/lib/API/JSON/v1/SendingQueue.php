@@ -127,11 +127,21 @@ class SendingQueue extends APIEndpoint {
       // check that the sending method has been configured properly by verifying that default mailer can be build
       $this->mailerFactory->getDefaultMailer();
 
-      if ((bool)$newsletter->getOptionValue('isScheduled') && $this->timeZoneCampaignScheduler->isSubscriberTimeZoneMode($newsletter)) {
+      $isScheduled = (bool)$newsletter->getOptionValue('isScheduled');
+      if ($isScheduled && $this->timeZoneCampaignScheduler->isSubscriberTimeZoneMode($newsletter)) {
         $sendingQueue = $this->timeZoneCampaignScheduler->schedule($newsletter);
         WordPress::resetRunInterval();
         $this->triggerSending($newsletter);
         return $this->successResponse($this->sendingQueuesResponseBuilder->build($sendingQueue));
+      }
+      if ($isScheduled) {
+        if (!$this->timeZoneCampaignScheduler->canReplaceScheduledCampaign($newsletter)) {
+          throw new \Exception(
+            __('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'),
+            Response::STATUS_BAD_REQUEST
+          );
+        }
+        $this->timeZoneCampaignScheduler->deleteScheduledCampaignQueues($newsletter);
       }
 
       $sendingQueue = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus($newsletter, null);
@@ -168,7 +178,7 @@ class SendingQueue extends APIEndpoint {
       $this->scheduledTasksRepository->flush();
 
       WordPress::resetRunInterval();
-      if ((bool)$newsletter->getOptionValue('isScheduled')) {
+      if ($isScheduled) {
         // set newsletter status
         $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
 
