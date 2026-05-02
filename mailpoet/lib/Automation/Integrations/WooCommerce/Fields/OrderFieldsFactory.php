@@ -278,6 +278,21 @@ class OrderFieldsFactory {
             'options' => $this->getProductOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:product-types',
+          Field::TYPE_ENUM_ARRAY,
+          __('Product types', 'mailpoet'),
+          function (OrderPayload $payload) {
+            $products = $this->getProducts($payload->getOrder());
+            $types = array_map(function (WC_Product $product) {
+              return $product->get_type();
+            }, $products);
+            return array_values(array_unique($types));
+          },
+          [
+            'options' => $this->getProductTypeOptions(),
+          ]
+        ),
       ]
     );
   }
@@ -407,6 +422,17 @@ class OrderFieldsFactory {
       $title = $product['post_title'];
       return ['id' => (int)$id, 'name' => "$title (#$id)"];
     }, (array)$products);
+  }
+
+  private function getProductTypeOptions(): array {
+    if (!function_exists('wc_get_product_types')) {
+      return [];
+    }
+    $options = [];
+    foreach (wc_get_product_types() as $id => $name) {
+      $options[] = ['id' => $id, 'name' => $name];
+    }
+    return $options;
   }
 
   private function getOrderCreatedViaOptions(): array {
