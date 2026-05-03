@@ -224,6 +224,7 @@ class TimeZoneCampaignScheduler {
     $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
     $newsletter = $queue->getNewsletter();
     $hasDueBatch = false;
+    $hasPendingBatch = false;
     foreach ($this->getCampaignQueues($queue) as $campaignQueue) {
       $task = $campaignQueue->getTask();
       if (!$task instanceof ScheduledTaskEntity) {
@@ -233,6 +234,7 @@ class TimeZoneCampaignScheduler {
         $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
         continue;
       }
+      $hasPendingBatch = true;
       $scheduledAt = $task->getScheduledAt();
       if ($scheduledAt && $scheduledAt > $now) {
         $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
@@ -243,7 +245,16 @@ class TimeZoneCampaignScheduler {
     }
 
     if ($newsletter instanceof NewsletterEntity) {
-      $newsletter->setStatus($hasDueBatch ? NewsletterEntity::STATUS_SENDING : NewsletterEntity::STATUS_SCHEDULED);
+      if (!$hasPendingBatch) {
+        // All batches are already completed: do not demote a finished campaign back to
+        // SCHEDULED. No task remains for the scheduler to pick up, so doing so would
+        // leave the newsletter permanently stuck in the wrong status.
+        if ($newsletter->canBeSetSent()) {
+          $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+        }
+      } else {
+        $newsletter->setStatus($hasDueBatch ? NewsletterEntity::STATUS_SENDING : NewsletterEntity::STATUS_SCHEDULED);
+      }
     }
     $this->entityManager->flush();
   }

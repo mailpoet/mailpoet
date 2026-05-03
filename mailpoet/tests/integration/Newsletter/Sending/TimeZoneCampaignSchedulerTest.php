@@ -360,6 +360,38 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     }
   }
 
+  public function testResumeDoesNotDemoteFullySentCampaign(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSegments([$segment])->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+
+    $scheduler = $this->getScheduler();
+    $scheduler->schedule($newsletter);
+
+    // Simulate every batch having finished sending: counts equal and tasks completed,
+    // newsletter marked as SENT (the state markNewsletterAsSent leaves the campaign in).
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    foreach ($queues as $queue) {
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      $queue->setCountProcessed($queue->getCountTotal());
+      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    }
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    $this->entityManager->flush();
+
+    $scheduler->resumeCampaign($queues[0]);
+
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    foreach ($queues as $queue) {
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    }
+  }
+
   public function testPauseStillPausesQueuesWithZeroCounts(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
