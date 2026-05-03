@@ -108,6 +108,11 @@ function Statistics({
     newsletter.statistics.opened >= minNewsletterOpens &&
     !tooEarlyForStats;
 
+  // only celebrate once the queue actually finished sending — otherwise
+  // a paused or stalled queue at X/Y < total still shows "Nice job!"
+  const showJustSentTag =
+    tooEarlyForStats && newsletter.queue.status === 'completed';
+
   const wrapContentInLink = (content, idPrefix) =>
     wrapInLink(content, params, `${idPrefix}-${newsletter.id}`, totalSent);
 
@@ -125,7 +130,7 @@ function Statistics({
   const content = (
     <>
       {openedClickedAndRevenueStats}
-      {tooEarlyForStats &&
+      {showJustSentTag &&
         wrapContentInLink(
           <Tag
             className="mailpoet-listing-stats-too-early"
