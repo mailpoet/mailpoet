@@ -206,7 +206,10 @@ class TimeZoneCampaignScheduler {
 
   public function pauseCampaign(SendingQueueEntity $queue): void {
     foreach ($this->getCampaignQueues($queue) as $campaignQueue) {
-      if ($campaignQueue->getCountProcessed() === $campaignQueue->getCountTotal()) {
+      // Mirrors the guard in resumeCampaign(): a queue is only "fully processed"
+      // when it has work to do AND all of it has been done. A zero-count queue
+      // is still pending and must be paused.
+      if ($campaignQueue->getCountTotal() > 0 && $campaignQueue->getCountProcessed() === $campaignQueue->getCountTotal()) {
         continue;
       }
       $task = $campaignQueue->getTask();
