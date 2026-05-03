@@ -414,34 +414,55 @@ class NewslettersRepository extends Repository {
   }
 
   /**
-   * Notification-history newsletters whose latest sending task is paused or
-   * invalid — i.e. sending was started but is now stalled and won't progress
-   * until the user intervenes (e.g. unauthorized sender domain, deleted
-   * segment, manual pause).
+   * Parent post-notification newsletters that have at least one history with a
+   * paused or invalid sending task — i.e. sending was started but is now
+   * stalled and won't progress until the user intervenes (e.g. unauthorized
+   * sender domain, deleted segment, manual pause).
    *
-   * @return NewsletterEntity[]
+   * Results are deduplicated per parent so a single noisy parent (which can
+   * accumulate multiple stuck histories — see PostNotificationScheduler::
+   * createPostNotificationSendingTask) doesn't crowd out other affected
+   * parents up to $limit. `hasInvalid` is true if any of the parent's stuck
+   * histories is in the INVALID state (more severe than PAUSED).
+   *
+   * @return array<int, array{parent: NewsletterEntity, hasInvalid: bool}>
    */
-  public function findStuckNotificationHistory(int $limit = 5): array {
-    return $this->entityManager->createQueryBuilder()
-      ->select('n', 'p')
-      ->from(NewsletterEntity::class, 'n')
-      ->join('n.parent', 'p')
+  public function findStuckPostNotificationParents(int $limit = 5): array {
+    $rows = $this->entityManager->createQueryBuilder()
+      ->select(
+        'p',
+        'MAX(CASE WHEN t.status = :invalidStatus THEN 1 ELSE 0 END) AS hasInvalid',
+        'MAX(t.updatedAt) AS latestUpdate'
+      )
+      ->from(NewsletterEntity::class, 'p')
+      ->join('p.children', 'n')
       ->join('n.queues', 'q')
       ->join('q.task', 't')
-      ->where('n.type = :type')
-      ->andWhere('n.status = :status')
-      ->andWhere('n.deletedAt IS NULL')
+      ->where('p.type = :parentType')
+      ->andWhere('n.type = :historyType')
+      ->andWhere('n.status = :sendingStatus')
       ->andWhere('p.deletedAt IS NULL')
+      ->andWhere('n.deletedAt IS NULL')
       ->andWhere('t.status IN (:stuckStatuses)')
-      ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
-      ->setParameter('status', NewsletterEntity::STATUS_SENDING)
+      ->setParameter('parentType', NewsletterEntity::TYPE_NOTIFICATION)
+      ->setParameter('historyType', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->setParameter('sendingStatus', NewsletterEntity::STATUS_SENDING)
+      ->setParameter('invalidStatus', ScheduledTaskEntity::STATUS_INVALID)
       ->setParameter('stuckStatuses', [
         ScheduledTaskEntity::STATUS_PAUSED,
         ScheduledTaskEntity::STATUS_INVALID,
       ])
-      ->orderBy('t.updatedAt', 'DESC')
+      ->groupBy('p.id')
+      ->orderBy('latestUpdate', 'DESC')
       ->setMaxResults($limit)
       ->getQuery()->getResult();
+
+    return array_map(static function (array $row): array {
+      return [
+        'parent' => $row[0],
+        'hasInvalid' => (bool)$row['hasInvalid'],
+      ];
+    }, $rows);
   }
 
   /**
