@@ -524,6 +524,13 @@ class TimeZoneCampaignScheduler {
     return $queues;
   }
 
+  /**
+   * Resolves the aggregate status of a multi-batch time zone campaign from the per-batch statuses.
+   *
+   * The priority is intentionally explicit (instead of falling back to "the first status in the
+   * list") so that the result is deterministic and reflects what the campaign is doing, not the
+   * order in which batches happen to be sorted.
+   */
   private function resolveAggregateStatus(array $statuses): ?string {
     if ($statuses === []) {
       return null;
@@ -534,20 +541,16 @@ class TimeZoneCampaignScheduler {
     if (in_array(null, $statuses, true)) {
       return null;
     }
-    $uniqueStatuses = array_values(array_unique($statuses));
-    if ($uniqueStatuses === [ScheduledTaskEntity::STATUS_COMPLETED]) {
-      return ScheduledTaskEntity::STATUS_COMPLETED;
-    }
-    if ($uniqueStatuses === [ScheduledTaskEntity::STATUS_CANCELLED]) {
-      return ScheduledTaskEntity::STATUS_CANCELLED;
-    }
-    if ($uniqueStatuses === [ScheduledTaskEntity::STATUS_SCHEDULED]) {
+    if (in_array(ScheduledTaskEntity::STATUS_SCHEDULED, $statuses, true)) {
       return ScheduledTaskEntity::STATUS_SCHEDULED;
     }
     if (in_array(ScheduledTaskEntity::STATUS_COMPLETED, $statuses, true)) {
-      return null;
+      return ScheduledTaskEntity::STATUS_COMPLETED;
     }
-    return $statuses[0];
+    if (in_array(ScheduledTaskEntity::STATUS_CANCELLED, $statuses, true)) {
+      return ScheduledTaskEntity::STATUS_CANCELLED;
+    }
+    return ScheduledTaskEntity::STATUS_INVALID;
   }
 
   private function minDate(?\DateTimeInterface $current, \DateTimeInterface $candidate): \DateTimeInterface {
