@@ -270,6 +270,68 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     verify($scheduler->hasIncompleteCampaignQueues($queues[1]))->false();
   }
 
+  public function testAggregateStatusIsDeterministicAcrossMixedBatchStatuses(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSegments([$segment])->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+
+    $scheduler = $this->getScheduler();
+    $scheduler->schedule($newsletter);
+
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    verify(count($queues))->equals(2);
+    $tasks = [];
+    foreach ($queues as $queue) {
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      $tasks[] = $task;
+    }
+
+    $assertAggregateStatus = function (string $expected) use ($scheduler, $queues): void {
+      $data = $scheduler->getAggregateQueueData($queues[0]);
+      $this->assertIsArray($data);
+      verify($data['status'])->equals($expected);
+    };
+    $assertAggregateStatusNull = function () use ($scheduler, $queues): void {
+      $data = $scheduler->getAggregateQueueData($queues[0]);
+      $this->assertIsArray($data);
+      verify($data['status'])->null();
+    };
+
+    // Mix of CANCELLED + SCHEDULED must report SCHEDULED (a batch is still pending).
+    // Previously this returned whichever status came first in the sorted queue list.
+    $tasks[0]->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
+    $tasks[1]->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+    $assertAggregateStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    // Order independence: the result must not depend on which batch holds CANCELLED.
+    $tasks[0]->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $tasks[1]->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
+    $this->entityManager->flush();
+    $assertAggregateStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    // PAUSED dominates everything because it requires user action.
+    $tasks[0]->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $tasks[1]->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->entityManager->flush();
+    $assertAggregateStatus(ScheduledTaskEntity::STATUS_PAUSED);
+
+    // A null status (active sending) wins over any terminal sibling.
+    $tasks[0]->setStatus(null);
+    $tasks[1]->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->entityManager->flush();
+    $assertAggregateStatusNull();
+
+    // Purely terminal mix prefers COMPLETED (some progress was made) over CANCELLED.
+    $tasks[0]->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $tasks[1]->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
+    $this->entityManager->flush();
+    $assertAggregateStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
   public function testPauseAndResumeAffectAllSiblings(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
