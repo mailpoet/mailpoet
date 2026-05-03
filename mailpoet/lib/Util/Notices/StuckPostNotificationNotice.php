@@ -3,7 +3,6 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -28,25 +27,25 @@ class StuckPostNotificationNotice {
     if (!$shouldDisplay) {
       return;
     }
-    $stuck = $this->newslettersRepository->findStuckNotificationHistory();
-    if (empty($stuck)) {
+    $stuckParents = $this->newslettersRepository->findStuckPostNotificationParents();
+    if (empty($stuckParents)) {
       return;
     }
-    $this->display($stuck);
+    $this->display($stuckParents);
   }
 
   /**
-   * @param NewsletterEntity[] $stuck
+   * @param array<int, array{parent: NewsletterEntity, hasInvalid: bool}> $stuckParents
    */
-  private function display(array $stuck): void {
-    Notice::displayWarning($this->getMessage($stuck), '', '', false);
+  private function display(array $stuckParents): void {
+    Notice::displayWarning($this->getMessage($stuckParents), '', '', false);
   }
 
   /**
-   * @param NewsletterEntity[] $stuck
+   * @param array<int, array{parent: NewsletterEntity, hasInvalid: bool}> $stuckParents
    */
-  private function getMessage(array $stuck): string {
-    $count = count($stuck);
+  private function getMessage(array $stuckParents): string {
+    $count = count($stuckParents);
     $heading = sprintf(
       '<p><b>%s</b></p>',
       $this->wp->escHtml(_n(
@@ -58,22 +57,15 @@ class StuckPostNotificationNotice {
     );
 
     $items = '';
-    foreach ($stuck as $newsletter) {
-      $parent = $newsletter->getParent();
-      if (!$parent) {
-        continue;
-      }
-      $items .= '<li>' . $this->renderItem($newsletter, $parent) . '</li>';
+    foreach ($stuckParents as $entry) {
+      $items .= '<li>' . $this->renderItem($entry['parent'], $entry['hasInvalid']) . '</li>';
     }
 
     return $heading . '<ul>' . $items . '</ul>';
   }
 
-  private function renderItem(NewsletterEntity $newsletter, NewsletterEntity $parent): string {
-    $queue = $newsletter->getLatestQueue();
-    $task = $queue ? $queue->getTask() : null;
-    $isInvalid = $task && $task->getStatus() === ScheduledTaskEntity::STATUS_INVALID;
-    $reason = $isInvalid
+  private function renderItem(NewsletterEntity $parent, bool $hasInvalid): string {
+    $reason = $hasInvalid
       ? __('flagged as invalid', 'mailpoet')
       : __('paused', 'mailpoet');
 

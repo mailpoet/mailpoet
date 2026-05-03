@@ -168,28 +168,57 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     verify($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
 
-  public function testFindStuckNotificationHistoryReturnsPausedAndInvalidEntries() {
-    $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+  public function testFindStuckPostNotificationParentsReturnsOneRowPerParent() {
+    $parentPaused = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    // Multiple stuck histories under the same parent should collapse to one row
+    $this->createNotificationHistoryWithTaskStatus($parentPaused, ScheduledTaskEntity::STATUS_PAUSED);
+    $this->createNotificationHistoryWithTaskStatus($parentPaused, ScheduledTaskEntity::STATUS_PAUSED);
+    $this->createNotificationHistoryWithTaskStatus($parentPaused, ScheduledTaskEntity::STATUS_PAUSED);
 
-    $stuckPaused = $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_PAUSED);
-    $stuckInvalid = $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_INVALID);
-    // Healthy: still running (null status)
-    $this->createNotificationHistoryWithTaskStatus($parent, null);
-    // Healthy: completed
-    $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_COMPLETED);
-    // Healthy: not in sending state
-    $draft = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, NewsletterEntity::STATUS_DRAFT, $parent);
+    $parentInvalid = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $this->createNotificationHistoryWithTaskStatus($parentInvalid, ScheduledTaskEntity::STATUS_INVALID);
+
+    // A parent with both paused and invalid histories should be flagged as invalid (more severe)
+    $parentMixed = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $this->createNotificationHistoryWithTaskStatus($parentMixed, ScheduledTaskEntity::STATUS_PAUSED);
+    $this->createNotificationHistoryWithTaskStatus($parentMixed, ScheduledTaskEntity::STATUS_INVALID);
+
+    // Healthy parent: still running, completed, not-sending — must not appear
+    $parentHealthy = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $this->createNotificationHistoryWithTaskStatus($parentHealthy, null);
+    $this->createNotificationHistoryWithTaskStatus($parentHealthy, ScheduledTaskEntity::STATUS_COMPLETED);
+    $draft = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, NewsletterEntity::STATUS_DRAFT, $parentHealthy);
     $this->createQueueWithTaskAndSegmentAndSubscribers($draft, ScheduledTaskEntity::STATUS_PAUSED);
 
-    $results = $this->repository->findStuckNotificationHistory();
-    $resultIds = array_map(fn(NewsletterEntity $n) => $n->getId(), $results);
+    $results = $this->repository->findStuckPostNotificationParents();
 
-    verify($resultIds)->arrayCount(2);
-    verify(in_array($stuckPaused->getId(), $resultIds, true))->true();
-    verify(in_array($stuckInvalid->getId(), $resultIds, true))->true();
+    verify($results)->arrayCount(3);
+
+    $byParentId = [];
+    foreach ($results as $row) {
+      $parentId = $row['parent']->getId();
+      $this->assertNotNull($parentId);
+      $byParentId[$parentId] = $row['hasInvalid'];
+    }
+
+    $parentPausedId = (int)$parentPaused->getId();
+    $parentInvalidId = (int)$parentInvalid->getId();
+    $parentMixedId = (int)$parentMixed->getId();
+    $parentHealthyId = (int)$parentHealthy->getId();
+
+    verify(isset($byParentId[$parentPausedId]))->true();
+    verify($byParentId[$parentPausedId])->false();
+
+    verify(isset($byParentId[$parentInvalidId]))->true();
+    verify($byParentId[$parentInvalidId])->true();
+
+    verify(isset($byParentId[$parentMixedId]))->true();
+    verify($byParentId[$parentMixedId])->true();
+
+    verify(isset($byParentId[$parentHealthyId]))->false();
   }
 
-  public function testFindStuckNotificationHistoryExcludesTrashedEntries() {
+  public function testFindStuckPostNotificationParentsExcludesTrashedEntries() {
     $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     $trashedHistory = $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_PAUSED);
     $trashedHistory->setDeletedAt(new Carbon());
@@ -200,16 +229,29 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->createNotificationHistoryWithTaskStatus($trashedParent, ScheduledTaskEntity::STATUS_PAUSED);
     $this->entityManager->flush();
 
-    verify($this->repository->findStuckNotificationHistory())->arrayCount(0);
+    verify($this->repository->findStuckPostNotificationParents())->arrayCount(0);
   }
 
-  public function testFindStuckNotificationHistoryRespectsLimit() {
-    $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+  public function testFindStuckPostNotificationParentsRespectsLimitAcrossDistinctParents() {
+    // One noisy parent with many stuck histories — must not consume the limit
+    $noisyParent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     for ($i = 0; $i < 4; $i++) {
-      $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_PAUSED);
+      $this->createNotificationHistoryWithTaskStatus($noisyParent, ScheduledTaskEntity::STATUS_PAUSED);
     }
 
-    verify($this->repository->findStuckNotificationHistory(2))->arrayCount(2);
+    // Three other distinct stuck parents
+    $otherParents = [];
+    for ($i = 0; $i < 3; $i++) {
+      $other = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+      $this->createNotificationHistoryWithTaskStatus($other, ScheduledTaskEntity::STATUS_PAUSED);
+      $otherParents[] = $other->getId();
+    }
+
+    $results = $this->repository->findStuckPostNotificationParents(2);
+    verify($results)->arrayCount(2);
+
+    $resultParentIds = array_map(fn(array $row) => $row['parent']->getId(), $results);
+    verify(count(array_unique($resultParentIds)))->equals(2);
   }
 
   private function createNotificationHistoryWithTaskStatus(NewsletterEntity $parent, ?string $taskStatus): NewsletterEntity {
