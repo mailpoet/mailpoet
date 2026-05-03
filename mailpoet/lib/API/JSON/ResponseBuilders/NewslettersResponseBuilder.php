@@ -281,29 +281,33 @@ class NewslettersResponseBuilder {
     if ($task === null) {
       return null;
     }
+    // When $aggregateData is non-null we are looking at a time zone campaign and ALL its fields
+    // are authoritative — including a null `status`, which represents VIRTUAL_STATUS_RUNNING (a
+    // sibling batch is actively sending). Using `??` here would silently fall back to this single
+    // task's status (e.g. 'scheduled' for a future batch) and misreport the campaign.
     $aggregateData = $this->timeZoneCampaignScheduler
       ? $this->timeZoneCampaignScheduler->getAggregateQueueData($queue)
       : null;
-    $scheduledAt = $aggregateData['scheduledAt'] ?? $task->getScheduledAt();
-    $processedAt = $aggregateData['processedAt'] ?? $task->getProcessedAt();
+    $scheduledAt = $aggregateData ? $aggregateData['scheduledAt'] : $task->getScheduledAt();
+    $processedAt = $aggregateData ? $aggregateData['processedAt'] : $task->getProcessedAt();
 
     return [
       'id' => (string)$queue->getId(), // (string) for BC
       'type' => $task->getType(),
-      'status' => $aggregateData['status'] ?? $task->getStatus(),
+      'status' => $aggregateData ? $aggregateData['status'] : $task->getStatus(),
       'priority' => (string)$task->getPriority(), // (string) for BC
       'scheduled_at' => $scheduledAt ? $scheduledAt->format(self::DATE_FORMAT) : null,
       'processed_at' => $processedAt ? $processedAt->format(self::DATE_FORMAT) : null,
       'created_at' => ($createdAt = $queue->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'updated_at' => ($updatedAt = $queue->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $queue->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
-      'meta' => $aggregateData['meta'] ?? $queue->getMeta(),
+      'meta' => $aggregateData ? $aggregateData['meta'] : $queue->getMeta(),
       'task_id' => (string)$task->getId(), // (string) for BC
       'newsletter_id' => ($newsletter = $queue->getNewsletter()) ? (string)$newsletter->getId() : null, // (string) for BC
       'newsletter_rendered_subject' => $this->processPersonalizationTags($queue->getNewsletterRenderedSubject()),
-      'count_total' => (string)($aggregateData['countTotal'] ?? $queue->getCountTotal()), // (string) for BC
-      'count_processed' => (string)($aggregateData['countProcessed'] ?? $queue->getCountProcessed()), // (string) for BC
-      'count_to_process' => (string)($aggregateData['countToProcess'] ?? $queue->getCountToProcess()), // (string) for BC
+      'count_total' => (string)($aggregateData ? $aggregateData['countTotal'] : $queue->getCountTotal()), // (string) for BC
+      'count_processed' => (string)($aggregateData ? $aggregateData['countProcessed'] : $queue->getCountProcessed()), // (string) for BC
+      'count_to_process' => (string)($aggregateData ? $aggregateData['countToProcess'] : $queue->getCountToProcess()), // (string) for BC
     ];
   }
 
