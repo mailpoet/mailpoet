@@ -134,15 +134,17 @@ class SendingQueue extends APIEndpoint {
         $this->triggerSending($newsletter);
         return $this->successResponse($this->sendingQueuesResponseBuilder->build($sendingQueue));
       }
-      if ($isScheduled) {
-        if (!$this->timeZoneCampaignScheduler->canReplaceScheduledCampaign($newsletter)) {
-          throw new \Exception(
-            __('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'),
-            Response::STATUS_BAD_REQUEST
-          );
-        }
-        $this->timeZoneCampaignScheduler->deleteScheduledCampaignQueues($newsletter);
+      // Existing time zone batches must be reconciled regardless of the new send mode (scheduled or
+      // immediate). Otherwise orphaned time zone queues survive in the DB and may later be picked up
+      // by the scheduler cron, causing duplicate sends. Both calls are no-ops when the newsletter
+      // has no time zone queues.
+      if (!$this->timeZoneCampaignScheduler->canReplaceScheduledCampaign($newsletter)) {
+        throw new \Exception(
+          __('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'),
+          Response::STATUS_BAD_REQUEST
+        );
       }
+      $this->timeZoneCampaignScheduler->deleteScheduledCampaignQueues($newsletter);
 
       $sendingQueue = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus($newsletter, null);
 

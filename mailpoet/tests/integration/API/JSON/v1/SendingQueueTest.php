@@ -188,6 +188,84 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduled->format('Y-m-d H:i:s'))->equals('2030-10-10 10:00:00');
   }
 
+  public function testItReplacesOrphanedTimezoneQueuesWhenSendingImmediately(): void {
+    $segment = (new SegmentFactory())->create();
+    $subscriber = (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())
+      ->withSegments([$segment])
+      ->withSubscriber($subscriber)
+      ->create();
+
+    $campaignId = 'orphan-timezone-campaign';
+    $oldTask1 = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new \DateTimeImmutable('2030-10-09 10:00:00')
+    );
+    $oldTask2 = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new \DateTimeImmutable('2030-10-09 11:00:00')
+    );
+    $oldQueue1 = (new SendingQueueFactory())->create($oldTask1, $newsletter);
+    $oldQueue2 = (new SendingQueueFactory())->create($oldTask2, $newsletter);
+    foreach ([$oldQueue1, $oldQueue2] as $oldQueue) {
+      $oldQueue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+      ]);
+    }
+    $this->entityManager->flush();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    verify($result->status)->equals(APIResponse::STATUS_OK);
+    verify($sendingQueuesRepository->findOneById((int)$oldQueue1->getId()))->null();
+    verify($sendingQueuesRepository->findOneById((int)$oldQueue2->getId()))->null();
+    verify($scheduledTasksRepository->findOneById((int)$oldTask1->getId()))->null();
+    verify($scheduledTasksRepository->findOneById((int)$oldTask2->getId()))->null();
+
+    $remainingQueues = $sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
+    verify(count($remainingQueues))->equals(1);
+    $newQueue = $remainingQueues[0];
+    verify($newQueue->getId())->equals($result->data['id']);
+    verify($newQueue->getMeta())->null();
+    $newTask = $newQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newTask);
+    verify($newTask->getStatus())->null();
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
+  public function testItRejectsImmediateSendWhenTimezoneBatchAlreadyStarted(): void {
+    $segment = (new SegmentFactory())->create();
+    $subscriber = (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())
+      ->withSegments([$segment])
+      ->withSubscriber($subscriber)
+      ->create();
+
+    $startedTask = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      new \DateTimeImmutable('2030-10-09 10:00:00')
+    );
+    $startedQueue = (new SendingQueueFactory())->create($startedTask, $newsletter);
+    $startedQueue->setMeta([
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'partially-started-campaign',
+    ]);
+    $startedQueue->setCountProcessed(1);
+    $this->entityManager->flush();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+    verify($result->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+
+    $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    verify($sendingQueuesRepository->findOneById((int)$startedQueue->getId()))->notNull();
+  }
+
   public function testAddReturnsErrorIfThereAreNoSubscribersAssociatedWithTheNewsletter() {
     $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
     $expectedResult = [
