@@ -76,7 +76,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->getId()]));
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager, $this->scheduledTaskSubscribersRepository);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId()]);
     verify($subscribers)->arrayCount(1);
     verify($subscribers)->arrayContains($this->subscriber3->getId());
@@ -90,7 +90,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->getId()]));
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager, $this->scheduledTaskSubscribersRepository);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId(), $this->segment3->getId()]);
     verify($subscribers)->arrayCount(1);
   }
@@ -130,7 +130,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue([$this->subscriber1->getId()]));
     $this->segment2->setType(SegmentEntity::TYPE_DYNAMIC);
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager, $this->scheduledTaskSubscribersRepository);
     $finder->addSubscribersToTaskFromSegments(
       $this->scheduledTask,
       [
@@ -152,7 +152,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue([$this->subscriber2->getId()]));
     $this->segment3->setType(SegmentEntity::TYPE_DYNAMIC);
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager, $this->scheduledTaskSubscribersRepository);
     $finder->addSubscribersToTaskFromSegments(
       $this->scheduledTask,
       [
