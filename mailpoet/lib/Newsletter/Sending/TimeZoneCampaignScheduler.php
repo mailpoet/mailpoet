@@ -14,6 +14,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class TimeZoneCampaignScheduler {
@@ -231,6 +232,10 @@ class TimeZoneCampaignScheduler {
         continue;
       }
       if ($campaignQueue->getCountProcessed() === $campaignQueue->getCountTotal() && $campaignQueue->getCountTotal() > 0) {
+        // Mirrors SendingQueuesRepository::resume(): when pause interrupted the worker after all
+        // recipients were processed but before STATUS_COMPLETED was set, finalize processedAt now
+        // so aggregate "processed at" reporting is not left null for this batch.
+        $task->setProcessedAt(Carbon::now()->millisecond(0));
         $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
         continue;
       }

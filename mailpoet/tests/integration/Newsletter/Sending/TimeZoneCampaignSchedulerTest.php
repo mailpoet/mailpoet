@@ -392,6 +392,40 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     }
   }
 
+  public function testResumeSetsProcessedAtWhenFinalizingFullyProcessedBatch(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSegments([$segment])->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+
+    $scheduler = $this->getScheduler();
+    $scheduler->schedule($newsletter);
+
+    // Reproduce the race resumeCampaign() finalizes: the worker processed every recipient of one
+    // batch but the user hit pause before STATUS_COMPLETED was set, so the batch sits at PAUSED
+    // with counts equal and processedAt still null.
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    $pausedFullyProcessed = $queues[0];
+    $pausedFullyProcessedTask = $pausedFullyProcessed->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $pausedFullyProcessedTask);
+    $pausedFullyProcessed->setCountProcessed($pausedFullyProcessed->getCountTotal());
+    $pausedFullyProcessedTask->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $pausedFullyProcessedTask->setProcessedAt(null);
+    $this->entityManager->flush();
+    verify($pausedFullyProcessedTask->getProcessedAt())->null();
+
+    $scheduler->resumeCampaign($queues[0]);
+
+    verify($pausedFullyProcessedTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->assertInstanceOf(\DateTimeInterface::class, $pausedFullyProcessedTask->getProcessedAt());
+
+    // Aggregate reporting now reflects the finalized batch instead of leaving processedAt null.
+    $aggregate = $scheduler->getAggregateQueueData($queues[0]);
+    $this->assertIsArray($aggregate);
+    $this->assertInstanceOf(\DateTimeInterface::class, $aggregate['processedAt']);
+  }
+
   public function testPauseStillPausesQueuesWithZeroCounts(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
