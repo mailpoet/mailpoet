@@ -77,7 +77,6 @@ class NewsletterCreationCest {
     $i->click('Send');
 
     // step 5 - verify recently sent newsletter tab and sent newsletter
-    $niceJobText = 'Nice job! Check back in 6 hour(s) for more stats.';
     $i->waitForText('Emails');
     $i->waitForText('The newsletter is being sent...');
     $i->reloadPage();
@@ -93,7 +92,8 @@ class NewsletterCreationCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
     $i->waitForText('Newsletters');
-    $i->waitForText($niceJobText);
+    $i->waitForText('Pause');
+    $i->dontSee('Nice job');
   }
 
   public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i, Scenario $scenario) {
