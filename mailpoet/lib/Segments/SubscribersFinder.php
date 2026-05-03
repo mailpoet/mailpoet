@@ -8,6 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -23,14 +24,19 @@ class SubscribersFinder {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   public function __construct(
     SegmentSubscribersRepository $segmentSubscriberRepository,
     SegmentsRepository $segmentsRepository,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository
   ) {
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->entityManager = $entityManager;
+    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
   }
 
   /**
@@ -196,40 +202,9 @@ class SubscribersFinder {
     }
 
     if ($subscriberIds) {
-      $count += $this->addSubscribersToTaskByIds($task, $subscriberIds);
+      $count += $this->scheduledTaskSubscribersRepository->addSubscribersByIds($task, $subscriberIds);
     }
     return $count;
-  }
-
-  private function addSubscribersToTaskByIds(ScheduledTaskEntity $task, array $subscriberIds) {
-    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
-    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-
-    $connection = $this->entityManager->getConnection();
-
-    $result = $connection->executeQuery(
-      "INSERT IGNORE INTO $scheduledTaskSubscriberTable
-       (task_id, subscriber_id, processed)
-       SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
-       FROM $subscriberTable subscribers
-       WHERE subscribers.`deleted_at` IS NULL
-       AND subscribers.`status` = ?
-       AND subscribers.`id` IN (?)",
-      [
-        $task->getId(),
-        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-        SubscriberEntity::STATUS_SUBSCRIBED,
-        $subscriberIds,
-      ],
-      [
-        ParameterType::INTEGER,
-        ParameterType::INTEGER,
-        ParameterType::STRING,
-        ArrayParameterType::INTEGER,
-      ]
-    );
-
-    return $result->rowCount();
   }
 
   private function unique(array $subscriberIds) {
