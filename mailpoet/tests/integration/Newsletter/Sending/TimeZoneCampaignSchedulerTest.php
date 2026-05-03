@@ -360,6 +360,31 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     }
   }
 
+  public function testPauseStillPausesQueuesWithZeroCounts(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSegments([$segment])->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+
+    $scheduler = $this->getScheduler();
+    $scheduler->schedule($newsletter);
+
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    // Force one batch into the "both counts are zero" edge case the bug exploits.
+    $queues[0]->setCountTotal(0);
+    $queues[0]->setCountProcessed(0);
+    $this->entityManager->flush();
+
+    $scheduler->pauseCampaign($queues[0]);
+
+    foreach ($queues as $queue) {
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    }
+  }
+
   public function testNewsletterDeleteRemovesAllSiblingQueuesAndSubscribers(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
