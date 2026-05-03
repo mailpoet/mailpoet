@@ -414,6 +414,37 @@ class NewslettersRepository extends Repository {
   }
 
   /**
+   * Notification-history newsletters whose latest sending task is paused or
+   * invalid — i.e. sending was started but is now stalled and won't progress
+   * until the user intervenes (e.g. unauthorized sender domain, deleted
+   * segment, manual pause).
+   *
+   * @return NewsletterEntity[]
+   */
+  public function findStuckNotificationHistory(int $limit = 5): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('n', 'p')
+      ->from(NewsletterEntity::class, 'n')
+      ->join('n.parent', 'p')
+      ->join('n.queues', 'q')
+      ->join('q.task', 't')
+      ->where('n.type = :type')
+      ->andWhere('n.status = :status')
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('p.deletedAt IS NULL')
+      ->andWhere('t.status IN (:stuckStatuses)')
+      ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->setParameter('status', NewsletterEntity::STATUS_SENDING)
+      ->setParameter('stuckStatuses', [
+        ScheduledTaskEntity::STATUS_PAUSED,
+        ScheduledTaskEntity::STATUS_INVALID,
+      ])
+      ->orderBy('t.updatedAt', 'DESC')
+      ->setMaxResults($limit)
+      ->getQuery()->getResult();
+  }
+
+  /**
    * @return NewsletterEntity[]
    */
   public function findSendingNotificationHistoryWithoutPausedOrInvalidTask(NewsletterEntity $newsletter): array {
