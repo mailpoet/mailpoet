@@ -4,6 +4,49 @@
   }
 }
 
+.mailpoet-subscribers-page-header {
+  align-items: center;
+
+  .mailpoet-page-header-content {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+  }
+}
+
+.mailpoet-subscribers-heading-actions {
+  align-items: center;
+  display: inline-flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.mailpoet-subscribers-heading-primary-actions,
+.mailpoet-subscribers-heading-management-actions {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+@include respond-to(small-screen) {
+  .mailpoet-subscribers-page-header {
+    .mailpoet-page-header-content {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  .mailpoet-subscribers-heading-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 .mailpoet-subscriber-stats-heading {
   margin-bottom: $grid-gap;
 }

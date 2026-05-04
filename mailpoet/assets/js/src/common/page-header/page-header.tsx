@@ -23,7 +23,7 @@ export function PageHeader({
       <FlexBlock>
         <Flex direction="row" gap="4px">
           {headingPrefix}
-          <FlexBlock>
+          <FlexBlock className="mailpoet-page-header-content">
             <h1 className="wp-heading-inline">{heading}</h1> {children}
           </FlexBlock>
         </Flex>
