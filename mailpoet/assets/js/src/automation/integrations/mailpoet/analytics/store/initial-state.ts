@@ -82,4 +82,6 @@ export const getInitialState = (): State => ({
     before: undefined,
   },
   runStatusUpdates: {},
+  versions: [],
+  selectedVersionId: undefined,
 });

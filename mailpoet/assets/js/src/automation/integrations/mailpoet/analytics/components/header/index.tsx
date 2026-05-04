@@ -9,6 +9,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect } from '@wordpress/data';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { Filter } from './filter';
+import { VersionSelector } from './version-selector';
 import { MailPoet } from '../../../../../../mailpoet';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 import { AutomationStatus } from '../../../../../listing/automation';
@@ -26,6 +27,7 @@ export function Header(): JSX.Element {
   return (
     <header className="mailpoet-analytics-header">
       <Filter />
+      <VersionSelector />
       <EditorNotices />
       <Dropdown
         focusOnMount={false}

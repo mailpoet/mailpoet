@@ -184,10 +184,19 @@ export type RunStatusUpdate = {
   status: string;
   error?: string;
 };
+
+export type AutomationVersion = {
+  id: number;
+  created_at: string;
+  is_current: boolean;
+};
+
 export type State = {
   sections: Record<string, Section>;
   query: Query;
   runStatusUpdates: Record<number, RunStatusUpdate>;
+  versions: AutomationVersion[];
+  selectedVersionId: number | undefined;
   premiumModal?: {
     content: string | JSX.Element;
     utmCampaign?: string;
