@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react';
 import classnames from 'classnames';
-import {
-  Button,
-  NavigableMenu,
-  TextControl,
-  Tooltip,
-} from '@wordpress/components';
+import { Button, NavigableMenu, TextControl } from '@wordpress/components';
 import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import { Icon, check, cloud } from '@wordpress/icons';
 import { PinnedItems } from '@wordpress/interface';
@@ -29,19 +24,16 @@ import { sendTelemetryEvent } from '../../telemetry';
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 export function ActivateButton({ label }): JSX.Element {
-  const { errors, isDeactivating, automationId } = useSelect(
+  const { errors, automationId } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
-      isDeactivating:
-        select(storeName).getAutomationData().status ===
-        AutomationStatus.DEACTIVATING,
       automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
   const { openActivationPanel } = useDispatch(storeName);
 
-  const button = (
+  return (
     <Button
       variant="primary"
       className="editor-post-publish-button"
@@ -52,35 +44,18 @@ export function ActivateButton({ label }): JSX.Element {
         });
         void openActivationPanel();
       }}
-      disabled={isDeactivating || !!errors}
+      disabled={!!errors}
     >
       {label}
     </Button>
   );
-
-  if (isDeactivating) {
-    return (
-      <Tooltip
-        delay={0}
-        text={__(
-          'Editing an active automation is currently unavailable.',
-          'mailpoet',
-        )}
-      >
-        {button}
-      </Tooltip>
-    );
-  }
-
-  return button;
 }
 
 export function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
-  const { automation, savedState } = useSelect(
+  const { savedState } = useSelect(
     (select) => ({
-      automation: select(storeName).getAutomationData(),
       savedState: select(storeName).getSavedState(),
     }),
     [],
@@ -93,40 +68,20 @@ export function UpdateButton(): JSX.Element {
       ? __('Updating…', 'mailpoet')
       : __('Update', 'mailpoet');
 
-  if (automation.stats.totals.in_progress === 0) {
-    return (
-      <Button
-        variant="primary"
-        className="editor-post-publish-button"
-        label={label}
-        showTooltip
-        shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
-        isBusy={savedState === 'saving'}
-        disabled={isDisabled}
-        aria-disabled={isDisabled}
-        onClick={save}
-      >
-        {label}
-      </Button>
-    );
-  }
   return (
-    <Tooltip
-      delay={0}
-      text={__(
-        'Editing an active automation is currently unavailable.',
-        'mailpoet',
-      )}
+    <Button
+      variant="primary"
+      className="editor-post-publish-button"
+      label={label}
+      showTooltip
+      shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
+      isBusy={savedState === 'saving'}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
+      onClick={save}
     >
-      <Button
-        variant="primary"
-        className="editor-post-publish-button"
-        onClick={save}
-        disabled
-      >
-        {__('Update', 'mailpoet')}
-      </Button>
-    </Tooltip>
+      {label}
+    </Button>
   );
 }
 

@@ -11,7 +11,6 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
-use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\Validation\AutomationValidator;
 
@@ -21,9 +20,6 @@ class UpdateAutomationController {
 
   /** @var AutomationStorage */
   private $storage;
-
-  /** @var AutomationStatisticsStorage */
-  private $statisticsStorage;
 
   /** @var AutomationValidator */
   private $automationValidator;
@@ -38,7 +34,6 @@ class UpdateAutomationController {
   public function __construct(
     Hooks $hooks,
     AutomationStorage $storage,
-    AutomationStatisticsStorage $statisticsStorage,
     AutomationValidator $automationValidator,
     AutomationRunStorage $automationRunStorage,
     ActionScheduler $actionScheduler,
@@ -46,7 +41,6 @@ class UpdateAutomationController {
   ) {
     $this->hooks = $hooks;
     $this->storage = $storage;
-    $this->statisticsStorage = $statisticsStorage;
     $this->automationValidator = $automationValidator;
     $this->updateStepsController = $updateStepsController;
     $this->automationRunStorage = $automationRunStorage;
@@ -59,7 +53,6 @@ class UpdateAutomationController {
       throw Exceptions::automationNotFound($id);
     }
     $previousAutomation = clone $automation;
-    $this->validateIfAutomationCanBeUpdated($automation, $data);
 
     if (array_key_exists('name', $data)) {
       $automation->setName($data['name']);
@@ -102,34 +95,6 @@ class UpdateAutomationController {
     }
     $this->hooks->doAutomationAfterUpdate($automation, $previousAutomation);
     return $automation;
-  }
-
-  /**
-   * This is a temporary validation, see MAILPOET-4744
-   */
-  private function validateIfAutomationCanBeUpdated(Automation $automation, array $data): void {
-
-    if (
-      !in_array(
-        $automation->getStatus(),
-        [
-        Automation::STATUS_ACTIVE,
-        Automation::STATUS_DEACTIVATING,
-        ],
-        true
-      )
-    ) {
-      return;
-    }
-
-    $statistics = $this->statisticsStorage->getAutomationStats($automation->getId());
-    if ($statistics->getInProgress() === 0) {
-      return;
-    }
-
-    if (!isset($data['status']) || $data['status'] === $automation->getStatus()) {
-      throw Exceptions::automationHasActiveRuns($automation->getId());
-    }
   }
 
   private function checkAutomationStatus(string $status): void {
