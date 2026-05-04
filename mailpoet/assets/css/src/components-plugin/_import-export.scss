@@ -9,10 +9,14 @@
 }
 
 .subscribers_data {
-  overflow: auto;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: auto hidden;
+  width: 100%;
 
   table {
-    width: auto;
+    table-layout: auto;
+    width: max-content;
   }
 
   td {
