@@ -238,6 +238,9 @@ class PermanentNotices {
       case (SendingQueueBodyCleanupNotice::OPTION_NAME):
         $this->sendingQueueBodyCleanupNotice->disable();
         break;
+      case (StuckPostNotificationNotice::OPTION_NAME):
+        $this->stuckPostNotificationNotice->disable();
+        break;
     }
   }
 }
