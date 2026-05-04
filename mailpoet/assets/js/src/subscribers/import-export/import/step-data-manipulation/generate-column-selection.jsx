@@ -95,28 +95,32 @@ export const generateColumnSelection = (onCreateCustomField) => {
         onCreateCustomField(selectElement);
       } else {
         // CHANGE COLUMN
-        // check for duplicate values in all select options
-        jQuery('select.mailpoet_subscribers_column_data_match').each(() => {
-          const element = selectElement;
-          const elementId = jQuery(element).val();
-          // if another column has the same value and it's not an 'ignore',
-          // prompt user
-          if (elementId === selectedOptionId && elementId !== 'ignore') {
-            if (
-              // eslint-disable-next-line no-restricted-globals, no-alert
-              confirm(
-                `${MailPoet.I18n.t(
-                  'selectedValueAlreadyMatched',
-                )} ${MailPoet.I18n.t('confirmCorrespondingColumn')}`,
-              )
-            ) {
-              jQuery(element).data('column-id', 'ignore');
-            } else {
-              selectEvent.preventDefault();
-              jQuery(selectElement).select2('close');
+        // check for duplicate values in all other select options
+        jQuery('select.mailpoet_subscribers_column_data_match').each(
+          (index, element) => {
+            if (element === selectElement) {
+              return;
             }
-          }
-        });
+            const elementId = jQuery(element).val();
+            // if another column has the same value and it's not an 'ignore',
+            // prompt user
+            if (elementId === selectedOptionId && elementId !== 'ignore') {
+              if (
+                // eslint-disable-next-line no-restricted-globals, no-alert
+                confirm(
+                  `${MailPoet.I18n.t(
+                    'selectedValueAlreadyMatched',
+                  )} ${MailPoet.I18n.t('confirmCorrespondingColumn')}`,
+                )
+              ) {
+                jQuery(element).data('column-id', 'ignore');
+              } else {
+                selectEvent.preventDefault();
+                jQuery(selectElement).select2('close');
+              }
+            }
+          },
+        );
       }
     })
     .on('select2:select', (selectEvent) => {
