@@ -14,6 +14,42 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoetTest;
 
 class UpdateAutomationControllerTest extends MailPoetTest {
+  public function testItUpdatesActiveAutomationWithRunningRuns(): void {
+    $automation = $this->tester->createAutomation(
+      'Active automation',
+      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
+      new Step('a1', Step::TYPE_ACTION, 'test:action', ['note' => 'before'], [])
+    );
+    $this->assertSame(Automation::STATUS_ACTIVE, $automation->getStatus());
+
+    $run = $this->tester->createAutomationRun($automation);
+    $this->diContainer->get(AutomationRunStorage::class)
+      ->updateStatus($run->getId(), AutomationRun::STATUS_RUNNING);
+
+    $controller = $this->diContainer->get(UpdateAutomationController::class);
+    $controller->updateAutomation(
+      $automation->getId(),
+      [
+        'steps' => [
+          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
+          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
+          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => ['note' => 'after'], 'next_steps' => []],
+        ],
+      ]
+    );
+
+    $updated = $this->diContainer->get(AutomationStorage::class)->getAutomation($automation->getId());
+    $this->assertInstanceOf(Automation::class, $updated);
+    $this->assertSame(Automation::STATUS_ACTIVE, $updated->getStatus());
+    $updatedStep = $updated->getStep('a1');
+    $this->assertInstanceOf(Step::class, $updatedStep);
+    $this->assertSame('after', $updatedStep->getArgs()['note']);
+
+    // existing run is preserved on its original version
+    $this->assertSame(AutomationRun::STATUS_RUNNING, $this->getAutomationRun($run->getId())->getStatus());
+    $this->assertNotSame($updated->getVersionId(), $run->getVersionId());
+  }
+
   public function testItUnschedulesTasksWhenSwitchedToDraft(): void {
     $automation = $this->tester->createAutomation(
       'Test automation',
