@@ -405,23 +405,28 @@ class WPTest extends \MailPoetTest {
     verify($subscriber->getDeletedAt())->notNull();
   }
 
-  public function testItSynchronizesDeletedWPUsersUsingHooks(): void {
+  public function testItUnlinksSubscriberWhenWPUserIsDeletedUsingHooks(): void {
     $id = $this->insertUser();
     $this->insertUser();
     $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     verify($subscribersCount)->equals(2);
+
     wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    // The subscriber row is preserved; only the WP linkage is dropped.
     $subscribersCount = $this->getSubscribersCount();
-    verify($subscribersCount)->equals(1);
+    verify($subscribersCount)->equals(2);
+    $stillLinked = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertNull($stillLinked);
   }
 
-  public function testItDeletesSubscriberSegmentEntriesWhenWPUserIsDeleted(): void {
+  public function testItRemovesOnlyWpUsersSegmentMembershipWhenWPUserIsDeleted(): void {
     // Insert a user directly (no hooks) and sync to MailPoet tables.
     $id = $this->insertUser();
     $this->wpSegment->synchronizeUsers();
 
-    // Confirm the subscriber and its segment entry were created.
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriberId = $subscriber->getId();
@@ -437,21 +442,90 @@ class WPTest extends \MailPoetTest {
       )->fetchOne();
     $this->assertEquals(1, is_numeric($segmentCountRaw) ? (int)$segmentCountRaw : 0);
 
-    // Delete the WP user — this fires delete_user → synchronizeUser → deleteSubscriber.
     wp_delete_user((int)$id);
     $this->entityManager->clear();
 
-    // The subscriber row must be gone.
-    $deletedSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
-    $this->assertNull($deletedSubscriber);
+    // The subscriber row survives but is unlinked from the WP user.
+    $reloaded = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    $this->assertNull($reloaded->getWpUserId());
+    $this->assertSame(\MailPoet\Subscribers\Source::WORDPRESS_USER_DELETED, $reloaded->getSource());
 
-    // The subscriber_segment row must also be gone (this is what the bug was about).
+    // The WP-Users segment_subscriber row is gone.
     $orphanedCountRaw = $this->entityManager->getConnection()
       ->executeQuery(
         "SELECT COUNT(*) FROM $subscriberSegmentTable WHERE subscriber_id = :id",
         ['id' => $subscriberId]
       )->fetchOne();
-    $this->assertEquals(0, is_numeric($orphanedCountRaw) ? (int)$orphanedCountRaw : 0, $subscriberSegmentTable . ' row was not deleted when WP user was deleted');
+    $this->assertEquals(0, is_numeric($orphanedCountRaw) ? (int)$orphanedCountRaw : 0);
+  }
+
+  public function testItKeepsSubscriberOnOtherSegmentsWhenWPUserIsDeleted(): void {
+    $id = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    // Add the subscriber to a separate, non-WP list.
+    $segment = $this->segmentFactory->withName('Newsletter list')->create();
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $reloaded = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    $this->assertNull($reloaded->getDeletedAt());
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $reloaded->getStatus());
+
+    $segments = $reloaded->getSegments()->toArray();
+    $this->assertCount(1, $segments);
+    $remainingSegment = reset($segments);
+    $this->assertInstanceOf(SegmentEntity::class, $remainingSegment);
+    $this->assertSame($segment->getId(), $remainingSegment->getId());
+  }
+
+  public function testItTrashesSubscriberOnlyOnWpUsersSegmentWhenWPUserIsDeleted(): void {
+    $id = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $reloaded = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    $this->assertInstanceOf(\DateTimeInterface::class, $reloaded->getDeletedAt());
+    $this->assertSame(SubscriberEntity::STATUS_UNCONFIRMED, $reloaded->getStatus());
+  }
+
+  public function testItRespectsHardDeleteFilterOnWPUserDeletion(): void {
+    $id = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+
+    add_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    try {
+      wp_delete_user((int)$id);
+    } finally {
+      remove_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    }
+    $this->entityManager->clear();
+
+    // Filter restores legacy behavior: subscriber row is gone entirely.
+    $this->assertNull($this->subscribersRepository->findOneById($subscriberId));
   }
 
   public function testItSynchronizesNewUsersToDisabledWPSegmentAsUnconfirmedAndTrashed(): void {
