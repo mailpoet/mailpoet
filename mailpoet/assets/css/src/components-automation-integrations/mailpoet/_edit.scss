@@ -2,8 +2,45 @@
   height: 16px;
 }
 
+.mailpoet-automation-email-design-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .components-button {
+    height: auto;
+    min-height: 36px;
+    text-align: center;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .mailpoet-automation-field-message {
+    display: block;
+  }
+}
+
+.mailpoet-automation-email-design-help {
+  color: #646970;
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .mailpoet-automation-email-buttons {
   display: grid;
   gap: 8px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+  .components-button {
+    height: auto;
+    min-height: 36px;
+    text-align: center;
+    white-space: normal;
+  }
+}
+
+.mailpoet-automation-email-buttons + .mailpoet-automation-field-message {
+  display: block;
+  margin-top: 8px;
 }

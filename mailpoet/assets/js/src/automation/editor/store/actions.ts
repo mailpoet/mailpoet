@@ -122,6 +122,7 @@ export function* save() {
   return {
     type: 'SAVE',
     automation: data?.data ?? automation,
+    saved: !!data?.data,
   } as const;
 }
 

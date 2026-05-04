@@ -19,14 +19,6 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Create an automation email using the block email editor');
     $i->login();
 
-    $i->wantTo('Enable block email editor for automation newsletters in settings');
-    $i->amOnMailpoetPage('Settings');
-    $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Use block email editor for automation emails');
-    $i->click('[data-automation-id="block-editor-for-automation-enabled"]');
-    $i->click('[data-automation-id="settings-submit-button"]');
-    $i->waitForText('Settings saved');
-
     $i->wantTo('Create a new automation');
     $i->amOnMailpoetPage('Automation');
     $i->see('Automations');
@@ -49,8 +41,10 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Block-Editor-Subject');
 
-    $i->wantTo('Verify that clicking Design email redirects to block editor');
-    $i->click('Design email');
+    $i->wantTo('Verify that choosing the new editor redirects to block editor');
+    $i->see('Design with the new editor');
+    $i->see('Design with the classic editor');
+    $i->click('Design with the new editor');
     $i->waitForText('Start with an email preset');
 
     $this->closeTemplateSelectionModal($i);
@@ -110,15 +104,15 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->see('This is automation email content created with block editor');
   }
 
-  public function testAutomationEmailWithoutBlockEditorSetting(\AcceptanceTester $i) {
-    $i->wantTo('Verify automation emails use legacy editor when block editor setting is disabled');
+  public function testAutomationEmailWithClassicEditorChoice(\AcceptanceTester $i) {
+    $i->wantTo('Verify automation emails use legacy editor when classic editor is selected');
     $i->login();
 
-    $i->wantTo('Ensure block email editor for automation newsletters is disabled');
+    $i->wantTo('Enable the global block email editor setting to verify the per-email choice wins');
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
     $i->waitForText('Use block email editor for automation emails');
-    $i->click('[data-automation-id="block-editor-for-automation-disabled"]');
+    $i->click('[data-automation-id="block-editor-for-automation-enabled"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 
@@ -138,8 +132,10 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Legacy-Editor-Subject');
 
-    $i->wantTo('Verify that clicking Design email redirects to legacy newsletter editor');
-    $i->click('Design email');
+    $i->wantTo('Verify that choosing the classic editor redirects to legacy newsletter editor');
+    $i->see('Design with the new editor');
+    $i->see('Design with the classic editor');
+    $i->click('Design with the classic editor');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
     $i->click('button[data-automation-id="select_template_0"]');
