@@ -100,6 +100,10 @@ class Helper {
     return wc_get_products($args);
   }
 
+  public function wcGetFormattedVariation(\WC_Product_Variation $variation, bool $flat = false, bool $includeNames = true, bool $skipAttributesInName = false): string {
+    return wc_get_formatted_variation($variation, $flat, $includeNames, $skipAttributesInName);
+  }
+
   public function wcGetPageId(string $page): ?int {
     if ($this->isWooCommerceActive()) {
       return (int)wc_get_page_id($page);
