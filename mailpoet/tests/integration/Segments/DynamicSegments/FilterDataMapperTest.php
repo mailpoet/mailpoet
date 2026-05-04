@@ -333,6 +333,18 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]]]);
   }
 
+  public function testItChecksWooCommerceProductVariationOperatorIsValid(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing operator');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceProductVariation::ACTION_PRODUCT_VARIATION,
+      'variation_ids' => ['20'],
+      'operator' => 'invalid-operator',
+    ]]]);
+  }
+
   public function testItCreatesEmailOpens(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,

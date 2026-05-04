@@ -419,7 +419,13 @@ class FilterDataMapper {
       if (!isset($data['variation_ids']) || !is_array($data['variation_ids']) || count($data['variation_ids']) === 0) {
         throw new InvalidFilterException('Missing variation', InvalidFilterException::MISSING_VARIATION_ID);
       }
-      if (!isset($data['operator'])) {
+      if (
+        !isset($data['operator']) || !in_array($data['operator'], [
+          DynamicSegmentFilterData::OPERATOR_ANY,
+          DynamicSegmentFilterData::OPERATOR_ALL,
+          DynamicSegmentFilterData::OPERATOR_NONE,
+        ], true)
+      ) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       }
       $filterData['operator'] = $data['operator'];
