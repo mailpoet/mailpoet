@@ -13,10 +13,11 @@ function ColumnDataMatch({ header = [], subscribers }) {
     <tr>
       <th>{MailPoet.I18n.t('matchData')}</th>
       {matchedColumnTypes.map((columnType, i) => (
-        <th
-          // eslint-disable-next-line react/no-array-index-key
-          key={columnType.column_id + i}
-        >
+        // A stable index keeps the underlying <select> (and its select2 binding)
+        // intact when matchColumns reclassifies a column after a custom field is
+        // created mid-flow.
+        // eslint-disable-next-line react/no-array-index-key
+        <th key={i}>
           {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <select
             className="mailpoet_subscribers_column_data_match"
