@@ -11,7 +11,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
   private const DATE_FORMAT = 'Y-m-d H:i:s';
 
   public function checkPermissions(): bool {
-    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_FORMS);
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
   }
 
   protected function buildItem(CustomFieldEntity $customField): array {
