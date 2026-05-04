@@ -257,13 +257,37 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
-    $controller = $this->getController($authorizedEmailsFromApi = ['authorized' => ['auth@email.com']]);
+    $bridgeMock = $this->make(Bridge::class, [
+      'isMailpoetSendingServiceEnabled' => Expected::once(true),
+      'getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['auth@email.com']]),
+    ]);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'shouldSkipAuthorization' => Expected::once(false),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
+    ]);
+
+    $controller = $this->getControllerWithCustomMocks([
+      'Bridge' => $bridgeMock,
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ]);
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    verify(count($error['invalid_senders_in_newsletters']))->equals(1);
-    verify($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->getId());
-    verify($error['invalid_senders_in_newsletters'][0]['sender_address'])->equals('invalid@email.com');
-    verify($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
+    if (!is_array($error)) {
+      $this->fail('Expected unauthorized sender error to be stored in settings.');
+    }
+    $invalidSenders = $error['invalid_senders_in_newsletters'] ?? null;
+    if (!is_array($invalidSenders)) {
+      $this->fail('Expected unauthorized newsletter senders to be stored in settings.');
+    }
+    $invalidSender = $invalidSenders[0] ?? null;
+    if (!is_array($invalidSender)) {
+      $this->fail('Expected unauthorized newsletter sender details to be stored in settings.');
+    }
+
+    verify(count($invalidSenders))->equals(1);
+    verify($invalidSender['newsletter_id'])->equals($newsletter->getId());
+    verify($invalidSender['sender_address'])->equals('invalid@email.com');
+    verify($invalidSender['subject'])->equals('Subject');
   }
 
   public function testItSetsFromAddressInSettings() {
