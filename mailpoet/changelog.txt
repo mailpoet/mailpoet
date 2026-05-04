@@ -1,5 +1,28 @@
 == Changelog ==
 
+= 5.25.0 - 2026-05-04 =
+* Added: Added generated WooCommerce coupon block support for regular newsletters and automation emails;
+* Added: Survey to collect unsubscribe reasons.;
+* Added: Add a controlled bulk resend action for confirmation emails to unconfirmed subscribers;
+* Added: Duplicate action for automations.;
+* Added: Bulk actions for automations.;
+* Added: Start saving timezone when subscribing via form (enabled by default, with option to disable in Settings).;
+* Added: Filter order automation triggers by product type;
+* Added: A warning notice on MailPoet admin pages when a post notification is stuck (paused or invalid);
+* Added: Add custom fields management for subscribers;
+* Updated: Translate email editor strings provided by the @woocommerce/email-editor package under the MailPoet text domain;
+* Improved: Improve MailPoet system status report with WooCommerce-style format and support-ready copy/download actions;
+* Improved: Rewrote the Forms listing using the new DataViews component for a faster, more accessible experience;
+* Improved: Improve handling of unconfirmed subscribers by allowing opt-in cleanup after 30 days;
+* Improved: Migrated Lists and Dynamic Segments listing pages to DataViews;
+* Improved: Add right-to-left direction support to sent legacy MailPoet emails on RTL sites;
+* Improved: Migrated Automations listing page to DataViews;
+* Improved: Improved public API documentation, and added examples;
+* Improved: Improve RTL language support in the block email editor;
+* Fixed: Changing the default 'from' email address now also updates existing automation emails with an unauthorized sender;
+* Fixed: Doctrine annotation cache now properly retains entries across calls within a request;
+* Fixed: Hide the "Nice job!" success tag for newsletters whose sending is paused or still in progress.
+
 = 5.24.0 - 2026-04-27 =
 * Added: Automatic cleanup of rendered email body from old completed sends to reduce database size, configurable in Settings → Advanced;
 * Added: Automatic cleanup of per-subscriber sending status data with a configurable retention period in Advanced settings;

@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.24.0
+Stable tag: 5.25.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,22 +227,27 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.24.0 - 2026-04-27 =
-* Added: Automatic cleanup of rendered email body from old completed sends to reduce database size, configurable in Settings → Advanced;
-* Added: Automatic cleanup of per-subscriber sending status data with a configurable retention period in Advanced settings;
-* Added: New public APIs to manage tags and (un)assign tags to subscribers;
-* Added: Add AI-powered subject line and preview text suggestions in the email editor;
-* Added: Ability to resend a newsletter to subscribers who didn't open it;
-* Added: Birthday email automation — send automated birthday emails to subscribers using any date custom field, with configurable send time and date formatting in email content;
-* Added: Subscribers' tags management page with list, create, edit, and delete actions;
-* Added: Birthday Celebration email template for the newsletter editor;
-* Added: Popup forms can now be configured to open on click using a CSS selector, and can also be opened programmatically via `window.MailPoetForm.openPopup(formId)`.;
-* Added: Export single-campaign email statistics as CSV or XLSX;
-* Improved: Show list visibility on the Lists listing page;
-* Improved: Redesign the subscriber statistics page;
-* Fixed: Default scheduled send time now shows 8:00 AM in the site's local timezone instead of 8:00 AM UTC;
-* Fixed: Newly created tags are now available for autocomplete when importing subscribers multiple times without reloading the page;
-* Fixed: Missing translations in the new email editor;
-* Removed: Removed deprecated \_\_get magic getter methods from NewsletterEntity, SendingQueueEntity, and SubscriberEntity.
+= 5.25.0 - 2026-05-04 =
+* Added: Added generated WooCommerce coupon block support for regular newsletters and automation emails;
+* Added: Survey to collect unsubscribe reasons.;
+* Added: Add a controlled bulk resend action for confirmation emails to unconfirmed subscribers;
+* Added: Duplicate action for automations.;
+* Added: Bulk actions for automations.;
+* Added: Start saving timezone when subscribing via form (enabled by default, with option to disable in Settings).;
+* Added: Filter order automation triggers by product type;
+* Added: A warning notice on MailPoet admin pages when a post notification is stuck (paused or invalid);
+* Added: Add custom fields management for subscribers;
+* Updated: Translate email editor strings provided by the @woocommerce/email-editor package under the MailPoet text domain;
+* Improved: Improve MailPoet system status report with WooCommerce-style format and support-ready copy/download actions;
+* Improved: Rewrote the Forms listing using the new DataViews component for a faster, more accessible experience;
+* Improved: Improve handling of unconfirmed subscribers by allowing opt-in cleanup after 30 days;
+* Improved: Migrated Lists and Dynamic Segments listing pages to DataViews;
+* Improved: Add right-to-left direction support to sent legacy MailPoet emails on RTL sites;
+* Improved: Migrated Automations listing page to DataViews;
+* Improved: Improved public API documentation, and added examples;
+* Improved: Improve RTL language support in the block email editor;
+* Fixed: Changing the default 'from' email address now also updates existing automation emails with an unauthorized sender;
+* Fixed: Doctrine annotation cache now properly retains entries across calls within a request;
+* Fixed: Hide the "Nice job!" success tag for newsletters whose sending is paused or still in progress.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
