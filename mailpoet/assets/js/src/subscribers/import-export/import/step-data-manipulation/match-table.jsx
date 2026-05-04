@@ -123,10 +123,15 @@ Subscribers.propTypes = {
   ).isRequired,
 };
 
-function MatchTable({ subscribersCount = 0, subscribers = [], header = [] }) {
+function MatchTable({
+  subscribersCount = 0,
+  subscribers = [],
+  header = [],
+  onCreateCustomField,
+}) {
   useLayoutEffect(() => {
-    generateColumnSelection();
-  });
+    generateColumnSelection(onCreateCustomField);
+  }, [onCreateCustomField]);
 
   return (
     <div className="subscribers_data">
@@ -159,6 +164,7 @@ MatchTable.propTypes = {
     ),
   ),
   header: PropTypes.arrayOf(PropTypes.string),
+  onCreateCustomField: PropTypes.func.isRequired,
 };
 
 export { MatchTable };

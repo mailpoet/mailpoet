@@ -1,7 +1,84 @@
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 
-export const generateColumnSelection = () => {
+const getCustomFieldsGroup = () => {
+  let customFieldsGroup = window.mailpoetColumnsSelect2.find(
+    (group) => group.name === MailPoet.I18n.t('userColumns'),
+  );
+
+  if (!customFieldsGroup) {
+    const label = MailPoet.I18n.t('userColumns');
+    customFieldsGroup = {
+      name: label,
+      text: label,
+      children: [],
+    };
+    window.mailpoetColumnsSelect2.push(customFieldsGroup);
+  }
+
+  return customFieldsGroup;
+};
+
+const getColumnData = (customField) => ({
+  id: customField.id,
+  name: customField.name,
+  text: customField.name, // Required for select2 default functionality
+  type: customField.type,
+  params: customField.params,
+  custom: true,
+});
+
+export const addCustomFieldColumn = (selectElement, customField) => {
+  const newColumnData = getColumnData(customField);
+  const customFieldsGroup = getCustomFieldsGroup();
+  customFieldsGroup.children.push(newColumnData);
+  window.mailpoetColumns.push(newColumnData);
+  const newColumnId = `${newColumnData.id}`;
+
+  const select2Config = {
+    data: window.mailpoetColumnsSelect2,
+    width: '15em',
+  };
+
+  jQuery('select.mailpoet_subscribers_column_data_match').each(
+    (index, element) => {
+      const $element = jQuery(element);
+
+      if (element === selectElement) {
+        $element.find(`option[value="${newColumnId}"]`).remove();
+        $element.append(
+          new Option(newColumnData.text, newColumnId, true, true),
+        );
+        $element.data('column-id', newColumnData.id);
+        $element.attr('data-column-id', newColumnData.id);
+        $element.val(newColumnId).trigger('change');
+        $element.trigger({
+          type: 'select2:select',
+          params: {
+            data: {
+              ...newColumnData,
+              id: newColumnId,
+            },
+          },
+        });
+        $element
+          .next('.select2-container')
+          .find('.select2-selection__rendered')
+          .text(newColumnData.text)
+          .attr('title', newColumnData.text);
+        return;
+      }
+
+      const currentValue = $element.data('column-id');
+      $element.html('').select2('destroy').select2(select2Config);
+      $element.data('column-id', currentValue);
+      $element.attr('data-column-id', currentValue);
+      $element.val(`${currentValue}`).trigger('change');
+    },
+  );
+};
+
+export const generateColumnSelection = (onCreateCustomField) => {
   const select2Config = {
     data: window.mailpoetColumnsSelect2,
     width: '15em',
@@ -15,62 +92,7 @@ export const generateColumnSelection = () => {
       if (selectedOptionId === 'create') {
         selectEvent.preventDefault();
         jQuery(selectElement).select2('close');
-        MailPoet.Modal.popup({
-          title: MailPoet.I18n.t('addNewField'),
-          template: jQuery('#form_template_field_form').html(),
-        });
-        jQuery('#form_field_new')
-          .parsley()
-          .on('form:submit', () => {
-            // get data
-            const data = jQuery('#form_field_new').mailpoetSerializeObject();
-
-            // save custom field
-            MailPoet.Ajax.post({
-              api_version: window.mailpoet_api_version,
-              endpoint: 'customFields',
-              action: 'save',
-              data,
-            })
-              .done((response) => {
-                const newColumnData = {
-                  id: response.data.id,
-                  name: response.data.name,
-                  text: response.data.name, // Required for select2 default functionality
-                  type: response.data.type,
-                  params: response.data.params,
-                  custom: true,
-                };
-                // if this is the first custom column, create an "optgroup"
-                if (window.mailpoetColumnsSelect2.length === 2) {
-                  window.mailpoetColumnsSelect2.push({
-                    name: MailPoet.I18n.t('userColumns'),
-                    children: [],
-                  });
-                }
-                window.mailpoetColumnsSelect2[2].children.push(newColumnData);
-                window.mailpoetColumns.push(newColumnData);
-                jQuery('select.mailpoet_subscribers_column_data_match').each(
-                  () => {
-                    jQuery(selectElement)
-                      .html('')
-                      .select2('destroy')
-                      .select2(select2Config);
-                  },
-                );
-                jQuery(selectElement).data('column-id', newColumnData.id);
-                // close popup
-                MailPoet.Modal.close();
-              })
-              .fail((response) => {
-                if (response.errors.length > 0) {
-                  MailPoet.Notice.showApiErrorNotice(response, {
-                    positionAfter: '#field_name',
-                  });
-                }
-              });
-            return false;
-          });
+        onCreateCustomField(selectElement);
       } else {
         // CHANGE COLUMN
         // check for duplicate values in all select options
