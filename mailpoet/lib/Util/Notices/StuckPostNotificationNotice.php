@@ -8,6 +8,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
 class StuckPostNotificationNotice {
+  const OPTION_NAME = 'mailpoet-stuck-post-notification-notice';
+  const DISMISS_NOTICE_TIMEOUT_SECONDS = WEEK_IN_SECONDS;
 
   /** @var WPFunctions */
   private $wp;
@@ -23,22 +25,27 @@ class StuckPostNotificationNotice {
     $this->newslettersRepository = $newslettersRepository;
   }
 
-  public function init(bool $shouldDisplay): void {
-    if (!$shouldDisplay) {
-      return;
+  public function init(bool $shouldDisplay): ?Notice {
+    if (!$shouldDisplay || $this->wp->getTransient(self::OPTION_NAME)) {
+      return null;
     }
     $stuckParents = $this->newslettersRepository->findStuckPostNotificationParents();
     if (empty($stuckParents)) {
-      return;
+      return null;
     }
-    $this->display($stuckParents);
+    return $this->display($stuckParents);
   }
 
   /**
    * @param array<int, array{parent: NewsletterEntity, hasInvalid: bool}> $stuckParents
    */
-  private function display(array $stuckParents): void {
-    Notice::displayWarning($this->getMessage($stuckParents), '', '', false);
+  private function display(array $stuckParents): Notice {
+    $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
+    return Notice::displayWarning($this->getMessage($stuckParents), $extraClasses, self::OPTION_NAME, false);
+  }
+
+  public function disable(): void {
+    $this->wp->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
 
   /**
