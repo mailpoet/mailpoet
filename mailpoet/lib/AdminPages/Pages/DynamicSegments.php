@@ -168,6 +168,9 @@ class DynamicSegments {
     $data['product_tags'] = $this->wpPostListLoader->getWooCommerceTags();
 
     $data['products'] = $this->wpPostListLoader->getProducts();
+    $data['variable_products'] = $this->woocommerceHelper->isWooCommerceActive()
+      ? $this->wpPostListLoader->getVariableProducts()
+      : [];
     $data['membership_plans'] = $this->wpPostListLoader->getMembershipPlans();
     $data['subscription_products'] = $this->wpPostListLoader->getSubscriptionProducts();
     $wcCountries = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getAllowedCountries() : [];
