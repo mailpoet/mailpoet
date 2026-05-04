@@ -52,13 +52,23 @@ class WooCommerceProduct implements Filter {
       $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $queryBuilder->andWhere("product.product_id IN (:products_{$parameterSuffix})");
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-      $this->applyProductJoin($queryBuilder, $orderStatsAlias);
-      $queryBuilder->andWhere("product.product_id IN (:products_{$parameterSuffix})")
-        ->groupBy("{$subscribersTable}.id, $orderStatsAlias.order_id")
-        ->having("COUNT($orderStatsAlias.order_id) = :count" . $parameterSuffix)
-        ->setParameter('count' . $parameterSuffix, count($productIds));
-
+      $subQueryCount = 1;
+      foreach ($productIds as $productId) {
+        $uniqueParameterSuffix = Security::generateRandomString();
+        $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+        $subOrderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+        $this->applyProductJoin($subQuery, $subOrderStatsAlias);
+        $subQuery->andWhere("product.product_id = :product_{$uniqueParameterSuffix}");
+        $subQuery->setParameter("product_{$uniqueParameterSuffix}", $productId);
+        $alias = sprintf('productSubQuery%d', $subQueryCount);
+        $queryBuilder->innerJoin(
+          $subscribersTable,
+          sprintf('(%s)', $this->filterHelper->getInterpolatedSQL($subQuery)),
+          $alias,
+          "$subscribersTable.id = $alias.id"
+        );
+        $subQueryCount++;
+      }
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);

@@ -33,6 +33,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     $customerId2 = $this->tester->createCustomer('customer2@example.com');
     $customerIdOnHold = $this->tester->createCustomer('customer-on-hold@example.com');
     $customerIdPendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
+    $customerIdMulti = $this->tester->createCustomer('customer-multi-orders@example.com');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
@@ -48,10 +49,21 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->addToOrder(3, $this->orderIds[2], $this->productIds[0], $customerIdOnHold);
     $this->orderIds[] = $this->createOrder($customerIdPendingPayment, Carbon::now(), 'wc-pending');
     $this->addToOrder(4, $this->orderIds[3], $this->productIds[0], $customerIdPendingPayment);
+
+    // customer-multi-orders bought product[0] and product[1] in two separate completed orders.
+    // This exercises the "all of" operator across orders.
+    $this->orderIds[] = $this->createOrder($customerIdMulti, Carbon::now());
+    $this->addToOrder(5, $this->orderIds[4], $this->productIds[0], $customerIdMulti);
+    $this->orderIds[] = $this->createOrder($customerIdMulti, Carbon::now());
+    $this->addToOrder(6, $this->orderIds[5], $this->productIds[1], $customerIdMulti);
   }
 
   public function testItGetsSubscribersThatPurchasedAnyProducts(): void {
-    $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
+    $expectedEmails = [
+      'customer1@example.com',
+      'customer2@example.com',
+      'customer-multi-orders@example.com',
+    ];
     $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
@@ -71,11 +83,14 @@ class WooCommerceProductTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
+    // customer-multi-orders bought product[0] and product[1] in two separate orders.
+    // The "all of" operator must match across orders, not require both in the same order.
+    $expectedEmails = ['customer-multi-orders@example.com'];
     $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
-    verify($emails)->arrayCount(0);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
 
-    $expectedEmails = ['customer1@example.com'];
+    $expectedEmails = ['customer1@example.com', 'customer-multi-orders@example.com'];
     $segmentFilterData = $this->getSegmentFilterData([$this->productIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
