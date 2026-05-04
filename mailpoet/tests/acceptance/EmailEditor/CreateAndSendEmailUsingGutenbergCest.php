@@ -122,14 +122,16 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->closeTab();
 
     $i->wantTo('Send preview email and verify it was delivered');
+    $sendTestEmailMenuItem = '//button[@role="menuitem" and .//span[normalize-space(.)="Send a test email"]]';
+    $sendTestEmailButton = '//button[normalize-space(.)="Send test email"]';
     $i->click('.editor-preview-dropdown__toggle');
-    $i->waitForElementVisible('//span[text()="Send a test email"]');
-    $i->click('//span[text()="Send a test email"]'); // MenuItem component renders a button containing span
-    $i->waitForElementClickable('//button[text()="Send test email"]');
-    $i->click('//button[text()="Send test email"]');
+    $i->waitForElementClickable($sendTestEmailMenuItem);
+    $i->click($sendTestEmailMenuItem);
+    $i->waitForElementClickable($sendTestEmailButton);
+    $i->click($sendTestEmailButton);
     $i->waitForText('Test email sent successfully!');
     $i->click('//button[text()="Cancel"]');
-    $i->waitForElementNotVisible('//button[text()="Send test email"]');
+    $i->waitForElementNotVisible($sendTestEmailButton);
   }
 
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
