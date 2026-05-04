@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
   Button,
@@ -9,6 +9,12 @@ import {
   ToggleControl,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
+import {
+  DragDropContext,
+  Draggable,
+  type DropResult,
+} from 'react-beautiful-dnd';
+import { StrictModeDroppable as Droppable } from 'form-editor/utils/strict-mode-droppable';
 import type {
   CustomField,
   CustomFieldDateSettings,
@@ -219,9 +225,6 @@ export function CustomFieldFormFields({
   disabled = false,
   onChange,
 }: Props): JSX.Element {
-  const [draggedOptionId, setDraggedOptionId] = useState<string | null>(null);
-  const [dragOverOptionId, setDragOverOptionId] = useState<string | null>(null);
-
   const dateFormatOptions = useMemo(
     () =>
       (dateSettings.dateFormats[data.dateType] ?? []).map((format) => ({
@@ -277,25 +280,18 @@ export function CustomFieldFormFields({
     });
   };
 
-  const reorderOptions = (sourceId: string, targetId: string): void => {
-    if (sourceId === targetId) {
+  const onDragEnd = (result: DropResult): void => {
+    if (!result.destination) {
       return;
     }
-
-    const sourceIndex = data.options.findIndex(
-      (option) => option.id === sourceId,
-    );
-    const targetIndex = data.options.findIndex(
-      (option) => option.id === targetId,
-    );
-
-    if (sourceIndex === -1 || targetIndex === -1) {
+    const from = Number(result.source.index);
+    const to = Number(result.destination.index);
+    if (from === to) {
       return;
     }
-
     const options = [...data.options];
-    const [movedOption] = options.splice(sourceIndex, 1);
-    options.splice(targetIndex, 0, movedOption);
+    const [movedOption] = options.splice(from, 1);
+    options.splice(to, 0, movedOption);
     updateData({ options });
   };
 
@@ -383,100 +379,82 @@ export function CustomFieldFormFields({
             <div className="mailpoet-custom-fields-form-options-label">
               {__('Options', 'mailpoet')}
             </div>
-            {data.options.map((option, index) => (
-              <div
-                key={option.id}
-                className={`mailpoet-custom-fields-form-option ${
-                  draggedOptionId === option.id ? 'is-dragging' : ''
-                } ${dragOverOptionId === option.id ? 'is-drag-over' : ''}`}
-                onDragOver={(event) => {
-                  if (!draggedOptionId || disabled) {
-                    return;
-                  }
-                  event.preventDefault();
-                  const { dataTransfer } = event;
-                  dataTransfer.dropEffect = 'move';
-                  setDragOverOptionId(option.id);
-                }}
-                onDragLeave={() => {
-                  if (dragOverOptionId === option.id) {
-                    setDragOverOptionId(null);
-                  }
-                }}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  const sourceId =
-                    draggedOptionId || event.dataTransfer.getData('text/plain');
-                  reorderOptions(sourceId, option.id);
-                  setDraggedOptionId(null);
-                  setDragOverOptionId(null);
-                }}
-              >
-                <div
-                  aria-label={__('Drag to reorder', 'mailpoet')}
-                  className="mailpoet-custom-fields-form-option-drag-handle"
-                  draggable={!disabled}
-                  onDragStart={(event) => {
-                    if (disabled) {
-                      event.preventDefault();
-                      return;
-                    }
-                    setDraggedOptionId(option.id);
-                    const { dataTransfer } = event;
-                    dataTransfer.effectAllowed = 'move';
-                    dataTransfer.setData('text/plain', option.id);
-
-                    const row = event.currentTarget.closest(
-                      '.mailpoet-custom-fields-form-option',
-                    );
-                    if (row instanceof HTMLElement) {
-                      dataTransfer.setDragImage(row, 18, 18);
-                    }
-                  }}
-                  onDragEnd={() => {
-                    setDraggedOptionId(null);
-                    setDragOverOptionId(null);
-                  }}
-                  role="button"
-                  tabIndex={disabled ? -1 : 0}
-                >
-                  <Dashicon icon="menu" />
-                </div>
-                <div className="mailpoet-custom-fields-form-option-input">
-                  <TextControl
-                    label={sprintf(__('Option %d', 'mailpoet'), index + 1)}
-                    hideLabelFromVision
-                    value={option.value}
-                    onChange={(value) => setOption(option.id, { value })}
-                    disabled={disabled}
-                    __nextHasNoMarginBottom
-                  />
-                </div>
-                <div>
-                  <CheckboxControl
-                    label={__('Default', 'mailpoet')}
-                    checked={option.isChecked}
-                    onChange={() =>
-                      setOption(option.id, {
-                        isChecked: !option.isChecked,
-                      })
-                    }
-                    disabled={disabled}
-                    __nextHasNoMarginBottom
-                  />
-                </div>
-                <div>
-                  <Button
-                    variant="tertiary"
-                    onClick={() => removeOption(option.id)}
-                    disabled={disabled || data.options.length === 1}
-                    __next40pxDefaultSize
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="custom-field-options">
+                {(droppableProvided) => (
+                  <div
+                    ref={droppableProvided.innerRef}
+                    {...droppableProvided.droppableProps}
                   >
-                    {__('Remove', 'mailpoet')}
-                  </Button>
-                </div>
-              </div>
-            ))}
+                    {data.options.map((option, index) => (
+                      <Draggable
+                        key={option.id}
+                        draggableId={option.id}
+                        index={index}
+                        isDragDisabled={disabled}
+                      >
+                        {(draggableProvided, snapshot) => (
+                          <div
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            className={`mailpoet-custom-fields-form-option ${
+                              snapshot.isDragging ? 'is-dragging' : ''
+                            }`}
+                          >
+                            <div
+                              {...draggableProvided.dragHandleProps}
+                              aria-label={__('Drag to reorder', 'mailpoet')}
+                              className="mailpoet-custom-fields-form-option-drag-handle"
+                            >
+                              <Dashicon icon="menu" />
+                            </div>
+                            <div className="mailpoet-custom-fields-form-option-input">
+                              <TextControl
+                                label={sprintf(
+                                  __('Option %d', 'mailpoet'),
+                                  index + 1,
+                                )}
+                                hideLabelFromVision
+                                value={option.value}
+                                onChange={(value) =>
+                                  setOption(option.id, { value })
+                                }
+                                disabled={disabled}
+                                __nextHasNoMarginBottom
+                              />
+                            </div>
+                            <div>
+                              <CheckboxControl
+                                label={__('Default', 'mailpoet')}
+                                checked={option.isChecked}
+                                onChange={() =>
+                                  setOption(option.id, {
+                                    isChecked: !option.isChecked,
+                                  })
+                                }
+                                disabled={disabled}
+                                __nextHasNoMarginBottom
+                              />
+                            </div>
+                            <div>
+                              <Button
+                                variant="tertiary"
+                                onClick={() => removeOption(option.id)}
+                                disabled={disabled || data.options.length === 1}
+                                __next40pxDefaultSize
+                              >
+                                {__('Remove', 'mailpoet')}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {droppableProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
             <Button
               variant="secondary"
               onClick={() =>
