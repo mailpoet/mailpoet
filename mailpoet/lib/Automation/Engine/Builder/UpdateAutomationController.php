@@ -119,8 +119,8 @@ class UpdateAutomationController {
   private function stepChanged(Step $a, Step $b): bool {
     $aData = $a->toArray();
     $bData = $b->toArray();
-    unset($aData['args']);
-    unset($bData['args']);
+    unset($aData['args'], $aData['filters']);
+    unset($bData['args'], $bData['filters']);
     return $aData === $bData;
   }
 
