@@ -8,6 +8,7 @@ class Source {
   const ADMINISTRATOR = 'administrator';
   const API = 'api';
   const WORDPRESS_USER = 'wordpress_user';
+  const WORDPRESS_USER_DELETED = 'wordpress_user_deleted';
   const WOOCOMMERCE_USER = 'woocommerce_user';
   const WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
   const UNKNOWN = 'unknown';

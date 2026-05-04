@@ -527,6 +527,7 @@ class SubscriberEntity {
         'imported',
         'administrator',
         'wordpress_user',
+        'wordpress_user_deleted',
         'woocommerce_user',
         'woocommerce_checkout',
       ])
