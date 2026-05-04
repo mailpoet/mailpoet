@@ -256,7 +256,6 @@ export function EditNewsletter(): JSX.Element {
           )
         ) {
           rollbackStepArgs();
-          await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
           showEditorChoiceError(
             editorChoice,
             __(
@@ -272,9 +271,6 @@ export function EditNewsletter(): JSX.Element {
       } catch {
         if (stagedStepArgs) {
           rollbackStepArgs();
-        }
-        if (createdEmail) {
-          await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
         }
         showEditorChoiceError(
           editorChoice,
