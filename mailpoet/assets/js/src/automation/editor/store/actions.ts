@@ -95,7 +95,7 @@ export function setAutomationName(name) {
   } as const;
 }
 
-export function* save() {
+export function* save(options: { cancelRunningRuns?: boolean } = {}) {
   const automation = select(storeName).getAutomationData();
 
   yield {
@@ -105,7 +105,10 @@ export function* save() {
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
-    data: { ...automation },
+    data: {
+      ...automation,
+      ...(options.cancelRunningRuns ? { cancel_running_runs: true } : {}),
+    },
   });
 
   const { createNotice } = dispatch(noticesStore);
