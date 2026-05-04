@@ -4,6 +4,7 @@ import { useSelect } from '@wordpress/data';
 import { useRef, useImperativeHandle, useState } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 import { blockDefault, Icon } from '@wordpress/icons';
+import { Hooks } from 'wp-js-hooks';
 import { Group } from './group';
 import { Item } from './item';
 import { StepInfoPanel } from './step-info-panel';
@@ -32,13 +33,25 @@ export const Inserter = forwardRef(
     const [filterValue, setFilterValue] = useState('');
     const [hoveredItem, setHoveredItem] = useState(null);
 
-    const { steps, type, automationId } = useSelect(
+    const { steps, type, automationId, automation } = useSelect(
       (select) => ({
         steps: select(storeName).getSteps(),
         type: select(storeName).getInserterPopover().type,
         automationId: select(storeName).getAutomationData().id,
+        automation: select(storeName).getAutomationData(),
       }),
       [],
+    );
+
+    const filterItemsByContext = useCallback(
+      (items: Item[], groupType: Group['type']): Item[] =>
+        Hooks.applyFilters(
+          'mailpoet.automation.inserter.items',
+          items,
+          groupType,
+          automation,
+        ) as Item[],
+      [automation],
     );
 
     const groups: Group[] = useMemo(
@@ -50,7 +63,10 @@ export const Inserter = forwardRef(
                 title: undefined,
                 // translators: Label for a list of automation steps of type trigger
                 label: _x('Triggers', 'automation steps', 'mailpoet'),
-                items: steps.filter(({ group }) => group === 'triggers'),
+                items: filterItemsByContext(
+                  steps.filter(({ group }) => group === 'triggers'),
+                  'triggers',
+                ),
               },
             ]
           : [
@@ -60,7 +76,10 @@ export const Inserter = forwardRef(
                 title: _x('Actions', 'automation steps', 'mailpoet'),
                 // translators: Label for a list of automation steps of type action
                 label: _x('Actions', 'automation steps', 'mailpoet'),
-                items: steps.filter(({ group }) => group === 'actions'),
+                items: filterItemsByContext(
+                  steps.filter(({ group }) => group === 'actions'),
+                  'actions',
+                ),
               },
               {
                 type: 'logical',
@@ -68,10 +87,13 @@ export const Inserter = forwardRef(
                 title: _x('Logical', 'automation steps', 'mailpoet'),
                 // translators: Label for a list of logical automation steps (if/else, etc.)
                 label: _x('Logical', 'automation steps', 'mailpoet'),
-                items: steps.filter(({ group }) => group === 'logical'),
+                items: filterItemsByContext(
+                  steps.filter(({ group }) => group === 'logical'),
+                  'logical',
+                ),
               },
             ],
-      [steps, type],
+      [steps, type, filterItemsByContext],
     );
 
     const onHover = useCallback(
