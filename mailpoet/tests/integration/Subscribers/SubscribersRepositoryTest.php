@@ -406,17 +406,33 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $wpUserId1 = $this->tester->createWordPressUser('subscriber1@email.com', 'author');
     $wpUserId2 = $this->tester->createWordPressUser('subscriber2@email.com', 'author');
     $wpUserId3 = $this->tester->createWordPressUser('subscriber3@email.com', 'author');
+    $subscriber1 = $this->repository->findOneBy(['wpUserId' => $wpUserId1]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $subscriber1Id = $subscriber1->getId();
     $subscriber2 = $this->repository->findOneBy(['wpUserId' => $wpUserId2]);
     $subscriber3 = $this->repository->findOneBy(['wpUserId' => $wpUserId3]);
 
     $this->tester->deleteWPUserFromDatabase($wpUserId1);
 
     $this->repository->removeOrphanedSubscribersFromWpSegment();
+    $this->entityManager->clear();
 
+    // Subscriber for the deleted WP user is preserved but unlinked and marked
+    // with the WORDPRESS_USER_DELETED source. Subscribers for live WP users are untouched.
     $subscribers = $this->repository->findAll();
-    $this->assertCount(2, $subscribers);
-    $this->assertSame($subscribers[0], $subscriber2);
-    $this->assertSame($subscribers[1], $subscriber3);
+    $this->assertCount(3, $subscribers);
+
+    $detachedSubscriber = $this->repository->findOneById($subscriber1Id);
+    $this->assertInstanceOf(SubscriberEntity::class, $detachedSubscriber);
+    $this->assertNull($detachedSubscriber->getWpUserId());
+    $this->assertSame(Source::WORDPRESS_USER_DELETED, $detachedSubscriber->getSource());
+
+    $stillLinked2 = $this->repository->findOneBy(['wpUserId' => $wpUserId2]);
+    $this->assertInstanceOf(SubscriberEntity::class, $stillLinked2);
+    $stillLinked3 = $this->repository->findOneBy(['wpUserId' => $wpUserId3]);
+    $this->assertInstanceOf(SubscriberEntity::class, $stillLinked3);
+    $this->assertSame($subscriber2 ? $subscriber2->getId() : null, $stillLinked2->getId());
+    $this->assertSame($subscriber3 ? $subscriber3->getId() : null, $stillLinked3->getId());
   }
 
   public function testRemoveByWpUserIds(): void {

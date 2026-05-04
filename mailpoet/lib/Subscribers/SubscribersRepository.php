@@ -13,6 +13,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\Source;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -1043,15 +1044,74 @@ class SubscribersRepository extends Repository {
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
 
+    // Hard-delete broken subscribers (no email) in the WP-Users segment.
+    // These rows are unusable; unlinking them would leave invalid data behind.
     $this->entityManager->getConnection()->executeStatement(
       "DELETE s
        FROM {$subscribersTable} s
        INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
-       LEFT JOIN {$wpdb->users} u ON s.wp_user_id = u.id
-       WHERE ss.segment_id = :segmentId AND (u.id IS NULL OR s.email = '')",
+       WHERE ss.segment_id = :segmentId AND s.email = ''",
       ['segmentId' => $segmentId],
       ['segmentId' => ParameterType::INTEGER]
+    );
+
+    // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
+    // and who are not WC customers — they have nowhere left to belong, but we keep
+    // them as soft-deleted so admins can recover them if needed.
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$subscribersTable} s
+       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+       SET s.deleted_at = NOW(), s.status = :unconfirmed
+       WHERE s.deleted_at IS NULL
+         AND s.is_woocommerce_user = 0
+         AND s.wp_user_id IS NOT NULL
+         AND u.id IS NULL
+         AND EXISTS (
+           SELECT 1 FROM {$subscriberSegmentsTable} ss_wp
+           WHERE ss_wp.subscriber_id = s.id AND ss_wp.segment_id = :segmentId
+         )
+         AND NOT EXISTS (
+           SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+           INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+           WHERE ss_other.subscriber_id = s.id
+             AND seg.type != :wpType
+             AND seg.deleted_at IS NULL
+         )",
+      [
+        'segmentId' => $segmentId,
+        'unconfirmed' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'wpType' => SegmentEntity::TYPE_WP_USERS,
+      ],
+      [
+        'segmentId' => ParameterType::INTEGER,
+        'unconfirmed' => ParameterType::STRING,
+        'wpType' => ParameterType::STRING,
+      ]
+    );
+
+    // Remove WP-Users segment memberships for orphans.
+    $this->entityManager->getConnection()->executeStatement(
+      "DELETE ss
+       FROM {$subscriberSegmentsTable} ss
+       INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
+       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+       WHERE ss.segment_id = :segmentId
+         AND s.wp_user_id IS NOT NULL
+         AND u.id IS NULL",
+      ['segmentId' => $segmentId],
+      ['segmentId' => ParameterType::INTEGER]
+    );
+
+    // Detach subscribers from non-existent WP users and mark the source.
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$subscribersTable} s
+       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+       SET s.wp_user_id = NULL, s.source = :source
+       WHERE s.wp_user_id IS NOT NULL AND u.id IS NULL",
+      ['source' => Source::WORDPRESS_USER_DELETED],
+      ['source' => ParameterType::STRING]
     );
   }
 
