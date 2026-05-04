@@ -20,6 +20,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProductVariation;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTag;
@@ -285,6 +286,50 @@ class FilterDataMapperTest extends \MailPoetTest {
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceProduct::ACTION_PRODUCT,
+    ]]]);
+  }
+
+  public function testItMapsWooCommerceProductVariation(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceProductVariation::ACTION_PRODUCT_VARIATION,
+      'variation_ids' => ['20', '21'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'noise' => 'noise',
+    ]]];
+    $filters = $this->mapper->map($data);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($filter->getAction())->equals(WooCommerceProductVariation::ACTION_PRODUCT_VARIATION);
+    verify($filter->getData())->equals([
+      'variation_ids' => ['20', '21'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksWooCommerceProductVariationIds(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing variation');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VARIATION_ID);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceProductVariation::ACTION_PRODUCT_VARIATION,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]]);
+  }
+
+  public function testItChecksWooCommerceProductVariationOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing operator');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceProductVariation::ACTION_PRODUCT_VARIATION,
+      'variation_ids' => ['20'],
     ]]]);
   }
 
