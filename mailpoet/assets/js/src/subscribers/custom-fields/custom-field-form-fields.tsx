@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { __, sprintf } from '@wordpress/i18n';
 import {
   Button,
@@ -225,6 +226,23 @@ export function CustomFieldFormFields({
   disabled = false,
   onChange,
 }: Props): JSX.Element {
+  // Render the dragged option via a portal to <body> so it escapes the modal's
+  // overflow:hidden + transform stacking context (which would otherwise clip
+  // and mis-position the lifted item that uses position:fixed).
+  const dragPortalRef = useRef<HTMLDivElement | null>(null);
+  if (typeof document !== 'undefined' && !dragPortalRef.current) {
+    dragPortalRef.current = document.createElement('div');
+    dragPortalRef.current.className = 'mailpoet-custom-fields-form-drag-portal';
+  }
+  useEffect(() => {
+    const portal = dragPortalRef.current;
+    if (!portal) return undefined;
+    document.body.appendChild(portal);
+    return () => {
+      document.body.removeChild(portal);
+    };
+  }, []);
+
   const dateFormatOptions = useMemo(
     () =>
       (dateSettings.dateFormats[data.dateType] ?? []).map((format) => ({
@@ -393,61 +411,69 @@ export function CustomFieldFormFields({
                         index={index}
                         isDragDisabled={disabled}
                       >
-                        {(draggableProvided, snapshot) => (
-                          <div
-                            ref={draggableProvided.innerRef}
-                            {...draggableProvided.draggableProps}
-                            className={`mailpoet-custom-fields-form-option ${
-                              snapshot.isDragging ? 'is-dragging' : ''
-                            }`}
-                          >
+                        {(draggableProvided, snapshot) => {
+                          const child = (
                             <div
-                              {...draggableProvided.dragHandleProps}
-                              aria-label={__('Drag to reorder', 'mailpoet')}
-                              className="mailpoet-custom-fields-form-option-drag-handle"
+                              ref={draggableProvided.innerRef}
+                              {...draggableProvided.draggableProps}
+                              className={`mailpoet-custom-fields-form-option ${
+                                snapshot.isDragging ? 'is-dragging' : ''
+                              }`}
                             >
-                              <Dashicon icon="menu" />
-                            </div>
-                            <div className="mailpoet-custom-fields-form-option-input">
-                              <TextControl
-                                label={sprintf(
-                                  __('Option %d', 'mailpoet'),
-                                  index + 1,
-                                )}
-                                hideLabelFromVision
-                                value={option.value}
-                                onChange={(value) =>
-                                  setOption(option.id, { value })
-                                }
-                                disabled={disabled}
-                                __nextHasNoMarginBottom
-                              />
-                            </div>
-                            <div>
-                              <CheckboxControl
-                                label={__('Default', 'mailpoet')}
-                                checked={option.isChecked}
-                                onChange={() =>
-                                  setOption(option.id, {
-                                    isChecked: !option.isChecked,
-                                  })
-                                }
-                                disabled={disabled}
-                                __nextHasNoMarginBottom
-                              />
-                            </div>
-                            <div>
-                              <Button
-                                variant="tertiary"
-                                onClick={() => removeOption(option.id)}
-                                disabled={disabled || data.options.length === 1}
-                                __next40pxDefaultSize
+                              <div
+                                {...draggableProvided.dragHandleProps}
+                                aria-label={__('Drag to reorder', 'mailpoet')}
+                                className="mailpoet-custom-fields-form-option-drag-handle"
                               >
-                                {__('Remove', 'mailpoet')}
-                              </Button>
+                                <Dashicon icon="menu" />
+                              </div>
+                              <div className="mailpoet-custom-fields-form-option-input">
+                                <TextControl
+                                  label={sprintf(
+                                    __('Option %d', 'mailpoet'),
+                                    index + 1,
+                                  )}
+                                  hideLabelFromVision
+                                  value={option.value}
+                                  onChange={(value) =>
+                                    setOption(option.id, { value })
+                                  }
+                                  disabled={disabled}
+                                  __nextHasNoMarginBottom
+                                />
+                              </div>
+                              <div>
+                                <CheckboxControl
+                                  label={__('Default', 'mailpoet')}
+                                  checked={option.isChecked}
+                                  onChange={() =>
+                                    setOption(option.id, {
+                                      isChecked: !option.isChecked,
+                                    })
+                                  }
+                                  disabled={disabled}
+                                  __nextHasNoMarginBottom
+                                />
+                              </div>
+                              <div>
+                                <Button
+                                  variant="tertiary"
+                                  onClick={() => removeOption(option.id)}
+                                  disabled={
+                                    disabled || data.options.length === 1
+                                  }
+                                  __next40pxDefaultSize
+                                >
+                                  {__('Remove', 'mailpoet')}
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                          if (snapshot.isDragging && dragPortalRef.current) {
+                            return createPortal(child, dragPortalRef.current);
+                          }
+                          return child;
+                        }}
                       </Draggable>
                     ))}
                     {droppableProvided.placeholder}
