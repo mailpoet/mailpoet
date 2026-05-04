@@ -48,7 +48,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
 
-    $i->click('Design email');
+    $i->click('Design with the classic editor');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
     $i->click('button[data-automation-id="select_template_0"]');

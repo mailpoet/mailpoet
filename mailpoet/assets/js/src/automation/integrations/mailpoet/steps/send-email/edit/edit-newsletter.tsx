@@ -1,12 +1,25 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
-import { useCallback, useEffect, useState } from 'react';
+import classnames from 'classnames';
+import { useCallback, useId, useState } from 'react';
 import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
+import { useSelectContext } from '../../../context';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 import { sendTelemetryEvent } from '../../../../../editor/telemetry';
+import type {
+  CreatedAutomationEmail,
+  EditorChoice,
+  SavedAutomationResult,
+} from './email-editor-choice';
+import {
+  editorChoiceButtonLabels,
+  getCreatedAutomationEmail,
+  isCreatedEmailPersisted,
+  parsePositiveInteger,
+} from './email-editor-choice';
 
 type HandleDuplicatedStepType = {
   newEmailId: number;
@@ -33,18 +46,41 @@ const retrievePreviewLink = async (emailId) => {
   return emailPreviewLinkCache[emailId];
 };
 
+const getEmailIdErrorMessage = (emailIdError: unknown): string =>
+  typeof emailIdError === 'string' && emailIdError.length > 0
+    ? emailIdError
+    : __(
+        'You need to design an email before you can activate the automation',
+        'mailpoet',
+      );
+
+function EmailIdValidationMessage({
+  message,
+}: {
+  message: string;
+}): JSX.Element {
+  return (
+    <span className="mailpoet-automation-field-message" role="alert">
+      {message}
+    </span>
+  );
+}
+
 export function EditNewsletter(): JSX.Element {
-  const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
-    useState(false);
+  const [creatingEditor, setCreatingEditor] = useState<EditorChoice | null>(
+    null,
+  );
   const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
   const [isHandlingDuplicatedStep, setIsHandlingDuplicatedStep] =
     useState(false);
+  const blockEmailEditorHelpId = useId();
+  const { block_email_editor_enabled: blockEmailEditorEnabled = false } =
+    useSelectContext();
 
-  const { selectedStep, automationId, savedState, errors } = useSelect(
+  const { selectedStep, automationId, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       automationId: select(storeName).getAutomationData().id,
-      savedState: select(storeName).getSavedState(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
       ),
@@ -53,54 +89,240 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
-  const emailWpPostId = selectedStep?.args?.email_wp_post_id as
-    | number
-    | undefined;
   const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
   const isDuplicatedStep = selectedStep?.args?.stepDuplicated === true;
+  const isBlockEmailEditorEnabled = blockEmailEditorEnabled === true;
+  const hasEmailIdError = !!emailIdError;
+  const emailIdErrorMessage = getEmailIdErrorMessage(emailIdError);
 
-  const createEmail = useCallback(async () => {
-    setRedirectToTemplateSelection(true);
-    const options = {
+  const showEditorChoiceError = useCallback(
+    (editorChoice: EditorChoice, message: string) => {
+      sendTelemetryEvent('button_error', {
+        button_label: editorChoiceButtonLabels[editorChoice],
+        automation_id: automationId,
+      });
+      void dispatch(noticesStore).createErrorNotice(message, {
+        explicitDismiss: true,
+      });
+    },
+    [automationId],
+  );
+
+  const cleanupCreatedEmail = useCallback(
+    async (emailIdToDelete: number, editorChoice: EditorChoice) => {
+      try {
+        await MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletters',
+          action: 'delete',
+          data: {
+            id: emailIdToDelete,
+          },
+        });
+      } catch {
+        showEditorChoiceError(
+          editorChoice,
+          __(
+            'MailPoet couldn’t clean up the email that was not connected. Please try again.',
+            'mailpoet',
+          ),
+        );
+      }
+    },
+    [showEditorChoiceError],
+  );
+
+  const redirectToEmailEditor = useCallback(
+    (createdEmail: CreatedAutomationEmail, editorChoice: EditorChoice) => {
+      if (editorChoice === 'new' && createdEmail.emailWpPostId) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(
+            {
+              type: 'mailpoet-navigate-to-email-editor',
+              postId: createdEmail.emailWpPostId,
+            },
+            window.location.origin,
+          );
+          return;
+        }
+        window.location.href = MailPoet.getBlockEmailEditorUrl(
+          createdEmail.emailWpPostId,
+        );
+        return;
+      }
+
+      window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${createdEmail.emailId}`;
+    },
+    [],
+  );
+
+  const createEmail = useCallback(
+    async (editorChoice: EditorChoice) => {
+      if (creatingEditor) {
+        return;
+      }
+
+      if (editorChoice === 'new' && !isBlockEmailEditorEnabled) {
+        return;
+      }
+
+      sendTelemetryEvent('button_click', {
+        button_label: editorChoiceButtonLabels[editorChoice],
+        automation_id: automationId,
+      });
+
+      setCreatingEditor(editorChoice);
+
+      const previousEmailId = selectedStep?.args?.email_id;
+      const previousEmailWpPostId = selectedStep?.args?.email_wp_post_id;
+      const rollbackStepArgs = () => {
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'email_id',
+          previousEmailId,
+        );
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'email_wp_post_id',
+          previousEmailWpPostId,
+        );
+      };
+      let createdEmail: CreatedAutomationEmail | undefined;
+      let stagedStepArgs = false;
+      let redirected = false;
+
+      try {
+        const options = {
+          automationId,
+          automationStepId,
+        };
+        const response = await MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletters',
+          action: 'create',
+          data: {
+            type: 'automation',
+            subject: '',
+            options,
+            new_editor: editorChoice === 'new',
+          },
+        });
+
+        createdEmail = getCreatedAutomationEmail(response, editorChoice);
+        if (!createdEmail) {
+          const emailIdFromResponse = parsePositiveInteger(response?.data?.id);
+          if (emailIdFromResponse) {
+            await cleanupCreatedEmail(emailIdFromResponse, editorChoice);
+          }
+          showEditorChoiceError(
+            editorChoice,
+            editorChoice === 'new'
+              ? __(
+                  'MailPoet couldn’t open the new editor because the email post was not created. Please try again.',
+                  'mailpoet',
+                )
+              : __(
+                  'MailPoet couldn’t create the email. Please try again.',
+                  'mailpoet',
+                ),
+          );
+          return;
+        }
+
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'email_id',
+          createdEmail.emailId,
+        );
+
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'email_wp_post_id',
+          editorChoice === 'new' ? createdEmail.emailWpPostId : undefined,
+        );
+        stagedStepArgs = true;
+
+        const saveResult = (await dispatch(
+          storeName,
+        ).save()) as SavedAutomationResult;
+        if (
+          !isCreatedEmailPersisted(
+            saveResult,
+            automationStepId,
+            createdEmail,
+            editorChoice,
+          )
+        ) {
+          rollbackStepArgs();
+          await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
+          showEditorChoiceError(
+            editorChoice,
+            __(
+              'Email design setup couldn’t be saved. Please try again.',
+              'mailpoet',
+            ),
+          );
+          return;
+        }
+
+        redirectToEmailEditor(createdEmail, editorChoice);
+        redirected = true;
+      } catch {
+        if (stagedStepArgs) {
+          rollbackStepArgs();
+        }
+        if (createdEmail) {
+          await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
+        }
+        showEditorChoiceError(
+          editorChoice,
+          stagedStepArgs
+            ? __(
+                'Email design setup couldn’t be saved. Please try again.',
+                'mailpoet',
+              )
+            : __(
+                'MailPoet couldn’t create the email. Please try again.',
+                'mailpoet',
+              ),
+        );
+      } finally {
+        if (!redirected) {
+          setCreatingEditor(null);
+        }
+      }
+    },
+    [
       automationId,
       automationStepId,
-    };
-    const response = await MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'create',
-      data: {
-        type: 'automation',
-        subject: '',
-        options,
-        new_editor: MailPoet.useBlockEmailEditorForAutomationNewsletter,
-      },
-    });
+      cleanupCreatedEmail,
+      creatingEditor,
+      isBlockEmailEditorEnabled,
+      redirectToEmailEditor,
+      selectedStep?.args?.email_id,
+      selectedStep?.args?.email_wp_post_id,
+      showEditorChoiceError,
+    ],
+  );
 
-    void dispatch(storeName).updateStepArgs(
-      automationStepId,
-      'email_id',
-      parseInt(response.data.id as string, 10),
-    );
-
-    if (response?.data?.wp_post_id) {
-      void dispatch(storeName).updateStepArgs(
-        automationStepId,
-        'email_wp_post_id',
-        parseInt(response.data.wp_post_id as string, 10),
-      );
-    }
-
-    void dispatch(storeName).save();
-  }, [automationId, automationStepId]);
+  const retrievePreviewLinkForEmail = useCallback(async () => {
+    setFetchingPreviewLink(true);
+    const link = await retrievePreviewLink(emailId);
+    window.open(link as string, '_blank');
+    setFetchingPreviewLink(false);
+  }, [emailId]);
 
   const handleDuplicatedStep =
     useCallback(async (): Promise<HandleDuplicatedStepType | null> => {
       try {
         // Save the automation to trigger backend duplication
         const savedData = await dispatch(storeName).save();
+        if (savedData?.saved !== true) {
+          throw new Error('Automation save was not confirmed');
+        }
+
         const newSelectedStep = savedData.automation.steps[automationStepId];
         const newEmailId = Number(newSelectedStep?.args?.email_id);
 
@@ -119,7 +341,7 @@ export function EditNewsletter(): JSX.Element {
         }
 
         return info;
-      } catch (error) {
+      } catch {
         void dispatch(noticesStore).createErrorNotice(
           __('Email duplication failed. Please try again.', 'mailpoet'),
           { explicitDismiss: true },
@@ -201,85 +423,91 @@ export function EditNewsletter(): JSX.Element {
     handleDuplicatedStep,
   ]);
 
-  // This component is rendered only when no email ID is set. Once we have the ID
-  // and the automation is saved, we can safely redirect to the email design flow.
-  useEffect(() => {
-    if (redirectToTemplateSelection && emailId && savedState === 'saved') {
-      if (emailWpPostId) {
-        // Check if we're in an iframe and navigating to block email editor
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(
-            {
-              type: 'mailpoet-navigate-to-email-editor',
-              postId: emailWpPostId,
-            },
-            window.location.origin,
-          );
-          return;
-        }
-        window.location.href = MailPoet.getBlockEmailEditorUrl(emailWpPostId);
-      } else {
-        window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
-      }
-    }
-  }, [emailId, emailWpPostId, savedState, redirectToTemplateSelection]);
-
-  if (!emailId || redirectToTemplateSelection) {
+  if (!emailId || creatingEditor) {
     return (
-      <div className={emailIdError ? 'mailpoet-automation-field__error' : ''}>
+      <div
+        className={classnames('mailpoet-automation-email-design-options', {
+          'mailpoet-automation-field__error': hasEmailIdError,
+        })}
+      >
         <Button
           variant="sidebar-primary"
           centered
           icon={plus}
-          onClick={createEmail}
-          isBusy={redirectToTemplateSelection}
-          disabled={redirectToTemplateSelection}
+          onClick={() => void createEmail('new')}
+          isBusy={creatingEditor === 'new'}
+          disabled={creatingEditor !== null || !isBlockEmailEditorEnabled}
+          aria-describedby={
+            isBlockEmailEditorEnabled ? undefined : blockEmailEditorHelpId
+          }
+          data-automation-id="automation_send_email_design_new_editor"
         >
-          {__('Design email', 'mailpoet')}
+          {__('Design with the new editor', 'mailpoet')}
         </Button>
-        {emailIdError && (
-          <span className="mailpoet-automation-field-message">
+        {!isBlockEmailEditorEnabled && (
+          <span
+            id={blockEmailEditorHelpId}
+            className="mailpoet-automation-email-design-help"
+          >
             {__(
-              'You need to design an email before you can activate the automation',
+              'The new editor is unavailable because required dependencies are missing. You can design this email with the classic editor.',
               'mailpoet',
             )}
           </span>
+        )}
+        <Button
+          variant="secondary"
+          centered
+          icon={plus}
+          onClick={() => void createEmail('classic')}
+          isBusy={creatingEditor === 'classic'}
+          disabled={creatingEditor !== null}
+          data-automation-id="automation_send_email_design_classic_editor"
+        >
+          {__('Design with the classic editor', 'mailpoet')}
+        </Button>
+        {hasEmailIdError && (
+          <EmailIdValidationMessage message={emailIdErrorMessage} />
         )}
       </div>
     );
   }
 
   return (
-    <div className="mailpoet-automation-email-buttons">
-      <Button
-        variant="sidebar-primary"
-        centered
-        onClick={() => {
-          sendTelemetryEvent('button_click', {
-            button_label: 'edit_content',
-            automation_id: automationId,
-          });
-          void handleEditContent();
-        }}
-        isBusy={isHandlingDuplicatedStep}
-        disabled={isHandlingDuplicatedStep}
-      >
-        {__('Edit content', 'mailpoet')}
-      </Button>
-      <Button
-        variant="secondary"
-        centered
-        isBusy={fetchingPreviewLink}
-        disabled={fetchingPreviewLink}
-        onClick={async () => {
-          setFetchingPreviewLink(true);
-          const link = await retrievePreviewLink(emailId);
-          window.open(link as string, '_blank');
-          setFetchingPreviewLink(false);
-        }}
-      >
-        {__('Preview', 'mailpoet')}
-      </Button>
+    <div
+      className={classnames({
+        'mailpoet-automation-field__error': hasEmailIdError,
+      })}
+    >
+      <div className="mailpoet-automation-email-buttons">
+        <Button
+          variant="sidebar-primary"
+          centered
+          onClick={() => {
+            sendTelemetryEvent('button_click', {
+              button_label: 'edit_content',
+              automation_id: automationId,
+            });
+            void handleEditContent();
+          }}
+          isBusy={isHandlingDuplicatedStep}
+          disabled={isHandlingDuplicatedStep}
+        >
+          {__('Edit content', 'mailpoet')}
+        </Button>
+        <Button
+          variant="secondary"
+          centered
+          isBusy={fetchingPreviewLink}
+          disabled={fetchingPreviewLink}
+          onClick={() => void retrievePreviewLinkForEmail()}
+        >
+          {__('Preview', 'mailpoet')}
+        </Button>
+      </div>
+      {hasEmailIdError && (
+        <EmailIdValidationMessage message={emailIdErrorMessage} />
+      )}
     </div>
   );
 }

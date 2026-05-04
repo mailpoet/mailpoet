@@ -21,6 +21,7 @@ export type Context = {
   senderDomainsConfig?: SenderDomainsConfig;
   transactional_triggers?: string[];
   delay_action_key?: string;
+  block_email_editor_enabled?: boolean;
 };
 
 export const getContext = (): Context =>
