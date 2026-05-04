@@ -191,6 +191,8 @@ class SubscriberExporter {
     switch ($source) {
       case Source::WORDPRESS_USER:
         return __('Subscriber information synchronized via WP user sync', 'mailpoet');
+      case Source::WORDPRESS_USER_DELETED:
+        return __('Originally synchronized from a WordPress user that has since been deleted', 'mailpoet');
       case Source::FORM:
         return __('Subscription via a MailPoet subscription form', 'mailpoet');
       case Source::API:

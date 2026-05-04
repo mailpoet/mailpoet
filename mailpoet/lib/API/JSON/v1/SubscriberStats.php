@@ -183,6 +183,8 @@ class SubscriberStats extends APIEndpoint {
         return __('API', 'mailpoet');
       case Source::WORDPRESS_USER:
         return __('WordPress user sync', 'mailpoet');
+      case Source::WORDPRESS_USER_DELETED:
+        return __('WordPress user (deleted)', 'mailpoet');
       case Source::WOOCOMMERCE_USER:
         return __('WooCommerce customer sync', 'mailpoet');
       case Source::WOOCOMMERCE_CHECKOUT:

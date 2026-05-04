@@ -164,6 +164,10 @@ class SubscriberFieldsFactory {
                 'name' => __('WordPress user', 'mailpoet'),
               ],
               [
+                'id' => 'wordpress_user_deleted',
+                'name' => __('WordPress user (deleted)', 'mailpoet'),
+              ],
+              [
                 'id' => 'woocommerce_user',
                 'name' => __('WooCommerce user', 'mailpoet'),
               ],
