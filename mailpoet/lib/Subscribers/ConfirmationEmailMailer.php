@@ -305,7 +305,7 @@ class ConfirmationEmailMailer {
       return ['status' => 'send_failed', 'reason' => 'sending_method'];
     }
 
-    $this->subscribersRepository->refresh($subscriber);
+    $this->completeAdminConfirmationEmailClaim($subscriber, $claim);
     $this->sentEmails[$subscriber->getId()] = true;
     return ['status' => 'sent'];
   }
@@ -316,6 +316,19 @@ class ConfirmationEmailMailer {
       return;
     }
     $this->subscribersRepository->releaseAdminConfirmationEmailResendClaim(
+      $subscriber,
+      (string)$claim['claim_time'],
+      $claim['previous_last_confirmation_email_sent_at'] ?? null,
+      (int)$claim['previous_count_confirmations']
+    );
+  }
+
+  /** @param array{claim_time?: string, previous_last_confirmation_email_sent_at?: string|null, previous_count_confirmations?: int} $claim */
+  private function completeAdminConfirmationEmailClaim(SubscriberEntity $subscriber, array $claim): void {
+    if (!isset($claim['claim_time'], $claim['previous_count_confirmations'])) {
+      return;
+    }
+    $this->subscribersRepository->completeAdminConfirmationEmailResendClaim(
       $subscriber,
       (string)$claim['claim_time'],
       $claim['previous_last_confirmation_email_sent_at'] ?? null,
