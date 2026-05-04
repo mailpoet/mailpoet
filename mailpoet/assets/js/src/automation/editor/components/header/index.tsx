@@ -17,6 +17,7 @@ import {
   DeactivateImmediatelyModal,
   DeactivateModal,
 } from '../modals/deactivate-modal';
+import { SaveActiveModal } from '../modals/save-active-modal';
 import { sendTelemetryEvent } from '../../telemetry';
 
 // See:
@@ -53,9 +54,12 @@ export function ActivateButton({ label }): JSX.Element {
 
 export function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
-  const { savedState } = useSelect(
+  const { hasUsersInProgress, savedState } = useSelect(
     (select) => ({
+      hasUsersInProgress:
+        select(storeName).getAutomationData().stats.totals.in_progress > 0,
       savedState: select(storeName).getSavedState(),
     }),
     [],
@@ -68,20 +72,33 @@ export function UpdateButton(): JSX.Element {
       ? __('Updating…', 'mailpoet')
       : __('Update', 'mailpoet');
 
+  const onClick = () => {
+    if (hasUsersInProgress) {
+      setShowSaveModal(true);
+      return;
+    }
+    void save();
+  };
+
   return (
-    <Button
-      variant="primary"
-      className="editor-post-publish-button"
-      label={label}
-      showTooltip
-      shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
-      isBusy={savedState === 'saving'}
-      disabled={isDisabled}
-      aria-disabled={isDisabled}
-      onClick={save}
-    >
-      {label}
-    </Button>
+    <>
+      {showSaveModal && (
+        <SaveActiveModal onClose={() => setShowSaveModal(false)} />
+      )}
+      <Button
+        variant="primary"
+        className="editor-post-publish-button"
+        label={label}
+        showTooltip
+        shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
+        isBusy={savedState === 'saving'}
+        disabled={isDisabled}
+        aria-disabled={isDisabled}
+        onClick={onClick}
+      >
+        {label}
+      </Button>
+    </>
   );
 }
 
