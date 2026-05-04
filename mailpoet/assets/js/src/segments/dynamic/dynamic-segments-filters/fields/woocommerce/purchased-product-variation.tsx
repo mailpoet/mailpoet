@@ -1,5 +1,5 @@
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { filter } from 'lodash/fp';
 import { Select } from 'common/form/select/select';
@@ -61,8 +61,13 @@ export function PurchasedProductVariationFields({
   const [isLoadingVariations, setIsLoadingVariations] =
     useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState<boolean>(false);
+  // Tracks the latest in-flight variations request so out-of-order
+  // responses from rapid parent changes don't overwrite newer state.
+  const variationsRequestIdRef = useRef(0);
 
   const loadVariationsByProduct = useCallback((productId: string) => {
+    variationsRequestIdRef.current += 1;
+    const requestId = variationsRequestIdRef.current;
     setIsLoadingVariations(true);
     void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -71,6 +76,7 @@ export function PurchasedProductVariationFields({
       data: { product_id: productId },
     })
       .then((response: VariationsResponse) => {
+        if (requestId !== variationsRequestIdRef.current) return;
         setVariations(
           response.data.variations.map((variation) => ({
             value: variation.id,
@@ -78,10 +84,15 @@ export function PurchasedProductVariationFields({
           })),
         );
       })
-      .always(() => setIsLoadingVariations(false));
+      .always(() => {
+        if (requestId !== variationsRequestIdRef.current) return;
+        setIsLoadingVariations(false);
+      });
   }, []);
 
   const loadVariationsByVariation = useCallback((variationId: string) => {
+    variationsRequestIdRef.current += 1;
+    const requestId = variationsRequestIdRef.current;
     setIsLoadingVariations(true);
     void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -90,6 +101,7 @@ export function PurchasedProductVariationFields({
       data: { variation_id: variationId },
     })
       .then((response: VariationsResponse) => {
+        if (requestId !== variationsRequestIdRef.current) return;
         if (response.data.product) {
           setParentProductId(response.data.product.id);
         }
@@ -100,7 +112,10 @@ export function PurchasedProductVariationFields({
           })),
         );
       })
-      .always(() => setIsLoadingVariations(false));
+      .always(() => {
+        if (requestId !== variationsRequestIdRef.current) return;
+        setIsLoadingVariations(false);
+      });
   }, []);
 
   useEffect(() => {
