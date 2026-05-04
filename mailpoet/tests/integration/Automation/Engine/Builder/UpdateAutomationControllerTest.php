@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -48,6 +49,28 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     // existing run is preserved on its original version
     $this->assertSame(AutomationRun::STATUS_RUNNING, $this->getAutomationRun($run->getId())->getStatus());
     $this->assertNotSame($updated->getVersionId(), $run->getVersionId());
+  }
+
+  public function testItRejectsTriggerKeyChange(): void {
+    $automation = $this->tester->createAutomation(
+      'Trigger lock automation',
+      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
+      new Step('a1', Step::TYPE_ACTION, 'test:action', [], [])
+    );
+
+    $controller = $this->diContainer->get(UpdateAutomationController::class);
+
+    $this->expectException(UnexpectedValueException::class);
+    $controller->updateAutomation(
+      $automation->getId(),
+      [
+        'steps' => [
+          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
+          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:other-trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
+          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => [], 'next_steps' => []],
+        ],
+      ]
+    );
   }
 
   public function testItUnschedulesTasksWhenSwitchedToDraft(): void {
