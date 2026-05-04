@@ -8,10 +8,11 @@ import {
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
 import { MailPoet } from 'mailpoet';
+import { createCustomField } from '../../../custom-fields/api';
 import type {
+  ApiErrorResponse,
   CustomField,
   CustomFieldDateSettings,
-  CustomFieldPayload,
 } from '../../../custom-fields/types';
 import {
   buildCustomFieldPayload,
@@ -26,31 +27,8 @@ type Props = {
   onSuccess: (customField: CustomField) => void;
 };
 
-type ApiErrorResponse = {
-  errors?: Array<{ message?: string }>;
-  message?: string;
-};
-
-type SaveCustomFieldResponse = {
-  data: CustomField;
-};
-
-function createCustomField(data: CustomFieldPayload): Promise<CustomField> {
-  return new Promise((resolve, reject) => {
-    void MailPoet.Ajax.post<SaveCustomFieldResponse>({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'customFields',
-      action: 'save',
-      data,
-    })
-      .done((response) => resolve(response.data))
-      .fail((response: ApiErrorResponse) => reject(response));
-  });
-}
-
 function getApiErrorMessage(error: ApiErrorResponse): string {
   return (
-    error?.errors?.[0]?.message ||
     error?.message ||
     MailPoet.I18n.t('customFieldCreateError') ||
     __('Custom field could not be created', 'mailpoet')
