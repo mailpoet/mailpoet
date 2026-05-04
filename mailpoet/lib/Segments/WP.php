@@ -94,7 +94,7 @@ class WP {
     // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
       if ($subscriber instanceof SubscriberEntity) {
-        $this->deleteSubscriber($subscriber);
+        $this->unlinkSubscriberFromWpUser($subscriber, $wpUser);
       }
       return;
     }
@@ -108,6 +108,54 @@ class WP {
     $this->entityManager->wrapInTransaction(function() use ($subscriber): void {
       $this->subscriberSegmentRepository->deleteAllBySubscriber($subscriber);
       $this->subscribersRepository->remove($subscriber);
+      $this->subscribersRepository->flush();
+    });
+  }
+
+  private function unlinkSubscriberFromWpUser(SubscriberEntity $subscriber, \WP_User $wpUser): void {
+    // Backwards-compat escape hatch for sites that need the legacy hard-delete behavior
+    // (e.g. GDPR-driven account deletion flows). Returning true reproduces pre-STOMAIL-8018 behavior.
+    $hardDelete = (bool)$this->wp->applyFilters(
+      'mailpoet_delete_subscriber_on_wp_user_delete',
+      false,
+      $subscriber,
+      (int)$wpUser->ID // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    );
+    if ($hardDelete) {
+      $this->deleteSubscriber($subscriber);
+      return;
+    }
+
+    $this->entityManager->wrapInTransaction(function() use ($subscriber, $wpUser): void {
+      $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+
+      // Remove only the WP-Users segment membership; other list subscriptions stay intact.
+      $this->entityManager->createQueryBuilder()
+        ->delete(SubscriberSegmentEntity::class, 'ss')
+        ->where('ss.subscriber = :subscriber AND ss.segment = :segment')
+        ->setParameter('subscriber', $subscriber)
+        ->setParameter('segment', $wpSegment)
+        ->getQuery()
+        ->execute();
+
+      $subscriber->setWpUserId(null);
+      $subscriber->setSource(Source::WORDPRESS_USER_DELETED);
+
+      // If the subscriber was only on the WP-Users list and is not a WC customer,
+      // they had no list of their own to remain on — trash them instead of leaving a floating row.
+      $otherActiveSegments = array_filter(
+        $subscriber->getSegments()->toArray(),
+        static function (SegmentEntity $segment): bool {
+          return $segment->getType() !== SegmentEntity::TYPE_WP_USERS && $segment->getDeletedAt() === null;
+        }
+      );
+      $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', (array)$wpUser->roles, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (!$otherActiveSegments && !$isWooCustomer) {
+        $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+        $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
+      }
+
+      $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
     });
   }
