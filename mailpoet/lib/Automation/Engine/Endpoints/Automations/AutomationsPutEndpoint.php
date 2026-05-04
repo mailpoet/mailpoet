@@ -40,6 +40,7 @@ class AutomationsPutEndpoint extends Endpoint {
       'status' => Builder::string(),
       'steps' => AutomationSchema::getStepsSchema(),
       'meta' => Builder::object(),
+      'cancel_running_runs' => Builder::boolean(),
     ];
   }
 }
