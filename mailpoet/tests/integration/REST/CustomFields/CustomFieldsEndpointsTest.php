@@ -225,6 +225,52 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertSame(409, $data['data']['status']);
   }
 
+  public function testPutRejectsTypeChangeWhenSubscriberValuesExist(): void {
+    $subscriber = (new SubscriberFactory())->withEmail('locked@example.com')->create();
+    $field = (new CustomFieldFactory())
+      ->withName('Locked field')
+      ->withType('text')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+
+    $data = $this->put(self::BASE_PATH . '/' . $field->getId(), [
+      'json' => [
+        'name' => 'Locked field',
+        'type' => 'date',
+        'params' => [
+          'label' => 'Locked field',
+        ],
+      ],
+    ]);
+
+    $this->assertSame('mailpoet_custom_fields_type_locked', $data['code']);
+    $this->assertSame(409, $data['data']['status']);
+
+    $entity = $this->repository->findOneById($field->getId());
+    $this->assertNotNull($entity);
+    $this->assertSame('text', $entity->getType());
+  }
+
+  public function testPutAllowsTypeChangeWhenNoSubscriberValues(): void {
+    $field = (new CustomFieldFactory())
+      ->withName('Empty field')
+      ->withType('text')
+      ->create();
+
+    $data = $this->put(self::BASE_PATH . '/' . $field->getId(), [
+      'json' => [
+        'name' => 'Empty field',
+        'type' => 'textarea',
+        'params' => [
+          'label' => 'Empty field',
+        ],
+      ],
+    ]);
+
+    $this->assertArrayHasKey('data', $data);
+    $this->assertSame('textarea', $data['data']['type']);
+  }
+
   public function testPutRejectsMissingCustomField(): void {
     $data = $this->put(self::BASE_PATH . '/999999', [
       'json' => [
