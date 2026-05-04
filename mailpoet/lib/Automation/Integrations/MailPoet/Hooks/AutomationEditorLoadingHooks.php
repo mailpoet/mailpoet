@@ -7,8 +7,10 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\BlockEmailContentDetector;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 
@@ -25,16 +27,20 @@ class AutomationEditorLoadingHooks {
 
   private NewsletterDeleteController $newsletterDeleteController;
 
+  private BlockEmailContentDetector $blockEmailContentDetector;
+
   public function __construct(
     WordPress $wp,
     AutomationStorage $automationStorage,
     NewslettersRepository $newslettersRepository,
-    NewsletterDeleteController $newsletterDeleteController
+    NewsletterDeleteController $newsletterDeleteController,
+    BlockEmailContentDetector $blockEmailContentDetector
   ) {
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterDeleteController = $newsletterDeleteController;
+    $this->blockEmailContentDetector = $blockEmailContentDetector;
   }
 
   public function init(): void {
@@ -59,33 +65,43 @@ class AutomationEditorLoadingHooks {
     $sendEmailSteps = array_filter(
       $automation->getSteps(),
       function(Step $step): bool {
-        return $step->getKey() === 'mailpoet:send-email';
+        return $step->getKey() === SendEmailAction::KEY;
       }
     );
+    $automationChanged = false;
     foreach ($sendEmailSteps as $step) {
-      $emailId = $step->getArgs()['email_id'] ?? 0;
+      $args = $step->getArgs();
+      $emailId = $args['email_id'] ?? 0;
       if (!$emailId) {
         continue;
       }
       $newsletterEntity = $this->newslettersRepository->findOneById($emailId);
-      if ($newsletterEntity && $newsletterEntity->getBody() !== null) {
-        continue;
-      }
+      $disconnectEmail = !$newsletterEntity;
 
-      if ($newsletterEntity && $newsletterEntity->getWpPostId()) {
-        $wpPost = $this->wp->getPost($newsletterEntity->getWpPostId());
-        // Skip if the wp post has content for emails created by the new block editor.
-        if ($wpPost && $wpPost instanceof \WP_Post && !empty($wpPost->post_content)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          continue;
+      if ($newsletterEntity) {
+        $wpPostId = $newsletterEntity->getWpPostId();
+        if ($wpPostId) {
+          $wpPost = $this->wp->getPost($wpPostId);
+          $disconnectEmail = !$wpPost instanceof \WP_Post || !$this->blockEmailContentDetector->hasMeaningfulContent($wpPost);
+          if (!$disconnectEmail && (int)($args['email_wp_post_id'] ?? 0) !== (int)$wpPostId) {
+            $args['email_wp_post_id'] = $wpPostId;
+          }
+        } else {
+          $disconnectEmail = $newsletterEntity->getBody() === null;
+          if (!$disconnectEmail && isset($args['email_wp_post_id'])) {
+            unset($args['email_wp_post_id']);
+          }
         }
       }
 
-      $this->newsletterDeleteController->bulkDelete([$emailId]);
-      $args = $step->getArgs();
-      unset($args['email_id']);
-
-      if (isset($args['email_wp_post_id'])) {
+      if ($disconnectEmail) {
+        $this->newsletterDeleteController->bulkDelete([(int)$emailId]);
+        unset($args['email_id']);
         unset($args['email_wp_post_id']);
+      }
+
+      if ($args === $step->getArgs()) {
+        continue;
       }
 
       $updatedStep = new Step(
@@ -93,19 +109,21 @@ class AutomationEditorLoadingHooks {
         $step->getType(),
         $step->getKey(),
         $args,
-        $step->getNextSteps()
+        $step->getNextSteps(),
+        $step->getFilters()
       );
 
-      $steps = array_merge(
-        $automation->getSteps(),
-        [$updatedStep->getId() => $updatedStep]
-      );
+      $steps = $automation->getSteps();
+      $steps[$updatedStep->getId()] = $updatedStep;
       $automation->setSteps($steps);
+      $automationChanged = true;
 
-      //To be valid, an email would need to be associated to an active automation.
-      if ($automation->getStatus() === Automation::STATUS_ACTIVE) {
+      if ($disconnectEmail && $automation->getStatus() === Automation::STATUS_ACTIVE) {
         $automation->setStatus(Automation::STATUS_DRAFT);
       }
+    }
+
+    if ($automationChanged) {
       $this->automationStorage->updateAutomation($automation);
     }
   }
