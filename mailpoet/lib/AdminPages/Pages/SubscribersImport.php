@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Form\Block;
 use MailPoet\Services\Validator;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersImport {
   /** @var PageRenderer */
@@ -14,12 +15,17 @@ class SubscribersImport {
   /** @var Block\Date */
   private $dateBlock;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     PageRenderer $pageRenderer,
-    Block\Date $dateBlock
+    Block\Date $dateBlock,
+    WPFunctions $wp
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->dateBlock = $dateBlock;
+    $this->wp = $wp;
   }
 
   public function render() {
@@ -37,6 +43,10 @@ class SubscribersImport {
       'date_formats' => $this->dateBlock->getDateFormats(),
       'month_names' => $this->dateBlock->getMonthNames(),
       'role_based_emails' => json_encode(Validator::ROLE_EMAILS),
+      'custom_fields_api' => [
+        'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+        'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+      ],
     ]);
     $this->pageRenderer->displayPage('subscribers/importExport/import.html', $data);
   }
