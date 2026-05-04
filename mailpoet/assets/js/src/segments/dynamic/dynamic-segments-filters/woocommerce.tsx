@@ -11,6 +11,10 @@ import {
   validatePurchasedProduct,
 } from './fields/woocommerce/purchased-product';
 import {
+  PurchasedProductVariationFields,
+  validatePurchasedProductVariation,
+} from './fields/woocommerce/purchased-product-variation';
+import {
   PurchasedCategoryFields,
   validatePurchasedCategory,
 } from './fields/woocommerce/purchased-category';
@@ -71,6 +75,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   }
   if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     return validatePurchasedProduct(formItems);
+  }
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT_VARIATION) {
+    return validatePurchasedProductVariation(formItems);
   }
   if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     return validateCustomerInCountry(formItems);
@@ -136,6 +143,8 @@ const componentsMap = {
   [WooCommerceActionTypes.NUMBER_OF_REVIEWS]: NumberOfReviewsFields,
   [WooCommerceActionTypes.PURCHASE_DATE]: DateFieldsDefaultBefore,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,
+  [WooCommerceActionTypes.PURCHASED_PRODUCT_VARIATION]:
+    PurchasedProductVariationFields,
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,
   [WooCommerceActionTypes.PURCHASED_WITH_ATTRIBUTE]:
     PurchasedWithAttributeFields,

@@ -136,6 +136,7 @@ export enum CountType {
 export interface WooCommerceFormItem extends FormItem {
   category_ids?: string[];
   product_ids?: string[];
+  variation_ids?: string[];
   operator?: string;
   number_of_orders_type?: string;
   number_of_orders_count?: number;
@@ -316,6 +317,7 @@ export type StaticSegment = {
 export interface SegmentFormDataWindow extends Window {
   wordpress_editable_roles_list: WindowEditableRoles;
   mailpoet_products: WindowProducts;
+  mailpoet_variable_products: WindowProducts;
   mailpoet_membership_plans: WindowMembershipPlans;
   mailpoet_subscription_products: WindowSubscriptionProducts;
   mailpoet_product_attributes: WindowProductAttributes;
@@ -344,6 +346,7 @@ export type DynamicSegmentGroup = {
 
 export interface StateType {
   products: WindowProducts;
+  variableProducts: WindowProducts;
   membershipPlans: WindowMembershipPlans;
   subscriptionProducts: WindowSubscriptionProducts;
   wordpressRoles: WindowEditableRoles;

@@ -27,6 +27,8 @@ import {
 } from '../types';
 
 export const getProducts = (state: StateType): WindowProducts => state.products;
+export const getVariableProducts = (state: StateType): WindowProducts =>
+  state.variableProducts;
 export const getMembershipPlans = (state: StateType): WindowMembershipPlans =>
   state.membershipPlans;
 export const getSubscriptionProducts = (
