@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Notice, TabPanel } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
+import {
+  type LoadListing,
+  useDataViewsQuery,
+} from 'common/dataviews/use-dataviews-query';
+import type { ListingGroup } from 'common/dataviews/types';
 import { CustomFieldsForm } from './custom-fields-form';
 import { listFields } from './fields';
 import {
@@ -17,8 +22,6 @@ import type {
   ApiErrorResponse,
   CustomField,
   CustomFieldDateSettings,
-  CustomFieldListGroup,
-  CustomFieldListMeta,
 } from './types';
 
 type Group = 'all' | 'trash';
@@ -98,69 +101,43 @@ export function CustomFieldsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingCustomField, setEditingCustomField] =
     useState<CustomField | null>(null);
-  const [refreshToken, setRefreshToken] = useState(0);
-  const [view, setView] = useState<View>(DEFAULT_VIEW);
-  const [items, setItems] = useState<CustomField[]>([]);
-  const [meta, setMeta] = useState<CustomFieldListMeta>({
-    count: 0,
-    pages: 0,
-  });
-  const [groups, setGroups] = useState<CustomFieldListGroup[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selection, setSelection] = useState<string[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
-  const latestRequestIdRef = useRef(0);
 
-  const loadCustomFields = useCallback(async () => {
-    const requestId = latestRequestIdRef.current + 1;
-    latestRequestIdRef.current = requestId;
-    setIsLoading(true);
-    try {
-      const requestedPage = view.page ?? 1;
+  const load = useCallback<LoadListing<CustomField>>(
+    async (params) => {
       const result = await getCustomFields({
-        search: view.search || '',
-        orderby: view.sort?.field ?? 'name',
-        order: view.sort?.direction ?? 'asc',
-        page: requestedPage,
-        per_page: view.perPage ?? 20,
+        search: typeof params.search === 'string' ? params.search : '',
+        orderby: params.orderby ?? 'name',
+        order: params.order ?? 'asc',
+        page: params.page,
+        per_page: params.per_page,
         group,
       });
+      return {
+        items: result.items,
+        meta: result.meta,
+        groups: result.groups as ListingGroup[],
+      };
+    },
+    [group],
+  );
 
-      if (requestId !== latestRequestIdRef.current) {
-        return;
-      }
-
-      const lastValidPage = Math.max(1, result.meta.pages);
-      if (requestedPage > lastValidPage) {
-        setView((currentView) => ({
-          ...currentView,
-          page: lastValidPage,
-        }));
-        return;
-      }
-
-      setItems(result.items);
-      setMeta(result.meta);
-      setGroups(result.groups);
-    } catch (err) {
-      if (requestId !== latestRequestIdRef.current) {
-        return;
-      }
-      const apiError = err as ApiErrorResponse;
-      setGlobalError(
-        apiError?.message || __('Failed to load custom fields.', 'mailpoet'),
-      );
-    } finally {
-      if (requestId === latestRequestIdRef.current) {
-        setIsLoading(false);
-      }
-    }
-  }, [group, view.search, view.sort, view.page, view.perPage]);
-
-  useEffect(() => {
-    void loadCustomFields();
-  }, [loadCustomFields, refreshToken]);
+  const {
+    view,
+    setView,
+    items,
+    meta,
+    groups,
+    isLoading,
+    error: loadError,
+    refresh,
+    clearError: clearLoadError,
+  } = useDataViewsQuery<CustomField>({
+    initialView: DEFAULT_VIEW,
+    load,
+  });
 
   const handleBulkAction = useCallback(
     async (
@@ -202,7 +179,7 @@ export function CustomFieldsPage() {
         const updatedCount = await bulkAction(action, ids);
         setSelection([]);
         setGlobalSuccess(bulkActionSuccessMessage(action, updatedCount));
-        void loadCustomFields();
+        refresh();
       } catch (err) {
         const apiError = err as ApiErrorResponse;
         setGlobalError(
@@ -211,29 +188,32 @@ export function CustomFieldsPage() {
         );
       }
     },
-    [loadCustomFields],
+    [refresh],
   );
 
-  const handleDuplicate = useCallback(async (customField: CustomField) => {
-    try {
-      const duplicate = await duplicateCustomField(customField.id);
-      setSelection([]);
-      setGroup('all');
-      setGlobalSuccess(
-        sprintf(
-          __('Custom field "%s" duplicated.', 'mailpoet'),
-          duplicate.name,
-        ),
-      );
-      setRefreshToken((current) => current + 1);
-    } catch (err) {
-      const apiError = err as ApiErrorResponse;
-      setGlobalError(
-        apiError?.message ||
-          __('The custom field could not be duplicated.', 'mailpoet'),
-      );
-    }
-  }, []);
+  const handleDuplicate = useCallback(
+    async (customField: CustomField) => {
+      try {
+        const duplicate = await duplicateCustomField(customField.id);
+        setSelection([]);
+        setGroup('all');
+        setGlobalSuccess(
+          sprintf(
+            __('Custom field "%s" duplicated.', 'mailpoet'),
+            duplicate.name,
+          ),
+        );
+        refresh();
+      } catch (err) {
+        const apiError = err as ApiErrorResponse;
+        setGlobalError(
+          apiError?.message ||
+            __('The custom field could not be duplicated.', 'mailpoet'),
+        );
+      }
+    },
+    [refresh],
+  );
 
   const actions = useMemo<Action<CustomField>[]>(
     () => [
@@ -310,8 +290,10 @@ export function CustomFieldsPage() {
 
   const groupCounts = useMemo(() => {
     const counts: Record<Group, number | null> = { all: null, trash: null };
-    groups.forEach((entry) => {
-      counts[entry.name] = entry.count;
+    (groups ?? []).forEach((entry) => {
+      if (entry.name === 'all' || entry.name === 'trash') {
+        counts[entry.name] = entry.count;
+      }
     });
     return counts;
   }, [groups]);
@@ -365,7 +347,7 @@ export function CustomFieldsPage() {
     setGroup('all');
     setSelection([]);
     setView((currentView) => ({ ...currentView, page: 1 }));
-    setRefreshToken((current) => current + 1);
+    refresh();
   };
 
   const handleEditSuccess = (customField: CustomField): void => {
@@ -373,7 +355,7 @@ export function CustomFieldsPage() {
     setGlobalSuccess(
       sprintf(__('Custom field "%s" updated.', 'mailpoet'), customField.name),
     );
-    setRefreshToken((current) => current + 1);
+    refresh();
   };
 
   return (
@@ -399,6 +381,13 @@ export function CustomFieldsPage() {
         </button>
       </PageHeader>
 
+      {loadError && (
+        <Notice status="error" onRemove={clearLoadError}>
+          {loadError === 'Failed to load data.'
+            ? __('Failed to load custom fields.', 'mailpoet')
+            : loadError}
+        </Notice>
+      )}
       {globalError && (
         <Notice status="error" onRemove={() => setGlobalError(null)}>
           {globalError}
