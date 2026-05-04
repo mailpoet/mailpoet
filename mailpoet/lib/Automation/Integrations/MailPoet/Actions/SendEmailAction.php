@@ -18,6 +18,7 @@ use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
+use MailPoet\EmailEditor\Integrations\MailPoet\BlockEmailContentDetector;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -109,6 +110,8 @@ class SendEmailAction implements Action {
 
   private NewsletterSaveController $newsletterSaveController;
 
+  private BlockEmailContentDetector $blockEmailContentDetector;
+
   public function __construct(
     AutomationController $automationController,
     SettingsController $settings,
@@ -120,7 +123,8 @@ class SendEmailAction implements Action {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     WordPress $wp,
-    NewsletterSaveController $newsletterSaveController
+    NewsletterSaveController $newsletterSaveController,
+    BlockEmailContentDetector $blockEmailContentDetector
   ) {
     $this->automationController = $automationController;
     $this->settings = $settings;
@@ -133,6 +137,7 @@ class SendEmailAction implements Action {
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
     $this->wp = $wp;
     $this->newsletterSaveController = $newsletterSaveController;
+    $this->blockEmailContentDetector = $blockEmailContentDetector;
   }
 
   public function getKey(): string {
@@ -168,6 +173,7 @@ class SendEmailAction implements Action {
         ? Builder::string()->formatEmail()->default($replyToAddressDefault)
         : Builder::string()->formatEmail(),
       'ga_campaign' => Builder::string()->minLength(1),
+      'email_wp_post_id' => Builder::integer(),
     ]);
   }
 
@@ -179,7 +185,7 @@ class SendEmailAction implements Action {
 
   public function validate(StepValidationArgs $args): void {
     try {
-      $this->getEmailForStep($args->getStep());
+      $email = $this->getEmailForStep($args->getStep());
     } catch (InvalidStateException $exception) {
       $exception = ValidationException::create()
         ->withMessage(__('Cannot send the email because it was not found. Please, go to the automation editor and update the email contents.', 'mailpoet'));
@@ -196,6 +202,24 @@ class SendEmailAction implements Action {
       }
       throw $exception;
     }
+
+    if ($args->getAutomation()->getStatus() !== Automation::STATUS_ACTIVE) {
+      return;
+    }
+
+    $wpPostId = $email->getWpPostId();
+    if (!$wpPostId) {
+      return;
+    }
+
+    $wpPost = $this->wp->getPost($wpPostId);
+    if ($wpPost instanceof \WP_Post && $this->blockEmailContentDetector->hasMeaningfulContent($wpPost)) {
+      return;
+    }
+
+    throw ValidationException::create()
+      ->withMessage(__('Cannot activate the automation because an email has no content.', 'mailpoet'))
+      ->withError('email_id', __('Add email content before activating the automation.', 'mailpoet'));
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
@@ -612,6 +636,12 @@ class SendEmailAction implements Action {
 
     $args['email_id'] = $duplicatedNewsletter->getId();
     $args['subject'] = $duplicatedNewsletter->getSubject();
+    $wpPostId = $duplicatedNewsletter->getWpPostId();
+    if ($wpPostId) {
+      $args['email_wp_post_id'] = $wpPostId;
+    } else {
+      unset($args['email_wp_post_id']);
+    }
 
     return new Step(
       $step->getId(),

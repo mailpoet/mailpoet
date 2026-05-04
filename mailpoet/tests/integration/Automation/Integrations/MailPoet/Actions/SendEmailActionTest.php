@@ -48,6 +48,7 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use Throwable;
 
 /**
@@ -150,6 +151,78 @@ class SendEmailActionTest extends \MailPoetTest {
       $this->assertSame("Automation email with ID '{$newsletter->getId()}' not found.", $error->getErrors()['email_id']);
     }
     $this->assertNotNull($error);
+  }
+
+  public function testItAllowsDraftAutomationWithEmptyBlockEditorEmail(): void {
+    $email = $this->createBlockEditorAutomationEmail('');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+
+    $this->action->validate(new StepValidationArgs($automation, $step, []));
+
+    $this->assertSame($email->getId(), $step->getArgs()['email_id']);
+  }
+
+  /** @dataProvider emptyBlockEditorContentProvider */
+  public function testItRequiresMeaningfulBlockEditorContentForActiveAutomations(string $content): void {
+    $email = $this->createBlockEditorAutomationEmail($content);
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+
+    $error = null;
+    try {
+      $this->action->validate(new StepValidationArgs($automation, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame('Add email content before activating the automation.', $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
+  }
+
+  public function emptyBlockEditorContentProvider(): array {
+    return [
+      'empty' => [''],
+      'whitespace' => [" \n\t "],
+      'comment-only markup' => ['<!-- wp:paragraph --><!-- /wp:paragraph -->'],
+      'empty layout blocks' => ['<!-- wp:group --><div><!-- wp:spacer {"height":"32px"} /--></div><!-- /wp:group -->'],
+    ];
+  }
+
+  public function testItRequiresExistingBlockEditorPostForActiveAutomations(): void {
+    $email = (new Newsletter())->withAutomationType()->withBody(null)->withWpPostId(999999)->create();
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+
+    $error = null;
+    try {
+      $this->action->validate(new StepValidationArgs($automation, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame('Add email content before activating the automation.', $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
+  }
+
+  public function testItAllowsActiveAutomationWithMeaningfulBlockEditorContent(): void {
+    $email = $this->createBlockEditorAutomationEmail('<!-- wp:paragraph --><p>Hello world</p><!-- /wp:paragraph -->');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+
+    $this->action->validate(new StepValidationArgs($automation, $step, []));
+
+    $this->assertSame($email->getId(), $step->getArgs()['email_id']);
+  }
+
+  public function testItDoesNotRunBlockEditorContentValidationForClassicEmails(): void {
+    $email = (new Newsletter())->withAutomationType()->withBody(null)->create();
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+
+    $this->action->validate(new StepValidationArgs($automation, $step, []));
+
+    $this->assertSame($email->getId(), $step->getArgs()['email_id']);
   }
 
   public function testHappyPath() {
@@ -872,6 +945,24 @@ class SendEmailActionTest extends \MailPoetTest {
       $error = $e->getMessage();
     }
     $this->assertSame($expectedMessage, $error);
+  }
+
+  private function createBlockEditorAutomationEmail(string $content): NewsletterEntity {
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $postId = $wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation Email',
+      'post_content' => $content,
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    return (new Newsletter())
+      ->withAutomationType()
+      ->withBody(null)
+      ->withWpPostId($postId)
+      ->create();
   }
 
   private function cleanup(): void {

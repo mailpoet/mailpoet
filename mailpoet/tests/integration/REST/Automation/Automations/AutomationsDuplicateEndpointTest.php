@@ -13,6 +13,8 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\REST\Automation\AutomationTest;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
@@ -180,6 +182,62 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
     $originalNewsletter = $newslettersRepository->findOneBy(['id' => $originalNewsletterId]);
     $this->assertInstanceOf(NewsletterEntity::class, $originalNewsletter);
     $this->assertSame('Original email', $originalNewsletter->getSubject());
+  }
+
+  public function testItDuplicatesBlockEditorAutomationEmailWhenDuplicatingAutomation(): void {
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $postId = $wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation Email',
+      'post_content' => '<!-- wp:paragraph --><p>Hello world</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $newsletter = (new Newsletter())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject('Original block email')
+      ->withWpPostId($postId)
+      ->create();
+    $originalNewsletterId = $newsletter->getId();
+    $this->assertIsInt($originalNewsletterId);
+
+    $automationId = $this->automationStorage->createAutomation(
+      new Automation(
+        'Testing automation with block email',
+        [
+          'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('send-email')]),
+          'send-email' => new Step(
+            'send-email',
+            Step::TYPE_ACTION,
+            'mailpoet:send-email',
+            [
+              'email_id' => $originalNewsletterId,
+              'email_wp_post_id' => $postId,
+              'subject' => 'Original block email',
+              'sender_name' => 'Sender',
+              'sender_address' => 'sender@example.com',
+            ],
+            []
+          ),
+        ],
+        wp_get_current_user()
+      )
+    );
+
+    $data = $this->post(sprintf(self::ENDPOINT_PATH, $automationId));
+
+    $sendEmailStep = $this->getStepByKey($data['data']['steps'], 'mailpoet:send-email');
+    $this->assertIsArray($sendEmailStep);
+    $duplicatedNewsletterId = (int)$sendEmailStep['args']['email_id'];
+    $duplicatedWpPostId = (int)$sendEmailStep['args']['email_wp_post_id'];
+    $this->assertNotSame($originalNewsletterId, $duplicatedNewsletterId);
+    $this->assertNotSame($postId, $duplicatedWpPostId);
+
+    $duplicatedNewsletter = $newslettersRepository->findOneBy(['id' => $duplicatedNewsletterId]);
+    $this->assertInstanceOf(NewsletterEntity::class, $duplicatedNewsletter);
+    $this->assertSame($duplicatedWpPostId, $duplicatedNewsletter->getWpPostId());
   }
 
   public function testItPreservesMetaAndStepFiltersWhenDuplicatingAutomation(): void {

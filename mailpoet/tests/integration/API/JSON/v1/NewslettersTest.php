@@ -470,6 +470,21 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
   }
 
+  public function testItCanCreateAnAutomationNewsletterForBlockEditor() {
+    $data = [
+      'subject' => 'My Automation block newsletter',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+      'new_editor' => true,
+    ];
+    $response = $this->endpoint->create($data);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'My Automation block newsletter']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertIsInt($newsletter->getWpPostId());
+    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
+    verify($response->data['wp_post_id'])->equals($newsletter->getWpPostId());
+  }
+
   public function testItHasDefaultSenderAfterCreate() {
     $data = [
       'subject' => 'My First Newsletter',

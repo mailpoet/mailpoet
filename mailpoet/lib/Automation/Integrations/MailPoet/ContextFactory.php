@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\Dependency_Check;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Config\ServicesChecker;
@@ -26,6 +28,8 @@ class ContextFactory {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  private Dependency_Check $dependencyCheck;
+
   public function __construct(
     SegmentsRepository $segmentsRepository,
     Bridge $bridge,
@@ -38,6 +42,7 @@ class ContextFactory {
     $this->bridge = $bridge;
     $this->authorizedSenderDomainController = $authorizedSenderDomainController;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->dependencyCheck = Email_Editor_Container::container()->get(Dependency_Check::class);
   }
 
   /** @return mixed[] */
@@ -47,6 +52,7 @@ class ContextFactory {
       'userRoles' => $this->getUserRoles(),
       'transactional_triggers' => SendEmailAction::TRANSACTIONAL_TRIGGERS,
       'delay_action_key' => DelayAction::KEY,
+      'block_email_editor_enabled' => $this->dependencyCheck->are_dependencies_met(), // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     ];
 
     if ($this->isMSSEnabled()) {
