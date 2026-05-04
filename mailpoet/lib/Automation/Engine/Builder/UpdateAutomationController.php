@@ -75,6 +75,8 @@ class UpdateAutomationController {
 
     if (($automation->getStatus() === Automation::STATUS_DRAFT) && ($originalStatus === Automation::STATUS_ACTIVE)) {
       $this->unscheduleAutomationRuns($automation);
+    } elseif (!empty($data['cancel_running_runs'])) {
+      $this->unscheduleAutomationRuns($automation);
     }
 
     if (array_key_exists('meta', $data)) {
