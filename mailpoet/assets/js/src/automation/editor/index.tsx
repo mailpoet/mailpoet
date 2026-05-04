@@ -2,7 +2,6 @@ import classnames from 'classnames';
 import { createRoot } from 'react-dom/client';
 import { useEffect, useRef, useState } from 'react';
 import { SlotFillProvider } from '@wordpress/components';
-import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
 import { Platform } from '@wordpress/element';
 import {
@@ -29,7 +28,6 @@ import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICES } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
-import { AutomationStatus } from '../listing/automation';
 import { initializeIntegrations } from './integrations';
 import { sendTelemetryEvent } from './telemetry';
 
@@ -39,33 +37,6 @@ import { sendTelemetryEvent } from './telemetry';
 
 // disable inserter sidebar until we implement drag & drop
 const showInserterSidebar = false;
-
-/**
- * Show temporary message that active automations cant be updated
- *
- * see MAILPOET-4744
- */
-function updatingActiveAutomationNotPossible() {
-  const automation = globalSelect(storeName).getAutomationData();
-  if (
-    ![AutomationStatus.ACTIVE, AutomationStatus.DEACTIVATING].includes(
-      automation.status,
-    )
-  ) {
-    return;
-  }
-  if (automation.stats.totals.in_progress === 0) {
-    return;
-  }
-  const { createNotice } = dispatch(noticesStore);
-  void createNotice(
-    'success',
-    __('Editing an active automation is currently unavailable.', 'mailpoet'),
-    {
-      type: 'snackbar',
-    },
-  );
-}
 
 function onUnload(event) {
   if (globalSelect(storeName).getSavedState() !== 'saved') {
@@ -125,7 +96,6 @@ function Editor(): JSX.Element {
         'notice-args': [automation.name],
       });
     }
-    updatingActiveAutomationNotPossible();
     if (!pageViewFiredRef.current) {
       pageViewFiredRef.current = true;
       sendTelemetryEvent('page_view', {

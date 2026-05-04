@@ -36,7 +36,6 @@ class Exceptions {
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
   private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_not_trashed';
   private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_template_not_found';
-  private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_has_active_runs';
   private const AUTOMATION_STEP_NOT_STARTED = 'mailpoet_automation_step_not_started';
   private const AUTOMATION_STEP_NOT_RUNNING = 'mailpoet_automation_step_not_running';
   private const AUTOMATION_STEP_ACTION_PROCESSED = 'mailpoet_automation_step_action_processed';
@@ -273,16 +272,6 @@ class Exceptions {
       ->withErrorCode(self::AUTOMATION_TEMPLATE_NOT_FOUND)
       // translators: %d is the ID of the automation template.
       ->withMessage(sprintf(__("Automation template with ID '%d' not found.", 'mailpoet'), $id));
-  }
-
-  /**
-   * This is a temporary block, see MAILPOET-4744
-   */
-  public static function automationHasActiveRuns(int $id): InvalidStateException {
-    return InvalidStateException::create()
-      ->withErrorCode(self::AUTOMATION_HAS_ACTIVE_RUNS)
-      // translators: %d is the ID of the automation.
-      ->withMessage(sprintf(__("Can not update automation with ID '%d' because users are currently active.", 'mailpoet'), $id));
   }
 
   public static function stepNotStarted(string $id, int $runId): InvalidStateException {
