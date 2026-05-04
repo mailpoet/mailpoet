@@ -265,10 +265,19 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'shouldSkipAuthorization' => Expected::once(false),
       'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
     ]);
+    $newslettersRepository = $this->createMock(NewslettersRepository::class);
+    $newslettersRepository
+      ->expects($this->once())
+      ->method('getScheduledStandardEmailsAndActiveAutomaticEmails')
+      ->with($this->callback(function (array $automaticEmailTypes): bool {
+        return in_array(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, $automaticEmailTypes, true);
+      }))
+      ->willReturn([$newsletter]);
 
     $controller = $this->getControllerWithCustomMocks([
       'Bridge' => $bridgeMock,
       'AuthorizedSenderDomainController' => $senderDomainMock,
+      'NewslettersRepository' => $newslettersRepository,
     ]);
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
