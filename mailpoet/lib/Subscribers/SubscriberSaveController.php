@@ -322,7 +322,7 @@ class SubscriberSaveController {
       return;
     }
 
-    $customFields = $this->customFieldsRepository->findBy(['id' => array_keys($customFieldsMap)]);
+    $customFields = $this->customFieldsRepository->findBy(['id' => array_keys($customFieldsMap), 'deletedAt' => null]);
     foreach ($customFields as $customField) {
       $customFieldId = $customField->getId();
       if ($customFieldId === null || !array_key_exists($customFieldId, $customFieldsMap)) {

@@ -31,7 +31,7 @@ class SubscriberCustomFieldsFactory {
   public function getFields(): array {
     return array_map(function (CustomFieldEntity $customField) {
       return $this->getField($customField);
-    }, $this->customFieldsRepository->findAll());
+    }, $this->customFieldsRepository->findAllActive());
   }
 
   private function getField(CustomFieldEntity $customField): Field {

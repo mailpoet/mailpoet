@@ -70,7 +70,7 @@ class Subscribers {
         $field['params']['values'] = $values;
       }
       return $field;
-    }, $this->customFieldsRepository->findAll());
+    }, $this->customFieldsRepository->findAllActive());
 
     $data['date_formats'] = $this->dateBlock->getDateFormats();
     $data['month_names'] = $this->dateBlock->getMonthNames();

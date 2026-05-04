@@ -242,7 +242,7 @@ class Export {
    */
   public function getSubscriberCustomFields(): array {
     $result = [];
-    foreach ($this->customFieldsRepository->findAll() as $customField) {
+    foreach ($this->customFieldsRepository->findAllActive() as $customField) {
       $result[(int)$customField->getId()] = $customField->getName();
     }
     return $result;
