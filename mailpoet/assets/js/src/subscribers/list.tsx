@@ -73,7 +73,6 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const bulkConfirmationResendLimit =
   window.mailpoet_bulk_confirmation_resend_limit;
 const bulkConfirmationCheckboxId = 'bulk-resend-confirmation-checkbox-input';
-const bulkConfirmationConfirmHelpId = 'bulk-resend-confirmation-confirm-help';
 
 const getColumns = () => [
   {
@@ -244,7 +243,7 @@ function BulkResendConfirmationEmailsModal({
         <Text as="p">
           {sprintf(
             __(
-              'You selected %1$s subscribers. MailPoet will queue confirmation emails for up to %2$s eligible unconfirmed subscribers.',
+              'You selected %1$s subscribers. MailPoet can resend confirmation emails to up to %2$s of them at a time.',
               'mailpoet',
             ),
             Number(count).toLocaleString(),
@@ -253,7 +252,7 @@ function BulkResendConfirmationEmailsModal({
         </Text>
         <Text as="p">
           {__(
-            'Subscribers who reached the resend limit, were emailed recently, are too old, or are no longer unconfirmed will be skipped.',
+            'Some subscribers may be skipped if they already received too many confirmation emails, got one recently, or were added too long ago.',
             'mailpoet',
           )}
         </Text>
@@ -261,7 +260,7 @@ function BulkResendConfirmationEmailsModal({
           <CheckboxControl
             id={bulkConfirmationCheckboxId}
             label={__(
-              'I confirm these subscribers asked to join and can be sent a confirmation email.',
+              'I confirm these subscribers asked to join my list.',
               'mailpoet',
             )}
             checked={isChecked}
@@ -269,22 +268,15 @@ function BulkResendConfirmationEmailsModal({
             onChange={(checked) => setIsChecked(checked)}
           />
         </div>
-        <Text as="p" id={bulkConfirmationConfirmHelpId} className="description">
-          {__(
-            'Confirm that these subscribers asked to join to queue confirmation emails.',
-            'mailpoet',
-          )}
-        </Text>
         <div>
           <WordPressButton
             variant="primary"
             onClick={handleSubmit}
             disabled={!isChecked || isSubmitting}
             isBusy={isSubmitting}
-            aria-describedby={bulkConfirmationConfirmHelpId}
             data-automation-id="bulk-resend-confirmation-confirm"
           >
-            {__('Queue emails', 'mailpoet')}
+            {__('Resend emails', 'mailpoet')}
           </WordPressButton>
         </div>
       </VStack>
@@ -295,7 +287,9 @@ function BulkResendConfirmationEmailsModal({
 const showBulkResendConfirmationNotice = (response: Response) => {
   const data = response.data;
   if (!data) {
-    MailPoet.Notice.success(__('Confirmation emails were queued.', 'mailpoet'));
+    MailPoet.Notice.success(
+      __('Confirmation emails are being resent.', 'mailpoet'),
+    );
     return;
   }
 
@@ -305,7 +299,7 @@ const showBulkResendConfirmationNotice = (response: Response) => {
   if (queuedCount === 0) {
     MailPoet.Notice.success(
       __(
-        'No confirmation email resend job was queued. No selected subscribers were currently eligible.',
+        'No confirmation emails were resent. The selected subscribers could not receive another confirmation email right now.',
         'mailpoet',
       ),
     );
@@ -317,8 +311,8 @@ const showBulkResendConfirmationNotice = (response: Response) => {
       sprintf(
         /* translators: %d is the number of subscribers. */
         _n(
-          'A resend job was queued for up to %d eligible subscriber.',
-          'A resend job was queued for up to %d eligible subscribers.',
+          'MailPoet is resending confirmation emails to %d subscriber.',
+          'MailPoet is resending confirmation emails to %d subscribers.',
           queuedCount,
           'mailpoet',
         ),
@@ -333,8 +327,8 @@ const showBulkResendConfirmationNotice = (response: Response) => {
         sprintf(
           /* translators: %d is the number of subscribers. */
           _n(
-            '%d selected subscriber was not queued because they were ineligible or beyond the batch limit.',
-            '%d selected subscribers were not queued because they were ineligible or beyond the batch limit.',
+            '%d selected subscriber was skipped.',
+            '%d selected subscribers were skipped.',
             skippedCount,
             'mailpoet',
           ),
@@ -343,15 +337,6 @@ const showBulkResendConfirmationNotice = (response: Response) => {
       ),
     );
   }
-
-  messageParts.push(
-    String(
-      __(
-        'The background job may still skip queued subscribers if they become ineligible before it runs.',
-        'mailpoet',
-      ),
-    ),
-  );
 
   MailPoet.Notice.success(messageParts.join(' '), {
     onOpen: (element) => {
