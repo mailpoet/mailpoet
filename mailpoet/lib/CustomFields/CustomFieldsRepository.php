@@ -77,6 +77,17 @@ class CustomFieldsRepository extends Repository {
     $this->bulkTrash([(int)$customField->getId()]);
   }
 
+  public function hasSubscriberValues(int $customFieldId): bool {
+    $count = (int)$this->entityManager->createQueryBuilder()
+      ->select('COUNT(scf.id)')
+      ->from(SubscriberCustomFieldEntity::class, 'scf')
+      ->where('scf.customField = :id')
+      ->setParameter('id', $customFieldId)
+      ->setMaxResults(1)
+      ->getQuery()->getSingleScalarResult();
+    return $count > 0;
+  }
+
   /**
    * @param array<int|null> $ids
    */

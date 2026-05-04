@@ -38,8 +38,21 @@ class CustomFieldsPutEndpoint extends CustomFieldsEndpoint {
       );
     }
 
+    $requestData = $this->getRequestData($request);
+    if (
+      $requestData['type'] !== ''
+      && $requestData['type'] !== $customField->getType()
+      && $this->customFieldsRepository->hasSubscriberValues($id)
+    ) {
+      throw new CustomFieldApiException(
+        __('The custom field type cannot be changed because subscribers have values stored for this field.', 'mailpoet'),
+        409,
+        'mailpoet_custom_fields_type_locked'
+      );
+    }
+
     try {
-      $data = $this->apiDataSanitizer->sanitize($this->getRequestData($request));
+      $data = $this->apiDataSanitizer->sanitize($requestData);
     } catch (InvalidArgumentException $exception) {
       throw new CustomFieldApiException(
         $exception->getMessage(),
