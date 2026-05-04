@@ -147,7 +147,6 @@ class Migration_20221028_105818 extends DbMigration {
       'params longtext NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'deleted_at timestamp NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)',
     ];
