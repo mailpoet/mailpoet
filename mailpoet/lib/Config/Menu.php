@@ -407,7 +407,7 @@ class Menu {
       self::SUBSCRIBERS_PAGE_SLUG,
       $this->setPageTitle(__('Custom Fields', 'mailpoet')),
       esc_html__('Custom Fields', 'mailpoet'),
-      AccessControl::PERMISSION_MANAGE_FORMS,
+      AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
       self::CUSTOM_FIELDS_PAGE_SLUG,
       [
         $this,
