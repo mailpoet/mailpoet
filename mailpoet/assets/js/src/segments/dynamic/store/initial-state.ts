@@ -25,6 +25,7 @@ export function getSegmentInitialState() {
 export const getInitialState = (): StateType => ({
   automations: window.mailpoet_automations,
   products: window.mailpoet_products,
+  variableProducts: window.mailpoet_variable_products || [],
   staticSegmentsList: window.mailpoet_static_segments_list,
   membershipPlans: window.mailpoet_membership_plans,
   subscriptionProducts: window.mailpoet_subscription_products,
