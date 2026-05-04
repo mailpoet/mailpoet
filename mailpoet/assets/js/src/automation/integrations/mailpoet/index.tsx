@@ -2,6 +2,7 @@ import { getIsGarden } from 'common/functions';
 import { registerStepType } from '../../editor/store';
 import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
+import { step as SomeoneUnsubscribesTrigger } from './steps/someone-unsubscribes';
 import { step as WpUserRegisteredTrigger } from './steps/wp-user-registered';
 import { step as AddTagsAction } from './steps/add-tags';
 import { step as RemoveTagsAction } from './steps/remove-tags';
@@ -28,6 +29,7 @@ export const initialize = (): void => {
   registerStepType(WpUserRegisteredTrigger);
   registerStepType(WpUserRoleChangedTrigger);
   registerStepType(SomeoneSubscribesTrigger);
+  registerStepType(SomeoneUnsubscribesTrigger);
   registerStepType(CustomTriggerStep);
 
   if (!isGarden) {
