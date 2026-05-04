@@ -30,6 +30,7 @@ class Exceptions {
   private const NEXT_STEP_NOT_FOUND = 'mailpoet_next_step_not_found';
   private const NEXT_STEP_NOT_SCHEDULED = 'mailpoet_next_step_not_scheduled';
   private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_structure_modification_not_supported';
+  private const AUTOMATION_TRIGGER_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_trigger_modification_not_supported';
   private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_structure_not_valid';
   private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_step_modified_when_unknown';
   private const AUTOMATION_NOT_VALID = 'mailpoet_automation_not_valid';
@@ -212,6 +213,12 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED)
       ->withMessage(__('Automation structure modification not supported.', 'mailpoet'));
+  }
+
+  public static function automationTriggerModificationNotSupported(): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::AUTOMATION_TRIGGER_MODIFICATION_NOT_SUPPORTED)
+      ->withMessage(__('Changing the trigger of an existing automation is not supported. You can edit its settings or filters instead.', 'mailpoet'));
   }
 
   public static function automationStructureNotValid(string $detail, string $ruleId): UnexpectedValueException {

@@ -64,6 +64,7 @@ class UpdateAutomationController {
     }
 
     if (array_key_exists('steps', $data)) {
+      $this->validateTriggerInvariants($automation, $data['steps']);
       $this->validateAutomationSteps($automation, $data['steps']);
       $this->updateStepsController->updateSteps($automation, $data['steps']);
       foreach ($automation->getSteps() as $step) {
@@ -99,6 +100,33 @@ class UpdateAutomationController {
     if (!in_array($status, Automation::STATUS_ALL, true)) {
       // translators: %s is the status.
       throw UnexpectedValueException::create()->withMessage(sprintf(__('Invalid status: %s', 'mailpoet'), $status));
+    }
+  }
+
+  private function validateTriggerInvariants(Automation $automation, array $steps): void {
+    $existingTriggers = [];
+    foreach ($automation->getSteps() as $step) {
+      if ($step->getType() === Step::TYPE_TRIGGER) {
+        $existingTriggers[$step->getId()] = $step;
+      }
+    }
+
+    $newTriggers = [];
+    foreach ($steps as $id => $data) {
+      if (($data['type'] ?? null) === Step::TYPE_TRIGGER) {
+        $newTriggers[$id] = $data;
+      }
+    }
+
+    if (count($newTriggers) !== count($existingTriggers)) {
+      throw Exceptions::automationTriggerModificationNotSupported();
+    }
+
+    foreach ($existingTriggers as $id => $existingTrigger) {
+      $newTrigger = $newTriggers[$id] ?? null;
+      if (!$newTrigger || ($newTrigger['key'] ?? '') !== $existingTrigger->getKey()) {
+        throw Exceptions::automationTriggerModificationNotSupported();
+      }
     }
   }
 
