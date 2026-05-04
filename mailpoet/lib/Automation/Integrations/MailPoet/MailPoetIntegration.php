@@ -19,6 +19,7 @@ use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectTo
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\SubscriberSubjectToWordPressUserSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneUnsubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 
 class MailPoetIntegration implements Integration {
@@ -36,6 +37,9 @@ class MailPoetIntegration implements Integration {
 
   /** @var SomeoneSubscribesTrigger */
   private $someoneSubscribesTrigger;
+
+  /** @var SomeoneUnsubscribesTrigger */
+  private $someoneUnsubscribesTrigger;
 
   /** @var UserRegistrationTrigger  */
   private $userRegistrationTrigger;
@@ -84,6 +88,7 @@ class MailPoetIntegration implements Integration {
     CommentSubjectToSubscriberSubjectTransformer $commentToSubscriberTransformer,
     CustomerSubjectToSubscriberSubjectTransformer $customerToSubscriberTransformer,
     SomeoneSubscribesTrigger $someoneSubscribesTrigger,
+    SomeoneUnsubscribesTrigger $someoneUnsubscribesTrigger,
     UserRegistrationTrigger $userRegistrationTrigger,
     SendEmailAction $sendEmailAction,
     AutomationEditorLoadingHooks $automationEditorLoadingHooks,
@@ -102,6 +107,7 @@ class MailPoetIntegration implements Integration {
     $this->commentToSubscriberTransformer = $commentToSubscriberTransformer;
     $this->customerToSubscriberTransformer = $customerToSubscriberTransformer;
     $this->someoneSubscribesTrigger = $someoneSubscribesTrigger;
+    $this->someoneUnsubscribesTrigger = $someoneUnsubscribesTrigger;
     $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
     $this->automationEditorLoadingHooks = $automationEditorLoadingHooks;
@@ -120,6 +126,7 @@ class MailPoetIntegration implements Integration {
     $registry->addSubject($this->subscriberSubject);
     $registry->addSubject($this->emailLinkSubject);
     $registry->addTrigger($this->someoneSubscribesTrigger);
+    $registry->addTrigger($this->someoneUnsubscribesTrigger);
     $registry->addTrigger($this->userRegistrationTrigger);
     $registry->addAction($this->sendEmailAction);
     $registry->addSubjectTransformer($this->orderToSubscriberTransformer);
