@@ -125,7 +125,7 @@ class SubscriberExporter {
       return $this->customFields;
     }
 
-    $fields = $this->customFieldsRepository->findAll();
+    $fields = $this->customFieldsRepository->findAllActive();
     foreach ($fields as $field) {
       $fieldId = $field->getId();
       if ($fieldId !== null) {

@@ -213,7 +213,7 @@ class Manage {
    */
   private function getMandatory(): array {
     $mandatory = [];
-    $requiredCustomFields = $this->customFieldsRepository->findAll();
+    $requiredCustomFields = $this->customFieldsRepository->findAllActive();
     foreach ($requiredCustomFields as $customField) {
       $params = $customField->getParams();
       if (

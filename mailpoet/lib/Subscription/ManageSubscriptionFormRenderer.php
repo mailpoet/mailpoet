@@ -145,7 +145,7 @@ class ManageSubscriptionFormRenderer {
       }
 
       return $customField;
-    }, $this->customFieldsRepository->findAll());
+    }, $this->customFieldsRepository->findAllActive());
   }
 
   private function getBasicFields(SubscriberEntity $subscriber): array {

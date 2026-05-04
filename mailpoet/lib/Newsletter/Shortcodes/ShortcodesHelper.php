@@ -141,7 +141,7 @@ class ShortcodesHelper {
   }
 
   public function getCustomFields(): array {
-    $customFields = $this->customFieldsRepository->findAll();
+    $customFields = $this->customFieldsRepository->findAllActive();
     return array_map(function($customField) {
       return [
         'text' => $customField->getName(),

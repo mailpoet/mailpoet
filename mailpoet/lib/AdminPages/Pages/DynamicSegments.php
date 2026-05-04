@@ -102,7 +102,7 @@ class DynamicSegments {
     ]);
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
 
-    $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
+    $customFields = $this->customFieldsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
     $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
 
     $wpRoles = $this->wp->getEditableRoles();

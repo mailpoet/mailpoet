@@ -581,7 +581,7 @@ class Import {
     // check if custom fields exist in the database
     $subscribersCustomFieldsIds = array_map(function(CustomFieldEntity $customField): int {
       return (int)$customField->getId();
-    }, $this->customFieldsRepository->findByIds($subscribersCustomFieldsIds));
+    }, $this->customFieldsRepository->findBy(['id' => $subscribersCustomFieldsIds, 'deletedAt' => null]));
     if (!$subscribersCustomFieldsIds) {
       return;
     }
