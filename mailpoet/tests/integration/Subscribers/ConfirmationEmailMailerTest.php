@@ -241,10 +241,13 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($result['reason'] ?? null)->equals('max_confirmations_reached');
   }
 
-  public function testItRecordsAndThrottlesAdminConfirmationEmailsForLoggedInUser() {
+  public function testItRecordsAdminConfirmationEmailWithoutUpdatingPublicTimestamp() {
     wp_set_current_user(1);
     verify((new WPFunctions)->isUserLoggedIn())->true();
+    $previousSentAt = Carbon::now()->subDays(8)->millisecond(0);
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscriber->setConfirmationsCount(1);
+    $this->subscriber->setLastConfirmationEmailSentAt($previousSentAt);
     $this->subscribersRepository->flush();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -265,14 +268,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     verify($sender->sendAdminConfirmationEmail($this->subscriber)['status'])->equals('sent');
     $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(1);
-    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
-
-    $result = $sender->sendAdminConfirmationEmail($this->subscriber);
-    verify($result['status'])->equals('skipped');
-    verify($result['reason'] ?? null)->equals('recently_sent');
-    $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(1);
+    verify($this->subscriber->getConfirmationsCount())->equals(2);
+    $lastConfirmationEmailSentAt = $this->subscriber->getLastConfirmationEmailSentAt();
+    $this->assertNotNull($lastConfirmationEmailSentAt);
+    verify($lastConfirmationEmailSentAt->format('Y-m-d H:i:s'))->equals($previousSentAt->format('Y-m-d H:i:s'));
   }
 
   public function testGenericConfirmationEmailKeepsApiCompatibilityWithoutAdminThrottle(): void {
@@ -295,7 +294,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     verify($sender->sendConfirmationEmail($this->subscriber))->true();
@@ -374,7 +374,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
 
     try {

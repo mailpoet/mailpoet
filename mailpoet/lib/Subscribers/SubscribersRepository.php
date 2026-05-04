@@ -397,6 +397,39 @@ class SubscribersRepository extends Repository {
     $this->entityManager->refresh($subscriber);
   }
 
+  public function completeAdminConfirmationEmailResendClaim(
+    SubscriberEntity $subscriber,
+    string $claimTime,
+    ?string $previousLastConfirmationEmailSentAt,
+    int $previousCountConfirmations
+  ): void {
+    if (!$subscriber->getId()) {
+      return;
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at
+       WHERE `id` = :id
+       AND `last_confirmation_email_sent_at` = :claim_time
+       AND `count_confirmations` = :claimed_count_confirmations",
+      [
+        'id' => $subscriber->getId(),
+        'claim_time' => $claimTime,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+        'claimed_count_confirmations' => $previousCountConfirmations + 1,
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'claim_time' => ParameterType::STRING,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt === null ? ParameterType::NULL : ParameterType::STRING,
+        'claimed_count_confirmations' => ParameterType::INTEGER,
+      ]
+    );
+    $this->entityManager->refresh($subscriber);
+  }
+
   public function getAdminConfirmationEmailResendIneligibilityReason(
     SubscriberEntity $subscriber,
     int $maxConfirmationEmails,
