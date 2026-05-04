@@ -23,4 +23,5 @@ class InvalidFilterException extends InvalidStateException {
   const MISSING_PLAN_ID = 16;
   const MISSING_SINGLE_ORDER_VALUE_FIELDS = 17;
   const MISSING_AVERAGE_SPENT_FIELDS = 18;
+  const MISSING_VARIATION_ID = 19;
 };
