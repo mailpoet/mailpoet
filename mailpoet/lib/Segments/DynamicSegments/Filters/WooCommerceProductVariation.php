@@ -53,12 +53,23 @@ class WooCommerceProductVariation implements Filter {
       $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $queryBuilder->andWhere("product.variation_id IN (:variations_{$parameterSuffix})");
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-      $this->applyProductJoin($queryBuilder, $orderStatsAlias);
-      $queryBuilder->andWhere("product.variation_id IN (:variations_{$parameterSuffix})")
-        ->groupBy("{$subscribersTable}.id, $orderStatsAlias.order_id")
-        ->having("COUNT(DISTINCT product.variation_id) = :count" . $parameterSuffix)
-        ->setParameter('count' . $parameterSuffix, count($variationIds));
+      $subQueryCount = 1;
+      foreach ($variationIds as $variationId) {
+        $uniqueParameterSuffix = Security::generateRandomString();
+        $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+        $subOrderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+        $this->applyProductJoin($subQuery, $subOrderStatsAlias);
+        $subQuery->andWhere("product.variation_id = :variation_{$uniqueParameterSuffix}");
+        $subQuery->setParameter("variation_{$uniqueParameterSuffix}", $variationId);
+        $alias = sprintf('variationSubQuery%d', $subQueryCount);
+        $queryBuilder->innerJoin(
+          $subscribersTable,
+          sprintf('(%s)', $this->filterHelper->getInterpolatedSQL($subQuery)),
+          $alias,
+          "$subscribersTable.id = $alias.id"
+        );
+        $subQueryCount++;
+      }
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
