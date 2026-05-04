@@ -29,6 +29,10 @@ class CustomFieldsRepository extends Repository {
   /**
    * @param array $data
    * @return CustomFieldEntity
+   *
+   * Updates the entity in place and does not touch `deletedAt`. Callers that
+   * accept ids from outside (REST endpoints, etc.) must reject trashed fields
+   * before calling this — otherwise the field stays trashed despite the update.
    */
   public function createOrUpdate($data) {
     // set name as label by default
