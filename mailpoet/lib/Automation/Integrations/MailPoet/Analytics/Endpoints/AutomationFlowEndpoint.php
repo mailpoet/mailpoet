@@ -53,14 +53,14 @@ class AutomationFlowEndpoint extends Endpoint {
       throw Exceptions::automationNotFound($id);
     }
     $query = Query::fromRequest($request);
-    $automations = $this->automationTimeSpanController->getAutomationsInTimespan($automation, $query->getAfter(), $query->getBefore());
+    $automations = $this->automationTimeSpanController->getAutomationsInTimespan($automation, $query->getAfter(), $query->getBefore(), $query->getVersionId());
     if (!count($automations)) {
       throw Exceptions::automationNotFoundInTimeSpan($id);
     }
     $automation = current($automations);
     $shortStatistics = $this->automationStatisticsStorage->getAutomationStats(
       $automation->getId(),
-      null,
+      $query->getVersionId(),
       $query->getAfter(),
       $query->getBefore()
     );

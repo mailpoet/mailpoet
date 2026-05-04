@@ -24,7 +24,11 @@ class AutomationTimeSpanController {
     $this->newslettersRepository = $newslettersRepository;
   }
 
-  public function getAutomationsInTimespan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
+  public function getAutomationsInTimespan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before, ?int $versionId = null): array {
+    if ($versionId !== null) {
+      return $this->automationStorage->getAutomationWithDifferentVersions([$versionId]);
+    }
+
     $automationVersions = $this->automationStorage->getAutomationVersionDates($automation->getId());
     usort(
       $automationVersions,
@@ -57,8 +61,8 @@ class AutomationTimeSpanController {
    * @param \DateTimeImmutable $before
    * @return NewsletterEntity[]
    */
-  public function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
-    $automations = $this->getAutomationsInTimespan($automation, $after, $before);
+  public function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before, ?int $versionId = null): array {
+    $automations = $this->getAutomationsInTimespan($automation, $after, $before, $versionId);
     return count($automations) > 0 ? $this->getEmailsFromAutomations($automations) : [];
   }
 
