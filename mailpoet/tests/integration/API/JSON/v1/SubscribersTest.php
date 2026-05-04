@@ -908,6 +908,38 @@ class SubscribersTest extends \MailPoetTest {
     verify($this->getTaskSubscriberIds((int)$response->data['task_id']))->equals([$inScope->getId()]);
   }
 
+  public function testBulkConfirmationEmailResendSearchStaysWithinListingScope(): void {
+    wp_set_current_user(1);
+    $inScope = (new SubscriberFactory())
+      ->withEmail('bulk-resend-search-match@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    (new SubscriberFactory())
+      ->withEmail('bulk-resend-search-subscribed@mailpoet.com')
+      ->withFirstName('bulk-resend-search-match')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    (new SubscriberFactory())
+      ->withEmail('bulk-resend-search-deleted@mailpoet.com')
+      ->withLastName('bulk-resend-search-match')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withDeletedAt(Carbon::now())
+      ->create();
+
+    $response = $this->endpoint->bulkAction([
+      'action' => 'resendConfirmationEmails',
+      'listing' => [
+        'group' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'search' => 'bulk-resend-search-match',
+      ],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['selected_count'])->equals(1);
+    verify($response->data['queued_count'])->equals(1);
+    verify($this->getTaskSubscriberIds((int)$response->data['task_id']))->equals([$inScope->getId()]);
+  }
+
   public function testBulkConfirmationEmailResendHonorsListingFiltersAndEligibilityBoundaries(): void {
     wp_set_current_user(1);
     $now = Carbon::now()->millisecond(0);

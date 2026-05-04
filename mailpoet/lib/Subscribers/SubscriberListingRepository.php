@@ -257,7 +257,7 @@ class SubscriberListingRepository extends ListingRepository {
     if ($search && strlen(trim($search)) > 0) {
       $search = Helpers::escapeSearch($search);
       $query
-        ->andWhere('s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search')
+        ->andWhere('(s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search)')
         ->setParameter('search', "%$search%");
     }
 
