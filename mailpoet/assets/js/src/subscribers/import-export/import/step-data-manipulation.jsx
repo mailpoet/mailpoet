@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { PreviousNextStepButtons } from './previous-next-step-buttons.jsx';
@@ -10,6 +10,8 @@ import { ExistingSubscribersStatus } from './step-data-manipulation/existing-sub
 import { UpdateExistingSubscribers } from './step-data-manipulation/update-existing-subscribers.jsx';
 import { doImport } from './step-data-manipulation/do-import.jsx';
 import { AssignTags } from './step-data-manipulation/assign-tags';
+import { CreateCustomFieldModal } from './step-data-manipulation/create-custom-field-modal';
+import { addCustomFieldColumn } from './step-data-manipulation/generate-column-selection.jsx';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
@@ -38,6 +40,26 @@ export function StepDataManipulation({
   const [existingSubscribersStatus, setExistingSubscribersStatus] =
     useState('dontUpdate');
   const [selectedTags, setSelectedTags] = useState([]);
+  const [customFieldSelectElement, setCustomFieldSelectElement] =
+    useState(null);
+  const customFieldDateSettings = useMemo(
+    () => ({
+      dateTypes: window.mailpoet_import_custom_fields_date_types ?? [],
+      dateFormats: window.mailpoet_import_custom_fields_date_formats ?? {},
+    }),
+    [],
+  );
+  const handleCreateCustomField = useCallback((selectElement) => {
+    setCustomFieldSelectElement(selectElement);
+  }, []);
+  const handleCustomFieldCreated = (customField) => {
+    if (!customFieldSelectElement) {
+      return;
+    }
+    addCustomFieldColumn(customFieldSelectElement, customField);
+    setCustomFieldSelectElement(null);
+  };
+
   useEffect(() => {
     if (typeof stepMethodSelectionData === 'undefined') {
       navigate('/step_method_selection', { replace: true });
@@ -69,6 +91,7 @@ export function StepDataManipulation({
         subscribersCount={stepMethodSelectionData.subscribersCount}
         subscribers={stepMethodSelectionData.subscribers}
         header={stepMethodSelectionData.header}
+        onCreateCustomField={handleCreateCustomField}
       />
       <div className="mailpoet-settings-grid">
         <SelectSegment setSelectedSegments={setSelectedSegments} />
@@ -102,6 +125,13 @@ export function StepDataManipulation({
           isLastStep
         />
       </div>
+      {customFieldSelectElement && (
+        <CreateCustomFieldModal
+          dateSettings={customFieldDateSettings}
+          onClose={() => setCustomFieldSelectElement(null)}
+          onSuccess={handleCustomFieldCreated}
+        />
+      )}
     </div>
   );
 }

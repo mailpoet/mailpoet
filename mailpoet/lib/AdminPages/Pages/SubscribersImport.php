@@ -25,8 +25,15 @@ class SubscribersImport {
   public function render() {
     $import = new ImportExportFactory(ImportExportFactory::IMPORT_ACTION);
     $data = $import->bootstrap();
+    $dateTypes = $this->dateBlock->getDateTypes();
     $data = array_merge($data, [
-      'date_types' => $this->dateBlock->getDateTypes(),
+      'date_types' => $dateTypes,
+      'custom_fields_date_types' => array_map(function ($label, $value) {
+        return [
+          'label' => $label,
+          'value' => $value,
+        ];
+      }, $dateTypes, array_keys($dateTypes)),
       'date_formats' => $this->dateBlock->getDateFormats(),
       'month_names' => $this->dateBlock->getMonthNames(),
       'role_based_emails' => json_encode(Validator::ROLE_EMAILS),

@@ -31,7 +31,9 @@
     importData = {},
     mailpoetColumnsSelect2 = JSON.parse("<%=subscriberFieldsSelect2|escape('js')%>"),
     mailpoetColumns = JSON.parse("<%=subscriberFields|escape('js')%>"),
-    mailpoetSegments = JSON.parse("<%=segments|escape('js')%>");
+    mailpoetSegments = JSON.parse("<%=segments|escape('js')%>"),
+    mailpoet_import_custom_fields_date_types = <%= json_encode(custom_fields_date_types) %>,
+    mailpoet_import_custom_fields_date_formats = <%= json_encode(date_formats) %>;
 </script>
 
 <%= localize({
