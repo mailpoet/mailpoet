@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet;
 
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\WordPress;
@@ -147,6 +148,9 @@ class MailPoetIntegration implements Integration {
 
     // execute send email step progress when email is sent
     $this->wordPress->addAction('mailpoet_automation_email_sent', [$this->sendEmailAction, 'handleEmailSent']);
+
+    // forbid combining the unsubscribe trigger with a "Send email" action
+    $this->wordPress->addAction(Hooks::AUTOMATION_BEFORE_SAVE, [$this->someoneUnsubscribesTrigger, 'validateAutomation']);
 
     $this->automationEditorLoadingHooks->init();
     $this->createAutomationRunHook->init();
