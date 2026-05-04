@@ -10,6 +10,7 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\CustomFields\RestApi\CustomFieldApiException;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Validator\Builder;
+use MailPoetVendor\Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class CustomFieldsPutEndpoint extends CustomFieldsEndpoint {
   /** @var CustomFieldsRepository */
@@ -59,7 +60,18 @@ class CustomFieldsPutEndpoint extends CustomFieldsEndpoint {
     }
 
     $data['id'] = $id;
-    $customField = $this->customFieldsRepository->createOrUpdate($data);
+    try {
+      $customField = $this->customFieldsRepository->createOrUpdate($data);
+    } catch (UniqueConstraintViolationException $exception) {
+      // Concurrent request renamed another field to this name between the duplicate-name check and the update.
+      throw new CustomFieldApiException(
+        __('A custom field with this name already exists.', 'mailpoet'),
+        409,
+        'mailpoet_custom_fields_duplicate',
+        [],
+        $exception
+      );
+    }
     return new Response($this->buildItem($customField));
   }
 

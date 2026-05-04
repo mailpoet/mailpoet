@@ -8,6 +8,7 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\CustomFields\RestApi\CustomFieldApiException;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Validator\Builder;
+use MailPoetVendor\Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class CustomFieldsDuplicateEndpoint extends CustomFieldsEndpoint {
   /** @var CustomFieldsRepository */
@@ -31,11 +32,29 @@ class CustomFieldsDuplicateEndpoint extends CustomFieldsEndpoint {
 
     $params = $customField->getParams() ?: [];
     $params['label'] = $this->getDuplicateLabel($params, $customField->getName());
-    $duplicate = $this->customFieldsRepository->createOrUpdate([
-      'name' => $this->getDuplicateName($customField->getName()),
-      'type' => $customField->getType(),
-      'params' => $params,
-    ]);
+
+    $attempts = 0;
+    while (true) {
+      try {
+        $duplicate = $this->customFieldsRepository->createOrUpdate([
+          'name' => $this->getDuplicateName($customField->getName()),
+          'type' => $customField->getType(),
+          'params' => $params,
+        ]);
+        break;
+      } catch (UniqueConstraintViolationException $exception) {
+        // A concurrent duplicate request picked the same candidate name. Recompute and retry.
+        if (++$attempts >= 3) {
+          throw new CustomFieldApiException(
+            __('A custom field with this name already exists.', 'mailpoet'),
+            409,
+            'mailpoet_custom_fields_duplicate',
+            [],
+            $exception
+          );
+        }
+      }
+    }
 
     return new Response($this->buildItem($duplicate), 201);
   }
