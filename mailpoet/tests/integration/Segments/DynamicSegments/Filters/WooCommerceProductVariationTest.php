@@ -35,6 +35,7 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
     $customerId1 = $this->tester->createCustomer('customer1@example.com');
     $customerId2 = $this->tester->createCustomer('customer2@example.com');
     $customerIdOnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerIdMulti = $this->tester->createCustomer('customer-multi-orders@example.com');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
@@ -52,10 +53,21 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
     $this->addToOrder(2, $this->orderIds[1], $this->productIds[0], $this->variationIds[1], $customerId2);
     $this->orderIds[] = $this->createOrder($customerIdOnHold, Carbon::now(), 'wc-on-hold');
     $this->addToOrder(3, $this->orderIds[2], $this->productIds[0], $this->variationIds[0], $customerIdOnHold);
+
+    // customer-multi-orders bought variation[0] and variation[1] in two separate completed orders.
+    // This exercises the "all of" operator across orders.
+    $this->orderIds[] = $this->createOrder($customerIdMulti, Carbon::now());
+    $this->addToOrder(4, $this->orderIds[3], $this->productIds[0], $this->variationIds[0], $customerIdMulti);
+    $this->orderIds[] = $this->createOrder($customerIdMulti, Carbon::now());
+    $this->addToOrder(5, $this->orderIds[4], $this->productIds[0], $this->variationIds[1], $customerIdMulti);
   }
 
   public function testItGetsSubscribersThatPurchasedAnyVariation(): void {
-    $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
+    $expectedEmails = [
+      'customer1@example.com',
+      'customer2@example.com',
+      'customer-multi-orders@example.com',
+    ];
     $segmentFilterData = $this->getSegmentFilterData(
       [$this->variationIds[0], $this->variationIds[1]],
       DynamicSegmentFilterData::OPERATOR_ANY
@@ -80,14 +92,17 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedAllVariations(): void {
+    // customer-multi-orders bought variation[0] and variation[1] in two separate orders.
+    // The "all of" operator must match across orders, not require both in the same order.
+    $expectedEmails = ['customer-multi-orders@example.com'];
     $segmentFilterData = $this->getSegmentFilterData(
       [$this->variationIds[0], $this->variationIds[1]],
       DynamicSegmentFilterData::OPERATOR_ALL
     );
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductVariationFilter);
-    verify($emails)->arrayCount(0);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
 
-    $expectedEmails = ['customer1@example.com'];
+    $expectedEmails = ['customer1@example.com', 'customer-multi-orders@example.com'];
     $segmentFilterData = $this->getSegmentFilterData(
       [$this->variationIds[0]],
       DynamicSegmentFilterData::OPERATOR_ALL
