@@ -98,8 +98,11 @@ class BulkConfirmationEmailResender {
       'skipped_by_reason' => $queueData['skipped_by_reason'],
       'task_id' => $task instanceof ScheduledTaskEntity ? $task->getId() : null,
       'message' => $queuedCount > 0
-        ? __('Confirmation emails were queued.', 'mailpoet')
-        : __('No eligible subscribers were queued for confirmation email resend.', 'mailpoet'),
+        ? __('Confirmation emails are being resent.', 'mailpoet')
+        : __(
+          'No confirmation emails were resent. The selected subscribers could not receive another confirmation email right now.',
+          'mailpoet'
+        ),
     ];
   }
 
