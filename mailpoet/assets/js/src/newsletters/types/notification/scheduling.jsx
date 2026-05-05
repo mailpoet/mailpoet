@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { FormFieldSelect as Select } from 'form/fields/select.jsx';
+import { Checkbox } from 'common/form/checkbox/checkbox';
 import {
   intervalValues,
   timeOfDayValues,
@@ -27,14 +28,79 @@ const weekDayField = {
   values: weekDayValues,
 };
 
-const monthDayField = {
-  name: 'monthDay',
-  values: monthDayValues,
-};
-
 const nthWeekDayField = {
   name: 'nthWeekDay',
   values: nthWeekDayValues,
+};
+
+const sortValues = (values) =>
+  [...values].sort(
+    (firstValue, secondValue) => Number(firstValue) - Number(secondValue),
+  );
+
+const parseSelectedValues = (value, defaultValue, availableValues) => {
+  const availableValueKeys = Object.keys(availableValues);
+  const normalizedValue = value === undefined || value === null ? '' : value;
+  const selectedValues = `${normalizedValue}`
+    .split(',')
+    .map((selectedValue) => selectedValue.trim())
+    .filter((selectedValue) => availableValueKeys.includes(selectedValue));
+
+  if (selectedValues.length === 0) {
+    return [defaultValue];
+  }
+
+  return sortValues([...new Set(selectedValues)]);
+};
+
+const serializeSelectedValues = (values) => sortValues(values).join(',');
+
+const getFirstSelectedValue = (value, defaultValue) =>
+  parseSelectedValues(value, defaultValue, weekDayValues)[0];
+
+function MultipleCheckboxSelection({
+  name,
+  values,
+  selectedValues,
+  onValueChange,
+  automationId,
+}) {
+  const normalizedSelectedValues = selectedValues.map((value) => `${value}`);
+  return (
+    <div className="mailpoet-grid-four-columns">
+      {Object.keys(values).map((value) => (
+        <Checkbox
+          key={`${name}-${value}`}
+          name={name}
+          value={value}
+          checked={normalizedSelectedValues.includes(value)}
+          onCheck={(isChecked) => {
+            let nextValues = normalizedSelectedValues;
+            if (isChecked) {
+              nextValues = normalizedSelectedValues.concat([value]);
+            } else if (normalizedSelectedValues.length > 1) {
+              nextValues = normalizedSelectedValues.filter(
+                (selectedValue) => selectedValue !== value,
+              );
+            }
+            onValueChange(serializeSelectedValues([...new Set(nextValues)]));
+          }}
+          automationId={`${automationId}_${value}`}
+          isFullWidth
+        >
+          {values[value]}
+        </Checkbox>
+      ))}
+    </div>
+  );
+}
+
+MultipleCheckboxSelection.propTypes = {
+  name: PropTypes.string.isRequired,
+  values: PropTypes.objectOf(PropTypes.string).isRequired,
+  selectedValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onValueChange: PropTypes.func.isRequired,
+  automationId: PropTypes.string.isRequired,
 };
 
 class NotificationScheduling extends Component {
@@ -53,10 +119,18 @@ class NotificationScheduling extends Component {
 
   handleIntervalChange = (event) => {
     const intervalType = event.target.value;
+    const oldValue = this.getCurrentValue();
     const changes = {};
     changes.intervalType = intervalType;
     if (intervalType === 'monthly') {
-      changes.monthDay = '1';
+      changes.monthDay = oldValue.monthDay || '1';
+    }
+    if (intervalType === 'weekly') {
+      changes.weekDay = oldValue.weekDay || '1';
+    }
+    if (intervalType === 'nthWeekDay') {
+      changes.weekDay = getFirstSelectedValue(oldValue.weekDay, '1');
+      changes.nthWeekDay = oldValue.nthWeekDay || '1';
     }
     this.handleValueChanges(changes);
   };
@@ -67,8 +141,9 @@ class NotificationScheduling extends Component {
   handleWeekDayChange = (event) =>
     this.handleValueChanges({ weekDay: event.target.value });
 
-  handleMonthDayChange = (event) =>
-    this.handleValueChanges({ monthDay: event.target.value });
+  handleWeekDaysChange = (weekDay) => this.handleValueChanges({ weekDay });
+
+  handleMonthDaysChange = (monthDay) => this.handleValueChanges({ monthDay });
 
   handleNthWeekDayChange = (event) =>
     this.handleValueChanges({ nthWeekDay: event.target.value });
@@ -90,10 +165,23 @@ class NotificationScheduling extends Component {
       );
     }
 
-    if (
-      value.intervalType === 'weekly' ||
-      value.intervalType === 'nthWeekDay'
-    ) {
+    if (value.intervalType === 'weekly') {
+      weekDaySelection = (
+        <MultipleCheckboxSelection
+          name="weekDay"
+          values={weekDayValues}
+          selectedValues={parseSelectedValues(
+            value.weekDay,
+            '1',
+            weekDayValues,
+          )}
+          onValueChange={this.handleWeekDaysChange}
+          automationId="newsletter_week_day"
+        />
+      );
+    }
+
+    if (value.intervalType === 'nthWeekDay') {
       weekDaySelection = (
         <Select
           field={weekDayField}
@@ -105,10 +193,16 @@ class NotificationScheduling extends Component {
 
     if (value.intervalType === 'monthly') {
       monthDaySelection = (
-        <Select
-          field={monthDayField}
-          item={this.getCurrentValue()}
-          onValueChange={this.handleMonthDayChange}
+        <MultipleCheckboxSelection
+          name="monthDay"
+          values={monthDayValues}
+          selectedValues={parseSelectedValues(
+            value.monthDay,
+            '1',
+            monthDayValues,
+          )}
+          onValueChange={this.handleMonthDaysChange}
+          automationId="newsletter_month_day"
         />
       );
     }
