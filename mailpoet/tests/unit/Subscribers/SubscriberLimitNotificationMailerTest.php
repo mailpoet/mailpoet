@@ -4,10 +4,12 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../../../lib/Subscribers/SubscriberLimitNotificationMailer.php';
-require_once __DIR__ . '/../../../lib/Subscribers/SubscriberLimitNotificationNativeMailer.php';
 
 class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
   public function testItSendsRenderedNotificationToAdminEmail(): void {
@@ -30,18 +32,26 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
     $servicesChecker = $this->createMock(ServicesChecker::class);
     $servicesChecker->expects($this->never())->method('generatePartialApiKey');
 
-    $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
-    $nativeMailer->expects($this->once())
+    $defaultMailer = $this->createMock(Mailer::class);
+    $defaultMailer->expects($this->once())
       ->method('send')
-      ->with(
-        'admin@example.com',
-        'Your MailPoet subscriber list is at 95% of its limit',
-        'emails/subscriberLimitThresholdNotification.html',
-        'emails/subscriberLimitThresholdNotification.txt'
-      )
-      ->willReturn(true);
+      ->willReturnCallback(function(array $newsletter, string $recipient, array $extraParams): array {
+        verify($recipient)->equals('admin@example.com');
+        verify($newsletter['subject'])->equals('Your MailPoet subscriber list is at 95% of its limit');
+        verify($newsletter['body']['html'])->equals('emails/subscriberLimitThresholdNotification.html');
+        verify($newsletter['body']['text'])->equals('emails/subscriberLimitThresholdNotification.txt');
+        verify($extraParams['meta'])->equals([
+          'email_type' => 'subscriber_limit_notification',
+          'subscriber_status' => 'unknown',
+          'subscriber_source' => 'administrator',
+        ]);
+        return ['response' => true];
+      });
 
-    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer, $servicesChecker);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($defaultMailer);
+
+    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $mailerFactory, new MetaInfo(), $servicesChecker);
     verify($mailer->send(95, 950, 1000, false))->true();
   }
 
@@ -53,10 +63,10 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
     $wp->method('getOption')->with('admin_email')->willReturn('invalid');
     $wp->method('sanitizeEmail')->with('invalid')->willReturn('');
 
-    $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
-    $nativeMailer->expects($this->never())->method('send');
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->expects($this->never())->method('getDefaultMailer');
 
-    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer, $this->createMock(ServicesChecker::class));
+    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $mailerFactory, new MetaInfo(), $this->createMock(ServicesChecker::class));
     verify($mailer->send(95, 950, 1000, false))->false();
   }
 }

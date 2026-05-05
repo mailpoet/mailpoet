@@ -4,6 +4,9 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberLimitNotificationMailerRenderingTest extends \MailPoetTest {
@@ -16,12 +19,14 @@ class SubscriberLimitNotificationMailerRenderingTest extends \MailPoetTest {
     $servicesChecker = $this->createMock(ServicesChecker::class);
     $servicesChecker->expects($this->never())->method('generatePartialApiKey');
 
-    $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
-    $nativeMailer->expects($this->once())
+    $defaultMailer = $this->createMock(Mailer::class);
+    $defaultMailer->expects($this->once())
       ->method('send')
-      ->willReturnCallback(function(string $recipient, string $subject, string $htmlBody, string $textBody): bool {
+      ->willReturnCallback(function(array $newsletter, string $recipient, array $extraParams): array {
         verify($recipient)->equals('admin@example.com');
-        verify($subject)->equals('Your MailPoet subscriber list is at 95% of its limit');
+        verify($newsletter['subject'])->equals('Your MailPoet subscriber list is at 95% of its limit');
+        $htmlBody = $newsletter['body']['html'];
+        $textBody = $newsletter['body']['text'];
         verify($htmlBody)->stringContainsString('You have reached 95% of the free version’s subscriber limit.');
         verify($htmlBody)->stringContainsString('<a href="https://account.mailpoet.com/?s=1001">view MailPoet plans</a>');
         verify($htmlBody)->stringNotContainsString('95%%');
@@ -30,13 +35,22 @@ class SubscriberLimitNotificationMailerRenderingTest extends \MailPoetTest {
         verify($textBody)->stringContainsString('Upgrade to a MailPoet plan to keep growing your audience: view MailPoet plans.');
         verify($textBody)->stringContainsString('https://account.mailpoet.com/?s=1001');
         verify($textBody)->stringNotContainsString('95%%');
-        return true;
+        verify($extraParams['meta'])->equals([
+          'email_type' => 'subscriber_limit_notification',
+          'subscriber_status' => 'unknown',
+          'subscriber_source' => 'administrator',
+        ]);
+        return ['response' => true];
       });
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($defaultMailer);
 
     $mailer = new SubscriberLimitNotificationMailer(
       $this->diContainer->get(Renderer::class),
       $wp,
-      $nativeMailer,
+      $mailerFactory,
+      new MetaInfo(),
       $servicesChecker
     );
 
@@ -52,12 +66,14 @@ class SubscriberLimitNotificationMailerRenderingTest extends \MailPoetTest {
     $servicesChecker = $this->createMock(ServicesChecker::class);
     $servicesChecker->expects($this->once())->method('generatePartialApiKey')->willReturn('abc123');
 
-    $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
-    $nativeMailer->expects($this->once())
+    $defaultMailer = $this->createMock(Mailer::class);
+    $defaultMailer->expects($this->once())
       ->method('send')
-      ->willReturnCallback(function(string $recipient, string $subject, string $htmlBody, string $textBody): bool {
+      ->willReturnCallback(function(array $newsletter, string $recipient, array $extraParams): array {
         verify($recipient)->equals('admin@example.com');
-        verify($subject)->equals('Your MailPoet subscriber list is at 95% of its limit');
+        verify($newsletter['subject'])->equals('Your MailPoet subscriber list is at 95% of its limit');
+        $htmlBody = $newsletter['body']['html'];
+        $textBody = $newsletter['body']['text'];
         verify($htmlBody)->stringContainsString('You have reached 95% of your MailPoet plan’s subscriber limit.');
         verify($htmlBody)->stringContainsString('<a href="https://account.mailpoet.com/orders/upgrade/abc123">manage your MailPoet plan</a>');
         verify($htmlBody)->stringNotContainsString('95%%');
@@ -66,13 +82,22 @@ class SubscriberLimitNotificationMailerRenderingTest extends \MailPoetTest {
         verify($textBody)->stringContainsString('Upgrade your MailPoet plan to keep growing your audience: manage your MailPoet plan.');
         verify($textBody)->stringContainsString('https://account.mailpoet.com/orders/upgrade/abc123');
         verify($textBody)->stringNotContainsString('95%%');
-        return true;
+        verify($extraParams['meta'])->equals([
+          'email_type' => 'subscriber_limit_notification',
+          'subscriber_status' => 'unknown',
+          'subscriber_source' => 'administrator',
+        ]);
+        return ['response' => true];
       });
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($defaultMailer);
 
     $mailer = new SubscriberLimitNotificationMailer(
       $this->diContainer->get(Renderer::class),
       $wp,
-      $nativeMailer,
+      $mailerFactory,
+      new MetaInfo(),
       $servicesChecker
     );
 

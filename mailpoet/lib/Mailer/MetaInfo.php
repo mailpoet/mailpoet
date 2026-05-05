@@ -34,6 +34,10 @@ class MetaInfo {
     return $this->makeMetaInfo('new_subscriber_notification', 'unknown', 'administrator');
   }
 
+  public function getSubscriberLimitNotificationMetaInfo() {
+    return $this->makeMetaInfo('subscriber_limit_notification', 'unknown', 'administrator');
+  }
+
   public function getNewsletterMetaInfo(NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
     $type = $newsletter->getType();
     switch ($newsletter->getType()) {
