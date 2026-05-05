@@ -16,13 +16,14 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     $settings = $this->createSettingsMock($state, $setValues);
 
     $feature = $this->createMock(SubscribersFeature::class);
-    $feature->method('getFreeSubscriberLimitForNotifications')->willReturn(1000);
+    $feature->method('getSubscriberLimitForNotifications')->willReturn(1000);
     $feature->method('getFreshSubscribersCount')->willReturn(990);
+    $feature->method('hasValidApiKey')->willReturn(false);
 
     $mailer = $this->createMock(SubscriberLimitNotificationMailer::class);
     $mailer->expects($this->exactly(2))
       ->method('send')
-      ->withConsecutive([95, 990, 1000], [99, 990, 1000])
+      ->withConsecutive([95, 990, 1000, false], [99, 990, 1000, false])
       ->willReturn(true);
 
     $evaluator = new SubscriberLimitNotificationEvaluator($settings, $feature, $mailer, $this->createWpMock());
@@ -47,7 +48,7 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     $settings = $this->createSettingsMock($state, $setValues);
 
     $feature = $this->createMock(SubscribersFeature::class);
-    $feature->method('getFreeSubscriberLimitForNotifications')->willReturn(1000);
+    $feature->method('getSubscriberLimitForNotifications')->willReturn(1000);
     $feature->method('getFreshSubscribersCount')->willReturn(960);
 
     $mailer = $this->createMock(SubscriberLimitNotificationMailer::class);
@@ -77,7 +78,7 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     $settings = $this->createSettingsMock($state, $setValues);
 
     $feature = $this->createMock(SubscribersFeature::class);
-    $feature->method('getFreeSubscriberLimitForNotifications')->willReturn(1000);
+    $feature->method('getSubscriberLimitForNotifications')->willReturn(1000);
     $feature->method('getFreshSubscribersCount')->willReturn(960);
 
     $mailer = $this->createMock(SubscriberLimitNotificationMailer::class);
@@ -96,13 +97,14 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     $settings = $this->createSettingsMock($state, $setValues);
 
     $feature = $this->createMock(SubscribersFeature::class);
-    $feature->method('getFreeSubscriberLimitForNotifications')->willReturn(1000);
+    $feature->method('getSubscriberLimitForNotifications')->willReturn(1000);
     $feature->method('getFreshSubscribersCount')->willReturn(950);
+    $feature->method('hasValidApiKey')->willReturn(false);
 
     $mailer = $this->createMock(SubscriberLimitNotificationMailer::class);
     $mailer->expects($this->once())
       ->method('send')
-      ->with(95, 950, 1000)
+      ->with(95, 950, 1000, false)
       ->willReturn(false);
 
     $evaluator = new SubscriberLimitNotificationEvaluator($settings, $feature, $mailer, $this->createWpMock());
@@ -111,7 +113,7 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     verify(isset($state['thresholds']['95']))->false();
   }
 
-  public function testItClearsStateWhenSiteIsNotEligibleForFreeLimit(): void {
+  public function testItClearsStateWhenSiteHasNoKnownLimit(): void {
     $state = [
       'limit' => 1000,
       'thresholds' => [
@@ -125,7 +127,7 @@ class SubscriberLimitNotificationEvaluatorTest extends \MailPoetUnitTest {
     $settings = $this->createSettingsMock($state, $setValues);
 
     $feature = $this->createMock(SubscribersFeature::class);
-    $feature->method('getFreeSubscriberLimitForNotifications')->willReturn(null);
+    $feature->method('getSubscriberLimitForNotifications')->willReturn(null);
     $feature->expects($this->never())->method('getFreshSubscribersCount');
 
     $mailer = $this->createMock(SubscriberLimitNotificationMailer::class);

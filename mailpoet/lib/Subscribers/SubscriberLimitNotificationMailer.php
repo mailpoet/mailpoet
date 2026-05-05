@@ -2,8 +2,8 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberLimitNotificationMailer {
@@ -17,17 +17,22 @@ class SubscriberLimitNotificationMailer {
   /** @var SubscriberLimitNotificationNativeMailer */
   private $nativeMailer;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     Renderer $renderer,
     WPFunctions $wp,
-    SubscriberLimitNotificationNativeMailer $nativeMailer
+    SubscriberLimitNotificationNativeMailer $nativeMailer,
+    ServicesChecker $servicesChecker
   ) {
     $this->renderer = $renderer;
     $this->wp = $wp;
     $this->nativeMailer = $nativeMailer;
+    $this->servicesChecker = $servicesChecker;
   }
 
-  public function send(int $threshold, int $count, int $limit): bool {
+  public function send(int $threshold, int $count, int $limit, bool $hasValidApiKey): bool {
     $recipient = $this->getRecipient();
     if ($recipient === null) {
       return false;
@@ -37,7 +42,8 @@ class SubscriberLimitNotificationMailer {
       'count' => $count,
       'limit' => $limit,
       'threshold' => $threshold,
-      'link_upgrade' => $this->wp->adminUrl('admin.php?page=' . Menu::UPGRADE_PAGE_SLUG),
+      'hasValidApiKey' => $hasValidApiKey,
+      'link_upgrade' => $this->getUpgradeLink($limit, $hasValidApiKey),
     ];
 
     return $this->nativeMailer->send(
@@ -55,5 +61,13 @@ class SubscriberLimitNotificationMailer {
       return null;
     }
     return $recipient;
+  }
+
+  private function getUpgradeLink(int $limit, bool $hasValidApiKey): string {
+    if ($hasValidApiKey) {
+      return 'https://account.mailpoet.com/orders/upgrade/' . $this->servicesChecker->generatePartialApiKey();
+    }
+
+    return 'https://account.mailpoet.com/?s=' . ($limit + 1);
   }
 }
