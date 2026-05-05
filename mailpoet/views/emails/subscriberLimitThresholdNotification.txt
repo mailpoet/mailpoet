@@ -4,7 +4,7 @@
   |replace({'%1$s': count, '%2$s': limit})
 %>
 
-<%= __('You have reached %s%% of your free plan limit.')
+<%= __('You have reached %s% of your free plan limit.')
   |replace({'%s': threshold})
 %>
 
