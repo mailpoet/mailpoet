@@ -1037,30 +1037,37 @@ class AcceptanceTester extends \Codeception\Actor {
   public function changeGroupInListingFilter(string $name): void {
     $i = $this;
     $legacySelector = '[data-automation-id="filters_' . $name . '"]';
+    $activeLegacySelector = $legacySelector . '.is-active';
     // DataViews-backed listings render group tabs as @wordpress/components
     // TabPanel buttons; the "mailpoet-dataviews-group-X" class is a stable
     // hook all migrations are expected to apply.
     $dataViewsSelector = '.mailpoet-dataviews-group-' . $name;
+    $lastException = new Exception("Unable to change listing filter group to $name.");
 
     for ($x = 1; $x <= 3; $x++) {
       try {
-        $i->waitForElementClickable($legacySelector, 1);
+        $i->waitForElementClickable($legacySelector, 3);
         $i->click($legacySelector);
         $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
+        $i->waitForElement($activeLegacySelector);
         return;
       } catch (Exception $legacyException) {
+        $lastException = $legacyException;
         // ignore and try DataViews variant
       }
 
       try {
-        $i->waitForElementClickable($dataViewsSelector, 1);
+        $i->waitForElementClickable($dataViewsSelector, 3);
         $i->click($dataViewsSelector);
         return;
       } catch (Exception $dataViewsException) {
+        $lastException = $dataViewsException;
         $this->wait(0.5);
         continue;
       }
     }
+
+    throw $lastException;
   }
 
   public function checkWooTableCheckboxForItemName(string $itemName): void {
