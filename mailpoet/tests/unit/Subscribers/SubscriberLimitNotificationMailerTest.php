@@ -69,4 +69,31 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
     $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $mailerFactory, new MetaInfo(), $this->createMock(ServicesChecker::class));
     verify($mailer->send(95, 950, 1000, false))->false();
   }
+
+  public function testItFallsBackToPlanPickerWhenPartialApiKeyIsUnavailable(): void {
+    $renderer = $this->createMock(Renderer::class);
+    $renderer->method('render')
+      ->willReturnCallback(function(string $template, array $context): string {
+        verify($context['hasValidApiKey'])->true();
+        verify($context['link_upgrade'])->equals('https://account.mailpoet.com/?s=1001');
+        return $template;
+      });
+
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getOption')->with('admin_email')->willReturn('admin@example.com');
+    $wp->method('sanitizeEmail')->with('admin@example.com')->willReturn('admin@example.com');
+    $wp->method('isEmail')->with('admin@example.com')->willReturn('admin@example.com');
+
+    $servicesChecker = $this->createMock(ServicesChecker::class);
+    $servicesChecker->expects($this->once())->method('generatePartialApiKey')->willReturn('');
+
+    $defaultMailer = $this->createMock(Mailer::class);
+    $defaultMailer->expects($this->once())->method('send')->willReturn(['response' => true]);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($defaultMailer);
+
+    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $mailerFactory, new MetaInfo(), $servicesChecker);
+    verify($mailer->send(95, 950, 1000, true))->true();
+  }
 }

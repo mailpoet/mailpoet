@@ -634,11 +634,6 @@ class Functions {
     return wp_login_url($redirect, $forceReauth);
   }
 
-  public function wpMail($to, string $subject, string $message, $headers = '', array $attachments = []): bool {
-    // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail -- Used for single admin notifications that must bypass MailPoet sending.
-    return wp_mail($to, $subject, $message, $headers, $attachments);
-  }
-
   public function wpParseArgs($args, $defaults = '') {
     return wp_parse_args($args, $defaults);
   }
