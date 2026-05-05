@@ -1,0 +1,15 @@
+<%= __('Howdy,') %>
+
+<%= __('Your site currently has %1$s subscribers out of a %2$s subscriber limit.')
+  |replace({'%1$s': count, '%2$s': limit})
+%>
+
+<%= __('You have reached %s%% of your free plan limit.')
+  |replace({'%s': threshold})
+%>
+
+<%= __('Upgrade your plan to keep growing your audience: manage your MailPoet plan.') %>
+<%= link_upgrade|raw %>
+
+<%= __('Cheers,') %>
+<%= __('The MailPoet Plugin') %>

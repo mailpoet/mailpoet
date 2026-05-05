@@ -182,6 +182,57 @@ class SubscribersTest extends \MailPoetUnitTest {
     verify($subscribersFeature->check())->true();
   }
 
+  public function testItGetsFreshSubscribersCountWithoutTransient() {
+    $subscribersRepository = $this->createMock(SubscribersRepository::class);
+    $subscribersRepository->expects($this->once())
+      ->method('getTotalSubscribers')
+      ->willReturn(123);
+
+    $wpFunctions = $this->createMock(WPFunctions::class);
+    $wpFunctions->expects($this->never())->method('getTransient');
+    $wpFunctions->expects($this->never())->method('setTransient');
+
+    $subscribersFeature = new SubscribersFeature(
+      $this->createMock(SettingsController::class),
+      $subscribersRepository,
+      $wpFunctions
+    );
+
+    verify($subscribersFeature->getFreshSubscribersCount())->equals(123);
+  }
+
+  public function testItGetsFreeSubscriberLimitForNotificationsOnlyWithoutValidKeys() {
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 0,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 500,
+    ]);
+    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->equals(SubscribersFeature::SUBSCRIBERS_NEW_LIMIT);
+
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => Bridge::KEY_VALID,
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 0,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 500,
+    ]);
+    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->null();
+
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 0,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 500,
+    ]);
+    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->null();
+  }
+
   private function constructWith($specs) {
     $settings = Stub::make(SettingsController::class, [
       'get' => function($name) use($specs) {

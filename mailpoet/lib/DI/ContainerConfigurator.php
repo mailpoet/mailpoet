@@ -354,6 +354,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SubscribersStatsReport::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\NewsletterTemplateThumbnails::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Automations\AbandonedCartWorker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SubscriberLimitNotificationWorker::class)->setPublic(true);
     // Custom field
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
@@ -474,6 +475,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper::class)->setPublic(true);
     // Subscribers
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationEvaluator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationNativeMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\BulkConfirmationEmailResender::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);

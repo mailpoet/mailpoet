@@ -120,5 +120,6 @@ class Daemon {
     yield $this->workersFactory->createTracksWorker();
     yield $this->workersFactory->createStatisticsExportWorker();
     yield $this->workersFactory->createBulkConfirmationEmailResendWorker();
+    yield $this->workersFactory->createSubscriberLimitNotificationWorker();
   }
 }

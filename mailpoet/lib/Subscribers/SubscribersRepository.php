@@ -139,6 +139,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }
@@ -160,6 +161,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }
@@ -763,6 +765,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }

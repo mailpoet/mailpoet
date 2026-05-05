@@ -75,6 +75,34 @@ class SubscriberListenerTest extends EventListenersBaseTest {
     $this->entityManager->flush();
   }
 
+  public function testItNotifiesCountChangeWhenCountedSubscriberIsTrashed(): void {
+    $subscriber = (new SubscriberFactory())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'wp' => $this->wp,
+      'subscriberUpdated' => Expected::once(),
+      'subscriberCountChanged' => Expected::once(),
+    ]);
+    $this->subscriberListener = new SubscriberListener($changesNotifier);
+    $this->replaceEntityListener($this->subscriberListener);
+
+    $subscriber->setDeletedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
+  }
+
+  public function testItDoesNotNotifyCountChangeWhenUncountedSubscriberIsTrashed(): void {
+    $subscriber = (new SubscriberFactory())->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'wp' => $this->wp,
+      'subscriberUpdated' => Expected::once(),
+      'subscriberCountChanged' => Expected::never(),
+    ]);
+    $this->subscriberListener = new SubscriberListener($changesNotifier);
+    $this->replaceEntityListener($this->subscriberListener);
+
+    $subscriber->setDeletedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
+  }
+
   public function _after() {
     parent::_after();
     $originalListener = $this->diContainer->get(TimestampListener::class);

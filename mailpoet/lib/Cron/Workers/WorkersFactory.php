@@ -39,6 +39,7 @@ class WorkersFactory {
     Tracks::TASK_TYPE,
     StatisticsExport::TASK_TYPE,
     BulkConfirmationEmailResend::TASK_TYPE,
+    SubscriberLimitNotificationWorker::TASK_TYPE,
   ];
 
   /** @var ContainerWrapper */
@@ -201,5 +202,10 @@ class WorkersFactory {
   /** @return BulkConfirmationEmailResend */
   public function createBulkConfirmationEmailResendWorker() {
     return $this->container->get(BulkConfirmationEmailResend::class);
+  }
+
+  /** @return SubscriberLimitNotificationWorker */
+  public function createSubscriberLimitNotificationWorker() {
+    return $this->container->get(SubscriberLimitNotificationWorker::class);
   }
 }
