@@ -72,9 +72,9 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->waitForText('Saved');
 
     $i->wantTo('Return to automation editor and verify email is configured');
-    $i->click('[aria-label="Close Settings"]', '.editor-sidebar__panel-tabs'); // Close the side panel as it obstructs the view of the save and continue button.
-    $i->see('Save and continue');
-    $i->click('[data-automation-id="email_editor_send_button"]'); // Save and continue button.
+    $i->click('[aria-label="Close Settings"]', '.editor-sidebar__panel-tabs'); // Close the side panel as it obstructs the return button.
+    $i->see('Return back to the Automation');
+    $i->click('[data-automation-id="email_editor_send_button"]');
     $i->waitForText('Inactive');
 
     $i->wantTo('Activate the automation');
