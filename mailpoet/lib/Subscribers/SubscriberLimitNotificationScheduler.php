@@ -32,7 +32,11 @@ class SubscriberLimitNotificationScheduler {
     );
   }
 
+  /**
+   * @param int[] $subscriberIds Subscriber IDs passed by the hook; the worker fetches a fresh count.
+   */
   public function schedule(array $subscriberIds = []): void {
+    unset($subscriberIds);
     $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning(SubscriberLimitNotificationWorker::TASK_TYPE);
   }
 }

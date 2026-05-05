@@ -372,12 +372,7 @@ class ImportExportRepository {
     }
 
     $subscriberTable = $this->getTableName(SubscriberEntity::class);
-    return array_map(static function($id): int {
-      if (is_int($id)) {
-        return $id;
-      }
-      return is_string($id) ? (int)$id : 0;
-    }, $this->entityManager->getConnection()->executeQuery(
+    $subscriberIds = $this->entityManager->getConnection()->executeQuery(
       "SELECT `id`
        FROM {$subscriberTable}
        WHERE `email` IN (:emails)
@@ -388,6 +383,10 @@ class ImportExportRepository {
       [
         'emails' => ArrayParameterType::STRING,
       ]
-    )->fetchFirstColumn());
+    )->fetchFirstColumn();
+
+    return array_values(array_map('intval', array_filter($subscriberIds, static function($id): bool {
+      return is_int($id) || (is_string($id) && ctype_digit($id));
+    })));
   }
 }

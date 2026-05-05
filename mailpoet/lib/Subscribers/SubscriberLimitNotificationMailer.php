@@ -83,7 +83,10 @@ class SubscriberLimitNotificationMailer {
 
   private function getUpgradeLink(int $limit, bool $hasValidApiKey): string {
     if ($hasValidApiKey) {
-      return 'https://account.mailpoet.com/orders/upgrade/' . $this->servicesChecker->generatePartialApiKey();
+      $partialApiKey = $this->servicesChecker->generatePartialApiKey();
+      if ($partialApiKey !== '') {
+        return 'https://account.mailpoet.com/orders/upgrade/' . $partialApiKey;
+      }
     }
 
     return 'https://account.mailpoet.com/?s=' . ($limit + 1);
