@@ -1042,93 +1042,98 @@ class SubscribersRepository extends Repository {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $deletedAt = $this->getCurrentDateTime()->format('Y-m-d H:i:s');
 
-    // Hard-delete broken subscribers in the WP-Users segment when they have no
-    // email, or when they have no WP user ID and no other list to belong to.
-    $this->entityManager->getConnection()->executeStatement(
-      "DELETE s
-       FROM {$subscribersTable} s
-       INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
-       WHERE ss.segment_id = :segmentId
-         AND (
-           s.email = ''
-           OR (
-             s.wp_user_id IS NULL
-             AND s.is_woocommerce_user = 0
-             AND NOT EXISTS (
-               SELECT 1 FROM {$subscriberSegmentsTable} ss_other
-               INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
-               WHERE ss_other.subscriber_id = s.id
-                 AND seg.type != :wpType
-                 AND seg.deleted_at IS NULL
+    $this->entityManager->wrapInTransaction(function () use ($segmentId, $subscribersTable, $subscriberSegmentsTable, $segmentsTable, $deletedAt, $wpdb): void {
+      // Hard-delete broken subscribers in the WP-Users segment when they have no
+      // email, or when they have no WP user ID and no other list to belong to.
+      $this->entityManager->getConnection()->executeStatement(
+        "DELETE s
+         FROM {$subscribersTable} s
+         INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
+         WHERE ss.segment_id = :segmentId
+           AND (
+             s.email = ''
+             OR (
+               s.wp_user_id IS NULL
+               AND s.is_woocommerce_user = 0
+               AND NOT EXISTS (
+                 SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+                 INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+                 WHERE ss_other.subscriber_id = s.id
+                   AND seg.type != :wpType
+                   AND seg.deleted_at IS NULL
+               )
              )
+           )",
+        [
+          'segmentId' => $segmentId,
+          'wpType' => SegmentEntity::TYPE_WP_USERS,
+        ],
+        [
+          'segmentId' => ParameterType::INTEGER,
+          'wpType' => ParameterType::STRING,
+        ]
+      );
+
+      // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
+      // and who are not WC customers — they have nowhere left to belong, but we keep
+      // them as soft-deleted so admins can recover them if needed.
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$subscribersTable} s
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         SET s.deleted_at = :deletedAt, s.status = :unconfirmed
+         WHERE s.deleted_at IS NULL
+           AND s.is_woocommerce_user = 0
+           AND s.wp_user_id IS NOT NULL
+           AND u.id IS NULL
+           AND EXISTS (
+             SELECT 1 FROM {$subscriberSegmentsTable} ss_wp
+             WHERE ss_wp.subscriber_id = s.id AND ss_wp.segment_id = :segmentId
            )
-         )",
-      [
-        'segmentId' => $segmentId,
-        'wpType' => SegmentEntity::TYPE_WP_USERS,
-      ],
-      [
-        'segmentId' => ParameterType::INTEGER,
-        'wpType' => ParameterType::STRING,
-      ]
-    );
+           AND NOT EXISTS (
+             SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+             INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+             WHERE ss_other.subscriber_id = s.id
+               AND seg.type != :wpType
+               AND seg.deleted_at IS NULL
+           )",
+        [
+          'segmentId' => $segmentId,
+          'unconfirmed' => SubscriberEntity::STATUS_UNCONFIRMED,
+          'wpType' => SegmentEntity::TYPE_WP_USERS,
+          'deletedAt' => $deletedAt,
+        ],
+        [
+          'segmentId' => ParameterType::INTEGER,
+          'unconfirmed' => ParameterType::STRING,
+          'wpType' => ParameterType::STRING,
+          'deletedAt' => ParameterType::STRING,
+        ]
+      );
 
-    // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
-    // and who are not WC customers — they have nowhere left to belong, but we keep
-    // them as soft-deleted so admins can recover them if needed.
-    $this->entityManager->getConnection()->executeStatement(
-      "UPDATE {$subscribersTable} s
-       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
-       SET s.deleted_at = NOW(), s.status = :unconfirmed
-       WHERE s.deleted_at IS NULL
-         AND s.is_woocommerce_user = 0
-         AND s.wp_user_id IS NOT NULL
-         AND u.id IS NULL
-         AND EXISTS (
-           SELECT 1 FROM {$subscriberSegmentsTable} ss_wp
-           WHERE ss_wp.subscriber_id = s.id AND ss_wp.segment_id = :segmentId
-         )
-         AND NOT EXISTS (
-           SELECT 1 FROM {$subscriberSegmentsTable} ss_other
-           INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
-           WHERE ss_other.subscriber_id = s.id
-             AND seg.type != :wpType
-             AND seg.deleted_at IS NULL
-         )",
-      [
-        'segmentId' => $segmentId,
-        'unconfirmed' => SubscriberEntity::STATUS_UNCONFIRMED,
-        'wpType' => SegmentEntity::TYPE_WP_USERS,
-      ],
-      [
-        'segmentId' => ParameterType::INTEGER,
-        'unconfirmed' => ParameterType::STRING,
-        'wpType' => ParameterType::STRING,
-      ]
-    );
+      // Remove WP-Users segment memberships for orphans.
+      $this->entityManager->getConnection()->executeStatement(
+        "DELETE ss
+         FROM {$subscriberSegmentsTable} ss
+         INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         WHERE ss.segment_id = :segmentId
+           AND (s.wp_user_id IS NULL OR u.id IS NULL)",
+        ['segmentId' => $segmentId],
+        ['segmentId' => ParameterType::INTEGER]
+      );
 
-    // Remove WP-Users segment memberships for orphans.
-    $this->entityManager->getConnection()->executeStatement(
-      "DELETE ss
-       FROM {$subscriberSegmentsTable} ss
-       INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
-       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
-       WHERE ss.segment_id = :segmentId
-         AND (s.wp_user_id IS NULL OR u.id IS NULL)",
-      ['segmentId' => $segmentId],
-      ['segmentId' => ParameterType::INTEGER]
-    );
-
-    // Detach subscribers from non-existent WP users and mark the source.
-    $this->entityManager->getConnection()->executeStatement(
-      "UPDATE {$subscribersTable} s
-       LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
-       SET s.wp_user_id = NULL, s.source = :source
-       WHERE s.wp_user_id IS NOT NULL AND u.id IS NULL",
-      ['source' => Source::WORDPRESS_USER_DELETED],
-      ['source' => ParameterType::STRING]
-    );
+      // Detach subscribers from non-existent WP users and mark the source.
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$subscribersTable} s
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         SET s.wp_user_id = NULL, s.source = :source
+         WHERE s.wp_user_id IS NOT NULL AND u.id IS NULL",
+        ['source' => Source::WORDPRESS_USER_DELETED],
+        ['source' => ParameterType::STRING]
+      );
+    });
   }
 
   public function removeByWpUserIds(array $wpUserIds) {
