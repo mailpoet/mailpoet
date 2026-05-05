@@ -143,9 +143,11 @@ class WP {
 
       // If the subscriber was only on the WP-Users list and is not a WC customer,
       // they had no list of their own to remain on — trash them instead of leaving a floating row.
+      // Skip when the subscriber was already trashed (e.g. manually by an admin) so we keep
+      // the original deleted_at and status as audit information.
       $hasOtherActiveSegments = $this->hasOtherActiveSegments($subscriber);
-      $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', (array)$wpUser->roles, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      if (!$hasOtherActiveSegments && !$isWooCustomer) {
+      $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', $wpUser->roles, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (!$hasOtherActiveSegments && !$isWooCustomer && $subscriber->getDeletedAt() === null) {
         $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
         $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
       }
@@ -207,8 +209,9 @@ class WP {
     }
 
     // subscriber data
+    $wpUserId = (int)$wpUser->ID; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data = [
-      'wp_user_id' => $wpUser->ID,
+      'wp_user_id' => $wpUserId,
       'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'first_name' => $firstName,
       'last_name' => $lastName,
@@ -216,10 +219,22 @@ class WP {
       'source' => Source::WORDPRESS_USER,
     ];
 
+    $isRelinkingDeletedWpUser = $subscriber !== null
+      && $subscriber->getSource() === Source::WORDPRESS_USER_DELETED
+      && $subscriber->getWpUserId() !== $wpUserId;
     if (!is_null($subscriber)) {
       $data['id'] = $subscriber->getId();
       unset($data['status']); // don't override status for existing users
       unset($data['source']); // don't override source for existing users
+      if ($isRelinkingDeletedWpUser) {
+        // Restore the live WP-user source on any re-link, not only the auto-trashed case.
+        // Only revive deleted_at when the subscriber was actually trashed by the unlink
+        // (subscribers kept on other lists were never trashed and must keep deleted_at IS NULL).
+        $data['source'] = Source::WORDPRESS_USER;
+        if ($subscriber->getDeletedAt() !== null) {
+          $data['deleted_at'] = null;
+        }
+      }
     }
 
     $addingNewUserToDisabledWPSegment = $wpSegment->getDeletedAt() !== null && $currentFilter === 'user_register';
@@ -233,7 +248,7 @@ class WP {
     $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', $wpUser->roles, true);
     // When WP Segment is disabled force trashed state and unconfirmed status for new WPUsers without active segment
     // or who are not WooCommerce customers at the same time since customers are added to the WooCommerce list
-    if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments && !$isWooCustomer) {
+    if ($addingNewUserToDisabledWPSegment && !$isRelinkingDeletedWpUser && !$otherActiveSegments && !$isWooCustomer) {
       $data['deleted_at'] = Carbon::now()->millisecond(0);
       $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
     }
@@ -362,7 +377,7 @@ class WP {
       $subscriber->setSource($data['source']);
     }
 
-    if (isset($data['deleted_at'])) {
+    if (array_key_exists('deleted_at', $data)) {
       $subscriber->setDeletedAt($data['deleted_at']);
     }
 
@@ -466,11 +481,24 @@ class WP {
         SELECT wu.id, wu.user_email, :subscriberStatus, CURRENT_TIMESTAMP(), :source, {$deletedAt}
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
+        LEFT JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email
         WHERE s.wp_user_id IS NULL AND wu.user_email != ''
-        ON DUPLICATE KEY UPDATE wp_user_id = wu.id";
+        ON DUPLICATE KEY UPDATE
+          wp_user_id = wu.id,
+          deleted_at = IF(
+            existingSubscriber.`source` = :deletedSource AND existingSubscriber.deleted_at IS NOT NULL,
+            NULL,
+            existingSubscriber.deleted_at
+          ),
+          `source` = IF(
+            existingSubscriber.`source` = :deletedSource,
+            :source,
+            existingSubscriber.`source`
+          )";
     $stmt = $this->databaseConnection->prepare($insertSql);
     $stmt->bindValue('subscriberStatus', $subscriberStatus);
     $stmt->bindValue('source', Source::WORDPRESS_USER);
+    $stmt->bindValue('deletedSource', Source::WORDPRESS_USER_DELETED);
     $stmt->executeStatement();
 
     return $insertedUserIds;

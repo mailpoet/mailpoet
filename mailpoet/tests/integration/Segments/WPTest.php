@@ -12,6 +12,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Registration;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -507,6 +508,148 @@ class WPTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
     $this->assertInstanceOf(\DateTimeInterface::class, $reloaded->getDeletedAt());
     $this->assertSame(SubscriberEntity::STATUS_UNCONFIRMED, $reloaded->getStatus());
+  }
+
+  public function testItPreservesManualTrashStateWhenWPUserIsDeleted(): void {
+    $id = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    // Simulate a subscriber that was already trashed manually (e.g. by an admin)
+    // with a meaningful status before the WP user is deleted.
+    $manualDeletedAt = new Carbon('2026-01-15 10:00:00');
+    $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
+    $subscriber->setDeletedAt($manualDeletedAt);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $reloaded = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    $reloadedDeletedAt = $reloaded->getDeletedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $reloadedDeletedAt);
+    $this->assertSame($manualDeletedAt->format('Y-m-d H:i:s'), $reloadedDeletedAt->format('Y-m-d H:i:s'));
+    $this->assertSame(SubscriberEntity::STATUS_BOUNCED, $reloaded->getStatus());
+  }
+
+  public function testSynchronizeUserRestoresDeletedSubscriberWhenWpUserIsRecreatedWithSameEmail(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $recreatedId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($recreatedId);
+    $this->entityManager->clear();
+
+    $relinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $relinked);
+    $this->assertSame($recreatedId, $relinked->getWpUserId());
+    $this->assertNull($relinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER, $relinked->getSource());
+    $this->assertSame(SubscriberEntity::STATUS_UNCONFIRMED, $relinked->getStatus());
+  }
+
+  public function testSynchronizeUsersRestoresDeletedSubscriberWhenWpUserIsRecreatedWithSameEmail(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $recreatedId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+    $this->entityManager->clear();
+
+    $relinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $relinked);
+    $this->assertSame($recreatedId, $relinked->getWpUserId());
+    $this->assertNull($relinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER, $relinked->getSource());
+    $this->assertSame(SubscriberEntity::STATUS_UNCONFIRMED, $relinked->getStatus());
+  }
+
+  public function testSynchronizeUserPreservesStatusWhenRelinkingUntrashedDeletedWpUser(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    $segment = $this->segmentFactory->withName('Newsletter list')->create();
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $recreatedId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($recreatedId);
+    $this->entityManager->clear();
+
+    $relinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $relinked);
+    $this->assertSame($recreatedId, $relinked->getWpUserId());
+    $this->assertNull($relinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER, $relinked->getSource());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $relinked->getStatus());
+  }
+
+  public function testSynchronizeUsersPreservesStatusWhenRelinkingUntrashedDeletedWpUser(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    $segment = $this->segmentFactory->withName('Newsletter list')->create();
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+
+    wp_delete_user((int)$id);
+    $this->entityManager->clear();
+
+    $recreatedId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+    $this->entityManager->clear();
+
+    $relinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $relinked);
+    $this->assertSame($recreatedId, $relinked->getWpUserId());
+    $this->assertNull($relinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER, $relinked->getSource());
+    $this->assertSame(SubscriberEntity::STATUS_BOUNCED, $relinked->getStatus());
   }
 
   public function testItRespectsHardDeleteFilterOnWPUserDeletion(): void {
