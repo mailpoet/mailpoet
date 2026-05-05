@@ -143,14 +143,9 @@ class WP {
 
       // If the subscriber was only on the WP-Users list and is not a WC customer,
       // they had no list of their own to remain on — trash them instead of leaving a floating row.
-      $otherActiveSegments = array_filter(
-        $subscriber->getSegments()->toArray(),
-        static function (SegmentEntity $segment): bool {
-          return $segment->getType() !== SegmentEntity::TYPE_WP_USERS && $segment->getDeletedAt() === null;
-        }
-      );
+      $hasOtherActiveSegments = $this->hasOtherActiveSegments($subscriber);
       $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', (array)$wpUser->roles, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      if (!$otherActiveSegments && !$isWooCustomer) {
+      if (!$hasOtherActiveSegments && !$isWooCustomer) {
         $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
         $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
       }
@@ -158,6 +153,27 @@ class WP {
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
     });
+  }
+
+  private function hasOtherActiveSegments(SubscriberEntity $subscriber): bool {
+    $subscriberId = $subscriber->getId();
+    if ($subscriberId === null) {
+      return false;
+    }
+
+    $count = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(segment.id)')
+      ->from(SubscriberSegmentEntity::class, 'subscriberSegment')
+      ->innerJoin('subscriberSegment.segment', 'segment')
+      ->where('subscriberSegment.subscriber = :subscriber')
+      ->andWhere('segment.type != :wpType')
+      ->andWhere('segment.deletedAt IS NULL')
+      ->setParameter('subscriber', $subscriber)
+      ->setParameter('wpType', SegmentEntity::TYPE_WP_USERS)
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    return is_numeric($count) && (int)$count > 0;
   }
 
   /**

@@ -468,6 +468,7 @@ class WPTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriberId = $subscriber->getId();
     $this->assertNotNull($subscriberId);
+    $subscriberStatus = $subscriber->getStatus();
 
     // Add the subscriber to a separate, non-WP list.
     $segment = $this->segmentFactory->withName('Newsletter list')->create();
@@ -481,7 +482,7 @@ class WPTest extends \MailPoetTest {
     $reloaded = $this->subscribersRepository->findOneById($subscriberId);
     $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
     $this->assertNull($reloaded->getDeletedAt());
-    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $reloaded->getStatus());
+    $this->assertSame($subscriberStatus, $reloaded->getStatus());
 
     $segments = $reloaded->getSegments()->toArray();
     $this->assertCount(1, $segments);
@@ -612,6 +613,34 @@ class WPTest extends \MailPoetTest {
     $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     verify($subscribersCount)->equals(0);
+  }
+
+  public function testItKeepsSubscribersWithoutWPIdOnOtherSegments(): void {
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SegmentEntity::class, $wpSegment);
+    $segment = $this->segmentFactory->withName('Newsletter list')->create();
+
+    $subscriber = $this->subscriberFactory
+      ->withFirstName('Mike')
+      ->withLastName('Mike')
+      ->withEmail('user-sync-test' . rand() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$wpSegment, $segment])
+      ->create();
+    $subscriberId = $subscriber->getId();
+    $this->assertNotNull($subscriberId);
+
+    $this->wpSegment->synchronizeUsers();
+    $this->entityManager->clear();
+
+    $reloaded = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    $this->assertNull($reloaded->getDeletedAt());
+    $segments = $reloaded->getSegments()->toArray();
+    $this->assertCount(1, $segments);
+    $remainingSegment = reset($segments);
+    $this->assertInstanceOf(SegmentEntity::class, $remainingSegment);
+    $this->assertSame($segment->getId(), $remainingSegment->getId());
   }
 
   public function testItRemovesSubscribersInWPSegmentWithoutEmail(): void {

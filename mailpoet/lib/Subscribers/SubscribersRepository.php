@@ -1046,15 +1046,35 @@ class SubscribersRepository extends Repository {
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
 
-    // Hard-delete broken subscribers (no email) in the WP-Users segment.
-    // These rows are unusable; unlinking them would leave invalid data behind.
+    // Hard-delete broken subscribers in the WP-Users segment when they have no
+    // email, or when they have no WP user ID and no other list to belong to.
     $this->entityManager->getConnection()->executeStatement(
       "DELETE s
        FROM {$subscribersTable} s
        INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
-       WHERE ss.segment_id = :segmentId AND s.email = ''",
-      ['segmentId' => $segmentId],
-      ['segmentId' => ParameterType::INTEGER]
+       WHERE ss.segment_id = :segmentId
+         AND (
+           s.email = ''
+           OR (
+             s.wp_user_id IS NULL
+             AND s.is_woocommerce_user = 0
+             AND NOT EXISTS (
+               SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+               INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+               WHERE ss_other.subscriber_id = s.id
+                 AND seg.type != :wpType
+                 AND seg.deleted_at IS NULL
+             )
+           )
+         )",
+      [
+        'segmentId' => $segmentId,
+        'wpType' => SegmentEntity::TYPE_WP_USERS,
+      ],
+      [
+        'segmentId' => ParameterType::INTEGER,
+        'wpType' => ParameterType::STRING,
+      ]
     );
 
     // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
@@ -1098,8 +1118,7 @@ class SubscribersRepository extends Repository {
        INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
        LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
        WHERE ss.segment_id = :segmentId
-         AND s.wp_user_id IS NOT NULL
-         AND u.id IS NULL",
+         AND (s.wp_user_id IS NULL OR u.id IS NULL)",
       ['segmentId' => $segmentId],
       ['segmentId' => ParameterType::INTEGER]
     );
