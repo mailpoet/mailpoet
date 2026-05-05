@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -97,6 +98,7 @@ class SomeoneUnsubscribesTrigger implements Trigger {
   }
 
   public function isTriggeredBy(StepRunArgs $args): bool {
-    return true;
+    $subscriberPayload = $args->getSinglePayloadByClass(SubscriberPayload::class);
+    return $subscriberPayload->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED;
   }
 }
