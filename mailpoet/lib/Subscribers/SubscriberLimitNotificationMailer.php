@@ -4,6 +4,8 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberLimitNotificationMailer {
@@ -14,8 +16,11 @@ class SubscriberLimitNotificationMailer {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var SubscriberLimitNotificationNativeMailer */
-  private $nativeMailer;
+  /** @var MailerFactory */
+  private $mailerFactory;
+
+  /** @var MetaInfo */
+  private $mailerMetaInfo;
 
   /** @var ServicesChecker */
   private $servicesChecker;
@@ -23,12 +28,14 @@ class SubscriberLimitNotificationMailer {
   public function __construct(
     Renderer $renderer,
     WPFunctions $wp,
-    SubscriberLimitNotificationNativeMailer $nativeMailer,
+    MailerFactory $mailerFactory,
+    MetaInfo $mailerMetaInfo,
     ServicesChecker $servicesChecker
   ) {
     $this->renderer = $renderer;
     $this->wp = $wp;
-    $this->nativeMailer = $nativeMailer;
+    $this->mailerFactory = $mailerFactory;
+    $this->mailerMetaInfo = $mailerMetaInfo;
     $this->servicesChecker = $servicesChecker;
   }
 
@@ -46,13 +53,24 @@ class SubscriberLimitNotificationMailer {
       'link_upgrade' => $this->getUpgradeLink($limit, $hasValidApiKey),
     ];
 
-    return $this->nativeMailer->send(
-      $recipient,
+    $newsletter = [
       // translators: %d is the subscriber limit threshold percentage.
-      sprintf(__('Your MailPoet subscriber list is at %d%% of its limit', 'mailpoet'), $threshold),
-      $this->renderer->render('emails/subscriberLimitThresholdNotification.html', $context),
-      $this->renderer->render('emails/subscriberLimitThresholdNotification.txt', $context)
-    );
+      'subject' => sprintf(__('Your MailPoet subscriber list is at %d%% of its limit', 'mailpoet'), $threshold),
+      'body' => [
+        'html' => $this->renderer->render('emails/subscriberLimitThresholdNotification.html', $context),
+        'text' => $this->renderer->render('emails/subscriberLimitThresholdNotification.txt', $context),
+      ],
+    ];
+
+    try {
+      $result = $this->mailerFactory->getDefaultMailer()->send($newsletter, $recipient, [
+        'meta' => $this->mailerMetaInfo->getSubscriberLimitNotificationMetaInfo(),
+      ]);
+    } catch (\Exception $e) {
+      return false;
+    }
+
+    return (bool)($result['response'] ?? false);
   }
 
   private function getRecipient(): ?string {

@@ -92,6 +92,14 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItGetsMetaInfoForSubscriberLimitNotifications() {
+    verify($this->meta->getSubscriberLimitNotificationMetaInfo())->equals([
+      'email_type' => 'subscriber_limit_notification',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'administrator',
+    ]);
+  }
+
   public function testItGetsMetaInfoForStandardNewsletter() {
     $subscriber = (new SubscriberFactory())
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
