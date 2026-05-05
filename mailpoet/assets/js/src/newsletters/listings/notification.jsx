@@ -114,6 +114,19 @@ const bulkActions = [
   },
 ];
 
+const formatSelectedValues = (value, labels, defaultValue) => {
+  const normalizedValue = value === undefined || value === null ? '' : value;
+  const selectedLabels = `${normalizedValue}`
+    .split(',')
+    .map((selectedValue) => selectedValue.trim())
+    .filter(Boolean)
+    .map((selectedValue) => labels[selectedValue])
+    .filter(Boolean)
+    .join(', ');
+
+  return selectedLabels || labels[defaultValue];
+};
+
 const newsletterActions = [
   {
     name: 'view',
@@ -256,13 +269,23 @@ class NewsletterListNotificationComponent extends Component {
 
       case 'weekly':
         sendingFrequency = __('Weekly on %1$s at %2$s', 'mailpoet')
-          .replace('%1$s', weekDayValues[newsletter.options.weekDay])
+          .replace(
+            '%1$s',
+            formatSelectedValues(newsletter.options.weekDay, weekDayValues, '1'),
+          )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;
 
       case 'monthly':
         sendingFrequency = __('Monthly on the %1$s at %2$s', 'mailpoet')
-          .replace('%1$s', monthDayValues[newsletter.options.monthDay])
+          .replace(
+            '%1$s',
+            formatSelectedValues(
+              newsletter.options.monthDay,
+              monthDayValues,
+              '1',
+            ),
+          )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;
 

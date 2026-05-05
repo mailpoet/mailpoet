@@ -12,10 +12,15 @@ import { GlobalContext, GlobalContextValue } from 'context';
 
 interface NewsletterNotificationState {
   options: {
-    intervalType: 'daily' | 'weekly' | 'monthly';
+    intervalType:
+      | 'daily'
+      | 'weekly'
+      | 'monthly'
+      | 'nthWeekDay'
+      | 'immediately';
     timeOfDay: number;
-    weekDay: number;
-    monthDay: number;
+    weekDay: string;
+    monthDay: string;
     nthWeekDay: number;
   };
 }
@@ -55,8 +60,8 @@ class NewsletterNotificationComponent extends Component<
       options: {
         intervalType: 'daily',
         timeOfDay: 0,
-        weekDay: 1,
-        monthDay: 0,
+        weekDay: '1',
+        monthDay: '1',
         nthWeekDay: 1,
       },
     };
