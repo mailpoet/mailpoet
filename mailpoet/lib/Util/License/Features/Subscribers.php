@@ -89,12 +89,13 @@ class Subscribers {
     return $this->subscribersRepository->getTotalSubscribers();
   }
 
-  public function getFreeSubscriberLimitForNotifications(): ?int {
-    if ($this->hasValidApiKey()) {
+  public function getSubscriberLimitForNotifications(): ?int {
+    $limit = $this->getSubscribersLimit();
+    if (!is_numeric($limit)) {
       return null;
     }
 
-    $limit = $this->getFreeSubscribersLimit();
+    $limit = (int)$limit;
     return $limit > 0 ? $limit : null;
   }
 

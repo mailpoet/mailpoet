@@ -37,7 +37,7 @@ class SubscriberLimitNotificationEvaluator {
   public function evaluate(): void {
     $storedState = $this->settings->fetch(self::SETTINGS_KEY, []);
     $state = $this->normalizeState($storedState);
-    $limit = $this->subscribersFeature->getFreeSubscriberLimitForNotifications();
+    $limit = $this->subscribersFeature->getSubscriberLimitForNotifications();
 
     if ($limit === null) {
       if ($storedState) {
@@ -72,7 +72,7 @@ class SubscriberLimitNotificationEvaluator {
         continue;
       }
 
-      if (!$this->mailer->send($threshold, $count, $limit)) {
+      if (!$this->mailer->send($threshold, $count, $limit, $this->subscribersFeature->hasValidApiKey())) {
         break;
       }
 

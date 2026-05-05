@@ -2,4 +2,4 @@
 
 # Description
 
-Add email notifications when free sites near their subscriber limit
+Add email notifications when sites near their subscriber limit

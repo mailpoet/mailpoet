@@ -4,12 +4,21 @@
   |replace({'%1$s': count, '%2$s': limit})
 %>
 
-<%= __('You have reached %s% of your free plan limit.')
+<% if hasValidApiKey %>
+<%= __('You have reached %s% of your MailPoet plan’s subscriber limit.')
   |replace({'%s': threshold})
 %>
 
-<%= __('Upgrade your plan to keep growing your audience: manage your MailPoet plan.') %>
+<%= __('Upgrade your MailPoet plan to keep growing your audience: manage your MailPoet plan.') %>
 <%= link_upgrade|raw %>
+<% else %>
+<%= __('You have reached %s% of the free version’s subscriber limit.')
+  |replace({'%s': threshold})
+%>
+
+<%= __('Upgrade to a MailPoet plan to keep growing your audience: view MailPoet plans.') %>
+<%= link_upgrade|raw %>
+<% endif %>
 
 <%= __('Cheers,') %>
 <%= __('The MailPoet Plugin') %>

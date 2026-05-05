@@ -201,7 +201,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     verify($subscribersFeature->getFreshSubscribersCount())->equals(123);
   }
 
-  public function testItGetsFreeSubscriberLimitForNotificationsOnlyWithoutValidKeys() {
+  public function testItGetsSubscriberLimitForNotificationsWhenLimitIsKnown() {
     $subscribersFeature = $this->constructWith([
       'mss_key_state' => 'invalid',
       'premium_key_state' => 'invalid',
@@ -210,7 +210,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->equals(SubscribersFeature::SUBSCRIBERS_NEW_LIMIT);
+    verify($subscribersFeature->getSubscriberLimitForNotifications())->equals(SubscribersFeature::SUBSCRIBERS_NEW_LIMIT);
 
     $subscribersFeature = $this->constructWith([
       'mss_key_state' => Bridge::KEY_VALID,
@@ -220,7 +220,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->null();
+    verify($subscribersFeature->getSubscriberLimitForNotifications())->equals(500);
 
     $subscribersFeature = $this->constructWith([
       'mss_key_state' => 'invalid',
@@ -230,7 +230,19 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    verify($subscribersFeature->getFreeSubscriberLimitForNotifications())->null();
+    verify($subscribersFeature->getSubscriberLimitForNotifications())->equals(500);
+  }
+
+  public function testItReturnsNoSubscriberLimitForNotificationsWhenPlanLimitIsMissing() {
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => Bridge::KEY_VALID,
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 0,
+      'premium_subscribers_limit' => false,
+      'mss_subscribers_limit' => false,
+    ]);
+    verify($subscribersFeature->getSubscriberLimitForNotifications())->null();
   }
 
   private function constructWith($specs) {

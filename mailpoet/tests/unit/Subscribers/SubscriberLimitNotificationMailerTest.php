@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../../../lib/Subscribers/SubscriberLimitNotificationMailer.php';
@@ -16,7 +17,8 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
         verify($context['count'])->equals(950);
         verify($context['limit'])->equals(1000);
         verify($context['threshold'])->equals(95);
-        verify($context['link_upgrade'])->equals('https://example.com/wp-admin/admin.php?page=mailpoet-upgrade');
+        verify($context['hasValidApiKey'])->false();
+        verify($context['link_upgrade'])->equals('https://account.mailpoet.com/?s=1001');
         return $template;
       });
 
@@ -24,7 +26,9 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
     $wp->method('getOption')->with('admin_email')->willReturn(' admin@example.com ');
     $wp->method('sanitizeEmail')->with(' admin@example.com ')->willReturn('admin@example.com');
     $wp->method('isEmail')->with('admin@example.com')->willReturn('admin@example.com');
-    $wp->method('adminUrl')->with('admin.php?page=mailpoet-upgrade')->willReturn('https://example.com/wp-admin/admin.php?page=mailpoet-upgrade');
+
+    $servicesChecker = $this->createMock(ServicesChecker::class);
+    $servicesChecker->expects($this->never())->method('generatePartialApiKey');
 
     $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
     $nativeMailer->expects($this->once())
@@ -37,8 +41,8 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
       )
       ->willReturn(true);
 
-    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer);
-    verify($mailer->send(95, 950, 1000))->true();
+    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer, $servicesChecker);
+    verify($mailer->send(95, 950, 1000, false))->true();
   }
 
   public function testItDoesNotSendWithInvalidAdminEmail(): void {
@@ -52,7 +56,7 @@ class SubscriberLimitNotificationMailerTest extends \MailPoetUnitTest {
     $nativeMailer = $this->createMock(SubscriberLimitNotificationNativeMailer::class);
     $nativeMailer->expects($this->never())->method('send');
 
-    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer);
-    verify($mailer->send(95, 950, 1000))->false();
+    $mailer = new SubscriberLimitNotificationMailer($renderer, $wp, $nativeMailer, $this->createMock(ServicesChecker::class));
+    verify($mailer->send(95, 950, 1000, false))->false();
   }
 }
