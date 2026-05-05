@@ -75,8 +75,11 @@ class MailpoetMenuCest {
     $i->wantTo('Check if the menu is still selected if I go to the choose template page');
     $i->waitForText('Send email');
     $i->click('Send email');
-    $i->waitForText('Design email');
-    $i->click('Design email');
+    $i->waitForText('Design with the classic editor');
+    $i->fillField('"From" name', 'From Test');
+    $i->fillField('"From" email address', 'test@mailpoet.com');
+    $i->fillField('Subject', 'Automation-Test-Subject');
+    $i->click('Design with the classic editor');
     $i->waitForElementClickable('[data-automation-id="select_template_0"]');
     $this->assertSelectedMenuItem($i, 'Automations');
 
@@ -105,6 +108,8 @@ class MailpoetMenuCest {
     $i->waitForElement('#mailpoet_form_edit');
     $i->seeInCurrentUrl('?page=mailpoet-form-editor');
     $this->assertSelectedMenuItem($i, 'Forms');
+    $i->selectOptionInSelect2('Newsletter mailing list');
+    $i->saveFormInEditor();
   }
 
   private function checkSubscribers(\AcceptanceTester $i) {
