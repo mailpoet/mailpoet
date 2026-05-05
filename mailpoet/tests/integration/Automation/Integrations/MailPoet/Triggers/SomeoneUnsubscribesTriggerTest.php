@@ -3,8 +3,12 @@
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers;
 
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
@@ -67,6 +71,58 @@ class SomeoneUnsubscribesTriggerTest extends \MailPoetTest {
     $testee->handleStatusChange(99999999);
   }
 
+  /**
+   * @dataProvider dataForTestTriggeredByAutomationRun
+   */
+  public function testTriggeredByAutomationRun(string $subscriberStatus, bool $expectation): void {
+    $subscriber = (new SubscriberFactory())
+      ->withStatus($subscriberStatus)
+      ->create();
+
+    $testee = $this->diContainer->get(SomeoneUnsubscribesTrigger::class);
+    $stepRunArgs = new StepRunArgs(
+      $this->make(Automation::class),
+      $this->automationRun(),
+      $this->triggerStep(),
+      [
+        new SubjectEntry(
+          $this->diContainer->get(SubscriberSubject::class),
+          new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()])
+        ),
+      ],
+      1
+    );
+
+    $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
+  }
+
+  public function testTriggeredByAutomationRunRequiresSubscriberPayload(): void {
+    $testee = $this->diContainer->get(SomeoneUnsubscribesTrigger::class);
+    $stepRunArgs = new StepRunArgs(
+      $this->make(Automation::class),
+      $this->automationRun(),
+      $this->triggerStep(),
+      [],
+      1
+    );
+
+    $this->expectException(NotFoundException::class);
+    $testee->isTriggeredBy($stepRunArgs);
+  }
+
+  public function dataForTestTriggeredByAutomationRun(): array {
+    return [
+      'unsubscribed_subscriber' => [
+        SubscriberEntity::STATUS_UNSUBSCRIBED,
+        true,
+      ],
+      'subscribed_subscriber' => [
+        SubscriberEntity::STATUS_SUBSCRIBED,
+        false,
+      ],
+    ];
+  }
+
   public function testItPassesAutomationValidationOnDraft(): void {
     $testee = $this->diContainer->get(SomeoneUnsubscribesTrigger::class);
     $automation = $this->buildAutomation([
@@ -113,6 +169,10 @@ class SomeoneUnsubscribesTriggerTest extends \MailPoetTest {
 
   private function triggerStep(): Step {
     return new Step('trigger-id', Step::TYPE_TRIGGER, SomeoneUnsubscribesTrigger::KEY, [], []);
+  }
+
+  private function automationRun(): AutomationRun {
+    return new AutomationRun(1, 1, SomeoneUnsubscribesTrigger::KEY, [], 1);
   }
 
   private function sendEmailStep(): Step {
