@@ -252,6 +252,27 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-01-03 23:45:00');
   }
 
+  public function testItProcessesPostNotificationScheduledForMultipleWeeklyDeliveryDays() {
+    $newsletter = $this->createNewsletter();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => Carbon::TUESDAY . ',' . Carbon::THURSDAY,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    verify($scheduleOption->getValue())->equals('0 14 * * 2,4');
+    $scheduler = $this->getSchedulerWithMockedTime('2017-01-01 13:00+00:00'); // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
+      ->equals('2017-01-03 14:00:00');
+  }
+
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
     $newsletter = $this->createNewsletter();
 
@@ -289,6 +310,45 @@ class PostNotificationTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-19 00:45:00');
+  }
+
+  public function testItProcessesPostNotificationScheduledForMultipleMonthlyDeliveryDays() {
+    $newsletter = $this->createNewsletter();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_MONTHLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => '15,1',
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    verify($scheduleOption->getValue())->equals('0 14 1,15 * *');
+    $scheduler = $this->getSchedulerWithMockedTime('2017-01-02 13:00+00:00'); // Monday, 2 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
+      ->equals('2017-01-15 14:00:00');
+  }
+
+  public function testItFallsBackToDefaultsForInvalidMultipleDeliveryDays() {
+    $newsletter = $this->createNewsletter();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => '8,invalid',
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    verify($scheduleOption->getValue())->equals('0 14 * * 1');
   }
 
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
