@@ -69,6 +69,7 @@ class AutomationEditorLoadingHooks {
       }
     );
     $automationChanged = false;
+    $newsletterIdsToDelete = [];
     foreach ($sendEmailSteps as $step) {
       $args = $step->getArgs();
       $emailId = $args['email_id'] ?? 0;
@@ -95,7 +96,7 @@ class AutomationEditorLoadingHooks {
       }
 
       if ($disconnectEmail) {
-        $this->newsletterDeleteController->bulkDelete([(int)$emailId]);
+        $newsletterIdsToDelete[] = (int)$emailId;
         unset($args['email_id']);
         unset($args['email_wp_post_id']);
       }
@@ -125,6 +126,12 @@ class AutomationEditorLoadingHooks {
 
     if ($automationChanged) {
       $this->automationStorage->updateAutomation($automation);
+    }
+
+    if ($newsletterIdsToDelete !== []) {
+      $this->newsletterDeleteController->bulkDelete(
+        array_values(array_unique($newsletterIdsToDelete))
+      );
     }
   }
 }
