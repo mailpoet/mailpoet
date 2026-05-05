@@ -27,8 +27,14 @@ export function registerHooks(): void {
       if (!hasUnsubscribeTrigger) {
         return items;
       }
+      const disabledReason = __(
+        'The "Send email" action cannot be used together with the "Email subscriber unsubscribed" trigger.',
+        'mailpoet',
+      );
       return items.map((item) =>
-        item.key === sendEmailKey ? { ...item, isDisabled: true } : item,
+        item.key === sendEmailKey
+          ? { ...item, isDisabled: true, disabledReason }
+          : item,
       );
     },
   );
