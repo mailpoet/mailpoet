@@ -104,7 +104,11 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->see('This is automation email content created with block editor');
   }
 
-  public function testAutomationEmailWithClassicEditorChoice(\AcceptanceTester $i) {
+  public function testAutomationEmailWithClassicEditorChoice(\AcceptanceTester $i, $scenario) {
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
+    }
+
     $i->wantTo('Verify automation emails use legacy editor when classic editor is selected');
     $i->login();
 
@@ -139,11 +143,11 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
     $i->click('button[data-automation-id="select_template_0"]');
-    $i->waitForText('Design');
+    $i->waitForElement('#mailpoet_editor');
 
     $i->wantTo('Verify we are in the legacy newsletter editor interface');
     $i->dontSeeElement('[name="editor-canvas"]'); // Block editor iframe should not be present
-    $i->see('Design'); // Legacy editor header
+    $i->seeElement('#mailpoet_editor');
   }
 
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
