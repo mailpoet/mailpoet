@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import { ComponentProps } from 'react';
+import { Tooltip } from '@wordpress/components';
 import { useRef, memo } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { Item } from './item';
@@ -37,51 +38,58 @@ export const InserterListItem = memo(
   }: Props): JSX.Element => {
     const isDragging = useRef(false);
 
-    return (
-      <div className="block-editor-block-types-list__list-item">
-        <InserterListboxItem
-          isFirst={isFirst}
-          className={classnames(
-            'block-editor-block-types-list__item',
-            className,
-          )}
-          disabled={item.isDisabled}
-          onClick={(event: MouseEvent) => {
+    const listboxItem = (
+      <InserterListboxItem
+        isFirst={isFirst}
+        className={classnames('block-editor-block-types-list__item', className)}
+        disabled={item.isDisabled}
+        onClick={(event: MouseEvent) => {
+          event.preventDefault();
+          onSelect(item, isAppleOS() ? event.metaKey : event.ctrlKey);
+          onHover(null);
+        }}
+        onKeyDown={(event: KeyboardEvent) => {
+          const { keyCode } = event;
+          if (keyCode === ENTER) {
             event.preventDefault();
             onSelect(item, isAppleOS() ? event.metaKey : event.ctrlKey);
             onHover(null);
-          }}
-          onKeyDown={(event: KeyboardEvent) => {
-            const { keyCode } = event;
-            if (keyCode === ENTER) {
-              event.preventDefault();
-              onSelect(item, isAppleOS() ? event.metaKey : event.ctrlKey);
-              onHover(null);
-            }
-          }}
-          onFocus={() => {
-            if (isDragging.current) {
-              return;
-            }
-            onHover(item);
-          }}
-          onMouseEnter={() => {
-            if (isDragging.current) {
-              return;
-            }
-            onHover(item);
-          }}
-          onMouseLeave={() => onHover(null)}
-          onBlur={() => onHover(null)}
-          {...props}
-        >
-          <span className="block-editor-block-types-list__item-icon">
-            <StepIcon icon={item.icon} />
-          </span>
-          <span className="block-editor-block-types-list__item-title">
-            {item.title(null, 'inserter')}
-          </span>
-        </InserterListboxItem>
+          }
+        }}
+        onFocus={() => {
+          if (isDragging.current) {
+            return;
+          }
+          onHover(item);
+        }}
+        onMouseEnter={() => {
+          if (isDragging.current) {
+            return;
+          }
+          onHover(item);
+        }}
+        onMouseLeave={() => onHover(null)}
+        onBlur={() => onHover(null)}
+        {...props}
+      >
+        <span className="block-editor-block-types-list__item-icon">
+          <StepIcon icon={item.icon} />
+        </span>
+        <span className="block-editor-block-types-list__item-title">
+          {item.title(null, 'inserter')}
+        </span>
+      </InserterListboxItem>
+    );
+
+    return (
+      <div className="block-editor-block-types-list__list-item">
+        {item.isDisabled && item.disabledReason ? (
+          <Tooltip text={item.disabledReason}>
+            <div>{listboxItem}</div>
+          </Tooltip>
+        ) : (
+          listboxItem
+        )}
       </div>
     );
   },
