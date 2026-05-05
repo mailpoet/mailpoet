@@ -21,6 +21,15 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
   }
 
+  public function _after() {
+    try {
+      (new Migration_20230421_135915($this->diContainer))->run();
+      (new Migration_20260504_120000_Db($this->diContainer))->run();
+    } finally {
+      parent::_after();
+    }
+  }
+
   public function testItMigratesEmailMachineOpensFiltersCorrectly() {
     $this->settings->set('db_version', '3.76.0');
     $data = ['newsletter_id' => '1'];
