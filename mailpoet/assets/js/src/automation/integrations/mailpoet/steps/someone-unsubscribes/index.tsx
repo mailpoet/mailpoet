@@ -21,9 +21,11 @@ export function registerHooks(): void {
     'mailpoet.automation.inserter.items',
     'mailpoet',
     (items: Item[], _groupType: Group['type'], automation: Automation) => {
-      const hasUnsubscribeTrigger = Object.values(automation.steps).some(
-        (step) => step.key === stepKey,
-      );
+      const steps = automation.steps;
+      const hasUnsubscribeTrigger =
+        !!steps &&
+        typeof steps === 'object' &&
+        Object.values(steps).some((step) => step.key === stepKey);
       if (!hasUnsubscribeTrigger) {
         return items;
       }
