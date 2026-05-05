@@ -12,4 +12,5 @@ export type Item = {
   keywords: string[];
   icon: ComponentType | JSX.Element;
   isDisabled?: boolean;
+  disabledReason?: string;
 };
