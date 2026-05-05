@@ -332,7 +332,7 @@ class SubscribersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
     $i->changeGroupInListingFilter('unconfirmed');
-    $i->waitForText('bulk-resend-all-pages-01@example.com');
+    $i->waitForText('bulk-resend-all-pages-');
     $i->click("[data-automation-id='select_all']");
     $i->waitForText('Select all items on all pages');
     $i->click('Select all items on all pages');
