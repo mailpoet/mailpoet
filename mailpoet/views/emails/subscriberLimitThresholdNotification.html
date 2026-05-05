@@ -1,0 +1,16 @@
+<p><%= __('Howdy,') %></p>
+
+<p><%= __('Your site currently has %1$s subscribers out of a %2$s subscriber limit.')
+  |replace({'%1$s': count, '%2$s': limit})
+  %></p>
+
+<p><%= __('You have reached %s%% of your free plan limit.')
+  |replace({'%s': threshold})
+  %></p>
+
+<p><%= __('Upgrade your plan to keep growing your audience: [link]manage your MailPoet plan[/link].')
+  |replaceLinkTags(link_upgrade)
+  %></p>
+
+<p><%= __('Cheers,') %></p>
+<p><%= __('The MailPoet Plugin') %></p>

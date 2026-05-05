@@ -93,6 +93,24 @@ class SubscribersTest extends \MailPoetTest {
     verify($count)->same(999999);
   }
 
+  public function testItGetsFreshSubscribersCountBypassingCachedTransient() {
+    $subscribers = $this->getServiceWithOverrides(Subscribers::class, [
+      'subscribersRepository' => Stub::make(SubscribersRepository::class, [
+        'getTotalSubscribers' => 123456,
+      ]),
+    ]);
+    $subscribers->getSubscribersCount();
+
+    $subscribers = $this->getServiceWithOverrides(Subscribers::class, [
+      'subscribersRepository' => Stub::make(SubscribersRepository::class, [
+        'getTotalSubscribers' => 999999,
+      ]),
+    ]);
+
+    verify($subscribers->getSubscribersCount())->same(123456);
+    verify($subscribers->getFreshSubscribersCount())->same(999999);
+  }
+
   public function testItInvalidatesSubscribersCountCache() {
     $subscribers = $this->getServiceWithOverrides(Subscribers::class, [
       'subscribersRepository' => Stub::make(SubscribersRepository::class, [

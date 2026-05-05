@@ -165,6 +165,10 @@ class ImportExportRepository {
       $keyColumnsConditions[] = "{$keyColumn} IN (:{$keyColumn})";
     }
 
+    $restoredSubscriberIds = $className === SubscriberEntity::class
+      ? $this->getDeletedSubscriberIdsByEmail($columns, $data)
+      : [];
+
     $ignoredColumns = self::IGNORED_COLUMNS_FOR_BULK_UPDATE[$className] ?? ['created_at'];
     $updateColumns = array_map(function($columnName) use ($keyColumns, $columns, $data, &$parameters): string {
       $values = [];
@@ -196,6 +200,9 @@ class ImportExportRepository {
       " . implode(' AND ', $keyColumnsConditions) . "
     ", $parameters, $parameterTypes);
     $this->notifyUpdates($className, $columns, $data);
+    if ($restoredSubscriberIds) {
+      $this->subscriberChangesNotifier->subscribersCountChanged($restoredSubscriberIds);
+    }
     if ($className === SubscriberEntity::class) {
       $this->subscribersRepository->refreshAll();
     }
@@ -332,5 +339,39 @@ class ImportExportRepository {
       FROM {$tableName}
       WHERE email IN (:emails)
     ", ['emails' => $emails], ['emails' => ArrayParameterType::STRING])->fetchFirstColumn();
+  }
+
+  private function getDeletedSubscriberIdsByEmail(array $columns, array $data): array {
+    $emailColumnIndex = array_search('email', $columns, true);
+    if ($emailColumnIndex === false) {
+      return [];
+    }
+
+    $emails = array_map(function(array $row) use ($emailColumnIndex): string {
+      return (string)$row[$emailColumnIndex];
+    }, $data);
+
+    if (!$emails) {
+      return [];
+    }
+
+    $subscriberTable = $this->getTableName(SubscriberEntity::class);
+    return array_map(static function($id): int {
+      if (is_int($id)) {
+        return $id;
+      }
+      return is_string($id) ? (int)$id : 0;
+    }, $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`
+       FROM {$subscriberTable}
+       WHERE `email` IN (:emails)
+       AND `deleted_at` IS NOT NULL",
+      [
+        'emails' => $emails,
+      ],
+      [
+        'emails' => ArrayParameterType::STRING,
+      ]
+    )->fetchFirstColumn());
   }
 }
