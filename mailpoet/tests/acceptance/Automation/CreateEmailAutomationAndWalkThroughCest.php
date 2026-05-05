@@ -53,7 +53,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Newsletters');
     $i->click('button[data-automation-id="select_template_0"]');
     $i->waitForText('Design');
-    $i->click('Save and continue');
+    $i->click('Return back to the Automation');
 
     $i->waitForText('Inactive');
 

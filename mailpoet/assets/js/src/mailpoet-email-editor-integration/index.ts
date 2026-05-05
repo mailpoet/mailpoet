@@ -42,10 +42,8 @@ addFilter(
   'woocommerce_email_editor_send_button_label',
   'mailpoet/email-editor-integration',
   () => {
-    // For automation newsletters, use the same label as the legacy editor
-    // See /assets/js/src/newsletter-editor/initializer.jsx#L49
     if (isAutomationNewsletter) {
-      return __('Save and continue', 'mailpoet');
+      return __('Return back to the Automation', 'mailpoet');
     }
 
     // For regular campaign emails, check if scheduled

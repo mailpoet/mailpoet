@@ -144,7 +144,7 @@ export async function designEmailInWorkflow(page) {
 
   // Click to save and get back to the workflow
   await page
-    .locator('input[value="Save and continue"')
+    .locator('input[value="Return back to the Automation"]')
     .waitFor({ state: 'visible' });
   try {
     await page.locator('#mailpoet_modal_close').click({ timeout: 3000 });
@@ -154,7 +154,7 @@ export async function designEmailInWorkflow(page) {
 
   await Promise.all([
     page.waitForNavigation(),
-    page.locator('input[value="Save and continue"').click(),
+    page.locator('input[value="Return back to the Automation"]').click(),
   ]);
   await page.waitForLoadState('networkidle');
 }

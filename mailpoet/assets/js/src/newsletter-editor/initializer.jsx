@@ -46,7 +46,7 @@ const renderHeading = (newsletterType, newsletterOptions) => {
             type="button"
             className="button button-primary"
             onClick={onClickSave}
-            value="Save and continue"
+            value={__('Return back to the Automation', 'mailpoet')}
           />
         </>
       );
