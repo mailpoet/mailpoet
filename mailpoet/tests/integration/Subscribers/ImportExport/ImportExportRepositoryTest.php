@@ -2,6 +2,8 @@
 
 namespace MailPoet\Subscribers\ImportExport;
 
+use Codeception\Stub\Expected;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
@@ -110,6 +112,54 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     verify($user2->getFirstName())->equals('TwoTwo');
     verify($user2->getLastName())->equals('UserTwo');
     verify($user2->getUpdatedAt())->equals($updatedAt);
+  }
+
+  public function testItNotifiesCountChangeWhenUpdatingSubscriberStatus(): void {
+    $subscriber = $this->createSubscriber('status-update@export-test.com', 'Status', 'Update');
+    $repository = $this->getRepositoryWithChangesNotifier([
+      'subscribersUpdated' => Expected::once(),
+      'subscribersCountChanged' => Expected::once(function(array $subscriberIds) use ($subscriber): void {
+        verify($subscriberIds)->equals([$subscriber->getId()]);
+      }),
+    ]);
+
+    $repository->updateMultiple(
+      SubscriberEntity::class,
+      ['email', 'status'],
+      [['status-update@export-test.com', SubscriberEntity::STATUS_UNSUBSCRIBED]]
+    );
+  }
+
+  public function testItDoesNotNotifyCountChangeWhenUpdatingSubscriberWithoutStatusOrRestore(): void {
+    $this->createSubscriber('no-count-update@export-test.com', 'NoCount', 'Update');
+    $repository = $this->getRepositoryWithChangesNotifier([
+      'subscribersUpdated' => Expected::once(),
+      'subscribersCountChanged' => Expected::never(),
+    ]);
+
+    $repository->updateMultiple(
+      SubscriberEntity::class,
+      ['email', 'first_name'],
+      [['no-count-update@export-test.com', 'StillNoCount']]
+    );
+  }
+
+  public function testItDeduplicatesRestoredAndStatusUpdatedSubscriberCountChanges(): void {
+    $subscriber = $this->createSubscriber('restored-status-update@export-test.com', 'Restored', 'Status');
+    $subscriber->setDeletedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
+    $repository = $this->getRepositoryWithChangesNotifier([
+      'subscribersUpdated' => Expected::once(),
+      'subscribersCountChanged' => Expected::once(function(array $subscriberIds) use ($subscriber): void {
+        verify($subscriberIds)->equals([$subscriber->getId()]);
+      }),
+    ]);
+
+    $repository->updateMultiple(
+      SubscriberEntity::class,
+      ['email', 'status'],
+      [['restored-status-update@export-test.com', SubscriberEntity::STATUS_SUBSCRIBED]]
+    );
   }
 
   public function testItInsertMultipleSubscriberCustomFields(): void {
@@ -373,6 +423,13 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
+  }
+
+  private function getRepositoryWithChangesNotifier(array $changesNotifierMethods): ImportExportRepository {
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, $changesNotifierMethods);
+    return $this->getServiceWithOverrides(ImportExportRepository::class, [
+      'subscriberChangesNotifier' => $changesNotifier,
+    ]);
   }
 
   private function createSubscriberSegment(

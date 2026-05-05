@@ -126,6 +126,7 @@ class DaemonTest extends \MailPoetTest {
       'createTracksWorker' => $this->createSimpleWorkerMock(),
       'createStatisticsExportWorker' => $this->createSimpleWorkerMock(),
       'createBulkConfirmationEmailResendWorker' => $this->createSimpleWorkerMock(),
+      'createSubscriberLimitNotificationWorker' => $this->createSimpleWorkerMock(),
       ]);
   }
 

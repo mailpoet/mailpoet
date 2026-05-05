@@ -199,9 +199,10 @@ class ImportExportRepository {
       WHERE
       " . implode(' AND ', $keyColumnsConditions) . "
     ", $parameters, $parameterTypes);
-    $this->notifyUpdates($className, $columns, $data);
-    if ($restoredSubscriberIds) {
-      $this->subscriberChangesNotifier->subscribersCountChanged($restoredSubscriberIds);
+    $updatedSubscriberIds = $this->notifyUpdates($className, $columns, $data);
+    $countChangedSubscriberIds = $this->getCountChangedSubscriberIdsForBulkUpdate($className, $columns, $updatedSubscriberIds, $restoredSubscriberIds);
+    if ($countChangedSubscriberIds) {
+      $this->subscriberChangesNotifier->subscribersCountChanged($countChangedSubscriberIds);
     }
     if ($className === SubscriberEntity::class) {
       $this->subscribersRepository->refreshAll();
@@ -313,11 +314,26 @@ class ImportExportRepository {
     }
   }
 
-  private function notifyUpdates(string $className, array $columns, array $data): void {
+  private function notifyUpdates(string $className, array $columns, array $data): array {
     if ($className === SubscriberEntity::class) {
       $ids = $this->getIdsByEmail($className, $columns, $data);
       $this->subscriberChangesNotifier->subscribersUpdated($ids);
+      return $ids;
     }
+    return [];
+  }
+
+  private function getCountChangedSubscriberIdsForBulkUpdate(string $className, array $columns, array $updatedSubscriberIds, array $restoredSubscriberIds): array {
+    if ($className !== SubscriberEntity::class) {
+      return [];
+    }
+
+    $subscriberIds = $restoredSubscriberIds;
+    if (in_array('status', $columns, true)) {
+      $subscriberIds = array_merge($subscriberIds, $updatedSubscriberIds);
+    }
+
+    return array_values(array_unique(array_map('intval', $subscriberIds)));
   }
 
   /**
