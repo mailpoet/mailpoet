@@ -58,9 +58,6 @@ export type Settings = {
   '3rd_party_libs': {
     enabled: '' | '1';
   };
-  use_block_email_editor_for_automation_emails: {
-    enabled: '' | '1';
-  };
   send_transactional_emails: '' | '1';
   deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365' | '540';
   delete_unconfirmed_subscribers_after_days: '' | '30';

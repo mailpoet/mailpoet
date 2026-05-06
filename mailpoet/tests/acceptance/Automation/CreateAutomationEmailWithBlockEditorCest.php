@@ -112,14 +112,6 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Verify automation emails use legacy editor when classic editor is selected');
     $i->login();
 
-    $i->wantTo('Enable the global block email editor setting to verify the per-email choice wins');
-    $i->amOnMailpoetPage('Settings');
-    $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Use block email editor for automation emails');
-    $i->click('[data-automation-id="block-editor-for-automation-enabled"]');
-    $i->click('[data-automation-id="settings-submit-button"]');
-    $i->waitForText('Settings saved');
-
     $i->wantTo('Create a new automation and verify it uses legacy editor');
     $i->amOnMailpoetPage('Automation');
     $i->click('Start with a template');

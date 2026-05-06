@@ -120,8 +120,6 @@ export const MailPoet = {
   adminPluginsUrl: window.mailpoet_admin_plugins_url,
   isDotcom: window.mailpoet_is_dotcom,
   cronTriggerMethod: window.mailpoet_cron_trigger_method,
-  useBlockEmailEditorForAutomationNewsletter:
-    window?.mailpoet_use_block_email_editor_for_automation_emails ?? false,
   getBlockEmailEditorUrl,
   getNewsletterEditorUrl,
   getActiveEmailEditorUrl,
