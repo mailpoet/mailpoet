@@ -55,7 +55,16 @@ class TurnstileHooks {
   }
 
   public function enqueueScripts() {
-    $this->wp->wpEnqueueScript('mailpoet_turnstile', self::TURNSTILE_LIB_URL);
+    $this->wp->wpEnqueueScript(
+      'mailpoet_turnstile',
+      self::TURNSTILE_LIB_URL,
+      [],
+      false,
+      [
+        'in_footer' => true,
+        'strategy' => 'defer',
+      ]
+    );
 
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
