@@ -24,6 +24,14 @@ export function Captcha() {
     'captcha',
     'recaptcha_invisible_secret_token',
   );
+  const [turnstileToken, setTurnstileToken] = useSetting(
+    'captcha',
+    'turnstile_site_token',
+  );
+  const [turnstileSecret, setTurnstileSecret] = useSetting(
+    'captcha',
+    'turnstile_secret_token',
+  );
   const hasBuiltInCaptcha = useSelector('isBuiltInCaptchaSupported');
   const setErrorFlag = useAction('setErrorFlag');
   const missingRecaptchaCheckboxToken =
@@ -34,18 +42,26 @@ export function Captcha() {
     type === 'recaptcha-invisible' && recaptchaInvisibleToken.trim() === '';
   const missingRecaptchaInvisibleSecret =
     type === 'recaptcha-invisible' && recaptchaInvisibleSecret.trim() === '';
+  const missingTurnstileToken =
+    type === 'turnstile' && turnstileToken.trim() === '';
+  const missingTurnstileSecret =
+    type === 'turnstile' && turnstileSecret.trim() === '';
   useEffect(() => {
     void setErrorFlag(
       missingRecaptchaCheckboxToken ||
         missingRecaptchaCheckboxSecret ||
         missingRecaptchaInvisibleSecret ||
-        missingRecaptchaInvisibleToken,
+        missingRecaptchaInvisibleToken ||
+        missingTurnstileToken ||
+        missingTurnstileSecret,
     );
   }, [
     missingRecaptchaCheckboxSecret,
     missingRecaptchaCheckboxToken,
     missingRecaptchaInvisibleSecret,
     missingRecaptchaInvisibleToken,
+    missingTurnstileSecret,
+    missingTurnstileToken,
     setErrorFlag,
   ]);
 
@@ -70,6 +86,19 @@ export function Captcha() {
                 <a
                   className="mailpoet-link"
                   href="https://www.google.com/recaptcha/admin"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {t('signupForCaptchaKey')}
+                </a>
+              </span>
+            )}
+            {type === 'turnstile' && (
+              <span>
+                <span>{t('turnstileDescription')} </span>
+                <a
+                  className="mailpoet-link"
+                  href="https://dash.cloudflare.com/?to=/:account/turnstile"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -169,6 +198,46 @@ export function Captcha() {
             {missingRecaptchaInvisibleSecret && (
               <span className="mailpoet_error_item mailpoet_error">
                 {t('fillReCaptchaKeys')}
+              </span>
+            )}
+          </div>
+        )}
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="cloudflare-turnstile"
+            value="turnstile"
+            checked={type === 'turnstile'}
+            onCheck={setType}
+          />
+          <label htmlFor="cloudflare-turnstile">
+            {t('cloudflareTurnstile')}
+          </label>
+        </div>
+        {type === 'turnstile' && (
+          <div className="mailpoet-settings-inputs-row">
+            <Input
+              dimension="small"
+              type="text"
+              value={turnstileToken}
+              onChange={onChange(setTurnstileToken)}
+              placeholder={t('yourTurnstileKey')}
+            />
+            {missingTurnstileToken && (
+              <span className="mailpoet_error_item mailpoet_error">
+                {t('fillTurnstileKeys')}
+              </span>
+            )}
+            <br />
+            <Input
+              dimension="small"
+              type="text"
+              value={turnstileSecret}
+              onChange={onChange(setTurnstileSecret)}
+              placeholder={t('yourTurnstileSecret')}
+            />
+            {missingTurnstileSecret && (
+              <span className="mailpoet_error_item mailpoet_error">
+                {t('fillTurnstileKeys')}
               </span>
             )}
           </div>
