@@ -133,6 +133,24 @@ class WordPress {
   }
 
   /**
+   * @param mixed $value
+   */
+  public function setTransient(string $transient, $value, int $expiration = 0): bool {
+    return set_transient($transient, $value, $expiration);
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getTransient(string $transient) {
+    return get_transient($transient);
+  }
+
+  public function deleteTransient(string $transient): bool {
+    return delete_transient($transient);
+  }
+
+  /**
    * @param int|\WP_Post $post
    * @param bool $leavename
    * @return string|false
