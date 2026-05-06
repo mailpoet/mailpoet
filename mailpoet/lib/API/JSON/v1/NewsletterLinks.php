@@ -141,6 +141,8 @@ class NewsletterLinks extends APIEndpoint {
     if ($url === '') {
       return false;
     }
+    // strpos returns false when '[' is absent and 0 when it's the first char; !== 0 covers both
+    // "no leading bracket" cases. Allow [link:…] shortcodes through; reject other tokens like [postLink].
     return strpos($url, '[') !== 0 || strpos($url, '[link:') === 0;
   }
 }
