@@ -25,12 +25,12 @@ interface JQuery {
   parsley: (options?: { successClass?: string }) => any;
   mailpoetSerializeObject: () => {
     recaptchaWidgetId: number;
-    turnstileWidgetId: string;
+    turnstileWidgetId?: string;
     token: string;
     api_version: string;
     data: {
       recaptchaResponseToken: string;
-      turnstileResponseToken: string;
+      turnstileResponseToken?: string;
       mailpoet_subscriber_timezone?: string;
     };
   };
