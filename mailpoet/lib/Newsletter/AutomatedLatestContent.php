@@ -89,16 +89,19 @@ class AutomatedLatestContent {
   }
 
   public function transformPosts($args, $posts) {
-    $posts = array_map(function($post) use ($args) {
-      return $this->filterPost($post, $args);
-    }, $posts);
+    if ($this->wp->hasFilter(self::FILTER_POST) !== false) {
+      $posts = array_map(function($post) use ($args) {
+        return $this->filterPost($post, $args);
+      }, $posts);
+    }
     $transformer = new Transformer($args);
     return $transformer->transform($posts);
   }
 
   private function filterPost($post, array $args) {
     $filteredPost = is_object($post) ? clone $post : $post;
-    return $this->wp->applyFilters(self::FILTER_POST, $filteredPost, $post, $args);
+    $filteredPost = $this->wp->applyFilters(self::FILTER_POST, $filteredPost, $post, $args);
+    return is_object($filteredPost) ? $filteredPost : $post;
   }
 
   private function _attachSentPostsFilter($newsletterId) {
