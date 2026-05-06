@@ -11,6 +11,10 @@ import {
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
+import {
+  parseSelectedValues,
+  serializeSelectedValues,
+} from 'newsletters/scheduling/multi-day';
 import { Grid } from 'common/grid';
 
 const intervalField = {
@@ -32,28 +36,6 @@ const nthWeekDayField = {
   name: 'nthWeekDay',
   values: nthWeekDayValues,
 };
-
-const sortValues = (values) =>
-  [...values].sort(
-    (firstValue, secondValue) => Number(firstValue) - Number(secondValue),
-  );
-
-const parseSelectedValues = (value, defaultValue, availableValues) => {
-  const availableValueKeys = Object.keys(availableValues);
-  const normalizedValue = value === undefined || value === null ? '' : value;
-  const selectedValues = `${normalizedValue}`
-    .split(',')
-    .map((selectedValue) => selectedValue.trim())
-    .filter((selectedValue) => availableValueKeys.includes(selectedValue));
-
-  if (selectedValues.length === 0) {
-    return [defaultValue];
-  }
-
-  return sortValues([...new Set(selectedValues)]);
-};
-
-const serializeSelectedValues = (values) => sortValues(values).join(',');
 
 const getFirstSelectedValue = (value, defaultValue) =>
   parseSelectedValues(value, defaultValue, weekDayValues)[0];

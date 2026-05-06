@@ -1,0 +1,38 @@
+type DayLabels = Record<string, string>;
+type DayValue = string | number | null | undefined;
+
+const sortValues = (values: string[]): string[] =>
+  [...values].sort(
+    (firstValue, secondValue) => Number(firstValue) - Number(secondValue),
+  );
+
+export const parseSelectedValues = (
+  value: DayValue,
+  defaultValue: string,
+  availableValues: DayLabels,
+): string[] => {
+  const availableValueKeys = Object.keys(availableValues);
+  const normalizedValue = value === undefined || value === null ? '' : value;
+  const selectedValues = String(normalizedValue)
+    .split(',')
+    .map((selectedValue) => selectedValue.trim())
+    .filter((selectedValue) => availableValueKeys.includes(selectedValue));
+
+  if (selectedValues.length === 0) {
+    return [defaultValue];
+  }
+
+  return sortValues([...new Set(selectedValues)]);
+};
+
+export const serializeSelectedValues = (values: string[]): string =>
+  sortValues(values).join(',');
+
+export const formatSelectedValues = (
+  value: DayValue,
+  labels: DayLabels,
+  defaultValue: string,
+): string =>
+  parseSelectedValues(value, defaultValue, labels)
+    .map((key) => labels[key])
+    .join(', ');

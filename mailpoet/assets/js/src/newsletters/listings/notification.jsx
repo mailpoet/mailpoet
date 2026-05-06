@@ -17,6 +17,7 @@ import {
   timeOfDayValues,
   weekDayValues,
 } from 'newsletters/scheduling/common.jsx';
+import { formatSelectedValues } from 'newsletters/scheduling/multi-day';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 
@@ -113,19 +114,6 @@ const bulkActions = [
     onSuccess: messages.onTrash,
   },
 ];
-
-const formatSelectedValues = (value, labels, defaultValue) => {
-  const normalizedValue = value === undefined || value === null ? '' : value;
-  const selectedLabels = `${normalizedValue}`
-    .split(',')
-    .map((selectedValue) => selectedValue.trim())
-    .filter(Boolean)
-    .map((selectedValue) => labels[selectedValue])
-    .filter(Boolean)
-    .join(', ');
-
-  return selectedLabels || labels[defaultValue];
-};
 
 const newsletterActions = [
   {
