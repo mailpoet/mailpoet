@@ -4,19 +4,29 @@
 
 Common usage is a rendering of a subscription form and processing it.
 
+Hook your API calls into `init` (default priority) or later, after MailPoet has finished its initialization and any pending database migrations. Calling the API earlier (e.g. on `plugins_loaded`) during a MailPoet upgrade will throw a readiness exception, which you can catch and handle.
+
 ## Fetching data for a subscription form
 
 ```php
 <?php
 
-if (class_exists(\MailPoet\API\API::class)) {
-  // Get MailPoet API instance
-  $mailpoet_api = \MailPoet\API\API::MP('v1');
-  // Get available list so that a subscriber can choose in which to subscribe
-  $lists = $mailpoet_api->getLists();
-  // Get subscriber fields to know what fields can be rendered within a form
-  $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
-}
+add_action('init', function () {
+  if (!class_exists(\MailPoet\API\API::class)) {
+    return;
+  }
+
+  try {
+    // Get MailPoet API instance
+    $mailpoet_api = \MailPoet\API\API::MP('v1');
+    // Get available list so that a subscriber can choose in which to subscribe
+    $lists = $mailpoet_api->getLists();
+    // Get subscriber fields to know what fields can be rendered within a form
+    $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
+  } catch (\Exception $e) {
+    // MailPoet is still upgrading or otherwise unavailable on this request.
+  }
+});
 ```
 
 ## Processing a subscription form
@@ -24,27 +34,31 @@ if (class_exists(\MailPoet\API\API::class)) {
 ```php
 <?php
 
-if (class_exists(\MailPoet\API\API::class)) {
-  // Get MailPoet API instance
-  $mailpoet_api = \MailPoet\API\API::MP('v1');
-
-  // Fill subscribed data from $_POST (for simplicity it expects that subscriber field ids are used as input names)
-  $subscriber = [];
-  $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
-  foreach ($subscriber_form_fields as $field) {
-    if (!isset($_POST[$field['id']])) {
-      continue;
-    }
-    $subscriber[$field['id']] = $_POST[$field['id']];
+add_action('init', function () {
+  if (!class_exists(\MailPoet\API\API::class)) {
+    return;
   }
-  $list_ids = $_POST['list_ids'];
-
-  // Check if subscriber exists. If subscriber doesn't exist an exception is thrown
-  try {
-    $get_subscriber = $mailpoet_api->getSubscriber($subscriber['email']);
-  } catch (\Exception $e) {}
 
   try {
+    // Get MailPoet API instance
+    $mailpoet_api = \MailPoet\API\API::MP('v1');
+
+    // Fill subscribed data from $_POST (for simplicity it expects that subscriber field ids are used as input names)
+    $subscriber = [];
+    $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
+    foreach ($subscriber_form_fields as $field) {
+      if (!isset($_POST[$field['id']])) {
+        continue;
+      }
+      $subscriber[$field['id']] = $_POST[$field['id']];
+    }
+    $list_ids = $_POST['list_ids'];
+
+    // Check if subscriber exists. If subscriber doesn't exist an exception is thrown
+    try {
+      $get_subscriber = $mailpoet_api->getSubscriber($subscriber['email']);
+    } catch (\Exception $e) {}
+
     if (!$get_subscriber) {
       // Subscriber doesn't exist let's create one
       $mailpoet_api->addSubscriber($subscriber, $list_ids);
@@ -55,5 +69,5 @@ if (class_exists(\MailPoet\API\API::class)) {
   } catch (\Exception $e) {
     $error_message = $e->getMessage();
   }
-}
+});
 ```
