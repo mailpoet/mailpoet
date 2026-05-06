@@ -1,7 +1,11 @@
 type DayLabels = Record<string, string>;
 type DayValue = string | number | null | undefined;
 
-const sortValues = (values: string[]): string[] =>
+// Numeric-string sort: every entry must parse to a finite number
+// (weekDayValues 0..6 and monthDayValues 1..28). Non-numeric inputs
+// like nthWeekDayValues' 'L' coerce to NaN and produce an unstable
+// order, so this helper must not be used for those.
+const sortNumericKeys = (values: string[]): string[] =>
   [...values].sort(
     (firstValue, secondValue) => Number(firstValue) - Number(secondValue),
   );
@@ -22,11 +26,11 @@ export const parseSelectedValues = (
     return [defaultValue];
   }
 
-  return sortValues([...new Set(selectedValues)]);
+  return sortNumericKeys([...new Set(selectedValues)]);
 };
 
 export const serializeSelectedValues = (values: string[]): string =>
-  sortValues(values).join(',');
+  sortNumericKeys(values).join(',');
 
 export const formatSelectedValues = (
   value: DayValue,
