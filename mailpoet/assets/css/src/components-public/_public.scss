@@ -180,6 +180,11 @@ $form-line-height: 1.4;
   }
 }
 
+.mailpoet_turnstile {
+  margin-bottom: $form-block-margin;
+  text-align: center;
+}
+
 @keyframes mailpoet-bouncedelay {
   0%,
   80%,
