@@ -17,11 +17,14 @@ class TurnstileValidator {
 
   public function validate(array $data): bool {
     $token = $data['turnstileResponseToken'] ?? '';
+    if (!is_string($token)) {
+      throw new ValidationError(__('CAPTCHA verification failed.', 'mailpoet'));
+    }
 
     try {
       $this->validator->validate($token);
-    } catch (\Exception $e) {
-      throw new ValidationError($e->getMessage());
+    } catch (\Throwable $e) {
+      throw new ValidationError($e->getMessage(), [], 0, $e);
     }
 
     return true;

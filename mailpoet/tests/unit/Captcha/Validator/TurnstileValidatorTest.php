@@ -50,4 +50,45 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
     $this->expectExceptionMessage($exceptionErr);
     $testee->validate($data);
   }
+
+  public function testItFailsIfTokenIsNotString() {
+    $validator = Stub::make(
+      Validator::class,
+      [
+        'validate' => Stub\Expected::never(),
+      ],
+      $this
+    );
+
+    $testee = new TurnstileValidator($validator);
+    $data = [
+      'turnstileResponseToken' => ['unexpectedToken'],
+    ];
+
+    $this->expectException(ValidationError::class);
+    $this->expectExceptionMessage('CAPTCHA verification failed.');
+    $testee->validate($data);
+  }
+
+  public function testItConvertsThrowableToValidationError() {
+    $error = 'Unexpected CAPTCHA validation failure.';
+    $validator = Stub::make(
+      Validator::class,
+      [
+        'validate' => function () use ($error) {
+          throw new \TypeError($error);
+        },
+      ],
+      $this
+    );
+
+    $testee = new TurnstileValidator($validator);
+    $data = [
+      'turnstileResponseToken' => 'turnstileResponseToken',
+    ];
+
+    $this->expectException(ValidationError::class);
+    $this->expectExceptionMessage($error);
+    $testee->validate($data);
+  }
 }

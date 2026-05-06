@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\Captcha;
+namespace MailPoet\Captcha;
 
 use Codeception\Stub;
 use MailPoet\Captcha\CaptchaConstants;

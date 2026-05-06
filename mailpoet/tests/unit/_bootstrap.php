@@ -25,6 +25,12 @@ if (!function_exists('esc_url')) {
 }
 if (!function_exists('wp_unslash')) {
   function wp_unslash($value) {
+    if (is_array($value)) {
+      foreach ($value as $key => $item) {
+        $value[$key] = wp_unslash($item);
+      }
+      return $value;
+    }
     return is_string($value) ? stripslashes($value) : $value;
   }
 }

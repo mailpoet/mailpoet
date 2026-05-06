@@ -39,10 +39,12 @@ class AssetsController {
     ob_start();
     $captcha = $this->settings->get('captcha');
     if (!empty($captcha['type']) && CaptchaConstants::isReCaptcha($captcha['type'])) {
-      echo '<script src="' . esc_url(self::RECAPTCHA_API_URL) . '" async defer></script>';
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
+      echo '<script src="' . $this->wp->escUrl(self::RECAPTCHA_API_URL) . '" async defer></script>';
     }
     if (!empty($captcha['type']) && CaptchaConstants::isTurnstile($captcha['type'])) {
-      echo '<script src="' . esc_url(self::TURNSTILE_API_URL) . '" async defer></script>';
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
+      echo '<script src="' . $this->wp->escUrl(self::TURNSTILE_API_URL) . '" async defer></script>';
     }
 
     $this->wp->wpPrintScripts('jquery');
