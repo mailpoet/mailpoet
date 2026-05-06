@@ -99,20 +99,22 @@ class Renderer {
 
   private function renderReCaptcha(): string {
     if ($this->settings->get('captcha.type') === CaptchaConstants::TYPE_RECAPTCHA) {
-      $siteKey = $this->settings->get('captcha.recaptcha_site_token');
+      $siteKey = (string)$this->settings->get('captcha.recaptcha_site_token');
       $size = '';
     } else {
-      $siteKey = $this->settings->get('captcha.recaptcha_invisible_site_token');
+      $siteKey = (string)$this->settings->get('captcha.recaptcha_invisible_site_token');
       $size = 'invisible';
     }
+    $siteKeyAttr = esc_attr($siteKey);
+    $fallbackUrl = esc_url('https://www.google.com/recaptcha/api/fallback?k=' . $siteKey);
 
-    $html = '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '" ' . ($size === 'invisible' ? 'data-size="invisible"' : '') . '>
+    $html = '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKeyAttr . '" ' . ($size === 'invisible' ? 'data-size="invisible"' : '') . '>
       <div class="mailpoet_recaptcha_container"></div>
       <noscript>
         <div>
           <div class="mailpoet_recaptcha_noscript_container">
             <div>
-              <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no">
+              <iframe src="' . $fallbackUrl . '" frameborder="0" scrolling="no">
               </iframe>
             </div>
           </div>
@@ -132,7 +134,7 @@ class Renderer {
   }
 
   private function renderTurnstile(): string {
-    $siteKey = $this->settings->get('captcha.turnstile_site_token');
+    $siteKey = esc_attr((string)$this->settings->get('captcha.turnstile_site_token'));
 
     return '<div class="mailpoet_turnstile" data-sitekey="' . $siteKey . '">
       <div class="mailpoet_turnstile_container"></div>
