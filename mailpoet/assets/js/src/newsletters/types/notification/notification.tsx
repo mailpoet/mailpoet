@@ -16,7 +16,7 @@ interface NewsletterNotificationState {
     timeOfDay: number;
     weekDay: string;
     monthDay: string;
-    nthWeekDay: number;
+    nthWeekDay: string;
   };
 }
 
@@ -57,7 +57,7 @@ class NewsletterNotificationComponent extends Component<
         timeOfDay: 0,
         weekDay: '1',
         monthDay: '1',
-        nthWeekDay: 1,
+        nthWeekDay: '1',
       },
     };
   }
