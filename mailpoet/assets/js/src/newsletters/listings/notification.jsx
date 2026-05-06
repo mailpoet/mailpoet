@@ -271,7 +271,11 @@ class NewsletterListNotificationComponent extends Component {
         sendingFrequency = __('Weekly on %1$s at %2$s', 'mailpoet')
           .replace(
             '%1$s',
-            formatSelectedValues(newsletter.options.weekDay, weekDayValues, '1'),
+            formatSelectedValues(
+              newsletter.options.weekDay,
+              weekDayValues,
+              '1',
+            ),
           )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;

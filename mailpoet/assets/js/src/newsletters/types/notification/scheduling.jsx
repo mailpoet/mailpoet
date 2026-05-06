@@ -59,9 +59,7 @@ const getFirstSelectedValue = (value, defaultValue) =>
   parseSelectedValues(value, defaultValue, weekDayValues)[0];
 
 const checkboxGridClassName = (columns) =>
-  columns === 4
-    ? 'mailpoet-grid-four-columns'
-    : 'mailpoet-grid-three-columns';
+  columns === 4 ? 'mailpoet-grid-four-columns' : 'mailpoet-grid-three-columns';
 
 function MultipleCheckboxSelection({
   name,
