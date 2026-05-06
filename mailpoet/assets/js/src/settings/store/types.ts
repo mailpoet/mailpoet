@@ -70,11 +70,13 @@ export type Settings = {
     enabled: '' | '1';
   };
   captcha: {
-    type: 'built-in' | 'recaptcha' | 'recaptcha-invisible' | '';
+    type: 'built-in' | 'recaptcha' | 'recaptcha-invisible' | 'turnstile' | '';
     recaptcha_site_token: string;
     recaptcha_secret_token: string;
     recaptcha_invisible_site_token: string;
     recaptcha_invisible_secret_token: string;
+    turnstile_site_token: string;
+    turnstile_secret_token: string;
     on_register_forms: {
       enabled: '' | '1';
     };

@@ -140,13 +140,15 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
       type: asEnum(
-        ['', 'built-in', 'recaptcha', 'recaptcha-invisible'],
+        ['', 'built-in', 'recaptcha', 'recaptcha-invisible', 'turnstile'],
         'built-in',
       ),
       recaptcha_site_token: text,
       recaptcha_secret_token: text,
       recaptcha_invisible_site_token: text,
       recaptcha_invisible_secret_token: text,
+      turnstile_site_token: text,
+      turnstile_secret_token: text,
       on_register_forms: asObject({
         enabled: disabledRadio,
       }),
