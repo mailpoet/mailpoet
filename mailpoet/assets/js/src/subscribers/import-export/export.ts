@@ -141,10 +141,8 @@ jQuery(document).ready(() => {
       'last_name',
       'list_status',
       'global_status',
-      'subscribed_ip',
       'created_at',
       'confirmed_at',
-      'confirmed_ip',
     ])
     .trigger('change');
 
