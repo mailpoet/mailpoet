@@ -39,4 +39,7 @@ export const formatSelectedValues = (
 ): string =>
   parseSelectedValues(value, defaultValue, labels)
     .map((key) => labels[key])
+    // English-style ", " joiner. wp.i18n has no locale-aware list
+    // formatter, so locales like Japanese (e.g. "、") render with the
+    // Latin separator until that gap is filled.
     .join(', ');
