@@ -102,9 +102,9 @@ describe('multi-day helpers', () => {
 
   describe('formatSelectedValues', () => {
     it('renders labels joined by ", " in numeric order', () => {
-      expect(
-        formatSelectedValues('4,2', weekDayValues, DEFAULT_DAY),
-      ).to.equal('Tuesday, Thursday');
+      expect(formatSelectedValues('4,2', weekDayValues, DEFAULT_DAY)).to.equal(
+        'Tuesday, Thursday',
+      );
     });
 
     it('renders the default label when the value is missing', () => {
@@ -120,9 +120,9 @@ describe('multi-day helpers', () => {
     });
 
     it('drops invalid entries before rendering', () => {
-      expect(
-        formatSelectedValues('8,1', weekDayValues, DEFAULT_DAY),
-      ).to.equal('Monday');
+      expect(formatSelectedValues('8,1', weekDayValues, DEFAULT_DAY)).to.equal(
+        'Monday',
+      );
     });
 
     it('falls back to the default label when no entry is valid', () => {
