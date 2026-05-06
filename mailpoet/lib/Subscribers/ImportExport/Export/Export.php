@@ -12,7 +12,7 @@ use MailPoet\Util\Security;
 use MailPoetVendor\XLSXWriter;
 
 class Export {
-  const SUBSCRIBER_BATCH_SIZE = 15000;
+  const SUBSCRIBER_BATCH_SIZE = 1000;
 
   public $exportFormatOption;
   public $subscriberFields;
