@@ -280,6 +280,8 @@ class Populator {
         'type' => $captchaType,
         'recaptcha_site_token' => !empty($reCaptcha['site_token']) ? $reCaptcha['site_token'] : '',
         'recaptcha_secret_token' => !empty($reCaptcha['secret_token']) ? $reCaptcha['secret_token'] : '',
+        'turnstile_site_token' => '',
+        'turnstile_secret_token' => '',
       ]);
     }
 

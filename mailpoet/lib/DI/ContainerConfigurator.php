@@ -747,6 +747,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Captcha\ReCaptchaHooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\ReCaptchaValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\ReCaptchaRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\TurnstileHooks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\TurnstileValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\TurnstileRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\Validator\TurnstileValidator::class)->setPublic(true);
     return $container;
   }
 

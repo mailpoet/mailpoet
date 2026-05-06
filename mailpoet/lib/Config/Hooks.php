@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Captcha\CaptchaHooks;
 use MailPoet\Captcha\ReCaptchaHooks;
+use MailPoet\Captcha\TurnstileHooks;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
 use MailPoet\Form\DisplayFormInWPContent;
@@ -95,6 +96,9 @@ class Hooks {
   /** @var ReCaptchaHooks */
   private $reCaptchaHooks;
 
+  /** @var TurnstileHooks */
+  private $turnstileHooks;
+
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
 
@@ -128,6 +132,7 @@ class Hooks {
     AutomateWooHooks $automateWooHooks,
     CaptchaHooks $captchaHooks,
     ReCaptchaHooks $reCaptchaHooks,
+    TurnstileHooks $turnstileHooks,
     WooSystemInfoController $wooSystemInfoController,
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
@@ -148,6 +153,7 @@ class Hooks {
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->captchaHooks = $captchaHooks;
     $this->reCaptchaHooks = $reCaptchaHooks;
+    $this->turnstileHooks = $turnstileHooks;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->subscriberLimitNotificationScheduler = $subscriberLimitNotificationScheduler;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
@@ -772,6 +778,40 @@ class Hooks {
         $this->wp->addAction(
           'woocommerce_process_registration_errors',
           [$this->reCaptchaHooks, 'validate']
+        );
+      }
+    } else if ($this->turnstileHooks->isEnabled()) {
+      $this->wp->addAction(
+        'login_enqueue_scripts',
+        [$this->turnstileHooks, 'enqueueScripts']
+      );
+
+      $this->wp->addAction(
+        'register_form',
+        [$this->turnstileHooks, 'render']
+      );
+
+      $this->wp->addFilter(
+        'registration_errors',
+        [$this->turnstileHooks, 'validate'],
+        10,
+        3
+      );
+
+      if ($this->wooHelper->isWooCommerceActive()) {
+        $this->wp->addAction(
+          'woocommerce_before_customer_login_form',
+          [$this->turnstileHooks, 'enqueueScripts']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_register_form',
+          [$this->turnstileHooks, 'render']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_process_registration_errors',
+          [$this->turnstileHooks, 'validate']
         );
       }
     }

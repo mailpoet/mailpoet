@@ -6,6 +6,7 @@ class CaptchaConstants {
   const TYPE_BUILTIN = 'built-in';
   const TYPE_RECAPTCHA = 'recaptcha';
   const TYPE_RECAPTCHA_INVISIBLE = 'recaptcha-invisible';
+  const TYPE_TURNSTILE = 'turnstile';
   const TYPE_DISABLED = null;
   const TYPE_SETTING_NAME = 'captcha.type';
   const ON_REGISTER_FORMS_SETTING_NAME = 'captcha.on_register_forms.enabled';
@@ -16,6 +17,10 @@ class CaptchaConstants {
 
   public static function isBuiltIn(?string $captchaType) {
     return $captchaType === self::TYPE_BUILTIN;
+  }
+
+  public static function isTurnstile(?string $captchaType) {
+    return $captchaType === self::TYPE_TURNSTILE;
   }
 
   public static function isDisabled(?string $captchaType) {
