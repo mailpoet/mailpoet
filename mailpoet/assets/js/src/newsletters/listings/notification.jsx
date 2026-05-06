@@ -17,7 +17,10 @@ import {
   timeOfDayValues,
   weekDayValues,
 } from 'newsletters/scheduling/common.jsx';
-import { formatSelectedValues } from 'newsletters/scheduling/multi-day';
+import {
+  DEFAULT_DAY,
+  formatSelectedValues,
+} from 'newsletters/scheduling/multi-day';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 
@@ -262,7 +265,7 @@ class NewsletterListNotificationComponent extends Component {
             formatSelectedValues(
               newsletter.options.weekDay,
               weekDayValues,
-              '1',
+              DEFAULT_DAY,
             ),
           )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
@@ -275,7 +278,7 @@ class NewsletterListNotificationComponent extends Component {
             formatSelectedValues(
               newsletter.options.monthDay,
               monthDayValues,
-              '1',
+              DEFAULT_DAY,
             ),
           )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);

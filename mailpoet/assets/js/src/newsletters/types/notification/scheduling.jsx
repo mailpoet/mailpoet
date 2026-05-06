@@ -12,6 +12,7 @@ import {
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
 import {
+  DEFAULT_DAY,
   parseSelectedValues,
   serializeSelectedValues,
 } from 'newsletters/scheduling/multi-day';
@@ -111,19 +112,19 @@ class NotificationScheduling extends Component {
     changes.intervalType = intervalType;
     if (intervalType === 'monthly') {
       changes.monthDay = serializeSelectedValues(
-        parseSelectedValues(oldValue.monthDay, '1', monthDayValues),
+        parseSelectedValues(oldValue.monthDay, DEFAULT_DAY, monthDayValues),
       );
     }
     if (intervalType === 'weekly') {
       // Route through parseSelectedValues so weekDay = 0 (Sunday) is preserved
       // -- a plain `oldValue.weekDay || '1'` would treat 0 as missing.
       changes.weekDay = serializeSelectedValues(
-        parseSelectedValues(oldValue.weekDay, '1', weekDayValues),
+        parseSelectedValues(oldValue.weekDay, DEFAULT_DAY, weekDayValues),
       );
     }
     if (intervalType === 'nthWeekDay') {
-      changes.weekDay = getFirstSelectedValue(oldValue.weekDay, '1');
-      changes.nthWeekDay = oldValue.nthWeekDay || '1';
+      changes.weekDay = getFirstSelectedValue(oldValue.weekDay, DEFAULT_DAY);
+      changes.nthWeekDay = oldValue.nthWeekDay || DEFAULT_DAY;
     }
     this.handleValueChanges(changes);
   };
@@ -165,7 +166,7 @@ class NotificationScheduling extends Component {
           values={weekDayValues}
           selectedValues={parseSelectedValues(
             value.weekDay,
-            '1',
+            DEFAULT_DAY,
             weekDayValues,
           )}
           onValueChange={this.handleWeekDaysChange}
@@ -192,7 +193,7 @@ class NotificationScheduling extends Component {
           values={monthDayValues}
           selectedValues={parseSelectedValues(
             value.monthDay,
-            '1',
+            DEFAULT_DAY,
             monthDayValues,
           )}
           onValueChange={this.handleMonthDaysChange}

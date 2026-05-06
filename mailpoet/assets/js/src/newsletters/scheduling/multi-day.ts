@@ -1,6 +1,11 @@
 type DayLabels = Record<string, string>;
 type DayValue = string | number | null | undefined;
 
+// Monday for weekDayValues (0..6), 1st for monthDayValues (1..28).
+// Used as the fallback when no day is selected or the stored value
+// is invalid.
+export const DEFAULT_DAY = '1';
+
 // Numeric-string sort: every entry must parse to a finite number
 // (weekDayValues 0..6 and monthDayValues 1..28). Non-numeric inputs
 // like nthWeekDayValues' 'L' coerce to NaN and produce an unstable
