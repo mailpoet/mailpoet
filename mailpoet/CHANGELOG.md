@@ -30,6 +30,9 @@ Each changelog file should contain:
 Brief description of the change
 ```
 
+Descriptions should not end with punctuation. The release compiler adds semicolons between entries and a period after the final entry.
+Descriptions should also start with a capital letter and read naturally after the generated type prefix. Avoid repeating the type verb, for example use `Generated WooCommerce coupon block support for regular newsletters and automation emails` instead of `Added generated WooCommerce coupon block support for regular newsletters and automation emails`.
+
 ## Types
 
 - `Added`: New features

@@ -330,6 +330,8 @@ pnpm changelog:add --type=Fixed --description="Describe what was fixed"
 ```
 
 Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
+Do not end changelog descriptions with punctuation; release compilation adds semicolons between entries and a period after the final entry.
+Write descriptions so they start with a capital letter and read naturally after the generated type prefix. Avoid repeating the type verb, for example use `Generated WooCommerce coupon block support for regular newsletters and automation emails` instead of `Added generated WooCommerce coupon block support for regular newsletters and automation emails`.
 
 ### Pull Requests
 
