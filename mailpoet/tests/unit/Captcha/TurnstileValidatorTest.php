@@ -5,6 +5,7 @@ namespace unit\Captcha;
 use Codeception\Stub;
 use MailPoet\Captcha\TurnstileValidator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TurnstileValidatorTest extends \MailPoetUnitTest {
@@ -36,6 +37,13 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
           verify($url)->equals('https://challenges.cloudflare.com/turnstile/v0/siteverify');
           verify($args['body']['secret'])->equals($captchaSettings['turnstile_secret_token']);
           verify($args['body']['response'])->equals(self::RES_TOKEN);
+          verify($args['timeout'])->equals(5);
+          $expectedIp = Helpers::getIP();
+          if (is_string($expectedIp) && $expectedIp !== '') {
+            verify($args['body']['remoteip'])->equals($expectedIp);
+          } else {
+            verify(isset($args['body']['remoteip']))->false();
+          }
           return $response;
         },
         'wpRemoteRetrieveBody' => function ($data) use ($response) {
@@ -131,7 +139,7 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testItFailsOnHttpError() {
-    $response = (object)['wp-error'];
+    $response = new \stdClass();
     $settings = Stub::make(
       SettingsController::class,
       [
