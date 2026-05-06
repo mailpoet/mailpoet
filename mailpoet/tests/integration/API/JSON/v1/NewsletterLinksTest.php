@@ -86,6 +86,38 @@ class NewsletterLinksTest extends \MailPoetTest {
     verify($ids)->equals($urls);
   }
 
+  public function testItDispatchesAutomationPathForTransactionalEmails(): void {
+    $newsletter = $this->createNewsletter(
+      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+      NewsletterEntity::STATUS_ACTIVE,
+      [
+        'content' => [
+          'blocks' => [
+            [
+              'type' => 'button',
+              'url' => 'https://example.com/transactional-button',
+            ],
+            [
+              'type' => 'button',
+              'url' => '[postLink]',
+            ],
+          ],
+        ],
+      ]
+    );
+    $queue = $this->createQueue($newsletter);
+    $this->createLink($newsletter, $queue, 'https://example.com/transactional-stored');
+
+    $response = $this->endpoint->get(['newsletterId' => $newsletter->getId()]);
+    $urls = array_column($response->data, 'url');
+    $ids = array_column($response->data, 'id');
+
+    $this->assertContains('https://example.com/transactional-stored', $urls);
+    $this->assertContains('https://example.com/transactional-button', $urls);
+    $this->assertNotContains('[postLink]', $urls);
+    verify($ids)->equals($urls);
+  }
+
   private function createNewsletter(string $type, string $status, array $body = []): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
