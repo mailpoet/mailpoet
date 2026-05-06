@@ -73,9 +73,8 @@ function MultipleCheckboxSelection({
   return (
     <div className={checkboxGridClassName(columns)}>
       {Object.keys(values).map((value) => (
-        <span>
+        <span key={`${name}-${value}`}>
           <Checkbox
-            key={`${name}-${value}`}
             name={name}
             value={value}
             checked={normalizedSelectedValues.includes(value)}
