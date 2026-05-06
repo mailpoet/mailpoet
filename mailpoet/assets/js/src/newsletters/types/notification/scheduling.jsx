@@ -64,13 +64,13 @@ function MultipleCheckboxSelection({
             onCheck={(isChecked) => {
               let nextValues = normalizedSelectedValues;
               if (isChecked) {
-                nextValues = normalizedSelectedValues.concat([value]);
+                nextValues = [...normalizedSelectedValues, value];
               } else if (normalizedSelectedValues.length > 1) {
                 nextValues = normalizedSelectedValues.filter(
                   (selectedValue) => selectedValue !== value,
                 );
               }
-              onValueChange(serializeSelectedValues([...new Set(nextValues)]));
+              onValueChange(serializeSelectedValues(nextValues));
             }}
             automationId={`${automationId}_${value}`}
           >
