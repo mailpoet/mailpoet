@@ -110,10 +110,16 @@ class NotificationScheduling extends Component {
     const changes = {};
     changes.intervalType = intervalType;
     if (intervalType === 'monthly') {
-      changes.monthDay = oldValue.monthDay || '1';
+      changes.monthDay = serializeSelectedValues(
+        parseSelectedValues(oldValue.monthDay, '1', monthDayValues),
+      );
     }
     if (intervalType === 'weekly') {
-      changes.weekDay = oldValue.weekDay || '1';
+      // Route through parseSelectedValues so weekDay = 0 (Sunday) is preserved
+      // -- a plain `oldValue.weekDay || '1'` would treat 0 as missing.
+      changes.weekDay = serializeSelectedValues(
+        parseSelectedValues(oldValue.weekDay, '1', weekDayValues),
+      );
     }
     if (intervalType === 'nthWeekDay') {
       changes.weekDay = getFirstSelectedValue(oldValue.weekDay, '1');
