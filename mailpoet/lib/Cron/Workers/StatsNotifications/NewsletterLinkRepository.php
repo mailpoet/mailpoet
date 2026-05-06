@@ -55,9 +55,13 @@ class NewsletterLinkRepository extends Repository {
       ->getQuery()
       ->getSingleColumnResult();
 
-    return array_values(array_filter(array_map('strval', $urls), function(string $url): bool {
-      return $url !== '';
-    }));
+    $result = [];
+    foreach ($urls as $url) {
+      if (is_string($url) && $url !== '') {
+        $result[] = $url;
+      }
+    }
+    return $result;
   }
 
   /** @param int[] $ids */
