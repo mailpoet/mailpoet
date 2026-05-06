@@ -186,13 +186,10 @@ class PostNotificationScheduler {
         $schedule = sprintf('%s %s * * %s', $minute, $hour, $weekDay);
         break;
       case self::INTERVAL_NTHWEEKDAY:
-        $schedule = sprintf(
-          '%s %s ? * %s%s',
-          $minute,
-          $hour,
-          $this->getFirstCronValue($weekDay),
-          $nthWeekDay
-        );
+        // nthWeekDay schedules a single weekday (e.g. "every 1st Monday"),
+        // so reduce the normalized list to its first entry.
+        $firstWeekDay = explode(',', $weekDay)[0];
+        $schedule = sprintf('%s %s ? * %s%s', $minute, $hour, $firstWeekDay, $nthWeekDay);
         break;
       case self::INTERVAL_MONTHLY:
         $schedule = sprintf('%s %s %s * *', $minute, $hour, $monthDay);
@@ -235,9 +232,5 @@ class PostNotificationScheduler {
     }
 
     return implode(',', $selectedValues);
-  }
-
-  private function getFirstCronValue(string $value): string {
-    return explode(',', $value)[0];
   }
 }
