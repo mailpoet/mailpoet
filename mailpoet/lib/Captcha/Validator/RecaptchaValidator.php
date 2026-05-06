@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Captcha\Validator;
 
@@ -17,6 +17,9 @@ class RecaptchaValidator {
 
   public function validate(array $data): bool {
     $token = $data['recaptchaResponseToken'] ?? '';
+    if (!is_string($token)) {
+      throw new ValidationError(__('CAPTCHA verification failed.', 'mailpoet'));
+    }
 
     try {
       $this->validator->validate($token);
