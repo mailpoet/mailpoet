@@ -34,7 +34,7 @@ class Changelogger {
     foreach (self::VALID_TYPES as $type) {
       if (isset($groupedEntries[$type])) {
         foreach ($groupedEntries[$type] as $entry) {
-          $compiledEntries[] = "* {$entry['type']}: {$entry['description']}";
+          $compiledEntries[] = "* {$entry['type']}: " . $this->removeTrailingPunctuation($entry['description']);
         }
       }
     }
@@ -169,9 +169,7 @@ class Changelogger {
       throw new \Exception("Invalid changelog type: $type");
     }
 
-    // Trim whitespace and remove trailing punctuation
-    $description = trim($description);
-    $description = rtrim($description, '.!?;,');
+    $description = $this->removeTrailingPunctuation($description);
     // Ensure description starts with a capital letter
     $description = ucfirst($description);
 
@@ -203,5 +201,9 @@ class Changelogger {
     $filename = preg_replace('/\s+/', '-', $filename);
     $filename = trim($filename, '-');
     return substr($filename, 0, 50); // Limit length
+  }
+
+  private function removeTrailingPunctuation(string $description): string {
+    return rtrim(trim($description), '.!?;,');
   }
 }
