@@ -80,6 +80,7 @@ export function Captcha() {
             >
               {t('readMore')}
             </a>
+            {' '}
             {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
               <span>
                 <span>{t('reCaptchaDescription')} </span>
@@ -143,7 +144,7 @@ export function Captcha() {
               placeholder={t('yourReCaptchaKey')}
             />
             {missingRecaptchaCheckboxToken && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillReCaptchaKeys')}
               </span>
             )}
@@ -156,7 +157,7 @@ export function Captcha() {
               placeholder={t('yourReCaptchaSecret')}
             />
             {missingRecaptchaCheckboxSecret && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillReCaptchaKeys')}
               </span>
             )}
@@ -183,7 +184,7 @@ export function Captcha() {
               placeholder={t('yourReCaptchaKey')}
             />
             {missingRecaptchaInvisibleToken && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillReCaptchaKeys')}
               </span>
             )}
@@ -196,7 +197,7 @@ export function Captcha() {
               placeholder={t('yourReCaptchaSecret')}
             />
             {missingRecaptchaInvisibleSecret && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillReCaptchaKeys')}
               </span>
             )}
@@ -223,7 +224,7 @@ export function Captcha() {
               placeholder={t('yourTurnstileKey')}
             />
             {missingTurnstileToken && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillTurnstileKeys')}
               </span>
             )}
@@ -236,7 +237,7 @@ export function Captcha() {
               placeholder={t('yourTurnstileSecret')}
             />
             {missingTurnstileSecret && (
-              <span className="mailpoet_error_item mailpoet_error">
+              <span className="mailpoet_error_item mailpoet_error mailpoet_error_captcha">
                 {t('fillTurnstileKeys')}
               </span>
             )}
