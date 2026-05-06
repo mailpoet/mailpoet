@@ -166,8 +166,8 @@ class SystemReportCollector {
         'Is reachable' => $this->cronHelper->validatePingResponse($cronPingResponse) ? 'Yes' : 'No',
         'Ping URL' => $cronPingUrl,
         'Ping response' => $cronPingResponse,
-        'Last run start' => isset($cronDaemonStatus['run_started_at']) ? date('Y-m-d H:i:s', $cronDaemonStatus['run_started_at']) : 'Unknown',
-        'Last run end' => isset($cronDaemonStatus['run_completed_at']) ? date('Y-m-d H:i:s', $cronDaemonStatus['run_completed_at']) : 'Unknown',
+        'Last run start' => isset($cronDaemonStatus['run_started_at']) ? $this->formatTimestamp((int)$cronDaemonStatus['run_started_at']) : 'Unknown',
+        'Last run end' => isset($cronDaemonStatus['run_completed_at']) ? $this->formatTimestamp((int)$cronDaemonStatus['run_completed_at']) : 'Unknown',
         'Last seen error' => $cronDaemonStatus['last_error'] ?? 'None',
       ]),
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
@@ -175,7 +175,7 @@ class SystemReportCollector {
       'Installed via WooCommerce onboarding wizard' => $this->wooCommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard(),
       'Sending queue status' => $this->formatCompositeField([
         'Status' => $mailerLog['status'] ?? 'Unknown',
-        'Started at' => isset($mailerLog['started']) ? date('Y-m-d H:i:s', $mailerLog['started']) : 'Unknown',
+        'Started at' => isset($mailerLog['started']) ? $this->formatTimestamp((int)$mailerLog['started']) : 'Unknown',
         'Emails sent' => $mailerLog['sent'],
         'Retry attempts' => $mailerLog['retry_attempt'] ?? 0,
         'Last seen error' => isset($mailerLog['error'])
@@ -286,6 +286,12 @@ class SystemReportCollector {
     }
 
     return $result;
+  }
+
+  private function formatTimestamp(int $timestamp): string {
+    return (new \DateTimeImmutable('@' . $timestamp))
+      ->setTimezone($this->wp->wpTimezone())
+      ->format('Y-m-d H:i:s');
   }
 
   protected function maskApiKey($key) {

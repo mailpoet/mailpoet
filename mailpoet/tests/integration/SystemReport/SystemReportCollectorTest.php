@@ -210,10 +210,13 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsCronStatusDetailsWhenDaemonIsActive() {
+    update_option('timezone_string', 'Asia/Tokyo');
+    update_option('gmt_offset', 9);
+
     $cronSettings = [
       'status' => CronHelper::DAEMON_STATUS_ACTIVE,
-      'run_started_at' => time(),
-      'run_completed_at' => time() + 10,
+      'run_started_at' => 0,
+      'run_completed_at' => 60,
       'last_error' => 'Some error',
     ];
 
@@ -224,8 +227,8 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($subjectField)->stringContainsString('Status: ' . $cronSettings['status']);
     verify($subjectField)->stringContainsString('Is reachable: Yes');
     verify($subjectField)->stringContainsString('Ping response: pong');
-    verify($subjectField)->stringContainsString('Last run start: ' . date('Y-m-d H:i:s', $cronSettings['run_started_at']));
-    verify($subjectField)->stringContainsString('Last run end: ' . date('Y-m-d H:i:s', $cronSettings['run_completed_at']));
+    verify($subjectField)->stringContainsString('Last run start: 1970-01-01 09:00:00');
+    verify($subjectField)->stringContainsString('Last run end: 1970-01-01 09:01:00');
     verify($subjectField)->stringContainsString('Last seen error: ' . $cronSettings['last_error']);
   }
 
@@ -245,18 +248,24 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsSendingQueueStatus() {
-    $mailerLog = MailerLog::createMailerLog();
-    MailerLog::resumeSending();
+    update_option('timezone_string', 'Asia/Tokyo');
+    update_option('gmt_offset', 9);
 
-    try {
-      MailerLog::processError($operation = 'send', $error = 'email rejected');
-    } catch (\Exception $e) {
-      // ignore
-    }
+    $mailerLog = MailerLog::createMailerLog();
+    $operation = 'send';
+    $error = 'email rejected';
+    $mailerLog['started'] = 0;
+    $mailerLog['retry_attempt'] = 1;
+    $mailerLog['error'] = [
+      'error_message' => $error,
+      'operation' => $operation,
+    ];
+
+    MailerLog::updateMailerLog($mailerLog);
 
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
     $subjectField = $systemInfoData['Sending queue status'];
-    verify($subjectField)->stringContainsString('Started at: ' . date('Y-m-d')); // ignoring time segment
+    verify($subjectField)->stringContainsString('Started at: 1970-01-01 09:00:00');
     verify($subjectField)->stringContainsString('Retry attempts: 1');
     verify($subjectField)->stringContainsString("Last seen error: $error ($operation)");
 
