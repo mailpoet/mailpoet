@@ -86,7 +86,7 @@ class TurnstileHooks {
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
       'is_rtl' => $this->wp->isRtl(),
-      'ajax_common_error_message' => $this->wp->escJs($ajaxFailedErrorMessage),
+      'ajax_common_error_message' => $ajaxFailedErrorMessage,
       'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
     ]);
   }
