@@ -1129,6 +1129,18 @@ class SubscribersTest extends \MailPoetTest {
     $this->settings->set('captcha', []);
   }
 
+  public function testItCannotSubscribeWithoutTurnstileWhenEnabled() {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_TURNSTILE]);
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->getId(),
+      $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    $this->settings->set('captcha', []);
+  }
+
   public function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
     $this->diContainer->get(Populator::class)->up();
 

@@ -8,6 +8,7 @@ use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\RecaptchaValidator;
+use MailPoet\Captcha\Validator\TurnstileValidator;
 use MailPoet\Captcha\Validator\ValidationError;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -42,6 +43,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
 
     $formsRepository = Stub::makeEmpty(
       FormsRepository::class,
@@ -80,7 +82,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -154,6 +157,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
 
     $testee = new SubscriberSubscribeController(
       $captchaSession,
@@ -169,7 +173,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -239,6 +244,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
 
     $testee = new SubscriberSubscribeController(
       $captchaSession,
@@ -254,7 +260,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -361,6 +368,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
 
     $testee = new SubscriberSubscribeController(
       $captchaSession,
@@ -376,7 +384,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -497,6 +506,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
     $testee = new SubscriberSubscribeController(
       $captchaSession,
       $subscriberActions,
@@ -511,7 +521,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -567,7 +578,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class),
       Stub::makeEmpty(CaptchaValidator::class),
-      Stub::makeEmpty(RecaptchaValidator::class)
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -620,7 +632,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class),
       Stub::makeEmpty(CaptchaValidator::class),
-      Stub::makeEmpty(RecaptchaValidator::class)
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -738,6 +751,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $recaptchaValidator = Stub::make(RecaptchaValidator::class);
+    $turnstileValidator = Stub::makeEmpty(TurnstileValidator::class);
 
     $testee = new SubscriberSubscribeController(
       $captchaSession,
@@ -753,7 +767,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriberTagRepository,
       $wp,
       $builtInCaptchaValidator,
-      $recaptchaValidator
+      $recaptchaValidator,
+      $turnstileValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));

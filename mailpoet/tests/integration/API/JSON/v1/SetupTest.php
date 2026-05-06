@@ -49,6 +49,8 @@ class SetupTest extends \MailPoetTest {
     verify($captcha['type'])->equals($captchaType);
     verify($captcha['recaptcha_site_token'])->equals('');
     verify($captcha['recaptcha_secret_token'])->equals('');
+    verify($captcha['turnstile_site_token'])->equals('');
+    verify($captcha['turnstile_secret_token'])->equals('');
 
     $woocommerceOptinOnCheckout = $settings->fetch('woocommerce.optin_on_checkout');
     verify($woocommerceOptinOnCheckout['enabled'])->true();
