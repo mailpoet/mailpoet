@@ -22,6 +22,16 @@ a:focus {
   color: #900;
 }
 
+.mailpoet_error_captcha {
+  display: inline-block;
+  margin-left: 10px;
+  padding-top: 6px;
+
+  ~ .mailpoet_error_captcha {
+    padding-top: 14px;
+  }
+}
+
 .mailpoet_hidden {
   display: none;
 }
