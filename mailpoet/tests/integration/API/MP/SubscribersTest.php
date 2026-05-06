@@ -204,6 +204,48 @@ class SubscribersTest extends \MailPoetTest {
     verify($sent)->equals(true);
   }
 
+  public function testItDoesNotSendConfirmationEmailToAlreadySubscribedSubscriberWhenBeingAddedToList() {
+    $subscriber = $this->subscriberFactory
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $subscriberWithExplicitConfirmation = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $segment = $this->getSegment('Already Subscribed Default');
+    $segmentWithExplicitConfirmation = $this->getSegment('Already Subscribed Explicit');
+
+    $subscribers = Stub::makeEmptyExcept(
+      Subscribers::class,
+      'subscribeToLists',
+      [
+        '_sendConfirmationEmail' => Expected::never(),
+        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
+        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
+        'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
+        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
+        'settings' => SettingsController::getInstance(),
+        'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+      ],
+      $this
+    );
+    $API = $this->getApi($subscribers);
+
+    $result = $API->subscribeToLists($subscriber->getId(), [$segment->getId()], [
+      'schedule_welcome_email' => false,
+      'skip_subscriber_notification' => true,
+    ]);
+    verify($result['id'])->equals($subscriber->getId());
+    verify($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
+
+    $result = $API->subscribeToLists($subscriberWithExplicitConfirmation->getId(), [$segmentWithExplicitConfirmation->getId()], [
+      'send_confirmation_email' => true,
+      'schedule_welcome_email' => false,
+      'skip_subscriber_notification' => true,
+    ]);
+    verify($result['id'])->equals($subscriberWithExplicitConfirmation->getId());
+    verify($result['subscriptions'][0]['segment_id'])->equals($segmentWithExplicitConfirmation->getId());
+  }
+
   public function testItSendsNotificationEmailWhenBeingAddedToList() {
     $subscriber = $this->subscriberFactory
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
