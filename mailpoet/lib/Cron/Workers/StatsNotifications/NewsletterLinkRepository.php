@@ -41,6 +41,25 @@ class NewsletterLinkRepository extends Repository {
     return null;
   }
 
+  /**
+   * @return string[]
+   */
+  public function findUrlsByNewsletterId(int $newsletterId): array {
+    $urls = $this->entityManager->createQueryBuilder()
+      ->select('l.url')
+      ->from(NewsletterLinkEntity::class, 'l')
+      ->where('l.newsletter = :newsletterId')
+      ->setParameter('newsletterId', $newsletterId)
+      ->groupBy('l.url')
+      ->orderBy('l.url', 'ASC')
+      ->getQuery()
+      ->getSingleColumnResult();
+
+    return array_values(array_filter(array_map('strval', $urls), function(string $url): bool {
+      return $url !== '';
+    }));
+  }
+
   /** @param int[] $ids */
   public function deleteByNewsletterIds(array $ids): void {
     $this->entityManager->createQueryBuilder()
