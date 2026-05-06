@@ -3,6 +3,7 @@
 namespace MailPoet\Captcha;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TurnstileValidator {
@@ -32,11 +33,17 @@ class TurnstileValidator {
     }
 
     $captchaSettings = $this->settings->get('captcha');
+    $body = [
+      'secret' => $captchaSettings['turnstile_secret_token'] ?? '',
+      'response' => $responseToken,
+    ];
+    $remoteIp = Helpers::getIP();
+    if (is_string($remoteIp) && $remoteIp !== '') {
+      $body['remoteip'] = $remoteIp;
+    }
     $response = $this->wp->wpRemotePost(self::ENDPOINT, [
-      'body' => [
-        'secret' => $captchaSettings['turnstile_secret_token'] ?? '',
-        'response' => $responseToken,
-      ],
+      'body' => $body,
+      'timeout' => 5,
     ]);
 
     if ($this->wp->isWpError($response)) {
