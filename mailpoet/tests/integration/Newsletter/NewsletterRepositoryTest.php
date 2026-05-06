@@ -24,6 +24,24 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
   }
 
+  public function testItGetsStandardAndAutomationNewsletterList() {
+    $standardNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $automationEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $automationTransactionalEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_ACTIVE);
+    $automationDraftEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_DRAFT);
+    $notification = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+
+    $newsletterIds = array_map(function(NewsletterEntity $newsletter) {
+      return $newsletter->getId();
+    }, $this->repository->getStandardAndAutomationNewsletterList());
+
+    $this->assertContains($standardNewsletter->getId(), $newsletterIds);
+    $this->assertContains($automationEmail->getId(), $newsletterIds);
+    $this->assertContains($automationTransactionalEmail->getId(), $newsletterIds);
+    $this->assertNotContains($automationDraftEmail->getId(), $newsletterIds);
+    $this->assertNotContains($notification->getId(), $newsletterIds);
+  }
+
   public function testItBulkTrashNewslettersAndChildren() {
     $standardNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $this->createQueueWithTaskAndSegmentAndSubscribers($standardNewsletter);
