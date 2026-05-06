@@ -12,12 +12,7 @@ import { GlobalContext, GlobalContextValue } from 'context';
 
 interface NewsletterNotificationState {
   options: {
-    intervalType:
-      | 'daily'
-      | 'weekly'
-      | 'monthly'
-      | 'nthWeekDay'
-      | 'immediately';
+    intervalType: 'daily' | 'weekly' | 'monthly' | 'nthWeekDay' | 'immediately';
     timeOfDay: number;
     weekDay: string;
     monthDay: string;
