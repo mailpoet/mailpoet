@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -197,6 +198,42 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringNotContainsString('POST 5');
     verify($encodedResult)->stringContainsString('POST 6');
     verify($encodedResult)->stringContainsString('POST 7');
+  }
+
+  public function testItAppliesPostFilterWhenRendering() {
+    $notification = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION);
+    $notificationHistory = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
+
+    $receivedOriginalPost = null;
+    $receivedArgs = null;
+    $filter = function($post, $originalPost, $args) use (&$receivedOriginalPost, &$receivedArgs) {
+      $receivedOriginalPost = $originalPost;
+      $receivedArgs = $args;
+      $post->post_title = 'Filtered notification title'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $post->post_content = 'Filtered notification content'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $post;
+    };
+
+    $this->wp->addFilter(AutomatedLatestContent::FILTER_POST, $filter, 10, 3);
+    try {
+      $result = $this->block->render($notificationHistory, array_merge($this->alcBlock, [
+        'amount' => '1',
+        'posts' => [$this->postIds[3]],
+        'displayType' => 'full',
+        'readMoreType' => 'none',
+      ]));
+    } finally {
+      $this->wp->removeFilter(AutomatedLatestContent::FILTER_POST, $filter);
+    }
+
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('Filtered notification title');
+    verify($encodedResult)->stringContainsString('Filtered notification content');
+    verify($encodedResult)->stringNotContainsString('POST 4');
+    $this->assertInstanceOf(\WP_Post::class, $receivedOriginalPost);
+    $this->assertIsArray($receivedArgs);
+    $this->assertSame($this->postIds[3], $receivedOriginalPost->ID);
+    $this->assertSame('automatedLatestContentLayout', $receivedArgs['type']);
   }
 
   private function createPost(string $title, string $publishDate, string $type = 'post') {

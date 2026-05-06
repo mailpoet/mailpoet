@@ -3,16 +3,22 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\SuccessResponse;
-use MailPoet\API\JSON\v1\AutomatedLatestContent;
+use MailPoet\API\JSON\v1\AutomatedLatestContent as AutomatedLatestContentEndpoint;
+use MailPoet\Newsletter\AutomatedLatestContent;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
-  /** @var AutomatedLatestContent */
+  /** @var AutomatedLatestContentEndpoint */
   private $endpoint;
+
+  /** @var WPFunctions */
+  private $wp;
 
   public function _before() {
     parent::_before();
 
-    $this->endpoint = $this->diContainer->get(AutomatedLatestContent::class);
+    $this->endpoint = $this->diContainer->get(AutomatedLatestContentEndpoint::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
   public function testItGetsPostTypes() {
@@ -95,5 +101,75 @@ class AutomatedLatestContentTest extends \MailPoetTest {
       }
     }
     return $data;
+  }
+
+  public function testItAppliesPostFilterWhenGettingBulkTransformedPosts() {
+    $postId = wp_insert_post([
+      'post_title' => 'Original ALC title',
+      'post_status' => 'publish',
+      'post_author' => 1,
+      'post_content' => 'Original ALC content',
+    ]);
+    $this->assertIsNumeric($postId);
+
+    $receivedOriginalPost = null;
+    $receivedArgs = null;
+    $filter = function($post, $originalPost, $args) use (&$receivedOriginalPost, &$receivedArgs) {
+      $receivedOriginalPost = $originalPost;
+      $receivedArgs = $args;
+      $post->post_title = 'Filtered ALC title'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $post->post_content = 'Filtered ALC content'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $post;
+    };
+
+    $this->wp->addFilter(AutomatedLatestContent::FILTER_POST, $filter, 10, 3);
+    try {
+      $response = $this->endpoint->getBulkTransformedPosts([
+        'blocks' => [$this->getAutomatedLatestContentBlock((int)$postId)],
+      ]);
+    } finally {
+      $this->wp->removeFilter(AutomatedLatestContent::FILTER_POST, $filter);
+      wp_delete_post($postId, true);
+    }
+
+    $encodedResponse = json_encode($response->data);
+    $this->assertIsString($encodedResponse);
+    $this->assertStringContainsString('Filtered ALC title', $encodedResponse);
+    $this->assertStringContainsString('Filtered ALC content', $encodedResponse);
+    $this->assertStringNotContainsString('Original ALC title', $encodedResponse);
+    $this->assertStringNotContainsString('Original ALC content', $encodedResponse);
+    $this->assertInstanceOf(\WP_Post::class, $receivedOriginalPost);
+    $this->assertIsArray($receivedArgs);
+    $this->assertSame((int)$postId, $receivedOriginalPost->ID);
+    $this->assertSame('automatedLatestContentLayout', $receivedArgs['type']);
+  }
+
+  private function getAutomatedLatestContentBlock(int $postId): array {
+    return [
+      'type' => 'automatedLatestContentLayout',
+      'withLayout' => true,
+      'amount' => '1',
+      'posts' => [$postId],
+      'contentType' => 'post',
+      'terms' => [],
+      'inclusionType' => 'include',
+      'displayType' => 'full',
+      'titleFormat' => 'h2',
+      'titleAlignment' => 'left',
+      'titleIsLink' => false,
+      'imageFullWidth' => false,
+      'titlePosition' => 'abovePost',
+      'featuredImagePosition' => 'none',
+      'fullPostFeaturedImagePosition' => 'none',
+      'showAuthor' => 'no',
+      'authorPrecededBy' => 'Author:',
+      'showCategories' => 'no',
+      'categoriesPrecededBy' => 'Categories:',
+      'readMoreType' => 'none',
+      'sortBy' => 'newest',
+      'showDivider' => false,
+      'backgroundColor' => '#ffffff',
+      'backgroundColorAlternate' => '#eeeeee',
+    ];
   }
 }
