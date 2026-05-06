@@ -79,8 +79,7 @@ export function Captcha() {
               target="_blank"
             >
               {t('readMore')}
-            </a>
-            {' '}
+            </a>{' '}
             {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
               <span>
                 <span>{t('reCaptchaDescription')} </span>
