@@ -80,7 +80,7 @@ class ReCaptchaHooks {
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
       'is_rtl' => (function_exists('is_rtl') && is_rtl()),
-      'ajax_common_error_message' => $this->wp->escJs($ajaxFailedErrorMessage),
+      'ajax_common_error_message' => $ajaxFailedErrorMessage,
       'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
     ]);
   }

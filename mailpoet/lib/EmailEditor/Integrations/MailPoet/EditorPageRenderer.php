@@ -151,9 +151,9 @@ class EditorPageRenderer {
       'email_editor_integration',
       'WooCommerceEmailEditor',
       [
-        'current_post_type' => esc_js($currentPostType),
+        'current_post_type' => $currentPostType,
         'current_post_id' => $post->ID,
-        'current_wp_user_email' => esc_js($currentUserEmail),
+        'current_wp_user_email' => $currentUserEmail,
         'editor_settings' => $editorSettings,
         'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
