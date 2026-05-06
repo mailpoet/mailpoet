@@ -192,6 +192,10 @@ class Functions {
     return esc_html($text);
   }
 
+  public function escJs($text) {
+    return esc_js($text);
+  }
+
   public function escSql($sql) {
     return esc_sql($sql);
   }

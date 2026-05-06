@@ -85,8 +85,8 @@ class TurnstileHooks {
     $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
-      'is_rtl' => (function_exists('is_rtl') && is_rtl()),
-      'ajax_common_error_message' => esc_js($ajaxFailedErrorMessage),
+      'is_rtl' => $this->wp->isRtl(),
+      'ajax_common_error_message' => $this->wp->escJs($ajaxFailedErrorMessage),
       'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
     ]);
   }

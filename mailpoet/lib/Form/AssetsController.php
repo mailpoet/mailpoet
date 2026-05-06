@@ -105,10 +105,10 @@ class AssetsController {
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
-      'ajax_common_error_message' => esc_js($ajaxFailedErrorMessage),
-      'captcha_input_label' => esc_js(__('Type in the characters you see in the picture above:', 'mailpoet')),
-      'captcha_reload_title' => esc_js(__('Reload CAPTCHA', 'mailpoet')),
-      'captcha_audio_title' => esc_js(__('Play CAPTCHA', 'mailpoet')),
+      'ajax_common_error_message' => $this->wp->escJs($ajaxFailedErrorMessage),
+      'captcha_input_label' => $this->wp->escJs(__('Type in the characters you see in the picture above:', 'mailpoet')),
+      'captcha_reload_title' => $this->wp->escJs(__('Reload CAPTCHA', 'mailpoet')),
+      'captcha_audio_title' => $this->wp->escJs(__('Play CAPTCHA', 'mailpoet')),
       'assets_url' => Env::$assetsUrl,
       'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
     ]);
