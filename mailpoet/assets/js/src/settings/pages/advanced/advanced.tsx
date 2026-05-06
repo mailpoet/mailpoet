@@ -18,7 +18,6 @@ import { Logging } from './logging';
 import { BounceAddress } from './bounce-address';
 import { CaptchaOnSignup } from './captcha-on-signup';
 import { CaptchaPage } from './captcha-page';
-import { UseBlockEditorForAutomation } from './use-block-editor-for-automation';
 
 export function Advanced() {
   const [captchaType] = useSetting('captcha', 'type');
@@ -41,7 +40,6 @@ export function Advanced() {
       <Captcha />
       {captchaType === 'built-in' && <CaptchaPage />}
       <CaptchaOnSignup />
-      <UseBlockEditorForAutomation />
       <Reinstall />
       <Logging />
       <SaveButton />

@@ -213,7 +213,6 @@ class PageRenderer {
       'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'is_woocommerce_bookings_active' => $this->wooCommerceBookingsHelper->isWooCommerceBookingsActive(),
       'cron_trigger_method' => $this->settings->get('cron_trigger.method'),
-      'use_block_email_editor_for_automation_emails' => $this->useBlockEmailEditorForAutomationNewsletter(),
     ];
 
     if (!$defaults['premium_plugin_active']) {
@@ -248,11 +247,5 @@ class PageRenderer {
   public function displayChatBotWidget(): bool {
     $display = $this->wp->applyFilters('mailpoet_display_docsbot_widget', $this->settings->get('3rd_party_libs.enabled') === '1');
     return (bool)$display;
-  }
-
-  public function useBlockEmailEditorForAutomationNewsletter(): bool {
-    $default = $this->settings->get('use_block_email_editor_for_automation_emails.enabled') === '1';
-    $status = $this->wp->applyFilters('mailpoet_use_block_email_editor_for_automation_emails', $default);
-    return (bool)$status;
   }
 }
