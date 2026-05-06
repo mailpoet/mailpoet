@@ -6,6 +6,7 @@ use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\RecaptchaValidator;
+use MailPoet\Captcha\Validator\TurnstileValidator;
 use MailPoet\Captcha\Validator\ValidationError;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -63,6 +64,9 @@ class SubscriberSubscribeController {
   /** @var RecaptchaValidator  */
   private $recaptchaValidator;
 
+  /** @var TurnstileValidator  */
+  private $turnstileValidator;
+
   public function __construct(
     CaptchaSession $captchaSession,
     SubscriberActions $subscriberActions,
@@ -77,7 +81,8 @@ class SubscriberSubscribeController {
     SubscriberTagRepository $subscriberTagRepository,
     WPFunctions $wp,
     CaptchaValidator $builtInCaptchaValidator,
-    RecaptchaValidator $recaptchaValidator
+    RecaptchaValidator $recaptchaValidator,
+    TurnstileValidator $turnstileValidator
   ) {
     $this->formsRepository = $formsRepository;
     $this->captchaSession = $captchaSession;
@@ -93,6 +98,7 @@ class SubscriberSubscribeController {
     $this->subscriberTagRepository = $subscriberTagRepository;
     $this->builtInCaptchaValidator = $builtInCaptchaValidator;
     $this->recaptchaValidator = $recaptchaValidator;
+    $this->turnstileValidator = $turnstileValidator;
   }
 
   public function subscribe(array $data): array {
@@ -247,6 +253,9 @@ class SubscriberSubscribeController {
       }
       if (CaptchaConstants::isReCaptcha($captchaSettings['type'])) {
         $this->recaptchaValidator->validate($data);
+      }
+      if (CaptchaConstants::isTurnstile($captchaSettings['type'])) {
+        $this->turnstileValidator->validate($data);
       }
     } catch (ValidationError $error) {
       return $error->getMeta();

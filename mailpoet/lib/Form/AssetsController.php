@@ -19,6 +19,7 @@ class AssetsController {
   private $settings;
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?render=explicit';
+  const TURNSTILE_API_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
   public function __construct(
     WPFunctions $wp,
@@ -39,6 +40,9 @@ class AssetsController {
     $captcha = $this->settings->get('captcha');
     if (!empty($captcha['type']) && CaptchaConstants::isReCaptcha($captcha['type'])) {
       echo '<script src="' . esc_url(self::RECAPTCHA_API_URL) . '" async defer></script>';
+    }
+    if (!empty($captcha['type']) && CaptchaConstants::isTurnstile($captcha['type'])) {
+      echo '<script src="' . esc_url(self::TURNSTILE_API_URL) . '" async defer></script>';
     }
 
     $this->wp->wpPrintScripts('jquery');
@@ -70,6 +74,12 @@ class AssetsController {
       $this->wp->wpEnqueueScript(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL
+      );
+    }
+    if (!empty($captcha['type']) && CaptchaConstants::isTurnstile($captcha['type'])) {
+      $this->wp->wpEnqueueScript(
+        'mailpoet_turnstile',
+        self::TURNSTILE_API_URL
       );
     }
 
