@@ -134,6 +134,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('Design with the classic editor');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
+    $i->waitForElementClickable('button[data-automation-id="select_template_0"]');
     $i->click('button[data-automation-id="select_template_0"]');
     $i->waitForElement('#mailpoet_editor');
 
