@@ -369,6 +369,17 @@ jQuery(($) => {
     });
   }
 
+  function resetCaptchaWidgets(
+    formData: ReturnType<JQuery['mailpoetSerializeObject']>,
+  ) {
+    if (window.grecaptcha && formData.recaptchaWidgetId) {
+      window.grecaptcha.reset(formData.recaptchaWidgetId);
+    }
+    if (window.turnstile && formData.turnstileWidgetId) {
+      window.turnstile.reset(formData.turnstileWidgetId);
+    }
+  }
+
   function submitSubscribeForm(
     form: JQuery<HTMLFormElement>,
     formData: ReturnType<JQuery['mailpoetSerializeObject']>,
@@ -409,9 +420,7 @@ jQuery(($) => {
           } else {
             void updateCaptcha();
           }
-          if (window.grecaptcha && formData.recaptchaWidgetId) {
-            window.grecaptcha.reset(formData.recaptchaWidgetId);
-          }
+          resetCaptchaWidgets(formData);
           form
             .find('.mailpoet_validate_error')
             .html(response.errors.map((error) => error.message).join('<br />'))
@@ -423,9 +432,7 @@ jQuery(($) => {
           // Fallback: go to captcha page (for non-JS scenarios)
           window.top.location.href = response.meta.redirect_url;
         } else {
-          if (window.grecaptcha && formData.recaptchaWidgetId) {
-            window.grecaptcha.reset(formData.recaptchaWidgetId);
-          }
+          resetCaptchaWidgets(formData);
           form
             .find('.mailpoet_validate_error')
             .html(response.errors.map((error) => error.message).join('<br />'))
@@ -433,9 +440,7 @@ jQuery(($) => {
         }
       })
       .done((response) => {
-        if (window.grecaptcha && formData.recaptchaWidgetId) {
-          window.grecaptcha.reset(formData.recaptchaWidgetId);
-        }
+        resetCaptchaWidgets(formData);
         return response;
       })
       .done((response) => {
@@ -459,9 +464,7 @@ jQuery(($) => {
         // reset validation
         parsley.reset();
         // reset captcha
-        if (window.grecaptcha && formData.recaptchaWidgetId) {
-          window.grecaptcha.reset(formData.recaptchaWidgetId);
-        }
+        resetCaptchaWidgets(formData);
 
         // resize iframe
         if (
@@ -497,7 +500,7 @@ jQuery(($) => {
 
     const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
     const field = recaptcha.find('> .mailpoet_recaptcha_field');
-    if (sitekey) {
+    if (sitekey && container) {
       const params: ReCaptchaV2.Parameters = { sitekey, size };
 
       if (size === 'invisible') {
@@ -520,6 +523,31 @@ jQuery(($) => {
 
   $('.mailpoet_recaptcha').each((_, element) => {
     setTimeout(renderCaptcha, 400, element, 1);
+  });
+
+  function renderTurnstile(element, iteration: number) {
+    if (!window.turnstile || !window.turnstile.render) {
+      if (iteration < 20) {
+        setTimeout(renderTurnstile, 400, element, iteration + 1);
+      }
+      return;
+    }
+    const turnstile = $(element);
+    const sitekey = turnstile.attr('data-sitekey');
+    const container = turnstile.find('> .mailpoet_turnstile_container').get(0);
+    const field = turnstile.find('> .mailpoet_turnstile_field');
+
+    if (sitekey && container) {
+      const widgetId = window.turnstile.render(container, {
+        sitekey,
+        'response-field-name': 'data[turnstileResponseToken]',
+      });
+      field.val(widgetId as string);
+    }
+  }
+
+  $('.mailpoet_turnstile').each((_, element) => {
+    setTimeout(renderTurnstile, 400, element, 1);
   });
 
   /**

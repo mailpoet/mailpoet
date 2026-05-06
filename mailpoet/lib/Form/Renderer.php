@@ -69,9 +69,8 @@ class Renderer {
       if (
         $captchaEnabled
         && $block['type'] === FormEntity::SUBMIT_BLOCK_TYPE
-        && CaptchaConstants::isRecaptcha($this->settings->get('captcha.type'))
       ) {
-        $html .= $this->renderReCaptcha();
+        $html .= $this->renderCaptcha();
       }
       if (in_array($block['type'], [FormEntity::COLUMN_BLOCK_TYPE, FormEntity::COLUMNS_BLOCK_TYPE])) {
         $blocks = $block['body'] ?? [];
@@ -85,6 +84,17 @@ class Renderer {
 
   private function renderHoneypot(): string {
     return '<label class="mailpoet_hp_email_label" style="display: none !important;">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"/></label>';
+  }
+
+  private function renderCaptcha(): string {
+    $type = $this->settings->get('captcha.type');
+    if (CaptchaConstants::isReCaptcha($type)) {
+      return $this->renderReCaptcha();
+    }
+    if (CaptchaConstants::isTurnstile($type)) {
+      return $this->renderTurnstile();
+    }
+    return '';
   }
 
   private function renderReCaptcha(): string {
@@ -119,5 +129,14 @@ class Renderer {
     }
 
     return $html;
+  }
+
+  private function renderTurnstile(): string {
+    $siteKey = $this->settings->get('captcha.turnstile_site_token');
+
+    return '<div class="mailpoet_turnstile" data-sitekey="' . $siteKey . '">
+      <div class="mailpoet_turnstile_container"></div>
+      <input class="mailpoet_turnstile_field" type="hidden" name="turnstileWidgetId">
+    </div>';
   }
 }
