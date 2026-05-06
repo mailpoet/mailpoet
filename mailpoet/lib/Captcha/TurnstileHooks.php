@@ -49,7 +49,7 @@ class TurnstileHooks {
       return CaptchaConstants::isTurnstile(
         $this->settings->get('captcha.type')
       );
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
       return false;
     }
   }
