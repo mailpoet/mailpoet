@@ -19,6 +19,7 @@ class ContextFactory {
   public function getContextData(): array {
     return [
       'comment_statuses' => $this->getCommentStatuses(),
+      'editable_roles' => $this->getEditableRoles(),
       'post_types' => $this->getPostTypes(),
       'taxonomies' => $this->getTaxonomies(),
     ];
@@ -37,6 +38,20 @@ class ContextFactory {
       ];
     }
     return $stati;
+  }
+
+  /**
+   * @return string[][]
+   */
+  private function getEditableRoles(): array {
+    $roles = [];
+    foreach ($this->wp->getEditableRoles() as $id => $role) {
+      $roles[] = [
+        'id' => $id,
+        'name' => (string)($role['name'] ?? $id),
+      ];
+    }
+    return $roles;
   }
 
   /**

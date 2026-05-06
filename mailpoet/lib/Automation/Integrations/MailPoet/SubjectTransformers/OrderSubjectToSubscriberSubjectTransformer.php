@@ -32,14 +32,14 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
     $this->woocommerceHelper = $woocommerceHelper;
   }
 
-  public function transform(Subject $data): Subject {
+  public function transform(Subject $data): ?Subject {
     if ($this->accepts() !== $data->getKey()) {
       throw new \InvalidArgumentException('Invalid subject type');
     }
 
       $subscriber = $this->findOrCreateSubscriber($data);
     if (!$subscriber instanceof SubscriberEntity) {
-      throw new \InvalidArgumentException('Subscriber not found');
+      return null;
     }
 
     return new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]);

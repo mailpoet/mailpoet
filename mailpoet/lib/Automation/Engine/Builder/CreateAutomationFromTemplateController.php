@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Builder;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\Validation\AutomationValidator;
@@ -19,14 +20,19 @@ class CreateAutomationFromTemplateController {
   /** @var Registry */
   private $registry;
 
+  /** @var Hooks */
+  private $hooks;
+
   public function __construct(
     AutomationStorage $storage,
     AutomationValidator $automationValidator,
-    Registry $registry
+    Registry $registry,
+    Hooks $hooks
   ) {
     $this->storage = $storage;
     $this->automationValidator = $automationValidator;
     $this->registry = $registry;
+    $this->hooks = $hooks;
   }
 
   public function createAutomation(string $slug): Automation {
@@ -42,6 +48,7 @@ class CreateAutomationFromTemplateController {
     if (!$savedAutomation) {
       throw new InvalidStateException('Automation not found.');
     }
+    $this->hooks->doAutomationAfterCreateFromTemplate($savedAutomation, $slug);
     return $savedAutomation;
   }
 }

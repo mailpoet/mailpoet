@@ -148,6 +148,10 @@ class WordPress {
     return get_comment_statuses();
   }
 
+  public function getEditableRoles(): array {
+    return get_editable_roles();
+  }
+
   public function getPostStatuses(): array {
     return get_post_statuses();
   }

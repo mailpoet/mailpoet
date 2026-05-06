@@ -54,8 +54,12 @@ class UpdateAutomationController {
   }
 
   public function updateAutomation(int $id, array $data): Automation {
+    $previousAutomation = $this->storage->getAutomation($id);
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
+      throw Exceptions::automationNotFound($id);
+    }
+    if (!$previousAutomation) {
       throw Exceptions::automationNotFound($id);
     }
     $this->validateIfAutomationCanBeUpdated($automation, $data);
@@ -99,6 +103,7 @@ class UpdateAutomationController {
     if (!$automation) {
       throw Exceptions::automationNotFound($id);
     }
+    $this->hooks->doAutomationAfterUpdate($automation, $previousAutomation);
     return $automation;
   }
 
