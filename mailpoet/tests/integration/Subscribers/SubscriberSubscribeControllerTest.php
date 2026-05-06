@@ -263,6 +263,35 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->assertNotNull($subscriber->getSubscriberTag($tag));
   }
 
+  public function testItAddsFormTagsToAlreadySubscribedSubscriberWithConfirmationEnabled(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $confirmationEmailMailerMock = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailerMock->expects($this->never())
+      ->method('sendConfirmationEmailOnce');
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, ['confirmationEmailMailer' => $confirmationEmailMailerMock]);
+    $subscriberController = $this->getServiceWithOverrides(SubscriberSubscribeController::class, ['subscriberActions' => $subscriberActions]);
+
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $tag = (new Tag())->withName('Already Subscribed Tag')->create();
+    $form = $this->createForm($segment, [], [$tag]);
+    $email = 'already-subscribed-tags-' . rand(0, 10000) . '@example.com';
+    $subscriber = (new SubscriberFactory())
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $subscriberController->subscribe([
+      $this->obfuscatedEmail => $email,
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ]);
+
+    $this->subscribersRepository->refresh($subscriber);
+    $this->assertEquals(SubscriberEntity::STATUS_SUBSCRIBED, $subscriber->getStatus());
+    $this->assertCount(1, $subscriber->getSubscriberTags());
+    $this->assertNotNull($subscriber->getSubscriberTag($tag));
+  }
+
   /**
    * @param CustomFieldEntity[] $customFields
    * @param TagEntity[] $tags

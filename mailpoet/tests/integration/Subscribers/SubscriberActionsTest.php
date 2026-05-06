@@ -267,6 +267,56 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', $originalSettingValue);
   }
 
+  public function testItDoesNotSendConfirmationOrStoreDataForAlreadySubscribedSubscriber(): void {
+    $originalConfirmationSettingValue = $this->settings->get('signup_confirmation.enabled');
+    $originalTimeZoneSettingValue = $this->settings->get('collect_subscriber_timezones.enabled');
+    $this->settings->set('signup_confirmation.enabled', true);
+    $this->settings->set('collect_subscriber_timezones.enabled', true);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('already-subscribed@example.com')
+      ->withFirstName('Original')
+      ->withLastName('Subscriber')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withTimeZone('America/New_York')
+      ->withUnconfirmedData('{"first_name":"Stale"}')
+      ->create();
+    $customField = (new CustomField())
+      ->withName('favorite color')
+      ->withSubscriber($subscriber->getId(), 'blue')
+      ->create();
+    $segment = $this->segmentsRepository->createOrUpdate('Already Subscribed List');
+
+    $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailer->expects($this->never())
+      ->method('sendConfirmationEmailOnce');
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
+      'confirmationEmailMailer' => $confirmationEmailMailer,
+    ]);
+
+    [$subscriber, $meta] = $subscriberActions->subscribe([
+      'email' => 'already-subscribed@example.com',
+      'first_name' => 'Updated',
+      'last_name' => 'Person',
+      'cf_' . $customField->getId() => 'red',
+      SubscriberEntity::TIME_ZONE_FIELD_NAME => 'Europe/Prague',
+    ], [$segment->getId()]);
+
+    $this->entityManager->refresh($subscriber);
+    verify($meta['confirmationEmailResult'])->false();
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getSegments())->arrayCount(1);
+    verify($subscriber->getFirstName())->equals('Original');
+    verify($subscriber->getLastName())->equals('Subscriber');
+    verify($subscriber->getTimeZone())->equals('America/New_York');
+    verify($subscriber->getUnconfirmedData())->empty();
+    $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
+    verify($subscriberCustomField->getValue())->equals('blue');
+
+    $this->settings->set('signup_confirmation.enabled', $originalConfirmationSettingValue);
+    $this->settings->set('collect_subscriber_timezones.enabled', $originalTimeZoneSettingValue);
+  }
+
   public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {
     $this->settings->set('signup_confirmation.enabled', true);
     $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);

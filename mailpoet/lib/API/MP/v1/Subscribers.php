@@ -329,6 +329,7 @@ class Subscribers {
 
     $this->checkSubscriberAndListParams($subscriberId, $listIds);
     $subscriber = $this->findSubscriber($subscriberId);
+    $wasAlreadySubscribed = $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED;
     $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_SUBSCRIBE);
 
     // restore trashed subscriber
@@ -379,7 +380,7 @@ class Subscribers {
     }
 
     // send confirmation email
-    if ($sendConfirmationEmail) {
+    if ($sendConfirmationEmail && !$wasAlreadySubscribed) {
       [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($foundSegments);
       $this->_sendConfirmationEmail($subscriber, $confirmationEmailId, $confirmationPageId);
     }
