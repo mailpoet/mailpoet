@@ -91,6 +91,24 @@ class RendererTest extends \MailPoetUnitTest {
     verify($source->value)->equals("https://www.google.com/recaptcha/api/fallback?k=$token");
   }
 
+  public function testItShouldRenderTurnstile() {
+    $token = '123456';
+    $this->blocksRendererMock->method('renderBlock')->willReturn('<div>Dummy</div>');
+    $this->settingsMock
+      ->method('get')
+      ->will($this->returnValueMap([
+        ['captcha.type', null, CaptchaConstants::TYPE_TURNSTILE],
+        ['captcha.turnstile_site_token', null, $token],
+      ]));
+    $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
+    $turnstile = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_turnstile' and @data-sitekey='$token']");
+    verify($turnstile->length)->equals(1);
+    $container = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_turnstile_container']");
+    verify($container->length)->equals(1);
+    $widgetField = $this->htmlParser->findByXpath($html, "//input[@class='mailpoet_turnstile_field' and @name='turnstileWidgetId']");
+    verify($widgetField->length)->equals(1);
+  }
+
   public function testItShouldNotRenderHoneypotAndRecaptcha() {
     $this->blocksRendererMock->method('renderBlock')->willReturn('<div>Dummy</div>');
     $this->settingsMock
