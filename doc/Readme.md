@@ -16,12 +16,19 @@ Currently supported version is `v1`.
 ### Instantiation
 
 ```php
-if (class_exists(\MailPoet\API\API::class)) {
-  $mailpoet_api = \MailPoet\API\API::MP('v1');
-}
+add_action('init', function () {
+  if (!class_exists(\MailPoet\API\API::class)) {
+    return;
+  }
+  try {
+    $mailpoet_api = \MailPoet\API\API::MP('v1');
+  } catch (\Exception $e) {
+    // MailPoet is still initializing or upgrading on this request.
+  }
+});
 ```
 
-Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by WordPress.
+Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by WordPress. Call the API from `init` (default priority) or later so MailPoet has run any pending database migrations. Calling the API earlier — for example on `plugins_loaded` during an upgrade — will throw a readiness exception you can catch and handle.
 
 ### Available API Methods
 
