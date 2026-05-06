@@ -58,38 +58,45 @@ const serializeSelectedValues = (values) => sortValues(values).join(',');
 const getFirstSelectedValue = (value, defaultValue) =>
   parseSelectedValues(value, defaultValue, weekDayValues)[0];
 
+const checkboxGridClassName = (columns) =>
+  columns === 4
+    ? 'mailpoet-grid-four-columns'
+    : 'mailpoet-grid-three-columns';
+
 function MultipleCheckboxSelection({
   name,
   values,
   selectedValues,
   onValueChange,
   automationId,
+  columns,
 }) {
   const normalizedSelectedValues = selectedValues.map((value) => `${value}`);
   return (
-    <div className="mailpoet-grid-four-columns">
+    <div className={checkboxGridClassName(columns)}>
       {Object.keys(values).map((value) => (
-        <Checkbox
-          key={`${name}-${value}`}
-          name={name}
-          value={value}
-          checked={normalizedSelectedValues.includes(value)}
-          onCheck={(isChecked) => {
-            let nextValues = normalizedSelectedValues;
-            if (isChecked) {
-              nextValues = normalizedSelectedValues.concat([value]);
-            } else if (normalizedSelectedValues.length > 1) {
-              nextValues = normalizedSelectedValues.filter(
-                (selectedValue) => selectedValue !== value,
-              );
-            }
-            onValueChange(serializeSelectedValues([...new Set(nextValues)]));
-          }}
-          automationId={`${automationId}_${value}`}
-          isFullWidth
-        >
-          {values[value]}
-        </Checkbox>
+        <span>
+          <Checkbox
+            key={`${name}-${value}`}
+            name={name}
+            value={value}
+            checked={normalizedSelectedValues.includes(value)}
+            onCheck={(isChecked) => {
+              let nextValues = normalizedSelectedValues;
+              if (isChecked) {
+                nextValues = normalizedSelectedValues.concat([value]);
+              } else if (normalizedSelectedValues.length > 1) {
+                nextValues = normalizedSelectedValues.filter(
+                  (selectedValue) => selectedValue !== value,
+                );
+              }
+              onValueChange(serializeSelectedValues([...new Set(nextValues)]));
+            }}
+            automationId={`${automationId}_${value}`}
+          >
+            {values[value]}
+          </Checkbox>
+        </span>
       ))}
     </div>
   );
@@ -101,6 +108,7 @@ MultipleCheckboxSelection.propTypes = {
   selectedValues: PropTypes.arrayOf(PropTypes.string).isRequired,
   onValueChange: PropTypes.func.isRequired,
   automationId: PropTypes.string.isRequired,
+  columns: PropTypes.oneOf([3, 4]).isRequired,
 };
 
 class NotificationScheduling extends Component {
@@ -150,9 +158,9 @@ class NotificationScheduling extends Component {
 
   render() {
     const value = this.getCurrentValue();
+    let multipleCheckboxSelection;
     let timeOfDaySelection;
     let weekDaySelection;
-    let monthDaySelection;
     let nthWeekDaySelection;
 
     if (value.intervalType !== 'immediately') {
@@ -166,7 +174,7 @@ class NotificationScheduling extends Component {
     }
 
     if (value.intervalType === 'weekly') {
-      weekDaySelection = (
+      multipleCheckboxSelection = (
         <MultipleCheckboxSelection
           name="weekDay"
           values={weekDayValues}
@@ -177,6 +185,7 @@ class NotificationScheduling extends Component {
           )}
           onValueChange={this.handleWeekDaysChange}
           automationId="newsletter_week_day"
+          columns={3}
         />
       );
     }
@@ -192,7 +201,7 @@ class NotificationScheduling extends Component {
     }
 
     if (value.intervalType === 'monthly') {
-      monthDaySelection = (
+      multipleCheckboxSelection = (
         <MultipleCheckboxSelection
           name="monthDay"
           values={monthDayValues}
@@ -203,6 +212,7 @@ class NotificationScheduling extends Component {
           )}
           onValueChange={this.handleMonthDaysChange}
           automationId="newsletter_month_day"
+          columns={4}
         />
       );
     }
@@ -234,9 +244,17 @@ class NotificationScheduling extends Component {
         </Grid.CenteredRow>
         <div className="mailpoet-gap" />
 
+        {multipleCheckboxSelection && (
+          <>
+            <div className="mailpoet-grid-column">
+              {multipleCheckboxSelection}
+            </div>
+            <div className="mailpoet-gap" />
+          </>
+        )}
+
         <div className="mailpoet-grid-column mailpoet-flex">
           {nthWeekDaySelection}
-          {monthDaySelection}
           {weekDaySelection}
           {timeOfDaySelection}
         </div>
