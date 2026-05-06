@@ -94,18 +94,14 @@ function WelcomeWizardStepsController(): JSX.Element {
     async (e) => {
       e.preventDefault();
       setLoading(true);
-      const defaultSenderInfo = { address: window.admin_email, name: '' };
 
       if (window.mailpoet_is_dotcom && !window.wizard_has_tracking_settings) {
         await updateTracking(true, true);
       }
-      await updateSettings(createSenderSettings(defaultSenderInfo)).then(() => {
-        setSender(defaultSenderInfo);
-        redirect(step);
-      });
+      redirect(step);
       setLoading(false);
     },
-    [redirect, step, setSender, updateTracking],
+    [redirect, step, updateTracking],
   );
 
   const stepName = mapStepNumberToStepName(step);
