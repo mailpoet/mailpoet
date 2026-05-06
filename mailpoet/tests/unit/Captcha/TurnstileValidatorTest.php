@@ -14,7 +14,7 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
     $captchaSettings = [
       'turnstile_secret_token' => 'turnstile_secret_token',
     ];
-    $response = json_encode(['success' => true]);
+    $response = $this->encodeSuccessfulResponse();
     $remoteAddr = '203.0.113.1';
     $hadRemoteAddr = array_key_exists('REMOTE_ADDR', $_SERVER);
     $previousRemoteAddr = $hadRemoteAddr ? $_SERVER['REMOTE_ADDR'] : null;
@@ -37,7 +37,7 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
     $captchaSettings = [
       'turnstile_secret_token' => 'turnstile_secret_token',
     ];
-    $response = json_encode(['success' => true]);
+    $response = $this->encodeSuccessfulResponse();
     $hadRemoteAddr = array_key_exists('REMOTE_ADDR', $_SERVER);
     $previousRemoteAddr = $hadRemoteAddr ? $_SERVER['REMOTE_ADDR'] : null;
     unset($_SERVER['REMOTE_ADDR']);
@@ -65,6 +65,14 @@ class TurnstileValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+  }
+
+  private function encodeSuccessfulResponse(): string {
+    $response = json_encode(['success' => true]);
+    if (!is_string($response)) {
+      throw new \RuntimeException('Failed to encode a successful Turnstile response.');
+    }
+    return $response;
   }
 
   private function makeWpForSuccessfulTurnstileValidation(
