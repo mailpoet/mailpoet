@@ -111,8 +111,12 @@ class NewsletterLinks extends APIEndpoint {
         if (in_array($key, ['url', 'link'], true)) {
           $this->addUrl($urls, $value);
         }
-        foreach ($this->newsletterLinks->extract($value) as $link) {
-          $this->addUrl($urls, $link['link'] ?? '');
+        // Links::extract parses HTML and scans for shortcodes; skip when neither marker is present
+        // to avoid running a DOM parse on every plain-text leaf of the body tree.
+        if (strpos($value, '<') !== false || strpos($value, '[') !== false) {
+          foreach ($this->newsletterLinks->extract($value) as $link) {
+            $this->addUrl($urls, $link['link'] ?? '');
+          }
         }
       }
 
