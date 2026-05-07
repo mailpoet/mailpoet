@@ -22,8 +22,8 @@ import {
 } from '../config.js';
 import {
   login,
-  waitForSelectorToBeVisible,
   clickFirstSelector,
+  waitForSelectorToBeVisible,
 } from '../utils/helpers.js';
 
 const automationActionMenuSelector =
@@ -42,7 +42,7 @@ export async function automationTrashRestore() {
     });
 
     await page.waitForLoadState('networkidle');
-    await waitForSelectorToBeVisible(page, automationActionMenuSelector);
+    await page.waitForSelector(automationActionMenuSelector);
     await page.screenshot({
       path: screenshotPath + 'Automation_Trash_Restore_01.png',
       fullPage: fullPageSet,
@@ -77,7 +77,7 @@ export async function automationTrashRestore() {
     await page.locator('.mailpoet-tab-trash').click(); // click Trash tab
     await page.waitForLoadState('networkidle');
     await waitForSelectorToBeVisible(page, '.mailpoet-tab-trash.is-active');
-    await waitForSelectorToBeVisible(page, automationActionMenuSelector);
+    await page.waitForSelector(automationActionMenuSelector);
     await clickFirstSelector(page, automationActionMenuSelector);
     await page.waitForLoadState('networkidle');
     await clickFirstSelector(page, '.components-dropdown-menu__menu-item'); // click Restore

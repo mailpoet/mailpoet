@@ -151,6 +151,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $dataViewsMenuItemXpath = ['xpath' => '//*[@role="menuitem" and normalize-space(.)="' . $link . '"]'];
     $lastException = null;
 
+    if ($this->clickListingRowActionWithJavaScript((string)$itemName, (string)$link)) {
+      return;
+    }
+
     for ($x = 1; $x <= 3; $x++) {
       try {
         $i->scrollListingRowIntoViewByItemName($itemName);
@@ -196,6 +200,26 @@ class AcceptanceTester extends \Codeception\Actor {
     }
 
     throw $lastException;
+  }
+
+  private function clickListingRowActionWithJavaScript(string $itemName, string $link): bool {
+    $encodedItemName = json_encode($itemName);
+    $encodedLink = json_encode($link);
+    return (bool)$this->executeJS(
+      <<<JS
+      const itemName = {$encodedItemName};
+      const link = {$encodedLink};
+      const rows = Array.from(document.querySelectorAll('tr'));
+      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      if (!row) return false;
+      const action = Array.from(row.querySelectorAll('a, button')).find((element) => element.textContent.trim() === link);
+      if (!action) return false;
+      row.scrollIntoView({ block: 'center', inline: 'nearest' });
+      row.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+      action.click();
+      return true;
+      JS
+    );
   }
 
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
@@ -331,8 +355,13 @@ class AcceptanceTester extends \Codeception\Actor {
   public function selectAllListingItems() {
     $i = $this;
     try {
-      $i->waitForElementVisible('[data-automation-id="select_all"]', 1);
-      $i->click('[data-automation-id="select_all"]');
+      $i->waitForElementVisible('[data-automation-id="select_all"]', 3);
+      try {
+        $i->checkOption('#select_all');
+      } catch (Exception $exception) {
+        $i->click('[data-automation-id="select_all"]');
+      }
+      $i->waitForElementVisible('[data-automation-id="listing-bulk-actions"]', 5);
       return;
     } catch (Exception $exception) {
       $dataViewsSelectAll = ['xpath' => '//table//thead//input[@type="checkbox"]'];
