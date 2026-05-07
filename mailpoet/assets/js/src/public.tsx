@@ -380,12 +380,36 @@ jQuery(($) => {
     }
   }
 
-  function submitSubscribeForm(
+  // Fetch a fresh nonce just before submit so cached form HTML doesn't break signups.
+  // Falls back to the embedded token if the request fails (offline, blocked, etc.).
+  async function refreshFormToken(
+    form: JQuery<HTMLFormElement>,
+    fallback: string,
+  ): Promise<string> {
+    try {
+      const response = await fetch(
+        `${window.MailPoetForm.ajax_url}?action=mailpoet_token`,
+        { cache: 'no-store', credentials: 'same-origin' },
+      );
+      if (!response.ok) return fallback;
+      const body = (await response.json()) as { token?: string };
+      if (typeof body.token === 'string' && body.token) {
+        form.find('input[name="token"]').val(body.token);
+        return body.token;
+      }
+    } catch {
+      // network/parse error — fall back to embedded token
+    }
+    return fallback;
+  }
+
+  async function submitSubscribeForm(
     form: JQuery<HTMLFormElement>,
     formData: ReturnType<JQuery['mailpoetSerializeObject']>,
     parsley,
   ) {
     form.addClass('mailpoet_form_sending');
+    const token = await refreshFormToken(form, formData.token);
     // ajax request
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     MailPoet.Ajax.post<
@@ -398,7 +422,7 @@ jQuery(($) => {
       } & ErrorResponse
     >({
       url: window.MailPoetForm.ajax_url,
-      token: formData.token,
+      token,
       api_version: formData.api_version,
       endpoint: 'subscribers',
       action: 'subscribe',
@@ -512,7 +536,7 @@ jQuery(($) => {
             ({} as ReturnType<JQuery['mailpoetSerializeObject']>);
           formData.data.recaptchaResponseToken = recaptchaResponseToken;
 
-          submitSubscribeForm(form, formData, form.parsley());
+          void submitSubscribeForm(form, formData, form.parsley());
         };
       }
 
@@ -908,7 +932,7 @@ jQuery(($) => {
         }
 
         if (size !== 'invisible') {
-          submitSubscribeForm(form, formData, parsley);
+          void submitSubscribeForm(form, formData, parsley);
         }
 
         return false;
