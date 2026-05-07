@@ -101,7 +101,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     // Check that the send email step waits for email to be sent.
     $this->openAutomationAnalytics($i, $automationId);
     $emailStatsContainer = Locator::contains('.mailpoet-automation-editor-step-wrapper', 'Send email');
-    $i->see('Sent 0', $emailStatsContainer);
+    $this->seeSendEmailSentCount($i, 0);
     $i->triggerAutomationActionScheduler(); // Set delay scheduled at to now, runs delay and send email
     $i->reloadPage();
     $i->see('(1) waiting', $emailStatsContainer);
@@ -110,7 +110,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->triggerMailPoetActionScheduler(); // Runs the email queue & updates the step status
     $i->reloadPage();
     $i->waitForText('Welcome new subscribers');
-    $i->see('Sent 1', $emailStatsContainer);
+    $this->seeSendEmailSentCount($i, 1);
     $i->see('(0) waiting', $emailStatsContainer);
 
     // Check the email.
@@ -137,6 +137,25 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->amOnUrl(
       \AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-automation-analytics&id=' . $automationId
     );
+  }
+
+  private function seeSendEmailSentCount(\AcceptanceTester $i, int $count): void {
+    $classContains = 'contains(concat(" ", normalize-space(@class), " "), " %s ")';
+    $stepWrapper = sprintf($classContains, 'mailpoet-automation-editor-step-wrapper');
+    $panelSection = sprintf($classContains, 'mailpoet-automation-analytics-send-email-panel-section');
+    $panelLabel = sprintf($classContains, 'mailpoet-automation-analytics-send-email-panel-label');
+    $panelValue = sprintf($classContains, 'mailpoet-automation-analytics-send-email-panel-value');
+    $sentCountSelector = sprintf(
+      '//div[%s][contains(., "Send email")]//div[%s]' .
+      '[.//span[%s and normalize-space(.) = "Sent"]]' .
+      '[.//span[%s and normalize-space(.) = "%d"]]',
+      $stepWrapper,
+      $panelSection,
+      $panelLabel,
+      $panelValue,
+      $count
+    );
+    $i->waitForElementVisible(['xpath' => $sentCountSelector]);
   }
 
   private function waitForAutomationListingRow(\AcceptanceTester $i, string $automationId, string $automationName): void {

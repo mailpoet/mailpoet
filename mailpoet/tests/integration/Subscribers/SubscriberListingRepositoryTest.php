@@ -25,6 +25,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   /** @var SubscriberListingRepository */
   private $repository;
 
+  /** @var int */
+  private static $subscriberEmailSequence = 0;
+
   private $listingData = [
     'params' => [
       0 => '',
@@ -430,8 +433,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   private function createSubscriberEntity(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
-    $rand = rand(0, 100000);
-    $subscriber->setEmail("john{$rand}@mailpoet.com");
+    self::$subscriberEmailSequence++;
+    $subscriber->setEmail(
+      sprintf('subscriber-listing-repository-%d@mailpoet.com', self::$subscriberEmailSequence)
+    );
     $subscriber->setFirstName('John');
     $subscriber->setLastName('Doe');
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
