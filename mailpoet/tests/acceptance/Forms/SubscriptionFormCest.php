@@ -4,7 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
 use MailPoet\Captcha\CaptchaConstants;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
@@ -187,13 +189,14 @@ class SubscriptionFormCest {
 
   public function subscriptionNewPageConfirmation(\AcceptanceTester $i) {
     $i->wantTo('Subscribe to a form and to see new page confirmation');
-    $i->login();
-    $i->amOnMailpoetPage('Forms');
-    $i->clickItemRowActionByItemName(self::FORM_NAME, 'Edit');
-    $i->waitForElement('[data-automation-id="form_title_input"]');
-    $i->click('(//div[@class="components-radio-control__option"])[2]'); // Click Go to Page option
-    $i->selectOption('.components-select-control__input', 'Sample Page');
-    $i->saveFormInEditor();
+    $pageId = $i->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'subscription-confirmation-page',
+      'post_title' => 'Sample Page',
+      'post_status' => 'publish',
+    ]);
+    $this->setFormSuccessPage((int)$pageId);
     $i->amOnPage('/form-test');
     $i->executeJS('window.scrollTo(0, document.body.scrollHeight);');
     $i->switchToIframe('#mailpoet_form_iframe');
@@ -201,5 +204,18 @@ class SubscriptionFormCest {
     $i->scrollTo('.mailpoet_submit');
     $i->click('.mailpoet_submit');
     $i->waitForText('Sample Page');
+  }
+
+  private function setFormSuccessPage(int $pageId): void {
+    $formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
+    $form = $formsRepository->findOneById($this->formId);
+    if (!$form) {
+      throw new \RuntimeException('Subscription form was not created.');
+    }
+    $settings = $form->getSettings() ?? [];
+    $settings['on_success'] = 'page';
+    $settings['success_page'] = $pageId;
+    $form->setSettings($settings);
+    $formsRepository->flush();
   }
 }
