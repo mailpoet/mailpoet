@@ -21,9 +21,7 @@ const WordPressFormattedInput = forwardRef<
   HTMLInputElement,
   WordPressFormattedInputProps
 >(({ selectedDate, value: _value, ...props }, ref) => {
-  const formattedValue = selectedDate
-    ? MailPoet.Date.short(selectedDate)
-    : '';
+  const formattedValue = selectedDate ? MailPoet.Date.short(selectedDate) : '';
 
   return <input {...props} ref={ref} value={formattedValue} readOnly />;
 });
