@@ -1,5 +1,5 @@
 import { __, _x } from '@wordpress/i18n';
-import { payment } from '@wordpress/icons';
+import { cart } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
@@ -24,7 +24,7 @@ export const step: StepType = {
   keywords,
   foreground: '#2271b1',
   background: '#f0f6fc',
-  icon: () => payment,
+  icon: () => cart,
   edit: () => (
     <PremiumModalForStepEdit
       tracking={{

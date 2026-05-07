@@ -5,6 +5,10 @@ namespace MailPoet\Test\Automation\Integrations\WordPress;
 use MailPoet\Automation\Integrations\WordPress\ContextFactory;
 
 class ContextFactoryTest extends \MailPoetTest {
+  public function _after(): void {
+    wp_set_current_user(0);
+  }
+
   public function testItExposesEditableRoles(): void {
     wp_set_current_user(1);
 

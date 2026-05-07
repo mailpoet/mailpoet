@@ -54,14 +54,11 @@ class UpdateAutomationController {
   }
 
   public function updateAutomation(int $id, array $data): Automation {
-    $previousAutomation = $this->storage->getAutomation($id);
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
       throw Exceptions::automationNotFound($id);
     }
-    if (!$previousAutomation) {
-      throw Exceptions::automationNotFound($id);
-    }
+    $previousAutomation = clone $automation;
     $this->validateIfAutomationCanBeUpdated($automation, $data);
 
     if (array_key_exists('name', $data)) {
