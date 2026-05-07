@@ -37,8 +37,13 @@ class APITest extends \MailPoetTest {
 
   public function testItDoesNotThrowOnceDbVersionMatches() {
     $settings = $this->diContainer->get(SettingsController::class);
+    $originalDbVersion = $settings->get('db_version');
     $settings->set('db_version', Env::$version);
 
-    verify(API::MP('v1'))->instanceOf('MailPoet\API\MP\v1\API');
+    try {
+      verify(API::MP('v1'))->instanceOf('MailPoet\API\MP\v1\API');
+    } finally {
+      $settings->set('db_version', $originalDbVersion);
+    }
   }
 }
