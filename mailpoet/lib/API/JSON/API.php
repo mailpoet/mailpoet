@@ -90,6 +90,17 @@ class API {
       [$this, 'setupAjax']
     );
 
+    // fresh-token endpoint for cached pages (e.g. edge-cached signup forms);
+    // intentionally separate from setupAjax() to break the chicken-and-egg of needing a token to fetch a token
+    WPFunctions::get()->addAction(
+      'wp_ajax_mailpoet_token',
+      [$this, 'getToken']
+    );
+    WPFunctions::get()->addAction(
+      'wp_ajax_nopriv_mailpoet_token',
+      [$this, 'getToken']
+    );
+
     // nonce refreshing via heartbeats
     WPFunctions::get()->addAction(
       'wp_refresh_nonces',
@@ -250,6 +261,21 @@ class API {
       esc_js($this->wp->wpCreateNonce('mailpoet_token')),
       esc_js(self::CURRENT_VERSION)
     );
+  }
+
+  public function getToken() {
+    // Bypass intermediate caches so the token is always fresh; the embedded form
+    // token in HTML can be served stale by edge caches and expire by submit time.
+    if (!headers_sent()) {
+      header('Cache-Control: no-store, max-age=0');
+      header('Content-Type: application/json; charset=UTF-8');
+    }
+
+    echo wp_json_encode([
+      'token' => $this->wp->wpCreateNonce('mailpoet_token'),
+      'api_version' => self::CURRENT_VERSION,
+    ]);
+    $this->wp->wpDie();
   }
 
   public function addTokenToHeartbeatResponse($response) {

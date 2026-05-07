@@ -98,6 +98,31 @@ class APITest extends \MailPoetTest {
     verify($called)->true();
   }
 
+  public function testGetTokenReturnsFreshNonceWithNoStoreHeader() {
+    $wpStub = Stub::make(new WPFunctions, [
+      'wpCreateNonce' => Expected::once(function($action) {
+        verify($action)->equals('mailpoet_token');
+        return 'fresh-token';
+      }),
+      'wpDie' => Expected::once(),
+    ]);
+    $api = Stub::makeEmptyExcept(
+      $this->api,
+      'getToken',
+      ['wp' => $wpStub]
+    );
+
+    ob_start();
+    $api->getToken();
+    $output = ob_get_clean();
+
+    $decoded = json_decode((string)$output, true);
+    verify($decoded)->equals([
+      'token' => 'fresh-token',
+      'api_version' => JSONAPI::CURRENT_VERSION,
+    ]);
+  }
+
   public function testItCanAddEndpointNamespaces() {
     verify($this->api->getEndpointNamespaces())->arrayCount(1);
 
