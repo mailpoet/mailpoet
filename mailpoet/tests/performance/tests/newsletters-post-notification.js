@@ -22,6 +22,7 @@ import {
   screenshotPath,
 } from '../config.js';
 import {
+  gotoMailPoetNewsletterPage,
   login,
   selectInSelect2,
   clickFirstSelector,
@@ -36,14 +37,10 @@ export async function newsletterPostNotification() {
     await login(page);
 
     // Go to the Emails page
-    await page.goto(
+    await gotoMailPoetNewsletterPage(
+      page,
       `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/new/notification`,
-      {
-        waitUntil: 'networkidle',
-      },
     );
-
-    await page.waitForLoadState('networkidle');
     await page.screenshot({
       path: screenshotPath + 'Newsletter_Post_Notification_01.png',
       fullPage: fullPageSet,

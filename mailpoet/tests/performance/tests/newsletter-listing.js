@@ -21,7 +21,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import { gotoMailPoetNewsletterPage, login } from '../utils/helpers.js';
 
 export async function newsletterListing() {
   const page = await browser.newPage();
@@ -31,11 +31,10 @@ export async function newsletterListing() {
     await login(page);
 
     // Go to the Emails page
-    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-      waitUntil: 'networkidle',
-    });
-
-    await page.waitForLoadState('networkidle');
+    await gotoMailPoetNewsletterPage(
+      page,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`,
+    );
     await page.screenshot({
       path: screenshotPath + 'Newsletter_Listing_01.png',
       fullPage: fullPageSet,
