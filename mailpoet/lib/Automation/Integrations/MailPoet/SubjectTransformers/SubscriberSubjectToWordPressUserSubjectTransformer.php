@@ -33,7 +33,7 @@ class SubscriberSubjectToWordPressUserSubjectTransformer implements SubjectTrans
 
     $subscriber = $this->subscribersRepository->findOneById((int)$data->getArgs()['subscriber_id']);
     if (!$subscriber) {
-      throw new \InvalidArgumentException('Subscriber not found');
+      return null;
     }
     if (!$subscriber->getWpUserId()) {
       return null;
