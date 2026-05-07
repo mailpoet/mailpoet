@@ -26,6 +26,9 @@ import {
   clickFirstSelector,
 } from '../utils/helpers.js';
 
+const automationActionMenuSelector =
+  '[data-automation-id="automation_listing"] tbody tr:first-child td:last-child button';
+
 export async function automationTrashRestore() {
   const page = await browser.newPage();
 
@@ -39,13 +42,14 @@ export async function automationTrashRestore() {
     });
 
     await page.waitForLoadState('networkidle');
+    await waitForSelectorToBeVisible(page, automationActionMenuSelector);
     await page.screenshot({
       path: screenshotPath + 'Automation_Trash_Restore_01.png',
       fullPage: fullPageSet,
     });
 
     // Move to trash one of the existing automation listing
-    await clickFirstSelector(page, '[aria-label="More"]');
+    await clickFirstSelector(page, automationActionMenuSelector);
     await page.locator('.components-popover__content').click(); // click Trash
     await page.waitForLoadState('networkidle');
     await page.locator('div.components-flex > button.is-primary').focus();
@@ -73,7 +77,8 @@ export async function automationTrashRestore() {
     await page.locator('.mailpoet-tab-trash').click(); // click Trash tab
     await page.waitForLoadState('networkidle');
     await waitForSelectorToBeVisible(page, '.mailpoet-tab-trash.is-active');
-    await clickFirstSelector(page, '[aria-label="More"]');
+    await waitForSelectorToBeVisible(page, automationActionMenuSelector);
+    await clickFirstSelector(page, automationActionMenuSelector);
     await page.waitForLoadState('networkidle');
     await clickFirstSelector(page, '.components-dropdown-menu__menu-item'); // click Restore
     await page.waitForLoadState('networkidle');
