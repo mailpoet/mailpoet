@@ -23,11 +23,12 @@ import {
 import {
   login,
   clickFirstSelector,
+  clickMenuItemByText,
   waitForSelectorToBeVisible,
 } from '../utils/helpers.js';
 
 const automationActionMenuSelector =
-  '[data-automation-id="automation_listing"] tbody tr:first-child td:last-child button';
+  '[data-automation-id="automation_listing"] tbody tr:first-child button[aria-label="Actions"][aria-haspopup="menu"]';
 
 export async function automationTrashRestore() {
   const page = await browser.newPage();
@@ -50,7 +51,7 @@ export async function automationTrashRestore() {
 
     // Move to trash one of the existing automation listing
     await clickFirstSelector(page, automationActionMenuSelector);
-    await page.locator('.components-popover__content').click(); // click Trash
+    await clickMenuItemByText(page, 'Trash');
     await page.waitForLoadState('networkidle');
     await page.locator('div.components-flex > button.is-primary').focus();
     await page.locator('div.components-flex > button.is-primary').click(); // click Move to trash
@@ -80,7 +81,7 @@ export async function automationTrashRestore() {
     await page.waitForSelector(automationActionMenuSelector);
     await clickFirstSelector(page, automationActionMenuSelector);
     await page.waitForLoadState('networkidle');
-    await clickFirstSelector(page, '.components-dropdown-menu__menu-item'); // click Restore
+    await clickMenuItemByText(page, 'Restore');
     await page.waitForLoadState('networkidle');
 
     // Wait for the success notice message and confirm it
