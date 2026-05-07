@@ -20,6 +20,8 @@ import {
 import {
   DEFAULT_DAY,
   formatSelectedValues,
+  getDefaultWeekDay,
+  getOrderedWeekDayKeys,
 } from 'newsletters/scheduling/multi-day';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
@@ -248,6 +250,8 @@ class NewsletterListNotificationComponent extends Component {
         </Fragment>
       ),
     );
+    const defaultWeekDay = getDefaultWeekDay(MailPoet.wpWeekStartsOn);
+    const orderedWeekDayKeys = getOrderedWeekDayKeys(MailPoet.wpWeekStartsOn);
 
     // set sending frequency
     switch (newsletter.options.intervalType) {
@@ -265,7 +269,8 @@ class NewsletterListNotificationComponent extends Component {
             formatSelectedValues(
               newsletter.options.weekDay,
               weekDayValues,
-              DEFAULT_DAY,
+              defaultWeekDay,
+              orderedWeekDayKeys,
             ),
           )
           .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);

@@ -9,6 +9,7 @@ import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext, GlobalContextValue } from 'context';
+import { getDefaultWeekDay } from 'newsletters/scheduling/multi-day';
 
 interface NewsletterNotificationState {
   options: {
@@ -55,7 +56,7 @@ class NewsletterNotificationComponent extends Component<
       options: {
         intervalType: 'daily',
         timeOfDay: 0,
-        weekDay: '1',
+        weekDay: getDefaultWeekDay(MailPoet.wpWeekStartsOn),
         monthDay: '1',
         nthWeekDay: '1',
       },

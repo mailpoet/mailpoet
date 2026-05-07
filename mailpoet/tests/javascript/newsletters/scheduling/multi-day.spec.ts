@@ -1,6 +1,8 @@
 import {
   DEFAULT_DAY,
   formatSelectedValues,
+  getDefaultWeekDay,
+  getOrderedWeekDayKeys,
   parseSelectedValues,
   serializeSelectedValues,
 } from '../../../../assets/js/src/newsletters/scheduling/multi-day';
@@ -24,6 +26,53 @@ const monthDayValues = {
 };
 
 describe('multi-day helpers', () => {
+  describe('getDefaultWeekDay', () => {
+    it('uses the WordPress week start day when it is valid', () => {
+      expect(getDefaultWeekDay('0')).to.equal('0');
+      expect(getDefaultWeekDay(2)).to.equal('2');
+    });
+
+    it('falls back to Monday when the WordPress week start day is missing or invalid', () => {
+      expect(getDefaultWeekDay(null)).to.equal(DEFAULT_DAY);
+      expect(getDefaultWeekDay('8')).to.equal(DEFAULT_DAY);
+    });
+  });
+
+  describe('getOrderedWeekDayKeys', () => {
+    it('orders weekdays from the WordPress week start day', () => {
+      expect(getOrderedWeekDayKeys('0')).to.deep.equal([
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+      ]);
+      expect(getOrderedWeekDayKeys('2')).to.deep.equal([
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '0',
+        '1',
+      ]);
+    });
+
+    it('uses Monday-first order when the WordPress week start day is invalid', () => {
+      expect(getOrderedWeekDayKeys('8')).to.deep.equal([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '0',
+      ]);
+    });
+  });
+
   describe('parseSelectedValues', () => {
     it('returns the default when value is null', () => {
       expect(
@@ -117,6 +166,20 @@ describe('multi-day helpers', () => {
       expect(formatSelectedValues('0', weekDayValues, DEFAULT_DAY)).to.equal(
         'Sunday',
       );
+    });
+
+    it('renders labels in the provided value order', () => {
+      expect(
+        formatSelectedValues('0,5', weekDayValues, DEFAULT_DAY, [
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '0',
+        ]),
+      ).to.equal('Friday, Sunday');
     });
 
     it('drops invalid entries before rendering', () => {
