@@ -89,7 +89,7 @@ export const MailPoetDate: {
     syncWordPressDateSettings();
     const settings = getSettings();
     return dateI18n(
-      settings.formats.datetime,
+      `${settings.formats.date} ${settings.formats.time}`,
       date as DateI18nInput,
       settings.timezone.string || settings.timezone.offset,
     );
