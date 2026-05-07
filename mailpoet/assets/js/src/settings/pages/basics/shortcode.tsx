@@ -121,7 +121,7 @@ export function Shortcode({ name, title, description }: Props) {
             <br />
             <Datepicker
               dimension="small"
-              dateFormat="MMMM d, yyyy"
+              formatWithWordPressSettings
               onChange={(value): void => {
                 setStartDate(value);
                 if (value !== null) {
@@ -135,7 +135,7 @@ export function Shortcode({ name, title, description }: Props) {
             />
             <Datepicker
               dimension="small"
-              dateFormat="MMMM d, yyyy"
+              formatWithWordPressSettings
               onChange={(value): void => {
                 setEndDate(value);
                 if (value !== null) {
