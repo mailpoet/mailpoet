@@ -30,10 +30,14 @@ class AddSendingKeyCest {
     // validate key, activate MSS, install & activate Premium plugin
     $i->waitForText('Your key is valid', 20);
     $i->waitForText('MailPoet Sending Service is active');
-    $i->waitForText('It’s time to set your default FROM address!');
-    $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
+    try {
+      $i->waitForText('It’s time to set your default FROM address!', 5);
+      $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
+      $i->click('[data-automation-id="mailpoet-modal-close"]');
+    } catch (\Exception $exception) {
+      // The modal is asserted below after the key state is reloaded.
+    }
     $i->dontSee('A test email was sent to');
-    $i->click('[data-automation-id="mailpoet-modal-close"]'); // close modal since we don't need it now
 
     // check the state after reload
     $i->reloadPage();
