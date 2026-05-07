@@ -17,13 +17,7 @@ function count(item: SegmentListingItem, status: string): JSX.Element {
 
 function dateTime(value: string | null): JSX.Element {
   if (!value) return createElement('span', null, '—');
-  return createElement(
-    'span',
-    null,
-    createElement('span', null, MailPoet.Date.short(value)),
-    createElement('br', null),
-    createElement('span', null, MailPoet.Date.time(value)),
-  );
+  return createElement('span', null, MailPoet.Date.full(value));
 }
 
 export const segmentFields: Field<SegmentListingItem>[] = [

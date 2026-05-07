@@ -97,15 +97,7 @@ export const listFields: Field<FormListingItem>[] = [
       if (!item.updated_at) {
         return createElement('span', null, '—');
       }
-      const date = MailPoet.Date.short(item.updated_at);
-      const time = MailPoet.Date.time(item.updated_at);
-      return createElement(
-        'span',
-        null,
-        createElement('span', null, date),
-        createElement('br', null),
-        createElement('span', null, time),
-      );
+      return createElement('span', null, MailPoet.Date.full(item.updated_at));
     },
   },
 ];
