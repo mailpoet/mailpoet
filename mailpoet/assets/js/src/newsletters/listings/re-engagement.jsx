@@ -356,9 +356,7 @@ class NewsletterListReEngagementComponent extends Component {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={__('Last modified on', 'mailpoet')}
         >
-          {MailPoet.Date.short(newsletter.updated_at)}
-          <br />
-          {MailPoet.Date.time(newsletter.updated_at)}
+          {MailPoet.Date.full(newsletter.updated_at)}
         </td>
       </div>
     );
