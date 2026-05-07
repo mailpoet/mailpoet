@@ -22,6 +22,7 @@ import {
   screenshotPath,
 } from '../config.js';
 import {
+  gotoMailPoetNewsletterPage,
   login,
   selectInSelect2,
   clickFirstSelector,
@@ -36,11 +37,10 @@ export async function newsletterSending() {
     await login(page);
 
     // Go to the Emails page
-    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-      waitUntil: 'networkidle',
-    });
-
-    await page.waitForLoadState('networkidle');
+    await gotoMailPoetNewsletterPage(
+      page,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`,
+    );
     await page.screenshot({
       path: screenshotPath + 'Newsletter_Sending_01.png',
       fullPage: fullPageSet,
@@ -49,7 +49,6 @@ export async function newsletterSending() {
     // Click to add a new standard newsletter
     await page.locator('[data-automation-id="new_email"]').click();
     await page.locator('[data-automation-id="create_standard"]').click();
-    await page.waitForSelector('.mailpoet_loading');
     await page.waitForSelector('[data-automation-id="templates-standard"]');
     await page.waitForLoadState('networkidle');
 
@@ -59,7 +58,6 @@ export async function newsletterSending() {
       page.waitForNavigation(),
       page.locator('[data-automation-id="select_template_1"]').click(),
     ]);
-    await page.waitForSelector('.mailpoet_loading');
     await page.waitForSelector('[data-automation-id="newsletter_title"]');
     await page.waitForLoadState('networkidle');
 

@@ -163,7 +163,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
       // Try the legacy <a> link first.
       try {
-        $i->waitForElementClickable($legacyActionXpath, 1);
+        $i->waitForElementClickable($legacyActionXpath, 3);
         $i->click($legacyActionXpath);
         return;
       } catch (Exception $legacyException) {
@@ -173,7 +173,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
       // DataViews primary action (inline button).
       try {
-        $i->waitForElementClickable($dataViewsPrimaryXpath, 1);
+        $i->waitForElementClickable($dataViewsPrimaryXpath, 3);
         $i->click($dataViewsPrimaryXpath);
         return;
       } catch (Exception $primaryException) {
@@ -183,7 +183,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
       // DataViews secondary action (dropdown menu).
       try {
-        $i->waitForElementClickable($dataViewsActionsToggleXpath, 1);
+        $i->waitForElementClickable($dataViewsActionsToggleXpath, 3);
         $i->click($dataViewsActionsToggleXpath);
         $i->waitForElementClickable($dataViewsMenuItemXpath, 2);
         $i->click($dataViewsMenuItemXpath);

@@ -31,6 +31,27 @@ export async function login(page) {
   await page.waitForLoadState('networkidle');
 }
 
+// Hide stale authorization notices in the shared performance test site.
+// The tests measure MailPoet page performance, not long-lived fixture warnings.
+export async function gotoMailPoetNewsletterPage(page, url) {
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    if (document.getElementById('mailpoet-performance-notice-overrides')) {
+      return;
+    }
+    const style = document.createElement('style');
+    style.id = 'mailpoet-performance-notice-overrides';
+    style.textContent =
+      [
+        '[data-id="mailpoet_authorization_error"]',
+        '[data-notice="unauthorized-email-in-newsletters-addresses-notice"]',
+        '.mailpoet-js-error-unauthorized-emails-notice',
+      ].join(',') + '{display:none!important;}';
+    document.head.appendChild(style);
+  });
+  await page.waitForLoadState('networkidle');
+}
+
 // Select a segment or a list from a select2 search field
 export async function selectInSelect2(page, listName) {
   // Type a list name from a dropdown and hit Enter

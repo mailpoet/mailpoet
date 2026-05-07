@@ -22,6 +22,7 @@ import {
   screenshotPath,
 } from '../config.js';
 import {
+  gotoMailPoetNewsletterPage,
   login,
   selectInSelect2,
   waitAndType,
@@ -37,14 +38,10 @@ export async function newsletterReEngagement() {
     await login(page);
 
     // Go to the Emails page
-    await page.goto(
+    await gotoMailPoetNewsletterPage(
+      page,
       `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/new/re-engagement`,
-      {
-        waitUntil: 'networkidle',
-      },
     );
-
-    await page.waitForLoadState('networkidle');
     await page.screenshot({
       path: screenshotPath + 'Newsletter_Re_Engagement_01.png',
       fullPage: fullPageSet,
@@ -53,7 +50,6 @@ export async function newsletterReEngagement() {
     // Click to add a new re-engagement email and set frequency
     await waitAndType(page, '.mailpoet-form-input > input', '99');
     await page.locator('.mailpoet-button.mailpoet-full-width').click();
-    await page.waitForSelector('.mailpoet_loading');
     await page.waitForSelector(
       '[data-automation-id="templates-re_engagement"]',
     );
