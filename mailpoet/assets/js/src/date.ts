@@ -1,9 +1,12 @@
 import Moment, { MomentInput } from 'moment';
+import { dateI18n, getSettings } from '@wordpress/date';
 
 export interface DateOptions {
   format?: string;
   offset?: number;
 }
+
+type DateI18nInput = Parameters<typeof dateI18n>[1];
 
 export const MailPoetDate: {
   version: number;
@@ -73,19 +76,28 @@ export const MailPoetDate: {
     return Moment.utc(date).toDate();
   },
   short: function short(date: MomentInput): string {
-    return this.format(date, {
-      format: window.mailpoet_date_format || 'F j, Y',
-    });
+    const settings = getSettings();
+    return dateI18n(
+      settings.formats.date,
+      date as DateI18nInput,
+      settings.timezone.string || settings.timezone.offset,
+    );
   },
   full: function full(date: MomentInput): string {
-    return this.format(date, {
-      format: window.mailpoet_datetime_format || 'F j, Y H:i:s',
-    });
+    const settings = getSettings();
+    return dateI18n(
+      settings.formats.datetime,
+      date as DateI18nInput,
+      settings.timezone.string || settings.timezone.offset,
+    );
   },
   time: function time(date: MomentInput): string {
-    return this.format(date, {
-      format: window.mailpoet_time_format || 'H:i:s',
-    });
+    const settings = getSettings();
+    return dateI18n(
+      settings.formats.time,
+      date as DateI18nInput,
+      settings.timezone.string || settings.timezone.offset,
+    );
   },
   datetimeString: function gmtToSiteTimestamp(date: MomentInput): string {
     return this.format(date, { format: 'Y-m-d H:i:s' });
@@ -187,7 +199,6 @@ export const MailPoetDate: {
         convertedFormat.push(`[${token}]`);
       }
     }
-
     return convertedFormat.join('');
   },
   isInFuture: (dateString: string, currentTime: MomentInput): boolean =>
