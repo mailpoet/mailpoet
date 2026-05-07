@@ -386,10 +386,18 @@ jQuery(($) => {
     form: JQuery<HTMLFormElement>,
     fallback: string,
   ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 5000);
     try {
       const response = await fetch(
         `${window.MailPoetForm.ajax_url}?action=mailpoet_token`,
-        { cache: 'no-store', credentials: 'same-origin' },
+        {
+          cache: 'no-store',
+          credentials: 'same-origin',
+          signal: controller.signal,
+        },
       );
       if (!response.ok) return fallback;
       const body = (await response.json()) as { token?: string };
@@ -398,7 +406,9 @@ jQuery(($) => {
         return body.token;
       }
     } catch {
-      // network/parse error — fall back to embedded token
+      // Network/parse errors and AbortError after timeout — use embedded token
+    } finally {
+      clearTimeout(timeoutId);
     }
     return fallback;
   }
