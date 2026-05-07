@@ -2,4 +2,4 @@
 
 # Description
 
-Locked automation discovery cards for premium WooCommerce triggers and actions
+Automation cards for new WooCommerce triggers and actions
