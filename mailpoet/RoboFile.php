@@ -474,6 +474,12 @@ class RoboFile extends \Robo\Tasks {
     $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker compose run --rm -it setup')
       ->dir(__DIR__ . '/tests/performance')
       ->run();
+    $resetPerformanceNoticesCommand = 'COMPOSE_HTTP_TIMEOUT=200 docker compose run --rm -T setup wp eval '
+      . '\'MailPoet\Settings\SettingsController::getInstance()->delete("authorized_emails_addresses_check"); '
+      . 'MailPoet\Mailer\MailerLog::resetMailerLog();\' --path=/var/www/html';
+    $this->taskExec($resetPerformanceNoticesCommand)
+      ->dir(__DIR__ . '/tests/performance')
+      ->run();
     $this->say('Data imported, WordPress set up.');
   }
 
