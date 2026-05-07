@@ -1164,13 +1164,6 @@ workflows:
             - build_release_zip
 
   nightly:
-    triggers:
-      - schedule:
-          cron: '0 1 * * 1-5'
-          filters:
-            branches:
-              only:
-                - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
