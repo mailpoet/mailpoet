@@ -169,13 +169,7 @@ const renderItem = (newsletter, actions, meta) => {
         className="column-date mailpoet-hide-on-mobile"
         data-colname={__('Sent on', 'mailpoet')}
       >
-        {newsletter.sent_at ? (
-          <>
-            {MailPoet.Date.short(newsletter.sent_at)}
-            <br />
-            {MailPoet.Date.time(newsletter.sent_at)}
-          </>
-        ) : null}
+        {newsletter.sent_at ? MailPoet.Date.full(newsletter.sent_at) : null}
       </td>
     </>
   );
