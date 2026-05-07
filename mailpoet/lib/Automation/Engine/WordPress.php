@@ -62,6 +62,10 @@ class WordPress {
     return register_rest_route($namespace, $route, $args, $override);
   }
 
+  public function adminUrl(string $path = '', string $scheme = 'admin'): string {
+    return admin_url($path, $scheme);
+  }
+
   public function getWpLocale(): WP_Locale {
     global $wp_locale;
     return $wp_locale;
