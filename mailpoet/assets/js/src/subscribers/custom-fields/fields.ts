@@ -1,8 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { dateI18n } from '@wordpress/date';
+import { dateI18n, getSettings } from '@wordpress/date';
 import { createElement } from 'react';
 import type { Field } from '@wordpress/dataviews';
 import type { CustomField } from './types';
+
+const dateSettings = getSettings();
 
 const FIELD_TYPE_LABELS: Record<string, string> = {
   text: __('Text', 'mailpoet'),
@@ -75,7 +77,13 @@ export const listFields: Field<CustomField>[] = [
       createElement(
         'span',
         null,
-        item.created_at ? dateI18n('M j, Y', item.created_at, undefined) : '',
+        item.created_at
+          ? dateI18n(
+              dateSettings.formats.date,
+              item.created_at,
+              dateSettings.timezone.string || dateSettings.timezone.offset,
+            )
+          : '',
       ),
   },
 ];
