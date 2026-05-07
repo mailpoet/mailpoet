@@ -196,3 +196,25 @@ export async function clickFirstSelector(page, selector) {
     throw new Error('No selector found on the page.');
   }
 }
+
+export async function clickMenuItemByText(page, text) {
+  await page.waitForSelector('.components-popover__content [role="menuitem"]');
+  const clicked = await page.evaluate((menuItemText) => {
+    const menuItems = Array.from(
+      document.querySelectorAll(
+        '.components-popover__content [role="menuitem"]',
+      ),
+    );
+    const menuItem = menuItems.find(
+      (element) => element.textContent.trim() === menuItemText,
+    );
+    if (!menuItem) {
+      return false;
+    }
+    menuItem.click();
+    return true;
+  }, text);
+  if (!clicked) {
+    throw new Error(`No menu item found with text "${text}".`);
+  }
+}
