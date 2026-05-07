@@ -1,7 +1,6 @@
 import classnames from 'classnames';
 import { forwardRef, type ComponentProps } from 'react';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
-import { dateI18n, getSettings } from '@wordpress/date';
 import { MailPoet } from 'mailpoet';
 import { withBoundary } from '../error-boundary';
 
@@ -22,13 +21,8 @@ const WordPressFormattedInput = forwardRef<
   HTMLInputElement,
   WordPressFormattedInputProps
 >(({ selectedDate, value: _value, ...props }, ref) => {
-  const settings = getSettings();
   const formattedValue = selectedDate
-    ? dateI18n(
-        settings.formats.date,
-        selectedDate,
-        settings.timezone.string || settings.timezone.offset,
-      )
+    ? MailPoet.Date.short(selectedDate)
     : '';
 
   return <input {...props} ref={ref} value={formattedValue} readOnly />;
