@@ -22,7 +22,7 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
   /** @var array{automation_id: int, status: string, previous_status: string|null}|null */
   private $saveEvent = null;
 
-  /** @var array{automation_id: int, status: string, previous_status: string}|null */
+  /** @var array{automation_id: int, status: string, previous_status: string, action_args?: array|null, previous_action_args?: array|null}|null */
   private $updateEvent = null;
 
   /** @var array{automation_id: int, status: string}|null */
@@ -79,6 +79,38 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
     $this->assertSame(Automation::STATUS_ACTIVE, $updateEvent['previous_status']);
     $this->assertSame($updated->getId(), $saveEvent['automation_id']);
     $this->assertSame(Automation::STATUS_ACTIVE, $saveEvent['previous_status']);
+  }
+
+  public function testItFiresUpdateHooksWithPreviousStepConfig(): void {
+    $steps = [
+      'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('trigger')]),
+      'trigger' => new Step('trigger', Step::TYPE_TRIGGER, 'mailpoet:someone-subscribes', [], [new NextStep('action')]),
+      'action' => new Step('action', Step::TYPE_ACTION, 'core:delay', [
+        'delay' => 1,
+        'delay_type' => 'MINUTES',
+      ], []),
+    ];
+    $automation = (new AutomationFactory())
+      ->withSteps($steps)
+      ->withStatusActive()
+      ->create();
+
+    $updatedSteps = array_map(function(Step $step): array {
+      return $step->toArray();
+    }, $automation->getSteps());
+    $updatedSteps['action']['args']['delay'] = 2;
+
+    $this->diContainer->get(UpdateAutomationController::class)->updateAutomation($automation->getId(), [
+      'steps' => $updatedSteps,
+    ]);
+
+    $updateEvent = $this->getUpdateEvent();
+    $previousActionArgs = $updateEvent['previous_action_args'] ?? null;
+    $actionArgs = $updateEvent['action_args'] ?? null;
+    $this->assertIsArray($previousActionArgs);
+    $this->assertIsArray($actionArgs);
+    $this->assertSame(1, $previousActionArgs['delay']);
+    $this->assertSame(2, $actionArgs['delay']);
   }
 
   public function testItFiresDuplicateHooksWithSourceAutomation(): void {
@@ -144,10 +176,14 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
     };
     $wp->addAction(Hooks::AUTOMATION_AFTER_SAVE, $this->hookCallbacks[Hooks::AUTOMATION_AFTER_SAVE], 10, 2);
     $this->hookCallbacks[Hooks::AUTOMATION_AFTER_UPDATE] = function(Automation $automation, Automation $previousAutomation): void {
+      $step = $automation->getStep('action');
+      $previousStep = $previousAutomation->getStep('action');
       $this->updateEvent = [
         'automation_id' => $automation->getId(),
         'status' => $automation->getStatus(),
         'previous_status' => $previousAutomation->getStatus(),
+        'action_args' => $step ? $step->getArgs() : null,
+        'previous_action_args' => $previousStep ? $previousStep->getArgs() : null,
       ];
     };
     $wp->addAction(Hooks::AUTOMATION_AFTER_UPDATE, $this->hookCallbacks[Hooks::AUTOMATION_AFTER_UPDATE], 10, 2);
@@ -191,7 +227,7 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
     return $this->saveEvent;
   }
 
-  /** @return array{automation_id: int, status: string, previous_status: string} */
+  /** @return array{automation_id: int, status: string, previous_status: string, action_args?: array|null, previous_action_args?: array|null} */
   private function getUpdateEvent(): array {
     if ($this->updateEvent === null) {
       $this->fail('Update event was not fired.');

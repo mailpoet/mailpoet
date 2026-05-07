@@ -48,6 +48,13 @@ class Automation {
   /** @var array<string, mixed> */
   private $meta = [];
 
+  public function __clone() {
+    $this->author = clone $this->author;
+    $this->steps = array_map(function(Step $step): Step {
+      return clone $step;
+    }, $this->steps);
+  }
+
   /** @param array<string, Step> $steps */
   public function __construct(
     string $name,

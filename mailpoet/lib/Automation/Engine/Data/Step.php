@@ -45,6 +45,15 @@ class Step {
     $this->filters = $filters;
   }
 
+  public function __clone() {
+    $this->nextSteps = array_map(function(NextStep $nextStep): NextStep {
+      return clone $nextStep;
+    }, $this->nextSteps);
+    if ($this->filters !== null) {
+      $this->filters = clone $this->filters;
+    }
+  }
+
   public function getId(): string {
     return $this->id;
   }
