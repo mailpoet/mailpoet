@@ -46,7 +46,7 @@ export const listFields: Field<Tag>[] = [
       createElement(
         'span',
         null,
-        item.created_at ? MailPoet.Date.full(item.created_at) : '',
+        item.created_at ? MailPoet.Date.short(item.created_at) : '',
       ),
   },
 ];
