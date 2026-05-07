@@ -116,7 +116,6 @@ type DateTextEvent = SyntheticEvent<HTMLInputElement> & {
 };
 
 type DateTextProps = {
-  displayFormat: string;
   onChange: (date: DateTextEvent) => void;
   storageFormat: string;
   value: string;

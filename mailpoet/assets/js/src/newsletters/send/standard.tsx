@@ -19,7 +19,6 @@ const tomorrowDateTime = MailPoet.Date.toGmtDatetimeString(
 const timeOfDayItems = window.mailpoet_schedule_time_of_day as unknown as {
   [key: string]: string;
 };
-const dateDisplayFormat = window.mailpoet_date_format;
 const dateStorageFormat = window.mailpoet_date_storage_format;
 
 type StandardSchedulingProps = {
@@ -99,7 +98,6 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
               dateValidation={this.getDateValidation()}
               defaultDateTime={tomorrowDateTime}
               timeOfDayItems={timeOfDayItems}
-              dateDisplayFormat={dateDisplayFormat}
               dateStorageFormat={dateStorageFormat}
               maxDate={maxDate}
             />

@@ -16,7 +16,6 @@ type DateTimeEvent = SyntheticEvent<HTMLInputElement> & {
 type DateTimeProps = {
   value?: string;
   defaultDateTime: string;
-  dateDisplayFormat: string;
   dateStorageFormat: string;
   onChange: (date: DateTimeEvent) => void;
   name?: string;
@@ -98,7 +97,6 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
             name="date"
             value={this.state.date}
             onChange={this.handleChange}
-            displayFormat={this.props.dateDisplayFormat}
             storageFormat={this.props.dateStorageFormat}
             disabled={this.props.disabled}
             validation={this.props.dateValidation}
