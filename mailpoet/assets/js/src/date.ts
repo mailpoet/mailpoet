@@ -1,5 +1,6 @@
 import Moment, { MomentInput } from 'moment';
 import { dateI18n, getSettings } from '@wordpress/date';
+import { syncWordPressDateSettings } from './wordpress-date-settings';
 
 export interface DateOptions {
   format?: string;
@@ -76,6 +77,7 @@ export const MailPoetDate: {
     return Moment.utc(date).toDate();
   },
   short: function short(date: MomentInput): string {
+    syncWordPressDateSettings();
     const settings = getSettings();
     return dateI18n(
       settings.formats.date,
@@ -84,6 +86,7 @@ export const MailPoetDate: {
     );
   },
   full: function full(date: MomentInput): string {
+    syncWordPressDateSettings();
     const settings = getSettings();
     return dateI18n(
       settings.formats.datetime,
@@ -92,6 +95,7 @@ export const MailPoetDate: {
     );
   },
   time: function time(date: MomentInput): string {
+    syncWordPressDateSettings();
     const settings = getSettings();
     return dateI18n(
       settings.formats.time,
