@@ -5,6 +5,18 @@ namespace MailPoet\Automation\Integrations\WordPress;
 use MailPoet\Automation\Engine\WordPress;
 
 class ContextFactory {
+  private const ELEVATED_CAPABILITIES = [
+    'create_users',
+    'delete_users',
+    'edit_files',
+    'edit_users',
+    'install_plugins',
+    'manage_options',
+    'manage_woocommerce',
+    'mailpoet_manage_settings',
+    'promote_users',
+    'unfiltered_html',
+  ];
 
   /** @var WordPress  */
   private $wp;
@@ -46,12 +58,31 @@ class ContextFactory {
   private function getEditableRoles(): array {
     $roles = [];
     foreach ($this->wp->getEditableRoles() as $id => $role) {
+      if ($this->isElevatedRole($role)) {
+        continue;
+      }
       $roles[] = [
         'id' => $id,
         'name' => (string)($role['name'] ?? $id),
       ];
     }
     return $roles;
+  }
+
+  /**
+   * @param array{name?: string, capabilities?: array<string, bool>} $role
+   */
+  private function isElevatedRole(array $role): bool {
+    if (!empty($role['capabilities']['administrator'])) {
+      return true;
+    }
+    $capabilities = $role['capabilities'] ?? [];
+    foreach (self::ELEVATED_CAPABILITIES as $capability) {
+      if (!empty($capabilities[$capability])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

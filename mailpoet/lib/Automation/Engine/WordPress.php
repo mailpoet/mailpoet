@@ -155,6 +155,18 @@ class WordPress {
   }
 
   /**
+   * @param mixed $data
+   */
+  public function wpCacheAdd(string $key, $data, string $group = '', int $expire = 0): bool {
+    // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.CacheTimeUndetermined -- Thin wrapper passes the caller-provided TTL.
+    return wp_cache_add($key, $data, $group, $expire);
+  }
+
+  public function wpCacheDelete(string $key, string $group = ''): bool {
+    return wp_cache_delete($key, $group);
+  }
+
+  /**
    * @param int|\WP_Post $post
    * @param bool $leavename
    * @return string|false
@@ -172,6 +184,10 @@ class WordPress {
 
   public function getEditableRoles(): array {
     return get_editable_roles();
+  }
+
+  public function isRole(string $role): bool {
+    return wp_roles()->is_role($role);
   }
 
   public function getPostStatuses(): array {
