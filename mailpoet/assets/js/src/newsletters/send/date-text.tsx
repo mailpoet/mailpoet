@@ -143,18 +143,6 @@ class DateText extends Component<DateTextProps> {
 
   getFieldName = () => this.props.name || 'date';
 
-  getDisplayDateFormat = (format: string) => {
-    const convertedFormat = MailPoet.Date.convertFormat(format);
-    // Convert moment format to date-fns, see: https://git.io/fxCyr
-    return convertedFormat
-      .replace(/D/g, 'd')
-      .replace(/Y/g, 'y')
-      .replace(/A/g, 'a')
-      .replace(/o/g, 'Y') // MailPoet.Date.convertFormat converts 'S' to 'o'
-      .replace(/\[/g, '')
-      .replace(/\]/g, '');
-  };
-
   getDate = (date: string) => Moment(date).toDate();
 
   getAsStringInFormat = (date: Date) =>
@@ -165,7 +153,7 @@ class DateText extends Component<DateTextProps> {
       <Datepicker
         name={this.getFieldName()}
         selected={this.getDate(this.props.value)}
-        dateFormat={this.getDisplayDateFormat(this.props.displayFormat)}
+        formatWithWordPressSettings
         disabled={this.props.disabled}
         onChange={this.onChange}
         minDate={this.getDate(window.mailpoet_current_date)}
