@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { FormFieldSelect as Select } from 'form/fields/select.jsx';
 import { Checkbox } from 'common/form/checkbox/checkbox';
+import { MailPoet } from 'mailpoet';
 import {
   intervalValues,
   timeOfDayValues,
@@ -13,6 +14,8 @@ import {
 } from 'newsletters/scheduling/common.jsx';
 import {
   DEFAULT_DAY,
+  getDefaultWeekDay,
+  getOrderedWeekDayKeys,
   parseSelectedValues,
   serializeSelectedValues,
 } from 'newsletters/scheduling/multi-day';
@@ -51,11 +54,13 @@ function MultipleCheckboxSelection({
   onValueChange,
   automationId,
   columns,
+  valueOrder,
 }) {
   const normalizedSelectedValues = selectedValues.map((value) => `${value}`);
+  const orderedValueKeys = valueOrder || Object.keys(values);
   return (
     <div className={checkboxGridClassName(columns)}>
-      {Object.keys(values).map((value) => (
+      {orderedValueKeys.map((value) => (
         <span key={`${name}-${value}`}>
           <Checkbox
             name={name}
@@ -89,10 +94,15 @@ MultipleCheckboxSelection.propTypes = {
   onValueChange: PropTypes.func.isRequired,
   automationId: PropTypes.string.isRequired,
   columns: PropTypes.oneOf([3, 4]).isRequired,
+  valueOrder: PropTypes.arrayOf(PropTypes.string),
 };
 
 class NotificationScheduling extends Component {
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
+
+  getDefaultWeekDay = () => getDefaultWeekDay(MailPoet.wpWeekStartsOn);
+
+  getOrderedWeekDayKeys = () => getOrderedWeekDayKeys(MailPoet.wpWeekStartsOn);
 
   handleValueChanges = (changes) => {
     const oldValue = this.getCurrentValue();
@@ -119,11 +129,18 @@ class NotificationScheduling extends Component {
       // Route through parseSelectedValues so weekDay = 0 (Sunday) is preserved
       // -- a plain `oldValue.weekDay || '1'` would treat 0 as missing.
       changes.weekDay = serializeSelectedValues(
-        parseSelectedValues(oldValue.weekDay, DEFAULT_DAY, weekDayValues),
+        parseSelectedValues(
+          oldValue.weekDay,
+          this.getDefaultWeekDay(),
+          weekDayValues,
+        ),
       );
     }
     if (intervalType === 'nthWeekDay') {
-      changes.weekDay = getFirstSelectedValue(oldValue.weekDay, DEFAULT_DAY);
+      changes.weekDay = getFirstSelectedValue(
+        oldValue.weekDay,
+        this.getDefaultWeekDay(),
+      );
       changes.nthWeekDay = oldValue.nthWeekDay || DEFAULT_DAY;
     }
     this.handleValueChanges(changes);
@@ -144,6 +161,12 @@ class NotificationScheduling extends Component {
 
   render() {
     const value = this.getCurrentValue();
+    const defaultWeekDay = this.getDefaultWeekDay();
+    const orderedWeekDayKeys = this.getOrderedWeekDayKeys();
+    const orderedWeekDayField = {
+      ...weekDayField,
+      sortBy: (dayValue) => orderedWeekDayKeys.indexOf(dayValue),
+    };
     let multipleCheckboxSelection;
     let timeOfDaySelection;
     let weekDaySelection;
@@ -166,12 +189,13 @@ class NotificationScheduling extends Component {
           values={weekDayValues}
           selectedValues={parseSelectedValues(
             value.weekDay,
-            DEFAULT_DAY,
+            defaultWeekDay,
             weekDayValues,
           )}
           onValueChange={this.handleWeekDaysChange}
           automationId="newsletter_week_day"
           columns={3}
+          valueOrder={orderedWeekDayKeys}
         />
       );
     }
@@ -179,7 +203,7 @@ class NotificationScheduling extends Component {
     if (value.intervalType === 'nthWeekDay') {
       weekDaySelection = (
         <Select
-          field={weekDayField}
+          field={orderedWeekDayField}
           item={this.getCurrentValue()}
           onValueChange={this.handleWeekDayChange}
         />
