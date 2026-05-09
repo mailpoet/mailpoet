@@ -391,14 +391,13 @@ jQuery(($) => {
       controller.abort();
     }, 5000);
     try {
-      const response = await fetch(
-        `${window.MailPoetForm.ajax_url}?action=mailpoet_token`,
-        {
-          cache: 'no-store',
-          credentials: 'same-origin',
-          signal: controller.signal,
-        },
-      );
+      const response = await fetch(window.MailPoetForm.ajax_url, {
+        body: new URLSearchParams({ action: 'mailpoet_token' }),
+        cache: 'no-store',
+        credentials: 'same-origin',
+        method: 'POST',
+        signal: controller.signal,
+      });
       if (!response.ok) return fallback;
       const body = (await response.json()) as { token?: string };
       if (typeof body.token === 'string' && body.token) {
