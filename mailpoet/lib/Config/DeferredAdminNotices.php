@@ -14,6 +14,7 @@ class DeferredAdminNotices {
    */
   public function addNetworkAdminNotice($message) {
     $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, []);
+    $notices = is_array($notices) ? $notices : [];
     $notices[] = [
       "message" => $message,
       "networkAdmin" => true,// if we'll need to display the notice to anyone else
@@ -24,7 +25,18 @@ class DeferredAdminNotices {
   public function printAndClean() {
     $notices = WPFunctions::get()->getOption(DeferredAdminNotices::OPTIONS_KEY_NAME, []);
 
+    if (!is_array($notices)) {
+      if (!empty($notices)) {
+        WPFunctions::get()->deleteOption(DeferredAdminNotices::OPTIONS_KEY_NAME);
+      }
+      return;
+    }
+
     foreach ($notices as $notice) {
+      if (!is_array($notice) || empty($notice["message"])) {
+        continue;
+      }
+
       $notice = new Notice(Notice::TYPE_WARNING, $notice["message"]);
       WPFunctions::get()->addAction('network_admin_notices', [$notice, 'displayWPNotice']);
     }
