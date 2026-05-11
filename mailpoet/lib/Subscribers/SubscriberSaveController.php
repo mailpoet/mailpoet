@@ -294,20 +294,13 @@ class SubscriberSaveController {
   }
 
   private function findSubscriber(array &$data): ?SubscriberEntity {
-    $subscriber = null;
     if (isset($data['id']) && (int)$data['id'] > 0) {
-      $subscriber = $this->subscribersRepository->findOneById(((int)$data['id']));
+      $subscriber = $this->subscribersRepository->findOneById((int)$data['id']);
       unset($data['id']);
+      return $subscriber;
     }
 
-    if (!$subscriber && !empty($data['email'])) {
-      $subscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
-      if ($subscriber) {
-        unset($data['email']);
-      }
-    }
-
-    return $subscriber;
+    return null;
   }
 
   public function updateCustomFields(array $data, SubscriberEntity $subscriber): void {

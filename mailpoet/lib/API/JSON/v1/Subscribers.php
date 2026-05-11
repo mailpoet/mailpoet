@@ -179,9 +179,9 @@ class Subscribers extends APIEndpoint {
     } catch (ValidationException $validationException) {
       return $this->badRequest([$this->getErrorMessage($validationException)]);
     } catch (ConflictException $conflictException) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => $conflictException->getMessage(),
-      ]);
+      return $this->errorResponse([
+        APIError::CONFLICT => $conflictException->getMessage(),
+      ], [], Response::STATUS_CONFLICT);
     };
 
     return $this->successResponse(
