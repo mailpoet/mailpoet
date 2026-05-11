@@ -94,4 +94,41 @@ class FormListingRepositoryTest extends \MailPoetTest {
     ]));
     verify($forms)->arrayCount(0);
   }
+
+  public function testItIteratesActionableIdsInBatches() {
+    $batches = [];
+    $this->formListingRepository->iterateActionableIds(
+      $this->listingHandler->getListingDefinition(['group' => 'all']),
+      function(array $ids) use (&$batches): void {
+        $batches[] = $ids;
+      },
+      1
+    );
+
+    verify($batches)->equals([
+      [(int)$this->form1->getId()],
+      [(int)$this->form2->getId()],
+    ]);
+  }
+
+  public function testItIteratesSelectedActionableIdsInBatches() {
+    $batches = [];
+    $this->formListingRepository->iterateActionableIds(
+      $this->listingHandler->getListingDefinition([
+        'selection' => [
+          $this->form2->getId(),
+          $this->form1->getId(),
+        ],
+      ]),
+      function(array $ids) use (&$batches): void {
+        $batches[] = $ids;
+      },
+      1
+    );
+
+    verify($batches)->equals([
+      [(int)$this->form2->getId()],
+      [(int)$this->form1->getId()],
+    ]);
+  }
 }

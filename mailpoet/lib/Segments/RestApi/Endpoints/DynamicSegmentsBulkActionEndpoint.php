@@ -7,6 +7,7 @@ use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler as ListingHandler;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -71,11 +72,6 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
         'mailpoet_segments_invalid_orderby'
       );
     }
-    $ids = $this->getSelectedIds($request, $orderby, is_string($orderParam) ? strtolower($orderParam) : 'desc');
-    $this->validateDynamicSelection($ids);
-    if ($action === self::ACTION_DELETE) {
-      $this->validateDeletionSelection($ids);
-    }
 
     $result = [
       'updated' => 0,
@@ -84,12 +80,33 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
       'errors' => [],
     ];
 
-    if ($action === self::ACTION_TRASH) {
-      $this->trashSegments($ids, $result);
-    } elseif ($action === self::ACTION_RESTORE) {
-      $result['updated'] = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+    $definition = $this->getAllMatchingIdsDefinition($request, $orderby, is_string($orderParam) ? strtolower($orderParam) : 'desc');
+    if ($definition instanceof ListingDefinition) {
+      $hasIds = false;
+      $this->dynamicSegmentsListingRepository->iterateActionableIds($definition, function(array $ids) use ($action, &$hasIds): void {
+        $hasIds = true;
+        $this->validateDynamicSelection($ids);
+        if ($action === self::ACTION_DELETE) {
+          $this->validateDeletionSelection($ids);
+        }
+      });
+      if (!$hasIds) {
+        throw new ApiException(
+          __('At least one segment id is required.', 'mailpoet'),
+          400,
+          'mailpoet_segments_ids_required'
+        );
+      }
+      $this->dynamicSegmentsListingRepository->iterateActionableIds($definition, function(array $ids) use ($action, &$result): void {
+        $this->processIds($ids, $action, $result);
+      });
     } else {
-      $result['deleted'] = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
+      $ids = $this->validateIds($request->getParam('ids'));
+      $this->validateDynamicSelection($ids);
+      if ($action === self::ACTION_DELETE) {
+        $this->validateDeletionSelection($ids);
+      }
+      $this->processIds($ids, $action, $result);
     }
 
     return new Response($result);
@@ -130,30 +147,34 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
   }
 
   /**
-   * @return int[]
+   * @return ListingDefinition|null
    */
-  private function getSelectedIds(Request $request, string $sortBy, string $sortOrder): array {
+  private function getAllMatchingIdsDefinition(Request $request, string $sortBy, string $sortOrder): ?ListingDefinition {
     if ($request->getParam('select_all') !== true) {
-      return $this->validateIds($request->getParam('ids'));
+      return null;
     }
 
-    $definition = $this->listingHandler->getListingDefinition([
+    return $this->listingHandler->getListingDefinition([
       'group' => $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null),
       'search' => is_string($request->getParam('search')) ? (string)$request->getParam('search') : null,
       'sort_by' => $sortBy,
       'sort_order' => $sortOrder,
       'params' => ['segments'],
     ]);
-    $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
-    $ids = array_map('intval', $ids);
-    if ($ids === []) {
-      throw new ApiException(
-        __('At least one segment id is required.', 'mailpoet'),
-        400,
-        'mailpoet_segments_ids_required'
-      );
+  }
+
+  /**
+   * @param int[] $ids
+   * @param array{updated:int,deleted:int,skipped:int,errors:array<int, array{id:int|null,message:string}>} $result
+   */
+  private function processIds(array $ids, string $action, array &$result): void {
+    if ($action === self::ACTION_TRASH) {
+      $this->trashSegments($ids, $result);
+    } elseif ($action === self::ACTION_RESTORE) {
+      $result['updated'] += $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+    } else {
+      $result['deleted'] += $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
     }
-    return $ids;
   }
 
   /**
@@ -176,7 +197,7 @@ class DynamicSegmentsBulkActionEndpoint extends SegmentsEndpoint {
       }
       $trashIds[] = $id;
     }
-    $result['updated'] = $this->segmentsRepository->bulkTrash($trashIds, SegmentEntity::TYPE_DYNAMIC);
+    $result['updated'] += $this->segmentsRepository->bulkTrash($trashIds, SegmentEntity::TYPE_DYNAMIC);
   }
 
   /**

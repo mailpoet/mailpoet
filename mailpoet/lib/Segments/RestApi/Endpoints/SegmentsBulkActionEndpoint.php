@@ -8,6 +8,7 @@ use MailPoet\API\REST\Response;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Listing\Handler as ListingHandler;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -64,12 +65,6 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
   public function handle(Request $request): Response {
     $action = $this->validateAction($request);
     $this->validateListingParams($request);
-    $ids = $this->getSelectedIds($request, $action);
-    $this->validateTypeBoundaries($ids);
-    if ($action === self::ACTION_DELETE) {
-      $this->validateDeletionSelection($ids);
-    }
-
     $result = [
       'updated' => 0,
       'deleted' => 0,
@@ -77,12 +72,24 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
       'errors' => [],
     ];
 
-    if ($action === self::ACTION_TRASH) {
-      $this->trashSegments($ids, $result);
-    } elseif ($action === self::ACTION_RESTORE) {
-      $this->restoreSegments($ids, $result);
+    $definition = $this->getAllMatchingIdsDefinition($request, $action);
+    if ($definition instanceof ListingDefinition) {
+      $this->segmentListingRepository->iterateActionableIds($definition, function(array $ids) use ($action): void {
+        $this->validateTypeBoundaries($ids);
+        if ($action === self::ACTION_DELETE) {
+          $this->validateDeletionSelection($ids);
+        }
+      });
+      $this->segmentListingRepository->iterateActionableIds($definition, function(array $ids) use ($action, &$result): void {
+        $this->processIds($ids, $action, $result);
+      });
     } else {
-      $this->deleteSegments($ids, $result);
+      $ids = $this->validateIds($request->getParam('ids'));
+      $this->validateTypeBoundaries($ids);
+      if ($action === self::ACTION_DELETE) {
+        $this->validateDeletionSelection($ids);
+      }
+      $this->processIds($ids, $action, $result);
     }
 
     return new Response($result);
@@ -145,33 +152,42 @@ class SegmentsBulkActionEndpoint extends SegmentsEndpoint {
   }
 
   /**
-   * @return int[]
+   * @return ListingDefinition|null
    */
-  private function getSelectedIds(Request $request, string $action): array {
+  private function getAllMatchingIdsDefinition(Request $request, string $action): ?ListingDefinition {
     if ($action === self::ACTION_EMPTY_TRASH) {
-      return $this->getAllMatchingIds('trash');
+      return $this->createAllMatchingIdsDefinition('trash');
     }
 
     if ($request->getParam('select_all') === true) {
       $group = $this->validateGroup(is_string($request->getParam('group')) ? (string)$request->getParam('group') : null);
-      return $this->getAllMatchingIds($group);
+      return $this->createAllMatchingIdsDefinition($group);
     }
 
-    return $this->validateIds($request->getParam('ids'));
+    return null;
   }
 
-  /**
-   * @return int[]
-   */
-  private function getAllMatchingIds(string $group): array {
-    $definition = $this->listingHandler->getListingDefinition([
+  private function createAllMatchingIdsDefinition(string $group): ListingDefinition {
+    return $this->listingHandler->getListingDefinition([
       'group' => $group,
       'sort_by' => 'name',
       'sort_order' => 'asc',
       'params' => ['lists'],
     ]);
-    $ids = $this->segmentListingRepository->getActionableIds($definition);
-    return array_map('intval', $ids);
+  }
+
+  /**
+   * @param int[] $ids
+   * @param array{updated:int,deleted:int,skipped:int,errors:array<int, array{id:int|null,message:string}>} $result
+   */
+  private function processIds(array $ids, string $action, array &$result): void {
+    if ($action === self::ACTION_TRASH) {
+      $this->trashSegments($ids, $result);
+    } elseif ($action === self::ACTION_RESTORE) {
+      $this->restoreSegments($ids, $result);
+    } else {
+      $this->deleteSegments($ids, $result);
+    }
   }
 
   /**

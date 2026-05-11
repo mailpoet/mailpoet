@@ -324,18 +324,28 @@ class Forms extends APIEndpoint {
 
   public function bulkAction($data = []): SuccessResponse {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->formListingRepository->getActionableIds($definition);
+    $count = 0;
     if ($data['action'] === 'trash') {
-      $this->formsRepository->bulkTrash($ids);
+      $action = function(array $ids) use (&$count): void {
+        $this->formsRepository->bulkTrash($ids);
+        $count += count($ids);
+      };
     } elseif ($data['action'] === 'restore') {
-      $this->formsRepository->bulkRestore($ids);
+      $action = function(array $ids) use (&$count): void {
+        $this->formsRepository->bulkRestore($ids);
+        $count += count($ids);
+      };
     } elseif ($data['action'] === 'delete') {
-      $this->formsRepository->bulkDelete($ids);
+      $action = function(array $ids) use (&$count): void {
+        $this->formsRepository->bulkDelete($ids);
+        $count += count($ids);
+      };
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
-    return $this->successResponse(null, ['count' => count($ids)]);
+    $this->formListingRepository->iterateActionableIds($definition, $action);
+    return $this->successResponse(null, ['count' => $count]);
   }
 
   private function getForm(array $data): ?FormEntity {

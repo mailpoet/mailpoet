@@ -242,6 +242,41 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['offset'] = 0;
   }
 
+  public function testItIteratesActionableIdsForDynamicSegmentInBatches() {
+    $wpUserEmail1 = 'user-role-test1@example.com';
+    $wpUserEmail2 = 'user-role-test2@example.com';
+    $wpUserEmail3 = 'user-role-test3@example.com';
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->tester->deleteWordPressUser($wpUserEmail3);
+    $this->tester->createWordPressUser($wpUserEmail1, 'editor');
+    $this->tester->createWordPressUser($wpUserEmail2, 'editor');
+    $this->tester->createWordPressUser($wpUserEmail3, 'editor');
+    $list = $this->createDynamicSegmentEntity();
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $batches = [];
+    $this->repository->iterateActionableIds(
+      $this->getListingDefinition(),
+      function(array $ids) use (&$batches): void {
+        $batches[] = $ids;
+      },
+      2
+    );
+
+    verify($batches)->arrayCount(2);
+    verify(array_merge(...$batches))->arrayCount(3);
+    foreach ($batches as $ids) {
+      verify(count($ids) <= 2)->true();
+    }
+
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->tester->deleteWordPressUser($wpUserEmail3);
+    $this->listingData['filter'] = [];
+  }
+
   public function testSearchForSubscribersInDynamicSegment() {
     $wpUserEmail1 = 'user-role-test1@example.com';
     $wpUserEmail2 = 'user-role-test2@example.com';

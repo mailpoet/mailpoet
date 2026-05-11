@@ -7,6 +7,8 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 abstract class ListingRepository {
+  public const ACTIONABLE_IDS_BATCH_SIZE = 500;
+
   /** @var QueryBuilder */
   protected $queryBuilder;
 
@@ -37,17 +39,55 @@ abstract class ListingRepository {
   }
 
   public function getActionableIds(ListingDefinition $definition): array {
-    $ids = $definition->getSelection();
-    if (!empty($ids)) {
-      return $ids;
+    $ids = [];
+    $this->iterateActionableIds($definition, function(array $batchIds) use (&$ids): void {
+      $ids = array_merge($ids, $batchIds);
+    });
+    return $ids;
+  }
+
+  public function iterateActionableIds(ListingDefinition $definition, callable $callback, int $batchSize = self::ACTIONABLE_IDS_BATCH_SIZE): void {
+    $batchSize = max(1, $batchSize);
+    $selectedIds = $definition->getSelection();
+    if (!empty($selectedIds)) {
+      foreach (array_chunk($selectedIds, $batchSize) as $batchIds) {
+        $callback(array_map('intval', $batchIds));
+      }
+      return;
     }
+
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
     $this->applyConstraints($queryBuilder, $definition);
     $alias = $queryBuilder->getRootAliases()[0];
-    $queryBuilder->select("$alias.id");
-    $ids = $queryBuilder->getQuery()->getScalarResult();
-    return array_column($ids, 'id');
+
+    $maxIdQueryBuilder = clone $queryBuilder;
+    $maxIdQueryBuilder->select("MAX($alias.id)");
+    $maxId = (int)$maxIdQueryBuilder->getQuery()->getSingleScalarResult();
+    if ($maxId <= 0) {
+      return;
+    }
+
+    $lastId = 0;
+    while ($lastId < $maxId) {
+      $batchQueryBuilder = clone $queryBuilder;
+      $batchQueryBuilder
+        ->select("DISTINCT $alias.id")
+        ->andWhere("$alias.id > :lastActionableId")
+        ->andWhere("$alias.id <= :maxActionableId")
+        ->setParameter('lastActionableId', $lastId)
+        ->setParameter('maxActionableId', $maxId)
+        ->orderBy("$alias.id", 'ASC')
+        ->setMaxResults($batchSize);
+
+      $ids = array_map('intval', array_column($batchQueryBuilder->getQuery()->getScalarResult(), 'id'));
+      if (empty($ids)) {
+        return;
+      }
+
+      $callback($ids);
+      $lastId = max($ids);
+    }
   }
 
   public function getGroups(ListingDefinition $definition): array {

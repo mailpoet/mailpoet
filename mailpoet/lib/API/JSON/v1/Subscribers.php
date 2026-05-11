@@ -298,9 +298,6 @@ class Subscribers extends APIEndpoint {
       return $this->successResponse($this->bulkConfirmationEmailResender->queue($definition, $data));
     }
 
-    $ids = $this->subscriberListingRepository->getActionableIds($definition);
-
-    $count = 0;
     $segment = null;
     if (isset($data['segment_id'])) {
       $segment = $this->getSegment($data);
@@ -321,31 +318,53 @@ class Subscribers extends APIEndpoint {
       }
     }
 
+    $count = 0;
     if ($data['action'] === 'trash') {
-      $count = $this->subscribersRepository->bulkTrash($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->subscribersRepository->bulkTrash($ids);
+      };
     } elseif ($data['action'] === 'restore') {
-      $count = $this->subscribersRepository->bulkRestore($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->subscribersRepository->bulkRestore($ids);
+      };
     } elseif ($data['action'] === 'delete') {
-      $count = $this->subscribersRepository->bulkDelete($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->subscribersRepository->bulkDelete($ids);
+      };
     } elseif ($data['action'] === 'removeFromAllLists') {
-      $count = $this->subscribersRepository->bulkRemoveFromAllSegments($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->subscribersRepository->bulkRemoveFromAllSegments($ids);
+      };
     } elseif ($data['action'] === 'removeFromList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkRemoveFromSegment($segment, $ids);
+      $action = function(array $ids) use (&$count, $segment): void {
+        $count += $this->subscribersRepository->bulkRemoveFromSegment($segment, $ids);
+      };
     } elseif ($data['action'] === 'addToList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkAddToSegment($segment, $ids);
+      $action = function(array $ids) use (&$count, $segment): void {
+        $count += $this->subscribersRepository->bulkAddToSegment($segment, $ids);
+      };
     } elseif ($data['action'] === 'moveToList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
+      $action = function(array $ids) use (&$count, $segment): void {
+        $count += $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
+      };
     } elseif ($data['action'] === 'unsubscribe') {
-      $this->trackBulkUnsubscribe($ids);
-      $count = $this->subscribersRepository->bulkUnsubscribe($ids);
+      $action = function(array $ids) use (&$count): void {
+        $this->trackBulkUnsubscribe($ids);
+        $count += $this->subscribersRepository->bulkUnsubscribe($ids);
+      };
     } elseif ($data['action'] === 'addTag' && $tag instanceof TagEntity) {
-      $count = $this->subscribersRepository->bulkAddTag($tag, $ids);
+      $action = function(array $ids) use (&$count, $tag): void {
+        $count += $this->subscribersRepository->bulkAddTag($tag, $ids);
+      };
     } elseif ($data['action'] === 'removeTag' && $tag instanceof TagEntity) {
-      $count = $this->subscribersRepository->bulkRemoveTag($tag, $ids);
+      $action = function(array $ids) use (&$count, $tag): void {
+        $count += $this->subscribersRepository->bulkRemoveTag($tag, $ids);
+      };
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    $this->subscriberListingRepository->iterateActionableIds($definition, $action);
     $meta = [
       'count' => $count,
     ];

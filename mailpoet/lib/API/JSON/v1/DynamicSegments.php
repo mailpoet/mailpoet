@@ -287,22 +287,30 @@ class DynamicSegments extends APIEndpoint {
 
   public function bulkAction($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
     $meta = [];
+    $count = 0;
     if ($data['action'] === 'trash') {
-      $errors = $this->getErrorMessagesForSegmentsUsedInActiveNewsletters($ids);
-      if (count($errors) > 0) {
-        $meta['errors'] = $errors;
-      }
-      $meta['count'] = $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
+      $action = function(array $ids) use (&$count, &$meta): void {
+        $errors = $this->getErrorMessagesForSegmentsUsedInActiveNewsletters($ids);
+        if (count($errors) > 0) {
+          $meta['errors'] = array_merge($meta['errors'] ?? [], $errors);
+        }
+        $count += $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
+      };
     } elseif ($data['action'] === 'restore') {
-      $meta['count'] = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+      };
     } elseif ($data['action'] === 'delete') {
-      $meta['count'] = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
+      };
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([Error::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    $this->dynamicSegmentsListingRepository->iterateActionableIds($definition, $action);
+    $meta['count'] = $count;
     return $this->successResponse(null, $meta);
   }
 

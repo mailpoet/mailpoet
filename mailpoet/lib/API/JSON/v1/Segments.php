@@ -282,18 +282,24 @@ class Segments extends APIEndpoint {
 
   public function bulkAction($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->segmentListingRepository->getActionableIds($definition);
     $count = 0;
     if ($data['action'] === 'trash') {
-      $count = $this->segmentsRepository->bulkTrash($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->segmentsRepository->bulkTrash($ids);
+      };
     } elseif ($data['action'] === 'restore') {
-      $count = $this->segmentsRepository->bulkRestore($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->segmentsRepository->bulkRestore($ids);
+      };
     } elseif ($data['action'] === 'delete') {
-      $count = $this->segmentsRepository->bulkDelete($ids);
+      $action = function(array $ids) use (&$count): void {
+        $count += $this->segmentsRepository->bulkDelete($ids);
+      };
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    $this->segmentListingRepository->iterateActionableIds($definition, $action);
     return $this->successResponse(null, ['count' => $count]);
   }
 

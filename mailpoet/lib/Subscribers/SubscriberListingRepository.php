@@ -105,25 +105,58 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getActionableIds(ListingDefinition $definition): array {
+    $ids = [];
+    $this->iterateActionableIds($definition, function(array $batchIds) use (&$ids): void {
+      $ids = array_merge($ids, $batchIds);
+    });
+    return $ids;
+  }
+
+  public function iterateActionableIds(ListingDefinition $definition, callable $callback, int $batchSize = self::ACTIONABLE_IDS_BATCH_SIZE): void {
+    $batchSize = max(1, $batchSize);
     $this->definition = $definition;
-    $ids = $definition->getSelection();
-    if (!empty($ids)) {
-      return $ids;
+    $selectedIds = $definition->getSelection();
+    if (!empty($selectedIds)) {
+      foreach (array_chunk($selectedIds, $batchSize) as $batchIds) {
+        $callback(array_map('intval', $batchIds));
+      }
+      return;
     }
     $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
     if ($dynamicSegment === null) {
-      return parent::getActionableIds($definition);
+      parent::iterateActionableIds($definition, $callback, $batchSize);
+      return;
     }
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $lastId = 0;
+    while (true) {
+      $subscribersIdsQuery = $this->createDynamicSegmentActionableIdsQuery($definition, $dynamicSegment, "DISTINCT $subscribersTable.id");
+      $subscribersIdsQuery
+        ->andWhere("$subscribersTable.id > :last_actionable_id")
+        ->setParameter('last_actionable_id', $lastId, ParameterType::INTEGER)
+        ->orderBy("$subscribersTable.id", 'ASC')
+        ->setMaxResults($batchSize);
+
+      $ids = array_map(function($id): int {
+        return $this->toInt($id);
+      }, $subscribersIdsQuery->executeQuery()->fetchFirstColumn());
+      if (empty($ids)) {
+        return;
+      }
+
+      $callback($ids);
+      $lastId = max($ids);
+    }
+  }
+
+  private function createDynamicSegmentActionableIdsQuery(ListingDefinition $definition, SegmentEntity $segment, string $select): DBALQueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersIdsQuery = $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
+      ->select($select)
       ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    $idsStatement = $subscribersIdsQuery->execute();
-    $result = $idsStatement->fetchAll();
-    return array_column($result, 'id');
+    return $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
   }
 
   /**

@@ -445,22 +445,34 @@ class Newsletters extends APIEndpoint {
 
   public function bulkAction($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->newsletterListingRepository->getActionableIds($definition);
     if ($data['action'] === 'trash') {
-      $this->newslettersRepository->bulkTrash($ids);
+      $count = 0;
+      $this->newsletterListingRepository->iterateActionableIds($definition, function(array $ids) use (&$count): void {
+        $this->newslettersRepository->bulkTrash($ids);
+        $count += count($ids);
+      });
     } elseif ($data['action'] === 'restore') {
-      $this->newslettersRepository->bulkRestore($ids);
+      $count = 0;
+      $this->newsletterListingRepository->iterateActionableIds($definition, function(array $ids) use (&$count): void {
+        $this->newslettersRepository->bulkRestore($ids);
+        $count += count($ids);
+      });
     } elseif ($data['action'] === 'delete') {
-      $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
-      $this->newsletterDeleteController->bulkDelete($ids);
-      $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
+      $count = 0;
+      $this->newsletterListingRepository->iterateActionableIds($definition, function(array $ids) use (&$count): void {
+        $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
+        $this->newsletterDeleteController->bulkDelete($ids);
+        $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
+        $count += count($ids);
+      });
     } elseif ($data['action'] === 'export_stats') {
+      $ids = $this->newsletterListingRepository->getActionableIds($definition);
       return $this->scheduleStatsExport($ids, $data);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
-    return $this->successResponse(null, ['count' => count($ids)]);
+    return $this->successResponse(null, ['count' => $count]);
   }
 
   /**
