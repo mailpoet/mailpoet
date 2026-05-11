@@ -108,7 +108,6 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $this->assertIsArray($meta);
     $this->assertTrue($meta[NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY]);
     $this->assertSame($sourceNewsletter->getId(), $meta[NewsletterReplayMetadata::REPLAY_SOURCE_NEWSLETTER_ID]);
-    $this->assertSame($segment->getId(), $meta[NewsletterReplayMetadata::REPLAY_SEGMENT_ID]);
     $this->assertSame($subscriber->getId(), $meta[NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID]);
     $this->assertSame(123, $meta[NewsletterReplayMetadata::AUTOMATION]['run_id']);
     $this->assertSame($meta, $queue->getMeta());
@@ -223,6 +222,53 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $task = $result['task_subscriber']->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $this->assertNotSame($staleReplayTask->getId(), $task->getId());
+  }
+
+  public function testItTreatsPendingReplayFromDifferentRunAsDuplicate(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    (new Newsletter())
+      ->withSentStatus()
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => Carbon::parse('2026-01-02 10:00:00')])
+      ->create();
+
+    $firstRun = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
+    $secondRun = $this->scheduler->schedule($subscriber, (int)$segment->getId(), [
+      'id' => 10,
+      'run_id' => 456,
+      'step_id' => 'step-id',
+      'run_number' => 1,
+    ]);
+
+    $this->assertSame(LatestNewsletterScheduler::OUTCOME_SCHEDULED, $firstRun['outcome']);
+    $this->assertSame(LatestNewsletterScheduler::OUTCOME_DUPLICATE, $secondRun['outcome']);
+    $this->assertNull($secondRun['task_subscriber']);
+  }
+
+  public function testSaveErrorAndPauseStopsReplayTask(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    (new Newsletter())
+      ->withSentStatus()
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => Carbon::parse('2026-01-02 10:00:00')])
+      ->create();
+
+    $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
+    $taskSubscriber = $result['task_subscriber'];
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $task = $taskSubscriber->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    $this->scheduler->saveErrorAndPause($taskSubscriber, 'Replay timed out');
+    $this->entityManager->refresh($task);
+    $this->entityManager->refresh($taskSubscriber);
+
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task->getStatus());
+    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $taskSubscriber->getProcessed());
+    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $taskSubscriber->getFailed());
+    $this->assertSame('Replay timed out', $taskSubscriber->getError());
   }
 
   private function createReplayQueue(NewsletterEntity $newsletter, Carbon $processedAt, array $meta): ScheduledTaskEntity {

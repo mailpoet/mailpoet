@@ -5,6 +5,8 @@ import { storeName } from '../../../../../editor/store';
 import { AutomationEditorWindow } from '../../../../../editor/store/types';
 import { automationHasTriggerList } from '../helper';
 
+declare let window: AutomationEditorWindow;
+
 const invalidPlacementMessage = __(
   'This action needs a trigger list, such as "Someone subscribes".',
   'mailpoet',
@@ -15,9 +17,7 @@ export function Edit(): JSX.Element {
     (select) => ({
       automation: select(storeName).getAutomationData(),
       registry:
-        select(storeName).getRegistry() ??
-        (window as unknown as AutomationEditorWindow)
-          .mailpoet_automation_registry,
+        select(storeName).getRegistry() ?? window.mailpoet_automation_registry,
     }),
     [],
   );
@@ -27,7 +27,7 @@ export function Edit(): JSX.Element {
   return (
     <PanelBody>
       {!hasTriggerList && (
-        <Notice isDismissible={false} status="warning">
+        <Notice isDismissible={false} status="error">
           {invalidPlacementMessage}
         </Notice>
       )}

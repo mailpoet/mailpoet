@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
@@ -108,7 +109,7 @@ class SendLatestNewsletterAction implements Action {
     try {
       $args->getSingleSubject(SubscriberSubject::KEY);
       $args->getSingleSubject(SegmentSubject::KEY);
-    } catch (Throwable $e) {
+    } catch (NotFoundException $e) {
       throw ValidationException::create()
         ->withMessage(__('This action needs a trigger list.', 'mailpoet'))
         ->withError('general', __('This action needs a trigger list, such as "Someone subscribes".', 'mailpoet'));
@@ -219,6 +220,15 @@ class SendLatestNewsletterAction implements Action {
       return true;
     }
 
+    if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
+      $this->latestNewsletterScheduler->saveErrorAndPause(
+        $newsletter,
+        __('Subscriber is no longer eligible for this email.', 'mailpoet')
+      );
+      $this->saveOutcome($controller, 'skipped-ineligible-subscriber', $newsletterId);
+      return true;
+    }
+
     $isLastRun = $args->getRunNumber() >= 1 + count(self::POLL_INTERVALS);
     if (!$isLastRun) {
       $this->saveOutcome($controller, 'polling', $newsletterId);
@@ -226,7 +236,7 @@ class SendLatestNewsletterAction implements Action {
     }
 
     $error = __('Email sending process timed out.', 'mailpoet');
-    $this->latestNewsletterScheduler->saveError($newsletter, $error);
+    $this->latestNewsletterScheduler->saveErrorAndPause($newsletter, $error);
     throw InvalidStateException::create()->withMessage($error);
   }
 

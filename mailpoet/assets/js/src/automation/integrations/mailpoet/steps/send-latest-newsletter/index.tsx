@@ -12,6 +12,8 @@ import {
   sendLatestNewsletterStepKey,
 } from './helper';
 
+declare let window: AutomationEditorWindow;
+
 const disabledReason = __(
   'This action needs a trigger list, such as "Someone subscribes".',
   'mailpoet',
@@ -38,8 +40,7 @@ export function registerHooks(): void {
       disableSendLatestNewsletterWhenMissingTriggerList(
         items,
         automation,
-        (window as unknown as AutomationEditorWindow)
-          .mailpoet_automation_registry,
+        window.mailpoet_automation_registry,
         disabledReason,
       ),
   );
