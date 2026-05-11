@@ -67,6 +67,28 @@ export function TaskScheduler() {
             {__('Server side cron (Linux cron)', 'mailpoet')}
           </label>
         </div>
+        {method === 'Disabled' && (
+          <>
+            <div className="mailpoet-settings-inputs-row">
+              <Radio
+                id="cron_trigger-method-disabled"
+                value="Disabled"
+                checked={method === 'Disabled'}
+                onCheck={setMethod}
+                automationId="disabled_cron_radio"
+              />
+              <label htmlFor="cron_trigger-method-disabled">
+                {__('Disabled', 'mailpoet')}
+              </label>
+            </div>
+            <div className="mailpoet-settings-inputs-row">
+              {__(
+                'MailPoet will not process scheduled emails automatically.',
+                'mailpoet',
+              )}
+            </div>
+          </>
+        )}
         {method === 'Linux Cron' && (
           <div className="mailpoet-settings-inputs-row">
             <div className="mailpoet-settings-inputs-row">
