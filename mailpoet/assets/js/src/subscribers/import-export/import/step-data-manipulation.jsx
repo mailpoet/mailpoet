@@ -66,6 +66,15 @@ export function StepDataManipulation({
     }
   }, [stepMethodSelectionData, navigate]);
 
+  const skippedRowsCount = useMemo(
+    () => ({
+      duplicate: stepMethodSelectionData?.duplicate?.length ?? 0,
+      invalid: stepMethodSelectionData?.invalid?.length ?? 0,
+      role: stepMethodSelectionData?.role?.length ?? 0,
+    }),
+    [stepMethodSelectionData],
+  );
+
   const importSubscribers = () => {
     doImport(
       stepMethodSelectionData.subscribers,
@@ -75,7 +84,12 @@ export function StepDataManipulation({
       updateExistingSubscribers,
       selectedTags,
       (importResults) => {
-        setStepDataManipulationData(importResults);
+        setStepDataManipulationData({
+          ...importResults,
+          skipped_duplicate: skippedRowsCount.duplicate,
+          skipped_invalid: skippedRowsCount.invalid,
+          skipped_role: skippedRowsCount.role,
+        });
         navigate('/step_results');
       },
     );
