@@ -11,6 +11,8 @@ import { step as BuysFromACategory } from './steps/buys-from-a-category';
 import { step as BuysFromATag } from './steps/buys-from-a-tag';
 import { step as MadeAReview } from './steps/made-a-review';
 import { step as CustomerWinBack } from './steps/customer-win-back';
+import { step as ChangeOrderStatus } from './steps/change-order-status';
+import { step as AddOrderNote } from './steps/add-order-note';
 // Insert new imports here
 
 export const initialize = (): void => {
@@ -28,5 +30,7 @@ export const initialize = (): void => {
   registerStepType(BuysFromATag);
   registerStepType(MadeAReview);
   registerStepType(CustomerWinBack);
+  registerStepType(ChangeOrderStatus);
+  registerStepType(AddOrderNote);
   // Insert new steps here
 };
