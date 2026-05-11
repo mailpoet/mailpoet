@@ -116,7 +116,7 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $this->assertSame(1, $queue->getCountTotal());
   }
 
-  public function testItDoesNotTreatFailedStatisticsRowAsDuplicate(): void {
+  public function testItTreatsExistingStatisticsRowAsDuplicate(): void {
     $segment = (new Segment())->create();
     $subscriber = (new Subscriber())->withSegments([$segment])->create();
     $sourceNewsletter = (new Newsletter())
@@ -138,7 +138,8 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
 
     $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
 
-    $this->assertSame(LatestNewsletterScheduler::OUTCOME_SCHEDULED, $result['outcome']);
+    $this->assertSame(LatestNewsletterScheduler::OUTCOME_DUPLICATE, $result['outcome']);
+    $this->assertNull($result['task_subscriber']);
   }
 
   public function testItTreatsSuccessfulProcessedSendAsDuplicate(): void {
