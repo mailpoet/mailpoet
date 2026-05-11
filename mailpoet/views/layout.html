@@ -170,10 +170,11 @@
 <% endif %>
 
 <% if display_chatbot_widget and not is_dotcom_ecommerce_plan() %>
+  <% set chatbot_bot_id = 'mailpoet-workflow-support_chat' %>
   <script type="text/javascript" src="<%= getJavascriptScriptUrl('haw.js') %>"></script>
   <chat-widget
     id="chat"
-    bot="mailpoet-workflow-support_chat"
+    bot="<%= chatbot_bot_id %>"
     avatar="<%= cdn_url('chat-avatar.png') %>"
     title="<%= __('MailPoet support', 'mailpoet') %>"
     subtitle="<%= __('Chat with our AI assistant', 'mailpoet') %>"
@@ -190,7 +191,8 @@
     </a>
   </chat-widget>
   <script>
-    const getChatId = () => localStorage.getItem('ai-widget-mailpoet-chat-support-chat-id');
+    const botId = '<%= chatbot_bot_id %>';
+    const getChatId = () => localStorage.getItem(`ai-widget-${botId}-chat-id`);
 
     document.addEventListener('DOMContentLoaded', function() {
       const supportLink = document.getElementById('mailpoet-support-link');
