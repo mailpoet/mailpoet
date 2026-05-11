@@ -15,6 +15,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -694,10 +695,14 @@ class SendingQueue {
       $queue = $task->getSendingQueue();
       if (
         $queue
+        && !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())
         && $this->timeZoneCampaignScheduler
         && $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)
         && $this->timeZoneCampaignScheduler->hasIncompleteCampaignQueues($queue)
       ) {
+        return;
+      }
+      if ($queue && NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())) {
         return;
       }
       $this->newsletterTask->markNewsletterAsSent($newsletter);

@@ -201,6 +201,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneUnsubscribesTrigger::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Actions\SendLatestNewsletterAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Hooks\AutomationEditorLoadingHooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Hooks\CreateAutomationRunHook::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer::class)->setPublic(true)->setShared(false);
@@ -632,6 +633,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Statistics\Export\StatisticsExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\AutomationEmailScheduler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Scheduler\LatestNewsletterScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\PostNotificationScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\ReEngagementScheduler::class)->setPublic(true);
