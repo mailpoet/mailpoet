@@ -25,6 +25,12 @@ class FilterGroup {
     $this->filters = $filters;
   }
 
+  public function __clone() {
+    $this->filters = array_map(function(Filter $filter): Filter {
+      return clone $filter;
+    }, $this->filters);
+  }
+
   public function getId(): string {
     return $this->id;
   }

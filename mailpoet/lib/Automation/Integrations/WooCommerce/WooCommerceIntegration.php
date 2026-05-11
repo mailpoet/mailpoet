@@ -7,6 +7,8 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\AbandonedCartSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderStatusChangeSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\CustomerSubjectToWordPressUserSubjectTransformer;
+use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\OrderSubjectToWordPressUserSubjectTransformer;
 use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUserSubjectToWooCommerceCustomerSubjectTransformer;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
@@ -64,6 +66,12 @@ class WooCommerceIntegration {
   /** @var WordPressUserSubjectToWooCommerceCustomerSubjectTransformer */
   private $wordPressUserToWooCommerceCustomerTransformer;
 
+  /** @var CustomerSubjectToWordPressUserSubjectTransformer */
+  private $woocommerceCustomerToWordPressUserTransformer;
+
+  /** @var OrderSubjectToWordPressUserSubjectTransformer */
+  private $woocommerceOrderToWordPressUserTransformer;
+
   /** @var WooCommerce */
   private $wooCommerce;
 
@@ -83,6 +91,8 @@ class WooCommerceIntegration {
     CustomerSubject $customerSubject,
     ContextFactory $contextFactory,
     WordPressUserSubjectToWooCommerceCustomerSubjectTransformer $wordPressUserToWooCommerceCustomerTransformer,
+    CustomerSubjectToWordPressUserSubjectTransformer $woocommerceCustomerToWordPressUserTransformer,
+    OrderSubjectToWordPressUserSubjectTransformer $woocommerceOrderToWordPressUserTransformer,
     WooCommerce $wooCommerce
   ) {
     $this->orderStatusChangedTrigger = $orderStatusChangedTrigger;
@@ -100,6 +110,8 @@ class WooCommerceIntegration {
     $this->customerSubject = $customerSubject;
     $this->contextFactory = $contextFactory;
     $this->wordPressUserToWooCommerceCustomerTransformer = $wordPressUserToWooCommerceCustomerTransformer;
+    $this->woocommerceCustomerToWordPressUserTransformer = $woocommerceCustomerToWordPressUserTransformer;
+    $this->woocommerceOrderToWordPressUserTransformer = $woocommerceOrderToWordPressUserTransformer;
     $this->wooCommerce = $wooCommerce;
   }
 
@@ -126,5 +138,7 @@ class WooCommerceIntegration {
     $registry->addTrigger($this->buysFromACategoryTrigger);
     $registry->addTrigger($this->buysFromATagTrigger);
     $registry->addSubjectTransformer($this->wordPressUserToWooCommerceCustomerTransformer);
+    $registry->addSubjectTransformer($this->woocommerceCustomerToWordPressUserTransformer);
+    $registry->addSubjectTransformer($this->woocommerceOrderToWordPressUserTransformer);
   }
 }

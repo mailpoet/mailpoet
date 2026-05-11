@@ -20,6 +20,12 @@ class Filters {
     $this->groups = $groups;
   }
 
+  public function __clone() {
+    $this->groups = array_map(function(FilterGroup $group): FilterGroup {
+      return clone $group;
+    }, $this->groups);
+  }
+
   public function getOperator(): string {
     return $this->operator;
   }
