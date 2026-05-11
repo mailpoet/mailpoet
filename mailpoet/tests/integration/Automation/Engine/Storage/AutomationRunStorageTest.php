@@ -3,7 +3,10 @@
 namespace MailPoet\Test\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Test\DataFactories\Automation;
+use MailPoet\Test\DataFactories\AutomationRun as AutomationRunFactory;
 
 class AutomationRunStorageTest extends \MailPoetTest {
 
@@ -122,5 +125,43 @@ class AutomationRunStorageTest extends \MailPoetTest {
 
     // Check automation3 has no runs
     $this->assertNull($result[$automation3->getId()]);
+  }
+
+  public function testGetCountByAutomationTriggerAndSubject() {
+    $automation = (new Automation())->create();
+    $otherAutomation = (new Automation())->create();
+    $subject = new Subject('mailpoet:test-subject', ['id' => 1]);
+    $otherSubject = new Subject('mailpoet:test-subject', ['id' => 2]);
+
+    (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('mailpoet:test-trigger')
+      ->withSubject($subject)
+      ->create();
+    (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('mailpoet:test-trigger')
+      ->withSubject($subject)
+      ->create();
+    (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('mailpoet:other-trigger')
+      ->withSubject($subject)
+      ->create();
+    (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('mailpoet:test-trigger')
+      ->withSubject($otherSubject)
+      ->create();
+    (new AutomationRunFactory())
+      ->withAutomation($otherAutomation)
+      ->withTriggerKey('mailpoet:test-trigger')
+      ->withSubject($subject)
+      ->create();
+
+    $this->assertSame(
+      2,
+      $this->testee->getCountByAutomationTriggerAndSubject($automation, 'mailpoet:test-trigger', $subject)
+    );
   }
 }
