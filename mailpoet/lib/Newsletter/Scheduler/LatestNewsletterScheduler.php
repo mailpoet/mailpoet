@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -70,7 +71,10 @@ class LatestNewsletterScheduler {
           throw InvalidStateException::create();
         }
 
-        if ($this->hasSuccessfulProcessedSend($newsletter, $subscriber)) {
+        if (
+          $this->hasSuccessfulProcessedSend($newsletter, $subscriber)
+          || $this->hasStatisticsNewsletter($newsletter, $subscriber)
+        ) {
           return [
             'outcome' => self::OUTCOME_DUPLICATE,
             'newsletter' => $newsletter,
@@ -158,6 +162,20 @@ class LatestNewsletterScheduler {
       ->setParameter('processed', ScheduledTaskSubscriberEntity::STATUS_PROCESSED)
       ->setParameter('notFailed', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK)
       ->setParameter('completed', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    return (int)$result > 0;
+  }
+
+  private function hasStatisticsNewsletter(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
+    $result = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(statistics)')
+      ->from(StatisticsNewsletterEntity::class, 'statistics')
+      ->where('statistics.newsletter = :newsletter')
+      ->andWhere('statistics.subscriber = :subscriber')
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('subscriber', $subscriber)
       ->getQuery()
       ->getSingleScalarResult();
 
