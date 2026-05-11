@@ -1371,6 +1371,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $this->endpoint->save($subscriberData);
     verify($this->sendingQueuesRepository->findAll())->empty();
 
+    $this->assertInstanceOf(SuccessResponse::class, $response);
     $subscriberData['id'] = $response->data['id'];
     $subscriberData['segments'] = [$this->segment1->getId()];
     $this->endpoint->save($subscriberData);
