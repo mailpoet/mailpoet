@@ -52,10 +52,10 @@ export const step: StepType = {
   title: () => __('Send latest newsletter', 'mailpoet'),
   description: () =>
     __(
-      'Send the latest regular newsletter from the trigger list when this automation runs.',
+      'Send the latest newsletter from the list when this automation runs.',
       'mailpoet',
     ),
-  subtitle: () => __('Latest newsletter from trigger list', 'mailpoet'),
+  subtitle: () => __('Latest newsletter from the list', 'mailpoet'),
   keywords,
   foreground: '#996800',
   background: '#FCF9E8',

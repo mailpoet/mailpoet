@@ -33,7 +33,7 @@ export function Edit(): JSX.Element {
       )}
       <p>
         {__(
-          'MailPoet will choose the latest regular newsletter already sent to the list that triggered this automation when this step runs. The newsletter is sent with the normal MailPoet sending process.',
+          'MailPoet will choose the latest regular newsletter already sent to the list that triggered this automation when this step runs.',
           'mailpoet',
         )}
       </p>
