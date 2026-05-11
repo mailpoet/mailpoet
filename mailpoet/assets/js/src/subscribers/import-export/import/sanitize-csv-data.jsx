@@ -2,10 +2,18 @@
 // single/double quotes and convert to lowercase
 import _ from 'underscore';
 
-const isRoleEmail = (email) =>
-  window.roleBasedEmails.findIndex((element) =>
-    email.startsWith(`${element}@`),
-  ) >= 0;
+const isRoleEmail = (email) => {
+  if (typeof email !== 'string') {
+    return false;
+  }
+
+  const normalizedEmail = email.toLowerCase();
+  return (
+    window.roleBasedEmails.findIndex((element) =>
+      normalizedEmail.startsWith(`${element}@`),
+    ) >= 0
+  );
+};
 
 const detectAndCleanupEmail = (emailString) => {
   let test;
@@ -44,6 +52,9 @@ export function sanitizeCSVData(csvData) {
   const duplicateEmails = [];
   const invalidEmails = [];
   const roleEmails = [];
+  let duplicateRowsCount = 0;
+  let invalidRowsCount = 0;
+  let roleRowsCount = 0;
   let emailColumnPosition = null;
   let columnCount = null;
   let isHeaderFound = false;
@@ -94,6 +105,7 @@ export function sanitizeCSVData(csvData) {
           );
           parsedEmails[roleFallbackEmail] = true;
           roleEmails.push(rowData[roleFallbackColumn]);
+          roleRowsCount += 1;
         }
         if (emailColumnPosition === null && parseInt(rowCount, 10) === 0) {
           isHeaderFound = true;
@@ -103,11 +115,14 @@ export function sanitizeCSVData(csvData) {
         email = detectAndCleanupEmail(rowData[emailColumnPosition]);
         if (_.has(parsedEmails, email)) {
           duplicateEmails.push(email);
-        } else if (isRoleEmail(rowData[emailColumnPosition])) {
+          duplicateRowsCount += 1;
+        } else if (isRoleEmail(email)) {
           parsedEmails[email] = true;
           roleEmails.push(rowData[emailColumnPosition]);
+          roleRowsCount += 1;
         } else if (!window.mailpoet_email_regex.test(email)) {
           invalidEmails.push(rowData[emailColumnPosition]);
+          invalidRowsCount += 1;
         } else {
           // if we haven't yet processed this e-mail and it passed
           // the regex test, then process the row
@@ -140,6 +155,9 @@ export function sanitizeCSVData(csvData) {
       duplicate: _.uniq(duplicateEmails),
       invalid: _.uniq(invalidEmails),
       role: _.uniq(roleEmails),
+      duplicateRowsCount,
+      invalidRowsCount,
+      roleRowsCount,
     };
   }
   return null;
