@@ -14,7 +14,7 @@ class Cookies {
   ];
 
   public function set($name, $value, array $options = []) {
-    if (headers_sent()) {
+    if ($this->headersSent()) {
       return;
     }
     $options = $options + self::DEFAULT_OPTIONS;
@@ -24,11 +24,7 @@ class Cookies {
       throw new InvalidArgumentException('Failed to JSON-encode cookie value');
     }
 
-    setcookie(
-      $name,
-      $value,
-      $options
-    );
+    $this->setCookie($name, $value, $options);
   }
 
   public function get($name) {
@@ -43,7 +39,26 @@ class Cookies {
     return $value;
   }
 
-  public function delete($name) {
+  public function delete($name, array $options = []) {
+    if (!$this->headersSent()) {
+      $options = $options + self::DEFAULT_OPTIONS;
+      $options['expires'] = time() - 3600;
+      $this->setCookie($name, '', $options);
+
+      if ($options['path'] === '') {
+        $options['path'] = '/';
+        $this->setCookie($name, '', $options);
+      }
+    }
+
     unset($_COOKIE[$name]);
+  }
+
+  protected function headersSent(): bool {
+    return headers_sent();
+  }
+
+  protected function setCookie($name, string $value, array $options): void {
+    setcookie($name, $value, $options);
   }
 }
