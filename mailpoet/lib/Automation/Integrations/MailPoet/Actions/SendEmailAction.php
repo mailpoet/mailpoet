@@ -71,6 +71,7 @@ class SendEmailAction implements Action {
     'mailpoet:custom-trigger',
     'woocommerce:order-status-changed',
     'woocommerce:order-created',
+    'woocommerce:order-paid',
     'woocommerce:order-completed',
     'woocommerce:order-cancelled',
     'woocommerce:abandoned-cart',
