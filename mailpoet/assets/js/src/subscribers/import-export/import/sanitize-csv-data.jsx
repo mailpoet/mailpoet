@@ -35,9 +35,6 @@ const detectAndCleanupEmail = (emailString) => {
   if (!window.mailpoet_email_regex.test(email)) {
     return false;
   }
-  if (isRoleEmail(email)) {
-    return false;
-  }
   return email;
 };
 
@@ -70,19 +67,34 @@ export function sanitizeCSVData(csvData) {
       // determine position of email address inside an array; this is
       // done once and then email regex is run just on that element for each row
       if (emailColumnPosition === null) {
+        let roleFallbackColumn = null;
         Object.keys(rowData).forEach((column) => {
           emailAddress = detectAndCleanupEmail(rowData[column]);
           if (
             emailColumnPosition === null &&
             window.mailpoet_email_regex.test(emailAddress)
           ) {
-            emailColumnPosition = column;
-            // add current e-mail to an object index
-            parsedEmails[emailAddress] = true;
-            rowData[column] = emailAddress;
-            processedSubscribers[emailAddress] = rowData;
+            if (isRoleEmail(emailAddress)) {
+              if (roleFallbackColumn === null) {
+                roleFallbackColumn = column;
+              }
+            } else {
+              emailColumnPosition = column;
+              // add current e-mail to an object index
+              parsedEmails[emailAddress] = true;
+              rowData[column] = emailAddress;
+              processedSubscribers[emailAddress] = rowData;
+            }
           }
         });
+        if (emailColumnPosition === null && roleFallbackColumn !== null) {
+          emailColumnPosition = roleFallbackColumn;
+          const roleFallbackEmail = detectAndCleanupEmail(
+            rowData[roleFallbackColumn],
+          );
+          parsedEmails[roleFallbackEmail] = true;
+          roleEmails.push(rowData[roleFallbackColumn]);
+        }
         if (emailColumnPosition === null && parseInt(rowCount, 10) === 0) {
           isHeaderFound = true;
           processedSubscribers[0] = rowData;
@@ -92,6 +104,7 @@ export function sanitizeCSVData(csvData) {
         if (_.has(parsedEmails, email)) {
           duplicateEmails.push(email);
         } else if (isRoleEmail(rowData[emailColumnPosition])) {
+          parsedEmails[email] = true;
           roleEmails.push(rowData[emailColumnPosition]);
         } else if (!window.mailpoet_email_regex.test(email)) {
           invalidEmails.push(rowData[emailColumnPosition]);

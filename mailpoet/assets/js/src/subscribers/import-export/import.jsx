@@ -69,6 +69,13 @@ function ImportSubscribers() {
                   errors={stepDataManipulationData.errors}
                   createdSubscribers={stepDataManipulationData.created}
                   updatedSubscribers={stepDataManipulationData.updated}
+                  skippedDuplicateSubscribers={
+                    stepDataManipulationData.skipped_duplicate
+                  }
+                  skippedInvalidSubscribers={
+                    stepDataManipulationData.skipped_invalid
+                  }
+                  skippedRoleSubscribers={stepDataManipulationData.skipped_role}
                   segments={stepDataManipulationData.segments}
                   addedToSegmentWithWelcomeNotification={
                     stepDataManipulationData.added_to_segment_with_welcome_notification

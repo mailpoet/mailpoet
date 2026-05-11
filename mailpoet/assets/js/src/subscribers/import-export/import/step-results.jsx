@@ -106,6 +106,9 @@ export function StepResults({
   errors = [],
   createdSubscribers = undefined,
   updatedSubscribers = undefined,
+  skippedDuplicateSubscribers = undefined,
+  skippedInvalidSubscribers = undefined,
+  skippedRoleSubscribers = undefined,
   segments = undefined,
   addedToSegmentWithWelcomeNotification = undefined,
 }) {
@@ -115,6 +118,9 @@ export function StepResults({
       typeof segments === 'undefined' &&
       errors.length === 0 &&
       typeof createdSubscribers === 'undefined' &&
+      typeof skippedDuplicateSubscribers === 'undefined' &&
+      typeof skippedInvalidSubscribers === 'undefined' &&
+      typeof skippedRoleSubscribers === 'undefined' &&
       typeof updatedSubscribers === 'undefined'
     ) {
       navigate('/step_method_selection', { replace: true });
@@ -124,6 +130,9 @@ export function StepResults({
     createdSubscribers,
     errors.length,
     navigate,
+    skippedDuplicateSubscribers,
+    skippedInvalidSubscribers,
+    skippedRoleSubscribers,
     updatedSubscribers,
   ]);
   if (errors.length) {
@@ -142,6 +151,18 @@ export function StepResults({
             subscribersCount={updatedSubscribers}
             segments={segments}
             initialMessage={MailPoet.I18n.t('subscribersUpdated')}
+          />
+          <ResultMessage
+            subscribersCount={skippedInvalidSubscribers}
+            initialMessage={MailPoet.I18n.t('importSkippedInvalid')}
+          />
+          <ResultMessage
+            subscribersCount={skippedDuplicateSubscribers}
+            initialMessage={MailPoet.I18n.t('importSkippedDuplicate')}
+          />
+          <ResultMessage
+            subscribersCount={skippedRoleSubscribers}
+            initialMessage={MailPoet.I18n.t('importSkippedRoleBased')}
           />
           <NoAction
             createdSubscribers={createdSubscribers}
@@ -190,6 +211,9 @@ StepResults.propTypes = {
   segments: PropTypes.arrayOf(PropTypes.string.isRequired),
   createdSubscribers: PropTypes.number,
   updatedSubscribers: PropTypes.number,
+  skippedDuplicateSubscribers: PropTypes.number,
+  skippedInvalidSubscribers: PropTypes.number,
+  skippedRoleSubscribers: PropTypes.number,
   addedToSegmentWithWelcomeNotification: PropTypes.bool,
 };
 
