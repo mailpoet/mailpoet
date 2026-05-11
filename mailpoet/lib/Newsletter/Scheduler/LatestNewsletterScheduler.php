@@ -138,13 +138,15 @@ class LatestNewsletterScheduler {
     return null;
   }
 
-  public function saveError(ScheduledTaskSubscriberEntity $scheduledTaskSubscriber, string $error): void {
+  public function saveErrorAndPause(ScheduledTaskSubscriberEntity $scheduledTaskSubscriber, string $error): void {
     $task = $scheduledTaskSubscriber->getTask();
     $subscriber = $scheduledTaskSubscriber->getSubscriber();
     if (!$task || !$subscriber || !$subscriber->getId()) {
       return;
     }
     $this->scheduledTaskSubscribersRepository->saveError($task, $subscriber->getId(), $error);
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->flush();
   }
 
   private function hasSuccessfulProcessedSend(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
@@ -256,10 +258,6 @@ class LatestNewsletterScheduler {
       NewsletterReplayMetadata::REPLAY_SOURCE_NEWSLETTER_ID => $newsletter->getId(),
       NewsletterReplayMetadata::REPLAY_SOURCE_QUEUE_ID => $sourceQueue->getId(),
       NewsletterReplayMetadata::REPLAY_SOURCE_TASK_ID => $sourceTask->getId(),
-      NewsletterReplayMetadata::REPLAY_SOURCE_PROCESSED_AT => $sourceTask->getProcessedAt()
-        ? $sourceTask->getProcessedAt()->format('Y-m-d H:i:s')
-        : null,
-      NewsletterReplayMetadata::REPLAY_SEGMENT_ID => $segmentId,
       NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID => $subscriber->getId(),
       NewsletterReplayMetadata::AUTOMATION => $automationMeta,
     ];
