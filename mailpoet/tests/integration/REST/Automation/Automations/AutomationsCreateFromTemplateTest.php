@@ -5,6 +5,7 @@ namespace MailPoet\REST\Automation\Automations;
 require_once __DIR__ . '/../AutomationTest.php';
 
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\REST\Automation\AutomationTest;
@@ -86,5 +87,41 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $createdAutomation = array_pop($allAutomations);
     $this->assertInstanceOf(Automation::class, $createdAutomation);
     $this->assertSame($createdAutomation->getId(), $response['data']['id']);
+  }
+
+  public function testCreateLatestNewsletterAutomationFromTemplate(): void {
+    $this->post(self::ENDPOINT_PATH, [
+      'json' => [
+        'slug' => 'latest-newsletter-to-new-subscribers',
+      ],
+    ]);
+
+    $allAutomations = $this->automationStorage->getAutomations();
+    $createdAutomation = array_pop($allAutomations);
+    $this->assertInstanceOf(Automation::class, $createdAutomation);
+    $this->assertSame('Send latest newsletter to new subscribers', $createdAutomation->getName());
+    $this->assertTrue($createdAutomation->getMeta('mailpoet:run-once-per-subscriber'));
+
+    $stepKeys = array_map(
+      function (Step $step): string {
+        return $step->getKey();
+      },
+      $createdAutomation->getSteps()
+    );
+    $this->assertSame([
+      'core:root',
+      'mailpoet:someone-subscribes',
+      'core:delay',
+      'mailpoet:send-latest-newsletter',
+    ], array_values($stepKeys));
+
+    $latestNewsletterSteps = array_values(array_filter(
+      $createdAutomation->getSteps(),
+      function (Step $step): bool {
+        return $step->getKey() === 'mailpoet:send-latest-newsletter';
+      }
+    ));
+    $this->assertCount(1, $latestNewsletterSteps);
+    $this->assertSame([], $latestNewsletterSteps[0]->getArgs());
   }
 }

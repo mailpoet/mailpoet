@@ -23,12 +23,18 @@ import { step as TagRemovedTrigger } from './steps/tag-removed';
 import { step as ClicksEmailLinkTrigger } from './steps/clicks-email-link';
 import { step as WpUserRoleChangedTrigger } from './steps/wp-user-role-changed';
 import { step as AnnualDateTrigger } from './steps/annual-date';
+import {
+  step as SendLatestNewsletterStep,
+  registerHooks as registerSendLatestNewsletterHooks,
+} from './steps/send-latest-newsletter';
 // Insert new imports here
 
 export const initialize = (): void => {
   const isGarden = getIsGarden();
 
   registerStepType(SendEmailStep);
+  registerStepType(SendLatestNewsletterStep);
+  registerSendLatestNewsletterHooks();
   registerStepType(WpUserRegisteredTrigger);
   registerStepType(WpUserRoleChangedTrigger);
   registerStepType(SomeoneSubscribesTrigger);
