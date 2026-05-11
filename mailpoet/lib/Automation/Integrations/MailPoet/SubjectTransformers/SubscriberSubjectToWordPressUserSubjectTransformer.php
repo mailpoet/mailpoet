@@ -26,14 +26,17 @@ class SubscriberSubjectToWordPressUserSubjectTransformer implements SubjectTrans
     return UserSubject::KEY;
   }
 
-  public function transform(Subject $data): Subject {
+  public function transform(Subject $data): ?Subject {
     if ($this->accepts() !== $data->getKey()) {
       throw new \InvalidArgumentException('Invalid subject type');
     }
 
     $subscriber = $this->subscribersRepository->findOneById((int)$data->getArgs()['subscriber_id']);
     if (!$subscriber) {
-      throw new \InvalidArgumentException('Subscriber not found');
+      return null;
+    }
+    if (!$subscriber->getWpUserId()) {
+      return null;
     }
     return new Subject(UserSubject::KEY, ['user_id' => $subscriber->getWpUserId()]);
   }

@@ -58,6 +58,7 @@ class UpdateAutomationController {
     if (!$automation) {
       throw Exceptions::automationNotFound($id);
     }
+    $previousAutomation = clone $automation;
     $this->validateIfAutomationCanBeUpdated($automation, $data);
 
     if (array_key_exists('name', $data)) {
@@ -99,6 +100,7 @@ class UpdateAutomationController {
     if (!$automation) {
       throw Exceptions::automationNotFound($id);
     }
+    $this->hooks->doAutomationAfterUpdate($automation, $previousAutomation);
     return $automation;
   }
 

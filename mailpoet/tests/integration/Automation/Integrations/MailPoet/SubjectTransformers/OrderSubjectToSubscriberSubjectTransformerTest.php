@@ -8,13 +8,17 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
+use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 use MailPoet\Test\Automation\Stubs\TestAction;
+use MailPoet\Test\DataFactories\Subscriber;
 
 require_once __DIR__ . '/../../../Stubs/TestAction.php';
 
@@ -101,6 +105,18 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberSubject::class, $subject);
     $this->assertInstanceOf(SubscriberPayload::class, $payload);
     $this->assertSame($billingAddress, $payload->getEmail());
+  }
+
+  public function testItDoesNotTransformGuestOrderWithoutBillingEmailToZeroWpUserSubscriber() {
+    (new Subscriber())->withWpUserId(0)->create();
+
+    $order = new \WC_Order();
+    $order->save();
+
+    /** @var OrderSubjectToSubscriberSubjectTransformer $transformer */
+    $transformer = $this->diContainer->get(OrderSubjectToSubscriberSubjectTransformer::class);
+
+    $this->assertNull($transformer->transform(new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()])));
   }
 
   public function _after() {

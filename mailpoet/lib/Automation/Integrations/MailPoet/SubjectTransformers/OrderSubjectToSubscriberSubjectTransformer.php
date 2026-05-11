@@ -32,14 +32,14 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
     $this->woocommerceHelper = $woocommerceHelper;
   }
 
-  public function transform(Subject $data): Subject {
+  public function transform(Subject $data): ?Subject {
     if ($this->accepts() !== $data->getKey()) {
       throw new \InvalidArgumentException('Invalid subject type');
     }
 
-      $subscriber = $this->findOrCreateSubscriber($data);
+    $subscriber = $this->findOrCreateSubscriber($data);
     if (!$subscriber instanceof SubscriberEntity) {
-      throw new \InvalidArgumentException('Subscriber not found');
+      return null;
     }
 
     return new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]);
@@ -78,8 +78,15 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
       return null;
     }
     $billingEmail = $wcOrder->get_billing_email();
-    return $billingEmail ?
-      $this->subscribersRepository->findOneBy(['email' => $billingEmail]) :
-      $this->subscribersRepository->findOneBy(['wpUserId' => $wcOrder->get_user_id()]);
+    if ($billingEmail) {
+      return $this->subscribersRepository->findOneBy(['email' => $billingEmail]);
+    }
+
+    $userId = $wcOrder->get_user_id();
+    if (!$userId) {
+      return null;
+    }
+
+    return $this->subscribersRepository->findOneBy(['wpUserId' => $userId]);
   }
 }
