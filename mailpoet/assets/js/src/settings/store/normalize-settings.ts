@@ -116,7 +116,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     }),
     cron_trigger: asObject({
       method: asEnum(
-        ['WordPress', 'Action Scheduler', 'Linux Cron'],
+        ['WordPress', 'Action Scheduler', 'Linux Cron', 'Disabled'],
         'Action Scheduler',
       ),
     }),
