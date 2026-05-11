@@ -37,39 +37,58 @@ class ListingBulkActions extends Component {
       return;
     }
 
-    const selectedIds =
-      this.props.selection === 'all' ? 'all' : this.props.selected_ids;
+    const submitAction = () => {
+      const selectedIds =
+        this.props.selection === 'all' ? 'all' : this.props.selected_ids;
 
-    const data = action.getData !== undefined ? action.getData() : {};
+      const data = action.getData !== undefined ? action.getData() : {};
 
-    data.action = action.name;
+      data.action = action.name;
 
-    let onSuccess = () => {};
-    if (action.onSuccess !== undefined) {
-      onSuccess = action.onSuccess;
-    }
-
-    if (data.action) {
-      this.isSubmittingAction = true;
-      const promise = this.props.onBulkAction(selectedIds, data);
-      if (promise !== false) {
-        promise.then(onSuccess);
-        promise.always(() => {
-          this.isSubmittingAction = false;
-        });
-      } else {
-        this.isSubmittingAction = false;
+      let onSuccess = () => {};
+      if (action.onSuccess !== undefined) {
+        onSuccess = action.onSuccess;
       }
+
+      if (data.action) {
+        this.isSubmittingAction = true;
+        const promise = this.props.onBulkAction(selectedIds, data);
+        if (promise !== false) {
+          promise.then(onSuccess);
+          promise.always(() => {
+            this.isSubmittingAction = false;
+          });
+        } else {
+          this.isSubmittingAction = false;
+        }
+      }
+
+      this.setState(
+        {
+          extra: false,
+        },
+        () => {
+          this.restoreTriggerElementFocus();
+        },
+      );
+    };
+
+    if (typeof action.confirm === 'function') {
+      this.isSubmittingAction = true;
+      action.confirm({
+        count: this.props.count,
+        selection: this.props.selection,
+        selectedIds:
+          this.props.selection === 'all' ? 'all' : this.props.selected_ids,
+        onCancel: () => {
+          this.isSubmittingAction = false;
+        },
+        onConfirm: submitAction,
+      });
+      return;
     }
 
-    this.setState(
-      {
-        extra: false,
-      },
-      () => {
-        this.restoreTriggerElementFocus();
-      },
-    );
+    submitAction();
   }
 
   getSelectedAction(actionName) {
@@ -132,6 +151,7 @@ class ListingBulkActions extends Component {
 
 ListingBulkActions.propTypes = {
   bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
+  count: PropTypes.number.isRequired,
   selection: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
   selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
   onBulkAction: PropTypes.func.isRequired,

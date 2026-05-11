@@ -11,6 +11,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
+  newsletterActionConfirmations,
 } from 'newsletters/listings/utils.jsx';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { withBoundary } from '../../common';
@@ -211,6 +212,7 @@ function NewsletterListNotificationHistoryComponent(props) {
         messages={messages}
         item_actions={newsletterActions}
         bulk_actions={bulkActions}
+        confirmations={newsletterActionConfirmations}
         auto_refresh
         sort_by="sent_at"
         sort_order="desc"

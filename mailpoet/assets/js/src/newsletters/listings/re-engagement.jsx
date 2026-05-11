@@ -17,6 +17,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
   confirmEdit,
+  newsletterActionConfirmations,
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
 import { withBoundary } from 'common';
@@ -388,6 +389,7 @@ class NewsletterListReEngagementComponent extends Component {
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}
+            confirmations={newsletterActionConfirmations}
             messages={messages}
             auto_refresh
             sort_by="updated_at"

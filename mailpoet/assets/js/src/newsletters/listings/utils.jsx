@@ -121,3 +121,57 @@ export const confirmEdit = (newsletter) => {
     window.location.href = editorHref;
   }
 };
+
+const isSelectingAllMatchingEmails = ({ selection, selectedIds }) =>
+  selection === 'all' || selectedIds === 'all';
+
+export const newsletterActionConfirmations = {
+  trashItem: ({ onConfirm }) =>
+    confirmAlert({
+      message: __('Move this email to trash?', 'mailpoet'),
+      confirmLabel: __('Move to trash', 'mailpoet'),
+      onConfirm,
+    }),
+  deleteItem: ({ onConfirm }) =>
+    confirmAlert({
+      message: __(
+        'Delete this email permanently? This action cannot be undone.',
+        'mailpoet',
+      ),
+      confirmLabel: __('Delete permanently', 'mailpoet'),
+      onConfirm,
+    }),
+  emptyTrash: ({ onConfirm }) =>
+    confirmAlert({
+      message: __(
+        'Delete all emails in trash permanently? This action cannot be undone.',
+        'mailpoet',
+      ),
+      confirmLabel: __('Empty Trash', 'mailpoet'),
+      onConfirm,
+    }),
+  bulkTrash: ({ selection, selectedIds, onCancel, onConfirm }) =>
+    confirmAlert({
+      message: isSelectingAllMatchingEmails({ selection, selectedIds })
+        ? __('Move all matching emails to trash?', 'mailpoet')
+        : __('Move selected emails to trash?', 'mailpoet'),
+      confirmLabel: __('Move to trash', 'mailpoet'),
+      onCancel,
+      onConfirm,
+    }),
+  bulkDelete: ({ selection, selectedIds, onCancel, onConfirm }) =>
+    confirmAlert({
+      message: isSelectingAllMatchingEmails({ selection, selectedIds })
+        ? __(
+            'Delete all matching emails permanently? This action cannot be undone.',
+            'mailpoet',
+          )
+        : __(
+            'Delete selected emails permanently? This action cannot be undone.',
+            'mailpoet',
+          ),
+      confirmLabel: __('Delete permanently', 'mailpoet'),
+      onCancel,
+      onConfirm,
+    }),
+};

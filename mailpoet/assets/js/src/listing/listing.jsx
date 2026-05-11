@@ -300,6 +300,10 @@ class ListingComponent extends Component {
   };
 
   handleTrashItem = (id) => {
+    this.confirmAction('trashItem', () => this.trashItem(id), { id });
+  };
+
+  trashItem = (id) => {
     const { endpoint, messages = undefined } = this.props;
     this.setState({
       loading: true,
@@ -327,6 +331,10 @@ class ListingComponent extends Component {
   };
 
   handleDeleteItem = (id) => {
+    this.confirmAction('deleteItem', () => this.deleteItem(id), { id });
+  };
+
+  deleteItem = (id) => {
     const { endpoint, messages = undefined } = this.props;
     this.setState({
       loading: true,
@@ -352,7 +360,9 @@ class ListingComponent extends Component {
       });
   };
 
-  handleEmptyTrash = () =>
+  handleEmptyTrash = () => this.confirmAction('emptyTrash', this.emptyTrash);
+
+  emptyTrash = () =>
     this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash',
@@ -368,6 +378,53 @@ class ListingComponent extends Component {
       .fail((response) => {
         this.context.notices.apiError(response, { scroll: true });
       });
+
+  confirmAction = (confirmationName, onConfirm, context = {}) => {
+    const { confirmations = undefined } = this.props;
+    const confirmation =
+      confirmations !== undefined ? confirmations[confirmationName] : null;
+
+    if (typeof confirmation !== 'function') {
+      onConfirm();
+      return;
+    }
+
+    confirmation({
+      ...context,
+      onConfirm,
+    });
+  };
+
+  getBulkActionConfirmation = (actionName) => {
+    const { confirmations = undefined } = this.props;
+
+    if (confirmations === undefined) {
+      return null;
+    }
+
+    if (actionName === 'trash') {
+      return confirmations.bulkTrash || null;
+    }
+
+    if (actionName === 'delete') {
+      return confirmations.bulkDelete || null;
+    }
+
+    return null;
+  };
+
+  addBulkActionConfirmation = (action) => {
+    const confirmation = this.getBulkActionConfirmation(action.name);
+
+    if (typeof confirmation !== 'function') {
+      return action;
+    }
+
+    return {
+      ...action,
+      confirm: confirmation,
+    };
+  };
 
   handleBulkAction = (selectedIds, params) => {
     if (
@@ -618,18 +675,20 @@ class ListingComponent extends Component {
 
     // bulk actions
     let bulkActions = this.props.bulk_actions || [];
-    bulkActions = bulkActions.filter(
-      (action) =>
-        action.display === undefined ||
-        action.display({
-          group: this.state.group,
-          filter: this.state.filter,
-          search: this.state.search,
-          count: this.state.count,
-          selection: this.state.selection,
-          selected_ids: this.state.selected_ids,
-        }),
-    );
+    bulkActions = bulkActions
+      .filter(
+        (action) =>
+          action.display === undefined ||
+          action.display({
+            group: this.state.group,
+            filter: this.state.filter,
+            search: this.state.search,
+            count: this.state.count,
+            selection: this.state.selection,
+            selected_ids: this.state.selected_ids,
+          }),
+      )
+      .map(this.addBulkActionConfirmation);
 
     if (this.state.group === 'trash' && bulkActions.length > 0) {
       bulkActions = [
@@ -643,7 +702,7 @@ class ListingComponent extends Component {
           label: __('Delete permanently', 'mailpoet'),
           onSuccess: this.props.messages.onDelete,
         },
-      ];
+      ].map(this.addBulkActionConfirmation);
     }
 
     // item actions
@@ -809,6 +868,13 @@ ListingComponent.propTypes = {
     onRestore: PropTypes.func,
     onTrash: PropTypes.func,
     onDelete: PropTypes.func,
+  }),
+  confirmations: PropTypes.shape({
+    trashItem: PropTypes.func,
+    deleteItem: PropTypes.func,
+    emptyTrash: PropTypes.func,
+    bulkTrash: PropTypes.func,
+    bulkDelete: PropTypes.func,
   }),
   onRenderItem: PropTypes.func.isRequired,
   isItemInactive: PropTypes.func,

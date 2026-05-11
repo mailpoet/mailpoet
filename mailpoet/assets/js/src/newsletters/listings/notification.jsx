@@ -30,6 +30,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
   confirmEdit,
+  newsletterActionConfirmations,
 } from 'newsletters/listings/utils.jsx';
 import { withBoundary } from '../../common';
 
@@ -420,6 +421,7 @@ class NewsletterListNotificationComponent extends Component {
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}
+            confirmations={newsletterActionConfirmations}
             messages={messages}
             auto_refresh
             sort_by="updated_at"

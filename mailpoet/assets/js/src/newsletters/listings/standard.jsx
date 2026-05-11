@@ -15,6 +15,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
+  newsletterActionConfirmations,
 } from 'newsletters/listings/utils.jsx';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import { NewsletterTypes } from 'newsletters/types';
@@ -419,6 +420,7 @@ class NewsletterListStandardComponent extends Component {
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={this.getNewsletterActions()}
+            confirmations={newsletterActionConfirmations}
             messages={messages}
             auto_refresh
             sort_by="sent_at"

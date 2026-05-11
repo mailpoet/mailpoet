@@ -7,6 +7,7 @@ import { MailPoet } from 'mailpoet';
 function ConfirmAlert({
   message,
   onConfirm,
+  onCancel = () => {},
   title = __('Confirm to proceed', 'mailpoet'),
   cancelLabel = __('Cancel', 'mailpoet'),
   confirmLabel = __('Confirm', 'mailpoet'),
@@ -42,8 +43,9 @@ function ConfirmAlert({
 
       document
         .getElementById('mailpoet_alert_cancel')
-        .addEventListener('click', () => MailPoet.Modal.close());
+        .addEventListener('click', () => MailPoet.Modal.cancel());
     },
+    onCancel,
   });
   return null;
 }
@@ -53,6 +55,7 @@ ConfirmAlert.propTypes = {
   message: PropTypes.string.isRequired,
   cancelLabel: PropTypes.string,
   confirmLabel: PropTypes.string,
+  onCancel: PropTypes.func,
   onConfirm: PropTypes.func.isRequired,
 };
 
@@ -64,6 +67,7 @@ export function confirmAlert(props) {
       message={props.message}
       cancelLabel={props.cancelLabel}
       confirmLabel={props.confirmLabel}
+      onCancel={props.onCancel}
       onConfirm={props.onConfirm}
     />,
   );
