@@ -44,7 +44,6 @@ class TemplatesFactory {
   public function createTemplates(): array {
     $templates = [
       $this->createSubscriberWelcomeEmailTemplate(),
-      $this->createLatestNewsletterForNewSubscribersTemplate(),
       $this->createUserWelcomeEmailTemplate(),
       $this->createSubscriberWelcomeSeriesTemplate(),
       $this->createUserWelcomeSeriesTemplate(),
@@ -134,35 +133,6 @@ class TemplatesFactory {
       'megaphone',
       'wordpress',
       true
-    );
-  }
-
-  private function createLatestNewsletterForNewSubscribersTemplate(): AutomationTemplate {
-    return new AutomationTemplate(
-      'latest-newsletter-to-new-subscribers',
-      'welcome',
-      __('Send latest newsletter to new subscribers', 'mailpoet'),
-      __('Send the latest regular newsletter to new subscribers after they join your list.', 'mailpoet'),
-      function (): Automation {
-        return $this->builder->createFromSequence(
-          __('Send latest newsletter to new subscribers', 'mailpoet'),
-          [
-            ['key' => 'mailpoet:someone-subscribes'],
-            ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES']],
-            ['key' => 'mailpoet:send-latest-newsletter'],
-          ],
-          [
-            'mailpoet:run-once-per-subscriber' => true,
-          ]
-        );
-      },
-      [
-        'automationSteps' => 1, // trigger and all delay steps are excluded
-      ],
-      AutomationTemplate::TYPE_DEFAULT,
-      'megaphone',
-      'wordpress',
-      false
     );
   }
 
