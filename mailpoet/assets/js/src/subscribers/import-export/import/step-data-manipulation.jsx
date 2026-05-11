@@ -68,9 +68,18 @@ export function StepDataManipulation({
 
   const skippedRowsCount = useMemo(
     () => ({
-      duplicate: stepMethodSelectionData?.duplicate?.length ?? 0,
-      invalid: stepMethodSelectionData?.invalid?.length ?? 0,
-      role: stepMethodSelectionData?.role?.length ?? 0,
+      duplicate:
+        stepMethodSelectionData?.duplicateRowsCount ??
+        stepMethodSelectionData?.duplicate?.length ??
+        0,
+      invalid:
+        stepMethodSelectionData?.invalidRowsCount ??
+        stepMethodSelectionData?.invalid?.length ??
+        0,
+      role:
+        stepMethodSelectionData?.roleRowsCount ??
+        stepMethodSelectionData?.role?.length ??
+        0,
     }),
     [stepMethodSelectionData],
   );
@@ -153,9 +162,12 @@ export function StepDataManipulation({
 StepDataManipulation.propTypes = {
   stepMethodSelectionData: PropTypes.shape({
     duplicate: PropTypes.arrayOf(PropTypes.string),
+    duplicateRowsCount: PropTypes.number,
     header: PropTypes.arrayOf(PropTypes.string),
     invalid: PropTypes.arrayOf(PropTypes.string),
+    invalidRowsCount: PropTypes.number,
     role: PropTypes.arrayOf(PropTypes.string),
+    roleRowsCount: PropTypes.number,
     subscribersCount: PropTypes.number,
     subscribers: PropTypes.arrayOf(
       // all subscribers
