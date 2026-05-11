@@ -149,6 +149,21 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($data['tags'])->equals($tagNames);
   }
 
+  public function testItThrowsExceptionWhenCreatingSubscriberWithDuplicateEmail(): void {
+    $subscriber = $this->createSubscriber('duplicate@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
+
+    $data = [
+      'email' => $subscriber->getEmail(),
+      'first_name' => 'Changed',
+    ];
+
+    $this->entityManager->clear();
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage('A subscriber with E-mail "' . $subscriber->getEmail() . '" already exists.');
+
+    $this->saveController->save($data);
+  }
+
   public function testItThrowsExceptionWhenUpdatingSubscriberEmailIfNotUnique(): void {
     $subscriber = $this->createSubscriber('second@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
     $subscriber2 = $this->createSubscriber('third@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
@@ -213,17 +228,20 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
     // create subscriber with subscribed status
     $count = 0;
-    $this->saveController->save($data);
+    $subscriber = $this->saveController->save($data);
     $this->assertSame(2, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
 
     // update subscriber to non-subscribed status
     $count = 0;
-    $this->saveController->save(array_merge($data, ['status' => SubscriberEntity::STATUS_UNCONFIRMED]));
+    $this->saveController->save(array_merge($data, [
+      'id' => $subscriber->getId(),
+      'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+    ]));
     $this->assertSame(0, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
 
     // update subscriber to subscribed status
     $count = 0;
-    $this->saveController->save($data);
+    $this->saveController->save(array_merge($data, ['id' => $subscriber->getId()]));
     $this->assertSame(2, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
   }
 

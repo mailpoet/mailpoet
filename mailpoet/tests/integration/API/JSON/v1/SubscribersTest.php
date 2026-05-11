@@ -268,6 +268,7 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItCanSaveAnExistingSubscriber() {
     $subscriberData = [
+      'id' => $this->subscriber2->getId(),
       'email' => 'jane@mailpoet.com',
       'first_name' => 'Super Jane',
       'last_name' => 'Doe',
@@ -284,6 +285,28 @@ class SubscribersTest extends \MailPoetTest {
     );
     verify($response->data['first_name'])->equals('Super Jane');
     verify($response->data['source'])->equals('api');
+  }
+
+  public function testItCannotCreateSubscriberWithDuplicateEmail() {
+    $subscriberData = [
+      'email' => 'jane@mailpoet.com',
+      'first_name' => 'Super Jane',
+      'last_name' => 'Doe',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$this->segment1->getId()],
+      'source' => Source::API,
+    ];
+
+    $response = $this->endpoint->save($subscriberData);
+    $this->assertInstanceOf(ErrorResponse::class, $response);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+    verify($response->errors[0]['error'])->equals(Error::CONFLICT);
+    verify($response->errors[0]['message'])->equals('A subscriber with E-mail "jane@mailpoet.com" already exists.');
+
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'jane@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Jane');
   }
 
   public function testItCanUpdateEmailOfAnExistingSubscriber() {
@@ -304,12 +327,14 @@ class SubscribersTest extends \MailPoetTest {
     $subscriberData['email'] = $this->subscriber1->getEmail();
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(ErrorResponse::class, $response);
-    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+    verify($response->errors[0]['error'])->equals(Error::CONFLICT);
     verify($response->errors[0]['message'])->equals('A subscriber with E-mail "' . $this->subscriber1->getEmail() . '" already exists.');
   }
 
   public function testItCanRemoveListsFromAnExistingSubscriber() {
     $subscriberData = [
+      'id' => $this->subscriber2->getId(),
       'email' => 'jane@mailpoet.com',
       'first_name' => 'Super Jane',
       'last_name' => 'Doe',
@@ -1343,9 +1368,10 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     // welcome notification is created only for segment #1
-    $this->endpoint->save($subscriberData);
+    $response = $this->endpoint->save($subscriberData);
     verify($this->sendingQueuesRepository->findAll())->empty();
 
+    $subscriberData['id'] = $response->data['id'];
     $subscriberData['segments'] = [$this->segment1->getId()];
     $this->endpoint->save($subscriberData);
     verify($this->sendingQueuesRepository->findAll())->arrayCount(1);
