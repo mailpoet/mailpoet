@@ -190,6 +190,30 @@ class ShortcodesTest extends \MailPoetTest {
     verify($parsed['endDate'])->null();
   }
 
+  public function testArchiveDefaultsLimitWhenLimitIsMissingOrInvalid(): void {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+
+    $limits = [
+      [],
+      ['limit' => ''],
+      ['limit' => '0'],
+      ['limit' => '-5'],
+      ['limit' => ['5']],
+    ];
+
+    foreach ($limits as $params) {
+      $parsed = $shortcodes->getParsedArchiveParams($params);
+      verify($parsed['limit'])->equals(Shortcodes::DEFAULT_ARCHIVE_LIMIT);
+    }
+  }
+
+  public function testArchiveAcceptsExplicitLimit(): void {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+
+    $parsed = $shortcodes->getParsedArchiveParams(['limit' => '7']);
+    verify($parsed['limit'])->equals(7);
+  }
+
   public function testArchiveAcceptsSegments(): void {
     $segment1 = (new Segment())->create();
     $segment2 = (new Segment())->create();
@@ -209,6 +233,21 @@ class ShortcodesTest extends \MailPoetTest {
     $result = do_shortcode(sprintf("[mailpoet_archive segments=\"%s\"]", $segment2->getId()));
     verify($result)->stringNotContainsString('Newsletter 1');
     verify($result)->stringContainsString('Newsletter 2');
+  }
+
+  public function testArchiveUsesDefaultLimitWhenLimitIsMissing(): void {
+    for ($i = 0; $i <= Shortcodes::DEFAULT_ARCHIVE_LIMIT; $i++) {
+      (new NewsletterFactory())
+        ->withSendingQueue(['processed_at' => Carbon::now()->subDays($i)])
+        ->withSentStatus()
+        ->withSubject(sprintf('Archive item %03d', $i))
+        ->create();
+    }
+
+    $result = do_shortcode('[mailpoet_archive]');
+    verify($result)->stringContainsString('Archive item 000');
+    verify($result)->stringContainsString(sprintf('Archive item %03d', Shortcodes::DEFAULT_ARCHIVE_LIMIT - 1));
+    verify($result)->stringNotContainsString(sprintf('Archive item %03d', Shortcodes::DEFAULT_ARCHIVE_LIMIT));
   }
 
   public function testArchiveSupportsLimit() {
