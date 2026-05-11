@@ -15,7 +15,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
 
   public function testGetAllTemplates() {
     $result = $this->get(self::ENDPOINT_PATH, []);
-    $this->assertCount(23, $result['data']);
+    $this->assertCount(22, $result['data']);
     $this->assertEquals('subscriber-welcome-email', $result['data'][0]['slug']);
   }
 
@@ -23,7 +23,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     wp_set_current_user($this->editorUserId);
     $data = $this->get(self::ENDPOINT_PATH, []);
 
-    $this->assertCount(23, $data['data']);
+    $this->assertCount(22, $data['data']);
   }
 
   public function testGuestNotAllowed(): void {
@@ -44,7 +44,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
         'category' => 'welcome',
       ],
     ]);
-    $this->assertCount(5, $result['data']);
+    $this->assertCount(4, $result['data']);
 
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
@@ -100,7 +100,6 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     $iconsByTemplate = [
       // Welcome
       'subscriber-welcome-email' => 'megaphone',
-      'latest-newsletter-to-new-subscribers' => 'megaphone',
       'user-welcome-email' => 'megaphone',
       'subscriber-welcome-series' => 'megaphone',
       'user-welcome-series' => 'megaphone',
