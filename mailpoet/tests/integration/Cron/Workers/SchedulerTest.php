@@ -663,7 +663,10 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $queue = $task->getSendingQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    $queue->setMeta([NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $queue->setMeta([
+      NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true,
+      NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID => $replaySubscriber->getId(),
+    ]);
     $this->createTaskSubscriber($task, $replaySubscriber);
     $this->entityManager->flush();
 
@@ -690,6 +693,34 @@ class SchedulerTest extends \MailPoetTest {
     verify($refetchedQueue->getCountProcessed())->equals(0);
     verify($refetchedQueue->getCountToProcess())->equals(1);
     verify($refetchedQueue->getCountTotal())->equals(1);
+  }
+
+  public function testItPausesMalformedLatestNewsletterReplayTask() {
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $subscriber = $this->subscriberFactory
+      ->withEmail('replay-subscriber@example.com')
+      ->create();
+    $otherSubscriber = $this->subscriberFactory
+      ->withEmail('other-subscriber@example.com')
+      ->create();
+
+    $task = $this->createTaskWithQueue($newsletter);
+    $queue = $task->getSendingQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setMeta([
+      NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true,
+      NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID => $subscriber->getId(),
+    ]);
+    $this->createTaskSubscriber($task, $subscriber);
+    $this->createTaskSubscriber($task, $otherSubscriber);
+    $this->entityManager->flush();
+
+    $scheduler = $this->getScheduler($this->subscribersFinder);
+    $scheduler->process();
+
+    $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
+    verify($refetchedTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {

@@ -99,6 +99,8 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $result['task_subscriber']);
     $task = $result['task_subscriber']->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $this->assertCount(1, $task->getSubscribers());
+    $this->assertSame($result['task_subscriber'], $task->getSubscribers()->first());
     $queue = $task->getSendingQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
 
@@ -158,6 +160,37 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
 
     $this->assertSame(LatestNewsletterScheduler::OUTCOME_DUPLICATE, $result['outcome']);
+  }
+
+  public function testItTreatsPendingNonReplayTaskAsDuplicate(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    $sourceNewsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => Carbon::parse('2026-01-02 10:00:00')])
+      ->create();
+
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingQueue::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $task->setSendingQueue($queue);
+    $queue->setNewsletter($sourceNewsletter);
+    $this->entityManager->persist($queue);
+
+    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $this->entityManager->persist($taskSubscriber);
+    $task->getSubscribers()->add($taskSubscriber);
+    $this->entityManager->flush();
+
+    $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
+
+    $this->assertSame(LatestNewsletterScheduler::OUTCOME_DUPLICATE, $result['outcome']);
+    $this->assertNull($result['task_subscriber']);
   }
 
   public function testItDoesNotTreatCompletedUnprocessedReplayTaskAsDuplicate(): void {

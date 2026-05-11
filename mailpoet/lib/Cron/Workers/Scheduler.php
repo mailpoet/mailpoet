@@ -7,6 +7,7 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -334,13 +335,28 @@ class Scheduler {
   }
 
   private function processLatestNewsletterReplay(ScheduledTaskEntity $task): bool {
-    if ($task->getSubscribers()->isEmpty()) {
+    $subscribers = $task->getSubscribers();
+    if ($subscribers->isEmpty()) {
       $this->deleteByTask($task);
       return false;
     }
 
-    $task->setStatus(null);
     $queue = $task->getSendingQueue();
+    $meta = $queue ? $queue->getMeta() : [];
+    $taskSubscriber = $subscribers->first();
+    $expectedSubscriberId = $meta[NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID] ?? null;
+    if (
+      $subscribers->count() !== 1
+      || !$taskSubscriber instanceof ScheduledTaskSubscriberEntity
+      || !is_numeric($expectedSubscriberId)
+      || (int)$taskSubscriber->getSubscriberId() !== (int)$expectedSubscriberId
+    ) {
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
+      return false;
+    }
+
+    $task->setStatus(null);
     if ($queue) {
       $this->sendingQueuesRepository->updateCounts($queue);
     }

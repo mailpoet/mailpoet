@@ -326,7 +326,9 @@ class Newsletter {
         'queue_id' => $queue->getId(),
       ]
     );
-    $this->newslettersRepository->setAsCorrupt($newsletter);
+    if (!NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())) {
+      $this->newslettersRepository->setAsCorrupt($newsletter);
+    }
     $this->sendingQueuesRepository->pause($queue);
   }
 
