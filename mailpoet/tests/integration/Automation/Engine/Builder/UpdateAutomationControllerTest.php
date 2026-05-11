@@ -84,6 +84,53 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     $this->assertCount(0, $this->getActions(['status' => ActionScheduler_Store::STATUS_PENDING]));
   }
 
+  public function testItDoesNotCancelRunningRunsWhenSaveFails(): void {
+    $automation = $this->tester->createAutomation(
+      'Active automation',
+      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
+      new Step('a1', Step::TYPE_ACTION, 'test:action', ['note' => 'before'], [])
+    );
+
+    $run = $this->tester->createAutomationRun($automation);
+    $runStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $runStorage->updateStatus($run->getId(), AutomationRun::STATUS_RUNNING);
+
+    $this->scheduleAction(time() + 100, ['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
+
+    $throwOnSave = function(): void {
+      throw new \RuntimeException('Save failed');
+    };
+    add_action(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
+
+    try {
+      $controller = $this->diContainer->get(UpdateAutomationController::class);
+      $controller->updateAutomation(
+        $automation->getId(),
+        [
+          'cancel_running_runs' => true,
+          'steps' => [
+            'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
+            't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
+            'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => ['note' => 'after'], 'next_steps' => []],
+          ],
+        ]
+      );
+      $this->fail('Expected save to fail.');
+    } catch (\RuntimeException $e) {
+      $this->assertSame('Save failed', $e->getMessage());
+    } finally {
+      remove_action(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
+    }
+
+    $updated = $this->diContainer->get(AutomationStorage::class)->getAutomation($automation->getId());
+    $this->assertInstanceOf(Automation::class, $updated);
+    $updatedStep = $updated->getStep('a1');
+    $this->assertInstanceOf(Step::class, $updatedStep);
+    $this->assertSame('before', $updatedStep->getArgs()['note']);
+    $this->assertSame(AutomationRun::STATUS_RUNNING, $this->getAutomationRun($run->getId())->getStatus());
+    $this->assertCount(1, $this->getActions(['status' => ActionScheduler_Store::STATUS_PENDING]));
+  }
+
   public function testItRejectsTriggerKeyChange(): void {
     $automation = $this->tester->createAutomation(
       'Trigger lock automation',

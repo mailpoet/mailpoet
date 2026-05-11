@@ -1,25 +1,42 @@
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import {
   useShortcut,
   store as keyboardShortcutsStore,
 } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
 import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
+import { AutomationStatus } from '../../../listing/automation';
+import { SaveActiveModal } from '../modals/save-active-modal';
 
 // See:
 //    https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
 //    https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/keyboard-shortcuts/index.js
 
-export function KeyboardShortcuts(): null {
-  const { isSidebarOpened, selectedStep, savedState } = useSelect((select) => ({
+export function KeyboardShortcuts(): JSX.Element | null {
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const {
+    automationStatus,
+    hasUsersInProgress,
+    isSidebarOpened,
+    selectedStep,
+    savedState,
+  } = useSelect((select) => ({
+    automationStatus: select(storeName).getAutomationData().status,
+    hasUsersInProgress:
+      select(storeName).getAutomationData().stats.totals.in_progress > 0,
     isSidebarOpened: select(storeName).isSidebarOpened,
     selectedStep: select(storeName).getSelectedStep,
     savedState: select(storeName).getSavedState(),
   }));
 
-  const { openSidebar, closeSidebar, save, toggleFeature } =
-    useDispatch(storeName);
+  const {
+    openActivationPanel,
+    openSidebar,
+    closeSidebar,
+    save,
+    toggleFeature,
+  } = useDispatch(storeName);
 
   const { registerShortcut } = useDispatch(keyboardShortcutsStore);
 
@@ -75,10 +92,24 @@ export function KeyboardShortcuts(): null {
   useShortcut('mailpoet/automation-editor/save', (event) => {
     event.preventDefault();
 
-    if (savedState === 'unsaved') {
-      void save();
+    if (savedState !== 'unsaved') {
+      return;
     }
+
+    if (automationStatus === AutomationStatus.ACTIVE && hasUsersInProgress) {
+      setShowSaveModal(true);
+      return;
+    }
+
+    if (automationStatus === AutomationStatus.DEACTIVATING) {
+      void openActivationPanel();
+      return;
+    }
+
+    void save();
   });
 
-  return null;
+  return showSaveModal ? (
+    <SaveActiveModal onClose={() => setShowSaveModal(false)} />
+  ) : null;
 }

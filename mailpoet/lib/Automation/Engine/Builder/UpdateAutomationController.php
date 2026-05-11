@@ -74,11 +74,10 @@ class UpdateAutomationController {
       }
     }
 
-    if (($automation->getStatus() === Automation::STATUS_DRAFT) && ($originalStatus === Automation::STATUS_ACTIVE)) {
-      $this->unscheduleAutomationRuns($automation);
-    } elseif (!empty($data['cancel_running_runs'])) {
-      $this->unscheduleAutomationRuns($automation);
-    }
+    $shouldUnscheduleAutomationRuns = (
+      ($automation->getStatus() === Automation::STATUS_DRAFT)
+      && ($originalStatus === Automation::STATUS_ACTIVE)
+    ) || !empty($data['cancel_running_runs']);
 
     if (array_key_exists('meta', $data)) {
       $automation->deleteAllMetas();
@@ -91,6 +90,10 @@ class UpdateAutomationController {
 
     $this->automationValidator->validate($automation);
     $this->storage->updateAutomation($automation);
+
+    if ($shouldUnscheduleAutomationRuns) {
+      $this->unscheduleAutomationRuns($automation);
+    }
 
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
