@@ -14,9 +14,11 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
@@ -147,10 +149,12 @@ class NewslettersRepository extends Repository {
       ->andWhere('n.type = :type')
       ->andWhere('n.status = :status')
       ->andWhere('t.status = :taskStatus')
+      ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('t.processedAt >= :since')
       ->setParameter('type', NewsletterEntity::TYPE_STANDARD)
       ->setParameter('status', NewsletterEntity::STATUS_SENT)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
       ->setParameter('since', $since)
       ->getQuery()
       ->getSingleScalarResult() ?: 0;
@@ -301,6 +305,77 @@ class NewslettersRepository extends Repository {
     }
 
     return $queryBuilder->getQuery()->getResult();
+  }
+
+  /**
+   * @return array{newsletter: NewsletterEntity, queue: SendingQueueEntity, task: ScheduledTaskEntity}|null
+   */
+  public function findLatestSentStandardForSegment(int $segmentId, int $overfetchLimit = 100): ?array {
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $queueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $taskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $newsletterSegmentTable = $this->entityManager->getClassMetadata(NewsletterSegmentEntity::class)->getTableName();
+
+    $rows = $this->entityManager->getConnection()->executeQuery(
+      "
+      SELECT n.id AS newsletter_id, sq.id AS queue_id, st.id AS task_id
+      FROM {$newsletterTable} n
+      INNER JOIN {$queueTable} sq ON sq.newsletter_id = n.id
+      INNER JOIN {$taskTable} st ON st.id = sq.task_id
+      INNER JOIN {$newsletterSegmentTable} ns ON ns.newsletter_id = n.id
+      WHERE n.type = :type
+        AND n.status = :newsletterStatus
+        AND n.deleted_at IS NULL
+        AND st.status = :taskStatus
+        AND st.type = :taskType
+        AND st.processed_at IS NOT NULL
+        AND sq.count_processed > 0
+        AND ns.segment_id = :segmentId
+        AND (sq.meta IS NULL OR sq.meta NOT LIKE :latestNewsletterReplayMeta)
+        AND (st.meta IS NULL OR st.meta NOT LIKE :latestNewsletterReplayMeta)
+      ORDER BY st.processed_at DESC, st.id DESC
+      LIMIT :limit
+      ",
+      [
+        'type' => NewsletterEntity::TYPE_STANDARD,
+        'newsletterStatus' => NewsletterEntity::STATUS_SENT,
+        'taskStatus' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'taskType' => 'sending',
+        'segmentId' => $segmentId,
+        'latestNewsletterReplayMeta' => NewsletterReplayMetadata::getMetaLikePattern(),
+        'limit' => $overfetchLimit,
+      ],
+      [
+        'limit' => ParameterType::INTEGER,
+      ]
+    )->fetchAllAssociative();
+
+    foreach ($rows as $row) {
+      $newsletterId = $row['newsletter_id'] ?? null;
+      $queueId = $row['queue_id'] ?? null;
+      $taskId = $row['task_id'] ?? null;
+      if (!is_numeric($newsletterId) || !is_numeric($queueId) || !is_numeric($taskId)) {
+        continue;
+      }
+      $newsletter = $this->findOneById((int)$newsletterId);
+      $queue = $this->entityManager->find(SendingQueueEntity::class, (int)$queueId);
+      $task = $this->entityManager->find(ScheduledTaskEntity::class, (int)$taskId);
+      if (
+        $newsletter instanceof NewsletterEntity
+        && $queue instanceof SendingQueueEntity
+        && $task instanceof ScheduledTaskEntity
+        && !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())
+        && !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($task->getMeta())
+      ) {
+        return [
+          'newsletter' => $newsletter,
+          'queue' => $queue,
+          'task' => $task,
+        ];
+      }
+    }
+
+    return null;
   }
 
   /**
