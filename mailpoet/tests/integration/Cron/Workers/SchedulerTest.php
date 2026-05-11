@@ -20,6 +20,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SubscribersFinder;
@@ -643,6 +644,52 @@ class SchedulerTest extends \MailPoetTest {
     ]);
     // scheduled job is processed
     $scheduler->process();
+  }
+
+  public function testItProcessesLatestNewsletterReplayForSentStandardNewsletter() {
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $segment = $this->_createSegment();
+    $this->_createNewsletterSegment($newsletter->getId(), $segment->getId());
+
+    $replaySubscriber = $this->subscriberFactory
+      ->withEmail('replay-subscriber@example.com')
+      ->create();
+    $otherSubscriber = $this->subscriberFactory
+      ->withEmail('other-subscriber@example.com')
+      ->create();
+    $this->_createSubscriberSegment($replaySubscriber->getId(), $segment->getId());
+    $this->_createSubscriberSegment($otherSubscriber->getId(), $segment->getId());
+
+    $task = $this->createTaskWithQueue($newsletter);
+    $queue = $task->getSendingQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setMeta([NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createTaskSubscriber($task, $replaySubscriber);
+    $this->entityManager->flush();
+
+    $scheduler = $this->getScheduler($this->subscribersFinder);
+    $scheduler->process();
+
+    $this->entityManager->clear();
+    $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
+    $refetchedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
+    $this->assertInstanceOf(NewsletterEntity::class, $refetchedNewsletter);
+    verify($refetchedTask->getStatus())->null();
+    verify($refetchedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+
+    $scheduledSubscriberIds = array_map(function (ScheduledTaskSubscriberEntity $taskSubscriber): int {
+      return (int)$taskSubscriber->getSubscriberId();
+    }, $refetchedTask->getSubscribers()->toArray());
+
+    verify($scheduledSubscriberIds)->equals([(int)$replaySubscriber->getId()]);
+
+    $refetchedQueue = $refetchedTask->getSendingQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $refetchedQueue);
+    verify($refetchedQueue->getCountProcessed())->equals(0);
+    verify($refetchedQueue->getCountToProcess())->equals(1);
+    verify($refetchedQueue->getCountTotal())->equals(1);
   }
 
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {
