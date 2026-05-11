@@ -74,6 +74,7 @@ class LatestNewsletterScheduler {
         if (
           $this->hasSuccessfulProcessedSend($newsletter, $subscriber)
           || $this->hasStatisticsNewsletter($newsletter, $subscriber)
+          || $this->hasPendingNonReplayTaskSubscriber($newsletter, $subscriber)
         ) {
           return [
             'outcome' => self::OUTCOME_DUPLICATE,
@@ -168,6 +169,29 @@ class LatestNewsletterScheduler {
     return (int)$result > 0;
   }
 
+  private function hasPendingNonReplayTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
+    $result = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(st)')
+      ->from(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->join('sts.task', 'st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'sq.task = st')
+      ->where('sq.newsletter = :newsletter')
+      ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere('sts.failed = :notFailed')
+      ->andWhere('(st.status = :scheduled OR st.status IS NULL)')
+      ->andWhere('st.meta IS NULL OR st.meta NOT LIKE :latestNewsletterReplayMeta')
+      ->andWhere('sq.meta IS NULL OR sq.meta NOT LIKE :latestNewsletterReplayMeta')
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('subscriber', $subscriber)
+      ->setParameter('notFailed', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK)
+      ->setParameter('scheduled', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    return (int)$result > 0;
+  }
+
   private function hasStatisticsNewsletter(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
     $result = $this->entityManager->createQueryBuilder()
       ->select('COUNT(statistics)')
@@ -250,6 +274,7 @@ class LatestNewsletterScheduler {
 
     $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($taskSubscriber);
+    $task->getSubscribers()->add($taskSubscriber);
 
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
