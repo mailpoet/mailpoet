@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Captcha\BehavioralSignals;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
@@ -67,6 +68,9 @@ class SubscriberSubscribeController {
   /** @var TurnstileValidator  */
   private $turnstileValidator;
 
+  /** @var BehavioralSignals */
+  private $behavioralSignals;
+
   public function __construct(
     CaptchaSession $captchaSession,
     SubscriberActions $subscriberActions,
@@ -82,7 +86,8 @@ class SubscriberSubscribeController {
     WPFunctions $wp,
     CaptchaValidator $builtInCaptchaValidator,
     RecaptchaValidator $recaptchaValidator,
-    TurnstileValidator $turnstileValidator
+    TurnstileValidator $turnstileValidator,
+    BehavioralSignals $behavioralSignals
   ) {
     $this->formsRepository = $formsRepository;
     $this->captchaSession = $captchaSession;
@@ -99,6 +104,7 @@ class SubscriberSubscribeController {
     $this->builtInCaptchaValidator = $builtInCaptchaValidator;
     $this->recaptchaValidator = $recaptchaValidator;
     $this->turnstileValidator = $turnstileValidator;
+    $this->behavioralSignals = $behavioralSignals;
   }
 
   public function subscribe(array $data): array {
@@ -119,12 +125,15 @@ class SubscriberSubscribeController {
     }
 
     $segmentIds = $this->getSegmentIds($form, $data['segments'] ?? []);
-    unset($data['segments']);
 
-    $meta = $this->validateCaptcha($captchaSettings, $data);
+    // Keep `segments` in $data until after CAPTCHA validation so that, if the
+    // behavioral-baseline path stashes the submission for a deferred challenge,
+    // the stash still carries the selected segments for the resubmit.
+    $meta = $this->validateCaptcha($captchaSettings, $data, $form);
     if (isset($meta['error'])) {
       return $meta;
     }
+    unset($data['segments']);
 
     $submittedTimeZone = SubscriberEntity::sanitizeTimeZone($data[SubscriberEntity::TIME_ZONE_FIELD_NAME] ?? null);
 
@@ -164,7 +173,12 @@ class SubscriberSubscribeController {
 
     [$subscriber, $subscriptionMeta] = $this->subscriberActions->subscribe($data, $segmentIds);
 
-    if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN && isset($data['captcha_session_id'])) {
+    if (
+      isset($data['captcha_session_id']) && (
+      ($captchaSettings['type'] ?? null) === CaptchaConstants::TYPE_BUILTIN
+      || CaptchaConstants::isDisabled($captchaSettings['type'] ?? null)
+      )
+    ) {
       // Captcha has been verified, invalidate the session vars
       $this->captchaSession->reset($data['captcha_session_id']);
     }
@@ -219,48 +233,90 @@ class SubscriberSubscribeController {
   }
 
   private function initCaptcha(?array $captchaSettings, FormEntity $form, array $data): array {
-    if (
-      !$captchaSettings
-      || !isset($captchaSettings['type'])
-      || $captchaSettings['type'] !== CaptchaConstants::TYPE_BUILTIN
-    ) {
+    $type = $captchaSettings['type'] ?? null;
+
+    if ($type === CaptchaConstants::TYPE_BUILTIN) {
+      // When serving the built-in CAPTCHA for the first time, generate a new session ID.
+      if (!isset($data['captcha_session_id'])) {
+        $data['captcha_session_id'] = $this->captchaSession->generateSessionId();
+      }
+      $sessionId = $data['captcha_session_id'];
+
+      if (!isset($data['captcha'])) {
+        // Save form data to session
+        $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
+      } elseif ($this->captchaSession->getFormData($sessionId)) {
+        // Restore form data from session
+        $data = array_merge($this->captchaSession->getFormData($sessionId), ['captcha' => $data['captcha']]);
+      }
       return $data;
     }
 
-    // When serving the built-in CAPTCHA for the first time, generate a new session ID.
-    if (!isset($data['captcha_session_id'])) {
-      $data['captcha_session_id'] = $this->captchaSession->generateSessionId();
+    // Disabled with behavioral baseline: restore stashed form data on resubmit
+    // (after a previous behavioral escalation). The first submit stashes inside
+    // the escalation path; here we only handle the restore side.
+    if (
+      CaptchaConstants::isDisabled($type)
+      && isset($data['captcha_session_id'], $data['captcha'])
+    ) {
+      $stashed = $this->captchaSession->getFormData($data['captcha_session_id']);
+      if (is_array($stashed)) {
+        $data = array_merge(
+          $stashed,
+          ['captcha' => $data['captcha'], 'captcha_session_id' => $data['captcha_session_id']]
+        );
+      }
     }
-    $sessionId = $data['captcha_session_id'];
 
-    if (!isset($data['captcha'])) {
-      // Save form data to session
-      $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
-    } elseif ($this->captchaSession->getFormData($sessionId)) {
-      // Restore form data from session
-      $data = array_merge($this->captchaSession->getFormData($sessionId), ['captcha' => $data['captcha']]);
-    }
     return $data;
   }
 
-  private function validateCaptcha($captchaSettings, $data): array {
-    if (empty($captchaSettings['type'])) {
-      return [];
-    }
+  private function validateCaptcha($captchaSettings, $data, FormEntity $form): array {
+    $type = $captchaSettings['type'] ?? null;
     try {
-      if ($captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
+      if (CaptchaConstants::isDisabled($type)) {
+        $this->enforceBehavioralBaseline($data, $form);
+        return [];
+      }
+      if ($type === CaptchaConstants::TYPE_BUILTIN) {
         $this->builtInCaptchaValidator->validate($data);
       }
-      if (CaptchaConstants::isReCaptcha($captchaSettings['type'])) {
+      if (CaptchaConstants::isReCaptcha($type)) {
         $this->recaptchaValidator->validate($data);
       }
-      if (CaptchaConstants::isTurnstile($captchaSettings['type'])) {
+      if (CaptchaConstants::isTurnstile($type)) {
         $this->turnstileValidator->validate($data);
       }
     } catch (ValidationError $error) {
       return $error->getMeta();
     }
     return [];
+  }
+
+  /**
+   * Baseline protection when no CAPTCHA is configured: behavioral signals must
+   * look human, otherwise escalate to the built-in CAPTCHA inline challenge.
+   * isRequired()'s IP-history heuristic is intentionally bypassed here — the
+   * decision is made on per-submission signals, not on the IP's CAPTCHA history.
+   */
+  private function enforceBehavioralBaseline(array $data, FormEntity $form): void {
+    // Resubmit: user already received a challenge, verify their answer
+    // regardless of isRequired() (the caller already decided one was needed).
+    if (!empty($data['captcha_session_id'])) {
+      $this->builtInCaptchaValidator->validateChallenge($data);
+      return;
+    }
+    // Admin/editor exemption mirrors the configured built-in CAPTCHA path.
+    if ($this->builtInCaptchaValidator->isUserExemptFromCaptcha()) {
+      return;
+    }
+    if ($this->behavioralSignals->looksHuman($data)) {
+      return;
+    }
+    // Stash form data so the non-JS captcha-page fallback can restore it.
+    $stash = array_merge($data, ['form_id' => $form->getId()]);
+    $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
+    throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
   }
 
   private function getSegmentIds(FormEntity $form, array $segmentIds): array {

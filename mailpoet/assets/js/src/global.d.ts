@@ -32,6 +32,14 @@ interface JQuery {
       recaptchaResponseToken: string;
       turnstileResponseToken?: string;
       mailpoet_subscriber_timezone?: string;
+      behavioral_signals?: {
+        time_ms: number;
+        mm_count: number;
+        kd_count: number;
+        scroll_count: number;
+        focus_count: number;
+        touch: boolean;
+      };
     };
   };
   velocity: (selector: string, options?: Record<string, unknown>) => void;

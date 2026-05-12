@@ -15,6 +15,25 @@ interface InlineCaptchaMeta {
   captcha_audio_url: string;
 }
 
+interface BehavioralSignalCounters {
+  time_ms: number;
+  mm_count: number;
+  kd_count: number;
+  scroll_count: number;
+  focus_count: number;
+  touch: boolean;
+}
+
+// Per-form counters collected from mount to submit. Counters only — no
+// coordinates or traces — so this is not a fingerprinting surface.
+const behavioralCounters = new WeakMap<
+  HTMLFormElement,
+  BehavioralSignalCounters
+>();
+const behavioralStartTimes = new WeakMap<HTMLFormElement, number>();
+const behavioralAccumulatedMs = new WeakMap<HTMLFormElement, number>();
+const behavioralFocusedFields = new WeakMap<HTMLFormElement, Set<string>>();
+
 jQuery(($) => {
   // Initialize Ajax Error message
   MailPoet.I18n.add(
@@ -66,6 +85,98 @@ jQuery(($) => {
     if (formDiv.data('is-preview')) return;
     const formCookieName = getFormCookieName(form);
     Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
+  }
+
+  const trackedForms: HTMLFormElement[] = [];
+  let behavioralListenersInstalled = false;
+
+  function installBehavioralListeners() {
+    if (behavioralListenersInstalled) return;
+    behavioralListenersInstalled = true;
+
+    const onMousemove = () => {
+      trackedForms.forEach((el) => {
+        const c = behavioralCounters.get(el);
+        if (c) c.mm_count += 1;
+      });
+    };
+    const onScroll = () => {
+      trackedForms.forEach((el) => {
+        const c = behavioralCounters.get(el);
+        if (c) c.scroll_count += 1;
+      });
+    };
+    document.addEventListener('mousemove', onMousemove, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true });
+
+    document.addEventListener('visibilitychange', () => {
+      const now = Date.now();
+      if (document.hidden) {
+        trackedForms.forEach((el) => {
+          const start = behavioralStartTimes.get(el);
+          if (start !== undefined) {
+            const acc = behavioralAccumulatedMs.get(el) || 0;
+            behavioralAccumulatedMs.set(el, acc + (now - start));
+            behavioralStartTimes.delete(el);
+          }
+        });
+      } else {
+        trackedForms.forEach((el) => behavioralStartTimes.set(el, now));
+      }
+    });
+  }
+
+  function initBehavioralSignals(form: JQuery<HTMLFormElement>) {
+    const el = form[0];
+    if (!el || behavioralCounters.has(el)) return;
+
+    behavioralCounters.set(el, {
+      time_ms: 0,
+      mm_count: 0,
+      kd_count: 0,
+      scroll_count: 0,
+      focus_count: 0,
+      touch:
+        'maxTouchPoints' in navigator ? navigator.maxTouchPoints > 0 : false,
+    });
+    behavioralStartTimes.set(el, Date.now());
+    behavioralAccumulatedMs.set(el, 0);
+    behavioralFocusedFields.set(el, new Set());
+    trackedForms.push(el);
+
+    form.on('keydown', 'input, textarea, select', () => {
+      const c = behavioralCounters.get(el);
+      if (c) c.kd_count += 1;
+    });
+    form.on('focusin', 'input, textarea, select', (event) => {
+      const focused = behavioralFocusedFields.get(el);
+      const target = event.target as HTMLInputElement;
+      if (focused && target.name) {
+        focused.add(target.name);
+      }
+    });
+
+    installBehavioralListeners();
+  }
+
+  function readBehavioralSignals(
+    form: JQuery<HTMLFormElement>,
+  ): BehavioralSignalCounters | undefined {
+    const el = form[0];
+    if (!el) return undefined;
+    const counters = behavioralCounters.get(el);
+    if (!counters) return undefined;
+    const focused = behavioralFocusedFields.get(el);
+    let elapsedMs = behavioralAccumulatedMs.get(el) || 0;
+    const start = behavioralStartTimes.get(el);
+    if (start !== undefined && !document.hidden) {
+      elapsedMs += Date.now() - start;
+    }
+    return {
+      ...counters,
+      time_ms: elapsedMs,
+      focus_count: focused ? focused.size : 0,
+    };
   }
 
   function playCaptcha(e?: Event) {
@@ -827,6 +938,7 @@ jQuery(($) => {
       if (form.data('font-family')) {
         renderFontFamily(form.data('font-family') as string, form.parent());
       }
+      initBehavioralSignals(form);
     });
     $('.mailpoet_form_close_icon').on('click', (event) => {
       const closeIcon = $(event.target);
@@ -919,6 +1031,10 @@ jQuery(($) => {
           if (browserTimeZone && formData.data) {
             formData.data.mailpoet_subscriber_timezone = browserTimeZone;
           }
+        }
+        const signals = readBehavioralSignals(form);
+        if (signals && formData.data) {
+          formData.data.behavioral_signals = signals;
         }
         const size = form
           .find('.mailpoet_recaptcha')
