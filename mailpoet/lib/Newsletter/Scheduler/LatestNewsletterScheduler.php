@@ -63,7 +63,7 @@ class LatestNewsletterScheduler {
     $lockName = sprintf('mailpoet_latest_replay_%d_%d', $subscriberId, $newsletterId);
     $this->acquireLock($lockName);
     try {
-      return $this->entityManager->wrapInTransaction(function() use ($subscriber, $segmentId, $automationMeta, $source) {
+      return $this->entityManager->wrapInTransaction(function() use ($subscriber, $automationMeta, $source) {
         $newsletter = $source['newsletter'];
         $subscriberId = $subscriber->getId();
         $newsletterId = $newsletter->getId();
@@ -95,7 +95,7 @@ class LatestNewsletterScheduler {
           ];
         }
 
-        $taskSubscriber = $this->createReplaySendingTask($source, $subscriber, $segmentId, $automationMeta);
+        $taskSubscriber = $this->createReplaySendingTask($source, $subscriber, $automationMeta);
         return [
           'outcome' => self::OUTCOME_SCHEDULED,
           'newsletter' => $newsletter,
@@ -248,7 +248,7 @@ class LatestNewsletterScheduler {
   /**
    * @param array{newsletter: NewsletterEntity, queue: SendingQueueEntity, task: ScheduledTaskEntity} $source
    */
-  private function createReplaySendingTask(array $source, SubscriberEntity $subscriber, int $segmentId, array $automationMeta): ScheduledTaskSubscriberEntity {
+  private function createReplaySendingTask(array $source, SubscriberEntity $subscriber, array $automationMeta): ScheduledTaskSubscriberEntity {
     $sourceTask = $source['task'];
     $sourceQueue = $source['queue'];
     $newsletter = $source['newsletter'];
