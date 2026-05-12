@@ -51,7 +51,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [
@@ -83,7 +84,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [
@@ -190,7 +192,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [
@@ -231,7 +234,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [
@@ -276,7 +280,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [
@@ -325,7 +330,8 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
-      $subscriberRepository
+      $subscriberRepository,
+      Stub::makeEmpty(CaptchaSession::class)
     );
 
     $data = [

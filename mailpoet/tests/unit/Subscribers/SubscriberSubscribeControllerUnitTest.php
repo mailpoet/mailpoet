@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Captcha\BehavioralSignals;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
@@ -83,7 +84,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -174,7 +176,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -261,7 +264,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -385,7 +389,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -522,7 +527,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -579,7 +585,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(WPFunctions::class),
       Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class),
-      Stub::makeEmpty(TurnstileValidator::class)
+      Stub::makeEmpty(TurnstileValidator::class),
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -633,7 +640,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(WPFunctions::class),
       Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class),
-      Stub::makeEmpty(TurnstileValidator::class)
+      Stub::makeEmpty(TurnstileValidator::class),
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -768,10 +776,281 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $wp,
       $builtInCaptchaValidator,
       $recaptchaValidator,
-      $turnstileValidator
+      $turnstileValidator,
+      Stub::makeEmpty(BehavioralSignals::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
     verify($result)->equals([]);
+  }
+
+  public function testBehavioralBaselineEscalatesWhenSignalsAreMissing() {
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getId' => 1,
+        'getSettingsSegmentIds' => function(): array { return [1];
+        },
+      ]
+    );
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      [
+        'findOneById' => function() use ($form): FormEntity { return $form;
+        },
+      ]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      [
+        'get' => function() { return ['type' => null];
+        },
+      ]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      [
+        'deobfuscateFormPayload' => function($data) { return $data;
+        },
+      ]
+    );
+    $challengeMeta = [
+      'show_captcha' => true,
+      'captcha_session_id' => 'new_session',
+      'captcha_image_url' => 'https://example.com/image',
+      'captcha_audio_url' => 'https://example.com/audio',
+      'redirect_url' => 'https://example.com/page',
+    ];
+    $capturedStash = null;
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::once(function($formData) use ($challengeMeta, &$capturedStash) {
+          $capturedStash = $formData;
+          return $challengeMeta;
+        }),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(
+      BehavioralSignals::class,
+      ['looksHuman' => false],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      Stub::makeEmpty(SubscriberActions::class, ['subscribe' => Expected::never()], $this),
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'segments' => [1]]);
+    verify($result['show_captcha'])->true();
+    verify($result['error'])->equals('Please fill in the CAPTCHA.');
+    verify($result['captcha_session_id'])->equals('new_session');
+    // The stash must keep the selected segments so the resubmit (inline or via
+    // the non-JS captcha page) can subscribe to the same lists.
+    verify($capturedStash['form_id'])->equals(1);
+    verify($capturedStash['segments'])->equals([1]);
+  }
+
+  public function testBehavioralBaselinePassesSilentlyWhenSignalsLookHuman() {
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getId' => 1,
+        'getSettingsSegmentIds' => function(): array { return [1];
+        },
+        'getBlocksByTypes' => function(): array { return [];
+        },
+        'getSettings' => function(): array { return [];
+        },
+      ]
+    );
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      [
+        'findOneById' => function() use ($form): FormEntity { return $form;
+        },
+      ]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      [
+        'get' => function() { return ['type' => null];
+        },
+      ]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      [
+        'deobfuscateFormPayload' => function($data) { return $data;
+        },
+      ]
+    );
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(
+      BehavioralSignals::class,
+      ['looksHuman' => Expected::once(true)],
+      $this
+    );
+    $subscriberActions = Stub::make(
+      SubscriberActions::class,
+      [
+        'subscribe' => Expected::once(function() use ($subscriber) {
+          return [$subscriber, ['confirmationEmailResult' => true]];
+        }),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals
+    );
+
+    $result = $testee->subscribe(['form_id' => 1]);
+    verify($result)->equals([]);
+  }
+
+  public function testBehavioralBaselineResubmitVerifiesChallengeAndRestoresStashedSegments() {
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    // A form whose segments come from a list-selection block: if the stashed
+    // payload lost `segments`, getSegmentIds() would throw "Please select a list."
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getId' => 1,
+        'getSegmentBlocksSegmentIds' => function(): array { return [1, 2];
+        },
+        'getSettingsSegmentIds' => function(): array { return [99];
+        },
+        'getBlocksByTypes' => function(): array { return [];
+        },
+        'getSettings' => function(): array { return [];
+        },
+      ]
+    );
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      [
+        'findOneById' => function() use ($form): FormEntity { return $form;
+        },
+      ]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      [
+        'get' => function() { return ['type' => null];
+        },
+      ]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      [
+        'deobfuscateFormPayload' => function($data) { return $data;
+        },
+      ]
+    );
+    $captchaSession = Stub::makeEmpty(
+      CaptchaSession::class,
+      [
+        'getFormData' => function() { return ['form_id' => 1, 'segments' => [1]];
+        },
+      ]
+    );
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => Expected::never(),
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::once(true),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(
+      BehavioralSignals::class,
+      ['looksHuman' => Expected::never()],
+      $this
+    );
+    $capturedSegmentIds = null;
+    $subscriberActions = Stub::make(
+      SubscriberActions::class,
+      [
+        'subscribe' => Expected::once(function($data, $segmentIds) use ($subscriber, &$capturedSegmentIds) {
+          $capturedSegmentIds = $segmentIds;
+          return [$subscriber, ['confirmationEmailResult' => true]];
+        }),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      $captchaSession,
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals
+    );
+
+    $result = $testee->subscribe([
+      'form_id' => 1,
+      'captcha_session_id' => 'sess',
+      'captcha' => 'ABCDEF',
+    ]);
+    verify($result)->equals([]);
+    verify($capturedSegmentIds)->equals([1]);
   }
 }
