@@ -44,16 +44,25 @@ class Hooks {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_SAVE, $automation, $previousAutomation);
   }
 
+  /**
+   * Fires after a plain automation create and then cascades to after-save.
+   */
   public function doAutomationAfterCreate(Automation $automation): void {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_CREATE, $automation);
     $this->doAutomationAfterSave($automation);
   }
 
+  /**
+   * Fires after creating from a template, then cascades to after-create and after-save.
+   */
   public function doAutomationAfterCreateFromTemplate(Automation $automation, string $templateSlug): void {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_CREATE_FROM_TEMPLATE, $automation, $templateSlug);
     $this->doAutomationAfterCreate($automation);
   }
 
+  /**
+   * Fires after updating an automation and then cascades to after-save with the previous persisted state.
+   */
   public function doAutomationAfterUpdate(Automation $automation, Automation $previousAutomation): void {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_UPDATE, $automation, $previousAutomation);
     $this->doAutomationAfterSave($automation, $previousAutomation);
@@ -63,6 +72,9 @@ class Hooks {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_DELETE, $automation);
   }
 
+  /**
+   * Fires after duplicating an automation, then cascades to after-create and after-save.
+   */
   public function doAutomationAfterDuplicate(Automation $automation, Automation $sourceAutomation): void {
     $this->wordPress->doAction(self::AUTOMATION_AFTER_DUPLICATE, $automation, $sourceAutomation);
     $this->doAutomationAfterCreate($automation);
