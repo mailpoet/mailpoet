@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.26.0
+Stable tag: 5.26.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,30 +227,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.26.0 - 2026-05-12 =
-* Added: WooCommerce dynamic segment filter for product variations;
-* Added: "Email subscriber unsubscribed" automation trigger;
-* Added: Add email notifications when sites near their subscriber limit;
-* Added: Cloudflare Turnstile as a CAPTCHA option;
-* Added: Automated Latest Content post customization hook;
-* Improved: Clarify the automation email editor return button label;
-* Improved: Post notifications can now be scheduled weekly or monthly on multiple days;
-* Improved: Subscriber exports use smaller batches to reduce memory use;
-* Improved: Subscriber import results now include skipped rows;
-* Improved: Respect WordPress date format settings in MailPoet UIs;
-* Changed: Deleting a WordPress user no longer deletes the linked MailPoet subscriber; the subscriber is unlinked from the WP user and kept on any other lists (use the mailpoet_delete_subscriber_on_wp_user_delete filter to restore the previous hard-delete behavior);
-* Changed: Subscriber exports no longer select IP address fields by default;
-* Changed: Adding a subscriber with an existing email now shows an error instead of updating the existing subscriber;
-* Changed: Newsletter archive shortcode now uses a default result limit of 100 when no limit is specified;
-* Fixed: Match purchased product across orders for the all-of operator in WooCommerce dynamic segments;
-* Fixed: Prevent duplicate confirmation emails when already subscribed users submit signup forms;
-* Fixed: System report timestamps now use the WordPress timezone;
-* Fixed: Throw a controlled exception instead of fataling when the public API is called against an outdated database schema during a MailPoet upgrade;
-* Fixed: Skipping the welcome wizard sender step preserves existing sender details;
-* Fixed: MailPoet cookie deletion now expires browser cookies;
-* Fixed: Disabled newsletter task scheduler settings display correctly;
-* Fixed: Prevent newsletter signup forms from failing when cached form nonces expire;
-* Fixed: Post notification scheduling follows the WordPress week start setting;
-* Fixed: Prevent PHP warnings from invalid deferred admin notice data.
+= 5.26.1 - 2026-05-12 =
+* Fixed: Activation error 'Illegal mix of collations' during WordPress user sync when wp_users and MailPoet subscribers tables use different collations;
+* Fixed: Avoid breaking third-party integrations that call MailPoet public API before init hook.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
