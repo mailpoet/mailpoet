@@ -4,7 +4,7 @@
 
 Common usage is a rendering of a subscription form and processing it.
 
-Hook your API calls into `init` (default priority) or later, after MailPoet has finished its initialization and any pending database migrations. Calling the API earlier (e.g. on `plugins_loaded`) during a MailPoet upgrade will throw a readiness exception, which you can catch and handle.
+Hook your API calls into `init` (default priority) or later, after MailPoet has finished its initialization and any pending database migrations.
 
 ## Fetching data for a subscription form
 
@@ -16,16 +16,12 @@ add_action('init', function () {
     return;
   }
 
-  try {
-    // Get MailPoet API instance
-    $mailpoet_api = \MailPoet\API\API::MP('v1');
-    // Get available list so that a subscriber can choose in which to subscribe
-    $lists = $mailpoet_api->getLists();
-    // Get subscriber fields to know what fields can be rendered within a form
-    $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
-  } catch (\Exception $e) {
-    // MailPoet is still upgrading or otherwise unavailable on this request.
-  }
+  // Get MailPoet API instance
+  $mailpoet_api = \MailPoet\API\API::MP('v1');
+  // Get available list so that a subscriber can choose in which to subscribe
+  $lists = $mailpoet_api->getLists();
+  // Get subscriber fields to know what fields can be rendered within a form
+  $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
 });
 ```
 
