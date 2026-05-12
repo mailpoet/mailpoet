@@ -2,11 +2,13 @@
 
 namespace MailPoet\Newsletter\Statistics;
 
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsOpens;
+use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -57,5 +59,54 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
 
     $this->assertSame(0, $statistics->getOpenCount());
     $this->assertSame(0, $statistics->getClickCount());
+  }
+
+  public function testItIncludesCampaignStatisticsWithoutQueue(): void {
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'processed_at' => Carbon::parse('2026-01-02 10:00:00'),
+      ])
+      ->create();
+
+    $link = (new NewsletterLink($newsletter))->create();
+    $open = (new StatisticsOpens($newsletter, $subscriber))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+    $open->setQueue(null);
+    $click->setQueue(null);
+    $this->entityManager->flush();
+
+    $statistics = $this->statisticsRepository->getStatistics($newsletter);
+
+    $this->assertSame(1, $statistics->getOpenCount());
+    $this->assertSame(1, $statistics->getClickCount());
+  }
+
+  public function testItIncludesWooCommerceRevenueWithoutQueue(): void {
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'processed_at' => Carbon::parse('2026-01-02 10:00:00'),
+      ])
+      ->create();
+
+    $link = (new NewsletterLink($newsletter))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+    $purchase = (new StatisticsWooCommercePurchases($click, [
+      'id' => 1,
+      'currency' => get_woocommerce_currency(),
+      'total' => 25,
+      'status' => 'completed',
+    ]))->create();
+    $tableName = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
+    $this->entityManager->getConnection()->update($tableName, ['queue_id' => null], ['id' => $purchase->getId()]);
+
+    $revenue = $this->statisticsRepository->getWooCommerceRevenue($newsletter);
+
+    $this->assertInstanceOf(WooCommerceRevenue::class, $revenue);
+    $this->assertSame(1, $revenue->getOrdersCount());
+    $this->assertSame(25.0, $revenue->getValue());
   }
 }
