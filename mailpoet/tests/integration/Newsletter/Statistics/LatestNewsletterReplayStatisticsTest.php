@@ -83,6 +83,9 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
     $this->assertSame(1, $statistics->getClickCount());
   }
 
+  /**
+   * @group woo
+   */
   public function testItIncludesWooCommerceRevenueWithoutQueue(): void {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())
@@ -96,7 +99,7 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
     $click = (new StatisticsClicks($link, $subscriber))->create();
     $purchase = (new StatisticsWooCommercePurchases($click, [
       'id' => 1,
-      'currency' => get_woocommerce_currency(),
+      'currency' => 'USD',
       'total' => 25,
       'status' => 'completed',
     ]))->create();

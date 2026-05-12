@@ -150,6 +150,7 @@ class NewslettersRepository extends Repository {
       ->andWhere('n.status = :status')
       ->andWhere('t.status = :taskStatus')
       ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
+      ->andWhere('t.meta IS NULL OR t.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('t.processedAt >= :since')
       ->setParameter('type', NewsletterEntity::TYPE_STANDARD)
       ->setParameter('status', NewsletterEntity::STATUS_SENT)

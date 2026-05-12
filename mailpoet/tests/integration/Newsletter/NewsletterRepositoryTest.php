@@ -11,6 +11,8 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -40,6 +42,32 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->assertContains($automationTransactionalEmail->getId(), $newsletterIds);
     $this->assertNotContains($automationDraftEmail->getId(), $newsletterIds);
     $this->assertNotContains($notification->getId(), $newsletterIds);
+  }
+
+  public function testItExcludesLatestNewsletterReplayTasksFromStandardSentCount(): void {
+    (new NewsletterFactory())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'processed_at' => Carbon::parse('2036-01-02 10:00:00'),
+      ])
+      ->create();
+    $replayNewsletter = (new NewsletterFactory())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'processed_at' => Carbon::parse('2036-01-02 11:00:00'),
+      ])
+      ->create();
+
+    $replayQueue = $replayNewsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $replayQueue);
+    $replayTask = $replayQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $replayTask);
+    $replayTask->setMeta([
+      NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true,
+    ]);
+    $this->entityManager->flush();
+
+    $this->assertSame(1, $this->repository->getStandardNewsletterSentCount(Carbon::parse('2036-01-01 00:00:00')));
   }
 
   public function testItBulkTrashNewslettersAndChildren() {
