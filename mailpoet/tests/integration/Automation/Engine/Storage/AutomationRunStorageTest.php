@@ -128,6 +128,8 @@ class AutomationRunStorageTest extends \MailPoetTest {
   }
 
   public function testGetCountByAutomationTriggerAndSubject() {
+    global $wpdb;
+
     $automation = (new Automation())->create();
     $otherAutomation = (new Automation())->create();
     $subject = new Subject('mailpoet:test-subject', ['id' => 1]);
@@ -158,6 +160,17 @@ class AutomationRunStorageTest extends \MailPoetTest {
       ->withTriggerKey('mailpoet:test-trigger')
       ->withSubject($subject)
       ->create();
+    $differentKeySubject = new Subject('mailpoet:different-subject', ['id' => 1]);
+    $differentKeyRun = (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('mailpoet:test-trigger')
+      ->withSubject($differentKeySubject)
+      ->create();
+    $wpdb->update(
+      $wpdb->prefix . 'mailpoet_automation_run_subjects',
+      ['hash' => $subject->getHash()],
+      ['automation_run_id' => $differentKeyRun->getId()]
+    );
 
     $this->assertSame(
       2,
