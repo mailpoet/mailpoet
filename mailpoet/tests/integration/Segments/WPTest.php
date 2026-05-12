@@ -141,6 +141,58 @@ class WPTest extends \MailPoetTest {
     verify($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
+  public function testSynchronizeUsersWorksWithMismatchedEmailColumnCollation(): void {
+    // Regression test for STOMAIL-8067: when wp_users.user_email and
+    // mailpoet_subscribers.email use different (but compatible) collations,
+    // the LEFT JOIN added in 5.26.0's insertSubscribers() raised
+    // "Illegal mix of collations" and broke plugin activation.
+    global $wpdb;
+    $originalCollation = $this->connection->executeQuery(
+      "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = '{$wpdb->users}'
+          AND COLUMN_NAME = 'user_email'"
+    )->fetchOne();
+    $this->assertIsString($originalCollation);
+
+    $mismatchCollation = $originalCollation === 'utf8mb4_unicode_ci' ? 'utf8mb4_general_ci' : 'utf8mb4_unicode_ci';
+    $this->connection->executeStatement(
+      "ALTER TABLE {$wpdb->users} MODIFY user_email VARCHAR(100) CHARACTER SET utf8mb4 COLLATE {$mismatchCollation} NOT NULL DEFAULT ''"
+    );
+    $postAlterCollation = $this->connection->executeQuery(
+      "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = '{$wpdb->users}'
+          AND COLUMN_NAME = 'user_email'"
+    )->fetchOne();
+    $this->assertSame($mismatchCollation, $postAlterCollation, 'ALTER did not change column collation');
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersEmailCollation = $this->connection->executeQuery(
+      "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = '{$subscribersTable}'
+          AND COLUMN_NAME = 'email'"
+    )->fetchOne();
+    $this->assertNotSame($postAlterCollation, $subscribersEmailCollation, 'Test setup: subscribers.email should not match wp_users.user_email collation');
+
+    try {
+      // A pre-existing subscriber row guarantees the LEFT JOIN on email actually
+      // evaluates the cross-collation comparison instead of short-circuiting on
+      // an empty right side.
+      $this->subscriberFactory
+        ->withEmail('pre-existing-subscriber@example.com')
+        ->create();
+      $this->insertUser();
+      $this->insertUser();
+      $this->wpSegment->synchronizeUsers();
+      verify($this->getSubscribersCount())->equals(2);
+    } finally {
+      $this->connection->executeStatement(
+        "ALTER TABLE {$wpdb->users} MODIFY user_email VARCHAR(100) NOT NULL DEFAULT '' COLLATE {$originalCollation}"
+      );
+    }
+  }
+
   public function testSynchronizeUserRemovesDuplicateSubscriberOnEmailChange(): void {
     $randomNumber = rand();
     // Create a WP user with email A
