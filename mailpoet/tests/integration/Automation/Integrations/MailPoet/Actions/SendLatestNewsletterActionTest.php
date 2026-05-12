@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
+use ActionScheduler_Action;
+use ActionScheduler_SimpleSchedule;
+use ActionScheduler_Store;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Control\StepRunLoggerFactory;
@@ -165,11 +168,50 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->assertSame('skipped-ineligible-subscriber', $pollController->getRunLog()->getLog()->getData()['outcome']);
   }
 
+  public function testItStartsPollingWithFirstIntervalAfterOptIn(): void {
+    [$subscriber, $segment, $sourceNewsletter] = $this->createSubscriberAndSourceNewsletter(SubscriberEntity::STATUS_UNCONFIRMED);
+    [$automation, $run, $step, $subjects] = $this->createAutomationRunContext($subscriber, $segment);
+    [$firstRunArgs, $firstRunController] = $this->createStepRun($automation, $run, $step, $subjects, 1);
+    $this->action->run($firstRunArgs, $firstRunController);
+
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->flush();
+
+    [$confirmedRunArgs, $confirmedRunController] = $this->createStepRun($automation, $run, $step, $subjects, 2);
+    $beforeRun = time();
+    $this->action->run($confirmedRunArgs, $confirmedRunController);
+
+    $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber($sourceNewsletter, $subscriber, $run);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $scheduledActions = array_values(array_filter($this->getScheduledAutomationActions(), function(ActionScheduler_Action $action) use ($run, $step): bool {
+      $args = $action->get_args();
+      return ($args[0]['automation_run_id'] ?? null) === $run->getId()
+        && ($args[0]['step_id'] ?? null) === $step->getId()
+        && ($args[0]['run_number'] ?? null) === 3;
+    }));
+
+    $this->assertCount(1, $scheduledActions);
+    $schedule = $scheduledActions[0]->get_schedule();
+    $this->assertInstanceOf(ActionScheduler_SimpleSchedule::class, $schedule);
+    $scheduledDate = $schedule->get_date();
+    if ($scheduledDate === null) {
+      $this->fail('Expected a scheduled date for the next polling run.');
+    }
+    $this->assertGreaterThanOrEqual($beforeRun + 5 * MINUTE_IN_SECONDS - 1, $scheduledDate->getTimestamp());
+    $this->assertLessThanOrEqual(time() + 5 * MINUTE_IN_SECONDS + 1, $scheduledDate->getTimestamp());
+    $this->assertSame([
+      'wait_optin' => 0,
+      'optin_retries' => 1,
+      'outcome' => 'polling',
+      'newsletter_id' => $sourceNewsletter->getId(),
+    ], $confirmedRunController->getRunLog()->getLog()->getData());
+  }
+
   /** @return array{0: SubscriberEntity, 1: SegmentEntity, 2: NewsletterEntity} */
-  private function createSubscriberAndSourceNewsletter(): array {
+  private function createSubscriberAndSourceNewsletter(string $subscriberStatus = SubscriberEntity::STATUS_SUBSCRIBED): array {
     $segment = (new Segment())->create();
     $subscriber = (new Subscriber())
-      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withStatus($subscriberStatus)
       ->withSegments([$segment])
       ->create();
     $sourceNewsletter = (new Newsletter())
@@ -214,6 +256,14 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
       new SubjectEntry($this->segmentSubject, $subjects['mailpoet:segment']),
       new SubjectEntry($this->subscriberSubject, $subjects['mailpoet:subscriber']),
     ];
+  }
+
+  /** @return ActionScheduler_Action[] */
+  private function getScheduledAutomationActions(): array {
+    return as_get_scheduled_actions([
+      'group' => 'mailpoet-automation',
+      'status' => [ActionScheduler_Store::STATUS_PENDING, ActionScheduler_Store::STATUS_RUNNING],
+    ]);
   }
 
   private function assertThrowsExceptionWithMessage(string $expectedMessage, callable $callback): void {

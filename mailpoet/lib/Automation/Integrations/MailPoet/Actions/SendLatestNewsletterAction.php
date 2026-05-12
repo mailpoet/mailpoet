@@ -52,6 +52,9 @@ class SendLatestNewsletterAction implements Action {
   private const OPTIN_RETRIES = 'optin_retries';
   private const OUTCOME = 'outcome';
   private const NEWSLETTER_ID = 'newsletter_id';
+  private const OUTCOME_POLLING = 'polling';
+  private const OUTCOME_SENT = 'sent';
+  private const OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER = 'skipped-ineligible-subscriber';
 
   private SubscribersRepository $subscribersRepository;
 
@@ -122,7 +125,7 @@ class SendLatestNewsletterAction implements Action {
 
     if ($args->isFirstRun()) {
       if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
-        $this->saveOutcome($controller, 'skipped-ineligible-subscriber');
+        $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER);
         return;
       }
 
@@ -144,14 +147,16 @@ class SendLatestNewsletterAction implements Action {
         }
 
         if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
-          $this->saveOutcome($controller, 'skipped-ineligible-subscriber');
+          $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER);
           return;
         }
 
+        $optinRetryCount = max(0, $args->getRunNumber() - 1);
         $controller->getRunLog()->saveLogData([
           self::WAIT_OPTIN => 0,
-          self::OPTIN_RETRIES => $args->getRunNumber(),
+          self::OPTIN_RETRIES => $optinRetryCount,
         ]);
+        $state[self::OPTIN_RETRIES] = $optinRetryCount;
         if (!$this->scheduleLatestNewsletter($args, $controller, $subscriber, $segmentId)) {
           return;
         }
@@ -201,7 +206,7 @@ class SendLatestNewsletterAction implements Action {
     );
     if (!$newsletter) {
       if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
-        $this->saveOutcome($controller, 'skipped-ineligible-subscriber', $newsletterId);
+        $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER, $newsletterId);
         return true;
       }
       throw InvalidStateException::create()->withMessage(__('Email failed to schedule.', 'mailpoet'));
@@ -216,7 +221,7 @@ class SendLatestNewsletterAction implements Action {
 
     $wasSent = $newsletter->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
     if ($wasSent) {
-      $this->saveOutcome($controller, 'sent', $newsletterId);
+      $this->saveOutcome($controller, self::OUTCOME_SENT, $newsletterId);
       return true;
     }
 
@@ -225,13 +230,15 @@ class SendLatestNewsletterAction implements Action {
         $newsletter,
         __('Subscriber is no longer eligible for this email.', 'mailpoet')
       );
-      $this->saveOutcome($controller, 'skipped-ineligible-subscriber', $newsletterId);
+      $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER, $newsletterId);
       return true;
     }
 
-    $isLastRun = $args->getRunNumber() >= 1 + count(self::POLL_INTERVALS);
+    $optinRetryCount = (int)($state[self::OPTIN_RETRIES] ?? 0);
+    $pollRunNumber = max(1, $args->getRunNumber() - $optinRetryCount);
+    $isLastRun = $pollRunNumber >= 1 + count(self::POLL_INTERVALS);
     if (!$isLastRun) {
-      $this->saveOutcome($controller, 'polling', $newsletterId);
+      $this->saveOutcome($controller, self::OUTCOME_POLLING, $newsletterId);
       return false;
     }
 
@@ -292,7 +299,7 @@ class SendLatestNewsletterAction implements Action {
   private function rerunLater(int $runNumber, StepRunController $controller, bool $waitingForOptIn): void {
     if ($waitingForOptIn) {
       if ($runNumber > count(self::OPTIN_RETRY_INTERVALS)) {
-        $this->saveOutcome($controller, 'skipped-ineligible-subscriber');
+        $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER);
         return;
       }
       $controller->scheduleProgress(time() + self::OPTIN_RETRY_INTERVALS[$runNumber - 1]);
