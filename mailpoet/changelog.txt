@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.26.1 - 2026-05-12 =
+* Fixed: Activation error 'Illegal mix of collations' during WordPress user sync when wp_users and MailPoet subscribers tables use different collations;
+* Fixed: Avoid breaking third-party integrations that call MailPoet public API before init hook.
+
 = 5.26.0 - 2026-05-12 =
 * Added: WooCommerce dynamic segment filter for product variations;
 * Added: "Email subscriber unsubscribed" automation trigger;
