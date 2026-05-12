@@ -111,6 +111,10 @@ class WpTransactionalEmails extends APIEndpoint {
   }
 
   private function featureDisabled(): Response {
-    return $this->errorResponse([APIError::FORBIDDEN => __('WordPress email customisation is not enabled.', 'mailpoet')]);
+    return $this->errorResponse(
+      [APIError::FORBIDDEN => __('WordPress email customisation is not enabled.', 'mailpoet')],
+      [],
+      Response::STATUS_FORBIDDEN
+    );
   }
 }

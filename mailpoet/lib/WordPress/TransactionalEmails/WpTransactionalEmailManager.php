@@ -108,7 +108,7 @@ class WpTransactionalEmailManager {
     return $this->wp->adminUrl('post.php?post=' . $postId . '&action=edit');
   }
 
-  private function createForKind(string $kind): NewsletterEntity {
+  private function createForKind(string $kind): ?NewsletterEntity {
     $subject = $this->templates->getSubject($kind);
     $content = $this->templates->getContent($kind);
 
@@ -118,15 +118,17 @@ class WpTransactionalEmailManager {
       'post_status' => 'draft',
       'post_author' => $this->wp->getCurrentUserId(),
       'post_title' => $subject,
-    ]);
+    ], true);
+
+    if ($this->wp->isWpError($postId) || !is_int($postId) || $postId <= 0) {
+      return null;
+    }
 
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_WP_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject($subject);
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
-    if (is_int($postId) && $postId > 0) {
-      $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
-    }
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
 

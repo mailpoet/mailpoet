@@ -4,6 +4,7 @@ namespace MailPoet\WordPress\TransactionalEmails;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Test\DataFactories\User as UserFactory;
 
 class WpTransactionalEmailManagerTest extends \MailPoetTest {
   /** @var WpTransactionalEmailManager */
@@ -15,11 +16,19 @@ class WpTransactionalEmailManagerTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var WpTransactionalEmailContext */
+  private $context;
+
+  /** @var WpTransactionalEmailRenderer */
+  private $renderer;
+
   public function _before() {
     parent::_before();
     $this->manager = $this->diContainer->get(WpTransactionalEmailManager::class);
     $this->service = $this->diContainer->get(WpTransactionalEmails::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->context = $this->diContainer->get(WpTransactionalEmailContext::class);
+    $this->renderer = $this->diContainer->get(WpTransactionalEmailRenderer::class);
   }
 
   private function assertNewsletter(?NewsletterEntity $newsletter): NewsletterEntity {
@@ -109,5 +118,27 @@ class WpTransactionalEmailManagerTest extends \MailPoetTest {
     verify($byKind[WpTransactionalEmails::KIND_NEW_USER]['status'])->equals(WpTransactionalEmailManager::STATUS_DRAFT);
     verify($byKind[WpTransactionalEmails::KIND_EMAIL_CHANGE]['status'])->equals(WpTransactionalEmailManager::STATUS_DEFAULT);
     verify($byKind[WpTransactionalEmails::KIND_PASSWORD_CHANGE]['status'])->equals(WpTransactionalEmailManager::STATUS_DEFAULT);
+  }
+
+  public function testRenderPersonalizesWordPressEmailTags() {
+    $user = (new UserFactory())->createUser('wp-email-user-' . uniqid(), 'subscriber', 'wp-email-user-' . uniqid() . '@example.com');
+    wp_update_user([
+      'ID' => $user->ID,
+      'display_name' => 'Jane & Admin',
+    ]);
+    $user = get_userdata($user->ID);
+    self::assertInstanceOf(\WP_User::class, $user);
+
+    $newsletter = $this->assertNewsletter($this->manager->findOrCreate(WpTransactionalEmails::KIND_PASSWORD_RESET));
+    $newsletter->setSubject('Reset on [mailpoet/site-title]');
+    $this->newslettersRepository->flush();
+
+    $rendered = $this->renderer->render($newsletter, $this->context->passwordReset($user, 'mailpoet-render-key'), (int)$user->ID);
+
+    verify($rendered['subject'])->equals('Reset on ' . get_bloginfo('name'));
+    verify($rendered['html'])->stringContainsString('Jane &amp; Admin');
+    verify($rendered['html'])->stringContainsString('mailpoet-render-key');
+    verify($rendered['html'])->stringNotContainsString('[mailpoet/');
+    verify($rendered['text'])->stringNotContainsString('[mailpoet/');
   }
 }

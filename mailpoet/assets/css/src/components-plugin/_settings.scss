@@ -165,3 +165,138 @@ ul.sending-method-benefits {
 .mailpoet-verify-key-button {
   height: 36px;
 }
+
+.mailpoet-wp-emails {
+  max-width: 960px;
+}
+
+.mailpoet-wp-emails__intro {
+  color: #50575e;
+  line-height: 1.5;
+  margin: 0 0 $grid-gap;
+  max-width: 760px;
+}
+
+.mailpoet-wp-emails__loading {
+  color: #50575e;
+  margin-top: 0;
+}
+
+.mailpoet-wp-emails__list {
+  display: grid;
+  gap: $grid-gap;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  list-style: none;
+  margin: $grid-gap 0 0;
+  padding: 0;
+}
+
+.mailpoet-wp-emails__item {
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 18px;
+
+  &[aria-busy='true'] {
+    opacity: 0.72;
+  }
+}
+
+.mailpoet-wp-emails__heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+
+  h3 {
+    font-size: 15px;
+    line-height: 1.35;
+    margin: 0;
+  }
+}
+
+.mailpoet-wp-emails__description,
+.mailpoet-wp-emails__status-description,
+.mailpoet-wp-emails__meta {
+  color: #646970;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.mailpoet-wp-emails__status-description,
+.mailpoet-wp-emails__meta {
+  font-size: 12px;
+}
+
+.mailpoet-wp-emails__status {
+  border-radius: 999px;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.mailpoet-wp-emails__status--default {
+  background: #f0f0f1;
+  color: #2c3338;
+}
+
+.mailpoet-wp-emails__status--customized {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.mailpoet-wp-emails__status--draft {
+  background: #fff4e5;
+  color: #8a4b00;
+}
+
+.mailpoet-wp-emails__subject {
+  background: #f6f7f7;
+  border-radius: 6px;
+  color: #1d2327;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 10px 12px;
+
+  span {
+    color: #646970;
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+}
+
+.mailpoet-wp-emails__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+@include respond-to(small-screen) {
+  .mailpoet-wp-emails__list {
+    grid-template-columns: 1fr;
+  }
+
+  .mailpoet-wp-emails__heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mailpoet-wp-emails__status {
+    align-self: flex-start;
+  }
+}

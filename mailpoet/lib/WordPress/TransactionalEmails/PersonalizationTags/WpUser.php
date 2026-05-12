@@ -11,28 +11,30 @@ class WpUser {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(WPFunctions $wp) {
+  public function __construct(
+    WPFunctions $wp
+  ) {
     $this->wp = $wp;
   }
 
   public function getDisplayName(array $context, array $args = []): string {
     $user = $this->resolveUser($context);
-    return $user ? (string)$user->display_name : (string)($args['default'] ?? '');
+    return $this->escape($user ? (string)$user->get('display_name') : (string)($args['default'] ?? ''));
   }
 
   public function getLogin(array $context, array $args = []): string {
     $user = $this->resolveUser($context);
-    return $user ? (string)$user->user_login : (string)($args['default'] ?? '');
+    return $this->escape($user ? (string)$user->get('user_login') : (string)($args['default'] ?? ''));
   }
 
   public function getEmail(array $context, array $args = []): string {
     $user = $this->resolveUser($context);
-    return $user ? (string)$user->user_email : (string)($args['default'] ?? '');
+    return $this->escape($user ? (string)$user->get('user_email') : (string)($args['default'] ?? ''));
   }
 
   public function getNewEmailAddress(array $context, array $args = []): string {
     $value = $context[self::CONTEXT_NEW_EMAIL_ADDRESS] ?? null;
-    return is_string($value) ? $value : (string)($args['default'] ?? '');
+    return $this->escape(is_string($value) ? $value : (string)($args['default'] ?? ''));
   }
 
   private function resolveUser(array $context): ?\WP_User {
@@ -42,5 +44,9 @@ class WpUser {
     }
     $user = $this->wp->getUserdata($userId);
     return $user instanceof \WP_User ? $user : null;
+  }
+
+  private function escape(string $value): string {
+    return $this->wp->escHtml($value);
   }
 }

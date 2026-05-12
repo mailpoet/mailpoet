@@ -34,7 +34,7 @@ const KIND_LABELS: Record<string, { title: string; description: string }> = {
   email_change: {
     title: __('Email change confirmation', 'mailpoet'),
     description: __(
-      "Sent when a user changes the email address on their profile and needs to confirm it.",
+      'Sent when a user changes the email address on their profile and needs to confirm it.',
       'mailpoet',
     ),
   },
@@ -47,10 +47,28 @@ const KIND_LABELS: Record<string, { title: string; description: string }> = {
   },
 };
 
-const STATUS_LABELS: Record<Status, string> = {
-  default: __('WordPress default', 'mailpoet'),
-  customized: __('Customized', 'mailpoet'),
-  draft: __('Draft (off)', 'mailpoet'),
+const STATUS_META: Record<
+  Status,
+  { label: string; description: string; className: string }
+> = {
+  default: {
+    label: __('Default', 'mailpoet'),
+    description: __('WordPress is sending its built-in email.', 'mailpoet'),
+    className: 'mailpoet-wp-emails__status--default',
+  },
+  customized: {
+    label: __('Active', 'mailpoet'),
+    description: __('MailPoet is sending this customized email.', 'mailpoet'),
+    className: 'mailpoet-wp-emails__status--customized',
+  },
+  draft: {
+    label: __('Draft', 'mailpoet'),
+    description: __(
+      'Your template is saved, but not being sent yet.',
+      'mailpoet',
+    ),
+    className: 'mailpoet-wp-emails__status--draft',
+  },
 };
 
 async function callApi<T>(
@@ -66,6 +84,34 @@ async function callApi<T>(
   return response as ApiResponse<T>;
 }
 
+function getResponseError<T>(response: ApiResponse<T>): string | null {
+  return response.errors?.[0]?.message ?? null;
+}
+
+function getRequestError(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object' && 'errors' in error) {
+    const errors = (error as { errors?: Array<{ message?: string }> }).errors;
+    const message = errors?.find((item) => item.message)?.message;
+    if (message) {
+      return message;
+    }
+  }
+  return fallback;
+}
+
+function formatUpdatedAt(updatedAt: string | null): string | null {
+  if (!updatedAt) {
+    return null;
+  }
+
+  const date = new Date(updatedAt);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return MailPoet.Date.full(updatedAt);
+}
+
 export function WpEmails(): JSX.Element {
   const [emails, setEmails] = useState<WpEmail[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,14 +123,20 @@ export function WpEmails(): JSX.Element {
     setError(null);
     try {
       const response = await callApi<WpEmail[]>('listAll');
-      if (response.errors && response.errors[0]) {
-        setError(response.errors[0].message);
+      const responseError = getResponseError(response);
+      if (responseError) {
+        setError(responseError);
         setEmails([]);
         return;
       }
       setEmails(response.data ?? []);
-    } catch (e) {
-      setError(__('Could not load WordPress email customizations.', 'mailpoet'));
+    } catch (e: unknown) {
+      setError(
+        getRequestError(
+          e,
+          __('Could not load WordPress email customizations.', 'mailpoet'),
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -100,14 +152,22 @@ export function WpEmails(): JSX.Element {
       const response = await callApi<{ edit_url: string }>('customize', {
         kind,
       });
-      if (response.errors && response.errors[0]) {
-        setError(response.errors[0].message);
+      const responseError = getResponseError(response);
+      if (responseError) {
+        setError(responseError);
         return;
       }
       const url = response.data?.edit_url;
       if (url) {
         window.location.href = url;
       }
+    } catch (e: unknown) {
+      setError(
+        getRequestError(
+          e,
+          __('Could not open the email editor for this email.', 'mailpoet'),
+        ),
+      );
     } finally {
       setBusyKind(null);
     }
@@ -116,8 +176,23 @@ export function WpEmails(): JSX.Element {
   const onToggleActive = async (kind: string, active: boolean) => {
     setBusyKind(kind);
     try {
-      await callApi('setActive', { kind, active });
+      const response = await callApi('setActive', { kind, active });
+      const responseError = getResponseError(response);
+      if (responseError) {
+        setError(responseError);
+        return;
+      }
       await refresh();
+    } catch (e: unknown) {
+      setError(
+        getRequestError(
+          e,
+          __(
+            'Could not update this WordPress email customization.',
+            'mailpoet',
+          ),
+        ),
+      );
     } finally {
       setBusyKind(null);
     }
@@ -137,57 +212,93 @@ export function WpEmails(): JSX.Element {
     }
     setBusyKind(kind);
     try {
-      await callApi('restoreDefault', { kind });
+      const response = await callApi('restoreDefault', { kind });
+      const responseError = getResponseError(response);
+      if (responseError) {
+        setError(responseError);
+        return;
+      }
       await refresh();
+    } catch (e: unknown) {
+      setError(
+        getRequestError(
+          e,
+          __(
+            'Could not restore the WordPress default for this email.',
+            'mailpoet',
+          ),
+        ),
+      );
     } finally {
       setBusyKind(null);
     }
   };
 
-  if (loading) {
-    return <p>{__('Loading…', 'mailpoet')}</p>;
-  }
-
-  if (error) {
+  if (loading && emails.length === 0) {
     return (
-      <div className="notice notice-error">
-        <p>{error}</p>
-      </div>
+      <p className="mailpoet-wp-emails__loading">
+        {__('Loading WordPress emails…', 'mailpoet')}
+      </p>
     );
   }
 
   return (
     <div className="mailpoet-wp-emails">
-      <p>
+      <p className="mailpoet-wp-emails__intro">
         {__(
           'Customize the emails WordPress sends to your users (password reset, account creation, etc.) using the block-based email editor.',
           'mailpoet',
         )}
       </p>
+      {error ? (
+        <div className="notice notice-error">
+          <p>{error}</p>
+        </div>
+      ) : null}
       <ul className="mailpoet-wp-emails__list">
         {emails.map((email) => {
           const labels = KIND_LABELS[email.kind] ?? {
             title: email.kind,
             description: '',
           };
+          const status = STATUS_META[email.status];
           const isCustomized = email.status === 'customized';
           const isBusy = busyKind === email.kind;
+          const updatedAt = formatUpdatedAt(email.updated_at);
           return (
             <li
               key={email.kind}
               className={`mailpoet-wp-emails__item mailpoet-wp-emails__item--${email.status}`}
+              aria-busy={isBusy}
             >
               <div className="mailpoet-wp-emails__heading">
                 <h3>{labels.title}</h3>
-                <span className="mailpoet-wp-emails__status">
-                  {STATUS_LABELS[email.status]}
+                <span
+                  className={`mailpoet-wp-emails__status ${status.className}`}
+                >
+                  {status.label}
                 </span>
               </div>
-              <p>{labels.description}</p>
+              <p className="mailpoet-wp-emails__description">
+                {labels.description}
+              </p>
+              <p className="mailpoet-wp-emails__status-description">
+                {status.description}
+              </p>
+              {email.subject ? (
+                <div className="mailpoet-wp-emails__subject">
+                  <span>{__('Subject', 'mailpoet')}</span>
+                  {email.subject}
+                </div>
+              ) : null}
+              {updatedAt ? (
+                <p className="mailpoet-wp-emails__meta">
+                  {__('Last edited', 'mailpoet')}: {updatedAt}
+                </p>
+              ) : null}
               <div className="mailpoet-wp-emails__actions">
                 <Button
                   type="button"
-                  variant="secondary"
                   dimension="small"
                   onClick={() => onCustomize(email.kind)}
                   withSpinner={isBusy}
@@ -207,8 +318,8 @@ export function WpEmails(): JSX.Element {
                       isDisabled={isBusy}
                     >
                       {isCustomized
-                        ? __('Disable', 'mailpoet')
-                        : __('Enable', 'mailpoet')}
+                        ? __('Turn off', 'mailpoet')
+                        : __('Turn on', 'mailpoet')}
                     </Button>
                     <Button
                       type="button"
