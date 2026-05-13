@@ -10,6 +10,10 @@ import { Toggle } from 'common/form/toggle/toggle';
 import { Radio } from 'common/form/radio/radio';
 import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from 'common/newsletter';
+import {
+  getExcludeFromArchiveOptionValue,
+  isNewsletterShownInArchive,
+} from 'common/newsletter-archive-visibility';
 import { Field } from 'form/types';
 import { SendToFieldWithCount } from './send-to-field';
 
@@ -204,6 +208,44 @@ function StandardOptions(props: StandardSchedulingProps) {
   );
 }
 
+function ArchiveVisibility({
+  item,
+  onValueChange,
+  field,
+}: StandardSchedulingProps) {
+  const currentOptions: Partial<NewsLetter['options']> = item?.options ?? {};
+  const helperTextId = 'mailpoet-archive-visibility-help';
+  const label = __('Show this newsletter in the archive', 'mailpoet');
+
+  return (
+    <>
+      <Toggle
+        checked={isNewsletterShownInArchive(currentOptions.excludeFromArchive)}
+        disabled={field.disabled}
+        name="excludeFromArchive"
+        onCheck={(checked) => {
+          onValueChange({
+            target: {
+              name: 'options',
+              value: {
+                ...currentOptions,
+                excludeFromArchive: getExcludeFromArchiveOptionValue(checked),
+              },
+            },
+          });
+        }}
+        automationId="archive-visibility-toggle"
+        aria-label={label}
+        aria-describedby={helperTextId}
+      />
+      <span className="mailpoet-form-toggle-text">{label}</span>
+      <p id={helperTextId} className="mailpoet-form-field-description">
+        {__('Shown on pages using the MailPoet archive shortcode.', 'mailpoet')}
+      </p>
+    </>
+  );
+}
+
 let fields: Array<Field> = [
   {
     name: 'email-header',
@@ -257,6 +299,12 @@ let fields: Array<Field> = [
     label: __('Schedule it', 'mailpoet'),
     type: 'reactComponent',
     component: withBoundary(StandardOptions),
+  },
+  {
+    name: 'archive-visibility',
+    label: __('Archive', 'mailpoet'),
+    type: 'reactComponent',
+    component: withBoundary(ArchiveVisibility),
   },
   {
     name: 'sender',
