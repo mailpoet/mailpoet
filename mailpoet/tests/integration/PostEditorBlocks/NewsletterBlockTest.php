@@ -22,13 +22,20 @@ class NewsletterBlockTest extends \MailPoetTest {
     $html = $this->block->renderNewsletter([
       'newsletterId' => $newsletter->getId(),
       'height' => 650,
+      'width' => 680,
       'showFallbackLink' => true,
+      'fallbackLinkAlignment' => 'right',
+      'iframeAlignment' => 'left',
       'align' => 'full',
     ]);
 
     $this->assertStringContainsString('<iframe', $html);
     $this->assertStringContainsString('height="650"', $html);
+    $this->assertStringContainsString('width="680"', $html);
+    $this->assertStringContainsString('max-width:680px', $html);
     $this->assertStringContainsString('class="mailpoet-newsletter-embed alignfull"', $html);
+    $this->assertStringContainsString('style="text-align:left;"', $html);
+    $this->assertStringContainsString('class="mailpoet-newsletter-embed-fallback" style="text-align:right;"', $html);
     $this->assertStringContainsString('View newsletter in browser', $html);
   }
 

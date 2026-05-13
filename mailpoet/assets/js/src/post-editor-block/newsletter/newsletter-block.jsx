@@ -14,7 +14,23 @@ const attributes = {
     type: 'number',
     default: 800,
   },
+  width: {
+    type: 'number',
+    default: 640,
+  },
   showFallbackLink: {
+    type: 'boolean',
+    default: true,
+  },
+  fallbackLinkAlignment: {
+    type: 'string',
+    default: 'center',
+  },
+  iframeAlignment: {
+    type: 'string',
+    default: 'center',
+  },
+  showEmailBackground: {
     type: 'boolean',
     default: true,
   },

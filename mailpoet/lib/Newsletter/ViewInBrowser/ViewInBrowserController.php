@@ -78,6 +78,9 @@ class ViewInBrowserController {
     }
 
     $html = $this->viewInBrowserRenderer->render($isPreview, $newsletter, $subscriber, $queue);
+    if (!empty($data['embed_hide_background'])) {
+      $html = $this->hideEmbedBackground($html);
+    }
     if (!$isPreview && $this->shareVisibility->canShare($newsletter)) {
       $publicUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
       // Pass $publicUrl as both the share target and the replaceState target so the
@@ -85,6 +88,22 @@ class ViewInBrowserController {
       return $this->shareMetadataBuilder->injectShareToolbar($html, $newsletter, $publicUrl, $publicUrl);
     }
     return $html;
+  }
+
+  private function hideEmbedBackground(string $html): string {
+    $style = '<style id="mailpoet-newsletter-embed-background">html,body{background:transparent!important;}body{padding:0!important;}</style>';
+    $headPosition = stripos($html, '</head>');
+    if ($headPosition !== false) {
+      return substr_replace($html, $style, $headPosition, 0);
+    }
+
+    $matches = [];
+    if (preg_match('/<html\b[^>]*>/i', $html, $matches, PREG_OFFSET_CAPTURE)) {
+      $position = $matches[0][1] + strlen($matches[0][0]);
+      return substr_replace($html, $style, $position, 0);
+    }
+
+    return $style . $html;
   }
 
   private function getNewsletter(array $data) {
