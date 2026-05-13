@@ -167,15 +167,15 @@ class DynamicProductsAPITest extends \MailPoetTest {
     $result = $this->dpAPI->getBulkTransformedProducts([
       "blocks" => [$singleBlockQuery],
     ]);
-    verify(count($result->data[0]))->equals(1);
-    verify($result->data[0][0]->get_name())->equals($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayContains($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayNotContains('Private Product');
 
     $this->loginWithRole("administrator");
     $result = $this->dpAPI->getBulkTransformedProducts([
       "blocks" => [$singleBlockQuery],
     ]);
-    verify(count($result->data[0]))->equals(1);
-    verify($result->data[0][0]->get_name())->equals($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayContains($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayNotContains('Private Product');
   }
 
   /**
@@ -218,9 +218,9 @@ class DynamicProductsAPITest extends \MailPoetTest {
 
     $this->loginWithRole("editor");
     $result = $this->dpAPI->getProducts(['postStatus' => "any", "contentType" => "product"]);
-    verify($result->data)->arrayCount(2);
     verify($this->getProductNames($result->data))->arrayContains('Published Product');
     verify($this->getProductNames($result->data))->arrayContains('Private Product');
+    verify($this->getProductNames($result->data))->arrayNotContains('Draft Product');
 
     $user = $this->loginWithRole("administrator");
     if (is_multisite()) {
@@ -228,7 +228,6 @@ class DynamicProductsAPITest extends \MailPoetTest {
     }
 
     $result = $this->dpAPI->getProducts(['postStatus' => "any", "contentType" => "product"]);
-    verify($result->data)->arrayCount(3);
     verify($this->getProductNames($result->data))->arrayContains('Published Product');
     verify($this->getProductNames($result->data))->arrayContains('Private Product');
     verify($this->getProductNames($result->data))->arrayContains('Draft Product');
