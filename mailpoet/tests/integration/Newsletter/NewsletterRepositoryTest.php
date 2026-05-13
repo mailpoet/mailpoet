@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter;
 use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -216,6 +217,83 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     verify($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
     verify($results[1]->getId())->equals($newsletters[6]->getId());
     verify($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+  }
+
+  public function testItExcludesStandardArchiveNewslettersWithArchiveOptOut(): void {
+    $missingOption = (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2024-01-04')])
+      ->withSentStatus()
+      ->withSubject('Visible without option')
+      ->create();
+    $visibleOption = (new NewsletterFactory())
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '0'])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-01-03')])
+      ->withSentStatus()
+      ->withSubject('Visible with option')
+      ->create();
+    $excludedOption = (new NewsletterFactory())
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1'])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-01-02')])
+      ->withSentStatus()
+      ->withSubject('Excluded with option')
+      ->create();
+    $notificationHistory = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1'])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-01-01')])
+      ->withSentStatus()
+      ->withSubject('Notification history')
+      ->create();
+
+    $resultIds = array_map(function(NewsletterEntity $newsletter): int {
+      return (int)$newsletter->getId();
+    }, $this->repository->getArchives());
+
+    $this->assertContains($missingOption->getId(), $resultIds);
+    $this->assertContains($visibleOption->getId(), $resultIds);
+    $this->assertNotContains($excludedOption->getId(), $resultIds);
+    $this->assertContains($notificationHistory->getId(), $resultIds);
+  }
+
+  public function testItFiltersArchiveOptOutBeforeSegmentFilterAndLimit(): void {
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'description');
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
+
+    (new NewsletterFactory())
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1'])
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-04')])
+      ->withSentStatus()
+      ->withSubject('Newest hidden')
+      ->create();
+    $firstVisible = (new NewsletterFactory())
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-03')])
+      ->withSentStatus()
+      ->withSubject('First visible')
+      ->create();
+    $secondVisible = (new NewsletterFactory())
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '0'])
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-02')])
+      ->withSentStatus()
+      ->withSubject('Second visible')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-01')])
+      ->withSentStatus()
+      ->withSubject('Different segment')
+      ->create();
+
+    $results = $this->repository->getArchives([
+      'segmentIds' => [$segment->getId()],
+      'limit' => 2,
+    ]);
+
+    verify($results)->arrayCount(2);
+    verify($results[0]->getId())->equals($firstVisible->getId());
+    verify($results[1]->getId())->equals($secondVisible->getId());
   }
 
   public function testFindStuckPostNotificationParentsReturnsOneRowPerParent() {

@@ -342,6 +342,25 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result)->stringNotContainsString('Newsletter 3');
   }
 
+  public function testArchiveDoesNotRenderExcludedNewsletter(): void {
+    (new NewsletterFactory())
+      ->withOptions([NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1'])
+      ->withSendingQueue(['processed_at' => new Carbon('2024-03-02')])
+      ->withSentStatus()
+      ->withSubject('Hidden newsletter')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2024-03-01')])
+      ->withSentStatus()
+      ->withSubject('Visible newsletter')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive]');
+
+    verify($result)->stringNotContainsString('Hidden newsletter');
+    verify($result)->stringContainsString('Visible newsletter');
+  }
+
   public function testItRendersShortcodeDefaultsInSubject() {
     $newsletterFactory = new NewsletterFactory();
     $this->newsletter = $newsletterFactory

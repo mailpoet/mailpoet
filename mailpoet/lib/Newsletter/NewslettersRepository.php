@@ -9,6 +9,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -271,6 +272,25 @@ class NewslettersRepository extends Repository {
       ->addOrderBy('st.id', 'ASC')
       ->setParameter('types', $types)
       ->setParameter('statusCompleted', SendingQueueEntity::STATUS_COMPLETED);
+
+    $excludeFromArchiveSubQuery = $this->entityManager
+      ->createQueryBuilder()
+      ->select('1')
+      ->from(NewsletterOptionEntity::class, 'archiveOption')
+      ->innerJoin('archiveOption.optionField', 'archiveOptionField')
+      ->where('archiveOption.newsletter = n')
+      ->andWhere('archiveOption.value = :excludeFromArchive')
+      ->andWhere('archiveOptionField.name = :excludeFromArchiveOptionName')
+      ->getDQL();
+
+    $queryBuilder
+      ->andWhere($queryBuilder->expr()->orX(
+        'n.type != :standardNewsletterType',
+        $queryBuilder->expr()->not($queryBuilder->expr()->exists($excludeFromArchiveSubQuery))
+      ))
+      ->setParameter('standardNewsletterType', NewsletterEntity::TYPE_STANDARD)
+      ->setParameter('excludeFromArchive', '1')
+      ->setParameter('excludeFromArchiveOptionName', NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE);
 
     $segmentIds = $params['segmentIds'] ?? [];
     if (!empty($segmentIds)) {

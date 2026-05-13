@@ -152,6 +152,31 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($scheduleOption->getValue())->equals('* * * * *');
   }
 
+  public function testItCanUpdateArchiveVisibilityOptionUponSave(): void {
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $newsletterData = [
+      'id' => $newsletter->getId(),
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'subject' => 'Newsletter',
+      'options' => [
+        NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1',
+      ],
+    ];
+
+    $savedNewsletter = $this->saveController->save($newsletterData);
+    verify($savedNewsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('1');
+
+    $newsletterData['options'][NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE] = '0';
+    $savedNewsletter = $this->saveController->save($newsletterData);
+    verify($savedNewsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('0');
+  }
+
   public function testItCanReschedulePreviouslyScheduledSendingQueueJobs() {
     $this->createPostNotificationOptions();
 
@@ -376,6 +401,29 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($duplicate->getHash())->notEquals($newsletter->getHash());
     verify($duplicate->getBody())->equals($newsletter->getBody());
     verify($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+  }
+
+  public function testItDoesNotDuplicateArchiveExclusionOption(): void {
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $this->saveController->save([
+      'id' => $newsletter->getId(),
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'subject' => $newsletter->getSubject(),
+      'options' => [
+        NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE => '1',
+      ],
+    ]);
+
+    $duplicate = $this->saveController->duplicate($newsletter);
+
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('1');
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->null();
   }
 
   public function testItDuplicatesNewsletterWithAssociatedPost() {

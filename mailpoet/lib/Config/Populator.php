@@ -508,6 +508,10 @@ class Populator {
         'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
       ],
       [
+        'name' => NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
+      [
         'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
       ],

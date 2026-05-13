@@ -10,6 +10,7 @@ use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\UnexpectedValueException;
@@ -58,6 +59,25 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($emailData['share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
     verify($emailData['effective_share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
     verify($emailData['can_share'])->true();
+  }
+
+  public function testItGetsShowInArchiveFromNewsletterOption(): void {
+    $wpPostId = 15;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+    verify($emailData['show_in_archive'])->true();
+
+    (new NewsletterOption())->create(
+      $newsletter,
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      '1'
+    );
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+    verify($emailData['show_in_archive'])->false();
   }
 
   public function testItSaveEmailDataToNewsletterEntity(): void {
@@ -233,6 +253,115 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->null();
     verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('0');
+  }
+
+  public function testItSavesShowInArchiveOption(): void {
+    $wpPostId = 16;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'show_in_archive' => false,
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('1');
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'show_in_archive' => true,
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('0');
+  }
+
+  public function testItDoesNotChangeShowInArchiveWhenFieldIsMissing(): void {
+    $wpPostId = 17;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+    (new NewsletterOption())->create(
+      $newsletter,
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      '1'
+    );
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('1');
+  }
+
+  public function testItRejectsNonBooleanShowInArchiveValue(): void {
+    $wpPostId = 18;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('Invalid show_in_archive value. Expected a boolean.');
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'show_in_archive' => 'false',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+  }
+
+  public function testItDoesNotSaveShowInArchiveForNonStandardNewsletters(): void {
+    $wpPostId = 19;
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION)
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'show_in_archive' => false,
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->null();
+  }
+
+  public function testEmailDataSchemaIncludesShowInArchiveBoolean(): void {
+    $schema = $this->emailApiController->getEmailDataSchema();
+
+    verify($schema['properties']['show_in_archive']['type'])->equals('boolean');
   }
 
   public function testItUpdatesSegmentIds(): void {
