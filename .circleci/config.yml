@@ -1164,13 +1164,6 @@ workflows:
             - build_release_zip
 
   nightly:
-    triggers:
-      - schedule:
-          cron: '0 1 * * 1-5'
-          filters:
-            branches:
-              only:
-                - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
@@ -1318,13 +1311,6 @@ workflows:
             - build_premium
 
   nightly_qit:
-    triggers:
-      - schedule:
-          cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
-          filters:
-            branches:
-              only:
-                - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
