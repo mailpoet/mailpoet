@@ -40,12 +40,20 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $html = $this->service->render([
       'newsletterId' => $newsletter->getId(),
       'height' => 600,
+      'width' => 700,
       'showFallbackLink' => true,
+      'fallbackLinkAlignment' => 'right',
+      'iframeAlignment' => 'center',
+      'showEmailBackground' => false,
       'align' => 'wide',
     ]);
 
     $this->assertStringContainsString('class="mailpoet-newsletter-embed alignwide"', $html);
+    $this->assertStringContainsString('style="text-align:center;"', $html);
     $this->assertStringContainsString('height="600"', $html);
+    $this->assertStringContainsString('width="700"', $html);
+    $this->assertStringContainsString('max-width:700px', $html);
+    $this->assertStringContainsString('class="mailpoet-newsletter-embed-fallback" style="text-align:right;"', $html);
     $this->assertStringContainsString('MailPoet newsletter: Spring &lt;Sale&gt;', $html);
     $this->assertStringContainsString('View newsletter in browser', $html);
 
@@ -53,6 +61,7 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $fallbackUrl = $this->getFallbackUrl($html);
     $this->assertSame($iframeUrl, $fallbackUrl);
     $this->assertSame($latestCompletedQueue->getId(), $this->getQueueIdFromUrl($iframeUrl));
+    $this->assertTrue($this->getUrlData($iframeUrl)['embed_hide_background']);
   }
 
   public function testItCanRenderWithoutFallbackLink(): void {
@@ -182,12 +191,15 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
   }
 
   private function getQueueIdFromUrl(string $url): int {
+    return (int)$this->getUrlData($url)['queue_id'];
+  }
+
+  private function getUrlData(string $url): array {
     $parsedLink = parse_url($url, PHP_URL_QUERY);
     parse_str((string)$parsedLink, $data);
     $this->assertArrayHasKey('data', $data);
-    $requestData = $this->newsletterUrl->transformUrlDataObject(
+    return $this->newsletterUrl->transformUrlDataObject(
       Router::decodeRequestData($data['data'])
     );
-    return (int)$requestData['queue_id'];
   }
 }

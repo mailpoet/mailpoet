@@ -13,6 +13,7 @@ const {
   ToggleControl,
   Disabled,
   ComboboxControl,
+  SelectControl,
 } = wp.components;
 const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const { useEffect, useMemo, useState } = wp.element;
@@ -22,6 +23,9 @@ const ServerSideRender = wp.serverSideRender;
 const DEFAULT_HEIGHT = 800;
 const MIN_HEIGHT = 200;
 const MAX_HEIGHT = 3000;
+const DEFAULT_WIDTH = 640;
+const MIN_WIDTH = 320;
+const MAX_WIDTH = 1200;
 
 function getNewsletterId(value) {
   if (value === '') {
@@ -35,6 +39,11 @@ function getNewsletterId(value) {
 function getHeight(value) {
   const parsed = parseInt(value, 10);
   return Number.isNaN(parsed) ? DEFAULT_HEIGHT : parsed;
+}
+
+function getWidth(value) {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? DEFAULT_WIDTH : parsed;
 }
 
 function PreviewLoadingPlaceholder() {
@@ -74,7 +83,26 @@ function Edit({ attributes, setAttributes }) {
 
   const selectedNewsletterId = attributes.newsletterId || null;
   const height = attributes.height || DEFAULT_HEIGHT;
+  const width = attributes.width || DEFAULT_WIDTH;
   const showFallbackLink = attributes.showFallbackLink !== false;
+  const fallbackLinkAlignment = attributes.fallbackLinkAlignment || 'center';
+  const iframeAlignment = attributes.iframeAlignment || 'center';
+  const showEmailBackground = attributes.showEmailBackground !== false;
+
+  const alignmentOptions = [
+    {
+      label: __('Left', 'mailpoet'),
+      value: 'left',
+    },
+    {
+      label: __('Center', 'mailpoet'),
+      value: 'center',
+    },
+    {
+      label: __('Right', 'mailpoet'),
+      value: 'right',
+    },
+  ];
 
   useEffect(() => {
     let isCurrent = true;
@@ -172,7 +200,11 @@ function Edit({ attributes, setAttributes }) {
           attributes={{
             newsletterId: selectedNewsletterId,
             height,
+            width,
             showFallbackLink,
+            fallbackLinkAlignment,
+            iframeAlignment,
+            showEmailBackground,
             align: attributes.align,
           }}
           LoadingResponsePlaceholder={PreviewLoadingPlaceholder}
@@ -213,6 +245,39 @@ function Edit({ attributes, setAttributes }) {
             step={50}
             __nextHasNoMarginBottom
           />
+          <RangeControl
+            label={__('Width', 'mailpoet')}
+            value={width}
+            onChange={(value) => {
+              setAttributes({
+                width: getWidth(value),
+              });
+            }}
+            min={MIN_WIDTH}
+            max={MAX_WIDTH}
+            step={20}
+            __nextHasNoMarginBottom
+          />
+          <SelectControl
+            label={__('Newsletter alignment', 'mailpoet')}
+            value={iframeAlignment}
+            options={alignmentOptions}
+            onChange={(value) => {
+              setAttributes({
+                iframeAlignment: value,
+              });
+            }}
+            __nextHasNoMarginBottom
+          />
+          <ToggleControl
+            label={__('Show email background', 'mailpoet')}
+            checked={showEmailBackground}
+            onChange={(value) => {
+              setAttributes({
+                showEmailBackground: value,
+              });
+            }}
+          />
           <ToggleControl
             label={__('Show fallback link', 'mailpoet')}
             checked={showFallbackLink}
@@ -222,6 +287,19 @@ function Edit({ attributes, setAttributes }) {
               });
             }}
           />
+          {showFallbackLink && (
+            <SelectControl
+              label={__('Fallback link alignment', 'mailpoet')}
+              value={fallbackLinkAlignment}
+              options={alignmentOptions}
+              onChange={(value) => {
+                setAttributes({
+                  fallbackLinkAlignment: value,
+                });
+              }}
+              __nextHasNoMarginBottom
+            />
+          )}
         </PanelBody>
       </InspectorControls>
       <div className="mailpoet-block-div">
@@ -235,7 +313,11 @@ Edit.propTypes = {
   attributes: PropTypes.shape({
     newsletterId: PropTypes.number,
     height: PropTypes.number,
+    width: PropTypes.number,
     showFallbackLink: PropTypes.bool,
+    fallbackLinkAlignment: PropTypes.string,
+    iframeAlignment: PropTypes.string,
+    showEmailBackground: PropTypes.bool,
     align: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,

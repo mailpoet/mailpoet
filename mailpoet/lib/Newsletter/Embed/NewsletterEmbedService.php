@@ -7,12 +7,17 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
+use MailPoet\Router\Router;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterEmbedService {
   public const DEFAULT_HEIGHT = 800;
   public const MIN_HEIGHT = 200;
   public const MAX_HEIGHT = 3000;
+  public const DEFAULT_WIDTH = 640;
+  public const MIN_WIDTH = 320;
+  public const MAX_WIDTH = 1200;
   public const DEFAULT_SELECTOR_LIMIT = 20;
   public const MAX_SELECTOR_LIMIT = 100;
 
@@ -57,8 +62,9 @@ class NewsletterEmbedService {
       return '';
     }
 
-    $url = $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue, true);
+    $url = $this->getEmbedUrl($newsletter, $queue, $attributes);
     $height = $attributes['height'];
+    $width = $attributes['width'];
     $subject = $newsletter->getSubject();
     if ($subject !== null && $subject !== '') {
       // translators: %s is the newsletter subject.
@@ -72,19 +78,25 @@ class NewsletterEmbedService {
       $classNames .= ' align' . $attributes['align'];
     }
 
-    $html = '<div class="' . $this->wp->escAttr($classNames) . '">';
+    $html = '<div'
+      . ' class="' . $this->wp->escAttr($classNames) . '"'
+      . ' style="' . $this->wp->escAttr('text-align:' . $attributes['iframeAlignment'] . ';') . '"'
+      . '>';
     $html .= '<iframe'
       . ' class="mailpoet-newsletter-embed-iframe"'
       . ' src="' . $this->wp->escUrl($url) . '"'
-      . ' width="100%"'
+      . ' width="' . $this->wp->escAttr((string)$width) . '"'
       . ' height="' . $this->wp->escAttr((string)$height) . '"'
       . ' title="' . $this->wp->escAttr($title) . '"'
       . ' loading="lazy"'
-      . ' style="' . $this->wp->escAttr('width:100%;height:' . $height . 'px;border:0;') . '"'
+      . ' style="' . $this->wp->escAttr('width:100%;max-width:' . $width . 'px;height:' . $height . 'px;border:0;background:transparent;') . '"'
       . '></iframe>';
 
     if ($attributes['showFallbackLink']) {
-      $html .= '<p class="mailpoet-newsletter-embed-fallback">'
+      $html .= '<p'
+        . ' class="mailpoet-newsletter-embed-fallback"'
+        . ' style="' . $this->wp->escAttr('text-align:' . $attributes['fallbackLinkAlignment'] . ';') . '"'
+        . '>'
         . '<a href="' . $this->wp->escUrl($url) . '">'
         . $this->wp->escHtml(__('View newsletter in browser', 'mailpoet'))
         . '</a>'
@@ -96,13 +108,17 @@ class NewsletterEmbedService {
   }
 
   /**
-   * @return array{newsletterId: int, height: int, showFallbackLink: bool, align: string}
+   * @return array{newsletterId: int, height: int, width: int, showFallbackLink: bool, fallbackLinkAlignment: string, iframeAlignment: string, showEmailBackground: bool, align: string}
    */
   public function sanitizeAttributes(array $attributes): array {
     return [
       'newsletterId' => $this->sanitizePositiveId($attributes['newsletterId'] ?? null),
       'height' => $this->sanitizeHeight($attributes['height'] ?? null),
-      'showFallbackLink' => $this->sanitizeShowFallbackLink($attributes['showFallbackLink'] ?? true),
+      'width' => $this->sanitizeWidth($attributes['width'] ?? null),
+      'showFallbackLink' => $this->sanitizeBoolean($attributes['showFallbackLink'] ?? true),
+      'fallbackLinkAlignment' => $this->sanitizeTextAlignment($attributes['fallbackLinkAlignment'] ?? 'center'),
+      'iframeAlignment' => $this->sanitizeTextAlignment($attributes['iframeAlignment'] ?? 'center'),
+      'showEmailBackground' => $this->sanitizeBoolean($attributes['showEmailBackground'] ?? true),
       'align' => $this->sanitizeAlign($attributes['align'] ?? ''),
     ];
   }
@@ -190,7 +206,28 @@ class NewsletterEmbedService {
   /**
    * @param mixed $value
    */
-  private function sanitizeShowFallbackLink($value): bool {
+  private function sanitizeWidth($value): int {
+    if (!is_scalar($value) || $value === '' || !is_numeric($value)) {
+      return self::DEFAULT_WIDTH;
+    }
+
+    $width = (int)$value;
+    if ($width <= 0) {
+      return self::DEFAULT_WIDTH;
+    }
+    if ($width < self::MIN_WIDTH) {
+      return self::MIN_WIDTH;
+    }
+    if ($width > self::MAX_WIDTH) {
+      return self::MAX_WIDTH;
+    }
+    return $width;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function sanitizeBoolean($value): bool {
     if (is_bool($value)) {
       return $value;
     }
@@ -201,6 +238,17 @@ class NewsletterEmbedService {
     }
 
     return true;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function sanitizeTextAlignment($value): string {
+    if (!is_string($value)) {
+      return 'center';
+    }
+
+    return in_array($value, ['left', 'center', 'right'], true) ? $value : 'center';
   }
 
   /**
@@ -219,5 +267,28 @@ class NewsletterEmbedService {
       return self::DEFAULT_SELECTOR_LIMIT;
     }
     return min($limit, self::MAX_SELECTOR_LIMIT);
+  }
+
+  /**
+   * @param array{newsletterId: int, height: int, width: int, showFallbackLink: bool, fallbackLinkAlignment: string, iframeAlignment: string, showEmailBackground: bool, align: string} $attributes
+   */
+  private function getEmbedUrl(NewsletterEntity $newsletter, SendingQueueEntity $queue, array $attributes): string {
+    if ($attributes['showEmailBackground']) {
+      return $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue, true);
+    }
+
+    return Router::buildRequest(
+      ViewInBrowserEndpoint::ENDPOINT,
+      ViewInBrowserEndpoint::ACTION_VIEW,
+      [
+        'newsletter_id' => $newsletter->getId(),
+        'newsletter_hash' => $newsletter->getHash(),
+        'subscriber_id' => false,
+        'subscriber_token' => false,
+        'queue_id' => $queue->getId(),
+        'preview' => true,
+        'embed_hide_background' => true,
+      ]
+    );
   }
 }

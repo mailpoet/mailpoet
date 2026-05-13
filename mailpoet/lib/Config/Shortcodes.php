@@ -135,7 +135,11 @@ class Shortcodes {
     return $this->newsletterEmbedService->render([
       'newsletterId' => $params['id'] ?? null,
       'height' => $params['height'] ?? null,
+      'width' => $params['width'] ?? null,
       'showFallbackLink' => $params['show_fallback_link'] ?? true,
+      'fallbackLinkAlignment' => $params['fallback_link_alignment'] ?? 'center',
+      'iframeAlignment' => $params['iframe_alignment'] ?? 'center',
+      'showEmailBackground' => $params['show_email_background'] ?? true,
     ]);
   }
 

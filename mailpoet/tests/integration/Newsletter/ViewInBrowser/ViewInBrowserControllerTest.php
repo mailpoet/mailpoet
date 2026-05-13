@@ -244,6 +244,26 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     verify($result)->stringNotContainsString('data-mailpoet-share-replace-state');
   }
 
+  public function testItCanHideEmbedBackground() {
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function () {
+        return '<!doctype html><html><head><title>Newsletter</title></head><body style="background:#f6f7f7;padding:32px;">Newsletter</body></html>';
+      }),
+    ]);
+
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
+
+    $data = $this->browserPreviewData;
+    $data['preview'] = true;
+    $data['embed_hide_background'] = true;
+
+    $html = $viewInBrowserController->view($data);
+
+    $this->assertStringContainsString('id="mailpoet-newsletter-embed-background"', $html);
+    $this->assertStringContainsString('background:transparent!important', $html);
+    $this->assertStringContainsString('</style></head>', $html);
+  }
+
   public function _after() {
     parent::_after();
     // reset WP user role

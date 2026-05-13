@@ -73,7 +73,23 @@ class NewsletterBlock {
         'type' => 'number',
         'default' => NewsletterEmbedService::DEFAULT_HEIGHT,
       ],
+      'width' => [
+        'type' => 'number',
+        'default' => NewsletterEmbedService::DEFAULT_WIDTH,
+      ],
       'showFallbackLink' => [
+        'type' => 'boolean',
+        'default' => true,
+      ],
+      'fallbackLinkAlignment' => [
+        'type' => 'string',
+        'default' => 'center',
+      ],
+      'iframeAlignment' => [
+        'type' => 'string',
+        'default' => 'center',
+      ],
+      'showEmailBackground' => [
         'type' => 'boolean',
         'default' => true,
       ],
