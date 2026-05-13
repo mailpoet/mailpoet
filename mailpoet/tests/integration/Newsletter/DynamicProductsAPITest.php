@@ -160,8 +160,8 @@ class DynamicProductsAPITest extends \MailPoetTest {
     verify($result->data)->arrayCount(1);
 
     // Published products should be visible to anyone
-    verify(count($result->data[0]))->equals(1);
-    verify($result->data[0][0]->get_name())->equals($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayContains($publishedProductTitle);
+    verify($this->getProductNames($result->data[0]))->arrayNotContains('Private Product');
 
     $this->loginWithRole("editor");
     $result = $this->dpAPI->getBulkTransformedProducts([
@@ -212,8 +212,9 @@ class DynamicProductsAPITest extends \MailPoetTest {
 
     wp_set_current_user(0);
     $result = $this->dpAPI->getProducts(['postStatus' => "any", "contentType" => "product"]);
-    verify($result->data)->arrayCount(1);
     verify($this->getProductNames($result->data))->arrayContains('Published Product');
+    verify($this->getProductNames($result->data))->arrayNotContains('Private Product');
+    verify($this->getProductNames($result->data))->arrayNotContains('Draft Product');
 
     $this->loginWithRole("editor");
     $result = $this->dpAPI->getProducts(['postStatus' => "any", "contentType" => "product"]);
