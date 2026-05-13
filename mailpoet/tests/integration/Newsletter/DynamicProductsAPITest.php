@@ -153,6 +153,7 @@ class DynamicProductsAPITest extends \MailPoetTest {
     ]);
 
     $singleBlockQuery = array_merge(self::$dpBlock, ['postStatus' => "any"]);
+    wp_set_current_user(0);
     $result = $this->dpAPI->getBulkTransformedProducts([
       "blocks" => [$singleBlockQuery],
     ]);
@@ -209,6 +210,7 @@ class DynamicProductsAPITest extends \MailPoetTest {
       'price' => '10.00',
     ]);
 
+    wp_set_current_user(0);
     $result = $this->dpAPI->getProducts(['postStatus' => "any", "contentType" => "product"]);
     verify($result->data)->arrayCount(1);
     verify($this->getProductNames($result->data))->arrayContains('Published Product');
