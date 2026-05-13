@@ -457,8 +457,21 @@ class RoboFile extends \Robo\Tasks {
       if (!is_dir(dirname($dataFile))) {
         mkdir(dirname($dataFile), 0777, true);
       }
-      $source = gzopen($url, 'rb');
-      $destination = fopen($dataFile, 'wb');
+      $source = @gzopen($url, 'rb');
+      if (!$source) {
+        $this->yell(
+          "Could not download the performance data file from 'WP_TEST_PERFORMANCE_DATA_URL'. Please check that the secret is valid and reachable.",
+          40,
+          'red'
+        );
+        exit(1);
+      }
+      $destination = @fopen($dataFile, 'wb');
+      if (!$destination) {
+        gzclose($source);
+        $this->yell("Could not open '$dataFile' for writing.", 40, 'red');
+        exit(1);
+      }
       while (!gzeof($source)) {
         fwrite($destination, gzread($source, 4096));
       }
