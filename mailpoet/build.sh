@@ -69,7 +69,7 @@ rm -rf vendor-prefixed/symfony/dependency-injection/Loader
 rm -rf vendor-prefixed/symfony/dependency-injection/LazyProxy
 rm -rf vendor-prefixed/symfony/dependency-injection/Extension
 
-./tools/vendor/composer.phar dump-autoload
+./tools/vendor/composer.phar dump-autoload --optimize
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'
