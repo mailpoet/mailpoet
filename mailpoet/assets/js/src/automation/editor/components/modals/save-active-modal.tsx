@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
-import { sendTelemetryEvent } from '../../telemetry';
 
 const LET_FINISH = 'let_existing_finish';
 const STOP_ALL = 'stop_all_subscribers';
@@ -17,10 +16,9 @@ export function SaveActiveModal({
   onClose,
   onRequestClose,
 }: Props): JSX.Element {
-  const { automationName, automationId } = useSelect(
+  const { automationName } = useSelect(
     (s) => ({
       automationName: s(storeName).getAutomationData().name,
-      automationId: s(storeName).getAutomationData().id,
     }),
     [],
   );
@@ -28,13 +26,6 @@ export function SaveActiveModal({
     LET_FINISH,
   );
   const [isBusy, setIsBusy] = useState<boolean>(false);
-
-  useEffect(() => {
-    sendTelemetryEvent('modal_view', {
-      modal_title: 'save_active_automation',
-      automation_id: automationId,
-    });
-  }, [automationId]);
 
   // translators: %s is the name of the automation.
   const title = sprintf(
@@ -68,11 +59,6 @@ export function SaveActiveModal({
                 name="save-method"
                 checked={selected === LET_FINISH}
                 onChange={() => {
-                  sendTelemetryEvent('modal_option_select', {
-                    modal_title: 'save_active_automation',
-                    selected_option: LET_FINISH,
-                    automation_id: automationId,
-                  });
                   setSelected(LET_FINISH);
                 }}
               />
@@ -103,11 +89,6 @@ export function SaveActiveModal({
                 name="save-method"
                 checked={selected === STOP_ALL}
                 onChange={() => {
-                  sendTelemetryEvent('modal_option_select', {
-                    modal_title: 'save_active_automation',
-                    selected_option: STOP_ALL,
-                    automation_id: automationId,
-                  });
                   setSelected(STOP_ALL);
                 }}
               />
@@ -129,12 +110,6 @@ export function SaveActiveModal({
         isBusy={isBusy}
         variant="primary"
         onClick={async () => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'save_active_automation',
-            button_label: 'save',
-            selected_option: selected,
-            automation_id: automationId,
-          });
           setIsBusy(true);
           try {
             await dispatch(storeName).save({
@@ -153,11 +128,6 @@ export function SaveActiveModal({
         disabled={isBusy}
         variant="tertiary"
         onClick={() => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'save_active_automation',
-            button_label: 'cancel',
-            automation_id: automationId,
-          });
           onClose();
         }}
       >

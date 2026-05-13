@@ -6,7 +6,6 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
-import { sendTelemetryEvent } from '../../telemetry';
 
 export function TrashButton({
   performActionAfterDelete = () => {},
@@ -51,10 +50,6 @@ export function TrashButton({
         variant="secondary"
         isDestructive
         onClick={() => {
-          sendTelemetryEvent('button_click', {
-            button_label: 'move_to_trash',
-            automation_id: automation.id,
-          });
           setShowConfirmDialog(true);
         }}
       >

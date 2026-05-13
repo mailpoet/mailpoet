@@ -6,13 +6,8 @@ import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
 import { Hooks } from '../../../../../hooks';
 import { AutomationSettingElements } from '../../../../types/filters';
-import { sendTelemetryEvent } from '../../../telemetry';
 
 function AutomationSettings(): JSX.Element {
-  const { automationId } = useSelect(
-    (s) => ({ automationId: s(storeName).getAutomationData().id }),
-    [],
-  );
   const settings: AutomationSettingElements = Hooks.applyFilters(
     'mailpoet.automation.settings.render',
     {},
@@ -23,16 +18,7 @@ function AutomationSettings(): JSX.Element {
   }
 
   return (
-    <PanelBody
-      title={__('Automation settings', 'mailpoet')}
-      initialOpen
-      onToggle={(isOpen) =>
-        sendTelemetryEvent(isOpen ? 'section_expand' : 'section_collapse', {
-          card_section: 'automation_settings',
-          automation_id: automationId,
-        })
-      }
-    >
+    <PanelBody title={__('Automation settings', 'mailpoet')} initialOpen>
       {Object.keys(settings).map((key) => (
         <PanelRow key={key}>{settings[key]}</PanelRow>
       ))}
@@ -50,16 +36,7 @@ export function AutomationSidebar(): JSX.Element {
 
   return (
     <>
-      <PanelBody
-        title={__('Automation details', 'mailpoet')}
-        initialOpen
-        onToggle={(isOpen) =>
-          sendTelemetryEvent(isOpen ? 'section_expand' : 'section_collapse', {
-            card_section: 'automation_details',
-            automation_id: automationData.id,
-          })
-        }
-      >
+      <PanelBody title={__('Automation details', 'mailpoet')} initialOpen>
         <PanelRow>
           <strong>Date added</strong>{' '}
           {MailPoet.Date.short(automationData.created_at)}

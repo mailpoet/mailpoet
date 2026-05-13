@@ -14,7 +14,6 @@ import { StepSidebar } from './step';
 import { AutomationSidebar } from './automation';
 import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 import { unlock } from '../../../lock-unlock';
-import { sendTelemetryEvent } from '../../telemetry';
 
 const { Tabs } = unlock(componentsPrivateApis);
 
@@ -78,12 +77,11 @@ function SidebarContent(props: Props): JSX.Element {
 export function Sidebar(props: Props): JSX.Element {
   const { openSidebar } = useDispatch(storeName);
 
-  const { sidebarKey, automationId } = useSelect(
+  const { sidebarKey } = useSelect(
     (select) => ({
       sidebarKey:
         select(interfaceStore).getActiveComplementaryArea(storeName) ??
         automationSidebarKey,
-      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
@@ -92,12 +90,6 @@ export function Sidebar(props: Props): JSX.Element {
     <Tabs
       selectedTabId={sidebarKey}
       onSelect={(tabId) => {
-        sendTelemetryEvent('tab_click', {
-          tab_name: sidebarKey === automationSidebarKey ? 'automation' : 'step',
-          selected_value:
-            tabId === automationSidebarKey ? 'automation' : 'step',
-          automation_id: automationId,
-        });
         void openSidebar(tabId);
       }}
     >
