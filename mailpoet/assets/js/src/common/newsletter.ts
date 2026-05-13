@@ -56,6 +56,7 @@ export type NewsLetter = {
     afterTimeNumber: number | string;
     afterTimeType: string;
     filterSegmentId?: string;
+    excludeFromArchive?: string | number | boolean | null;
   };
   parent_id: null | string;
   preheader: string;
