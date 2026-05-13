@@ -15,7 +15,6 @@ import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
 import { RenderStepFooterType, StepMoreType } from '../../../types/filters';
 import { triggerFilterStrings } from './trigger-filters';
-import { sendTelemetryEvent } from '../../telemetry';
 
 const getUnknownStepType = (step: StepData): StepType => {
   const isTrigger = step.type === 'trigger';
@@ -48,11 +47,10 @@ type Props = {
 };
 
 export function Step({ step, isSelected }: Props): JSX.Element {
-  const { stepType, error, automationId } = useSelect(
+  const { stepType, error } = useSelect(
     (select) => ({
       stepType: select(storeName).getStepType(step.key),
       error: select(storeName).getStepError(step.id),
-      automationId: select(storeName).getAutomationData().id,
     }),
     [step],
   );
@@ -109,10 +107,6 @@ export function Step({ step, isSelected }: Props): JSX.Element {
                     if (typeof htmlProps.onClick === 'function') {
                       htmlProps.onClick();
                     }
-                    sendTelemetryEvent('step_click', {
-                      step_type: step.type === 'trigger' ? 'trigger' : step.key,
-                      automation_id: automationId,
-                    });
                     batch(() => {
                       void openSidebar(stepSidebarKey);
                       void selectStep(step);

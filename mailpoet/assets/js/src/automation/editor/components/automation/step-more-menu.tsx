@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import { DropdownMenu } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
 import { moreVertical, trash, copy } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
@@ -8,8 +7,6 @@ import { PremiumModal } from 'common/premium-modal';
 import { AutomationContext } from './context';
 import { Step as StepData } from './types';
 import { StepMoreControlsType } from '../../../types/filters';
-import { storeName } from '../../store';
-import { sendTelemetryEvent } from '../../telemetry';
 
 type Props = {
   step: StepData;
@@ -19,10 +16,6 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const { context } = useContext(AutomationContext);
   const [showModal, setShowModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
-  const { automationId } = useSelect(
-    (s) => ({ automationId: s(storeName).getAutomationData().id }),
-    [],
-  );
 
   const canDuplicate = step.key !== 'core:if-else' && step.type !== 'trigger';
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
@@ -64,13 +57,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
         control: {
           title: __('Delete step', 'mailpoet'),
           icon: trash,
-          onClick: () => {
-            sendTelemetryEvent('step_delete_click', {
-              step_type: step.type === 'trigger' ? 'trigger' : step.key,
-              automation_id: automationId,
-            });
-            setShowModal(true);
-          },
+          onClick: () => setShowModal(true),
         },
         slot: () => {
           if (!showModal) {

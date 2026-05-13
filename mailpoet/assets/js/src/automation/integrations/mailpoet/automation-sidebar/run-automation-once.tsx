@@ -2,7 +2,6 @@ import { ToggleControl } from '@wordpress/components';
 import { dispatch, select, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../editor/store';
-import { sendTelemetryEvent } from '../../../editor/telemetry';
 
 export function showRunOnlyOnce(): boolean {
   const automation = select(storeName).getAutomationData();
@@ -42,10 +41,6 @@ export function RunAutomationOnce(): JSX.Element {
       )}
       checked={checked}
       onChange={(value) => {
-        sendTelemetryEvent(value ? 'toggle_enable' : 'toggle_disable', {
-          toggle_name: 'run_once_per_subscriber',
-          automation_id: automationData.id,
-        });
         void dispatch(storeName).updateAutomationMeta(
           'mailpoet:run-once-per-subscriber',
           value,

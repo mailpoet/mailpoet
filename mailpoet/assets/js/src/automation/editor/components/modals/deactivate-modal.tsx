@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
-import { sendTelemetryEvent } from '../../telemetry';
 
 type DeactivateImmediatelyModalProps = {
   onClose: () => void;
@@ -15,19 +14,6 @@ export function DeactivateImmediatelyModal({
   onRequestClose,
 }: DeactivateImmediatelyModalProps): JSX.Element {
   const [isBusy, setIsBusy] = useState<boolean>(false);
-  const { automationId } = useSelect(
-    (s) => ({
-      automationId: s(storeName).getAutomationData().id,
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    sendTelemetryEvent('modal_view', {
-      modal_title: 'deactivate_automation',
-      automation_id: automationId,
-    });
-  }, [automationId]);
 
   return (
     <Modal
@@ -46,16 +32,8 @@ export function DeactivateImmediatelyModal({
         isBusy={isBusy}
         variant="primary"
         onClick={() => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'deactivate_automation',
-            button_label: 'deactivate_now',
-            automation_id: automationId,
-          });
           setIsBusy(true);
-          void dispatch(storeName).deactivate(true, {
-            source: 'modal',
-            selected_option: 'stop_all_subscribers',
-          });
+          void dispatch(storeName).deactivate(true);
         }}
       >
         {__('Deactivate now', 'mailpoet')}
@@ -65,11 +43,6 @@ export function DeactivateImmediatelyModal({
         disabled={isBusy}
         variant="tertiary"
         onClick={() => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'deactivate_automation',
-            button_label: 'cancel',
-            automation_id: automationId,
-          });
           onClose();
         }}
       >
@@ -87,10 +60,9 @@ export function DeactivateModal({
   onClose,
   onRequestClose,
 }: DeactivateModalProps): JSX.Element {
-  const { automationName, automationId } = useSelect(
+  const { automationName } = useSelect(
     (s) => ({
       automationName: s(storeName).getAutomationData().name,
-      automationId: s(storeName).getAutomationData().id,
     }),
     [],
   );
@@ -99,23 +71,11 @@ export function DeactivateModal({
   >(AutomationStatus.DEACTIVATING);
   const [isBusy, setIsBusy] = useState<boolean>(false);
 
-  useEffect(() => {
-    sendTelemetryEvent('modal_view', {
-      modal_title: 'deactivate_automation',
-      automation_id: automationId,
-    });
-  }, [automationId]);
-
   // translators: %s is the name of the automation.
   const title = sprintf(
     __('Deactivate the "%s" automation?', 'mailpoet'),
     automationName,
   );
-
-  const selectedOption =
-    selected === AutomationStatus.DEACTIVATING
-      ? 'let_existing_finish'
-      : 'stop_all_subscribers';
 
   return (
     <Modal
@@ -143,11 +103,6 @@ export function DeactivateModal({
                 name="deactivation-method"
                 checked={selected === AutomationStatus.DEACTIVATING}
                 onChange={() => {
-                  sendTelemetryEvent('modal_option_select', {
-                    modal_title: 'deactivate_automation',
-                    selected_option: 'let_existing_finish',
-                    automation_id: automationId,
-                  });
                   setSelected(AutomationStatus.DEACTIVATING);
                 }}
               />
@@ -178,11 +133,6 @@ export function DeactivateModal({
                 name="deactivation-method"
                 checked={selected === AutomationStatus.DRAFT}
                 onChange={() => {
-                  sendTelemetryEvent('modal_option_select', {
-                    modal_title: 'deactivate_automation',
-                    selected_option: 'stop_all_subscribers',
-                    automation_id: automationId,
-                  });
                   setSelected(AutomationStatus.DRAFT);
                 }}
               />
@@ -204,16 +154,9 @@ export function DeactivateModal({
         isBusy={isBusy}
         variant="primary"
         onClick={() => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'deactivate_automation',
-            button_label: 'deactivate',
-            selected_option: selectedOption,
-            automation_id: automationId,
-          });
           setIsBusy(true);
           void dispatch(storeName).deactivate(
             selected !== AutomationStatus.DEACTIVATING,
-            { source: 'modal', selected_option: selectedOption },
           );
         }}
       >
@@ -224,11 +167,6 @@ export function DeactivateModal({
         disabled={isBusy}
         variant="tertiary"
         onClick={() => {
-          sendTelemetryEvent('modal_button_click', {
-            modal_title: 'deactivate_automation',
-            button_label: 'cancel',
-            automation_id: automationId,
-          });
           onClose();
         }}
       >

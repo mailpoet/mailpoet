@@ -18,17 +18,15 @@ import {
   DeactivateModal,
 } from '../modals/deactivate-modal';
 import { SaveActiveModal } from '../modals/save-active-modal';
-import { sendTelemetryEvent } from '../../telemetry';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 export function ActivateButton({ label }): JSX.Element {
-  const { errors, automationId } = useSelect(
+  const { errors } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
-      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
@@ -39,10 +37,6 @@ export function ActivateButton({ label }): JSX.Element {
       variant="primary"
       className="editor-post-publish-button"
       onClick={() => {
-        sendTelemetryEvent('button_click', {
-          button_label: 'activate',
-          automation_id: automationId,
-        });
         void openActivationPanel();
       }}
       disabled={!!errors}
@@ -149,41 +143,27 @@ function SaveDraftButton(): JSX.Element {
 export function DeactivateButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const { hasUsersInProgress, automationId } = useSelect(
+  const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
         select(storeName).getAutomationData().stats.totals.in_progress > 0,
-      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
 
   const deactivateOrShowModal = () => {
-    sendTelemetryEvent('button_click', {
-      button_label: 'deactivate',
-      automation_id: automationId,
-    });
     if (hasUsersInProgress) {
       setShowDeactivateModal(true);
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate(true, { source: 'header' });
+    void dispatch(storeName).deactivate(true);
   };
 
   return (
     <>
       {showDeactivateModal && (
-        <DeactivateModal
-          onClose={() => setShowDeactivateModal(false)}
-          onRequestClose={() => {
-            sendTelemetryEvent('modal_close', {
-              modal_title: 'deactivate_automation',
-              automation_id: automationId,
-            });
-            setShowDeactivateModal(false);
-          }}
-        />
+        <DeactivateModal onClose={() => setShowDeactivateModal(false)} />
       )}
       <Button
         isBusy={isBusy}
@@ -199,26 +179,21 @@ export function DeactivateButton(): JSX.Element {
 export function DeactivateNowButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const { hasUsersInProgress, automationId } = useSelect(
+  const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
         select(storeName).getAutomationData().stats.totals.in_progress > 0,
-      automationId: select(storeName).getAutomationData().id,
     }),
     [],
   );
 
   const deactivateOrShowModal = () => {
-    sendTelemetryEvent('button_click', {
-      button_label: 'deactivate_now',
-      automation_id: automationId,
-    });
     if (hasUsersInProgress) {
       setShowDeactivateModal(true);
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate(true, { source: 'header' });
+    void dispatch(storeName).deactivate(true);
   };
 
   return (
@@ -226,13 +201,6 @@ export function DeactivateNowButton(): JSX.Element {
       {showDeactivateModal && (
         <DeactivateImmediatelyModal
           onClose={() => setShowDeactivateModal(false)}
-          onRequestClose={() => {
-            sendTelemetryEvent('modal_close', {
-              modal_title: 'deactivate_automation',
-              automation_id: automationId,
-            });
-            setShowDeactivateModal(false);
-          }}
         />
       )}
       <Button

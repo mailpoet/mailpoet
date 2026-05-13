@@ -8,14 +8,12 @@ import { Button } from '../../../components/button';
 import { useSelectContext } from '../../../context';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
-import { sendTelemetryEvent } from '../../../../../editor/telemetry';
 import type {
   CreatedAutomationEmail,
   EditorChoice,
   SavedAutomationResult,
 } from './email-editor-choice';
 import {
-  editorChoiceButtonLabels,
   getCreatedAutomationEmail,
   isCreatedEmailPersisted,
   parsePositiveInteger,
@@ -159,21 +157,14 @@ export function EditNewsletter(): JSX.Element {
   const hasEmailIdError = !!emailIdError;
   const emailIdErrorMessage = getEmailIdErrorMessage(emailIdError);
 
-  const showEditorChoiceError = useCallback(
-    (editorChoice: EditorChoice, message: string) => {
-      sendTelemetryEvent('button_error', {
-        button_label: editorChoiceButtonLabels[editorChoice],
-        automation_id: automationId,
-      });
-      void dispatch(noticesStore).createErrorNotice(message, {
-        explicitDismiss: true,
-      });
-    },
-    [automationId],
-  );
+  const showEditorChoiceError = useCallback((message: string) => {
+    void dispatch(noticesStore).createErrorNotice(message, {
+      explicitDismiss: true,
+    });
+  }, []);
 
   const cleanupCreatedEmail = useCallback(
-    async (emailIdToDelete: number, editorChoice: EditorChoice) => {
+    async (emailIdToDelete: number) => {
       try {
         await MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -185,7 +176,6 @@ export function EditNewsletter(): JSX.Element {
         });
       } catch {
         showEditorChoiceError(
-          editorChoice,
           __(
             'MailPoet couldn’t clean up the email that was not connected. Please try again.',
             'mailpoet',
@@ -217,11 +207,6 @@ export function EditNewsletter(): JSX.Element {
       if (editorChoice === 'new' && !isBlockEmailEditorEnabled) {
         return;
       }
-
-      sendTelemetryEvent('button_click', {
-        button_label: editorChoiceButtonLabels[editorChoice],
-        automation_id: automationId,
-      });
 
       setCreatingEditor(editorChoice);
 
@@ -264,10 +249,9 @@ export function EditNewsletter(): JSX.Element {
         if (!createdEmail) {
           const emailIdFromResponse = parsePositiveInteger(response?.data?.id);
           if (emailIdFromResponse) {
-            await cleanupCreatedEmail(emailIdFromResponse, editorChoice);
+            await cleanupCreatedEmail(emailIdFromResponse);
           }
           showEditorChoiceError(
-            editorChoice,
             editorChoice === 'new'
               ? __(
                   'MailPoet couldn’t open the new editor because the email post was not created. Please try again.',
@@ -306,9 +290,8 @@ export function EditNewsletter(): JSX.Element {
           )
         ) {
           rollbackStepArgs();
-          await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
+          await cleanupCreatedEmail(createdEmail.emailId);
           showEditorChoiceError(
-            editorChoice,
             __(
               'Email design setup couldn’t be saved. Please try again.',
               'mailpoet',
@@ -323,11 +306,10 @@ export function EditNewsletter(): JSX.Element {
         if (stagedStepArgs) {
           rollbackStepArgs();
           if (createdEmail) {
-            await cleanupCreatedEmail(createdEmail.emailId, editorChoice);
+            await cleanupCreatedEmail(createdEmail.emailId);
           }
         }
         showEditorChoiceError(
-          editorChoice,
           stagedStepArgs
             ? __(
                 'Email design setup couldn’t be saved. Please try again.',
@@ -522,10 +504,6 @@ export function EditNewsletter(): JSX.Element {
           variant="sidebar-primary"
           centered
           onClick={() => {
-            sendTelemetryEvent('button_click', {
-              button_label: 'edit_content',
-              automation_id: automationId,
-            });
             void handleEditContent();
           }}
           isBusy={isHandlingDuplicatedStep}
