@@ -128,7 +128,7 @@ export function SaveActiveModal({
       <Button
         isBusy={isBusy}
         variant="primary"
-        onClick={() => {
+        onClick={async () => {
           sendTelemetryEvent('modal_button_click', {
             modal_title: 'save_active_automation',
             button_label: 'save',
@@ -136,10 +136,13 @@ export function SaveActiveModal({
             automation_id: automationId,
           });
           setIsBusy(true);
-          void dispatch(storeName).save({
-            cancelRunningRuns: selected === STOP_ALL,
-          });
-          onClose();
+          try {
+            await dispatch(storeName).save({
+              cancelRunningRuns: selected === STOP_ALL,
+            });
+          } finally {
+            onClose();
+          }
         }}
       >
         {__('Save', 'mailpoet')}
