@@ -24,11 +24,6 @@ export type SavedAutomationResult = {
   };
 };
 
-export const editorChoiceButtonLabels: Record<EditorChoice, string> = {
-  new: 'design_with_new_editor',
-  classic: 'design_with_classic_editor',
-};
-
 export const parsePositiveInteger = (value: unknown): number | undefined => {
   if (typeof value !== 'number' && typeof value !== 'string') {
     return undefined;
