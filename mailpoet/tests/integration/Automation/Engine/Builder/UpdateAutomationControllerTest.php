@@ -15,15 +15,15 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\Validation\AutomationValidator;
+use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoetTest;
 
 class UpdateAutomationControllerTest extends MailPoetTest {
   public function testItUpdatesActiveAutomationWithRunningRuns(): void {
-    $automation = $this->tester->createAutomation(
-      'Active automation',
-      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
-      new Step('a1', Step::TYPE_ACTION, 'test:action', ['note' => 'before'], [])
-    );
+    $automation = $this->createActiveAutomationWithDelay();
     $this->assertSame(Automation::STATUS_ACTIVE, $automation->getStatus());
 
     $run = $this->tester->createAutomationRun($automation);
@@ -34,11 +34,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     $controller->updateAutomation(
       $automation->getId(),
       [
-        'steps' => [
-          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
-          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
-          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => ['note' => 'after'], 'next_steps' => []],
-        ],
+        'steps' => $this->getDelayAutomationSteps(2),
       ]
     );
 
@@ -47,7 +43,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     $this->assertSame(Automation::STATUS_ACTIVE, $updated->getStatus());
     $updatedStep = $updated->getStep('a1');
     $this->assertInstanceOf(Step::class, $updatedStep);
-    $this->assertSame('after', $updatedStep->getArgs()['note']);
+    $this->assertSame(2, $updatedStep->getArgs()['delay']);
 
     // existing run is preserved on its original version
     $this->assertSame(AutomationRun::STATUS_RUNNING, $this->getAutomationRun($run->getId())->getStatus());
@@ -55,11 +51,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
   }
 
   public function testItCancelsRunningRunsWhenCancelFlagIsSet(): void {
-    $automation = $this->tester->createAutomation(
-      'Active automation',
-      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
-      new Step('a1', Step::TYPE_ACTION, 'test:action', ['note' => 'before'], [])
-    );
+    $automation = $this->createActiveAutomationWithDelay();
 
     $run = $this->tester->createAutomationRun($automation);
     $runStorage = $this->diContainer->get(AutomationRunStorage::class);
@@ -72,11 +64,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
       $automation->getId(),
       [
         'cancel_running_runs' => true,
-        'steps' => [
-          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
-          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
-          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => ['note' => 'after'], 'next_steps' => []],
-        ],
+        'steps' => $this->getDelayAutomationSteps(2),
       ]
     );
 
@@ -88,11 +76,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
   }
 
   public function testItDoesNotCancelRunningRunsWhenSaveFails(): void {
-    $automation = $this->tester->createAutomation(
-      'Active automation',
-      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
-      new Step('a1', Step::TYPE_ACTION, 'test:action', ['note' => 'before'], [])
-    );
+    $automation = $this->createActiveAutomationWithDelay();
 
     $run = $this->tester->createAutomationRun($automation);
     $runStorage = $this->diContainer->get(AutomationRunStorage::class);
@@ -100,10 +84,11 @@ class UpdateAutomationControllerTest extends MailPoetTest {
 
     $this->scheduleAction(time() + 100, ['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
 
+    $wp = $this->diContainer->get(WordPress::class);
     $throwOnSave = function(): void {
       throw new \RuntimeException('Save failed');
     };
-    add_action(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
+    $wp->addAction(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
 
     try {
       $controller = $this->diContainer->get(UpdateAutomationController::class);
@@ -111,25 +96,21 @@ class UpdateAutomationControllerTest extends MailPoetTest {
         $automation->getId(),
         [
           'cancel_running_runs' => true,
-          'steps' => [
-            'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
-            't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
-            'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => ['note' => 'after'], 'next_steps' => []],
-          ],
+          'steps' => $this->getDelayAutomationSteps(2),
         ]
       );
       $this->fail('Expected save to fail.');
     } catch (\RuntimeException $e) {
       $this->assertSame('Save failed', $e->getMessage());
     } finally {
-      remove_action(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
+      $wp->removeAction(Hooks::AUTOMATION_BEFORE_SAVE, $throwOnSave);
     }
 
     $updated = $this->diContainer->get(AutomationStorage::class)->getAutomation($automation->getId());
     $this->assertInstanceOf(Automation::class, $updated);
     $updatedStep = $updated->getStep('a1');
     $this->assertInstanceOf(Step::class, $updatedStep);
-    $this->assertSame('before', $updatedStep->getArgs()['note']);
+    $this->assertSame(1, $updatedStep->getArgs()['delay']);
     $this->assertSame(AutomationRun::STATUS_RUNNING, $this->getAutomationRun($run->getId())->getStatus());
     $this->assertCount(1, $this->getActions(['status' => ActionScheduler_Store::STATUS_PENDING]));
   }
@@ -270,6 +251,50 @@ class UpdateAutomationControllerTest extends MailPoetTest {
         array_merge(['hook' => Hooks::AUTOMATION_STEP, 'group' => 'mailpoet-automation'], $args)
       )
     );
+  }
+
+  private function createActiveAutomationWithDelay(int $delay = 1): Automation {
+    return (new AutomationFactory())
+      ->withName('Active automation')
+      ->withSteps([
+        'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('t')]),
+        't' => new Step('t', Step::TYPE_TRIGGER, SomeoneSubscribesTrigger::KEY, [], [new NextStep('a1')]),
+        'a1' => new Step('a1', Step::TYPE_ACTION, DelayAction::KEY, [
+          'delay_type' => 'MINUTES',
+          'delay' => $delay,
+        ], []),
+      ])
+      ->withStatusActive()
+      ->create();
+  }
+
+  private function getDelayAutomationSteps(int $delay): array {
+    return [
+      'root' => [
+        'id' => 'root',
+        'type' => Step::TYPE_ROOT,
+        'key' => 'core:root',
+        'args' => [],
+        'next_steps' => [['id' => 't']],
+      ],
+      't' => [
+        'id' => 't',
+        'type' => Step::TYPE_TRIGGER,
+        'key' => SomeoneSubscribesTrigger::KEY,
+        'args' => [],
+        'next_steps' => [['id' => 'a1']],
+      ],
+      'a1' => [
+        'id' => 'a1',
+        'type' => Step::TYPE_ACTION,
+        'key' => DelayAction::KEY,
+        'args' => [
+          'delay_type' => 'MINUTES',
+          'delay' => $delay,
+        ],
+        'next_steps' => [],
+      ],
+    ];
   }
 
   private function createRootOnlyAutomation(): Automation {
