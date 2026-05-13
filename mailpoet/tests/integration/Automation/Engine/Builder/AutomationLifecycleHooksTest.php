@@ -16,6 +16,8 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 
 class AutomationLifecycleHooksTest extends \MailPoetTest {
+  private const TEMPLATE_SLUG = 'lifecycle-hook-template';
+
   /** @var AutomationStorage */
   private $automationStorage;
 
@@ -58,6 +60,7 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
     foreach ($this->hookCallbacks as $hook => $callback) {
       $wp->removeAction($hook, $callback);
     }
+    $this->diContainer->get(Registry::class)->removeTemplate(self::TEMPLATE_SLUG);
     $this->automationStorage->truncate();
   }
 
@@ -143,9 +146,8 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
   }
 
   public function testItFiresCreateFromTemplateHooksWithActiveAutomationState(): void {
-    $templateSlug = 'lifecycle-hook-template';
     $this->diContainer->get(Registry::class)->addTemplate(new AutomationTemplate(
-      $templateSlug,
+      self::TEMPLATE_SLUG,
       'welcome',
       'Lifecycle hook template',
       'Lifecycle hook template',
@@ -154,12 +156,12 @@ class AutomationLifecycleHooksTest extends \MailPoetTest {
       }
     ));
 
-    $automation = $this->diContainer->get(CreateAutomationFromTemplateController::class)->createAutomation($templateSlug);
+    $automation = $this->diContainer->get(CreateAutomationFromTemplateController::class)->createAutomation(self::TEMPLATE_SLUG);
 
     $templateEvent = $this->getTemplateEvent();
     $createEvent = $this->getCreateEvent();
     $this->assertSame($automation->getId(), $templateEvent['automation_id']);
-    $this->assertSame($templateSlug, $templateEvent['template_slug']);
+    $this->assertSame(self::TEMPLATE_SLUG, $templateEvent['template_slug']);
     $this->assertSame(Automation::STATUS_ACTIVE, $templateEvent['status']);
     $this->assertSame($automation->getId(), $createEvent['automation_id']);
     $this->assertSame(Automation::STATUS_ACTIVE, $createEvent['status']);
