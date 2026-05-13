@@ -44,7 +44,7 @@ export function SaveActiveModal({
 
   return (
     <Modal
-      className="mailpoet-automation-deactivate-modal"
+      className="mailpoet-automation-save-active-modal"
       title={title}
       onRequestClose={onRequestClose ?? onClose}
     >
@@ -140,8 +140,9 @@ export function SaveActiveModal({
             await dispatch(storeName).save({
               cancelRunningRuns: selected === STOP_ALL,
             });
-          } finally {
             onClose();
+          } catch {
+            setIsBusy(false);
           }
         }}
       >
