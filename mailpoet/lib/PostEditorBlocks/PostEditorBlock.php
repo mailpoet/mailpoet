@@ -16,18 +16,24 @@ class PostEditorBlock {
   /** @var SubscriptionFormBlock */
   private $subscriptionFormBlock;
 
+  /** @var NewsletterBlock */
+  private $newsletterBlock;
+
   public function __construct(
     Renderer $renderer,
     WPFunctions $wp,
-    SubscriptionFormBlock $subscriptionFormBlock
+    SubscriptionFormBlock $subscriptionFormBlock,
+    NewsletterBlock $newsletterBlock
   ) {
     $this->renderer = $renderer;
     $this->wp = $wp;
     $this->subscriptionFormBlock = $subscriptionFormBlock;
+    $this->newsletterBlock = $newsletterBlock;
   }
 
   public function init() {
     $this->subscriptionFormBlock->init();
+    $this->newsletterBlock->init();
 
     if ($this->wp->isAdmin()) {
       $this->initAdmin();
@@ -39,6 +45,7 @@ class PostEditorBlock {
   private function initAdmin() {
     $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
     $this->subscriptionFormBlock->initAdmin();
+    $this->newsletterBlock->initAdmin();
   }
 
   public function enqueueAssets() {
@@ -60,5 +67,6 @@ class PostEditorBlock {
 
   private function initFrontend() {
     $this->subscriptionFormBlock->initFrontend();
+    $this->newsletterBlock->initFrontend();
   }
 }

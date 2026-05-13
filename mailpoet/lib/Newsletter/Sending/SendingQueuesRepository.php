@@ -80,6 +80,7 @@ class SendingQueuesRepository extends Repository {
       ->setParameter('newsletter', $newsletter)
       ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
       ->orderBy('t.processedAt', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
       ->addOrderBy('s.id', 'DESC')
       ->setMaxResults(1)
       ->getQuery()
