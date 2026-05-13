@@ -83,6 +83,7 @@ class DynamicProductsAPITest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    wp_set_current_user(0);
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->wcHelper = $this->diContainer->get(WCHelper::class);
     $loggerFactory = $this->diContainer->get(LoggerFactory::class);
@@ -105,6 +106,7 @@ class DynamicProductsAPITest extends \MailPoetTest {
   }
 
   public function _after() {
+    wp_set_current_user(0);
     parent::_after();
 
     // we've switched to blog_id=1
