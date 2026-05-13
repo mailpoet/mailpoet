@@ -117,6 +117,9 @@ export function* save(options: { cancelRunningRuns?: boolean } = {}) {
       button_label: 'save',
       automation_id: automation.id,
     });
+    yield {
+      type: 'SAVE_ERROR',
+    };
     throw new Error(__('Failed to save automation.', 'mailpoet'));
   }
 

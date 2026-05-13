@@ -67,6 +67,11 @@ export function reducer(state: State, action): State {
         ...state,
         savedState: 'saving',
       };
+    case 'SAVE_ERROR':
+      return {
+        ...state,
+        savedState: 'unsaved',
+      };
     case 'REGISTER_STEP_TYPE':
       return {
         ...state,
