@@ -9,11 +9,10 @@ const {
   PanelBody,
   Placeholder,
   RangeControl,
-  SelectControl,
   Spinner,
-  TextControl,
   ToggleControl,
   Disabled,
+  ComboboxControl,
 } = wp.components;
 const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const { useEffect, useMemo, useState } = wp.element;
@@ -131,14 +130,7 @@ function Edit({ attributes, setAttributes }) {
   function renderSelectorControls() {
     return (
       <>
-        <TextControl
-          label={__('Search newsletters', 'mailpoet')}
-          value={search}
-          onChange={setSearch}
-          placeholder={__('Search by subject', 'mailpoet')}
-          __nextHasNoMarginBottom
-        />
-        <SelectControl
+        <ComboboxControl
           label={__('Newsletter', 'mailpoet')}
           value={
             selectedNewsletterId === null ? '' : String(selectedNewsletterId)
@@ -149,6 +141,8 @@ function Edit({ attributes, setAttributes }) {
               newsletterId: getNewsletterId(value),
             });
           }}
+          onFilterValueChange={setSearch}
+          placeholder={__('Search by subject', 'mailpoet')}
           disabled={isLoading && newsletters.length === 0}
           __nextHasNoMarginBottom
         />
