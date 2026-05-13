@@ -4,6 +4,8 @@ namespace MailPoet\Test\Automation\Engine\Control;
 
 use ActionScheduler_Store;
 use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
+use MailPoet\Automation\Engine\Builder\UpdateStepsController;
+use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -12,6 +14,7 @@ use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Engine\Validation\AutomationValidator;
 use MailPoetTest;
 
 class UpdateAutomationControllerTest extends MailPoetTest {
@@ -131,26 +134,57 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     $this->assertCount(1, $this->getActions(['status' => ActionScheduler_Store::STATUS_PENDING]));
   }
 
-  public function testItRejectsTriggerKeyChange(): void {
+  /**
+   * @group automation-trigger-invariants
+   */
+  public function testItAllowsTriggerChangeWhenNoRunIsRecorded(): void {
+    $automation = $this->createRootOnlyAutomation();
+    $controller = $this->getEditableStructureUpdateAutomationController();
+
+    $updated = $controller->updateAutomation(
+      $automation->getId(),
+      [
+        'status' => Automation::STATUS_ACTIVE,
+        'steps' => [
+          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'core:root', 'args' => [], 'next_steps' => [['id' => 't']]],
+          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'mailpoet:someone-subscribes', 'args' => [], 'next_steps' => [['id' => 'a1']]],
+          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES'], 'next_steps' => []],
+        ],
+      ]
+    );
+
+    $this->assertSame(Automation::STATUS_ACTIVE, $updated->getStatus());
+    $this->assertInstanceOf(Step::class, $updated->getTrigger('mailpoet:someone-subscribes'));
+  }
+
+  /**
+   * @group automation-trigger-invariants
+   */
+  public function testItRejectsTriggerKeyChangeWhenRunIsRecorded(): void {
     $automation = $this->tester->createAutomation(
       'Trigger lock automation',
       new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
       new Step('a1', Step::TYPE_ACTION, 'test:action', [], [])
     );
+    $this->tester->createAutomationRun($automation);
 
     $controller = $this->diContainer->get(UpdateAutomationController::class);
 
-    $this->expectException(UnexpectedValueException::class);
-    $controller->updateAutomation(
-      $automation->getId(),
-      [
-        'steps' => [
-          'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
-          't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:other-trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
-          'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => [], 'next_steps' => []],
-        ],
-      ]
-    );
+    try {
+      $controller->updateAutomation(
+        $automation->getId(),
+        [
+          'steps' => [
+            'root' => ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'root', 'args' => [], 'next_steps' => [['id' => 't']]],
+            't' => ['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'test:other-trigger', 'args' => [], 'next_steps' => [['id' => 'a1']]],
+            'a1' => ['id' => 'a1', 'type' => Step::TYPE_ACTION, 'key' => 'test:action', 'args' => [], 'next_steps' => []],
+          ],
+        ]
+      );
+      $this->fail('Expected trigger modification to fail.');
+    } catch (UnexpectedValueException $e) {
+      $this->assertSame('mailpoet_automation_trigger_modification_not_supported', $e->getErrorCode());
+    }
   }
 
   public function testItUnschedulesTasksWhenSwitchedToDraft(): void {
@@ -236,6 +270,34 @@ class UpdateAutomationControllerTest extends MailPoetTest {
         array_merge(['hook' => Hooks::AUTOMATION_STEP, 'group' => 'mailpoet-automation'], $args)
       )
     );
+  }
+
+  private function createRootOnlyAutomation(): Automation {
+    $automationStorage = $this->diContainer->get(AutomationStorage::class);
+    $automation = new Automation(
+      'New automation',
+      [
+        'root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], []),
+      ],
+      wp_get_current_user()
+    );
+    $automation = $automationStorage->getAutomation($automationStorage->createAutomation($automation));
+    $this->assertInstanceOf(Automation::class, $automation);
+    return $automation;
+  }
+
+  private function getEditableStructureUpdateAutomationController(): UpdateAutomationController {
+    return new class(
+      $this->diContainer->get(Hooks::class),
+      $this->diContainer->get(AutomationStorage::class),
+      $this->diContainer->get(AutomationValidator::class),
+      $this->diContainer->get(AutomationRunStorage::class),
+      $this->diContainer->get(ActionScheduler::class),
+      $this->diContainer->get(UpdateStepsController::class)
+    ) extends UpdateAutomationController {
+      protected function validateAutomationSteps(Automation $automation, array $steps): void {
+      }
+    };
   }
 
   public function _before(): void {
