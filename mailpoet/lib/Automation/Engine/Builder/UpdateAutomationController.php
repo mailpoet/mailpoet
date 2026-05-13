@@ -125,15 +125,23 @@ class UpdateAutomationController {
       }
     }
 
+    $triggersChanged = false;
     if (count($newTriggers) !== count($existingTriggers)) {
-      throw Exceptions::automationTriggerModificationNotSupported();
+      $triggersChanged = true;
     }
 
-    foreach ($existingTriggers as $id => $existingTrigger) {
-      $newTrigger = $newTriggers[$id] ?? null;
-      if (!$newTrigger || ($newTrigger['key'] ?? '') !== $existingTrigger->getKey()) {
-        throw Exceptions::automationTriggerModificationNotSupported();
+    if (!$triggersChanged) {
+      foreach ($existingTriggers as $id => $existingTrigger) {
+        $newTrigger = $newTriggers[$id] ?? null;
+        if (!$newTrigger || ($newTrigger['key'] ?? '') !== $existingTrigger->getKey()) {
+          $triggersChanged = true;
+          break;
+        }
       }
+    }
+
+    if ($triggersChanged && $this->automationRunStorage->getCountForAutomation($automation) > 0) {
+      throw Exceptions::automationTriggerModificationNotSupported();
     }
   }
 
