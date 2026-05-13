@@ -102,14 +102,23 @@ export function* save(options: { cancelRunningRuns?: boolean } = {}) {
     type: 'SAVING',
   };
 
-  const data = yield apiFetch({
-    path: `/automations/${automation.id}`,
-    method: 'PUT',
-    data: {
-      ...automation,
-      ...(options.cancelRunningRuns ? { cancel_running_runs: true } : {}),
-    },
-  });
+  let data;
+  try {
+    data = yield apiFetch({
+      path: `/automations/${automation.id}`,
+      method: 'PUT',
+      data: {
+        ...automation,
+        ...(options.cancelRunningRuns ? { cancel_running_runs: true } : {}),
+      },
+    });
+  } catch {
+    sendTelemetryEvent('button_error', {
+      button_label: 'save',
+      automation_id: automation.id,
+    });
+    throw new Error(__('Failed to save automation.', 'mailpoet'));
+  }
 
   const { createNotice } = dispatch(noticesStore);
   if (data?.data) {
