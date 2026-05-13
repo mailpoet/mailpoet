@@ -38,7 +38,7 @@ export function SaveActiveModal({
 
   // translators: %s is the name of the automation.
   const title = sprintf(
-    __('Save changes to "%s"?', 'mailpoet'),
+    __('Save changes to the "%s" automation?', 'mailpoet'),
     automationName,
   );
 
@@ -49,7 +49,7 @@ export function SaveActiveModal({
       onRequestClose={onRequestClose ?? onClose}
     >
       {__(
-        'Some subscribers are mid-flow. Choose how this update should affect them.',
+        "Some subscribers entered but have not finished the flow. Let's decide what to do in this case.",
         'mailpoet',
       )}
       <ul className="mailpoet-automation-options">
@@ -79,10 +79,10 @@ export function SaveActiveModal({
             </span>
             <span>
               <strong>
-                {__('Let in-flight subscribers finish', 'mailpoet')}
+                {__('Let entered subscribers finish the flow', 'mailpoet')}
               </strong>
               {__(
-                'They continue on the previous version. New subscribers use the updated automation.',
+                'New subscribers will enter the updated automation, but recently entered could proceed through the previous version.',
                 'mailpoet',
               )}
             </span>
@@ -113,9 +113,11 @@ export function SaveActiveModal({
               />
             </span>
             <span>
-              <strong>{__('Drop in-flight subscribers', 'mailpoet')}</strong>
+              <strong>
+                {__('Stop automation for entered subscribers', 'mailpoet')}
+              </strong>
               {__(
-                'In-flight runs are cancelled. Only new subscribers will go through the updated automation.',
+                'Automation will stop for recently entered subscribers immediately. New subscribers will go through the updated automation.',
                 'mailpoet',
               )}
             </span>
