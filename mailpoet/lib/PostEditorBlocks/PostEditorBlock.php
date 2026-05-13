@@ -52,7 +52,16 @@ class PostEditorBlock {
     $this->wp->wpEnqueueScript(
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
-      ['wp-blocks', 'wp-components', 'wp-server-side-render', 'wp-block-editor'],
+      [
+        'wp-api-fetch',
+        'wp-blocks',
+        'wp-components',
+        'wp-element',
+        'wp-i18n',
+        'wp-server-side-render',
+        'wp-block-editor',
+        'wp-url',
+      ],
       Env::$version,
       true
     );
