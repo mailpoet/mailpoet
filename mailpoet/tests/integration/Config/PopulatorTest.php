@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Populator;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoetTest;
@@ -27,6 +28,7 @@ class PopulatorTest extends MailPoetTest {
     $populator->up();
     $optionFields = $this->getAllOptionFields();
     $this->assertSame(self::OPTION_FIELD_COUNT, count($optionFields));
+    $this->assertStandardExcludeFromArchiveOptionFieldExists();
 
     // delete only some fields
     $this->entityManager->createQueryBuilder()
@@ -43,6 +45,7 @@ class PopulatorTest extends MailPoetTest {
     $populator->up();
     $optionFields = $this->getAllOptionFields();
     $this->assertSame(self::OPTION_FIELD_COUNT, count($optionFields));
+    $this->assertStandardExcludeFromArchiveOptionFieldExists();
   }
 
   public function testItInsertsTemplates(): void {
@@ -128,6 +131,15 @@ class PopulatorTest extends MailPoetTest {
       ->getQuery()
       ->setHint(Query::HINT_REFRESH, true)
       ->getResult();
+  }
+
+  private function assertStandardExcludeFromArchiveOptionFieldExists(): void {
+    $optionField = $this->entityManager->getRepository(NewsletterOptionFieldEntity::class)->findOneBy([
+      'name' => NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      'newsletterType' => NewsletterEntity::TYPE_STANDARD,
+    ]);
+
+    $this->assertInstanceOf(NewsletterOptionFieldEntity::class, $optionField);
   }
 
   private function getAllTemplates(): array {

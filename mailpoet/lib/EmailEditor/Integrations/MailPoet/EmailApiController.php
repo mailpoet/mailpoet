@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
@@ -64,6 +65,9 @@ class EmailApiController {
   public function getEmailData($postEmailData): array {
     $newsletter = $this->newsletterRepository->findOneBy(['wpPost' => $postEmailData['id']]);
     $isAutomationNewsletter = $newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional());
+    $showInArchive = $newsletter
+      ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE) !== '1'
+      : true;
     return [
       'id' => $newsletter ? $newsletter->getId() : null,
       'subject' => $newsletter ? $newsletter->getSubject() : '',
@@ -84,6 +88,7 @@ class EmailApiController {
         ? $this->shareVisibility->getEffectiveVisibility($newsletter)
         : $this->shareVisibility->getDefaultVisibility(),
       'can_share' => $newsletter ? $this->shareVisibility->canShare($newsletter) : false,
+      'show_in_archive' => $showInArchive,
     ];
   }
 
@@ -127,12 +132,32 @@ class EmailApiController {
       );
     }
 
+    if (array_key_exists('show_in_archive', $data)) {
+      $this->updateShowInArchiveOption($newsletter, $data['show_in_archive']);
+    }
+
     if (isset($data['segment_ids']) && is_array($data['segment_ids'])) {
       $this->updateSegments($newsletter, $data['segment_ids']);
       $this->entityManager->refresh($newsletter);
     }
 
     $this->newsletterRepository->flush();
+  }
+
+  private function updateShowInArchiveOption(NewsletterEntity $newsletter, $showInArchiveValue): void {
+    if (!is_bool($showInArchiveValue)) {
+      throw new UnexpectedValueException('Invalid show_in_archive value. Expected a boolean.');
+    }
+
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
+      return;
+    }
+
+    $this->updateOption(
+      $newsletter,
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
+      $showInArchiveValue ? '0' : '1'
+    );
   }
 
   private function updateOption($newsletter, string $optionName, $optionValue): void {
@@ -243,6 +268,7 @@ class EmailApiController {
       'share_visibility' => Builder::string(),
       'effective_share_visibility' => Builder::string(),
       'can_share' => Builder::boolean(),
+      'show_in_archive' => Builder::boolean(),
     ])->toArray();
   }
 }
