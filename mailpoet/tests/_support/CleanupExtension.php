@@ -70,7 +70,7 @@ class CleanupExtension extends Extension {
     $sql .= "
       INSERT INTO mp_options (option_name, option_value, autoload)
       VALUES ('can_compress_scripts', '1', 'yes')
-      ON DUPLICATE KEY UPDATE option_value = '1';
+      ON DUPLICATE KEY UPDATE option_value = '1', autoload = 'yes';
     ";
 
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)

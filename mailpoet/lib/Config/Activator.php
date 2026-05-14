@@ -93,6 +93,9 @@ class Activator {
     $this->checkForDisabledMailFunction();
   }
 
+  /**
+   * Public because it can be deferred until Action Scheduler is initialized.
+   */
   public function refreshCronActions(): void {
     $currentMethod = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
     if ($currentMethod !== CronTrigger::METHOD_ACTION_SCHEDULER) {
