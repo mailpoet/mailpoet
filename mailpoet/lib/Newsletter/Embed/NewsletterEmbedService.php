@@ -45,9 +45,16 @@ class NewsletterEmbedService {
     $this->wp = $wp;
   }
 
-  public function render(array $attributes = []): string {
-    $attributes = $this->sanitizeAttributes($attributes);
-    $newsletterId = $attributes['newsletterId'];
+  public function render(array $rawSettings = []): string {
+    $settings = $this->sanitizeAttributes($rawSettings);
+    return $this->renderSanitized($settings);
+  }
+
+  /**
+   * @param array{newsletterId: int, height: int, width: int, showFallbackLink: bool, fallbackLinkAlignment: string, iframeAlignment: string, showEmailBackground: bool, align: string} $settings
+   */
+  private function renderSanitized(array $settings): string {
+    $newsletterId = $settings['newsletterId'];
     if ($newsletterId <= 0) {
       return '';
     }
@@ -62,9 +69,9 @@ class NewsletterEmbedService {
       return '';
     }
 
-    $url = $this->getEmbedUrl($newsletter, $queue, $attributes);
-    $height = $attributes['height'];
-    $width = $attributes['width'];
+    $url = $this->getEmbedUrl($newsletter, $queue, $settings);
+    $height = $settings['height'];
+    $width = $settings['width'];
     $subject = $newsletter->getSubject();
     if ($subject !== null && $subject !== '') {
       // translators: %s is the newsletter subject.
@@ -74,13 +81,13 @@ class NewsletterEmbedService {
     }
 
     $classNames = 'mailpoet-newsletter-embed';
-    if ($attributes['align'] !== '') {
-      $classNames .= ' align' . $attributes['align'];
+    if ($settings['align'] !== '') {
+      $classNames .= ' align' . $settings['align'];
     }
 
     $html = '<div'
       . ' class="' . $this->wp->escAttr($classNames) . '"'
-      . ' style="' . $this->wp->escAttr('text-align:' . $attributes['iframeAlignment'] . ';') . '"'
+      . ' style="' . $this->wp->escAttr('text-align:' . $settings['iframeAlignment'] . ';') . '"'
       . '>';
     $html .= '<iframe'
       . ' class="mailpoet-newsletter-embed-iframe"'
@@ -89,13 +96,14 @@ class NewsletterEmbedService {
       . ' height="' . $this->wp->escAttr((string)$height) . '"'
       . ' title="' . $this->wp->escAttr($title) . '"'
       . ' loading="lazy"'
+      . ' sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"'
       . ' style="' . $this->wp->escAttr('width:100%;max-width:' . $width . 'px;height:' . $height . 'px;border:0;background:transparent;') . '"'
       . '></iframe>';
 
-    if ($attributes['showFallbackLink']) {
+    if ($settings['showFallbackLink']) {
       $html .= '<p'
         . ' class="mailpoet-newsletter-embed-fallback"'
-        . ' style="' . $this->wp->escAttr('text-align:' . $attributes['fallbackLinkAlignment'] . ';') . '"'
+        . ' style="' . $this->wp->escAttr('text-align:' . $settings['fallbackLinkAlignment'] . ';') . '"'
         . '>'
         . '<a href="' . $this->wp->escUrl($url) . '">'
         . $this->wp->escHtml(__('View full newsletter', 'mailpoet'))
@@ -104,8 +112,7 @@ class NewsletterEmbedService {
     }
 
     $html .= '</div>';
-    // Attributes are normalized and every dynamic HTML value is escaped above.
-    return $html; // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.xss.block-attr
+    return $html;
   }
 
   /**
@@ -143,12 +150,7 @@ class NewsletterEmbedService {
     $rows = $this->newslettersRepository->findEmbeddableNewsletterRows($this->wp->sanitizeTextField($search), $limit);
 
     return array_map(function(array $row): array {
-      $sentAt = null;
-      if ($row['sentAt'] instanceof \DateTimeInterface) {
-        $sentAt = $row['sentAt']->format('Y-m-d H:i:s');
-      } elseif (is_string($row['sentAt'] ?? null) && $row['sentAt'] !== '') {
-        $sentAt = $row['sentAt'];
-      }
+      $sentAt = $this->formatSentAt($row['sentAt'] ?? null);
       $subject = (string)($row['subject'] ?? '');
       $label = $subject;
       if ($sentAt !== null) {
@@ -261,6 +263,26 @@ class NewsletterEmbedService {
     }
 
     return in_array($value, ['wide', 'full'], true) ? $value : '';
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function formatSentAt($value): ?string {
+    if ($value instanceof \DateTimeInterface) {
+      $timestamp = $value->getTimestamp();
+    } elseif (is_string($value) && $value !== '') {
+      $timestamp = strtotime($value);
+      if ($timestamp === false) {
+        return $value;
+      }
+    } else {
+      return null;
+    }
+
+    $dateFormat = (string)$this->wp->getOption('date_format', 'F j, Y');
+    $timeFormat = (string)$this->wp->getOption('time_format', 'g:i a');
+    return $this->wp->dateI18n(trim($dateFormat . ' ' . $timeFormat), $timestamp);
   }
 
   private function sanitizeSelectorLimit(?int $limit): int {

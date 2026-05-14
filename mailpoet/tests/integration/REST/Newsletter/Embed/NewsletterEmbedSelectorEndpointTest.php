@@ -83,4 +83,16 @@ class NewsletterEmbedSelectorEndpointTest extends Test {
 
     $this->assertSame('rest_forbidden', $data['code']);
   }
+
+  public function testItRejectsSubscribers(): void {
+    $userId = wp_create_user('newsletter_embed_subscriber_' . uniqid(), 'password', 'newsletter-embed-subscriber-' . uniqid() . '@localhost.test');
+    $this->assertIsInt($userId);
+    $user = new \WP_User($userId);
+    $user->set_role('subscriber');
+    wp_set_current_user($userId);
+
+    $data = $this->get(self::BASE_PATH);
+
+    $this->assertSame('rest_forbidden', $data['code']);
+  }
 }
