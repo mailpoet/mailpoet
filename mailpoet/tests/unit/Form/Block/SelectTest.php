@@ -7,8 +7,11 @@ use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Select;
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions;
 use PHPUnit\Framework\MockObject\MockObject;
+
+require_once __DIR__ . '/../HtmlParser.php';
 
 class SelectTest extends \MailPoetUnitTest {
   /** @var array */
@@ -29,20 +32,28 @@ class SelectTest extends \MailPoetUnitTest {
   /** @var MockObject & BlockWrapperRenderer */
   private $wrapperMock;
 
+  /** @var HtmlParser */
+  private $htmlParser;
+
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(Functions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
     $this->rendererHelperMock->method('getFieldName')->will($this->returnValue('select'));
-    $this->rendererHelperMock->method('renderLabel')->will($this->returnValue('<label></label>'));
+    $this->rendererHelperMock->method('renderLabel')->willReturnCallback(function(array $block) {
+      $for = empty($block['params']['input_id']) ? '' : ' for="' . $block['params']['input_id'] . '"';
+      return '<label' . $for . '></label>';
+    });
     $this->rendererHelperMock->method('getFieldLabel')->will($this->returnValue('Field label'));
     $this->rendererHelperMock->method('getFieldValue')->will($this->returnValue(''));
     $this->blockStylesRenderer = $this->createMock(BlockStylesRenderer::class);
     $this->blockStylesRenderer->method('renderForSelect')->willReturn('');
     $this->selectBlock = new Select($this->rendererHelperMock, $this->wrapperMock, $this->blockStylesRenderer, $this->wpMock);
+    $this->htmlParser = new HtmlParser();
     $this->block = [
       'id' => 'status',
       'type' => 'select',
@@ -98,5 +109,21 @@ class SelectTest extends \MailPoetUnitTest {
     $this->block['params']['values'][2]['is_hidden'] = true;
     $rendered = $this->selectBlock->render($this->block, []);
     verify($rendered)->stringNotContainsString(SubscriberEntity::STATUS_BOUNCED);
+  }
+
+  public function testItAssociatesLabelAndDescriptionWhenInputIdIsConfigured(): void {
+    $this->block['params']['input_id'] = 'status_select';
+    $this->block['params']['description'] = 'Status helper';
+
+    $rendered = $this->selectBlock->render($this->block, []);
+
+    $label = $this->htmlParser->getElementByXpath($rendered, '//label');
+    $description = $this->htmlParser->getElementByXpath($rendered, "//p[@class='mailpoet_field_description']");
+    $select = $this->htmlParser->getElementByXpath($rendered, '//select');
+
+    verify($this->htmlParser->getAttribute($label, 'for')->value)->equals('status_select');
+    verify($this->htmlParser->getAttribute($select, 'id')->value)->equals('status_select');
+    verify($this->htmlParser->getAttribute($description, 'id')->value)->equals('status_select_description');
+    verify($this->htmlParser->getAttribute($select, 'aria-describedby')->value)->equals('status_select_description');
   }
 }

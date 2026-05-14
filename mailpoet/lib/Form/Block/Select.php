@@ -36,17 +36,29 @@ class Select {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
-    $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
+    $automationId = ($block['id'] == 'status') ? ' data-automation-id="form_status"' : '';
+    $inputId = $this->getInputId($block, $formSettings);
+    $descriptionId = $this->getDescriptionId($block, $inputId);
+
+    if ($inputId !== '') {
+      $block['params']['input_id'] = $inputId;
+    }
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
     if (!empty($block['params']['description'])) {
-      $html .= '<p class="mailpoet_field_description">' . $this->wp->escHtml($block['params']['description']) . '</p>';
+      $html .= '<p class="mailpoet_field_description"';
+      if ($descriptionId !== '') {
+        $html .= ' id="' . $this->wp->escAttr($descriptionId) . '"';
+      }
+      $html .= '>' . $this->wp->escHtml($block['params']['description']) . '</p>';
     }
     $html .= '<select
       class="mailpoet_select"
-      name="' . $fieldName . '" '
+      ' . ($inputId !== '' ? 'id="' . $this->wp->escAttr($inputId) . '"' : '') . '
+      name="' . $fieldName . '"'
       . $automationId
-      . 'style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"'
+      . ($descriptionId !== '' ? ' aria-describedby="' . $this->wp->escAttr($descriptionId) . '"' : '')
+      . ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"'
       . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
@@ -100,5 +112,28 @@ class Select {
     $html .= $this->rendererHelper->renderErrorsContainer($block, $formId);
 
     return $this->wrapper->render($block, $html);
+  }
+
+  private function getInputId(array $block, array $formSettings): string {
+    if (!empty($block['params']['input_id']) && is_scalar($block['params']['input_id'])) {
+      return (string)$block['params']['input_id'];
+    }
+    if (isset($formSettings['id'])) {
+      return 'form_' . (string)$block['id'] . '_' . (string)$formSettings['id'];
+    }
+    return '';
+  }
+
+  private function getDescriptionId(array $block, string $inputId): string {
+    if (empty($block['params']['description'])) {
+      return '';
+    }
+    if (!empty($block['params']['description_id']) && is_scalar($block['params']['description_id'])) {
+      return (string)$block['params']['description_id'];
+    }
+    if ($inputId !== '') {
+      return $inputId . '_description';
+    }
+    return '';
   }
 }

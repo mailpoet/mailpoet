@@ -221,6 +221,7 @@ class ManageSubscriptionFormRenderer {
           'label' => __('Email subscription status', 'mailpoet'),
           'description' => __('This controls whether you receive emails overall. Your list choices below control which public lists you receive.', 'mailpoet'),
           'class_name' => 'mailpoet-manage-subscription-status',
+          'input_id' => 'mailpoet_manage_subscription_status',
           'values' => [
             [
               'value' => [
