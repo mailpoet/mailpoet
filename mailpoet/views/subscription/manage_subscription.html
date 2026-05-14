@@ -5,19 +5,34 @@
   <input type="hidden" name="mailpoet_redirect" value="<%= redirectUrl|escape %>"/>
   <input type="hidden" name="data[email]" value="<%= email|escape %>" />
   <input type="hidden" name="token" value="<%= token %>" />
-  <p class="mailpoet_paragraph">
-    <label> <%= __('Email', 'mailpoet') %><br /><strong><%= email|escape %></strong></label>
-    <br />
-    <span class="mailpoet-change-email-info">
-      <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
-      <%= editEmailInfo|wpKses(allowedHtml) %>
-    </span>
-  </p>
-  <%= formHtml|raw %>
   <% if formState == 'success' %>
-  <p class="mailpoet-submit-success">
-    <%= _x('Your preferences have been saved.', 'success message after saving subscription settings') %>
+  <p class="mailpoet-submit-success" role="status" aria-live="polite">
+    <%= _x('Your subscription settings have been saved.', 'success message after saving subscription settings') %>
   </p>
   <% endif %>
+  <section class="mailpoet-manage-subscription-section mailpoet-manage-subscription-settings">
+    <h2><%= __('Your email settings', 'mailpoet') %></h2>
+    <p class="mailpoet-manage-subscription-section-description">
+      <%= __('Review your email address and choose whether you can receive emails from this site.', 'mailpoet') %>
+    </p>
+    <p class="mailpoet_paragraph mailpoet-manage-subscription-email">
+      <span class="mailpoet_text_label"><%= __('Email address', 'mailpoet') %></span>
+      <strong><%= email|escape %></strong>
+      <span class="mailpoet-change-email-info">
+        <% set allowedHtml = {'a': {'href': [], 'target': [], 'rel': []}} %>
+        <%= editEmailInfo|wpKses(allowedHtml) %>
+      </span>
+    </p>
+    <%= identityFieldsHtml|raw %>
+    <% if not hasVisibleLists %>
+    <p class="mailpoet-manage-subscription-no-lists">
+      <%= __('There are no individual list preferences to manage for this email address.', 'mailpoet') %>
+    </p>
+    <% endif %>
+  </section>
+  <%= listFieldsHtml|raw %>
+  <div class="mailpoet-manage-subscription-actions">
+    <%= submitHtml|raw %>
+  </div>
 </form>
 <% endblock %>

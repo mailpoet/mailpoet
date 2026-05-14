@@ -16,6 +16,8 @@ class ManageSubscriptionLinkCest {
 
   const ADDITIONAL_FIRST_FANCY_LIST = 'First fancy list';
   const ADDITIONAL_SECOND_FANCY_LIST = 'Second fancy list';
+  const ADDITIONAL_FIRST_PUBLIC_DESCRIPTION = 'First list public description';
+  const ADDITIONAL_SECOND_PUBLIC_DESCRIPTION = 'Second list public description';
 
   /** @var Settings */
   private $settings;
@@ -34,8 +36,14 @@ class ManageSubscriptionLinkCest {
       ->withCronTriggerMethod('Action Scheduler');
 
     $segmentFactory = new Segment();
-    $segmentFactory->withName(self::ADDITIONAL_FIRST_FANCY_LIST)->create();
-    $segmentFactory->withName(self::ADDITIONAL_SECOND_FANCY_LIST)->create();
+    $segmentFactory
+      ->withName(self::ADDITIONAL_FIRST_FANCY_LIST)
+      ->withPublicDescription(self::ADDITIONAL_FIRST_PUBLIC_DESCRIPTION)
+      ->create();
+    $segmentFactory
+      ->withName(self::ADDITIONAL_SECOND_FANCY_LIST)
+      ->withPublicDescription(self::ADDITIONAL_SECOND_PUBLIC_DESCRIPTION)
+      ->create();
   }
 
   public function manageSubscriptionLink(\AcceptanceTester $i) {
@@ -56,8 +64,11 @@ class ManageSubscriptionLinkCest {
     $i->click('Manage your subscription');
     $i->switchToNextTab();
     $i->waitForText('Manage your subscription');
-    $successMessage = 'Your preferences have been saved.';
+    $successMessage = 'Your subscription settings have been saved.';
     $i->dontSee($successMessage);
+    $i->see('Your email settings');
+    $i->see('Your lists');
+    $i->see(self::ADDITIONAL_FIRST_PUBLIC_DESCRIPTION);
 
     $formStatusElement = '[data-automation-id="form_status"]';
 
@@ -65,7 +76,7 @@ class ManageSubscriptionLinkCest {
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->selectOption($formStatusElement, 'Unsubscribed');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save');
+    $i->click('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
     $i->see($successMessage);
@@ -73,18 +84,20 @@ class ManageSubscriptionLinkCest {
     $i->wantTo('Change the status to back to subscribed');
     $i->selectOption($formStatusElement, 'Subscribed');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save');
+    $i->click('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
     $i->seeNoJSErrors();
 
     $i->wantTo('Subscribe to the other two lists');
-    $i->checkOption(self::ADDITIONAL_FIRST_FANCY_LIST);
-    $i->checkOption(self::ADDITIONAL_SECOND_FANCY_LIST);
-    $i->click('Save');
+    $firstListYes = $this->getListChoiceSelector(self::ADDITIONAL_FIRST_FANCY_LIST, 'subscribed');
+    $secondListYes = $this->getListChoiceSelector(self::ADDITIONAL_SECOND_FANCY_LIST, 'subscribed');
+    $i->checkOption($firstListYes);
+    $i->checkOption($secondListYes);
+    $i->click('Save changes');
     $i->waitForElement($formStatusElement);
-    $i->canSeeCheckboxIsChecked(self::ADDITIONAL_FIRST_FANCY_LIST);
-    $i->canSeeCheckboxIsChecked(self::ADDITIONAL_SECOND_FANCY_LIST);
+    $i->canSeeCheckboxIsChecked($firstListYes);
+    $i->canSeeCheckboxIsChecked($secondListYes);
   }
 
   public function unsubscribeLinksWithLinkTracking(\AcceptanceTester $i) {
@@ -149,7 +162,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Subscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save');
+    $i->click('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
 
@@ -161,7 +174,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Subscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save');
+    $i->click('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
 
@@ -227,6 +240,14 @@ class ManageSubscriptionLinkCest {
     }
     $i->waitForText('Sent to 1 of 1');
     $i->see('Sent to 1 of 1');
+  }
+
+  private function getListChoiceSelector(string $listName, string $choice): string {
+    return sprintf(
+      '//div[contains(@class, "mailpoet-manage-subscription-list-row")][.//*[contains(normalize-space(.), "%s")]]//input[@type="radio" and @value="%s"]',
+      $listName,
+      $choice
+    );
   }
 
   private function sendPostRequestAndAssertSuccess(string $link) {

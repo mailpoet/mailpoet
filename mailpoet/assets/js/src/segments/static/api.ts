@@ -28,6 +28,7 @@ export type SegmentListingItem = {
   id: string;
   name: string;
   description: string;
+  public_description: string;
   type: string;
   average_engagement_score: number;
   show_in_manage_subscription_page: boolean | number;
