@@ -53,4 +53,25 @@ class Migration_20260514_120000_Db_Test extends \MailPoetTest {
     verify($column['Null'])->equals('NO');
     verify($column['Type'])->stringContainsString('text');
   }
+
+  public function testItRepairsExistingNullableColumnWithNullValues(): void {
+    $this->entityManager->getConnection()->executeStatement("
+      ALTER TABLE `{$this->segmentsTable}`
+      ADD COLUMN `public_description` text NULL
+    ");
+
+    $this->migration->run();
+
+    $publicDescription = $this->entityManager->getConnection()->fetchOne(
+      "SELECT public_description FROM `{$this->segmentsTable}` WHERE id = ?",
+      [$this->segment->getId()]
+    );
+    verify($publicDescription)->equals('');
+
+    $column = $this->entityManager->getConnection()->fetchAssociative(
+      "SHOW COLUMNS FROM `{$this->segmentsTable}` LIKE 'public_description'"
+    );
+    $this->assertIsArray($column);
+    verify($column['Null'])->equals('NO');
+  }
 }

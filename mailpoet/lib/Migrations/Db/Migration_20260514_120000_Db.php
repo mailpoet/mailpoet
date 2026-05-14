@@ -10,14 +10,12 @@ class Migration_20260514_120000_Db extends DbMigration {
     $segmentsTable = $this->getTableName(SegmentEntity::class);
     $columnName = 'public_description';
 
-    if ($this->columnExists($segmentsTable, $columnName)) {
-      return;
+    if (!$this->columnExists($segmentsTable, $columnName)) {
+      $this->connection->executeStatement("
+        ALTER TABLE `{$segmentsTable}`
+        ADD COLUMN `{$columnName}` text NULL
+      ");
     }
-
-    $this->connection->executeStatement("
-      ALTER TABLE `{$segmentsTable}`
-      ADD COLUMN `{$columnName}` text NULL
-    ");
 
     $this->connection->executeStatement("
       UPDATE `{$segmentsTable}`

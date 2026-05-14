@@ -128,6 +128,9 @@ class Manage {
     }
 
     $segmentsIds = $this->getLegacySegmentIds($subscriberData);
+    if (!$segmentsIds && $this->hasMalformedLegacySegmentIds($subscriberData)) {
+      return;
+    }
     $segments = $this->getVisibleDefaultManageSegmentsByIds($segmentsIds);
     $segmentsIds = array_map('intval', array_keys($segments));
 
@@ -210,13 +213,18 @@ class Manage {
    * @param mixed $value
    * @return mixed
    */
-  private function sanitizeFormValue($value) {
+  private function sanitizeFormValue($value, ?string $parentKey = null) {
     if (is_array($value)) {
       $sanitized = [];
       foreach ($value as $key => $item) {
-        $sanitized[sanitize_text_field((string)$key)] = $this->sanitizeFormValue($item);
+        $sanitizedKey = $parentKey === 'segment_choices' ? $key : sanitize_text_field((string)$key);
+        $childParentKey = $parentKey === 'segments' ? 'segments' : (string)$sanitizedKey;
+        $sanitized[$sanitizedKey] = $this->sanitizeFormValue($item, $childParentKey);
       }
       return $sanitized;
+    }
+    if ($parentKey === 'segments') {
+      return is_scalar($value) ? (string)$value : '';
     }
     return sanitize_text_field(is_scalar($value) ? (string)$value : '');
   }
@@ -231,12 +239,29 @@ class Manage {
 
     $segmentIds = [];
     foreach ($subscriberData['segments'] as $segmentId) {
-      if (!is_scalar($segmentId) || (int)$segmentId <= 0) {
+      $segmentId = $this->normalizePositiveIntegerId($segmentId);
+      if ($segmentId === null) {
         continue;
       }
-      $segmentIds[] = (int)$segmentId;
+      $segmentIds[] = $segmentId;
     }
     return array_values(array_unique($segmentIds));
+  }
+
+  private function hasMalformedLegacySegmentIds(array $subscriberData): bool {
+    if (!isset($subscriberData['segments']) || !is_array($subscriberData['segments'])) {
+      return false;
+    }
+
+    foreach ($subscriberData['segments'] as $segmentId) {
+      if ($segmentId === '') {
+        continue;
+      }
+      if ($this->normalizePositiveIntegerId($segmentId) === null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -250,15 +275,33 @@ class Manage {
 
     $choices = [];
     foreach ($segmentChoices as $segmentId => $choice) {
-      if ((int)$segmentId <= 0 || !is_string($choice)) {
+      $segmentId = $this->normalizePositiveIntegerId($segmentId);
+      if ($segmentId === null || !is_string($choice)) {
         continue;
       }
       if (!in_array($choice, ['subscribed', 'unsubscribed'], true)) {
         continue;
       }
-      $choices[(int)$segmentId] = $choice;
+      $choices[$segmentId] = $choice;
     }
     return $choices;
+  }
+
+  /**
+   * @param mixed $segmentId
+   */
+  private function normalizePositiveIntegerId($segmentId): ?int {
+    if (is_int($segmentId)) {
+      return $segmentId > 0 ? $segmentId : null;
+    }
+    if (!is_string($segmentId) || $segmentId === '' || $segmentId[0] === '0' || !ctype_digit($segmentId)) {
+      return null;
+    }
+    $normalized = (int)$segmentId;
+    if ((string)$normalized !== $segmentId || $normalized <= 0) {
+      return null;
+    }
+    return $normalized;
   }
 
   /**
