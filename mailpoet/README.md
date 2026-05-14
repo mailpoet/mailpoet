@@ -295,8 +295,6 @@ The `pnpm` wrapper passes `--skip-deps` by default to speed up the run locally.
 If there are some unexpected errors you can delete all the runtime and start again.
 To delete all the docker runtime for acceptance tests use the Robo-only command `cd mailpoet && ./do delete:docker`.
 
-When debugging you can add `$i->pause();` in to your test which pauses the execution.
-
 We are using Gravity Flow plugin's setup as an example for our acceptance test suite: https://www.stevenhenty.com/learn-acceptance-testing-deeply/
 
 From the article above:
