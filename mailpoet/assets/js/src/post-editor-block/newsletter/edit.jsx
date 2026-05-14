@@ -232,6 +232,8 @@ function Edit({ attributes, setAttributes }) {
       <InspectorControls>
         <PanelBody title={__('MailPoet Newsletter', 'mailpoet')} initialOpen>
           {renderSelectorControls()}
+        </PanelBody>
+        <PanelBody title={__('Size and layout', 'mailpoet')} initialOpen>
           <RangeControl
             label={__('Height', 'mailpoet')}
             value={height}
@@ -243,7 +245,6 @@ function Edit({ attributes, setAttributes }) {
             min={MIN_HEIGHT}
             max={MAX_HEIGHT}
             step={50}
-            __nextHasNoMarginBottom
           />
           <RangeControl
             label={__('Width', 'mailpoet')}
@@ -256,7 +257,6 @@ function Edit({ attributes, setAttributes }) {
             min={MIN_WIDTH}
             max={MAX_WIDTH}
             step={20}
-            __nextHasNoMarginBottom
           />
           <SelectControl
             label={__('Newsletter alignment', 'mailpoet')}
@@ -267,7 +267,6 @@ function Edit({ attributes, setAttributes }) {
                 iframeAlignment: value,
               });
             }}
-            __nextHasNoMarginBottom
           />
           <ToggleControl
             label={__('Show email background', 'mailpoet')}
@@ -278,6 +277,8 @@ function Edit({ attributes, setAttributes }) {
               });
             }}
           />
+        </PanelBody>
+        <PanelBody title={__('Fallback link', 'mailpoet')} initialOpen>
           <ToggleControl
             label={__('Show fallback link', 'mailpoet')}
             checked={showFallbackLink}
@@ -297,7 +298,6 @@ function Edit({ attributes, setAttributes }) {
                   fallbackLinkAlignment: value,
                 });
               }}
-              __nextHasNoMarginBottom
             />
           )}
         </PanelBody>
