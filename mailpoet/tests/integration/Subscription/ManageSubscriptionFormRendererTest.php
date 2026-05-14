@@ -37,6 +37,10 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     verify($form)->stringContainsString('name="data[segment_choices][' . $this->segment->getId() . ']" value="unsubscribed" data-automation-id="manage_subscription_list_' . $this->segment->getId() . '_no"');
     verify($form)->stringContainsString('Public description for subscribers');
     verify($form)->stringContainsString('Email subscription status');
+    verify($form)->stringContainsString('<label for="mailpoet_manage_subscription_status" class="mailpoet_select_label" >Email subscription status&nbsp;<span class="mailpoet_required" aria-hidden="true">*</span></label>');
+    verify($form)->stringContainsString('<p class="mailpoet_field_description" id="mailpoet_manage_subscription_status_description">This controls whether you receive emails overall. Your list choices below control which public lists you receive.</p>');
+    verify($form)->stringContainsString('id="mailpoet_manage_subscription_status"');
+    verify($form)->stringContainsString('aria-describedby="mailpoet_manage_subscription_status_description"');
     verify($form)->stringMatchesRegExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 1" value="some value"  data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}"\/>/');
     verify($form)->stringMatchesRegExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 2" value="another value"  data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}"\/>/');
 

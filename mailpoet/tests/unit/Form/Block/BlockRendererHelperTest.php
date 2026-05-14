@@ -67,6 +67,15 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     verify($label)->stringContainsString('style="font-size: 1.2em;');
   }
 
+  public function testItShouldRenderLabelForConfiguredInputId(): void {
+    $block = $this->block;
+    $block['params']['input_id'] = 'custom_input_id';
+
+    $label = $this->rendererHelper->renderLabel($block, []);
+
+    verify($label)->stringContainsString('for="custom_input_id"');
+  }
+
   public function testItShouldRenderLegend() {
     $block = $this->block;
     $label = $this->rendererHelper->renderLegend($block, []);
