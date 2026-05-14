@@ -1,8 +1,8 @@
 import { __, _x } from '@wordpress/i18n';
-import { update } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
+import { ProductSubscriptionIcon } from '../product-subscription-icon';
 
 const keywords = [
   __('woocommerce', 'mailpoet'),
@@ -19,7 +19,7 @@ export const step: StepType = {
   keywords,
   foreground: '#00a32a',
   background: '#edfaef',
-  icon: () => update,
+  icon: () => <ProductSubscriptionIcon type="status" />,
   edit: () => (
     <PremiumModalForStepEdit
       tracking={{
