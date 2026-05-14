@@ -14,6 +14,10 @@ const {
   Disabled,
   ComboboxControl,
   SelectControl,
+  ToggleGroupControl: StableToggleGroupControl,
+  ToggleGroupControlOption: StableToggleGroupControlOption,
+  __experimentalToggleGroupControl: ExperimentalToggleGroupControl,
+  __experimentalToggleGroupControlOption: ExperimentalToggleGroupControlOption,
 } = wp.components;
 const { BlockIcon, InspectorControls, useBlockProps } = wp.blockEditor;
 const { useEffect, useMemo, useState } = wp.element;
@@ -26,6 +30,10 @@ const MAX_HEIGHT = 3000;
 const DEFAULT_WIDTH = 640;
 const MIN_WIDTH = 320;
 const MAX_WIDTH = 1200;
+const ToggleGroupControl =
+  StableToggleGroupControl || ExperimentalToggleGroupControl;
+const ToggleGroupControlOption =
+  StableToggleGroupControlOption || ExperimentalToggleGroupControlOption;
 
 function getNewsletterId(value) {
   if (value === '') {
@@ -192,6 +200,38 @@ function Edit({ attributes, setAttributes }) {
     );
   }
 
+  function renderAlignmentControl(label, value, onChange) {
+    if (ToggleGroupControl && ToggleGroupControlOption) {
+      return (
+        <ToggleGroupControl
+          label={label}
+          value={value}
+          onChange={(nextValue) => {
+            onChange(nextValue || 'center');
+          }}
+          isBlock
+        >
+          {alignmentOptions.map((option) => (
+            <ToggleGroupControlOption
+              key={option.value}
+              value={option.value}
+              label={option.label}
+            />
+          ))}
+        </ToggleGroupControl>
+      );
+    }
+
+    return (
+      <SelectControl
+        label={label}
+        value={value}
+        options={alignmentOptions}
+        onChange={onChange}
+      />
+    );
+  }
+
   function renderPreview() {
     return (
       <Disabled>
@@ -258,16 +298,15 @@ function Edit({ attributes, setAttributes }) {
             max={MAX_WIDTH}
             step={20}
           />
-          <SelectControl
-            label={__('Newsletter alignment', 'mailpoet')}
-            value={iframeAlignment}
-            options={alignmentOptions}
-            onChange={(value) => {
+          {renderAlignmentControl(
+            __('Newsletter alignment', 'mailpoet'),
+            iframeAlignment,
+            (value) => {
               setAttributes({
                 iframeAlignment: value,
               });
-            }}
-          />
+            },
+          )}
           <ToggleControl
             label={__('Show email background', 'mailpoet')}
             checked={showEmailBackground}
@@ -288,18 +327,16 @@ function Edit({ attributes, setAttributes }) {
               });
             }}
           />
-          {showFallbackLink && (
-            <SelectControl
-              label={__('Fallback link alignment', 'mailpoet')}
-              value={fallbackLinkAlignment}
-              options={alignmentOptions}
-              onChange={(value) => {
+          {showFallbackLink &&
+            renderAlignmentControl(
+              __('Fallback link alignment', 'mailpoet'),
+              fallbackLinkAlignment,
+              (value) => {
                 setAttributes({
                   fallbackLinkAlignment: value,
                 });
-              }}
-            />
-          )}
+              },
+            )}
         </PanelBody>
       </InspectorControls>
       <div className="mailpoet-block-div">
