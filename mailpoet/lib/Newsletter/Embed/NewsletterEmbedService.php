@@ -98,7 +98,7 @@ class NewsletterEmbedService {
         . ' style="' . $this->wp->escAttr('text-align:' . $attributes['fallbackLinkAlignment'] . ';') . '"'
         . '>'
         . '<a href="' . $this->wp->escUrl($url) . '">'
-        . $this->wp->escHtml(__('View newsletter in browser', 'mailpoet'))
+        . $this->wp->escHtml(__('View full newsletter', 'mailpoet'))
         . '</a>'
         . '</p>';
     }
