@@ -365,6 +365,73 @@ class ManageTest extends \MailPoetTest {
     verify($notifications)->empty();
   }
 
+  public function testItRedirectsWithErrorAndDoesNotSaveWhenTokenVerificationFails(): void {
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+      'linkTokens' => Stub::make(LinkTokens::class, [
+        'verifyToken' => function() {
+          return false;
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'stale-token';
+    $_POST['data'] = [
+      'first_name' => 'Changed',
+      'last_name' => 'Changed',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'unsubscribed',
+        (string)$this->segmentB->getId() => 'subscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getFirstName())->equals('John');
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($redirectParams)->equals(['error' => true]);
+  }
+
+  public function testItRedirectsWithErrorWhenSubscriberLookupFails(): void {
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'Unknown',
+      'last_name' => 'Subscriber',
+      'email' => 'unknown@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentB->getId() => 'subscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    verify($redirectParams)->equals(['error' => true]);
+    verify($this->subscribersRepository->findOneBy(['email' => 'unknown@example.com']))->null();
+  }
+
   private function getManageService(array $overrides = []): Manage {
     return $this->getServiceWithOverrides(Manage::class, array_merge([
       'urlHelper' => Stub::make(UrlHelper::class, [

@@ -86,6 +86,7 @@ class Manage {
 
     if ($action !== 'mailpoet_subscription_update' || empty($_POST['data'])) {
       $this->urlHelper->redirectBack();
+      return;
     }
 
     //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -95,7 +96,7 @@ class Manage {
       $subscriberData = [];
     }
 
-    $result = [];
+    $result = ['error' => true];
     if (!empty($subscriberData['email'])) {
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberData['email']]);
 
@@ -116,8 +117,8 @@ class Manage {
           $this->subscriberSaveController->updateCustomFields($this->filterOutEmptyMandatoryFields($subscriberData), $subscriber);
           $this->updateSubscriptions($subscriber, $subscriberData);
         }
+        $result = ['success' => true];
       }
-      $result = ['success' => true];
     }
 
     $this->urlHelper->redirectBack($result);

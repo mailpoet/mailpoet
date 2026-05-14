@@ -64,6 +64,14 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     verify($form)->stringMatchesRegExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Additional info" value=""  data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}"\/>/');
   }
 
+  public function testItRendersErrorState(): void {
+    $form = $this->formRenderer->renderForm($this->subscriber, ManageSubscriptionFormRenderer::FORM_STATE_ERROR);
+
+    verify($form)->stringContainsString('class="mailpoet-submit-error" role="alert" aria-live="assertive" tabindex="-1"');
+    verify($form)->stringContainsString('We could not save your subscription settings. Please review the form and try again.');
+    verify($form)->stringNotContainsString('Your subscription settings have been saved.');
+  }
+
   public function testItEscapesManageSubscriptionListNamesAndPublicDescriptions(): void {
     $this->segment->setName('List <strong>name</strong>');
     $this->segment->setPublicDescription('Public <script>alert(1)</script> description');
@@ -86,6 +94,15 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     verify($form)->stringNotContainsString('data-automation-id="manage_subscription_lists"');
     verify($form)->stringContainsString('There are no individual list preferences to manage for this email address.');
     verify($form)->stringContainsString('data-automation-id="subscribe-submit-button"');
+
+    $statusDescriptionPosition = strpos($form, 'This controls whether you receive emails overall.');
+    $noListsPosition = strpos($form, 'There are no individual list preferences to manage for this email address.');
+    $customFieldPosition = strpos($form, 'title="custom field 1"');
+    $this->assertNotFalse($statusDescriptionPosition);
+    $this->assertNotFalse($noListsPosition);
+    $this->assertNotFalse($customFieldPosition);
+    $this->assertGreaterThan($statusDescriptionPosition, $noListsPosition);
+    $this->assertGreaterThan($noListsPosition, $customFieldPosition);
   }
 
   private function getSegment(): SegmentEntity {
