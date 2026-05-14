@@ -80,8 +80,7 @@ class Activator {
 
   private function processActivate(): void {
     $this->migrator->run();
-    $this->deactivateCronActions();
-    $this->reactivateCronActions();
+    $this->refreshCronActions();
     $this->populator->up();
     $this->updateDbVersion();
 
@@ -92,6 +91,22 @@ class Activator {
     $localizer->forceInstallLanguagePacks($this->wp);
 
     $this->checkForDisabledMailFunction();
+  }
+
+  public function refreshCronActions(): void {
+    $currentMethod = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
+    if ($currentMethod !== CronTrigger::METHOD_ACTION_SCHEDULER) {
+      $this->daemonActionSchedulerRunner->clearDeactivationFlag();
+      return;
+    }
+
+    if (!$this->cronActionSchedulerRunner->isInitialized()) {
+      $this->cronActionSchedulerRunner->runAfterInitialized([$this, 'refreshCronActions']);
+      return;
+    }
+
+    $this->deactivateCronActions();
+    $this->reactivateCronActions();
   }
 
   public function deactivate() {
