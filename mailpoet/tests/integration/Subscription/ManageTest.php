@@ -235,6 +235,94 @@ class ManageTest extends \MailPoetTest {
     ]);
   }
 
+  public function testLegacyPositiveIdsForHiddenDeletedAndUnknownSegmentsDoNotChangeVisibleLists() {
+    $deletedSegment = (new SegmentFactory())
+      ->withName('Deleted List')
+      ->withDeleted()
+      ->create();
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [
+        $this->hiddenSegment->getId(),
+        $deletedSegment->getId(),
+        999999999,
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
+  public function testObfuscatedMalformedLegacySegmentIdsCannotChangeVisibleLists() {
+    $fieldNameObfuscator = $this->diContainer->get(FieldNameObfuscator::class);
+    $manage = $this->getManageService([
+      'fieldNameObfuscator' => $fieldNameObfuscator,
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => '',
+      $fieldNameObfuscator->obfuscate('segments') => [
+        ' ' . $this->segmentB->getId(),
+        $this->segmentB->getId() . ' ',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
+  public function testObfuscatedLegacySegmentIdsCanChangeVisibleLists() {
+    $fieldNameObfuscator = $this->diContainer->get(FieldNameObfuscator::class);
+    $manage = $this->getManageService([
+      'fieldNameObfuscator' => $fieldNameObfuscator,
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => '',
+      $fieldNameObfuscator->obfuscate('segments') => [
+        (string)$this->segmentB->getId(),
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
   public function testSegmentChoicesDoNotChangeGlobalStatusUnlessPosted() {
     $subscriber = (new SubscriberFactory())
       ->withFirstName('Jane')

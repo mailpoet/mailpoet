@@ -88,10 +88,12 @@ class Manage {
       $this->urlHelper->redirectBack();
     }
 
-    // custom recursive sanitization via sanitizeFormValue()
     //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-    $subscriberData = $this->sanitizeFormValue(wp_unslash((array)$_POST['data']));
-    $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload($subscriberData);
+    $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload(wp_unslash((array)$_POST['data']));
+    $subscriberData = $this->sanitizeFormValue($subscriberData);
+    if (!is_array($subscriberData)) {
+      $subscriberData = [];
+    }
 
     $result = [];
     if (!empty($subscriberData['email'])) {
@@ -131,8 +133,12 @@ class Manage {
     if (!$segmentsIds && $this->hasMalformedLegacySegmentIds($subscriberData)) {
       return;
     }
-    $segments = $this->getVisibleDefaultManageSegmentsByIds($segmentsIds);
+    $legacySegmentIds = $segmentsIds;
+    $segments = $this->getVisibleDefaultManageSegmentsByIds($legacySegmentIds);
     $segmentsIds = array_map('intval', array_keys($segments));
+    if ($legacySegmentIds && !$segmentsIds) {
+      return;
+    }
 
     // Unsubscribe from all other segments already subscribed to
     // but don't change disallowed segments
