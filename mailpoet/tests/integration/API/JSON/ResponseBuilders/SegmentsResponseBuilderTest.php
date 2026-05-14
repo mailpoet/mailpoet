@@ -16,6 +16,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     $di = ContainerWrapper::getInstance();
     $em = $di->get(EntityManager::class);
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, $description);
+    $segment->setPublicDescription('Public description');
     $em->persist($segment);
     $em->flush();
     $responseBuilder = $di->get(SegmentsResponseBuilder::class);
@@ -24,6 +25,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response['name'])->equals($name);
     verify($response['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     verify($response['description'])->equals($description);
+    verify($response['public_description'])->equals('Public description');
     verify($response)->arrayHasKey('id');
     verify($response)->arrayHasKey('created_at');
     verify($response)->arrayHasKey('updated_at');
@@ -39,6 +41,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     $di = ContainerWrapper::getInstance();
     $em = $di->get(EntityManager::class);
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, $description);
+    $segment->setPublicDescription('Public listings description');
     $em->persist($segment);
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
@@ -54,6 +57,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->isArray();
     verify($response[0]['name'])->equals($name);
     verify($response[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($response[0]['public_description'])->equals('Public listings description');
     verify($response[0]['subscribers_url'])->stringStartsWith('http');
     verify($response[0]['subscribers_count']['subscribed'])->equals('1');
   }

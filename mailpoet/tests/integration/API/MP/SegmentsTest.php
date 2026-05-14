@@ -325,6 +325,7 @@ class SegmentsTest extends \MailPoetTest {
     $this->assertEquals($segment->getType(), $item['type']);
     $this->assertArrayHasKey('created_at', $item);
     $this->assertArrayHasKey('updated_at', $item);
+    $this->assertArrayNotHasKey('public_description', $item);
     $this->assertNull($item['deleted_at']);
   }
 

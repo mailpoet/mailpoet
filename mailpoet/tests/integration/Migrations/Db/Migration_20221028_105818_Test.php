@@ -7,6 +7,8 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Settings\SettingsController;
 
+require_once __DIR__ . '/../../../../lib/Migrations/Db/Migration_20260514_120000_Db.php';
+
 //phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 class Migration_20221028_105818_Test extends \MailPoetTest {
   /** @var Migration_20221028_105818 */
@@ -25,6 +27,7 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     try {
       (new Migration_20230421_135915($this->diContainer))->run();
       (new Migration_20260504_120000_Db($this->diContainer))->run();
+      (new Migration_20260514_120000_Db($this->diContainer))->run();
     } finally {
       parent::_after();
     }

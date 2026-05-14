@@ -151,6 +151,46 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository->createOrUpdate('Existing', $segment->getDescription(), $segment->getType(), [], $segment->getId());
   }
 
+  public function testItHandlesPublicDescriptionDefaultsAndUpdates(): void {
+    $segment = $this->segmentsRepository->createOrUpdate('Public Description Default');
+    verify($segment->getPublicDescription())->equals('');
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Public Description',
+      'Description',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      null,
+      null,
+      'Shown on manage page'
+    );
+    verify($segment->getPublicDescription())->equals('Shown on manage page');
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Public Description',
+      'Updated description',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      $segment->getId()
+    );
+    verify($segment->getPublicDescription())->equals('Shown on manage page');
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Public Description',
+      'Updated description',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      $segment->getId(),
+      true,
+      null,
+      null,
+      ''
+    );
+    verify($segment->getPublicDescription())->equals('');
+  }
+
   public function testItDeletesNewsletterSegmentEntriesWhenDeletingASegment(): void {
     $segment = $this->createDefaultSegment('Test');
     $newsletterFactory = new NewsletterFactory();
