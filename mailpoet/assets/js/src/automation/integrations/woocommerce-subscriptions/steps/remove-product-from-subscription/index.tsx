@@ -19,7 +19,7 @@ export const step: StepType = {
   keywords,
   foreground: '#00a32a',
   background: '#edfaef',
-  icon: () => <ProductSubscriptionIcon />,
+  icon: () => <ProductSubscriptionIcon type="remove" />,
   edit: () => (
     <PremiumModalForStepEdit
       tracking={{

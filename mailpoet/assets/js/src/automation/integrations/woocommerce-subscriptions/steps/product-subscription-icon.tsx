@@ -1,4 +1,19 @@
-export function ProductSubscriptionIcon(): JSX.Element {
+type ProductSubscriptionIconType = 'add' | 'remove' | 'status' | 'update';
+
+const centerIcons: Record<ProductSubscriptionIconType, string> = {
+  add: 'M11.25 8.75H12.75V11.25H15.25V12.75H12.75V15.25H11.25V12.75H8.75V11.25H11.25V8.75Z',
+  remove: 'M8.75 11.25H15.25V12.75H8.75V11.25Z',
+  status:
+    'M8.75 9.25H15.25V10.55H8.75V9.25ZM8.75 11.35H13.75V12.65H8.75V11.35ZM8.75 13.45H15.25V14.75H8.75V13.45Z',
+  update:
+    'M14.9081 8.12561L15.8725 9.08998L11.3311 13.6314L9.48544 14.0929L9.94687 12.2472L14.9081 8.12561ZM8.75 15.25H15.25V16.75H8.75V15.25Z',
+};
+
+export function ProductSubscriptionIcon({
+  type,
+}: {
+  type: ProductSubscriptionIconType;
+}): JSX.Element {
   return (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -6,6 +21,7 @@ export function ProductSubscriptionIcon(): JSX.Element {
         clipRule="evenodd"
         d="M16.5197 16.8032C15.3729 17.8384 13.8534 18.4688 12.1867 18.4688C8.61411 18.4688 5.71796 15.5726 5.71796 12C5.71796 8.42741 8.61411 5.53125 12.1867 5.53125C15.7593 5.53125 18.6555 8.42741 18.6555 12C18.6555 12.1834 18.6478 12.365 18.6329 12.5445H16.8363L19.3363 15.5445L21.8363 12.5445H20.1371C20.1493 12.3646 20.1555 12.183 20.1555 12C20.1555 7.59898 16.5877 4.03125 12.1867 4.03125C7.78569 4.03125 4.21796 7.59898 4.21796 12C4.21796 16.401 7.78569 19.9688 12.1867 19.9688C14.2782 19.9688 16.1816 19.163 17.6032 17.8449L16.5197 16.8032Z"
       />
+      <path fillRule="evenodd" clipRule="evenodd" d={centerIcons[type]} />
     </svg>
   );
 }
