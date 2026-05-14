@@ -75,6 +75,75 @@ class ActivatorTest extends \MailPoetUnitTest {
     $activator->refreshCronActions();
   }
 
+  public function testRefreshCronActionsRunsAfterActionSchedulerInitialization(): void {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')
+      ->with(CronTrigger::SETTING_NAME . '.method')
+      ->willReturn(CronTrigger::METHOD_ACTION_SCHEDULER);
+
+    $cronActionScheduler = $this->createMock(CronActionScheduler::class);
+    $daemonActionSchedulerRunner = $this->createMock(DaemonActionSchedulerRunner::class);
+    $wp = $this->createMock(WPFunctions::class);
+    $activator = $this->createActivator($settings, $cronActionScheduler, $daemonActionSchedulerRunner, $wp);
+
+    $cronActionScheduler->expects($this->exactly(2))
+      ->method('isInitialized')
+      ->willReturnOnConsecutiveCalls(false, true);
+    $cronActionScheduler->expects($this->once())
+      ->method('runAfterInitialized')
+      ->with([$activator, 'refreshCronActions']);
+    $cronActionScheduler->expects($this->once())
+      ->method('unscheduleAllCronActions');
+    $daemonActionSchedulerRunner->expects($this->once())
+      ->method('clearDeactivationFlag');
+    $cronActionScheduler->expects($this->once())
+      ->method('hasScheduledAction')
+      ->with(DaemonTrigger::NAME)
+      ->willReturn(false);
+    $wp->expects($this->once())
+      ->method('currentTime')
+      ->with('timestamp', true)
+      ->willReturn(123456);
+    $cronActionScheduler->expects($this->once())
+      ->method('scheduleRecurringAction')
+      ->with(123456, DaemonTrigger::TRIGGER_RUN_INTERVAL, DaemonTrigger::NAME);
+
+    $activator->refreshCronActions();
+    $activator->refreshCronActions();
+  }
+
+  public function testRefreshCronActionsDoesNotScheduleWhenAlreadyScheduled(): void {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')
+      ->with(CronTrigger::SETTING_NAME . '.method')
+      ->willReturn(CronTrigger::METHOD_ACTION_SCHEDULER);
+
+    $cronActionScheduler = $this->createMock(CronActionScheduler::class);
+    $daemonActionSchedulerRunner = $this->createMock(DaemonActionSchedulerRunner::class);
+    $wp = $this->createMock(WPFunctions::class);
+    $activator = $this->createActivator($settings, $cronActionScheduler, $daemonActionSchedulerRunner, $wp);
+
+    $cronActionScheduler->expects($this->once())
+      ->method('isInitialized')
+      ->willReturn(true);
+    $cronActionScheduler->expects($this->once())
+      ->method('unscheduleAllCronActions');
+    $daemonActionSchedulerRunner->expects($this->once())
+      ->method('clearDeactivationFlag');
+    $cronActionScheduler->expects($this->once())
+      ->method('hasScheduledAction')
+      ->with(DaemonTrigger::NAME)
+      ->willReturn(true);
+    $cronActionScheduler->expects($this->never())
+      ->method('scheduleRecurringAction');
+    $cronActionScheduler->expects($this->never())
+      ->method('runAfterInitialized');
+    $wp->expects($this->never())
+      ->method('currentTime');
+
+    $activator->refreshCronActions();
+  }
+
   public function testRefreshCronActionsOnlyClearsFlagWhenMethodIsNotActionScheduler(): void {
     $settings = $this->createMock(SettingsController::class);
     $settings->expects($this->once())
