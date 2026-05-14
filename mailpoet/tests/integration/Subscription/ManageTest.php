@@ -179,6 +179,62 @@ class ManageTest extends \MailPoetTest {
     verify($notifications)->empty();
   }
 
+  public function testMalformedSegmentChoiceIdsCannotChangeVisibleLists() {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        $this->segmentA->getId() . 'abc' => 'unsubscribed',
+        $this->segmentB->getId() . '.9' => 'subscribed',
+        $this->segmentB->getId() . 'e0' => 'subscribed',
+        ' ' . $this->segmentB->getId() => 'subscribed',
+        $this->segmentB->getId() . ' ' => 'subscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
+  public function testMalformedLegacySegmentIdsCannotChangeVisibleLists() {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [
+        $this->segmentA->getId() . 'abc',
+        $this->segmentB->getId() . '.9',
+        $this->segmentB->getId() . 'e0',
+        ' ' . $this->segmentB->getId(),
+        $this->segmentB->getId() . ' ',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
   public function testSegmentChoicesDoNotChangeGlobalStatusUnlessPosted() {
     $subscriber = (new SubscriberFactory())
       ->withFirstName('Jane')
