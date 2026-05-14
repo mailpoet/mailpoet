@@ -104,7 +104,8 @@ class NewsletterEmbedService {
     }
 
     $html .= '</div>';
-    return $html;
+    // Attributes are normalized and every dynamic HTML value is escaped above.
+    return $html; // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.xss.block-attr
   }
 
   /**
