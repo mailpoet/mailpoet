@@ -8,15 +8,14 @@ const keywords = [
   __('wordpress', 'mailpoet'),
   __('user', 'mailpoet'),
   __('role', 'mailpoet'),
-  __('customer', 'mailpoet'),
+  __('account', 'mailpoet'),
 ];
 
 export const step: StepType = {
   key: 'wordpress:change-user-role',
   group: 'actions',
-  title: () => __('Change customer role', 'mailpoet'),
-  description: () =>
-    __('Change the WordPress role for a customer.', 'mailpoet'),
+  title: () => __('Change user role', 'mailpoet'),
+  description: () => __('Change the WordPress role for a user.', 'mailpoet'),
   subtitle: () => <LockedBadge text={_x('Premium', 'noun', 'mailpoet')} />,
   keywords,
   foreground: '#00a32a',
@@ -29,7 +28,7 @@ export const step: StepType = {
         utm_campaign: 'create_automation_editor_change_user_role',
       }}
     >
-      {__('Changing a customer role is a premium feature.', 'mailpoet')}
+      {__('Changing a user role is a premium feature.', 'mailpoet')}
     </PremiumModalForStepEdit>
   ),
 } as const;
