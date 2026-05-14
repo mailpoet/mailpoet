@@ -39,6 +39,9 @@ class Select {
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
+    if (!empty($block['params']['description'])) {
+      $html .= '<p class="mailpoet_field_description">' . $this->wp->escHtml($block['params']['description']) . '</p>';
+    }
     $html .= '<select
       class="mailpoet_select"
       name="' . $fieldName . '" '

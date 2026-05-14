@@ -128,6 +128,12 @@ const fields = [
     tip: MailPoet.I18n.t('segmentDescriptionTip'),
   },
   {
+    name: 'public_description',
+    label: MailPoet.I18n.t('publicDescription'),
+    type: 'textarea',
+    tip: MailPoet.I18n.t('publicDescriptionTip'),
+  },
+  {
     name: 'show_in_manage_subscription_page',
     label: MailPoet.I18n.t('showInManageSubscriptionPage'),
     type: 'checkbox',

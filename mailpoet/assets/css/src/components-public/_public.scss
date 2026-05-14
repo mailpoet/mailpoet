@@ -546,6 +546,57 @@ h2.mailpoet-heading {
 
 // Manage Subscription page
 .mailpoet-manage-subscription {
+  box-sizing: border-box;
+  color: #1f2933;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 720px;
+  overflow-wrap: anywhere;
+  width: 100%;
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
+  .mailpoet-manage-subscription-section {
+    margin: 0 0 32px;
+  }
+
+  h2 {
+    color: #111827;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 8px;
+  }
+
+  .mailpoet-manage-subscription-section-description,
+  .mailpoet_field_description,
+  .mailpoet-manage-subscription-lists-description,
+  .mailpoet-manage-subscription-list-description,
+  .mailpoet-manage-subscription-no-lists,
+  .mailpoet-change-email-info {
+    color: #52616f;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .mailpoet-manage-subscription-section-description,
+  .mailpoet-manage-subscription-lists-description {
+    margin: 0 0 20px;
+  }
+
+  .mailpoet_field_description {
+    margin: 4px 0 8px;
+  }
+
+  .mailpoet_paragraph {
+    margin: 0 0 20px;
+  }
+
   .mailpoet_text_label,
   .mailpoet_textarea_label,
   .mailpoet_select_label,
@@ -553,14 +604,242 @@ h2.mailpoet-heading {
   .mailpoet_checkbox_label,
   .mailpoet_list_label,
   .mailpoet_date_label {
+    color: #111827;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 6px;
     padding-right: 10px;
   }
 
-  .mailpoet-submit-success {
-    color: $color-input-success;
+  .mailpoet_text,
+  .mailpoet_textarea,
+  .mailpoet_select {
+    background: #fff;
+    border: 1px solid #b8c3cf;
+    border-radius: 6px;
+    color: #111827;
+    font-size: 16px;
+    line-height: 1.4;
+    min-height: 44px;
+    padding: 9px 12px;
+    width: 100%;
+  }
+
+  .mailpoet_text:focus,
+  .mailpoet_textarea:focus,
+  .mailpoet_select:focus,
+  .mailpoet_submit:focus-visible,
+  .mailpoet-manage-subscription-choice-label:focus-within {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.2);
+    outline: 0;
+  }
+
+  .mailpoet-manage-subscription-email {
+    strong {
+      background: #f6f8fa;
+      border: 1px solid #d8dee4;
+      border-radius: 6px;
+      display: block;
+      font-weight: 600;
+      margin-top: 6px;
+      min-height: 44px;
+      padding: 10px 12px;
+    }
   }
 
   .mailpoet-change-email-info {
-    font-size: 85%;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .mailpoet-manage-subscription-lists {
+    border: 0;
+    margin: 0 0 28px;
+    padding: 0;
+
+    > .mailpoet_segment_label {
+      color: #111827;
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 8px;
+      padding: 0;
+    }
+  }
+
+  .mailpoet-manage-subscription-list-row {
+    align-items: center;
+    border-top: 1px solid #d8dee4;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 16px 0;
+  }
+
+  .mailpoet-manage-subscription-list-row:last-of-type {
+    border-bottom: 1px solid #d8dee4;
+  }
+
+  .mailpoet-manage-subscription-list-copy {
+    min-width: 0;
+  }
+
+  .mailpoet-manage-subscription-list-name {
+    color: #111827;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .mailpoet-manage-subscription-list-description {
+    margin-top: 4px;
+    white-space: pre-line;
+  }
+
+  .mailpoet-manage-subscription-list-choice {
+    align-items: center;
+    border: 0;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .mailpoet-manage-subscription-choice-legend {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    word-wrap: normal;
+  }
+
+  .mailpoet-manage-subscription-choice-label {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #b8c3cf;
+    border-radius: 6px;
+    color: #111827;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 15px;
+    font-weight: 700;
+    gap: 8px;
+    justify-content: center;
+    min-height: 40px;
+    min-width: 72px;
+    padding: 8px 12px;
+  }
+
+  .mailpoet-manage-subscription-choice-label:hover {
+    border-color: #6b7a89;
+  }
+
+  .mailpoet-manage-subscription-choice-label:has(input:checked) {
+    background: #edf6ff;
+    border-color: #2271b1;
+    color: #0f4f83;
+  }
+
+  .mailpoet_radio {
+    accent-color: #2271b1;
+    margin: 0;
+  }
+
+  .mailpoet-manage-subscription-no-lists {
+    background: #f6f8fa;
+    border-left: 4px solid #8c9aa8;
+    margin: 8px 0 0;
+    padding: 12px 14px;
+  }
+
+  .mailpoet-submit-success {
+    background: #f1f8ee;
+    border-left: 4px solid #4f8f35;
+    color: #255f1f;
+    margin: 0 0 28px;
+    padding: 12px 14px;
+  }
+
+  .parsley-errors-list,
+  .mailpoet_validate_error,
+  .mailpoet-submit-error {
+    background: #fff4f4;
+    border-left: 4px solid #c62828;
+    color: #8a1f1f;
+    margin: 8px 0 0;
+    padding: 10px 12px;
+  }
+
+  .mailpoet-manage-subscription-actions {
+    margin-top: 28px;
+
+    .mailpoet_paragraph {
+      margin-bottom: 0;
+    }
+  }
+
+  .mailpoet_submit {
+    appearance: none;
+    background: #2271b1;
+    border: 1px solid #1d5f95;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    min-height: 44px;
+    padding: 10px 18px;
+  }
+
+  .mailpoet_submit:hover {
+    background: #135e96;
+  }
+
+  .mailpoet_submit:active {
+    background: #0f4f83;
+  }
+
+  .mailpoet_submit:disabled {
+    cursor: default;
+    opacity: 0.65;
+  }
+
+  @include breakpoint-max-width(599px) {
+    h2,
+    .mailpoet-manage-subscription-lists > .mailpoet_segment_label {
+      font-size: 21px;
+    }
+
+    .mailpoet-manage-subscription-list-row {
+      align-items: stretch;
+      gap: 12px;
+      grid-template-columns: 1fr;
+      padding: 18px 0;
+    }
+
+    .mailpoet-manage-subscription-list-choice {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      white-space: normal;
+      width: 100%;
+    }
+
+    .mailpoet-manage-subscription-choice-label {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .mailpoet_submit {
+      width: 100%;
+    }
   }
 }

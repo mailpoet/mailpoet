@@ -68,19 +68,20 @@ class ManageSubscriptionFormRenderer {
     $basicFields = $this->getBasicFields($subscriber);
     $customFields = $this->getCustomFields($subscriber);
     $segmentField = $this->getSegmentField($subscriber);
+    $submitField = [
+      'id' => 'submit',
+      'type' => 'submit',
+      'params' => [
+        'label' => __('Save changes', 'mailpoet'),
+      ],
+    ];
 
     $form = array_merge(
       $basicFields,
       $customFields,
       [
         $segmentField,
-        [
-          'id' => 'submit',
-          'type' => 'submit',
-          'params' => [
-            'label' => __('Save', 'mailpoet'),
-          ],
-        ],
+        $submitField,
       ]
     );
 
@@ -89,13 +90,18 @@ class ManageSubscriptionFormRenderer {
       $form = $filteredForm;
     }
 
+    $formSections = $this->splitFormSections($form);
+
     $templateData = [
       'actionUrl' => admin_url('admin-post.php'),
       'redirectUrl' => $this->urlHelper->getCurrentUrl(),
       'email' => $subscriber->getEmail(),
       'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe using the form below, then simply sign up again.', 'mailpoet'),
-      'formHtml' => $this->formRenderer->renderBlocks($form, [], null, $honeypot = false, $captcha = false),
+      'identityFieldsHtml' => $this->formRenderer->renderBlocks($formSections['identityFields'], [], null, $honeypot = false, $captcha = false),
+      'listFieldsHtml' => $this->formRenderer->renderBlocks($formSections['listFields'], [], null, $honeypot = false, $captcha = false),
+      'submitHtml' => $this->formRenderer->renderBlocks($formSections['submitFields'], [], null, $honeypot = false, $captcha = false),
+      'hasVisibleLists' => $formSections['hasVisibleLists'],
       'formState' => $formState,
     ];
 
@@ -117,6 +123,42 @@ class ManageSubscriptionFormRenderer {
     }
 
     return $this->templateRenderer->render('subscription/manage_subscription.html', $templateData);
+  }
+
+  private function splitFormSections(array $form): array {
+    $identityFields = [];
+    $listFields = [];
+    $submitFields = [];
+    $hasVisibleLists = false;
+
+    foreach ($form as $field) {
+      if (!is_array($field)) {
+        continue;
+      }
+      $params = isset($field['params']) && is_array($field['params']) ? $field['params'] : [];
+
+      if (($field['type'] ?? null) === 'submit') {
+        $submitFields[] = $field;
+        continue;
+      }
+
+      if (($field['type'] ?? null) === 'segment' && (($params['display_mode'] ?? null) === 'manage_subscription_choices')) {
+        if (!empty($params['values']) && is_array($params['values'])) {
+          $hasVisibleLists = true;
+          $listFields[] = $field;
+        }
+        continue;
+      }
+
+      $identityFields[] = $field;
+    }
+
+    return [
+      'identityFields' => $identityFields,
+      'listFields' => $listFields,
+      'submitFields' => $submitFields,
+      'hasVisibleLists' => $hasVisibleLists,
+    ];
   }
 
   private function getCustomFields(SubscriberEntity $subscriber): array {
@@ -176,7 +218,9 @@ class ManageSubscriptionFormRenderer {
         'type' => 'select',
         'params' => [
           'required' => true,
-          'label' => __('Status', 'mailpoet'),
+          'label' => __('Email subscription status', 'mailpoet'),
+          'description' => __('This controls whether you receive emails overall. Your list choices below control which public lists you receive.', 'mailpoet'),
+          'class_name' => 'mailpoet-manage-subscription-status',
           'values' => [
             [
               'value' => [
@@ -246,6 +290,7 @@ class ManageSubscriptionFormRenderer {
       return [
         'id' => $segment->getId(),
         'name' => $segment->getName(),
+        'public_description' => $segment->getPublicDescription(),
         'is_checked' => in_array($segment->getId(), $subscribedSegmentIds),
       ];
     }, $segments);
@@ -255,6 +300,8 @@ class ManageSubscriptionFormRenderer {
       'type' => 'segment',
       'params' => [
         'label' => __('Your lists', 'mailpoet'),
+        'description' => __('Choose Yes for lists you want to receive and No for lists you do not want to receive.', 'mailpoet'),
+        'display_mode' => 'manage_subscription_choices',
         'values' => $segments,
       ],
     ];
