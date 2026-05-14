@@ -18,6 +18,7 @@ use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class ManageSubscriptionFormRenderer {
   const FORM_STATE_SUCCESS = 'success';
+  const FORM_STATE_ERROR = 'error';
   const FORM_STATE_NOT_SUBMITTED = 'not_submitted';
 
   /** @var UrlHelper */
@@ -99,6 +100,7 @@ class ManageSubscriptionFormRenderer {
       'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe using the form below, then simply sign up again.', 'mailpoet'),
       'identityFieldsHtml' => $this->formRenderer->renderBlocks($formSections['identityFields'], [], null, $honeypot = false, $captcha = false),
+      'additionalIdentityFieldsHtml' => $this->formRenderer->renderBlocks($formSections['additionalIdentityFields'], [], null, $honeypot = false, $captcha = false),
       'listFieldsHtml' => $this->formRenderer->renderBlocks($formSections['listFields'], [], null, $honeypot = false, $captcha = false),
       'submitHtml' => $this->formRenderer->renderBlocks($formSections['submitFields'], [], null, $honeypot = false, $captcha = false),
       'hasVisibleLists' => $formSections['hasVisibleLists'],
@@ -127,9 +129,11 @@ class ManageSubscriptionFormRenderer {
 
   private function splitFormSections(array $form): array {
     $identityFields = [];
+    $additionalIdentityFields = [];
     $listFields = [];
     $submitFields = [];
     $hasVisibleLists = false;
+    $placeAdditionalIdentityFieldsAfterNoListNotice = false;
 
     foreach ($form as $field) {
       if (!is_array($field)) {
@@ -150,11 +154,19 @@ class ManageSubscriptionFormRenderer {
         continue;
       }
 
-      $identityFields[] = $field;
+      if ($placeAdditionalIdentityFieldsAfterNoListNotice) {
+        $additionalIdentityFields[] = $field;
+      } else {
+        $identityFields[] = $field;
+      }
+      if (($field['id'] ?? null) === 'status') {
+        $placeAdditionalIdentityFieldsAfterNoListNotice = true;
+      }
     }
 
     return [
       'identityFields' => $identityFields,
+      'additionalIdentityFields' => $additionalIdentityFields,
       'listFields' => $listFields,
       'submitFields' => $submitFields,
       'hasVisibleLists' => $hasVisibleLists,

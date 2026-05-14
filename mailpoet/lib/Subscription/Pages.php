@@ -449,11 +449,16 @@ class Pages {
       return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
-    // Read+absint sanitizes the value; phpcs can't see that across the conditional.
+    // Read+absint sanitizes the values; phpcs can't see that across the conditional.
+    $errorParam = isset($_GET['error']) && is_scalar($_GET['error']) ? wp_unslash($_GET['error']) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     $successParam = isset($_GET['success']) && is_scalar($_GET['success']) ? wp_unslash($_GET['success']) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-    $formStatus = is_scalar($successParam) && absint($successParam)
-      ? ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS
-      : ManageSubscriptionFormRenderer::FORM_STATE_NOT_SUBMITTED;
+    if (is_scalar($errorParam) && absint($errorParam)) {
+      $formStatus = ManageSubscriptionFormRenderer::FORM_STATE_ERROR;
+    } elseif (is_scalar($successParam) && absint($successParam)) {
+      $formStatus = ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS;
+    } else {
+      $formStatus = ManageSubscriptionFormRenderer::FORM_STATE_NOT_SUBMITTED;
+    }
 
     return $this->wp->applyFilters(
       'mailpoet_manage_subscription_page',

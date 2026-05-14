@@ -358,6 +358,19 @@ class PagesTest extends \MailPoetTest {
     verify($content)->stringNotContainsString('Please let us know why you unsubscribed:');
   }
 
+  public function testItShowsManageSubscriptionErrorState(): void {
+    $_GET['error'] = '1';
+    $_GET['success'] = '1';
+    try {
+      $content = $this->getPages()->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+    } finally {
+      unset($_GET['error'], $_GET['success']);
+    }
+
+    verify($content)->stringContainsString('We could not save your subscription settings. Please review the form and try again.');
+    verify($content)->stringNotContainsString('Your subscription settings have been saved.');
+  }
+
   public function testItDoesNotSaveUnsubscribeReasonForPreview() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     $this->testData['preview'] = 1;

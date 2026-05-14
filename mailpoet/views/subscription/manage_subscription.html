@@ -9,6 +9,10 @@
   <p class="mailpoet-submit-success" role="status" aria-live="polite">
     <%= _x('Your subscription settings have been saved.', 'success message after saving subscription settings') %>
   </p>
+  <% elseif formState == 'error' %>
+  <p class="mailpoet-submit-error" role="alert" aria-live="assertive" tabindex="-1">
+    <%= _x('We could not save your subscription settings. Please review the form and try again.', 'error message after failing to save subscription settings') %>
+  </p>
   <% endif %>
   <section class="mailpoet-manage-subscription-section mailpoet-manage-subscription-settings">
     <h2><%= __('Your email settings', 'mailpoet') %></h2>
@@ -29,6 +33,7 @@
       <%= __('There are no individual list preferences to manage for this email address.', 'mailpoet') %>
     </p>
     <% endif %>
+    <%= additionalIdentityFieldsHtml|raw %>
   </section>
   <%= listFieldsHtml|raw %>
   <div class="mailpoet-manage-subscription-actions">
