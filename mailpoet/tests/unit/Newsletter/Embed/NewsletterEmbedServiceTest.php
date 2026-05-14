@@ -16,7 +16,11 @@ class NewsletterEmbedServiceTest extends \MailPoetUnitTest {
     $this->assertSame([
       'newsletterId' => 0,
       'height' => NewsletterEmbedService::DEFAULT_HEIGHT,
+      'width' => NewsletterEmbedService::DEFAULT_WIDTH,
       'showFallbackLink' => true,
+      'fallbackLinkAlignment' => 'center',
+      'iframeAlignment' => 'center',
+      'showEmailBackground' => true,
       'align' => '',
     ], $service->sanitizeAttributes([]));
 
@@ -32,10 +36,27 @@ class NewsletterEmbedServiceTest extends \MailPoetUnitTest {
     $this->assertSame(600, $service->sanitizeAttributes(['height' => '600'])['height']);
     $this->assertSame(NewsletterEmbedService::MAX_HEIGHT, $service->sanitizeAttributes(['height' => '3001'])['height']);
 
+    $this->assertSame(NewsletterEmbedService::DEFAULT_WIDTH, $service->sanitizeAttributes(['width' => ''])['width']);
+    $this->assertSame(NewsletterEmbedService::DEFAULT_WIDTH, $service->sanitizeAttributes(['width' => 'abc'])['width']);
+    $this->assertSame(NewsletterEmbedService::DEFAULT_WIDTH, $service->sanitizeAttributes(['width' => '0'])['width']);
+    $this->assertSame(NewsletterEmbedService::DEFAULT_WIDTH, $service->sanitizeAttributes(['width' => '-1'])['width']);
+    $this->assertSame(NewsletterEmbedService::MIN_WIDTH, $service->sanitizeAttributes(['width' => '319'])['width']);
+    $this->assertSame(800, $service->sanitizeAttributes(['width' => '800'])['width']);
+    $this->assertSame(NewsletterEmbedService::MAX_WIDTH, $service->sanitizeAttributes(['width' => '1201'])['width']);
+
     $this->assertFalse($service->sanitizeAttributes(['showFallbackLink' => false])['showFallbackLink']);
     $this->assertFalse($service->sanitizeAttributes(['showFallbackLink' => '0'])['showFallbackLink']);
     $this->assertFalse($service->sanitizeAttributes(['showFallbackLink' => 'false'])['showFallbackLink']);
     $this->assertTrue($service->sanitizeAttributes(['showFallbackLink' => '1'])['showFallbackLink']);
+
+    $this->assertFalse($service->sanitizeAttributes(['showEmailBackground' => false])['showEmailBackground']);
+    $this->assertFalse($service->sanitizeAttributes(['showEmailBackground' => '0'])['showEmailBackground']);
+    $this->assertTrue($service->sanitizeAttributes(['showEmailBackground' => '1'])['showEmailBackground']);
+
+    $this->assertSame('left', $service->sanitizeAttributes(['fallbackLinkAlignment' => 'left'])['fallbackLinkAlignment']);
+    $this->assertSame('center', $service->sanitizeAttributes(['fallbackLinkAlignment' => 'top'])['fallbackLinkAlignment']);
+    $this->assertSame('right', $service->sanitizeAttributes(['iframeAlignment' => 'right'])['iframeAlignment']);
+    $this->assertSame('center', $service->sanitizeAttributes(['iframeAlignment' => 'bottom'])['iframeAlignment']);
 
     $this->assertSame('wide', $service->sanitizeAttributes(['align' => 'wide'])['align']);
     $this->assertSame('full', $service->sanitizeAttributes(['align' => 'full'])['align']);

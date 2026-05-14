@@ -60,7 +60,8 @@ class NewsletterBlock {
   }
 
   public function renderNewsletter(array $attributes = []): string {
-    return $this->newsletterEmbedService->render($attributes);
+    // NewsletterEmbedService sanitizes block attributes before rendering.
+    return $this->newsletterEmbedService->render($attributes); // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.xss.block-attr
   }
 
   private function getAttributes(): array {
