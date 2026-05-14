@@ -39,4 +39,12 @@ class ActionScheduler {
   public function hasScheduledAction(string $hook, array $args = []): bool {
     return as_has_scheduled_action($hook, $args, self::GROUP_ID);
   }
+
+  public function isInitialized(): bool {
+    return class_exists(\ActionScheduler::class) && \ActionScheduler::is_initialized();
+  }
+
+  public function runAfterInitialized(callable $callback): void {
+    $this->wp->addAction('action_scheduler_init', $callback);
+  }
 }

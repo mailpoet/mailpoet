@@ -66,6 +66,13 @@ class CleanupExtension extends Extension {
       ON DUPLICATE KEY UPDATE option_value = 'yes';
     ";
 
+    // Prevent WordPress from running its admin compression test Ajax probe during acceptance tests.
+    $sql .= "
+      INSERT INTO mp_options (option_name, option_value, autoload)
+      VALUES ('can_compress_scripts', '1', 'yes')
+      ON DUPLICATE KEY UPDATE option_value = '1';
+    ";
+
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)
     $sql = "
       SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;
