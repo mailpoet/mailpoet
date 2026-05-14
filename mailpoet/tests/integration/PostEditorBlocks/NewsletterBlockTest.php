@@ -36,7 +36,7 @@ class NewsletterBlockTest extends \MailPoetTest {
     $this->assertStringContainsString('class="mailpoet-newsletter-embed alignfull"', $html);
     $this->assertStringContainsString('style="text-align:left;"', $html);
     $this->assertStringContainsString('class="mailpoet-newsletter-embed-fallback" style="text-align:right;"', $html);
-    $this->assertStringContainsString('View newsletter in browser', $html);
+    $this->assertStringContainsString('View full newsletter', $html);
   }
 
   public function testItReturnsEmptyForMissingNewsletter(): void {

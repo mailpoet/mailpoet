@@ -21,7 +21,7 @@ class NewsletterShortcodeTest extends \MailPoetTest {
 
     $this->assertStringContainsString('<iframe', $html);
     $this->assertStringContainsString('height="800"', $html);
-    $this->assertStringContainsString('View newsletter in browser', $html);
+    $this->assertStringContainsString('View full newsletter', $html);
   }
 
   public function testItSupportsAppearanceAttributes(): void {
@@ -41,7 +41,7 @@ class NewsletterShortcodeTest extends \MailPoetTest {
     $this->assertStringContainsString('max-width:720px', $html);
     $this->assertStringContainsString('style="text-align:right;"', $html);
     $this->assertTrue($this->getIframeUrlData($html)['embed_hide_background']);
-    $this->assertStringNotContainsString('View newsletter in browser', $html);
+    $this->assertStringNotContainsString('View full newsletter', $html);
   }
 
   public function testItReturnsEmptyForInvalidNewsletterId(): void {

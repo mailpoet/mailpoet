@@ -55,7 +55,7 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $this->assertStringContainsString('max-width:700px', $html);
     $this->assertStringContainsString('class="mailpoet-newsletter-embed-fallback" style="text-align:right;"', $html);
     $this->assertStringContainsString('MailPoet newsletter: Spring &lt;Sale&gt;', $html);
-    $this->assertStringContainsString('View newsletter in browser', $html);
+    $this->assertStringContainsString('View full newsletter', $html);
 
     $iframeUrl = $this->getIframeUrl($html);
     $fallbackUrl = $this->getFallbackUrl($html);
@@ -76,7 +76,7 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     ]);
 
     $this->assertStringContainsString('<iframe', $html);
-    $this->assertStringNotContainsString('View newsletter in browser', $html);
+    $this->assertStringNotContainsString('View full newsletter', $html);
   }
 
   public function testItReturnsEmptyForIneligibleNewsletters(): void {
