@@ -52,6 +52,7 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $this->assertStringContainsString('style="text-align:center;"', $html);
     $this->assertStringContainsString('height="600"', $html);
     $this->assertStringContainsString('width="700"', $html);
+    $this->assertStringContainsString('sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"', $html);
     $this->assertStringContainsString('max-width:700px', $html);
     $this->assertStringContainsString('class="mailpoet-newsletter-embed-fallback" style="text-align:right;"', $html);
     $this->assertStringContainsString('MailPoet newsletter: Spring &lt;Sale&gt;', $html);
@@ -166,6 +167,14 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $this->assertLessThan($oldIndex, $newIndex);
     $this->assertArrayHasKey('wpPostId', $items[$newIndex]);
     $this->assertSame(123, $items[$newIndex]['wpPostId']);
+    $dateFormat = get_option('date_format');
+    $timeFormat = get_option('time_format');
+    $this->assertIsString($dateFormat);
+    $this->assertIsString($timeFormat);
+    $this->assertSame(
+      'New campaign - ' . date_i18n($dateFormat . ' ' . $timeFormat, (new Carbon('2024-02-01 10:00:00'))->getTimestamp()),
+      $items[$newIndex]['label']
+    );
 
     foreach ($items as $item) {
       $this->assertArrayNotHasKey('url', $item);
@@ -175,7 +184,24 @@ class NewsletterEmbedServiceTest extends \MailPoetTest {
     $searched = $this->service->getSelectorItems('New', 10);
     $this->assertCount(1, $searched);
     $this->assertSame($new->getId(), $searched[0]['id']);
+  }
 
+  public function testItEscapesSelectorSearchWildcards(): void {
+    $target = (new NewsletterFactory())
+      ->withSubject('100% matched_campaign')
+      ->withSentStatus()
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-01 10:00:00')])
+      ->create();
+    (new NewsletterFactory())
+      ->withSubject('100X matchedAcampaign')
+      ->withSentStatus()
+      ->withSendingQueue(['processed_at' => new Carbon('2024-02-02 10:00:00')])
+      ->create();
+
+    $items = $this->service->getSelectorItems('100% matched_', 10);
+
+    $this->assertCount(1, $items);
+    $this->assertSame($target->getId(), $items[0]['id']);
   }
 
   private function getIframeUrl(string $html): string {

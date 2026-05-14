@@ -28,10 +28,12 @@ class NewsletterBlock {
   }
 
   public function init() {
-    $this->wp->registerBlockType('mailpoet/newsletter-render', [
-      'attributes' => $this->getAttributes(),
-      'render_callback' => [$this, 'renderNewsletter'],
-    ]);
+    if ($this->wp->isAdmin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+      $this->wp->registerBlockType('mailpoet/newsletter-render', [
+        'attributes' => $this->getAttributes(),
+        'render_callback' => [$this, 'renderNewsletter'],
+      ]);
+    }
 
     $this->wp->addAction(RestApi::REST_API_INIT_ACTION, function(): void {
       $this->api->registerGetRoute('newsletter-embeds', NewsletterEmbedSelectorEndpoint::class);
@@ -59,9 +61,8 @@ class NewsletterBlock {
     ]);
   }
 
-  public function renderNewsletter(array $attributes = []): string {
-    // NewsletterEmbedService sanitizes block attributes before rendering.
-    return $this->newsletterEmbedService->render($attributes); // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.xss.block-attr
+  public function renderNewsletter(array $blockSettings = []): string {
+    return $this->newsletterEmbedService->render($blockSettings);
   }
 
   private function getAttributes(): array {

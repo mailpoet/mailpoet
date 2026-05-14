@@ -79,6 +79,7 @@ class ViewInBrowserController {
 
     $html = $this->viewInBrowserRenderer->render($isPreview, $newsletter, $subscriber, $queue);
     if (!empty($data['embed_hide_background'])) {
+      // Public embed URLs may request this cosmetic-only presentation variant.
       $html = $this->hideEmbedBackground($html);
     }
     if (!$isPreview && $this->shareVisibility->canShare($newsletter)) {
