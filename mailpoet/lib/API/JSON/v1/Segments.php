@@ -121,6 +121,9 @@ class Segments extends APIEndpoint {
     try {
       $data['name'] = isset($data['name']) ? sanitize_text_field($data['name']) : '';
       $data['description'] = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
+      if (array_key_exists('public_description', $data)) {
+        $data['public_description'] = sanitize_textarea_field((string)$data['public_description']);
+      }
       $segment = $this->segmentSavecontroller->save($data);
     } catch (ValidationException $exception) {
       return $this->badRequest([

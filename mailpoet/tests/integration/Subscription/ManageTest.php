@@ -7,7 +7,9 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Manage;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -96,6 +98,145 @@ class ManageTest extends \MailPoetTest {
       ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
     ]);
+  }
+
+  public function testItUsesSegmentChoicesAndIgnoresLegacySegmentsWhenPresent() {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'unsubscribed',
+      ],
+      'segments' => [$this->segmentB->getId()],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
+  public function testItIgnoresInvalidHiddenDeletedAndUnknownSegmentChoices() {
+    $hiddenSegment = (new SegmentFactory())
+      ->withName('Other Hidden List')
+      ->withDisplayInManageSubscriptionPage(false)
+      ->create();
+    $deletedSegment = (new SegmentFactory())
+      ->withName('Deleted List')
+      ->withDeleted()
+      ->create();
+    $dynamicSegment = (new SegmentFactory())
+      ->withName('Dynamic List')
+      ->withType(SegmentEntity::TYPE_DYNAMIC)
+      ->create();
+    $notifications = [];
+    $manage = $this->getManageService([
+      'newSubscriberNotificationMailer' => Stub::make(NewSubscriberNotificationMailer::class, [
+        'send' => function() use (&$notifications) {
+          $notifications[] = 'mail';
+        },
+      ]),
+      'welcomeScheduler' => Stub::make(WelcomeScheduler::class, [
+        'scheduleSubscriberWelcomeNotification' => function() use (&$notifications) {
+          $notifications[] = 'welcome';
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        (string)$hiddenSegment->getId() => 'subscribed',
+        (string)$deletedSegment->getId() => 'subscribed',
+        (string)$dynamicSegment->getId() => 'subscribed',
+        '999999999' => 'subscribed',
+        (string)$this->segmentB->getId() => 'invalid',
+      ],
+      'segments' => [$this->segmentB->getId()],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($notifications)->empty();
+  }
+
+  public function testSegmentChoicesDoNotChangeGlobalStatusUnlessPosted() {
+    $subscriber = (new SubscriberFactory())
+      ->withFirstName('Jane')
+      ->withLastName('Jane')
+      ->withEmail('jane.doe@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $notifications = [];
+    $manage = $this->getManageService([
+      'newSubscriberNotificationMailer' => Stub::make(NewSubscriberNotificationMailer::class, [
+        'send' => function() use (&$notifications) {
+          $notifications[] = 'mail';
+        },
+      ]),
+      'welcomeScheduler' => Stub::make(WelcomeScheduler::class, [
+        'scheduleSubscriberWelcomeNotification' => function() use (&$notifications) {
+          $notifications[] = 'welcome';
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'Jane',
+      'last_name' => 'Jane',
+      'email' => 'jane.doe@example.com',
+      'segment_choices' => [
+        (string)$this->segmentB->getId() => 'subscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($notifications)->empty();
+  }
+
+  private function getManageService(array $overrides = []): Manage {
+    return $this->getServiceWithOverrides(Manage::class, array_merge([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => null,
+      ]),
+      'fieldNameObfuscator' => Stub::make(FieldNameObfuscator::class, [
+        'deobfuscateFormPayload' => function($data) {
+          return $data;
+        },
+      ]),
+      'linkTokens' => Stub::make(LinkTokens::class, [
+        'verifyToken' => function($token) {
+          return true;
+        },
+      ]),
+    ], $overrides));
   }
 
   /**

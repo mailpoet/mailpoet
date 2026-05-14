@@ -104,6 +104,68 @@ class SegmentsTest extends \MailPoetTest {
     );
   }
 
+  public function testItCanSaveAndReturnPublicDescription(): void {
+    $name = 'Public description segment';
+    $publicDescription = "Public description\nSecond line";
+
+    $response = $this->endpoint->save([
+      'name' => $name,
+      'description' => 'Regular description',
+      'public_description' => $publicDescription,
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $segment = $this->segmentRepository->findOneBy(['name' => $name]);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+    verify($segment->getPublicDescription())->equals($publicDescription);
+    verify($response->data['public_description'])->equals($publicDescription);
+
+    $response = $this->endpoint->get(['id' => $segment->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['public_description'])->equals($publicDescription);
+
+    $response = $this->endpoint->listing();
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $segmentListingItems = array_filter($response->data, function(array $item) use ($segment): bool {
+      return (int)$item['id'] === (int)$segment->getId();
+    });
+    $segmentListingItem = reset($segmentListingItems);
+    verify($segmentListingItem['public_description'])->equals($publicDescription);
+  }
+
+  public function testItPreservesAndClearsPublicDescriptionOnSave(): void {
+    $segment = $this->segmentRepository->createOrUpdate(
+      'Public description update',
+      'Description',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      null,
+      null,
+      'Keep me'
+    );
+
+    $response = $this->endpoint->save([
+      'id' => $segment->getId(),
+      'name' => 'Public description update',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $this->entityManager->refresh($segment);
+    verify($segment->getPublicDescription())->equals('Keep me');
+    verify($response->data['public_description'])->equals('Keep me');
+
+    $response = $this->endpoint->save([
+      'id' => $segment->getId(),
+      'name' => 'Public description update',
+      'public_description' => '',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $this->entityManager->refresh($segment);
+    verify($segment->getPublicDescription())->equals('');
+    verify($response->data['public_description'])->equals('');
+  }
+
   public function testItCannotSaveDuplicate(): void {
     $duplicateEntry = [
       'name' => 'Segment 1',

@@ -26,6 +26,7 @@ class Segment {
       'type' => SegmentEntity::TYPE_DEFAULT,
       'name' => 'List ' . bin2hex(random_bytes(7)), // phpcs:ignore
       'description' => '',
+      'public_description' => '',
       'display_in_manage_subscription_page' => true,
     ];
   }
@@ -42,6 +43,13 @@ class Segment {
    */
   public function withDescription(string $description) {
     return $this->update('description', $description);
+  }
+
+  /**
+   * @return static
+   */
+  public function withPublicDescription(string $publicDescription) {
+    return $this->update('public_description', $publicDescription);
   }
 
   /**
@@ -72,7 +80,10 @@ class Segment {
       $this->data['type'],
       [],
       null,
-      $this->data['display_in_manage_subscription_page']
+      $this->data['display_in_manage_subscription_page'],
+      null,
+      null,
+      $this->data['public_description']
     );
     if (($this->data['deleted_at'] ?? null) instanceof \DateTimeInterface) {
       $segment->setDeletedAt($this->data['deleted_at']);

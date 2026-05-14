@@ -42,8 +42,9 @@ class SegmentSaveController {
     if ($confirmationPageId === 0) {
       $confirmationPageId = null;
     }
+    $publicDescription = array_key_exists('public_description', $data) ? (string)$data['public_description'] : null;
 
-    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, (bool)$displayInManageSubPage, $confirmationEmailId, $confirmationPageId);
+    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, (bool)$displayInManageSubPage, $confirmationEmailId, $confirmationPageId, $publicDescription);
   }
 
   /**

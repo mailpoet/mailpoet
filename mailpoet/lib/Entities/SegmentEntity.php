@@ -57,6 +57,12 @@ class SegmentEntity {
   private $description;
 
   /**
+   * @ORM\Column(type="text")
+   * @var string
+   */
+  private $publicDescription = '';
+
+  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\DynamicSegmentFilterEntity", mappedBy="segment")
    * @var ArrayCollection<int, DynamicSegmentFilterEntity>
    */
@@ -100,6 +106,7 @@ class SegmentEntity {
     $this->name = $name;
     $this->type = $type;
     $this->description = $description;
+    $this->publicDescription = '';
     $this->dynamicFilters = new ArrayCollection();
   }
 
@@ -149,6 +156,14 @@ class SegmentEntity {
    */
   public function setDescription($description) {
     $this->description = $description;
+  }
+
+  public function getPublicDescription(): string {
+    return $this->publicDescription;
+  }
+
+  public function setPublicDescription(string $publicDescription): void {
+    $this->publicDescription = $publicDescription;
   }
 
   /**

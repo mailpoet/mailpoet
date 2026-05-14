@@ -199,7 +199,8 @@ class SegmentsRepository extends Repository {
     ?int $id = null,
     bool $displayInManageSubscriptionPage = true,
     ?int $confirmationEmailId = null,
-    ?int $confirmationPageId = null
+    ?int $confirmationPageId = null,
+    ?string $publicDescription = null
   ): SegmentEntity {
     if ($confirmationEmailId !== null && $confirmationEmailId <= 0) {
       $confirmationEmailId = null;
@@ -222,12 +223,16 @@ class SegmentsRepository extends Repository {
       $segment->setDisplayInManageSubscriptionPage($displayInManageSubPage);
       $segment->setConfirmationEmailId($confirmationEmailId);
       $segment->setConfirmationPageId($confirmationPageId);
+      if ($publicDescription !== null) {
+        $segment->setPublicDescription($publicDescription);
+      }
     } else {
       $this->verifyNameIsUnique($name, $id);
       $segment = new SegmentEntity($name, $type, $description);
       $segment->setDisplayInManageSubscriptionPage($displayInManageSubPage);
       $segment->setConfirmationEmailId($confirmationEmailId);
       $segment->setConfirmationPageId($confirmationPageId);
+      $segment->setPublicDescription($publicDescription ?? '');
       $this->persist($segment);
     }
 
