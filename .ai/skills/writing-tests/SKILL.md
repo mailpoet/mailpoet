@@ -65,7 +65,6 @@ Browser-based end-to-end tests using Selenium and Chrome in Docker. **The slowes
 - **Run one file:** `pnpm test:acceptance --file=tests/acceptance/Misc/WordPressSiteEditorCest.php`
 - **Multisite:** `cd mailpoet && ./do test:acceptance-multisite --skip-deps --file ...` (Robo-only)
 - **Reset Docker:** `cd mailpoet && ./do delete:docker` — if you get unexpected errors, delete the Docker runtime and start fresh (Robo-only)
-- **Debug with pause:** Add `$i->pause();` in your test to pause execution and inspect the browser state
 - **Watch tests in browser:** The browser runs in Docker. Connect via VNC at `vnc://localhost:5900` (password: `secret`).
 
 ### JavaScript Tests
