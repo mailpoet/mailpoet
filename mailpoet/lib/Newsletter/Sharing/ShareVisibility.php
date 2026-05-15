@@ -41,6 +41,25 @@ class ShareVisibility {
       && (bool)$newsletter->getHash();
   }
 
+  public function getUnavailableReason(NewsletterEntity $newsletter): string {
+    if ($newsletter->getDeletedAt() !== null) {
+      return __('Deleted emails cannot be shared.', 'mailpoet');
+    }
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
+      return __('Only standard emails can be shared for now.', 'mailpoet');
+    }
+    if ($newsletter->getStatus() !== NewsletterEntity::STATUS_SENT) {
+      return __('Only sent emails can be shared.', 'mailpoet');
+    }
+    if (!$newsletter->getHash()) {
+      return __('This email does not have a public sharing identifier yet.', 'mailpoet');
+    }
+    if ($this->getEffectiveVisibility($newsletter) !== self::VISIBILITY_PUBLIC) {
+      return __('Sharing is turned off for this email.', 'mailpoet');
+    }
+    return '';
+  }
+
   public function getEffectiveVisibility(NewsletterEntity $newsletter): string {
     $visibility = $this->getConfiguredVisibility($newsletter);
     if ($visibility === self::VISIBILITY_DEFAULT) {
@@ -50,7 +69,10 @@ class ShareVisibility {
   }
 
   public function getConfiguredVisibility(NewsletterEntity $newsletter): string {
-    $visibility = (string)$newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY);
+    return $this->sanitize((string)$newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY));
+  }
+
+  public function sanitize(string $visibility): string {
     return in_array($visibility, self::ALLOWED_VISIBILITIES, true)
       ? $visibility
       : self::VISIBILITY_DEFAULT;

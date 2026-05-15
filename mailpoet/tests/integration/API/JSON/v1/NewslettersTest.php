@@ -24,6 +24,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
@@ -102,6 +103,7 @@ class NewslettersTest extends \MailPoetTest {
           $this->diContainer->get(Url::class),
           $this->diContainer->get(SendingQueuesRepository::class),
           $this->diContainer->get(LogRepository::class),
+          $this->diContainer->get(ShareVisibility::class),
           $this->diContainer->get(StatisticsUnsubscribesRepository::class)
         ),
       ]

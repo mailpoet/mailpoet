@@ -5,16 +5,19 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use Codeception\Util\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilderTest extends \MailPoetTest {
@@ -50,6 +53,7 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     $newsletterUrl = $this->diContainer->get(Url::class);
     $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $logRepository = $this->diContainer->get(LogRepository::class);
+    $shareVisibility = $this->diContainer->get(ShareVisibility::class);
     $statisticsUnsubscribesRepository = Stub::make(StatisticsUnsubscribesRepository::class, [
       'getReasonCountsForNewsletter' => [],
     ]);
@@ -60,6 +64,7 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
       $newsletterUrl,
       $sendingQueuesRepository,
       $logRepository,
+      $shareVisibility,
       $statisticsUnsubscribesRepository
     );
     $response = $responseBuilder->build($newsletter, [
@@ -153,5 +158,62 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     $this->assertIsArray($queue['meta']);
     $this->assertIsArray($queue['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]);
     verify(count($queue['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]))->equals(2);
+  }
+
+  public function testItAddsSharingDataToListingItems() {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $newsletterUrl = $this->diContainer->get(Url::class);
+    $newsletter = (new Newsletter())
+      ->withSubject('Share me')
+      ->withSentStatus()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PRIVATE,
+      ])
+      ->create();
+
+    $response = $responseBuilder->buildForListing([$newsletter]);
+
+    verify($response[0]['share_url'])->equals($newsletterUrl->getPublicShareUrl($newsletter));
+    verify($response[0]['share_visibility'])->equals(ShareVisibility::VISIBILITY_PRIVATE);
+    verify($response[0]['effective_share_visibility'])->equals(ShareVisibility::VISIBILITY_PRIVATE);
+    verify($response[0]['can_share'])->false();
+    verify($response[0]['is_share_supported'])->true();
+    verify($response[0]['share_unavailable_reason'])->equals('Sharing is turned off for this email.');
+  }
+
+  public function testItAddsSharingDataToEmailResponse() {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $newsletterUrl = $this->diContainer->get(Url::class);
+    $newsletter = (new Newsletter())
+      ->withSubject('Share me')
+      ->withSentStatus()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PUBLIC,
+      ])
+      ->create();
+
+    $response = $responseBuilder->build($newsletter);
+
+    verify($response['share_url'])->equals($newsletterUrl->getPublicShareUrl($newsletter));
+    verify($response['share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($response['effective_share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($response['can_share'])->true();
+    verify($response['is_share_supported'])->true();
+    verify($response['share_unavailable_reason'])->equals('');
+  }
+
+  public function testItExplainsUnsupportedSharing() {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $newsletter = (new Newsletter())
+      ->withSubject('Draft')
+      ->withDraftStatus()
+      ->create();
+
+    $response = $responseBuilder->buildForListing([$newsletter]);
+
+    verify($response[0]['share_url'])->equals('');
+    verify($response[0]['can_share'])->false();
+    verify($response[0]['is_share_supported'])->false();
+    verify($response[0]['share_unavailable_reason'])->equals('Only sent emails can be shared.');
   }
 }
