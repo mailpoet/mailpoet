@@ -342,6 +342,31 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       ->equals(ShareVisibility::VISIBILITY_DEFAULT);
   }
 
+  public function testItUpdatesShareVisibilityWithoutRerenderingQueue() {
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $queue = $this->createQueueWithTask($newsletter);
+    $renderedBody = [
+      'html' => '<p>Already sent</p>',
+      'text' => 'Already sent',
+    ];
+    $queue->setNewsletterRenderedSubject('Already sent subject');
+    $queue->setNewsletterRenderedBody($renderedBody);
+    $this->entityManager->flush();
+
+    $this->saveController->updateShareVisibility($newsletter, ShareVisibility::VISIBILITY_PUBLIC);
+
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY))
+      ->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($queue->getNewsletterRenderedSubject())->equals('Already sent subject');
+    verify($queue->getNewsletterRenderedBody())->equals($renderedBody);
+  }
+
   public function testItDuplicatesNewsletter() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $duplicate = $this->saveController->duplicate($newsletter);

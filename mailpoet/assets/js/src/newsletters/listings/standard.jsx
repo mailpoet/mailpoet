@@ -301,12 +301,10 @@ class NewsletterListStandardComponent extends Component {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
-      action: 'save',
+      action: 'updateShareVisibility',
       data: {
         id: newsletter.id,
-        options: {
-          shareVisibility: SHARE_VISIBILITY_PUBLIC,
-        },
+        share_visibility: SHARE_VISIBILITY_PUBLIC,
       },
     })
       .done((response) => {
