@@ -80,6 +80,19 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     verify($form)->stringContainsString('mailpoet-manage-subscription-list-fields');
   }
 
+  public function testItDoesNotAddGlobalUnsubscribedClassToClassicForm(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('subscription.manage_subscription_page_style', SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+
+    $form = $this->formRenderer->renderForm($this->subscriber);
+
+    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
+    verify($form)->stringNotContainsString('mailpoet-manage-subscription--global-unsubscribed');
+    verify($form)->stringContainsString('mailpoet-manage-subscription-list-fields');
+  }
+
   public function testItAppliesFieldsFilter() {
     $wp = $this->diContainer->get(WPFunctions::class);
     $wp->addFilter('mailpoet_manage_subscription_page_form_fields', function($fields) {

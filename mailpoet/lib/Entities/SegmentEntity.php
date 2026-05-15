@@ -57,8 +57,8 @@ class SegmentEntity {
   private $description;
 
   /**
-   * @ORM\Column(type="text")
-   * @var string
+   * @ORM\Column(type="text", nullable=true)
+   * @var string|null
    */
   private $publicDescription = '';
 
@@ -159,7 +159,7 @@ class SegmentEntity {
   }
 
   public function getPublicDescription(): string {
-    return $this->publicDescription;
+    return $this->publicDescription ?? '';
   }
 
   public function setPublicDescription(string $publicDescription): void {

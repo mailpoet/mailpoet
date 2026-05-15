@@ -114,7 +114,7 @@ class Migration_20221028_105818 extends DbMigration {
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL DEFAULT \'default\',',
       'description varchar(250) NOT NULL DEFAULT \'\',',
-      'public_description text NOT NULL,',
+      'public_description text NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',

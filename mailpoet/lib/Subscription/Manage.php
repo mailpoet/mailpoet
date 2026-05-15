@@ -95,6 +95,10 @@ class Manage {
     if (!is_array($subscriberData)) {
       $subscriberData = [];
     }
+    if ($this->hasInvalidStatus($subscriberData) || $this->hasMalformedLegacySegmentIds($subscriberData)) {
+      $this->urlHelper->redirectBack(['error' => true]);
+      return;
+    }
 
     $result = ['error' => true];
     if (!empty($subscriberData['email'])) {
@@ -102,6 +106,7 @@ class Manage {
 
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
+          $previousStatus = $subscriber->getStatus();
           $shouldTrackUnsubscribe = (
             ($subscriberData['status'] ?? '') === SubscriberEntity::STATUS_UNSUBSCRIBED
             && $subscriber instanceof SubscriberEntity
@@ -115,7 +120,12 @@ class Manage {
             );
           }
           $this->subscriberSaveController->updateCustomFields($this->filterOutEmptyMandatoryFields($subscriberData), $subscriber);
-          $this->updateSubscriptions($subscriber, $subscriberData);
+          $this->updateSubscriptions(
+            $subscriber,
+            $subscriberData,
+            $previousStatus !== SubscriberEntity::STATUS_SUBSCRIBED
+              && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+          );
         }
         $result = ['success' => true];
       }
@@ -124,20 +134,25 @@ class Manage {
     $this->urlHelper->redirectBack($result);
   }
 
-  private function updateSubscriptions(SubscriberEntity $subscriber, array $subscriberData): void {
-    if (($subscriberData['status'] ?? null) === SubscriberEntity::STATUS_UNSUBSCRIBED) {
+  private function updateSubscriptions(
+    SubscriberEntity $subscriber,
+    array $subscriberData,
+    bool $isGlobalResubscribe
+  ): void {
+    if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
       return;
     }
 
     if (array_key_exists('segment_choices', $subscriberData)) {
-      $this->updateSubscriptionsFromSegmentChoices($subscriber, $subscriberData['segment_choices']);
+      $this->updateSubscriptionsFromSegmentChoices(
+        $subscriber,
+        $subscriberData['segment_choices'],
+        $isGlobalResubscribe
+      );
       return;
     }
 
     $segmentsIds = $this->getLegacySegmentIds($subscriberData);
-    if (!$segmentsIds && $this->hasMalformedLegacySegmentIds($subscriberData)) {
-      return;
-    }
     $legacySegmentIds = $segmentsIds;
     $segments = $this->getVisibleDefaultManageSegmentsByIds($legacySegmentIds);
     $segmentsIds = array_map('intval', array_keys($segments));
@@ -176,13 +191,20 @@ class Manage {
       );
     }
 
-    $this->sendNotificationsForNewSegments($subscriber, $newSegmentIds);
+    $this->sendNotificationsForNewSegments(
+      $subscriber,
+      $isGlobalResubscribe ? $this->getCurrentSubscribedSegmentIds($subscriber) : $newSegmentIds
+    );
   }
 
   /**
    * @param mixed $segmentChoices
    */
-  private function updateSubscriptionsFromSegmentChoices(SubscriberEntity $subscriber, $segmentChoices): void {
+  private function updateSubscriptionsFromSegmentChoices(
+    SubscriberEntity $subscriber,
+    $segmentChoices,
+    bool $isGlobalResubscribe
+  ): void {
     $choices = $this->getSegmentChoices($segmentChoices);
     $segments = $this->getVisibleDefaultManageSegmentsByIds(array_keys($choices));
     $subscribeIds = [];
@@ -217,7 +239,22 @@ class Manage {
       );
     }
 
-    $this->sendNotificationsForNewSegments($subscriber, array_diff($subscribeIds, $currentSegmentIds));
+    $this->sendNotificationsForNewSegments(
+      $subscriber,
+      $isGlobalResubscribe
+        ? $this->getCurrentSubscribedSegmentIds($subscriber)
+        : array_diff($subscribeIds, $currentSegmentIds)
+    );
+  }
+
+  private function hasInvalidStatus(array $subscriberData): bool {
+    if (!isset($subscriberData['status'])) {
+      return false;
+    }
+    return !in_array($subscriberData['status'], [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+    ], true);
   }
 
   /**

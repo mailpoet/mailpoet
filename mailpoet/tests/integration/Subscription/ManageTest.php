@@ -59,7 +59,7 @@ class ManageTest extends \MailPoetTest {
         },
       ]),
       'linkTokens' => Stub::make(LinkTokens::class, [
-        'verifyToken' => function($token) {
+        'verifyToken' => function() {
           return true;
         },
       ]),
@@ -235,7 +235,14 @@ class ManageTest extends \MailPoetTest {
   }
 
   public function testMalformedLegacySegmentIdsCannotChangeVisibleLists() {
-    $manage = $this->getManageService();
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+    ]);
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';
     $_POST['data'] = [
@@ -260,6 +267,7 @@ class ManageTest extends \MailPoetTest {
       ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
     ]);
+    verify($redirectParams)->equals(['error' => true]);
   }
 
   public function testLegacyPositiveIdsForHiddenDeletedAndUnknownSegmentsDoNotChangeVisibleLists() {
@@ -294,8 +302,14 @@ class ManageTest extends \MailPoetTest {
 
   public function testObfuscatedMalformedLegacySegmentIdsCannotChangeVisibleLists() {
     $fieldNameObfuscator = $this->diContainer->get(FieldNameObfuscator::class);
+    $redirectParams = null;
     $manage = $this->getManageService([
       'fieldNameObfuscator' => $fieldNameObfuscator,
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
     ]);
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';
@@ -319,6 +333,7 @@ class ManageTest extends \MailPoetTest {
       ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
     ]);
+    verify($redirectParams)->equals(['error' => true]);
   }
 
   public function testObfuscatedLegacySegmentIdsCanChangeVisibleLists() {
@@ -350,7 +365,7 @@ class ManageTest extends \MailPoetTest {
     ]);
   }
 
-  public function testSegmentChoicesDoNotChangeGlobalStatusUnlessPosted() {
+  public function testSegmentChoicesDoNotChangeGlobalStatusOrSegmentsUnlessPosted() {
     $subscriber = (new SubscriberFactory())
       ->withFirstName('Jane')
       ->withLastName('Jane')
@@ -386,10 +401,92 @@ class ManageTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    verify($this->createSegmentsMap($subscriber))->equals([
-      ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
-    ]);
+    verify($this->createSegmentsMap($subscriber))->equals([]);
     verify($notifications)->empty();
+  }
+
+  public function testItRejectsInvalidGlobalStatus(): void {
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'Changed',
+      'last_name' => 'Changed',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_BOUNCED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'unsubscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getFirstName())->equals('John');
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($redirectParams)->equals(['error' => true]);
+  }
+
+  public function testItSendsNotificationsForSubscribedSegmentsWhenGloballyResubscribing(): void {
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+    $notifiedSegmentIds = [];
+    $welcomeSegmentIds = [];
+    $manage = $this->getManageService([
+      'newSubscriberNotificationMailer' => Stub::make(NewSubscriberNotificationMailer::class, [
+        'send' => function(SubscriberEntity $subscriber, array $segments) use (&$notifiedSegmentIds) {
+          verify($subscriber->getId())->notEmpty();
+          $notifiedSegmentIds = array_map(function(SegmentEntity $segment): int {
+            return (int)$segment->getId();
+          }, $segments);
+          sort($notifiedSegmentIds);
+        },
+      ]),
+      'welcomeScheduler' => Stub::make(WelcomeScheduler::class, [
+        'scheduleSubscriberWelcomeNotification' => function(
+          $subscriberId,
+          array $segmentIds
+        ) use (&$welcomeSegmentIds) {
+          verify($subscriberId)->notEmpty();
+          $welcomeSegmentIds = array_map('intval', $segmentIds);
+          sort($welcomeSegmentIds);
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'subscribed',
+        (string)$this->segmentB->getId() => 'unsubscribed',
+      ],
+    ];
+
+    $manage->onSave();
+
+    $expectedSegmentIds = [(int)$this->segmentA->getId(), (int)$this->hiddenSegment->getId()];
+    sort($expectedSegmentIds);
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($notifiedSegmentIds)->equals($expectedSegmentIds);
+    verify($welcomeSegmentIds)->equals($expectedSegmentIds);
   }
 
   public function testItRedirectsWithErrorAndDoesNotSaveWhenTokenVerificationFails(): void {
@@ -470,7 +567,7 @@ class ManageTest extends \MailPoetTest {
         },
       ]),
       'linkTokens' => Stub::make(LinkTokens::class, [
-        'verifyToken' => function($token) {
+        'verifyToken' => function() {
           return true;
         },
       ]),

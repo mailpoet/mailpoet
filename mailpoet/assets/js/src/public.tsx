@@ -974,7 +974,7 @@ jQuery(($) => {
         .prop('disabled', isGloballyUnsubscribed);
     };
 
-    $('.mailpoet-manage-subscription').each((_, element) => {
+    $('.mailpoet-manage-subscription--modern').each((_, element) => {
       const form = $(element) as JQuery<HTMLFormElement>;
       updateManageSubscriptionListVisibility(form);
       form
