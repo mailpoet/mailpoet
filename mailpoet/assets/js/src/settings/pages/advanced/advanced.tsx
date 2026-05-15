@@ -9,6 +9,7 @@ import { InactiveSubscribers } from './inactive-subscribers';
 import { SendingStatusRetention } from './sending-status-retention';
 import { SendingQueueBodyCleanup } from './sending-queue-body-cleanup';
 import { SubscriberTimeZoneData } from './subscriber-time-zone-data';
+import { EmailSharingVisibility } from './email-sharing-visibility';
 import { ShareData } from './share-data';
 import { Libs3rdParty } from './libs-3rd-party';
 import { Captcha } from './captcha';
@@ -35,6 +36,7 @@ export function Advanced() {
       <SendingStatusRetention />
       <SendingQueueBodyCleanup />
       <SubscriberTimeZoneData />
+      <EmailSharingVisibility />
       <ShareData />
       <Libs3rdParty />
       <Captcha />

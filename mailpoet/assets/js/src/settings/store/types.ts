@@ -67,6 +67,9 @@ export type Settings = {
   analytics: {
     enabled: '' | '1';
   };
+  sharing: {
+    default_visibility: 'public' | 'private';
+  }
   collect_subscriber_timezones: {
     enabled: '' | '1';
   };
