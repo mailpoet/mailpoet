@@ -1221,4 +1221,98 @@ class FilterDataMapperTest extends \MailPoetTest {
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
+
+  public function testItPropagatesGroupingParamsOntoFilterData(): void {
+    $data = [
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'group_id' => 2,
+        'group_operator' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      ]],
+    ];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'newsletters' => [1],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      'group_id' => 2,
+      'group_operator' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+    ]);
+  }
+
+  public function testItDefaultsInvalidGroupOperatorToAnd(): void {
+    $data = [
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'group_id' => 0,
+        'group_operator' => 'bogus',
+      ]],
+    ];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    $filterData = $filter->getData();
+    $this->assertIsArray($filterData);
+    verify($filterData['group_operator'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+  }
+
+  public function testItRejectsTooManyGroups(): void {
+    $filters = [];
+    for ($i = 0; $i < FilterDataMapper::MAX_GROUPS + 1; $i++) {
+      $filters[] = [
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'group_id' => $i,
+      ];
+    }
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::TOO_MANY_GROUPS);
+    $this->mapper->map(['filters' => $filters]);
+  }
+
+  public function testItRejectsTooManyFiltersInOneGroup(): void {
+    $filters = [];
+    for ($i = 0; $i < FilterDataMapper::MAX_FILTERS_PER_GROUP + 1; $i++) {
+      $filters[] = [
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'group_id' => 0,
+      ];
+    }
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::TOO_MANY_FILTERS_PER_GROUP);
+    $this->mapper->map(['filters' => $filters]);
+  }
+
+  public function testItRejectsNoneAsOuterConnectorWhenMultipleGroups(): void {
+    $filters = [
+      [
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'group_id' => 0,
+      ],
+      [
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [2],
+        'group_id' => 1,
+      ],
+    ];
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_OUTER_CONNECTOR);
+    $this->mapper->map([
+      'filters' => $filters,
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+    ]);
+  }
 }
