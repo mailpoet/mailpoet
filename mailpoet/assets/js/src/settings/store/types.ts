@@ -26,6 +26,7 @@ export type Settings = {
     page: string;
   };
   subscription: {
+    manage_subscription_page_style: 'classic' | 'modern';
     pages: {
       manage: string;
       unsubscribe: string;

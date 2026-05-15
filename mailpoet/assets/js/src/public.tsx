@@ -955,6 +955,33 @@ jQuery(($) => {
     $('.mailpoet_captcha_audio').on('click', playCaptcha);
 
     // Manage subscription form
+    const updateManageSubscriptionListVisibility = (
+      form: JQuery<HTMLFormElement>,
+    ) => {
+      const isGloballyUnsubscribed =
+        form.find('[data-automation-id="form_status"]').val() ===
+        'unsubscribed';
+      const listFields = form.find('.mailpoet-manage-subscription-list-fields');
+
+      form.toggleClass(
+        'mailpoet-manage-subscription--global-unsubscribed',
+        isGloballyUnsubscribed,
+      );
+      listFields
+        .prop('hidden', isGloballyUnsubscribed)
+        .attr('aria-hidden', isGloballyUnsubscribed ? 'true' : 'false')
+        .find(':input')
+        .prop('disabled', isGloballyUnsubscribed);
+    };
+
+    $('.mailpoet-manage-subscription').each((_, element) => {
+      const form = $(element) as JQuery<HTMLFormElement>;
+      updateManageSubscriptionListVisibility(form);
+      form
+        .find('[data-automation-id="form_status"]')
+        .on('change', () => updateManageSubscriptionListVisibility(form));
+    });
+
     $('.mailpoet-manage-subscription').on('submit', (event) => {
       if (!$(event.target).parsley().isValid()) {
         event.preventDefault();

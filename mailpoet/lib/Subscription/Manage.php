@@ -125,6 +125,10 @@ class Manage {
   }
 
   private function updateSubscriptions(SubscriberEntity $subscriber, array $subscriberData): void {
+    if (($subscriberData['status'] ?? null) === SubscriberEntity::STATUS_UNSUBSCRIBED) {
+      return;
+    }
+
     if (array_key_exists('segment_choices', $subscriberData)) {
       $this->updateSubscriptionsFromSegmentChoices($subscriber, $subscriberData['segment_choices']);
       return;

@@ -47,6 +47,13 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertFalse($this->controller->get('subscription.unsubscribe_survey.allow_other_text'));
   }
 
+  public function testItDefaultsManageSubscriptionPageStyleToModern(): void {
+    $this->assertSame(
+      SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN,
+      $this->controller->get('subscription.manage_subscription_page_style')
+    );
+  }
+
   public function testItEnablesSubscriberTimeZoneCollectionByDefault(): void {
     $this->assertTrue($this->controller->get('collect_subscriber_timezones.enabled'));
   }

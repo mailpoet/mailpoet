@@ -1,10 +1,11 @@
 <% block content %>
-<form class="mailpoet-manage-subscription" method="post" action="<%= actionUrl|escape %>" novalidate>
+<form class="mailpoet-manage-subscription<% if isModernStyle %> mailpoet-manage-subscription--modern<% endif %><% if isGloballyUnsubscribed %> mailpoet-manage-subscription--global-unsubscribed<% endif %>" method="post" action="<%= actionUrl|escape %>" novalidate>
   <input type="hidden" name="action" value="mailpoet_subscription_update" />
   <input type="hidden" name="data[segments]" value="" />
   <input type="hidden" name="mailpoet_redirect" value="<%= redirectUrl|escape %>"/>
   <input type="hidden" name="data[email]" value="<%= email|escape %>" />
   <input type="hidden" name="token" value="<%= token %>" />
+  <% if isModernStyle %>
   <% if formState == 'success' %>
   <p class="mailpoet-submit-success" role="status" aria-live="polite">
     <%= _x('Your subscription settings have been saved.', 'success message after saving subscription settings') %>
@@ -39,5 +40,25 @@
   <div class="mailpoet-manage-subscription-actions">
     <%= submitHtml|raw %>
   </div>
+  <% else %>
+  <p class="mailpoet_paragraph">
+    <label> <%= __('Email', 'mailpoet') %><br /><strong><%= email|escape %></strong></label>
+    <br />
+    <span class="mailpoet-change-email-info">
+      <% set allowedHtml = {'a': {'href': [], 'target': [], 'rel': []}} %>
+      <%= editEmailInfo|wpKses(allowedHtml) %>
+    </span>
+  </p>
+  <%= formHtml|raw %>
+  <% if formState == 'success' %>
+  <p class="mailpoet-submit-success">
+    <%= _x('Your preferences have been saved.', 'success message after saving subscription settings') %>
+  </p>
+  <% elseif formState == 'error' %>
+  <p class="mailpoet-submit-error" role="alert" aria-live="assertive" tabindex="-1">
+    <%= _x('We could not save your subscription settings. Please review the form and try again.', 'error message after failing to save subscription settings') %>
+  </p>
+  <% endif %>
+  <% endif %>
 </form>
 <% endblock %>

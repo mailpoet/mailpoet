@@ -369,7 +369,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    verify($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    verify($result)->stringContainsString('form class="mailpoet-manage-subscription');
     verify($result)->stringContainsString($subscriber->getEmail());
   }
 
@@ -390,7 +390,7 @@ class ShortcodesTest extends \MailPoetTest {
       return $page . ' MY CUSTOM CONTENT';
     });
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    verify($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    verify($result)->stringContainsString('form class="mailpoet-manage-subscription');
     verify($result)->stringContainsString('MY CUSTOM CONTENT');
     $wp->removeAllActions('mailpoet_manage_subscription_page');
   }
