@@ -175,6 +175,87 @@ class FilterHandlerTest extends \MailPoetTest {
     verify($result)->arrayCount(0);
   }
 
+  public function testItOrsTwoSingleFilterGroups(): void {
+    // Group 0: editor (s1, s3) — single filter, group operator irrelevant.
+    // Group 1: administrator (s2).
+    // Outer OR → {s1, s2, s3}.
+    $filterHandler = $this->getFilterHandlerWithoutMissingDependencies();
+    $segment = $this->getGroupedSegment(
+      [
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND, 'roles' => ['editor']],
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND, 'roles' => ['administrator']],
+      ],
+      DynamicSegmentFilterData::CONNECT_TYPE_OR
+    );
+    $statement = $filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    $this->assertInstanceOf(Result::class, $statement);
+    $result = $statement->fetchAll();
+
+    verify($this->getEmailsFromResult($result))->equals([
+      'user-role-test1@example.com',
+      'user-role-test2@example.com',
+      'user-role-test3@example.com',
+    ]);
+  }
+
+  public function testItAndsTwoSingleFilterGroupsToEmptyIntersection(): void {
+    // Group 0: editor → {s1, s3}. Group 1: administrator → {s2}. No overlap.
+    $filterHandler = $this->getFilterHandlerWithoutMissingDependencies();
+    $segment = $this->getGroupedSegment(
+      [
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND, 'roles' => ['editor']],
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND, 'roles' => ['administrator']],
+      ],
+      DynamicSegmentFilterData::CONNECT_TYPE_AND
+    );
+    $statement = $filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    $this->assertInstanceOf(Result::class, $statement);
+    verify($statement->fetchAll())->arrayCount(0);
+  }
+
+  public function testItIntersectsNoneGroupWithAndGroup(): void {
+    // Group 0: NONE editor → {s2, s4} (everyone except editors).
+    // Group 1: administrator → {s2}.
+    // Outer AND → {s2}.
+    $filterHandler = $this->getFilterHandlerWithoutMissingDependencies();
+    $segment = $this->getGroupedSegment(
+      [
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_NONE, 'roles' => ['editor']],
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND, 'roles' => ['administrator']],
+      ],
+      DynamicSegmentFilterData::CONNECT_TYPE_AND
+    );
+    $statement = $filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    $this->assertInstanceOf(Result::class, $statement);
+
+    verify($this->getEmailsFromResult($statement->fetchAll()))->equals([
+      'user-role-test2@example.com',
+    ]);
+  }
+
+  public function testItOrsAcrossNoneAndOrGroupsWithMultipleFiltersEach(): void {
+    // Group 0: OR editor, administrator → {s1, s2, s3}.
+    // Group 1: NONE editor, administrator → {s4}.
+    // Outer OR → {s1, s2, s3, s4}.
+    $filterHandler = $this->getFilterHandlerWithoutMissingDependencies();
+    $segment = $this->getGroupedSegment(
+      [
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_OR, 'roles' => ['editor', 'administrator']],
+        ['operator' => DynamicSegmentFilterData::CONNECT_TYPE_NONE, 'roles' => ['editor', 'administrator']],
+      ],
+      DynamicSegmentFilterData::CONNECT_TYPE_OR
+    );
+    $statement = $filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    $this->assertInstanceOf(Result::class, $statement);
+
+    verify($this->getEmailsFromResult($statement->fetchAll()))->equals([
+      'user-role-test1@example.com',
+      'user-role-test2@example.com',
+      'user-role-test3@example.com',
+      'user-role-test4@example.com',
+    ]);
+  }
+
   /**
    * @param string[] $roles
    */
@@ -188,6 +269,29 @@ class FilterHandlerTest extends \MailPoetTest {
       $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
       $segment->addDynamicFilter($dynamicSegmentFilter);
       $this->entityManager->persist($dynamicSegmentFilter);
+    }
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
+    return $segment;
+  }
+
+  /**
+   * @param array<int, array{operator: string, roles: string[]}> $groupSpecs
+   */
+  private function getGroupedSegment(array $groupSpecs, string $outerConnect): SegmentEntity {
+    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    foreach ($groupSpecs as $groupId => $spec) {
+      foreach ($spec['roles'] as $role) {
+        $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
+          'wordpressRole' => $role,
+          'connect' => $outerConnect,
+          'group_id' => $groupId,
+          'group_operator' => $spec['operator'],
+        ]);
+        $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
+        $segment->addDynamicFilter($dynamicSegmentFilter);
+        $this->entityManager->persist($dynamicSegmentFilter);
+      }
     }
     $this->entityManager->persist($segment);
     $this->entityManager->flush();
