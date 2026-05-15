@@ -297,8 +297,14 @@ class Manage {
   }
 
   private function hasMalformedLegacySegmentIds(array $subscriberData): bool {
-    if (!isset($subscriberData['segments']) || !is_array($subscriberData['segments'])) {
+    if (!isset($subscriberData['segments'])) {
       return false;
+    }
+    if ($subscriberData['segments'] === '') {
+      return false;
+    }
+    if (!is_array($subscriberData['segments'])) {
+      return true;
     }
 
     foreach ($subscriberData['segments'] as $segmentId) {

@@ -270,6 +270,36 @@ class ManageTest extends \MailPoetTest {
     verify($redirectParams)->equals(['error' => true]);
   }
 
+  public function testNonArrayLegacySegmentIdsCannotChangeVisibleLists() {
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => 'foo',
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+    verify($redirectParams)->equals(['error' => true]);
+  }
+
   public function testLegacyPositiveIdsForHiddenDeletedAndUnknownSegmentsDoNotChangeVisibleLists() {
     $deletedSegment = (new SegmentFactory())
       ->withName('Deleted List')
