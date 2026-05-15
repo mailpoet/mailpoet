@@ -69,6 +69,23 @@ class SendingQueuesRepository extends Repository {
     return $queryBuilder->getQuery()->getOneOrNullResult();
   }
 
+  public function findLatestCompletedByNewsletter(NewsletterEntity $newsletter): ?SendingQueueEntity {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s')
+      ->from(SendingQueueEntity::class, 's')
+      ->join('s.task', 't')
+      ->andWhere('s.newsletter = :newsletter')
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere('t.status = :status')
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->orderBy('t.processedAt', 'DESC')
+      ->addOrderBy('s.id', 'DESC')
+      ->setMaxResults(1)
+      ->getQuery()
+      ->getOneOrNullResult();
+  }
+
   public function countAllToProcessByNewsletter(NewsletterEntity $newsletter): int {
     return intval($this->entityManager->createQueryBuilder()
       ->select('sum(s.countToProcess)')
