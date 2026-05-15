@@ -47,8 +47,50 @@ class PublicEmailControllerTest extends \MailPoetTest {
   }
 
   public function testItRendersFromCurrentEntityWhenNoCompletedQueueIsStored() {
+    $newsletterBody = [
+      'content' => [
+        'type' => 'container',
+        'orientation' => 'vertical',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => 'transparent',
+          ],
+        ],
+        'blocks' => [
+          [
+            'type' => 'container',
+            'orientation' => 'horizontal',
+            'styles' => [
+              'block' => [
+                'backgroundColor' => 'transparent',
+              ],
+            ],
+            'blocks' => [
+              [
+                'type' => 'container',
+                'orientation' => 'vertical',
+                'styles' => [
+                  'block' => [
+                    'backgroundColor' => 'transparent',
+                  ],
+                ],
+                'blocks' => [
+                  [
+                    'type' => 'text',
+                    'text' => '<p>Hello, [subscriber:firstname | default:reader]. '
+                      . '<a href="[link:newsletter_view_in_browser_url]">View in browser</a></p>',
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
+
     $newsletter = (new Newsletter())
       ->withSubject('Resilient Share')
+      ->withBody($newsletterBody)
       ->withSentStatus()
       ->withOptions([
         NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PUBLIC,
@@ -59,6 +101,9 @@ class PublicEmailControllerTest extends \MailPoetTest {
     $result = $controller->render($newsletter);
 
     verify($result)->stringContainsString('<meta property="og:title" content="Resilient Share" />');
+    verify($result)->stringContainsString($this->diContainer->get(NewsletterUrl::class)->getPublicShareUrl($newsletter));
+    verify($result)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
+    verify($result)->stringNotContainsString(Router::NAME . '&endpoint=track');
   }
 
   public function testItRejectsPrivatePublicEmails() {
