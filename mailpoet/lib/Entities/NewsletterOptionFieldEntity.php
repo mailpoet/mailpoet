@@ -36,6 +36,7 @@ class NewsletterOptionFieldEntity {
   public const NAME_AUTOMATION_ID = 'automationId';
   public const NAME_AUTOMATION_STEP_ID = 'automationStepId';
   public const NAME_FILTER_SEGMENT_ID = 'filterSegmentId';
+  public const NAME_SHARE_VISIBILITY = 'shareVisibility';
 
   use AutoincrementedIdTrait;
   use CreatedAtTrait;

@@ -515,6 +515,10 @@ class Populator {
         'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_NOTIFICATION,
       ],
+      [
+        'name' => NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
     ];
 
     // 1. Load all existing option fields from the database.
