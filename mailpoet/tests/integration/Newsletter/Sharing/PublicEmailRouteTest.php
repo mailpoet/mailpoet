@@ -15,10 +15,19 @@ class PublicEmailRouteTest extends \MailPoetTest {
   /** @var string|null */
   private $previousRequestUri;
 
+  /** @var string|false */
+  private $previousHomeOption;
+
+  /** @var string|false */
+  private $previousPermalinkStructureOption;
+
   public function _before() {
     parent::_before();
+    $wp = $this->diContainer->get(WPFunctions::class);
     $uri = $_SERVER['REQUEST_URI'] ?? null;
     $this->previousRequestUri = is_string($uri) ? $uri : null;
+    $this->previousHomeOption = $wp->getOption('home');
+    $this->previousPermalinkStructureOption = $wp->getOption('permalink_structure');
   }
 
   public function _after() {
@@ -28,8 +37,16 @@ class PublicEmailRouteTest extends \MailPoetTest {
       $_SERVER['REQUEST_URI'] = $this->previousRequestUri;
     }
     $wp = $this->diContainer->get(WPFunctions::class);
-    $wp->updateOption('home', '');
-    $wp->updateOption('permalink_structure', '');
+    if (is_string($this->previousHomeOption)) {
+      $wp->updateOption('home', $this->previousHomeOption);
+    } else {
+      $wp->deleteOption('home');
+    }
+    if (is_string($this->previousPermalinkStructureOption)) {
+      $wp->updateOption('permalink_structure', $this->previousPermalinkStructureOption);
+    } else {
+      $wp->deleteOption('permalink_structure');
+    }
     parent::_after();
   }
 
