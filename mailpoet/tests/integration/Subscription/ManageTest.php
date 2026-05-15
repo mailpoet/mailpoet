@@ -125,6 +125,33 @@ class ManageTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItDoesNotUpdateSegmentsWhenGloballyUnsubscribing(): void {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'unsubscribed',
+        (string)$this->segmentB->getId() => 'subscribed',
+      ],
+      'segments' => [$this->segmentB->getId()],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
   public function testItIgnoresInvalidHiddenDeletedAndUnknownSegmentChoices() {
     $hiddenSegment = (new SegmentFactory())
       ->withName('Other Hidden List')

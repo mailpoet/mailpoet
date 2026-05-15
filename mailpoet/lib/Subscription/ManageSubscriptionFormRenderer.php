@@ -10,6 +10,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Block\Date as FormBlockDate;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
@@ -45,6 +46,9 @@ class ManageSubscriptionFormRenderer {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     WPFunctions $wp,
     UrlHelper $urlHelper,
@@ -53,7 +57,8 @@ class ManageSubscriptionFormRenderer {
     FormBlockDate $dateBlock,
     TemplateRenderer $templateRenderer,
     CustomFieldsRepository $customFieldsRepository,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    SettingsController $settings
   ) {
     $this->wp = $wp;
     $this->urlHelper = $urlHelper;
@@ -63,17 +68,19 @@ class ManageSubscriptionFormRenderer {
     $this->templateRenderer = $templateRenderer;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->settings = $settings;
   }
 
   public function renderForm(SubscriberEntity $subscriber, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
-    $basicFields = $this->getBasicFields($subscriber);
+    $isModernStyle = $this->isModernStyle();
+    $basicFields = $this->getBasicFields($subscriber, $isModernStyle);
     $customFields = $this->getCustomFields($subscriber);
-    $segmentField = $this->getSegmentField($subscriber);
+    $segmentField = $this->getSegmentField($subscriber, $isModernStyle);
     $submitField = [
       'id' => 'submit',
       'type' => 'submit',
       'params' => [
-        'label' => __('Save changes', 'mailpoet'),
+        'label' => $isModernStyle ? __('Save changes', 'mailpoet') : __('Save', 'mailpoet'),
       ],
     ];
 
@@ -91,21 +98,27 @@ class ManageSubscriptionFormRenderer {
       $form = $filteredForm;
     }
 
-    $formSections = $this->splitFormSections($form);
-
     $templateData = [
       'actionUrl' => admin_url('admin-post.php'),
       'redirectUrl' => $this->urlHelper->getCurrentUrl(),
       'email' => $subscriber->getEmail(),
       'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe using the form below, then simply sign up again.', 'mailpoet'),
-      'identityFieldsHtml' => $this->formRenderer->renderBlocks($formSections['identityFields'], [], null, $honeypot = false, $captcha = false),
-      'additionalIdentityFieldsHtml' => $this->formRenderer->renderBlocks($formSections['additionalIdentityFields'], [], null, $honeypot = false, $captcha = false),
-      'listFieldsHtml' => $this->formRenderer->renderBlocks($formSections['listFields'], [], null, $honeypot = false, $captcha = false),
-      'submitHtml' => $this->formRenderer->renderBlocks($formSections['submitFields'], [], null, $honeypot = false, $captcha = false),
-      'hasVisibleLists' => $formSections['hasVisibleLists'],
+      'isModernStyle' => $isModernStyle,
+      'isGloballyUnsubscribed' => $subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED,
       'formState' => $formState,
     ];
+
+    if ($isModernStyle) {
+      $formSections = $this->splitFormSections($form);
+      $templateData['identityFieldsHtml'] = $this->formRenderer->renderBlocks($formSections['identityFields'], [], null, $honeypot = false, $captcha = false);
+      $templateData['additionalIdentityFieldsHtml'] = $this->formRenderer->renderBlocks($formSections['additionalIdentityFields'], [], null, $honeypot = false, $captcha = false);
+      $templateData['listFieldsHtml'] = $this->formRenderer->renderBlocks($formSections['listFields'], [], null, $honeypot = false, $captcha = false);
+      $templateData['submitHtml'] = $this->formRenderer->renderBlocks($formSections['submitFields'], [], null, $honeypot = false, $captcha = false);
+      $templateData['hasVisibleLists'] = $formSections['hasVisibleLists'];
+    } else {
+      $templateData['formHtml'] = $this->formRenderer->renderBlocks($form, [], null, $honeypot = false, $captcha = false);
+    }
 
     if ($subscriber->isWPUser() || $subscriber->getIsWoocommerceUser()) {
       $wpCurrentUser = $this->wp->wpGetCurrentUser();
@@ -125,6 +138,10 @@ class ManageSubscriptionFormRenderer {
     }
 
     return $this->templateRenderer->render('subscription/manage_subscription.html', $templateData);
+  }
+
+  private function isModernStyle(): bool {
+    return $this->settings->get('subscription.manage_subscription_page_style') === SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN;
   }
 
   private function splitFormSections(array $form): array {
@@ -205,7 +222,58 @@ class ManageSubscriptionFormRenderer {
     }, $this->customFieldsRepository->findAllActive());
   }
 
-  private function getBasicFields(SubscriberEntity $subscriber): array {
+  private function getBasicFields(SubscriberEntity $subscriber, bool $isModernStyle): array {
+    $statusParams = [
+      'required' => true,
+      'label' => $isModernStyle ? __('Email subscription status', 'mailpoet') : __('Status', 'mailpoet'),
+      'values' => [
+        [
+          'value' => [
+            SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
+          ],
+          'is_checked' => (
+            $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+          ),
+        ],
+        [
+          'value' => [
+            SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
+          ],
+          'is_checked' => (
+            $subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
+          ),
+        ],
+        [
+          'value' => [
+            SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
+          ],
+          'is_checked' => (
+            $subscriber->getStatus() === SubscriberEntity::STATUS_BOUNCED
+          ),
+          'is_disabled' => true,
+          'is_hidden' => (
+            $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED
+          ),
+        ],
+        [
+          'value' => [
+            SubscriberEntity::STATUS_INACTIVE => __('Inactive', 'mailpoet'),
+          ],
+          'is_checked' => (
+            $subscriber->getStatus() === SubscriberEntity::STATUS_INACTIVE
+          ),
+          'is_hidden' => (
+            $subscriber->getStatus() !== SubscriberEntity::STATUS_INACTIVE
+          ),
+        ],
+      ],
+    ];
+    if ($isModernStyle) {
+      $statusParams['description'] = __('This controls whether you receive emails overall. Your list choices below control which public lists you receive.', 'mailpoet');
+      $statusParams['class_name'] = 'mailpoet-manage-subscription-status';
+      $statusParams['input_id'] = 'mailpoet_manage_subscription_status';
+    }
+
     return [
       [
         'id' => 'first_name',
@@ -228,59 +296,12 @@ class ManageSubscriptionFormRenderer {
       [
         'id' => 'status',
         'type' => 'select',
-        'params' => [
-          'required' => true,
-          'label' => __('Email subscription status', 'mailpoet'),
-          'description' => __('This controls whether you receive emails overall. Your list choices below control which public lists you receive.', 'mailpoet'),
-          'class_name' => 'mailpoet-manage-subscription-status',
-          'input_id' => 'mailpoet_manage_subscription_status',
-          'values' => [
-            [
-              'value' => [
-                SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
-              ),
-            ],
-            [
-              'value' => [
-                SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
-              ),
-            ],
-            [
-              'value' => [
-                SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->getStatus() === SubscriberEntity::STATUS_BOUNCED
-              ),
-              'is_disabled' => true,
-              'is_hidden' => (
-                $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED
-              ),
-            ],
-            [
-              'value' => [
-                SubscriberEntity::STATUS_INACTIVE => __('Inactive', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->getStatus() === SubscriberEntity::STATUS_INACTIVE
-              ),
-              'is_hidden' => (
-                $subscriber->getStatus() !== SubscriberEntity::STATUS_INACTIVE
-              ),
-            ],
-          ],
-        ],
+        'params' => $statusParams,
       ],
     ];
   }
 
-  private function getSegmentField(SubscriberEntity $subscriber): array {
+  private function getSegmentField(SubscriberEntity $subscriber, bool $isModernStyle): array {
     // Get default segments
     $criteria = [
       'type' => SegmentEntity::TYPE_DEFAULT,
@@ -299,24 +320,32 @@ class ManageSubscriptionFormRenderer {
       }
     }
 
-    $segments = array_map(function (SegmentEntity $segment) use ($subscribedSegmentIds) {
-      return [
+    $segments = array_map(function (SegmentEntity $segment) use ($subscribedSegmentIds, $isModernStyle) {
+      $segmentData = [
         'id' => $segment->getId(),
         'name' => $segment->getName(),
-        'public_description' => $segment->getPublicDescription(),
         'is_checked' => in_array($segment->getId(), $subscribedSegmentIds),
       ];
+      if ($isModernStyle) {
+        $segmentData['public_description'] = $segment->getPublicDescription();
+      }
+      return $segmentData;
     }, $segments);
+
+    $params = [
+      'label' => __('Your lists', 'mailpoet'),
+      'class_name' => 'mailpoet-manage-subscription-list-fields',
+      'values' => $segments,
+    ];
+    if ($isModernStyle) {
+      $params['description'] = __('Choose Yes for lists you want to receive and No for lists you do not want to receive.', 'mailpoet');
+      $params['display_mode'] = 'manage_subscription_choices';
+    }
 
     return [
       'id' => 'segments',
       'type' => 'segment',
-      'params' => [
-        'label' => __('Your lists', 'mailpoet'),
-        'description' => __('Choose Yes for lists you want to receive and No for lists you do not want to receive.', 'mailpoet'),
-        'display_mode' => 'manage_subscription_choices',
-        'values' => $segments,
-      ],
+      'params' => $params,
     ];
   }
 }

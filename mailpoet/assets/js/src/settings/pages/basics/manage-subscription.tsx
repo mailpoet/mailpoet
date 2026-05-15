@@ -1,10 +1,15 @@
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
+import { Radio } from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Inputs, Label, PageSelect } from 'settings/components';
 
 export function ManageSubscription() {
   const [page, setPage] = useSetting('subscription', 'pages', 'manage');
+  const [pageStyle, setPageStyle] = useSetting(
+    'subscription',
+    'manage_subscription_page_style',
+  );
   return (
     <>
       <Label
@@ -40,6 +45,32 @@ export function ManageSubscription() {
           automationId="subscription-manage-page-selection"
           linkAutomationId="preview_manage_subscription_page_link"
         />
+
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="subscription-manage-page-style-modern"
+            value="modern"
+            checked={pageStyle === 'modern'}
+            onCheck={setPageStyle}
+          />
+          <label htmlFor="subscription-manage-page-style-modern">
+            {t('manageSubPageStyleModern')}
+          </label>
+        </div>
+        <p>{t('manageSubPageStyleModernDescription')}</p>
+
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="subscription-manage-page-style-classic"
+            value="classic"
+            checked={pageStyle === 'classic'}
+            onCheck={setPageStyle}
+          />
+          <label htmlFor="subscription-manage-page-style-classic">
+            {t('manageSubPageStyleClassic')}
+          </label>
+        </div>
+        <p>{t('manageSubPageStyleClassicDescription')}</p>
 
         <p>
           {ReactStringReplace(

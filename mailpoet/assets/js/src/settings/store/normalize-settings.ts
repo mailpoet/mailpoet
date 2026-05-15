@@ -89,6 +89,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     subscription: asObject({
+      manage_subscription_page_style: asEnum(['classic', 'modern'], 'modern'),
       pages: asObject({
         manage: text,
         unsubscribe: text,

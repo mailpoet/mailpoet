@@ -546,6 +546,32 @@ h2.mailpoet-heading {
 
 // Manage Subscription page
 .mailpoet-manage-subscription {
+  .mailpoet_text_label,
+  .mailpoet_textarea_label,
+  .mailpoet_select_label,
+  .mailpoet_radio_label,
+  .mailpoet_checkbox_label,
+  .mailpoet_list_label,
+  .mailpoet_date_label {
+    padding-right: 10px;
+  }
+
+  .mailpoet-submit-success {
+    color: $color-input-success;
+  }
+
+  .mailpoet-change-email-info {
+    font-size: 85%;
+  }
+}
+
+.mailpoet-manage-subscription--global-unsubscribed {
+  .mailpoet-manage-subscription-list-fields {
+    display: none;
+  }
+}
+
+.mailpoet-manage-subscription--modern {
   box-sizing: border-box;
   color: #1f2933;
   font-size: 16px;
@@ -651,6 +677,7 @@ h2.mailpoet-heading {
 
   .mailpoet-change-email-info {
     display: block;
+    font-size: 15px;
     margin-top: 8px;
   }
 
