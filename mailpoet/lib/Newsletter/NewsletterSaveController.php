@@ -19,6 +19,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -82,6 +83,9 @@ class NewsletterSaveController {
   /** @var TimeZoneCampaignScheduler */
   private $timeZoneCampaignScheduler;
 
+  /** @var ShareVisibility */
+  private $shareVisibility;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -99,7 +103,8 @@ class NewsletterSaveController {
     ApiDataSanitizer $dataSanitizer,
     Scheduler $scheduler,
     NewsletterCoupon $newsletterCoupon,
-    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
+    ShareVisibility $shareVisibility
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -118,6 +123,7 @@ class NewsletterSaveController {
     $this->scheduler = $scheduler;
     $this->newsletterCoupon = $newsletterCoupon;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->shareVisibility = $shareVisibility;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -408,7 +414,8 @@ class NewsletterSaveController {
   private function updateOptions(NewsletterEntity $newsletter, array $options) {
     $optionFields = $this->newsletterOptionFieldsRepository->findBy(['newsletterType' => $newsletter->getType()]);
     foreach ($optionFields as $optionField) {
-      if (!isset($options[$optionField->getName()])) {
+      $name = $optionField->getName();
+      if (!isset($options[$name])) {
         continue;
       }
 
@@ -421,7 +428,11 @@ class NewsletterSaveController {
         $option = new NewsletterOptionEntity($newsletter, $optionField);
         $this->newsletterOptionsRepository->persist($option);
       }
-      $option->setValue($options[$optionField->getName()]);
+      $value = $options[$name];
+      if ($name === NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY) {
+        $value = $this->shareVisibility->sanitize((string)$value);
+      }
+      $option->setValue($value);
 
       if (!$newsletter->getOptions()->contains($option)) {
         $newsletter->getOptions()->add($option);
