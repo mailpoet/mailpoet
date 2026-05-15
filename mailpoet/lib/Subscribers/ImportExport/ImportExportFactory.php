@@ -69,6 +69,7 @@ class ImportExportFactory {
       $fields = array_merge(
         $fields,
         [
+          'last_subscribed_at' => __('Last subscribed on', 'mailpoet'),
           'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
           'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
         ]
@@ -83,7 +84,7 @@ class ImportExportFactory {
         'id' => $fieldId,
         'name' => $fieldName,
         'text' => $fieldName, // Required for select2 default functionality
-        'type' => ($fieldId === 'confirmed_at' || $fieldId === 'created_at') ? 'date' : null,
+        'type' => in_array($fieldId, ['confirmed_at', 'created_at', 'last_subscribed_at'], true) ? 'date' : null,
         'custom' => false,
       ];
     }, array_keys($subscriberFields), $subscriberFields);
