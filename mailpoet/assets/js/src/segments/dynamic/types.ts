@@ -83,6 +83,8 @@ export interface FormItem {
   id?: number;
   segmentType?: string;
   action?: string;
+  group_id?: number;
+  group_operator?: SegmentConnectTypes;
 }
 
 export interface DateFormItem extends FormItem {
