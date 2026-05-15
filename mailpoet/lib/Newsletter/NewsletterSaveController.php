@@ -172,6 +172,13 @@ class NewsletterSaveController {
     return $newsletter;
   }
 
+  public function updateShareVisibility(NewsletterEntity $newsletter, string $visibility): NewsletterEntity {
+    $this->updateOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => $visibility,
+    ]);
+    return $newsletter;
+  }
+
   private function isNewEditor(array $data): bool {
     if (!isset($data['new_editor'])) {
       return false;

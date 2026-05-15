@@ -69,7 +69,7 @@ export type Settings = {
   };
   sharing: {
     default_visibility: 'public' | 'private';
-  }
+  };
   collect_subscriber_timezones: {
     enabled: '' | '1';
   };

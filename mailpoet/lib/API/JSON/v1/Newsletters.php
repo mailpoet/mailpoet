@@ -207,6 +207,25 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($response, ['preview_url' => $previewUrl]);
   }
 
+  public function updateShareVisibility($data = []) {
+    if (!is_array($data) || !isset($data['share_visibility']) || !is_string($data['share_visibility'])) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('You need to specify a sharing visibility.', 'mailpoet'),
+      ]);
+    }
+
+    $newsletter = $this->getNewsletter($data);
+    if (!$newsletter) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
+      ]);
+    }
+
+    $newsletter = $this->newsletterSaveController->updateShareVisibility($newsletter, $data['share_visibility']);
+    $response = $this->newslettersResponseBuilder->build($newsletter);
+    return $this->successResponse($response);
+  }
+
   public function setStatus($data = []) {
     $status = (isset($data['status']) ? $data['status'] : null);
 
