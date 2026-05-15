@@ -18,12 +18,37 @@ import { isFormValid } from './validator';
 import { PrivacyProtectionNotice } from './privacy-protection-notice';
 import { storeName } from './store';
 
-import { FilterValue } from './types';
+import { FilterRow, FilterValue, Segment } from './types';
 
 interface Props {
   isNewSegment: boolean;
   newsletterId?: string;
 }
+
+interface FilterRowsGroup {
+  groupId: number;
+  rows: FilterRow[];
+}
+
+interface FilterGroupProps {
+  groupFilterRows: FilterRow[];
+  groupId: number;
+}
+
+const groupFilterRows = (
+  filterRows: FilterRow[],
+  segment: Segment,
+): FilterRowsGroup[] =>
+  filterRows.reduce((groups: FilterRowsGroup[], filterRow) => {
+    const groupId = segment.filters[filterRow.index]?.group_id ?? 0;
+    const group = groups.find((item) => item.groupId === groupId);
+    if (group) {
+      group.rows.push(filterRow);
+    } else {
+      groups.push({ groupId, rows: [filterRow] });
+    }
+    return groups;
+  }, []);
 
 const FiltersBefore = Hooks.applyFilters(
   'mailpoet_dynamic_segments_form_filters_before',
@@ -36,6 +61,14 @@ const FilterBefore = Hooks.applyFilters(
 const FilterAfter = Hooks.applyFilters(
   'mailpoet_dynamic_filters_filter_after',
   (): JSX.Element => <div className="mailpoet-gap" />,
+);
+const ConditionsBottom = Hooks.applyFilters(
+  'mailpoet_dynamic_segments_form_conditions_bottom',
+  (): FunctionComponent => null,
+);
+const FilterGroupBefore = Hooks.applyFilters(
+  'mailpoet_dynamic_segments_filter_group_before',
+  (): FunctionComponent<FilterGroupProps> => null,
 );
 
 export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
@@ -72,6 +105,10 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
     'mailpoet_dynamic_segments_form_add_condition_action',
     showPremiumModalOnClick,
   );
+  const groupedFilterRows = Array.isArray(filterRows)
+    ? groupFilterRows(filterRows, segment)
+    : [];
+  const hasMultipleFilterGroups = groupedFilterRows.length > 1;
 
   return (
     <div className="mailpoet-form-container">
@@ -128,51 +165,89 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
           <FieldWrapper>
             <div className="mailpoet-segments-segments-section">
               <FiltersBefore />
-              {Array.isArray(filterRows) &&
-                filterRows.map((filterRow, index) => (
-                  <Fragment key={filterRow.index}>
-                    <div
-                      className="mailpoet-segments-grid"
-                      data-automation-id={`filter-row-${index}`}
-                    >
-                      <FilterBefore filterRows={filterRows} index={index} />
-                      <div className="mailpoet-segments-filter-selector">
-                        <ReactSelect
-                          dimension="small"
-                          placeholder={__('Select action', 'mailpoet')}
-                          options={segmentFilters}
-                          value={filterRow.filterValue}
-                          onChange={(newValue: FilterValue): void => {
-                            void updateSegmentFilter(
-                              {
-                                segmentType: newValue.group,
-                                action: newValue.value,
-                              },
-                              index,
-                            );
-                          }}
-                          automationId="select-segment-action"
-                          isFullWidth
-                        />
-                      </div>
-                      {filterRow.index !== undefined && (
-                        <FormFilterFields filterIndex={filterRow.index} />
-                      )}
+              {groupedFilterRows.map((filterRowsGroup, groupIndex) => (
+                <Fragment key={filterRowsGroup.groupId}>
+                  <div
+                    className={`mailpoet-segments-filter-group${
+                      hasMultipleFilterGroups
+                        ? ' mailpoet-segments-filter-group-is-separated'
+                        : ''
+                    }`}
+                    data-automation-id={`filter-group-${filterRowsGroup.groupId}`}
+                  >
+                    <FilterGroupBefore
+                      groupFilterRows={filterRowsGroup.rows}
+                      groupId={filterRowsGroup.groupId}
+                    />
+                    {filterRowsGroup.rows.map((filterRow, rowIndex) => (
+                      <Fragment key={filterRow.index}>
+                        <div
+                          className="mailpoet-segments-grid"
+                          data-automation-id={`filter-row-${filterRow.index}`}
+                        >
+                          <FilterBefore
+                            filterRows={filterRows}
+                            groupFilterRows={filterRowsGroup.rows}
+                            groupId={filterRowsGroup.groupId}
+                            index={filterRow.index}
+                          />
+                          <div className="mailpoet-segments-filter-selector">
+                            <ReactSelect
+                              dimension="small"
+                              placeholder={__('Select action', 'mailpoet')}
+                              options={segmentFilters}
+                              value={filterRow.filterValue}
+                              onChange={(newValue: FilterValue): void => {
+                                void updateSegmentFilter(
+                                  {
+                                    segmentType: newValue.group,
+                                    action: newValue.value,
+                                  },
+                                  filterRow.index,
+                                );
+                              }}
+                              automationId="select-segment-action"
+                              isFullWidth
+                            />
+                          </div>
+                          {filterRow.index !== undefined && (
+                            <FormFilterFields filterIndex={filterRow.index} />
+                          )}
+                        </div>
+                        {rowIndex < filterRowsGroup.rows.length - 1 && (
+                          <FilterAfter index={filterRow.index} />
+                        )}
+                      </Fragment>
+                    ))}
+                    <div className="mailpoet-segments-filter-group-actions">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={(e): void => {
+                          e.preventDefault();
+                          addConditionAction(
+                            segment,
+                            updateSegment,
+                            filterRowsGroup.groupId,
+                          );
+                        }}
+                      >
+                        {__('Add a condition', 'mailpoet')}
+                      </Button>
                     </div>
-                    <FilterAfter index={index} />
-                  </Fragment>
-                ))}
+                  </div>
+                  {groupIndex < groupedFilterRows.length - 1 && (
+                    <FilterAfter
+                      index={
+                        filterRowsGroup.rows[filterRowsGroup.rows.length - 1]
+                          .index
+                      }
+                    />
+                  )}
+                </Fragment>
+              ))}
               <div className="mailpoet-segments-conditions-bottom">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={(e): void => {
-                    e.preventDefault();
-                    addConditionAction(segment, updateSegment);
-                  }}
-                >
-                  {__('Add a condition', 'mailpoet')}
-                </Button>
+                <ConditionsBottom />
 
                 {(!MailPoet.premiumActive ||
                   !MailPoet.hasValidPremiumKey ||

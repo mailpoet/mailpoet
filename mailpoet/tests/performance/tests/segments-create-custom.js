@@ -78,7 +78,7 @@ export async function segmentsCreateCustom() {
 
     // Click to add a new segment action
     await page
-      .locator('div.mailpoet-segments-conditions-bottom > button')
+      .locator('.mailpoet-segments-filter-group-actions > button')
       .click();
 
     // Select "Subscribed date" action
@@ -97,7 +97,7 @@ export async function segmentsCreateCustom() {
 
     // Click to add a new segment action
     await page
-      .locator('div.mailpoet-segments-conditions-bottom > button')
+      .locator('.mailpoet-segments-filter-group-actions > button')
       .click();
 
     // WordPress user role action has been automatically added

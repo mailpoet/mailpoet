@@ -37,6 +37,25 @@
   }
 }
 
+.mailpoet-segments-filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.mailpoet-segments-filter-group-is-separated {
+  background: $color-grey-0;
+  border: 1px solid $color-tertiary-light;
+  border-radius: $grid-border-radius;
+  padding: 24px;
+  position: relative;
+}
+
+.mailpoet-segments-filter-group-actions {
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+}
+
 .mailpoet-segments-description-section .mailpoet-form-textarea textarea {
   height: 100px;
 }
@@ -48,7 +67,7 @@
   height: 24px;
   justify-content: center;
   position: absolute;
-  right: 34px;
+  right: 16px;
   width: 24px;
 }
 
@@ -73,6 +92,10 @@
 
 .mailpoet-segments-condition-type-selector {
   padding-bottom: 40px;
+}
+
+.mailpoet-segments-filter-group .mailpoet-segments-condition-type-selector {
+  padding-bottom: 24px;
 }
 
 .mailpoet-segments-condition-type {
