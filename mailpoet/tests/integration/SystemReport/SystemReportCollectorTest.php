@@ -247,6 +247,21 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($subjectField)->stringContainsString('Last seen error: None');
   }
 
+  public function testItFormatsArrayValuesInCompositeFields() {
+    $cronSettings = [
+      'status' => CronHelper::DAEMON_STATUS_INACTIVE,
+      'last_error' => [
+        'message' => 'Cron failed',
+        'code' => 123,
+      ],
+    ];
+
+    $this->settings->set('cron_daemon', $cronSettings);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['MailPoet Cron / Action Scheduler'])->stringContainsString('Last seen error: {"message":"Cron failed","code":123}');
+  }
+
   public function testItReturnsSendingQueueStatus() {
     update_option('timezone_string', 'Asia/Tokyo');
     update_option('gmt_offset', 9);
