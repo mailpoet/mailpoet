@@ -155,6 +155,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'list_status',
       'global_status',
       'subscribed_ip',
+      'last_subscribed_at',
     ];
     foreach ($exportFields as $field) {
       verify(in_array($field, array_keys($subsriberFields)))->true();
@@ -177,6 +178,17 @@ class ImportExportFactoryTest extends \MailPoetTest {
         ->true();
     }
     verify($formattedSubscriberFields[0]['custom'])->false();
+    $this->importFactory->action = 'export';
+    $formattedSubscriberFields = $this->importFactory->formatSubscriberFields(
+      $this->importFactory->getSubscriberFields()
+    );
+    foreach ($formattedSubscriberFields as $field) {
+      if ($field['id'] === 'last_subscribed_at') {
+        verify($field['type'])->equals('date');
+        return;
+      }
+    }
+    $this->fail('Last subscribed field not found.');
   }
 
   public function testItCanGetSubscriberCustomFields() {

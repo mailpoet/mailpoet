@@ -244,12 +244,16 @@ class ImportExportRepositoryTest extends \MailPoetTest {
   public function testItGetSubscribersByDefaultSegment(): void {
     $confirmedAt = Carbon::createFromFormat(DateTime::DEFAULT_DATE_TIME_FORMAT, '2021-02-12 12:11:00');
     $this->assertInstanceOf(Carbon::class, $confirmedAt);
+    $lastSubscribedAt = Carbon::createFromFormat(DateTime::DEFAULT_DATE_TIME_FORMAT, '2021-02-13 13:12:00');
+    $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
     $confirmedIp = '122.122.122.122';
     $subscribedIp = '123.123.123.123';
     $user1 = $this->createSubscriber('user1@export-test.com', 'One', 'User');
     $user1->setConfirmedAt($confirmedAt->toDateTime());
+    $user1->setLastSubscribedAt($lastSubscribedAt->toDateTime());
     $user1->setConfirmedIp($confirmedIp);
     $user1->setSubscribedIp($subscribedIp);
+    $this->subscribersRepository->flush();
     $user2 = $this->createSubscriber('user2@export-test.com', 'Two', 'User');
     $user3 = $this->createSubscriber('user3@export-test.com', 'Three', 'User');
     $segment1 = $this->createSegment('First', SegmentEntity::TYPE_DEFAULT);
@@ -266,6 +270,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     verify($exported[0]['segment_name'])->equals('First');
     verify($exported[0]['confirmed_at'])->equals($confirmedAt);
     verify($exported[0]['created_at'])->equals($user1->getCreatedAt());
+    verify($exported[0]['last_subscribed_at'])->equals($lastSubscribedAt);
     verify($exported[0]['confirmed_ip'])->equals($confirmedIp);
     verify($exported[0]['subscribed_ip'])->equals($subscribedIp);
     verify($exported[1]['first_name'])->equals('Two');
