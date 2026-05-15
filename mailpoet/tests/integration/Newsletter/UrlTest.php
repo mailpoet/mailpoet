@@ -37,7 +37,7 @@ class UrlTest extends \MailPoetTest {
     $url = $newsletterUrl->getPublicShareUrl($newsletter);
     $identifier = sprintf('%s-spring-sale-updates', $newsletter->getHash());
 
-    verify(parse_url($url, PHP_URL_PATH))->equals(sprintf('/mailpoet-email/%s/', $identifier));
+    verify($url)->equals(home_url(sprintf('/mailpoet-email/%s/', $identifier)));
   }
 
   public function testItBuildsPublicShareUrlFallbackForPlainPermalinks() {
