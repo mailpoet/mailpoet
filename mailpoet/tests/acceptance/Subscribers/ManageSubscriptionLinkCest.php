@@ -75,14 +75,17 @@ class ManageSubscriptionLinkCest {
     $i->wantTo('Set the status to unsubscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->selectOption($formStatusElement, 'Unsubscribed');
+    $i->dontSeeElement('.mailpoet-manage-subscription-list-fields');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
     $i->click('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
+    $i->dontSeeElement('.mailpoet-manage-subscription-list-fields');
     $i->see($successMessage);
 
     $i->wantTo('Change the status to back to subscribed');
     $i->selectOption($formStatusElement, 'Subscribed');
+    $i->seeElement('.mailpoet-manage-subscription-list-fields');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
     $i->click('Save changes');
     $i->waitForElement($formStatusElement);

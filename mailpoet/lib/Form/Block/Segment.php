@@ -116,11 +116,11 @@ class Segment {
       $html .= '</div>';
 
       $html .= '<fieldset class="mailpoet-manage-subscription-list-choice" aria-labelledby="' . $this->wp->escAttr($fieldsetLabelId) . '"' . $describedBy . '>';
-      $html .= '<legend class="mailpoet-manage-subscription-choice-legend">' . sprintf(
+      $html .= '<legend class="mailpoet-manage-subscription-choice-legend">' . $this->wp->escHtml(sprintf(
         // translators: %s is the name of a mailing list.
-        $this->wp->escHtml(__('Receive %s?', 'mailpoet')),
-        $this->wp->escHtml($name)
-      ) . '</legend>';
+        __('Receive %s?', 'mailpoet'),
+        $name
+      )) . '</legend>';
 
       $html .= '<label class="mailpoet-manage-subscription-choice-label" for="' . $this->wp->escAttr($yesId) . '">';
       $html .= '<input type="radio" class="mailpoet_radio" id="' . $this->wp->escAttr($yesId) . '" name="data[segment_choices][' . $this->wp->escAttr($segmentId) . ']" value="subscribed"' . $yesChecked . ' data-automation-id="manage_subscription_list_' . $this->wp->escAttr($segmentId) . '_yes" />';

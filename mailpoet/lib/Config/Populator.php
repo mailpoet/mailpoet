@@ -225,15 +225,6 @@ class Populator {
     $settingsDbVersion = $this->settings->get('db_version');
     $currentUser = $this->wp->wpGetCurrentUser();
 
-    if (!$this->settings->hasSavedValue('subscription.manage_subscription_page_style')) {
-      $this->settings->set(
-        'subscription.manage_subscription_page_style',
-        empty($settingsDbVersion)
-          ? SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN
-          : SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC
-      );
-    }
-
     // set cron trigger option to default method
     if (!$this->settings->get(CronTrigger::SETTING_NAME)) {
       $this->settings->set(CronTrigger::SETTING_NAME, [

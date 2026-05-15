@@ -31,6 +31,13 @@ class Migration_20260515_120000_App_Test extends \MailPoetTest {
       SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC,
       $this->settings->get('subscription.manage_subscription_page_style')
     );
+
+    $this->migration->run();
+
+    $this->assertSame(
+      SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC,
+      $this->settings->get('subscription.manage_subscription_page_style')
+    );
   }
 
   public function testItSkipsNewInstallations(): void {
@@ -54,6 +61,22 @@ class Migration_20260515_120000_App_Test extends \MailPoetTest {
 
     $this->assertSame(
       SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN,
+      $this->settings->get('subscription.manage_subscription_page_style')
+    );
+  }
+
+  public function testItPreservesSavedClassicStyle(): void {
+    $this->settings->set('db_version', '5.26.0');
+    $this->settings->set(
+      'subscription.manage_subscription_page_style',
+      SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC
+    );
+
+    $this->migration->run();
+    $this->migration->run();
+
+    $this->assertSame(
+      SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_CLASSIC,
       $this->settings->get('subscription.manage_subscription_page_style')
     );
   }

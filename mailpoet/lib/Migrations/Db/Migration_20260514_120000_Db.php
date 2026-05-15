@@ -22,10 +22,5 @@ class Migration_20260514_120000_Db extends DbMigration {
       SET `{$columnName}` = ''
       WHERE `{$columnName}` IS NULL
     ");
-
-    $this->connection->executeStatement("
-      ALTER TABLE `{$segmentsTable}`
-      MODIFY `{$columnName}` text NOT NULL
-    ");
   }
 }

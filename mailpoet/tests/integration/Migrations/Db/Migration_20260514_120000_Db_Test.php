@@ -43,14 +43,14 @@ class Migration_20260514_120000_Db_Test extends \MailPoetTest {
     verify($publicDescription)->equals('');
   }
 
-  public function testItAddsANonNullableColumn(): void {
+  public function testItAddsANullableColumn(): void {
     $this->migration->run();
 
     $column = $this->entityManager->getConnection()->fetchAssociative(
       "SHOW COLUMNS FROM `{$this->segmentsTable}` LIKE 'public_description'"
     );
     $this->assertIsArray($column);
-    verify($column['Null'])->equals('NO');
+    verify($column['Null'])->equals('YES');
     verify($column['Type'])->stringContainsString('text');
   }
 
@@ -72,6 +72,6 @@ class Migration_20260514_120000_Db_Test extends \MailPoetTest {
       "SHOW COLUMNS FROM `{$this->segmentsTable}` LIKE 'public_description'"
     );
     $this->assertIsArray($column);
-    verify($column['Null'])->equals('NO');
+    verify($column['Null'])->equals('YES');
   }
 }

@@ -1,5 +1,5 @@
 <% block content %>
-<form class="mailpoet-manage-subscription<% if isModernStyle %> mailpoet-manage-subscription--modern<% endif %><% if isGloballyUnsubscribed %> mailpoet-manage-subscription--global-unsubscribed<% endif %>" method="post" action="<%= actionUrl|escape %>" novalidate>
+<form class="mailpoet-manage-subscription<% if isModernStyle %> mailpoet-manage-subscription--modern<% endif %><% if isModernStyle and isGloballyUnsubscribed %> mailpoet-manage-subscription--global-unsubscribed<% endif %>" method="post" action="<%= actionUrl|escape %>" novalidate>
   <input type="hidden" name="action" value="mailpoet_subscription_update" />
   <input type="hidden" name="data[segments]" value="" />
   <input type="hidden" name="mailpoet_redirect" value="<%= redirectUrl|escape %>"/>
