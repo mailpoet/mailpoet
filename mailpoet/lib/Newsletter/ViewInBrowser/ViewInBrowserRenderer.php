@@ -15,6 +15,13 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\Emoji;
 
 class ViewInBrowserRenderer {
+  private const OPTION_RENDER_AS_PREVIEW = 'renderAsPreview';
+  private const OPTION_SANITIZE_RENDERED_QUEUE_LINKS = 'sanitizeRenderedQueueLinks';
+  private const OPTION_SHORTCODES_PREVIEW = 'shortcodesPreview';
+  private const OPTION_REPLACE_SUBSCRIBER_TRACKING = 'replaceSubscriberTracking';
+  private const OPTION_PERSONALIZER_PREVIEW = 'personalizerPreview';
+  private const OPTION_REPLACE_VIEW_IN_BROWSER_URL = 'replaceViewInBrowserUrlWithPublicShareUrl';
+
   /** @var Emoji */
   private $emoji;
 
@@ -62,12 +69,7 @@ class ViewInBrowserRenderer {
       $newsletter,
       $subscriber,
       $queue,
-      $isPreview,
-      $isPreview,
-      $isPreview,
-      !$isPreview,
-      $isPreview,
-      false
+      $this->buildRenderOptionsForPreview($isPreview)
     );
   }
 
@@ -82,26 +84,33 @@ class ViewInBrowserRenderer {
       $newsletter,
       new SubscriberEntity(),
       $queue,
-      false,
-      true,
-      true,
-      false,
-      false,
-      true
+      $this->buildRenderOptionsForPublicShare()
     );
   }
 
+  /**
+   * @param array{
+   *   renderAsPreview: bool,
+   *   sanitizeRenderedQueueLinks: bool,
+   *   shortcodesPreview: bool,
+   *   replaceSubscriberTracking: bool,
+   *   personalizerPreview: bool,
+   *   replaceViewInBrowserUrlWithPublicShareUrl: bool
+   * } $options
+   */
   private function renderWithContext(
     NewsletterEntity $newsletter,
     ?SubscriberEntity $subscriber,
     ?SendingQueueEntity $queue,
-    bool $renderAsPreview,
-    bool $sanitizeRenderedQueueLinks,
-    bool $shortcodesPreview,
-    bool $replaceSubscriberTracking,
-    bool $personalizerPreview,
-    bool $replaceViewInBrowserUrlWithPublicShareUrl
+    array $options
   ): string {
+    $renderAsPreview = $options[self::OPTION_RENDER_AS_PREVIEW];
+    $sanitizeRenderedQueueLinks = $options[self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS];
+    $shortcodesPreview = $options[self::OPTION_SHORTCODES_PREVIEW];
+    $replaceSubscriberTracking = $options[self::OPTION_REPLACE_SUBSCRIBER_TRACKING];
+    $personalizerPreview = $options[self::OPTION_PERSONALIZER_PREVIEW];
+    $replaceViewInBrowserUrlWithPublicShareUrl = $options[self::OPTION_REPLACE_VIEW_IN_BROWSER_URL];
+
     $isTrackingEnabled = $this->trackingConfig->isEmailTrackingEnabled();
 
     if ($queue && $queue->getNewsletterRenderedBody()) {
@@ -163,6 +172,48 @@ class ViewInBrowserRenderer {
       $renderedNewsletter = $this->personalizer->personalize_content($renderedNewsletter);
     }
     return $renderedNewsletter;
+  }
+
+  /**
+   * @return array{
+   *   renderAsPreview: bool,
+   *   sanitizeRenderedQueueLinks: bool,
+   *   shortcodesPreview: bool,
+   *   replaceSubscriberTracking: bool,
+   *   personalizerPreview: bool,
+   *   replaceViewInBrowserUrlWithPublicShareUrl: bool
+   * }
+   */
+  private function buildRenderOptionsForPreview(bool $isPreview): array {
+    return [
+      self::OPTION_RENDER_AS_PREVIEW => $isPreview,
+      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => $isPreview,
+      self::OPTION_SHORTCODES_PREVIEW => $isPreview,
+      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => !$isPreview,
+      self::OPTION_PERSONALIZER_PREVIEW => $isPreview,
+      self::OPTION_REPLACE_VIEW_IN_BROWSER_URL => false,
+    ];
+  }
+
+  /**
+   * @return array{
+   *   renderAsPreview: bool,
+   *   sanitizeRenderedQueueLinks: bool,
+   *   shortcodesPreview: bool,
+   *   replaceSubscriberTracking: bool,
+   *   personalizerPreview: bool,
+   *   replaceViewInBrowserUrlWithPublicShareUrl: bool
+   * }
+   */
+  private function buildRenderOptionsForPublicShare(): array {
+    return [
+      self::OPTION_RENDER_AS_PREVIEW => false,
+      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => true,
+      self::OPTION_SHORTCODES_PREVIEW => true,
+      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => false,
+      self::OPTION_PERSONALIZER_PREVIEW => false,
+      self::OPTION_REPLACE_VIEW_IN_BROWSER_URL => true,
+    ];
   }
 
   private function prepareShortcodes(
