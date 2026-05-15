@@ -277,7 +277,10 @@ class SegmentEntity {
         continue;
       }
       $groupId = $data->getParam('group_id');
-      $groupKey = is_int($groupId) ? $groupId : (int)$groupId;
+      if (!is_int($groupId) && !is_numeric($groupId)) {
+        continue;
+      }
+      $groupKey = (int)$groupId;
       if (!isset($groups[$groupKey])) {
         $operator = $data->getParam('group_operator');
         $groups[$groupKey] = [
