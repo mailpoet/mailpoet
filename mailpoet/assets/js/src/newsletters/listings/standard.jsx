@@ -20,6 +20,7 @@ import { pollExportStatus } from 'newsletters/statistics-export/poll-export-stat
 import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context';
 import { ErrorBoundary, withBoundary } from '../../common';
+import { NewsletterShareModal, SHARE_VISIBILITY_PUBLIC } from './share-modal';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -179,7 +180,7 @@ const confirmEdit = (newsletter) => {
   }
 };
 
-let newsletterActions = [
+const baseNewsletterActions = [
   {
     name: 'view',
     link: function link(newsletter) {
@@ -234,15 +235,92 @@ let newsletterActions = [
     className: 'mailpoet-hide-on-mobile',
   },
 ];
-newsletterActions = addStatsCTAAction(newsletterActions);
+
+function ShareNewsletterAction({ newsletter, onOpen }) {
+  return (
+    <a
+      href="#"
+      title={newsletter.share_unavailable_reason || undefined}
+      data-automation-id={`newsletter_share_${newsletter.id}`}
+      onClick={(event) => {
+        event.preventDefault();
+        onOpen(newsletter);
+      }}
+    >
+      {__('Share', 'mailpoet')}
+    </a>
+  );
+}
+
+ShareNewsletterAction.propTypes = {
+  newsletter: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    share_unavailable_reason: PropTypes.string,
+  }).isRequired,
+  onOpen: PropTypes.func.isRequired,
+};
 
 class NewsletterListStandardComponent extends Component {
   constructor(props) {
     super(props);
+    this.refreshListingRef = { current: null };
     this.state = {
       newslettersCount: undefined,
+      shareNewsletter: null,
     };
   }
+
+  openShareModal = (newsletter) => {
+    this.setState({ shareNewsletter: newsletter });
+    MailPoet.trackEvent('Emails > Share modal opened');
+  };
+
+  renderShareAction = (newsletter) => (
+    <ShareNewsletterAction
+      newsletter={newsletter}
+      onOpen={this.openShareModal}
+    />
+  );
+
+  getNewsletterActions = () =>
+    addStatsCTAAction([
+      baseNewsletterActions[0],
+      {
+        name: 'share',
+        className: 'mailpoet-hide-on-mobile',
+        link: this.renderShareAction,
+      },
+      ...baseNewsletterActions.slice(1),
+    ]);
+
+  closeShareModal = () => {
+    this.setState({ shareNewsletter: null });
+  };
+
+  makeNewsletterPublic = (newsletter) =>
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'save',
+      data: {
+        id: newsletter.id,
+        options: {
+          shareVisibility: SHARE_VISIBILITY_PUBLIC,
+        },
+      },
+    })
+      .done((response) => {
+        this.setState({ shareNewsletter: response.data });
+        if (typeof this.refreshListingRef.current === 'function') {
+          this.refreshListingRef.current();
+        }
+        MailPoet.trackEvent('Emails > Share email made public');
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+        }
+      });
 
   renderItem = (newsletter, actions, meta) => {
     const rowClasses = classnames(
@@ -325,6 +403,7 @@ class NewsletterListStandardComponent extends Component {
         )}
         {this.state.newslettersCount !== 0 && (
           <Listing
+            refreshRef={this.refreshListingRef}
             limit={window.mailpoet_listing_per_page}
             location={this.props.location}
             params={this.props.params}
@@ -335,7 +414,7 @@ class NewsletterListStandardComponent extends Component {
             isItemInactive={this.isItemInactive}
             columns={columns}
             bulk_actions={bulkActions}
-            item_actions={newsletterActions}
+            item_actions={this.getNewsletterActions()}
             messages={messages}
             auto_refresh
             sort_by="sent_at"
@@ -351,6 +430,13 @@ class NewsletterListStandardComponent extends Component {
               checkMailerStatus(state);
               checkCronStatus(state);
             }}
+          />
+        )}
+        {this.state.shareNewsletter && (
+          <NewsletterShareModal
+            newsletter={this.state.shareNewsletter}
+            onClose={this.closeShareModal}
+            onMakePublic={this.makeNewsletterPublic}
           />
         )}
       </>
