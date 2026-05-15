@@ -98,6 +98,9 @@ class SettingsController {
         'delete_unconfirmed_subscribers_after_days' => self::DEFAULT_DELETE_UNCONFIRMED_SUBSCRIBERS_AFTER_DAYS,
         'sending_status_retention_days' => self::DEFAULT_SENDING_STATUS_RETENTION_DAYS,
         'sending_queue_body_retention_days' => self::DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS,
+        'sharing' => [
+          'default_visibility' => 'private',
+        ],
       ];
     }
 
