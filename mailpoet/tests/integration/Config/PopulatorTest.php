@@ -9,7 +9,7 @@ use MailPoetTest;
 use MailPoetVendor\Doctrine\ORM\Query;
 
 class PopulatorTest extends MailPoetTest {
-  private const OPTION_FIELD_COUNT = 34;
+  private const OPTION_FIELD_COUNT = 35;
   private const TEMPLATE_COUNT = 77;
 
   public function testItInsertsOptionFields(): void {
