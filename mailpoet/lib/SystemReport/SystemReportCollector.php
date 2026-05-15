@@ -274,8 +274,31 @@ class SystemReportCollector {
     }
 
     return implode(' - ', array_map(function ($key, $value) {
-      return $key . ': ' . $value;
+      return $key . ': ' . $this->formatCompositeValue($value);
     }, array_keys($fields), array_values($fields)));
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function formatCompositeValue($value): string {
+    if ($value instanceof \WP_Error) {
+      return $value->get_error_message();
+    }
+    if (is_object($value) && method_exists($value, '__toString')) {
+      return (string)$value;
+    }
+    if (is_array($value) || is_object($value)) {
+      $encodedValue = $this->wp->wpJsonEncode($value);
+      return is_string($encodedValue) ? $encodedValue : '';
+    }
+    if (is_scalar($value)) {
+      return (string)$value;
+    }
+    if (is_resource($value)) {
+      return get_resource_type($value);
+    }
+    return '';
   }
 
   private function convertKeysToTitleCase(array $array): array {
