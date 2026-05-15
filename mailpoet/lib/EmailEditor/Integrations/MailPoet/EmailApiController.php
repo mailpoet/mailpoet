@@ -10,6 +10,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
 use MailPoet\UnexpectedValueException;
@@ -35,13 +36,17 @@ class EmailApiController {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var ShareVisibility */
+  private $shareVisibility;
+
   public function __construct(
     NewslettersRepository $newsletterRepository,
     NewsletterUrl $newsletterUrl,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    ShareVisibility $shareVisibility
   ) {
     $this->newsletterRepository = $newsletterRepository;
     $this->newsletterUrl = $newsletterUrl;
@@ -49,6 +54,7 @@ class EmailApiController {
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->entityManager = $entityManager;
+    $this->shareVisibility = $shareVisibility;
   }
 
   /**
@@ -68,6 +74,16 @@ class EmailApiController {
       'utm_campaign' => $newsletter ? $newsletter->getGaCampaign() : '',
       'segment_ids' => $newsletter ? $newsletter->getSegmentIds() : [],
       'is_automation_newsletter' => $isAutomationNewsletter,
+      'share_url' => $newsletter && $this->shareVisibility->isSupported($newsletter)
+        ? $this->newsletterUrl->getPublicShareUrl($newsletter)
+        : '',
+      'share_visibility' => $newsletter
+        ? $this->shareVisibility->getConfiguredVisibility($newsletter)
+        : ShareVisibility::VISIBILITY_DEFAULT,
+      'effective_share_visibility' => $newsletter
+        ? $this->shareVisibility->getEffectiveVisibility($newsletter)
+        : $this->shareVisibility->getDefaultVisibility(),
+      'can_share' => $newsletter ? $this->shareVisibility->canShare($newsletter) : false,
     ];
   }
 
@@ -103,6 +119,14 @@ class EmailApiController {
       $this->updateScheduledAtOption($newsletter, $data['scheduled_at']);
     }
 
+    if (array_key_exists('share_visibility', $data)) {
+      $this->updateOption(
+        $newsletter,
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+        $this->shareVisibility->sanitize((string)$data['share_visibility'])
+      );
+    }
+
     if (isset($data['segment_ids']) && is_array($data['segment_ids'])) {
       $this->updateSegments($newsletter, $data['segment_ids']);
       $this->entityManager->refresh($newsletter);
@@ -111,23 +135,13 @@ class EmailApiController {
     $this->newsletterRepository->flush();
   }
 
-  private function updateScheduledAtOption($newsletter, $scheduledAtValue): void {
-    // Validate the scheduled_at value
-    if ($scheduledAtValue !== null && $scheduledAtValue !== '') {
-      try {
-        new \DateTime($scheduledAtValue);
-      } catch (\Exception $e) {
-        throw new UnexpectedValueException('Invalid scheduled_at format. Expected a valid datetime string.');
-      }
-    }
-
+  private function updateOption($newsletter, string $optionName, $optionValue): void {
     $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
-      'name' => NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+      'name' => $optionName,
       'newsletterType' => $newsletter->getType(),
     ]);
 
     if (!$optionField) {
-      // If the option field doesn't exist for this newsletter type, skip
       return;
     }
 
@@ -142,30 +156,27 @@ class EmailApiController {
       $newsletter->getOptions()->add($option);
     }
 
-    // Set the value (null or the datetime string)
-    $option->setValue($scheduledAtValue);
+    $option->setValue($optionValue);
+  }
+
+  private function updateScheduledAtOption($newsletter, $scheduledAtValue): void {
+    // Validate the scheduled_at value
+    if ($scheduledAtValue !== null && $scheduledAtValue !== '') {
+      try {
+        new \DateTime($scheduledAtValue);
+      } catch (\Exception $e) {
+        throw new UnexpectedValueException('Invalid scheduled_at format. Expected a valid datetime string.');
+      }
+    }
+
+    $this->updateOption($newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULED_AT, $scheduledAtValue);
 
     // Also update the isScheduled option
-    $isScheduledOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
-      'name' => NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
-      'newsletterType' => $newsletter->getType(),
-    ]);
-
-    if ($isScheduledOptionField) {
-      $isScheduledOption = $this->newsletterOptionsRepository->findOneBy([
-        'newsletter' => $newsletter,
-        'optionField' => $isScheduledOptionField,
-      ]);
-
-      if (!$isScheduledOption) {
-        $isScheduledOption = new NewsletterOptionEntity($newsletter, $isScheduledOptionField);
-        $this->newsletterOptionsRepository->persist($isScheduledOption);
-        $newsletter->getOptions()->add($isScheduledOption);
-      }
-
-      // Set isScheduled to '1' if scheduled_at has a value, '0' otherwise
-      $isScheduledOption->setValue($scheduledAtValue !== null && $scheduledAtValue !== '' ? '1' : '0');
-    }
+    $this->updateOption(
+      $newsletter,
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+      $scheduledAtValue !== null && $scheduledAtValue !== '' ? '1' : '0'
+    );
   }
 
   /**
@@ -228,6 +239,10 @@ class EmailApiController {
       'utm_campaign' => Builder::string(),
       'segment_ids' => Builder::array(),
       'is_automation_newsletter' => Builder::boolean(),
+      'share_url' => Builder::string(),
+      'share_visibility' => Builder::string(),
+      'effective_share_visibility' => Builder::string(),
+      'can_share' => Builder::boolean(),
     ])->toArray();
   }
 }

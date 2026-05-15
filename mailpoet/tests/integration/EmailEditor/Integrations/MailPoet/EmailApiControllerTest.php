@@ -6,6 +6,8 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
@@ -36,6 +38,26 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($emailData['subject'])->equals('New subject');
     verify($emailData['preheader'])->equals('New preheader');
     verify($emailData['id'])->equals($newsletter->getId());
+  }
+
+  public function testItGetsSharingEmailData(): void {
+    $wpPostId = 15;
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Shared email')
+      ->withWpPostId($wpPostId)
+      ->withSentStatus()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PUBLIC,
+      ])
+      ->create();
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+
+    $newsletterUrl = $this->diContainer->get(NewsletterUrl::class);
+    verify($emailData['share_url'])->equals($newsletterUrl->getPublicShareUrl($newsletter));
+    verify($emailData['share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($emailData['effective_share_visibility'])->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($emailData['can_share'])->true();
   }
 
   public function testItSaveEmailDataToNewsletterEntity(): void {
@@ -121,6 +143,56 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals($scheduledAt);
     verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('1');
+  }
+
+  public function testItUpdatesShareVisibility(): void {
+    $wpPostId = 16;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'share_visibility' => ShareVisibility::VISIBILITY_PRIVATE,
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY))->equals(ShareVisibility::VISIBILITY_PRIVATE);
+  }
+
+  public function testItNormalizesInvalidShareVisibility(): void {
+    $wpPostId = 17;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'share_visibility' => 'unexpected',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY))->equals(ShareVisibility::VISIBILITY_DEFAULT);
   }
 
   public function testItUpdatesScheduledAtToNullAndSetsIsScheduledTo0(): void {

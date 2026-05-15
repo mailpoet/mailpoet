@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -14,6 +15,7 @@ use MailPoet\Entities\WpPostEntity;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\WP\Functions as WPFunctions;
@@ -321,6 +323,23 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->saveController->save($data);
     verify($settings->get('sender.name'))->same('Test sender');
     verify($settings->get('sender.address'))->same('test@example.com');
+  }
+
+  public function testItSanitizesShareVisibilityOptionWhenSaving() {
+    (new NewsletterOptionField())->findOrCreate(
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+      NewsletterEntity::TYPE_STANDARD
+    );
+    $this->entityManager->flush();
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+
+    $newsletter = $this->saveController->save([
+      'id' => $newsletter->getId(),
+      'options' => ['shareVisibility' => 'totally-not-valid'],
+    ]);
+
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY))
+      ->equals(ShareVisibility::VISIBILITY_DEFAULT);
   }
 
   public function testItDuplicatesNewsletter() {
