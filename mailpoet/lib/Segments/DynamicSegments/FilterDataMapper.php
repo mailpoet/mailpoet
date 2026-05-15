@@ -41,6 +41,9 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedShippingMethod;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapper {
+  public const MAX_GROUPS = 5;
+  public const MAX_FILTERS_PER_GROUP = 10;
+
   private WPFunctions $wp;
 
   private DateFilterHelper $dateFilterHelper;
@@ -81,9 +84,10 @@ class FilterDataMapper {
     if (!isset($data['filters']) || count($data['filters'] ?? []) < 1) {
       throw new InvalidFilterException('Filters are missing', InvalidFilterException::MISSING_FILTER);
     }
+    $this->validateGroups($data['filters'], $data['filters_connect'] ?? null);
     $processFilter = function ($filter, $data) {
       $filter['connect'] = $data['filters_connect'] ?? DynamicSegmentFilterData::CONNECT_TYPE_AND;
-      return $this->createFilter($filter);
+      return $this->withGroupingParams($this->createFilter($filter), $filter);
     };
     $wpFilterName = 'mailpoet_dynamic_segments_filters_map';
     if ($this->wp->hasFilter($wpFilterName)) {
@@ -96,6 +100,69 @@ class FilterDataMapper {
     }
     $filter = reset($data['filters']);
     return [$processFilter($filter, $data)];
+  }
+
+  /**
+   * @throws InvalidFilterException
+   */
+  private function validateGroups(array $filters, ?string $filtersConnect): void {
+    $groupCounts = [];
+    foreach ($filters as $filter) {
+      if (!isset($filter['group_id'])) {
+        continue;
+      }
+      $groupId = (int)$filter['group_id'];
+      $groupCounts[$groupId] = ($groupCounts[$groupId] ?? 0) + 1;
+    }
+    if (count($groupCounts) > self::MAX_GROUPS) {
+      throw new InvalidFilterException(
+        'Too many filter groups (max ' . self::MAX_GROUPS . ')',
+        InvalidFilterException::TOO_MANY_GROUPS
+      );
+    }
+    foreach ($groupCounts as $count) {
+      if ($count > self::MAX_FILTERS_PER_GROUP) {
+        throw new InvalidFilterException(
+          'Too many filters in a group (max ' . self::MAX_FILTERS_PER_GROUP . ')',
+          InvalidFilterException::TOO_MANY_FILTERS_PER_GROUP
+        );
+      }
+    }
+    if (count($groupCounts) > 1 && $filtersConnect === DynamicSegmentFilterData::CONNECT_TYPE_NONE) {
+      throw new InvalidFilterException(
+        'Outer connector must be and/or for grouped segments',
+        InvalidFilterException::INVALID_OUTER_CONNECTOR
+      );
+    }
+  }
+
+  /**
+   * Stamps group_id/group_operator from the raw filter row onto the constructed
+   * filter data so the entity can group filters at query time.
+   */
+  private function withGroupingParams(DynamicSegmentFilterData $filterData, array $rawFilter): DynamicSegmentFilterData {
+    if (!isset($rawFilter['group_id'])) {
+      return $filterData;
+    }
+    $existingData = $filterData->getData() ?? [];
+    $existingData['group_id'] = (int)$rawFilter['group_id'];
+    $existingData['group_operator'] = $this->normalizeGroupOperator($rawFilter['group_operator'] ?? null);
+    return new DynamicSegmentFilterData(
+      (string)$filterData->getFilterType(),
+      (string)$filterData->getAction(),
+      $existingData
+    );
+  }
+
+  private function normalizeGroupOperator($value): string {
+    if (
+      $value === DynamicSegmentFilterData::CONNECT_TYPE_AND
+      || $value === DynamicSegmentFilterData::CONNECT_TYPE_OR
+      || $value === DynamicSegmentFilterData::CONNECT_TYPE_NONE
+    ) {
+      return $value;
+    }
+    return DynamicSegmentFilterData::CONNECT_TYPE_AND;
   }
 
   private function createFilter(array $filterData): DynamicSegmentFilterData {
