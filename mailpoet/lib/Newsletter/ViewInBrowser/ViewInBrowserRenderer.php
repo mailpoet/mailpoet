@@ -207,11 +207,14 @@ class ViewInBrowserRenderer {
    */
   private function buildRenderOptionsForPublicShare(): array {
     return [
-      self::OPTION_RENDER_AS_PREVIEW => false,
+      // Keep no-queue public share fallback in preview mode to avoid
+      // send-time preprocessing side effects and keep shortcode behavior
+      // consistent with the rendering mode.
+      self::OPTION_RENDER_AS_PREVIEW => true,
       self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => true,
       self::OPTION_SHORTCODES_PREVIEW => true,
       self::OPTION_REPLACE_SUBSCRIBER_TRACKING => false,
-      self::OPTION_PERSONALIZER_PREVIEW => false,
+      self::OPTION_PERSONALIZER_PREVIEW => true,
       self::OPTION_REPLACE_VIEW_IN_BROWSER_URL => true,
     ];
   }

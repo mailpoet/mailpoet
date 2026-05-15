@@ -255,4 +255,15 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
     verify($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
   }
+
+  public function testItRendersPublicShareWithoutQueueInPreviewFallbackMode() {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+
+    $renderedBody = $this->viewInBrowserRenderer->renderPublicShare($this->newsletter, null);
+
+    verify($renderedBody)->stringContainsString('Rendered newsletter. Hello, reader');
+    verify($renderedBody)->stringContainsString($this->diContainer->get(NewsletterUrl::class)->getPublicShareUrl($this->newsletter));
+    verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=track');
+    verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
+  }
 }
