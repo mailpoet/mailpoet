@@ -1,4 +1,4 @@
-import { ChangeEvent, Component } from 'react';
+import { ChangeEvent, Component, useEffect } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import { __ } from '@wordpress/i18n';
@@ -7,6 +7,7 @@ import { DateTime } from 'newsletters/send/date-time';
 import { SenderField } from 'newsletters/send/sender-address-field.jsx';
 import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { Toggle } from 'common/form/toggle/toggle';
+import { Radio } from 'common/form/radio/radio';
 import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from 'common/newsletter';
 import { Field } from 'form/types';
@@ -26,7 +27,7 @@ type StandardSchedulingProps = {
   onValueChange: (targetWrap: {
     target: {
       name: string;
-      value: string;
+      value: string | Partial<NewsLetter['options']>;
     };
   }) => void;
   field: Field;
@@ -121,6 +122,86 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
   }
 }
 
+function StandardSharingVisibility({
+  item,
+  field,
+  onValueChange,
+}: StandardSchedulingProps) {
+  const options: Partial<NewsLetter['options']> = item?.options ?? {};
+  const savedVisibility = options.shareVisibility;
+  const visibility: 'public' | 'private' =
+    savedVisibility === 'public' || savedVisibility === 'private'
+      ? savedVisibility
+      : item?.effective_share_visibility || 'private';
+  const changeVisibility = (value: 'public' | 'private') => {
+    onValueChange({
+      target: {
+        name: field.name,
+        value: { ...options, shareVisibility: value },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (savedVisibility) {
+      return;
+    }
+    onValueChange({
+      target: {
+        name: field.name,
+        value: { ...options, shareVisibility: visibility },
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed shareVisibility once on mount when unset; rerunning would clobber user edits
+  }, []);
+
+  return (
+    <div>
+      <p className="mailpoet-form-description">
+        {__(
+          'Choose whether this email can be opened from a public share link after it is sent.',
+          'mailpoet',
+        )}
+      </p>
+      <div className="mailpoet-settings-inputs-row">
+        <Radio
+          id="mailpoet-share-visibility-public"
+          value="public"
+          checked={visibility === 'public'}
+          onCheck={changeVisibility}
+          name="shareVisibility"
+        />
+        <label htmlFor="mailpoet-share-visibility-public">
+          {__('Public', 'mailpoet')}
+        </label>
+      </div>
+      <div className="mailpoet-settings-inputs-row">
+        <Radio
+          id="mailpoet-share-visibility-private"
+          value="private"
+          checked={visibility === 'private'}
+          onCheck={changeVisibility}
+          name="shareVisibility"
+        />
+        <label htmlFor="mailpoet-share-visibility-private">
+          {__('Private', 'mailpoet')}
+        </label>
+      </div>
+    </div>
+  );
+}
+
+function StandardOptions(props: StandardSchedulingProps) {
+  return (
+    <>
+      <StandardScheduling {...props} />
+      <div className="mailpoet-gap" />
+      <h4 className="mailpoet-h4">{__('Sharing visibility', 'mailpoet')}</h4>
+      <StandardSharingVisibility {...props} />
+    </>
+  );
+}
+
 let fields: Array<Field> = [
   {
     name: 'email-header',
@@ -173,7 +254,7 @@ let fields: Array<Field> = [
     name: 'options',
     label: __('Schedule it', 'mailpoet'),
     type: 'reactComponent',
-    component: withBoundary(StandardScheduling),
+    component: withBoundary(StandardOptions),
   },
   {
     name: 'sender',
