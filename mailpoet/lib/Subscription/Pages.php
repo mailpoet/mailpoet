@@ -567,6 +567,7 @@ class Pages {
     $unsubscribeUrl = $unsubscribeUrl . (parse_url($unsubscribeUrl, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
     $templateData = [
       'unsubscribeUrl' => $unsubscribeUrl,
+      'subscriberEmail' => $this->subscriber instanceof SubscriberEntity ? $this->subscriber->getEmail() : null,
     ];
     return $this->wp->applyFilters(
       'mailpoet_unsubscribe_confirmation_page',

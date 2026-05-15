@@ -296,6 +296,15 @@ class PagesTest extends \MailPoetTest {
     verify($clickStat)->arrayCount(1);
   }
 
+  public function testItRendersSubscriberEmailOnConfirmUnsubscribePage() {
+    $pages = $this->getPages()->init(Pages::ACTION_CONFIRM_UNSUBSCRIBE, $this->testData);
+
+    $content = $pages->setPageContent('[mailpoet_page]');
+
+    verify($content)->stringContainsString('You are about to unsubscribe this email address:');
+    verify($content)->stringContainsString('jane.doe@example.com');
+  }
+
   public function testItRendersUnsubscribeReasonSurveyWhenEnabled() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     $pages = $this->getPages()->init('unsubscribe', $this->testData);
