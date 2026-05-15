@@ -21,6 +21,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
+use MailPoet\Newsletter\Sharing\PublicEmailRoute;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration;
 use MailPoet\Router;
@@ -70,6 +71,9 @@ class Initializer {
 
   /** @var Changelog */
   private $changelog;
+
+  /** @var PublicEmailRoute */
+  private $publicEmailRoute;
 
   /** @var Menu */
   private $menu;
@@ -189,7 +193,8 @@ class Initializer {
     TagsRestApi $tagsRestApi,
     CustomFieldsRestApi $customFieldsRestApi,
     FormsRestApi $formsRestApi,
-    SegmentsRestApi $segmentsRestApi
+    SegmentsRestApi $segmentsRestApi,
+    PublicEmailRoute $publicEmailRoute
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -226,6 +231,7 @@ class Initializer {
     $this->customFieldsRestApi = $customFieldsRestApi;
     $this->formsRestApi = $formsRestApi;
     $this->segmentsRestApi = $segmentsRestApi;
+    $this->publicEmailRoute = $publicEmailRoute;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -348,6 +354,7 @@ class Initializer {
 
   public function pluginsLoaded() {
     $this->hooks->init();
+    $this->publicEmailRoute->init();
   }
 
   public function preInitialize() {
