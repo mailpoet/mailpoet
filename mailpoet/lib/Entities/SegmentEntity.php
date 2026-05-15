@@ -223,6 +223,11 @@ class SegmentEntity {
 
   /**
    * Returns connect operand from the first filter, when doesn't exist, then returns a default value.
+   *
+   * For segments with multiple filter groups this is the outer connector between the groups
+   * (and/or). For legacy single-group segments it carries the within-group operator
+   * (and/or/none).
+   *
    * @return string
    */
   public function getFiltersConnectOperator(): string {
@@ -233,5 +238,57 @@ class SegmentEntity {
     }
     $connect = $filterData->getParam('connect');
     return is_string($connect) && $connect !== '' ? $connect : DynamicSegmentFilterData::CONNECT_TYPE_AND;
+  }
+
+  /**
+   * Returns dynamic filters grouped by their group_id.
+   *
+   * Legacy filters (no group_id) collapse into a single group whose operator is the
+   * legacy filters_connect value. Saved groups carry their own group_operator.
+   *
+   * @return array<int, array{operator: string, filters: DynamicSegmentFilterEntity[]}>
+   */
+  public function getFilterGroups(): array {
+    $filters = $this->getDynamicFilters()->toArray();
+    if (!$filters) {
+      return [];
+    }
+
+    $hasGroupData = false;
+    foreach ($filters as $filter) {
+      $data = $filter->getFilterData();
+      if ($data && $data->getParam('group_id') !== null) {
+        $hasGroupData = true;
+        break;
+      }
+    }
+
+    if (!$hasGroupData) {
+      return [[
+        'operator' => $this->getFiltersConnectOperator(),
+        'filters' => array_values($filters),
+      ]];
+    }
+
+    $groups = [];
+    foreach ($filters as $filter) {
+      $data = $filter->getFilterData();
+      if (!$data) {
+        continue;
+      }
+      $groupId = $data->getParam('group_id');
+      $groupKey = is_int($groupId) ? $groupId : (int)$groupId;
+      if (!isset($groups[$groupKey])) {
+        $operator = $data->getParam('group_operator');
+        $groups[$groupKey] = [
+          'operator' => is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::CONNECT_TYPE_AND,
+          'filters' => [],
+        ];
+      }
+      $groups[$groupKey]['filters'][] = $filter;
+    }
+
+    ksort($groups);
+    return array_values($groups);
   }
 }
