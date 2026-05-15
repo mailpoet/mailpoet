@@ -271,18 +271,17 @@ class SegmentEntity {
     }
 
     $groups = [];
+    $legacyGroupKey = 0;
     foreach ($filters as $filter) {
       $data = $filter->getFilterData();
       if (!$data) {
         continue;
       }
       $groupId = $data->getParam('group_id');
-      if (!is_int($groupId) && !is_numeric($groupId)) {
-        continue;
-      }
-      $groupKey = (int)$groupId;
+      $hasNumericGroupId = is_int($groupId) || is_numeric($groupId);
+      $groupKey = $hasNumericGroupId ? (int)$groupId : $legacyGroupKey;
       if (!isset($groups[$groupKey])) {
-        $operator = $data->getParam('group_operator');
+        $operator = $hasNumericGroupId ? $data->getParam('group_operator') : $this->getFiltersConnectOperator();
         $groups[$groupKey] = [
           'operator' => is_string($operator) && $operator !== '' ? $operator : DynamicSegmentFilterData::CONNECT_TYPE_AND,
           'filters' => [],
