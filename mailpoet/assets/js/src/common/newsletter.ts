@@ -47,6 +47,7 @@ export type NewsLetter = {
   options: {
     isScheduled: string;
     scheduledAt: string;
+    shareVisibility?: 'default' | 'public' | 'private';
     disabled?: string;
     group: NewsletterOptionGroup;
     intervalType?: string;
@@ -81,4 +82,10 @@ export type NewsLetter = {
   updated_at: string;
   logs: string[];
   wp_post_id: null | number;
+  share_url?: string;
+  share_visibility?: 'default' | 'public' | 'private';
+  effective_share_visibility?: 'public' | 'private';
+  can_share?: boolean;
+  is_share_supported?: boolean;
+  share_unavailable_reason?: string;
 };
