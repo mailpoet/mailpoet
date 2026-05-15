@@ -42,6 +42,20 @@ class ShareMetadataBuilderTest extends \MailPoetTest {
     verify($result)->stringNotContainsString('og:title');
   }
 
+  public function testItPreservesDollarDigitSequencesInSubject() {
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSubject('Save $50 today, $5 off, $0 trial')
+      ->create();
+    $html = '<html><head></head><body></body></html>';
+
+    $result = $this->diContainer->get(ShareMetadataBuilder::class)
+      ->injectMetadata($html, $newsletter, 'https://example.com/mailpoet-email/1-save/');
+
+    verify($result)->stringContainsString('<meta property="og:title" content="Save $50 today, $5 off, $0 trial" />');
+    verify($result)->stringContainsString('<meta name="twitter:title" content="Save $50 today, $5 off, $0 trial" />');
+  }
+
   public function testItOmitsUnsuitableImages() {
     $newsletter = (new Newsletter())
       ->withSentStatus()

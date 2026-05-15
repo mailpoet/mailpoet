@@ -18,11 +18,15 @@ class ShareMetadataBuilder {
 
   public function injectMetadata(string $html, NewsletterEntity $newsletter, string $canonicalUrl): string {
     $metadata = $this->buildMetadata($html, $newsletter, $canonicalUrl);
-    if (stripos($html, '</head>') === false) {
+    $position = stripos($html, '</head>');
+    if ($position === false) {
       return $metadata . "\n" . $html;
     }
 
-    return preg_replace('/<\/head>/i', $metadata . "\n</head>", $html, 1) ?: $html;
+    // Inject before </head> using substr_replace rather than preg_replace so
+    // that dollar-digit sequences in the newsletter subject (e.g. "Save $50")
+    // are not interpreted as backreferences in the replacement string.
+    return substr_replace($html, $metadata . "\n", $position, 0);
   }
 
   public function buildMetadata(string $html, NewsletterEntity $newsletter, string $canonicalUrl): string {
