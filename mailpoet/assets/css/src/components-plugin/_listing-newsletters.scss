@@ -310,3 +310,106 @@ h1.title.mailpoet-newsletter-listing-heading {
 .mailpoet-listing-stats-percentages-opens {
   font-weight: normal;
 }
+
+.mailpoet-share-email-modal.components-modal__frame {
+  max-width: 640px;
+  width: calc(100vw - 64px);
+}
+
+.mailpoet-share-email-modal__content {
+  color: $color-text;
+}
+
+.mailpoet-share-email-modal__intro {
+  margin-top: 0;
+}
+
+.mailpoet-share-email-modal__url-row {
+  align-items: flex-end;
+  display: flex;
+  gap: 10px;
+  margin-top: $grid-gap;
+}
+
+.mailpoet-share-email-modal__url-control {
+  flex: 1;
+  margin-bottom: 0;
+  min-width: 0;
+
+  .components-base-control__field {
+    margin-bottom: 0;
+  }
+
+  .components-text-control__input {
+    font-family: monospace;
+    width: 100%;
+  }
+}
+
+.mailpoet-share-email-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.mailpoet-share-email-modal__notice.components-notice {
+  margin: 0;
+}
+
+.mailpoet-share-email-modal__social-button.components-button {
+  border-color: transparent;
+  box-shadow: none;
+  color: $color-white;
+  flex-grow: 1;
+  justify-content: center !important;
+
+  &:hover,
+  &:focus {
+    border-color: transparent;
+    color: $color-white !important;
+    opacity: 0.85;
+  }
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.mailpoet-share-email-modal__social-button--facebook.components-button {
+  background: #1877f2;
+}
+
+.mailpoet-share-email-modal__social-button--x.components-button {
+  background: #111;
+}
+
+.mailpoet-share-email-modal__social-button--whatsapp.components-button {
+  background: #25d366;
+}
+
+.mailpoet-share-email-modal__social-button--email.components-button {
+  background: #3858e9;
+}
+
+.mailpoet-share-email-modal__footer {
+  margin-top: $grid-gap;
+}
+
+@include respond-to(small-screen) {
+  .mailpoet-share-email-modal.components-modal__frame {
+    width: calc(100vw - 32px);
+  }
+
+  .mailpoet-share-email-modal__url-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mailpoet-share-email-modal__actions {
+    .components-button {
+      justify-content: center;
+    }
+  }
+}
