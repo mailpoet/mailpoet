@@ -13,6 +13,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -171,6 +172,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class),
       $this->diContainer->get(Links::class),
+      $this->diContainer->get(NewsletterUrl::class),
     );
     $renderedBody = $viewInBrowser->render(
       $preview = false,
@@ -235,5 +237,22 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     // open tracking data tag should be removed
     verify($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
     verify($renderedBody)->stringContainsString('<img alt="" class="" src="">');
+  }
+
+  public function testItRendersPublicShareWithoutRecipientTracking() {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $queue = $this->sendingQueue;
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);
+
+    $renderedBody = $this->viewInBrowserRenderer->renderPublicShare($this->newsletter, $queue);
+
+    verify($renderedBody)->stringContainsString('Hello, reader');
+    verify($renderedBody)->stringContainsString($this->diContainer->get(NewsletterUrl::class)->getPublicShareUrl($this->newsletter));
+    verify($renderedBody)->stringContainsString('<a href="http://google.com">');
+    verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=track');
+    verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
   }
 }
