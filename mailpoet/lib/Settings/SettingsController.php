@@ -99,7 +99,7 @@ class SettingsController {
         'sending_status_retention_days' => self::DEFAULT_SENDING_STATUS_RETENTION_DAYS,
         'sending_queue_body_retention_days' => self::DEFAULT_SENDING_QUEUE_BODY_RETENTION_DAYS,
         'sharing' => [
-          'default_visibility' => 'private',
+          'default_visibility' => 'public',
         ],
       ];
     }
