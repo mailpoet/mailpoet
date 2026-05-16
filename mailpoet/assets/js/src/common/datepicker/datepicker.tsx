@@ -1,5 +1,4 @@
 import classnames from 'classnames';
-import { forwardRef, type ComponentProps } from 'react';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import { MailPoet } from 'mailpoet';
 import { withBoundary } from '../error-boundary';
@@ -7,44 +6,19 @@ import { withBoundary } from '../error-boundary';
 type Props = ReactDatePickerProps & {
   className?: string;
   dimension?: 'small';
-  formatWithWordPressSettings?: boolean;
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
 };
 
-type WordPressFormattedInputProps = ComponentProps<'input'> & {
-  selectedDate?: Date | null;
-};
-
-const WordPressFormattedInput = forwardRef<
-  HTMLInputElement,
-  WordPressFormattedInputProps
->(({ selectedDate, value: _value, ...props }, ref) => {
-  const formattedValue = selectedDate ? MailPoet.Date.short(selectedDate) : '';
-
-  return <input {...props} ref={ref} value={formattedValue} readOnly />;
-});
-WordPressFormattedInput.displayName = 'WordPressFormattedInput';
-
 function Datepicker({
   className,
   dimension,
-  formatWithWordPressSettings,
   isFullWidth,
   iconStart,
   iconEnd,
   ...props
 }: Props) {
-  const selectedDate =
-    props.selected instanceof Date ? props.selected : undefined;
-  const datePickerProps = formatWithWordPressSettings
-    ? {
-        ...props,
-        customInput: <WordPressFormattedInput selectedDate={selectedDate} />,
-      }
-    : props;
-
   return (
     <div
       className={classnames(
@@ -61,7 +35,7 @@ function Datepicker({
       <ReactDatePicker
         useWeekdaysShort
         calendarStartDay={props.calendarStartDay ?? MailPoet.wpWeekStartsOn}
-        {...datePickerProps}
+        {...props}
       />
       {iconEnd}
     </div>

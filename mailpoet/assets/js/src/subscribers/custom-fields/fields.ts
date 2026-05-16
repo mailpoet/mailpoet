@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
+import { dateI18n } from '@wordpress/date';
 import { createElement } from 'react';
 import type { Field } from '@wordpress/dataviews';
-import { MailPoet } from 'mailpoet';
 import type { CustomField } from './types';
 
 const FIELD_TYPE_LABELS: Record<string, string> = {
@@ -75,7 +75,7 @@ export const listFields: Field<CustomField>[] = [
       createElement(
         'span',
         null,
-        item.created_at ? MailPoet.Date.short(item.created_at) : '',
+        item.created_at ? dateI18n('M j, Y', item.created_at, undefined) : '',
       ),
   },
 ];

@@ -1,6 +1,5 @@
-import { getSettings } from '@wordpress/date';
+import { dateI18n, getSettings } from '@wordpress/date';
 import { __ } from '@wordpress/i18n';
-import { MailPoet } from '../../../mailpoet';
 import { FilterType } from '../store/types';
 
 export const filter: FilterType = {
@@ -42,9 +41,11 @@ export const filter: FilterType = {
 
     const isDate = condition === 'on' || condition === 'not-on';
 
-    return isDate
-      ? MailPoet.Date.short(args.value as string)
-      : MailPoet.Date.full(args.value as string);
+    return dateI18n(
+      isDate ? settings.formats.date : settings.formats.datetime,
+      args.value as string,
+      settings.timezone.string,
+    );
   },
   validateArgs: (args, condition) => {
     const value = args.value;

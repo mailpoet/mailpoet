@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
+import { dateI18n } from '@wordpress/date';
 import { createElement } from 'react';
 import type { Field } from '@wordpress/dataviews';
-import { MailPoet } from 'mailpoet';
 import type { Tag } from './types';
 import { getSubscribersListingUrl } from './api';
 
@@ -46,7 +46,7 @@ export const listFields: Field<Tag>[] = [
       createElement(
         'span',
         null,
-        item.created_at ? MailPoet.Date.short(item.created_at) : '',
+        item.created_at ? dateI18n('M j, Y', item.created_at, undefined) : '',
       ),
   },
 ];

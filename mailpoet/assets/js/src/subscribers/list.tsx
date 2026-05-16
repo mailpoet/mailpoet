@@ -780,17 +780,25 @@ function SubscriberList() {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={__('Confirmed on', 'mailpoet')}
         >
-          {subscriber.last_subscribed_at
-            ? MailPoet.Date.full(subscriber.last_subscribed_at)
-            : null}
+          {subscriber.last_subscribed_at ? (
+            <>
+              {MailPoet.Date.short(subscriber.last_subscribed_at)}
+              <br />
+              {MailPoet.Date.time(subscriber.last_subscribed_at)}
+            </>
+          ) : null}
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
           data-colname={__('Subscribed on', 'mailpoet')}
         >
-          {subscriber.created_at
-            ? MailPoet.Date.full(subscriber.created_at)
-            : null}
+          {subscriber.created_at ? (
+            <>
+              {MailPoet.Date.short(subscriber.created_at)}
+              <br />
+              {MailPoet.Date.time(subscriber.created_at)}
+            </>
+          ) : null}
         </td>
       </>
     );

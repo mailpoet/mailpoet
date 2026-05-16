@@ -1,8 +1,5 @@
 // Modules that are exposed for usage in the premium plugin.
 // The exports below are available via "window.MailPoetLib".
-import { syncWordPressDateSettings } from './wordpress-date-settings';
-
-syncWordPressDateSettings();
 
 // libs
 export * as ClassNames from 'classnames';

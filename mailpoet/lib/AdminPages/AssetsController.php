@@ -87,7 +87,7 @@ class AssetsController {
   }
 
   public function setupAutomationEditorDependencies(): void {
-    $this->enqueueJsEntrypoint('automation_editor');
+    $this->enqueueJsEntrypoint('automation_editor', ['wp-date']);
     $this->wp->wpEnqueueStyle('mailpoet_automation_editor', $this->getCssUrl('mailpoet-automation-editor.css'));
   }
 
@@ -149,7 +149,6 @@ class AssetsController {
       'mailpoet_admin_vendor',
       $this->getScriptUrl('admin_vendor.js'),
       [
-        'wp-date',
         'wp-i18n',
         'mailpoet_runtime',
         'mailpoet_vendor',

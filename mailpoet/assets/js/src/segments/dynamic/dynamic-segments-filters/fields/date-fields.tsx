@@ -133,7 +133,7 @@ function DateFields({
         segment.operator === DateOperator.NOT_ON) && (
         <Datepicker
           className="mailpoet-segments-datepicker-small"
-          formatWithWordPressSettings
+          dateFormat="MMM d, yyyy"
           onChange={(value): void => {
             void updateSegmentFilter(
               { value: convertDateToString(value) },
