@@ -6,16 +6,20 @@ use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sharing\ShareMetadataBuilder;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\Security;
@@ -206,6 +210,35 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserController->view($data);
   }
 
+  public function testItAddsShareToolbarForRecipientViews(): void {
+    $newsletter = $this->newslettersRepository->findOneById($this->browserPreviewData['newsletter_id']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    $this->entityManager->flush();
+
+    $result = $this->viewInBrowserController->view($this->browserPreviewData);
+
+    verify($result)->stringContainsString('data-mailpoet-share-host');
+    verify($result)->stringContainsString('class="mailpoet-share-toolbar"');
+    verify($result)->stringContainsString($this->newsletterUrl->getPublicShareUrl($newsletter));
+  }
+
+  public function testItDoesNotAddShareToolbarForPrivateRecipientViews(): void {
+    $newsletter = $this->newslettersRepository->findOneById($this->browserPreviewData['newsletter_id']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    (new NewsletterOption())->create(
+      $newsletter,
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY,
+      ShareVisibility::VISIBILITY_PRIVATE
+    );
+    $this->entityManager->flush();
+
+    $result = $this->viewInBrowserController->view($this->browserPreviewData);
+
+    verify($result)->stringNotContainsString('data-mailpoet-share-host');
+  }
+
   public function _after() {
     parent::_after();
     // reset WP user role
@@ -230,7 +263,9 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       $viewInBrowserRenderer,
       $this->sendingQueuesRepository,
       $this->diContainer->get(DependencyNotice::class),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->diContainer->get(ShareVisibility::class),
+      $this->diContainer->get(ShareMetadataBuilder::class)
     );
   }
 }
