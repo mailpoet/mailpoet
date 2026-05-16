@@ -7,6 +7,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
@@ -41,6 +42,9 @@ class Shortcodes {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var ShareVisibility */
+  private $shareVisibility;
+
   /** @var Date */
   private $dateCategory;
 
@@ -63,6 +67,7 @@ class Shortcodes {
     SubscribersRepository $subscribersRepository,
     NewsletterUrl $newsletterUrl,
     NewslettersRepository $newslettersRepository,
+    ShareVisibility $shareVisibility,
     Date $dateCategory,
     Link $linkCategory,
     Newsletter $newsletterCategory,
@@ -75,6 +80,7 @@ class Shortcodes {
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterUrl = $newsletterUrl;
     $this->newslettersRepository = $newslettersRepository;
+    $this->shareVisibility = $shareVisibility;
     $this->dateCategory = $dateCategory;
     $this->linkCategory = $linkCategory;
     $this->newsletterCategory = $newsletterCategory;
@@ -253,7 +259,6 @@ class Shortcodes {
       $subscriber = new SubscriberEntity();
     }
 
-    $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     /**
      * An ugly workaround to make sure state is not shared via NewsletterShortcodes service
      * This should be replaced with injected service when state is removed from this service
@@ -272,9 +277,15 @@ class Shortcodes {
 
     $shortcodeProcessor->setSubscriber($subscriber);
     $shortcodeProcessor->setQueue($queue);
-    return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
-      . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
-      . esc_attr((string)$shortcodeProcessor->replace($queue ? $queue->getNewsletterRenderedSubject() : '')) .
+    $subject = (string)$shortcodeProcessor->replace($queue ? $queue->getNewsletterRenderedSubject() : '');
+    if (!$this->shareVisibility->canShare($newsletter)) {
+      return $this->wp->escHtml($subject);
+    }
+
+    $previewUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
+    return '<a href="' . $this->wp->escUrl($previewUrl) . '" target="_blank" rel="noopener noreferrer" title="'
+      . $this->wp->escAttr(__('Read in a new tab', 'mailpoet')) . '">'
+      . $this->wp->escHtml($subject) .
       '</a>';
   }
 }
