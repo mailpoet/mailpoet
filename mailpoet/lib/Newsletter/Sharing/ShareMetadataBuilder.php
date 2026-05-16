@@ -31,8 +31,15 @@ class ShareMetadataBuilder {
     return substr_replace($html, $metadata . "\n", $position, 0);
   }
 
-  public function injectShareToolbar(string $html, NewsletterEntity $newsletter, string $canonicalUrl): string {
-    return $this->injectAfterBodyOpen($html, $this->buildShareToolbar($newsletter, $canonicalUrl));
+  /**
+   * Inject the share toolbar right after <body>. Pass $replaceStateUrl when the
+   * current URL carries subscriber-specific data (e.g. a tokenised view-in-browser
+   * link) — the toolbar's JS will rewrite the address bar to that URL on load so
+   * the subscriber's token isn't shared by accident if they copy from the bar
+   * or use their browser's share menu.
+   */
+  public function injectShareToolbar(string $html, NewsletterEntity $newsletter, string $canonicalUrl, string $replaceStateUrl = ''): string {
+    return $this->injectAfterBodyOpen($html, $this->buildShareToolbar($newsletter, $canonicalUrl, $replaceStateUrl));
   }
 
   public function buildMetadata(string $html, NewsletterEntity $newsletter, string $canonicalUrl): string {
@@ -70,7 +77,7 @@ class ShareMetadataBuilder {
     return implode("\n", $tags);
   }
 
-  private function buildShareToolbar(NewsletterEntity $newsletter, string $canonicalUrl): string {
+  private function buildShareToolbar(NewsletterEntity $newsletter, string $canonicalUrl, string $replaceStateUrl): string {
     $title = __('Share this email', 'mailpoet');
     $description = __('Copy the public link or share it on your favorite channel.', 'mailpoet');
     $emailTitle = $newsletter->getCampaignNameOrSubject() ?: __('Email', 'mailpoet');
@@ -78,6 +85,11 @@ class ShareMetadataBuilder {
     $shareLabel = _x('Share', 'Web Share button label', 'mailpoet');
     $encodedUrl = rawurlencode($canonicalUrl);
     $encodedTitle = rawurlencode($emailTitle);
+
+    $hostAttrs = ' data-mailpoet-share-host';
+    if ($replaceStateUrl !== '') {
+      $hostAttrs .= ' data-mailpoet-share-replace-state="' . $this->wp->escAttr($replaceStateUrl) . '"';
+    }
 
     $toolbar = $this->buildShareToolbarStyles()
       . '<div class="mailpoet-share-toolbar" role="region" aria-label="' . $this->wp->escAttr($title) . '">'
@@ -101,7 +113,7 @@ class ShareMetadataBuilder {
       . $this->buildShareToolbarLink('email', $this->wp->escUrl('mailto:?subject=' . $encodedTitle . '&body=' . $encodedUrl), __('Email', 'mailpoet'), true)
       . '</div></div></div></div>';
 
-    return '<div data-mailpoet-share-host>' . $toolbar . '</div>' . $this->buildShareToolbarScript();
+    return '<div' . $hostAttrs . '>' . $toolbar . '</div>' . $this->buildShareToolbarScript();
   }
 
   private function buildShareToolbarCopyButton(string $canonicalUrl, string $copyLabel): string {
@@ -179,6 +191,8 @@ class ShareMetadataBuilder {
     return '<script>'
       . '(function(){'
       . 'var hosts=document.querySelectorAll("[data-mailpoet-share-host]");'
+      // Replace state once if any host asks us to scrub a tokenised URL from the address bar.
+      . 'for(var r=0;r<hosts.length;r++){var replace=hosts[r].getAttribute("data-mailpoet-share-replace-state");if(replace&&window.history&&typeof window.history.replaceState==="function"){try{window.history.replaceState(null,document.title,replace);}catch(error){}break;}}'
       . 'function copyUrl(url){'
       . 'if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(url);}'
       . 'var input=document.createElement("textarea");'

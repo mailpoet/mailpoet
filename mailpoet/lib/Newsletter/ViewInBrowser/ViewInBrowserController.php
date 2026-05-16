@@ -79,11 +79,10 @@ class ViewInBrowserController {
 
     $html = $this->viewInBrowserRenderer->render($isPreview, $newsletter, $subscriber, $queue);
     if (!$isPreview && $this->shareVisibility->canShare($newsletter)) {
-      return $this->shareMetadataBuilder->injectShareToolbar(
-        $html,
-        $newsletter,
-        $this->newsletterUrl->getPublicShareUrl($newsletter)
-      );
+      $publicUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
+      // Pass $publicUrl as both the share target and the replaceState target so the
+      // tokenised view-in-browser URL is scrubbed from the address bar on load.
+      return $this->shareMetadataBuilder->injectShareToolbar($html, $newsletter, $publicUrl, $publicUrl);
     }
     return $html;
   }

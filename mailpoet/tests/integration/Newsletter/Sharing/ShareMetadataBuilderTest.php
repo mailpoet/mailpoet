@@ -121,5 +121,29 @@ class ShareMetadataBuilderTest extends \MailPoetTest {
     $dom = \MailPoet\Util\pQuery\pQuery::parseStr($result);
     $main = $dom->query('[data-mailpoet-share-host] main');
     verify(count($main))->equals(0);
+    // no replace-state attribute on the public path
+    verify($result)->stringNotContainsString('data-mailpoet-share-replace-state');
+  }
+
+  public function testItScrubsTokenisedUrlFromAddressBarWhenReplaceStateGiven(): void {
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSubject('Recipient update')
+      ->create();
+
+    $result = $this->diContainer->get(ShareMetadataBuilder::class)
+      ->injectShareToolbar(
+        '<html><body><main>Email content</main></body></html>',
+        $newsletter,
+        'https://example.com/mailpoet-email/1-recipient-update/',
+        'https://example.com/mailpoet-email/1-recipient-update/'
+      );
+
+    verify($result)->stringContainsString('data-mailpoet-share-replace-state="https://example.com/mailpoet-email/1-recipient-update/"');
+    verify($result)->stringContainsString('window.history.replaceState');
+    // recipient toolbar carries the same markup as the public one — URL field + social icons
+    verify($result)->stringContainsString('class="mailpoet-share-toolbar"');
+    verify($result)->stringContainsString('mailpoet-share-toolbar__url');
+    verify($result)->stringContainsString('mailpoet-share-toolbar__social-button--facebook');
   }
 }
