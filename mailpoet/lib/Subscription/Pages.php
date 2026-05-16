@@ -170,6 +170,18 @@ class Pages {
     $this->wp->addFilter('the_content', [$this, 'setPageContent'], 10, 1);
     $this->wp->removeAction('wp_head', 'noindex', 1);
     $this->wp->addAction('wp_head', [$this, 'setMetaRobots'], 1);
+    $this->setSubscriptionPageHeaders();
+  }
+
+  private function setSubscriptionPageHeaders(): void {
+    if ($this->wp->headersSent()) {
+      return;
+    }
+    // Prevent the rendered subscriber email and other personal data on
+    // subscription pages from leaking via outbound link referrers, and stop
+    // archivers that honor HTTP headers but not <meta name="robots">.
+    header('X-Robots-Tag: noindex, nofollow');
+    header('Referrer-Policy: no-referrer');
   }
 
   public function initShortcodes() {
