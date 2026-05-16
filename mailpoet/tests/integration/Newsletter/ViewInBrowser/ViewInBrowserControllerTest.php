@@ -210,17 +210,21 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserController->view($data);
   }
 
-  public function testItAddsShareToolbarForRecipientViews(): void {
+  public function testItAddsShareToolbarForRecipientViewsAndScrubsTokenisedUrl(): void {
     $newsletter = $this->newslettersRepository->findOneById($this->browserPreviewData['newsletter_id']);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     $this->entityManager->flush();
 
     $result = $this->viewInBrowserController->view($this->browserPreviewData);
+    $publicUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
 
     verify($result)->stringContainsString('data-mailpoet-share-host');
     verify($result)->stringContainsString('class="mailpoet-share-toolbar"');
-    verify($result)->stringContainsString($this->newsletterUrl->getPublicShareUrl($newsletter));
+    verify($result)->stringContainsString($publicUrl);
+    // address-bar scrub: replaceState attribute set to the public URL so the subscriber token
+    // never ends up shared via copy-from-address-bar or browser share menu.
+    verify($result)->stringContainsString('data-mailpoet-share-replace-state="' . $publicUrl . '"');
   }
 
   public function testItDoesNotAddShareToolbarForPrivateRecipientViews(): void {
@@ -237,6 +241,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $result = $this->viewInBrowserController->view($this->browserPreviewData);
 
     verify($result)->stringNotContainsString('data-mailpoet-share-host');
+    verify($result)->stringNotContainsString('data-mailpoet-share-replace-state');
   }
 
   public function _after() {
