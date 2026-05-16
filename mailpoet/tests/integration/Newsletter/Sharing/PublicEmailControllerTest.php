@@ -40,9 +40,13 @@ class PublicEmailControllerTest extends \MailPoetTest {
     $result = $controller->render($controller->getNewsletter($identifier));
 
     verify($result)->stringContainsString('Hello, reader');
+    verify($result)->stringContainsString('data-mailpoet-share-host');
+    verify($result)->stringContainsString('class="mailpoet-share-toolbar"');
+    verify($result)->stringContainsString($controller->getCanonicalUrl($newsletter));
     verify($result)->stringContainsString('<meta property="og:title"');
     verify($result)->stringContainsString('<a href="https://example.com">');
     verify($result)->stringNotContainsString(Router::NAME . '&endpoint=track');
+    verify($result)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
     verify($result)->stringNotContainsString('[mailpoet_open_data]');
   }
 

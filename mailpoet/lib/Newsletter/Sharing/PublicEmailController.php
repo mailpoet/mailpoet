@@ -70,6 +70,7 @@ class PublicEmailController {
     $queue = $this->sendingQueuesRepository->findLatestCompletedByNewsletter($newsletter);
     $canonicalUrl = $this->getCanonicalUrl($newsletter);
     $html = $this->viewInBrowserRenderer->renderPublicShare($newsletter, $queue);
+    $html = $this->shareMetadataBuilder->injectShareToolbar($html, $newsletter, $canonicalUrl);
     return $this->shareMetadataBuilder->injectMetadata($html, $newsletter, $canonicalUrl);
   }
 }
