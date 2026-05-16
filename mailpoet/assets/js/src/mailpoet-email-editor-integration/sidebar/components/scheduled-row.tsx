@@ -12,12 +12,11 @@ import {
 } from '@wordpress/components';
 import { __, _x } from '@wordpress/i18n';
 import { useRef } from '@wordpress/element';
-import { getSettings } from '@wordpress/date';
+import { dateI18n, getSettings } from '@wordpress/date';
 import { closeSmall } from '@wordpress/icons';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { MailPoet } from 'mailpoet';
 
 export function ScheduledRow() {
   const [mailpoetEmailData] = useEntityProp(
@@ -59,7 +58,11 @@ export function ScheduledRow() {
     if (!scheduledDate) {
       return __('Immediately', 'mailpoet');
     }
-    return MailPoet.Date.full(scheduledDate);
+    return dateI18n(
+      settings.formats.datetime,
+      scheduledDate,
+      settings.timezone.string,
+    );
   };
 
   const is12HourTime = /a(?!\\)/i.test(

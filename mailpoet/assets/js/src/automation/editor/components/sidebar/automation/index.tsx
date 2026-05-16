@@ -1,9 +1,9 @@
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { MailPoet } from 'mailpoet';
 import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
+import { locale } from '../../../../config';
 import { Hooks } from '../../../../../hooks';
 import { AutomationSettingElements } from '../../../../types/filters';
 
@@ -34,20 +34,34 @@ export function AutomationSidebar(): JSX.Element {
     [],
   );
 
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+
   return (
     <>
       <PanelBody title={__('Automation details', 'mailpoet')} initialOpen>
         <PanelRow>
           <strong>Date added</strong>{' '}
-          {MailPoet.Date.short(automationData.created_at)}
+          {new Date(Date.parse(automationData.created_at)).toLocaleDateString(
+            locale.toString(),
+            dateOptions,
+          )}
         </PanelRow>
         <PanelRow>
           <strong>Activated</strong>{' '}
           {automationData.status === 'active' &&
-            MailPoet.Date.short(automationData.updated_at)}
+            new Date(Date.parse(automationData.updated_at)).toLocaleDateString(
+              locale.toString(),
+              dateOptions,
+            )}
           {automationData.status !== 'active' &&
             automationData.activated_at &&
-            MailPoet.Date.short(automationData.activated_at)}
+            new Date(
+              Date.parse(automationData.activated_at),
+            ).toLocaleDateString(locale.toString(), dateOptions)}
           {automationData.status !== 'active' &&
             !automationData.activated_at && (
               <span className="mailpoet-deactive">Not activated yet.</span>

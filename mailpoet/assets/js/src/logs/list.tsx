@@ -153,7 +153,7 @@ function List({
           }
           <ErrorBoundary>
             <Datepicker
-              formatWithWordPressSettings
+              dateFormat="MMMM d, yyyy"
               onChange={dateChanged(setFrom)}
               maxDate={new Date()}
               selected={from ? parseISO(from) : undefined}
@@ -164,7 +164,7 @@ function List({
               `${__('To', 'mailpoet')}:`
             }
             <Datepicker
-              formatWithWordPressSettings
+              dateFormat="MMMM d, yyyy"
               onChange={dateChanged(setTo)}
               maxDate={new Date()}
               selected={to ? parseISO(to) : undefined}

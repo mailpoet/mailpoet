@@ -165,7 +165,9 @@ export function getRow(
         <div
           data-automation-id={`mailpoet_dynamic_segment_created_at_${dynamicSegment.id}`}
         >
-          {MailPoet.Date.full(dynamicSegment.created_at)}
+          {MailPoet.Date.short(dynamicSegment.created_at)}
+          <br />
+          {MailPoet.Date.time(dynamicSegment.created_at)}
         </div>
       ),
     },

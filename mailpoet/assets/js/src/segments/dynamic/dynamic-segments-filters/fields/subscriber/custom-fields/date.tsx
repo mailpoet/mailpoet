@@ -227,7 +227,7 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
       </Select>
       {!isBlankOption(item.operator) && (
         <Datepicker
-          formatWithWordPressSettings
+          dateFormat="MMM d, yyyy"
           onChange={(value): void =>
             onChange(
               assign(item, { value: convertDateToString(value) }),

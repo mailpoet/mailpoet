@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { useEffect, useState } from 'react';
 import { SlotFillProvider } from '@wordpress/components';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
+import { getSettings, setSettings } from '@wordpress/date';
 import { Platform } from '@wordpress/element';
 import {
   store as interfaceStore,
@@ -129,6 +130,19 @@ function Editor(): JSX.Element {
 
 window.addEventListener('DOMContentLoaded', () => {
   setLocaleData(window.wp.i18n.getLocaleData());
+
+  if (window.wp.date.getSettings !== undefined) {
+    const dateSettings = window.wp as unknown as {
+      date: { getSettings: typeof getSettings };
+    };
+    setSettings(dateSettings.date.getSettings());
+  } else {
+    const dateSettings = window.wp as unknown as {
+      /* eslint-disable no-underscore-dangle */
+      date: { __experimentalGetSettings: typeof getSettings };
+    };
+    setSettings(dateSettings.date.__experimentalGetSettings());
+  }
 
   createStore();
 

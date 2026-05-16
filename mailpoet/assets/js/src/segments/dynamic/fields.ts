@@ -17,7 +17,9 @@ function dateTime(
         ? `mailpoet_dynamic_segment_updated_at_${segmentId}`
         : 'mailpoet_dynamic_segment_updated_at',
     },
-    MailPoet.Date.full(value),
+    createElement('span', null, MailPoet.Date.short(value)),
+    createElement('br', null),
+    createElement('span', null, MailPoet.Date.time(value)),
   );
 }
 
