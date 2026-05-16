@@ -5,10 +5,11 @@ namespace MailPoet\Config;
 use Helper\WordPress;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url;
-use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment;
@@ -57,27 +58,63 @@ class ShortcodesTest extends \MailPoetTest {
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {
-        case 'mailpoet_archive_date':
+        case 'mailpoet_archive_email_processed_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject_line':
+        case 'mailpoet_archive_email_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
     });
-    // result contains a link pointing to the "view in browser" router endpoint
+    // result contains a link pointing to the public share URL
     $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
     $dom = pQuery::parseStr($result);
     $link = $dom->query('a');
     /** @var string $link */
     $link = $link->attr('href');
-    verify($link)->stringContainsString('endpoint=view_in_browser');
-    $parsedLink = parse_url($link, PHP_URL_QUERY);
-    parse_str(html_entity_decode((string)$parsedLink), $data);
-    $requestData = $this->newsletterUrl->transformUrlDataObject(
-      Router::decodeRequestData($data['data'])
-    );
-    verify($requestData['newsletter_hash'])->equals($this->newsletter->getHash());
+    verify($link)->equals($this->newsletterUrl->getPublicShareUrl($this->newsletter));
+    verify($link)->stringNotContainsString('endpoint=view_in_browser');
+  }
+
+  public function testArchiveListsPublicAndPrivateEmails(): void {
+    (new NewsletterFactory())
+      ->withSubject('Public newsletter')
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->create();
+    (new NewsletterFactory())
+      ->withSubject('Private newsletter')
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PRIVATE,
+      ])
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive]');
+
+    verify($result)->stringContainsString('Public newsletter');
+    verify($result)->stringContainsString('Private newsletter');
+  }
+
+  public function testRenderArchiveSubjectDoesNotLinkPrivateEmails(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Private subject')
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PRIVATE,
+      ])
+      ->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+
+    $result = ContainerWrapper::getInstance()
+      ->get(Shortcodes::class)
+      ->renderArchiveSubject($newsletter, null, $queue);
+
+    verify($result)->stringContainsString('Private subject');
+    verify($result)->stringNotContainsString('<a ');
   }
 
   public function testArchiveAcceptsStartDate() {
@@ -302,9 +339,9 @@ class ShortcodesTest extends \MailPoetTest {
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {
-        case 'mailpoet_archive_date':
+        case 'mailpoet_archive_email_processed_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject_line':
+        case 'mailpoet_archive_email_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
@@ -345,9 +382,9 @@ class ShortcodesTest extends \MailPoetTest {
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {
-        case 'mailpoet_archive_date':
+        case 'mailpoet_archive_email_processed_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject_line':
+        case 'mailpoet_archive_email_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
