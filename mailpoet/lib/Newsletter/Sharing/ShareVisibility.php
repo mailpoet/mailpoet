@@ -79,9 +79,9 @@ class ShareVisibility {
   }
 
   public function getDefaultVisibility(): string {
-    $visibility = (string)$this->settings->get(self::SETTING_DEFAULT_VISIBILITY, self::VISIBILITY_PRIVATE);
+    $visibility = (string)$this->settings->get(self::SETTING_DEFAULT_VISIBILITY, self::VISIBILITY_PUBLIC);
     return in_array($visibility, [self::VISIBILITY_PUBLIC, self::VISIBILITY_PRIVATE], true)
       ? $visibility
-      : self::VISIBILITY_PRIVATE;
+      : self::VISIBILITY_PUBLIC;
   }
 }

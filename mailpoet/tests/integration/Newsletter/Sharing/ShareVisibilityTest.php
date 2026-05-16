@@ -8,7 +8,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class ShareVisibilityTest extends \MailPoetTest {
-  public function testItBlocksSentStandardNewslettersByDefault() {
+  public function testItAllowsSentStandardNewslettersByDefault() {
     $newsletter = (new Newsletter())
       ->withSentStatus()
       ->create();
@@ -16,6 +16,21 @@ class ShareVisibilityTest extends \MailPoetTest {
     $shareVisibility = $this->diContainer->get(ShareVisibility::class);
 
     verify($shareVisibility->getConfiguredVisibility($newsletter))->equals(ShareVisibility::VISIBILITY_DEFAULT);
+    verify($shareVisibility->getDefaultVisibility())->equals(ShareVisibility::VISIBILITY_PUBLIC);
+    verify($shareVisibility->canShare($newsletter))->true();
+  }
+
+  public function testItBlocksSentStandardNewslettersWhenGlobalDefaultIsPrivate() {
+    $this->diContainer->get(SettingsController::class)->set(
+      ShareVisibility::SETTING_DEFAULT_VISIBILITY,
+      ShareVisibility::VISIBILITY_PRIVATE
+    );
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->create();
+
+    $shareVisibility = $this->diContainer->get(ShareVisibility::class);
+
     verify($shareVisibility->getDefaultVisibility())->equals(ShareVisibility::VISIBILITY_PRIVATE);
     verify($shareVisibility->canShare($newsletter))->false();
   }

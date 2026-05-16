@@ -139,7 +139,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     analytics: asObject({ enabled: disabledRadio }),
     collect_subscriber_timezones: asObject({ enabled: enabledRadio }),
     sharing: asObject({
-      default_visibility: asEnum(['public', 'private'], 'private'),
+      default_visibility: asEnum(['public', 'private'], 'public'),
     }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
