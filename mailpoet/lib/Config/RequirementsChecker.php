@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -54,6 +55,16 @@ class RequirementsChecker {
           str_replace('\n', PHP_EOL, '<?php\n\n// Silence is golden')
         );
       }
+    }
+    try {
+      ExportDownload::ensureExportDirectory();
+    } catch (\RuntimeException $e) {
+      $error = Helpers::replaceLinkTags(
+        __('MailPoet requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+        'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions',
+        ['target' => '_blank']
+      );
+      return $this->processError($error);
     }
     return true;
   }
