@@ -583,8 +583,7 @@ class FilterDataMapper {
       $this->wooCommerceUsedCouponCode->validateFilterData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['coupon_code_ids'] = $data['coupon_code_ids'];
-      $filterData['days'] = $data['days'];
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommercePurchasedWithAttribute::ACTION) {
       $this->wooCommercePurchasedWithAttribute->validateFilterData($data);
       $filterData['operator'] = $data['operator'];
