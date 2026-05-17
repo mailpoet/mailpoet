@@ -543,7 +543,10 @@ class FilterDataMapper {
     } elseif (in_array($data['action'], [WooCommercePurchaseDate::ACTION, WooCommerceFirstOrder::ACTION])) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
-      if ($data['operator'] === DateFilterHelper::BETWEEN && isset($data['value2']) && is_string($filterData['value']) && is_string($data['value2'])) {
+      if ($data['operator'] === DateFilterHelper::BETWEEN) {
+        if (!isset($data['value2']) || !is_string($data['value2']) || $data['value2'] === '' || !is_string($filterData['value'])) {
+          throw new InvalidFilterException('Missing second date for between operator', InvalidFilterException::INVALID_DATE_VALUE);
+        }
         [$filterData['value'], $filterData['value2']] = $this->orderDateRange($filterData['value'], $data['value2']);
       }
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
