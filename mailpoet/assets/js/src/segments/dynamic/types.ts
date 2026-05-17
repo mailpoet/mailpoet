@@ -146,6 +146,9 @@ export interface WooCommerceFormItem extends FormItem {
   category_ids?: string[];
   product_ids?: string[];
   variation_ids?: string[];
+  timeframe?: Timeframe;
+  value?: string;
+  value2?: string;
   operator?: string;
   number_of_orders_type?: string;
   number_of_orders_count?: number;
