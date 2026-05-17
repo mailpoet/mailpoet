@@ -492,6 +492,7 @@ class FilterDataMapper {
       }
       $filterData['operator'] = $data['operator'];
       $filterData['variation_ids'] = $data['variation_ids'];
+      $this->copyDatePeriodData($data, $filterData, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     } elseif ($data['action'] === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
       if (!isset($data['country_code'])) {
         throw new InvalidFilterException('Missing country', InvalidFilterException::MISSING_COUNTRY);

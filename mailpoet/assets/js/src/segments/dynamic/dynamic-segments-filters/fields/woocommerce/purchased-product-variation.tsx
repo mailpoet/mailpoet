@@ -10,9 +10,11 @@ import {
   AnyValueTypes,
   FilterProps,
   SelectOption,
+  Timeframe,
   WindowProducts,
   WooCommerceFormItem,
 } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 type VariationsResponse = {
   data: {
@@ -27,7 +29,8 @@ export function validatePurchasedProductVariation(
   return (
     Array.isArray(formItems.variation_ids) &&
     formItems.variation_ids.length > 0 &&
-    !!formItems.operator
+    !!formItems.operator &&
+    validateDaysPeriod(formItems)
   );
 }
 
@@ -212,6 +215,10 @@ export function PurchasedProductVariationFields({
           );
         }}
         automationId="select-product-variations"
+      />
+      <DaysPeriodField
+        filterIndex={filterIndex}
+        defaultTimeframe={Timeframe.ALL_TIME}
       />
     </>
   );
