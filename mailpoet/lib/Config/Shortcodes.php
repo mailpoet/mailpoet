@@ -278,13 +278,16 @@ class Shortcodes {
     $shortcodeProcessor->setSubscriber($subscriber);
     $shortcodeProcessor->setQueue($queue);
     $subject = (string)$shortcodeProcessor->replace($queue ? $queue->getNewsletterRenderedSubject() : '');
-    if (!$this->shareVisibility->canShare($newsletter)) {
-      return $this->wp->escHtml($subject);
+    if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && $this->shareVisibility->canShare($newsletter)) {
+      $previewUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
+      $linkTitle = __('Read in a new tab', 'mailpoet');
+    } else {
+      $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
+      $linkTitle = __('Preview in a new tab', 'mailpoet');
     }
 
-    $previewUrl = $this->newsletterUrl->getPublicShareUrl($newsletter);
     return '<a href="' . $this->wp->escUrl($previewUrl) . '" target="_blank" rel="noopener noreferrer" title="'
-      . $this->wp->escAttr(__('Read in a new tab', 'mailpoet')) . '">'
+      . $this->wp->escAttr($linkTitle) . '">'
       . $this->wp->escHtml($subject) .
       '</a>';
   }

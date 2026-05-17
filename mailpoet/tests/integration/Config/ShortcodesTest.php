@@ -97,7 +97,27 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result)->stringContainsString('Private newsletter');
   }
 
-  public function testRenderArchiveSubjectDoesNotLinkPrivateEmails(): void {
+  public function testRenderArchiveSubjectLinksNotificationHistoryToViewInBrowser(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Post notification subject')
+      ->withPostNotificationHistoryType()
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+
+    $result = ContainerWrapper::getInstance()
+      ->get(Shortcodes::class)
+      ->renderArchiveSubject($newsletter, null, $queue);
+
+    verify($result)->stringContainsString('Post notification subject');
+    verify($result)->stringContainsString('<a ');
+    verify($result)->stringContainsString('endpoint=view_in_browser');
+    verify($result)->stringNotContainsString($this->newsletterUrl->getPublicShareUrl($newsletter));
+  }
+
+  public function testRenderArchiveSubjectLinksPrivateEmailsToViewInBrowser(): void {
     $newsletter = (new NewsletterFactory())
       ->withSubject('Private subject')
       ->withSentStatus()
@@ -114,7 +134,9 @@ class ShortcodesTest extends \MailPoetTest {
       ->renderArchiveSubject($newsletter, null, $queue);
 
     verify($result)->stringContainsString('Private subject');
-    verify($result)->stringNotContainsString('<a ');
+    verify($result)->stringContainsString('<a ');
+    verify($result)->stringContainsString('endpoint=view_in_browser');
+    verify($result)->stringNotContainsString($this->newsletterUrl->getPublicShareUrl($newsletter));
   }
 
   public function testArchiveAcceptsStartDate() {
