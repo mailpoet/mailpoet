@@ -6,7 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -42,9 +41,6 @@ class WooCommerceUsedShippingMethod implements Filter {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
     $shippingMethodInstanceIds = $filterData->getParam('shipping_methods');
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
-
-    $days = $filterData->getParam('days');
 
     if (!is_string($operator) || !in_array($operator, self::VALID_OPERATORS, true)) {
       throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
@@ -58,17 +54,16 @@ class WooCommerceUsedShippingMethod implements Filter {
     $this->filterHelper->validateDaysPeriodData((array)$data);
 
     $excludedStatuses = $this->wooFilterHelper->defaultExcludedStatuses();
-    $date = is_int($days) ? $this->filterHelper->getDateNDaysAgo($days) : Carbon::now();
 
     switch ($operator) {
       case DynamicSegmentFilterData::OPERATOR_ANY:
-        $this->applyForAnyOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForAnyOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $filterData);
         break;
       case DynamicSegmentFilterData::OPERATOR_ALL:
-        $this->applyForAllOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForAllOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $filterData);
         break;
       case DynamicSegmentFilterData::OPERATOR_NONE:
-        $this->applyForNoneOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+        $this->applyForNoneOperator($queryBuilder, $excludedStatuses, $shippingMethodInstanceIds, $filterData);
         break;
     }
 
@@ -93,7 +88,7 @@ class WooCommerceUsedShippingMethod implements Filter {
     return $lookupData;
   }
 
-  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, DynamicSegmentFilterData $filterData): void {
     $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
     $orderItemsTable = $this->filterHelper->getPrefixedTable('woocommerce_order_items');
@@ -108,15 +103,10 @@ class WooCommerceUsedShippingMethod implements Filter {
       ->andWhere("$orderItemMetaTableAlias.meta_key = 'instance_id'")
       ->andWhere("$orderItemMetaTableAlias.meta_value IN (:$instanceIdsParam)")
       ->setParameter($instanceIdsParam, $shippingMethodInstanceIds, ArrayParameterType::STRING);
-    if (!$isAllTime) {
-      $dateParam = $this->filterHelper->getUniqueParameterName('date');
-      $queryBuilder
-        ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-        ->setParameter($dateParam, $date->toDateTimeString());
-    }
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData);
   }
 
-  private function applyForAllOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForAllOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, DynamicSegmentFilterData $filterData): void {
     $orderItemTypeParam = $this->filterHelper->getUniqueParameterName('orderItemType');
     $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
@@ -137,17 +127,12 @@ class WooCommerceUsedShippingMethod implements Filter {
       ->groupBy('inner_subscriber_id')
       ->having("COUNT(DISTINCT($orderItemMetaTableAlias.meta_value)) = " . count($shippingMethodInstanceIds));
 
-    if (!$isAllTime) {
-      $dateParam = $this->filterHelper->getUniqueParameterName('date');
-      $queryBuilder
-        ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-        ->setParameter($dateParam, $date->toDateTimeString());
-    }
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData);
   }
 
-  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
+  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $excludedStatuses, array $shippingMethodInstanceIds, DynamicSegmentFilterData $filterData): void {
     $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-    $this->applyForAnyOperator($subQuery, $excludedStatuses, $shippingMethodInstanceIds, $date, $isAllTime);
+    $this->applyForAnyOperator($subQuery, $excludedStatuses, $shippingMethodInstanceIds, $filterData);
     $subscribersTable = $this->filterHelper->getSubscribersTable();
     $queryBuilder->andWhere($queryBuilder->expr()->notIn("$subscribersTable.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
   }
