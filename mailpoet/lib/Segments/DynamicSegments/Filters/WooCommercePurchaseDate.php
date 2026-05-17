@@ -77,9 +77,9 @@ class WooCommercePurchaseDate implements Filter {
           throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
         }
         $date2Param = $this->filterHelper->getUniqueParameterName('date');
-        $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam AND $orderStatsAlias.date_created < :$date2Param");
-        $queryBuilder->setParameter($dateParam, $date . ' 00:00:00');
-        $queryBuilder->setParameter($date2Param, $this->dateFilterHelper->getNextDayStart($date2));
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) >= :$dateParam AND DATE($orderStatsAlias.date_created) <= :$date2Param");
+        $queryBuilder->setParameter($dateParam, $date);
+        $queryBuilder->setParameter($date2Param, $date2);
         return $queryBuilder;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);

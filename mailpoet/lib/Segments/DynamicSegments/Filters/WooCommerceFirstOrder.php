@@ -58,31 +58,31 @@ class WooCommerceFirstOrder implements Filter {
 
     switch ($operator) {
       case DateFilterHelper::BEFORE:
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) < :$dateParam");
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) < :$dateParam");
         break;
       case DateFilterHelper::AFTER:
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) > :$dateParam");
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) > :$dateParam");
         break;
       case DateFilterHelper::IN_THE_LAST:
       case DateFilterHelper::NOT_IN_THE_LAST:
       case DateFilterHelper::ON_OR_AFTER:
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) >= :$dateParam");
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) >= :$dateParam");
         break;
       case DateFilterHelper::ON:
       case DateFilterHelper::NOT_ON:
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) = :$dateParam");
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) = :$dateParam");
         break;
       case DateFilterHelper::ON_OR_BEFORE:
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) <= :$dateParam");
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) <= :$dateParam");
         break;
       case DateFilterHelper::BETWEEN:
         if ($date2 === null) {
           throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
         }
         $date2Param = $this->filterHelper->getUniqueParameterName('date');
-        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) >= :$dateParam AND MIN($orderStatsAlias.date_created) < :$date2Param");
-        $queryBuilder->setParameter($dateParam, $date . ' 00:00:00');
-        $queryBuilder->setParameter($date2Param, $this->dateFilterHelper->getNextDayStart($date2));
+        $queryBuilder->andHaving("DATE(MIN($orderStatsAlias.date_created)) >= :$dateParam AND DATE(MIN($orderStatsAlias.date_created)) <= :$date2Param");
+        $queryBuilder->setParameter($dateParam, $date);
+        $queryBuilder->setParameter($date2Param, $date2);
         return $queryBuilder;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
