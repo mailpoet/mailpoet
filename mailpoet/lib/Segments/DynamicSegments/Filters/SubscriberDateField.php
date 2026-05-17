@@ -48,6 +48,9 @@ class SubscriberDateField implements Filter {
     $value = $this->dateFilterHelper->getDateValueFromFilter($filter);
     $parameter = $this->filterHelper->getUniqueParameterName('date');
     $date = $this->dateFilterHelper->getDateStringForOperator($operator, $value);
+    $date2 = $operator === DateFilterHelper::BETWEEN
+      ? $this->dateFilterHelper->getDateStringForOperator($operator, $this->dateFilterHelper->getSecondDateValueFromFilter($filter))
+      : null;
 
     if (!is_string($action)) {
       throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
@@ -76,6 +79,15 @@ class SubscriberDateField implements Filter {
       case DateFilterHelper::ON_OR_AFTER:
         $queryBuilder->andWhere("DATE($columnName) >= :$parameter");
         break;
+      case DateFilterHelper::BETWEEN:
+        if ($date2 === null) {
+          throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
+        }
+        $parameter2 = $this->filterHelper->getUniqueParameterName('date');
+        $queryBuilder->andWhere("$columnName >= :$parameter AND $columnName < :$parameter2");
+        $queryBuilder->setParameter($parameter, $date . ' 00:00:00');
+        $queryBuilder->setParameter($parameter2, $this->dateFilterHelper->getNextDayStart($date2));
+        return $queryBuilder;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }

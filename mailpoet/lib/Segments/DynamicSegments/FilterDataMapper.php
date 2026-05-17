@@ -335,11 +335,15 @@ class FilterDataMapper {
       if (!in_array($data['operator'], $this->dateFilterHelper->getValidOperators())) {
         throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
       }
-      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+      $filterData = [
         'value' => $data['value'],
         'operator' => $data['operator'],
         'connect' => $data['connect'],
-      ]);
+      ];
+      if (isset($data['value2'])) {
+        $filterData['value2'] = $data['value2'];
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], $filterData);
     }
     if (empty($data['wordpressRole'])) {
       throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
