@@ -121,6 +121,26 @@ class WooCommerceNumberOfReviewsTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('4', '=', 1, 50, 'inTheLast', ['3@e.com']);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@e.com');
+    $this->tester->createWooProductReview($customerInRange, 'between-in@e.com', $this->productId, 5, Carbon::parse('2023-05-11'));
+    $customerBefore = $this->tester->createCustomer('between-before@e.com');
+    $this->tester->createWooProductReview($customerBefore, 'between-before@e.com', $this->productId, 5, Carbon::parse('2023-05-09'));
+    $customerAfter = $this->tester->createCustomer('between-after@e.com');
+    $this->tester->createWooProductReview($customerAfter, 'between-after@e.com', $this->productId, 5, Carbon::parse('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfReviews::ACTION, [
+      'count_type' => '>',
+      'count' => 0,
+      'rating' => 'any',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@e.com'], $emails);
+  }
+
   public function testItValidatesRatingPresence(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);

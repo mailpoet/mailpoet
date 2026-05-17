@@ -5,6 +5,7 @@ namespace integration\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @group woo
@@ -174,6 +175,37 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
     $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['red', 'blue'], ['customer4@example.com']);
     $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['red'], ['customer3@example.com', 'customer4@example.com']);
     $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['blue'], ['customer2@example.com', 'customer4@example.com']);
+  }
+
+  public function testItWorksWithBetweenDatesForTaxonomies(): void {
+    $product = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'attributes' => [
+        $this->tester->getWooCommerceProductAttribute('color', ['blue']),
+      ],
+    ]);
+
+    $blueTermId = $this->tester->getWooCommerceProductAttributeTermId('color', 'blue');
+
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+
+    $this->createOrder($customerInRange, [$product], Carbon::parse('2023-05-11'));
+    $this->createOrder($customerBefore, [$product], Carbon::parse('2023-05-09'));
+    $this->createOrder($customerAfter, [$product], Carbon::parse('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommercePurchasedWithAttribute::ACTION, [
+      'operator' => 'any',
+      'attribute_taxonomy_slug' => 'pa_color',
+      'attribute_term_ids' => [$blueTermId],
+      'attribute_type' => 'taxonomy',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
   }
 
   public function testItRetrievesLookupData(): void {
@@ -349,10 +381,13 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
-  private function createOrder(int $customerId, array $products): int {
+  private function createOrder(int $customerId, array $products, ?Carbon $createdAt = null): int {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);
     $order->set_status('wc-completed');
+    if ($createdAt !== null) {
+      $order->set_date_created($createdAt->toDateTimeString());
+    }
     foreach ($products as $product) {
       $order->add_product($product);
     }

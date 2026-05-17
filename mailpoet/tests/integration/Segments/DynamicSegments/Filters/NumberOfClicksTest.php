@@ -80,6 +80,30 @@ class NumberOfClicksTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['2@e.com'], $emails);
   }
 
+  public function testBetweenDates(): void {
+    $subBefore = (new Subscriber())->withEmail('before@e.com')->create();
+    $this->createClicks($subBefore, 1, new CarbonImmutable('2023-05-09'));
+
+    $subStart = (new Subscriber())->withEmail('start@e.com')->create();
+    $this->createClicks($subStart, 1, new CarbonImmutable('2023-05-10'));
+
+    $subEnd = (new Subscriber())->withEmail('end@e.com')->create();
+    $this->createClicks($subEnd, 1, new CarbonImmutable('2023-05-12'));
+
+    $subAfter = (new Subscriber())->withEmail('after@e.com')->create();
+    $this->createClicks($subAfter, 1, new CarbonImmutable('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, NumberOfClicks::ACTION, [
+      'operator' => 'equals',
+      'clicks' => 1,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['start@e.com', 'end@e.com'], $emails);
+  }
+
   private function getSegmentFilterData(int $clicks, string $operator, int $days, string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, string $action = NumberOfClicks::ACTION): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,

@@ -63,6 +63,25 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['customer2@example.com', 'customer3@example.com'], $emails);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $this->createOrder($customerInRange, Carbon::parse('2023-05-11'), 50);
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $this->createOrder($customerBefore, Carbon::parse('2023-05-09'), 50);
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+    $this->createOrder($customerAfter, Carbon::parse('2023-05-13'), 50);
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE, [
+      'single_order_value_type' => '=',
+      'single_order_value_amount' => 50,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->singleOrderValue);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   public function testItWorksWithLifetimeOption(): void {
     $segmentFilterData = $this->getSegmentFilterData('<', 1000000000, 0, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
