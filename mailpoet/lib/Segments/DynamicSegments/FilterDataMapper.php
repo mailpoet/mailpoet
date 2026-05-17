@@ -553,11 +553,9 @@ class FilterDataMapper {
       if (!isset($data['payment_methods']) || !is_array($data['payment_methods']) || empty($data['payment_methods'])) {
         throw new InvalidFilterException('Missing payment gateways', InvalidFilterException::MISSING_VALUE);
       }
-      $this->filterHelper->validateDaysPeriodData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['payment_methods'] = $data['payment_methods'];
-      $filterData['days'] = intval($data['days'] ?? 0);
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceUsedShippingMethod::ACTION) {
       if (!isset($data['operator']) || !in_array($data['operator'], WooCommerceUsedShippingMethod::VALID_OPERATORS, true)) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
