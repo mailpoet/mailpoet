@@ -498,7 +498,6 @@ class FilterDataMapper {
       $filterData['country_code'] = $data['country_code'];
       $filterData['operator'] = $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY;
     } elseif (in_array($data['action'], WooCommerceNumberOfOrders::ACTIONS)) {
-      $this->filterHelper->validateDaysPeriodData($data);
       if (
         !isset($data['number_of_orders_type'])
         || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
@@ -507,8 +506,7 @@ class FilterDataMapper {
       }
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
-      $filterData['days'] = $data['days'] ?? 0;
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceNumberOfReviews::ACTION) {
       $this->wooCommerceNumberOfReviews->validateFilterData($data);
       $filterData['days'] = $data['days'];
