@@ -9,9 +9,11 @@ import {
   AnyValueTypes,
   FilterProps,
   SelectOption,
+  Timeframe,
   WindowProductCategories,
   WooCommerceFormItem,
 } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 export function validatePurchasedCategory(
   formItems: WooCommerceFormItem,
@@ -19,7 +21,8 @@ export function validatePurchasedCategory(
   const purchasedCategoryIsInvalid =
     formItems.category_ids === undefined ||
     formItems.category_ids.length === 0 ||
-    !formItems.operator;
+    !formItems.operator ||
+    !validateDaysPeriod(formItems);
 
   return !purchasedCategoryIsInvalid;
 }
@@ -92,6 +95,10 @@ export function PurchasedCategoryFields({
           );
         }}
         automationId="select-segment-category"
+      />
+      <DaysPeriodField
+        filterIndex={filterIndex}
+        defaultTimeframe={Timeframe.ALL_TIME}
       />
     </>
   );
