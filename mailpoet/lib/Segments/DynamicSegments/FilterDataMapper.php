@@ -543,6 +543,9 @@ class FilterDataMapper {
     } elseif (in_array($data['action'], [WooCommercePurchaseDate::ACTION, WooCommerceFirstOrder::ACTION])) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
+      if ($data['operator'] === DateFilterHelper::BETWEEN && isset($data['value2']) && is_string($filterData['value']) && is_string($data['value2'])) {
+        [$filterData['value'], $filterData['value2']] = $this->orderDateRange($filterData['value'], $data['value2']);
+      }
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
       if (
         !isset($data['average_spent_type'])
