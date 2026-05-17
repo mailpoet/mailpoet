@@ -524,7 +524,6 @@ class FilterDataMapper {
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
       $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
-      $this->filterHelper->validateDaysPeriodData($data);
       if (
         !isset($data['single_order_value_type'])
         || !isset($data['single_order_value_amount']) || $data['single_order_value_amount'] < 0
@@ -533,8 +532,7 @@ class FilterDataMapper {
       }
       $filterData['single_order_value_type'] = $data['single_order_value_type'];
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
-      $filterData['days'] = $data['days'] ?? 0;
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif (in_array($data['action'], [WooCommercePurchaseDate::ACTION, WooCommerceFirstOrder::ACTION])) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];

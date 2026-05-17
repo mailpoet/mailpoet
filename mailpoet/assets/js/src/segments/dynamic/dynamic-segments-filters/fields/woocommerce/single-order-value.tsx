@@ -75,9 +75,7 @@ export function SingleOrderValueFields({
         />
         <div>{wooCurrencySymbol}</div>
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }
