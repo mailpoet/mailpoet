@@ -78,9 +78,7 @@ export function NumberOfClicksFields({
           return null;
         })}
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }
