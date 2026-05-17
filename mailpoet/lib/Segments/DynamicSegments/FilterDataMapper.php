@@ -340,7 +340,25 @@ class FilterDataMapper {
         'operator' => $data['operator'],
         'connect' => $data['connect'],
       ];
-      if (isset($data['value2'])) {
+      if ($data['operator'] === DateFilterHelper::BETWEEN) {
+        $betweenData = [
+          'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+          'value' => $filterData['value'],
+          'value2' => $data['value2'] ?? null,
+        ];
+        if (is_string($betweenData['value']) && is_string($betweenData['value2'])) {
+          [$betweenData['value'], $betweenData['value2']] = $this->orderDateRange($betweenData['value'], $betweenData['value2']);
+        }
+        try {
+          $this->filterHelper->validateDaysPeriodData($betweenData);
+        } catch (InvalidFilterException $e) {
+          throw $e;
+        } catch (\Throwable $e) {
+          throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+        }
+        $filterData['value'] = $betweenData['value'];
+        $filterData['value2'] = $betweenData['value2'];
+      } elseif (isset($data['value2'])) {
         $filterData['value2'] = $data['value2'];
       }
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], $filterData);
