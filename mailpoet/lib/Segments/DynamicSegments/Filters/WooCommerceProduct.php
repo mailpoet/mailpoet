@@ -49,6 +49,7 @@ class WooCommerceProduct implements Filter {
 
     if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
       $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+      $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
       $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $queryBuilder->andWhere("product.product_id IN (:products_{$parameterSuffix})");
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
@@ -57,6 +58,7 @@ class WooCommerceProduct implements Filter {
         $uniqueParameterSuffix = Security::generateRandomString();
         $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
         $subOrderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+        $this->filterHelper->applyDatePeriodFilter($subQuery, "$subOrderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
         $this->applyProductJoin($subQuery, $subOrderStatsAlias);
         $subQuery->andWhere("product.product_id = :product_{$uniqueParameterSuffix}");
         $subQuery->setParameter("product_{$uniqueParameterSuffix}", $productId);
@@ -74,6 +76,7 @@ class WooCommerceProduct implements Filter {
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
       $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+      $this->filterHelper->applyDatePeriodFilter($subQuery, "$orderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
       $subQuery = $this->applyProductJoin($subQuery, $orderStatsAlias);
       $subQuery->andWhere("product.product_id IN (:products_{$parameterSuffix})");
       // application subQuery for negation

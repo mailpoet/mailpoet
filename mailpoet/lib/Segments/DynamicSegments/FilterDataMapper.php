@@ -476,6 +476,7 @@ class FilterDataMapper {
       }
       $filterData['operator'] = $data['operator'];
       $filterData['product_ids'] = $data['product_ids'];
+      $this->copyDatePeriodData($data, $filterData, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     } elseif ($data['action'] === WooCommerceProductVariation::ACTION_PRODUCT_VARIATION) {
       if (!isset($data['variation_ids']) || !is_array($data['variation_ids']) || count($data['variation_ids']) === 0) {
         throw new InvalidFilterException('Missing variation', InvalidFilterException::MISSING_VARIATION_ID);
