@@ -2,13 +2,14 @@
 
 namespace MailPoet\Subscribers\ImportExport\Export;
 
-use MailPoet\Config\Env;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Router\Endpoints\ExportDownload;
+use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
@@ -175,21 +176,14 @@ class ExportTest extends \MailPoetTest {
     verify(
       preg_match(
         '|' .
-        preg_quote(Env::$tempPath, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
+        preg_quote(Export::getExportPath(), '|') . '/MailPoet_export_[a-f0-9]{64}.' .
         $this->export->exportFormatOption .
         '|',
         $this->export->exportFile
       )
     )->equals(1);
-    verify(
-      preg_match(
-        '|' .
-        preg_quote(Env::$tempUrl, '|') . '/' .
-        basename($this->export->exportFile) .
-        '|',
-        $this->export->exportFileURL
-      )
-    )->equals(1);
+    verify($this->getSubscriberDownloadFormat($this->export->exportFileURL))->equals($this->export->exportFormatOption);
+    verify($this->export->exportFileURL)->stringNotContainsString(basename($this->export->exportFile));
   }
 
   public function testItCanGetSubscriberCustomFields() {
@@ -261,6 +255,7 @@ class ExportTest extends \MailPoetTest {
     }
     verify($result['totalExported'])->equals(4);
     verify($result['exportFileURL'])->notEmpty();
+    verify($this->getSubscriberDownloadFormat($result['exportFileURL']))->equals('csv');
 
     try {
       $this->export->exportFile = $this->export->getExportFile('xlsx');
@@ -271,6 +266,18 @@ class ExportTest extends \MailPoetTest {
     }
     verify($result['totalExported'])->equals(4);
     verify($result['exportFileURL'])->notEmpty();
+    verify($this->getSubscriberDownloadFormat($result['exportFileURL']))->equals('xlsx');
+  }
+
+  private function getSubscriberDownloadFormat(string $url): string {
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
+    verify($query[Router::NAME] ?? null)->equals('');
+    verify($query['endpoint'] ?? null)->equals(ExportDownload::ENDPOINT);
+    verify($query['action'] ?? null)->equals('subscriber_export');
+    $data = Router::decodeRequestData($query['data'] ?? '');
+    verify($data['token'] ?? null)->stringMatchesRegExp('/^[a-z0-9]{32}$/');
+    verify(isset($data['filename']))->false();
+    return (string)$data['format'];
   }
 
   private function createCustomField(string $name, string $type): CustomFieldEntity {
