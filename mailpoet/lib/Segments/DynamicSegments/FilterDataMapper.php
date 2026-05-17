@@ -595,6 +595,7 @@ class FilterDataMapper {
       $filterData['attribute_type'] = $data['attribute_type'];
       $filterData['attribute_local_name'] = $data['attribute_local_name'] ?? null;
       $filterData['attribute_local_values'] = $data['attribute_local_values'] ?? null;
+      $this->copyDatePeriodData($data, $filterData, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     } elseif ($data['action'] === WooCommerceTag::ACTION) {
       $this->wooCommerceTag->validateFilterData($data);
       $filterData['operator'] = $data['operator'];

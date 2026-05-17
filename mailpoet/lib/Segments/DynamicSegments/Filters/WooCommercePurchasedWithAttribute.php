@@ -51,6 +51,7 @@ class WooCommercePurchasedWithAttribute implements Filter {
     $attributeTermIds = $filterData->getArrayParam('attribute_term_ids');
     $termIdsParam = $this->filterHelper->getUniqueParameterName('attribute_term_ids');
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
     $attributeAlias = $this->applyTaxonomyAttributeJoin($queryBuilder, $productAlias, $attributeTaxonomySlug);
     $queryBuilder->andWhere("$attributeAlias.term_id IN (:$termIdsParam)");
@@ -193,6 +194,7 @@ class WooCommercePurchasedWithAttribute implements Filter {
     $valuesParam = $this->filterHelper->getUniqueParameterName('attribute_values');
     $keyParam = $this->filterHelper->getUniqueParameterName('attribute_name');
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
 
     $queryBuilder->innerJoin(
