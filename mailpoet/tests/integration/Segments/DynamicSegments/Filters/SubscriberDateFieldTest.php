@@ -81,6 +81,26 @@ class SubscriberDateFieldTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('lastClickDate', 'on', '2023-07-12', ['2@example.com']);
   }
 
+  public function testItWorksForBetween(): void {
+    (new Subscriber())
+      ->withEmail('1@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-11'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('2@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-12'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('3@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-13'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('4@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-14'))
+      ->create();
+    $this->assertFilterReturnsEmails('lastEngagementDate', 'between', '2023-07-12', ['2@example.com', '3@example.com'], '2023-07-13');
+  }
+
   public function testItWorksForOnOrBefore(): void {
     (new Subscriber())
       ->withEmail('1@example.com')
@@ -193,11 +213,15 @@ class SubscriberDateFieldTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('subscribedDate', 'notInTheLast', '3', ['1@example.com', '2@example.com']);
   }
 
-  private function assertFilterReturnsEmails(string $action, string $operator, string $value, array $expectedEmails): void {
-    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $action, [
+  private function assertFilterReturnsEmails(string $action, string $operator, string $value, array $expectedEmails, ?string $value2 = null): void {
+    $data = [
       'operator' => $operator,
       'value' => $value,
-    ]);
+    ];
+    if ($value2 !== null) {
+      $data['value2'] = $value2;
+    }
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $action, $data);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
