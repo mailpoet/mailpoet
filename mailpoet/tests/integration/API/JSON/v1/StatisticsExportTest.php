@@ -11,6 +11,8 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
+use MailPoet\Router\Endpoints\ExportDownload;
+use MailPoet\Router\Router;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
@@ -41,8 +43,11 @@ class StatisticsExportTest extends \MailPoetTest {
   }
 
   public function _after() {
-    foreach (glob($this->tempDir . '/*') ?: [] as $file) {
+    foreach ($this->getExportFiles() as $file) {
       unlink($file);
+    }
+    if (is_dir(ExportDownload::getExportDirectory())) {
+      rmdir(ExportDownload::getExportDirectory());
     }
     if (is_dir($this->tempDir)) {
       rmdir($this->tempDir);
@@ -87,10 +92,9 @@ class StatisticsExportTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['totalExported'])->equals(1);
-    verify($response->data['exportFileURL'])->stringStartsWith('https://example.test/uploads/mailpoet/MailPoet_stats_export_');
-    verify($response->data['exportFileURL'])->stringEndsWith('.csv');
+    $this->verifyStatisticsDownloadUrl($response->data['exportFileURL'], StatisticsExporter::FORMAT_CSV);
 
-    $files = glob($this->tempDir . '/*.csv') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
     verify($files)->arrayCount(1);
 
     $content = (string)file_get_contents($files[0]);
@@ -109,9 +113,9 @@ class StatisticsExportTest extends \MailPoetTest {
     ]);
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['exportFileURL'])->stringEndsWith('.xlsx');
+    $this->verifyStatisticsDownloadUrl($response->data['exportFileURL'], StatisticsExporter::FORMAT_XLSX);
 
-    $files = glob($this->tempDir . '/*.xlsx') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
     verify($files)->arrayCount(1);
     verify(filesize($files[0]))->greaterThan(0);
   }
@@ -124,7 +128,7 @@ class StatisticsExportTest extends \MailPoetTest {
     ]);
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['exportFileURL'])->stringEndsWith('.csv');
+    $this->verifyStatisticsDownloadUrl($response->data['exportFileURL'], StatisticsExporter::FORMAT_CSV);
   }
 
   public function testItRejectsRecipientsExportWhenDetailedAnalyticsRestricted() {
@@ -215,5 +219,23 @@ class StatisticsExportTest extends \MailPoetTest {
         'getCapability' => $capability,
       ]),
     ]);
+  }
+
+  private function verifyStatisticsDownloadUrl(string $url, string $extension): void {
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
+    verify($query[Router::NAME] ?? null)->equals('');
+    verify($query['endpoint'] ?? null)->equals(ExportDownload::ENDPOINT);
+    verify($query['action'] ?? null)->equals('statistics_export');
+    $data = Router::decodeRequestData($query['data'] ?? '');
+    verify($data['token'] ?? null)->stringMatchesRegExp('/^[a-z0-9]{32}$/');
+    verify($data['format'] ?? null)->equals($extension);
+    verify(isset($data['filename']))->false();
+  }
+
+  private function getExportFiles(): array {
+    return array_merge(
+      glob(ExportDownload::getExportDirectory() . '/*') ?: [],
+      glob(ExportDownload::getExportDirectory() . '/.htaccess') ?: []
+    );
   }
 }
