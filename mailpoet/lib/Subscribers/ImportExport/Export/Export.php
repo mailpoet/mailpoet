@@ -2,13 +2,12 @@
 
 namespace MailPoet\Subscribers\ImportExport\Export;
 
-use MailPoet\Config\Env;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
-use MailPoet\Util\Security;
 use MailPoetVendor\XLSXWriter;
 
 class Export {
@@ -22,6 +21,7 @@ class Export {
   public $exportPath;
   public $exportFile;
   public $exportFileURL;
+  public $exportFileToken;
 
   /** @var int */
   private $subscribersOffset;
@@ -76,13 +76,14 @@ class Export {
   }
 
   public static function getExportPath() {
-    return Env::$tempPath;
+    return ExportDownload::getExportDirectory();
   }
 
   public function process(): array {
     $processedSubscribers = 0;
     $this->resetCounters();
     try {
+      ExportDownload::ensureExportDirectory();
       if (is_writable($this->exportPath) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
@@ -101,7 +102,7 @@ class Export {
     }
     return [
       'totalExported' => $processedSubscribers,
-      'exportFileURL' => $this->exportFileURL,
+      'exportFileURL' => $this->getExportFileURL($this->exportFile),
     ];
   }
 
@@ -222,19 +223,15 @@ class Export {
   }
 
   public function getExportFileURL($file): string {
-    return sprintf(
-      '%s/%s',
-      Env::$tempUrl,
-      basename($file)
+    return ExportDownload::buildSubscriberExportUrl(
+      $this->exportFileToken,
+      (string)pathinfo($file, PATHINFO_EXTENSION)
     );
   }
 
   public function getExportFile($format): string {
-    return sprintf(
-      $this->exportPath . '/' . self::getFilePrefix() . '%s.%s',
-      Security::generateRandomString(15),
-      $format
-    );
+    $this->exportFileToken = ExportDownload::generateDownloadToken();
+    return ExportDownload::getFilePathForToken(self::getFilePrefix(), $this->exportFileToken, $format);
   }
 
   /**
