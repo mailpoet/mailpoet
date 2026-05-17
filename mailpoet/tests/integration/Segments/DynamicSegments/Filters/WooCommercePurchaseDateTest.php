@@ -86,6 +86,20 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     verify($emails)->equals(['c2@example.com']);
   }
 
+  public function testBetweenDates(): void {
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
+    $customerId4 = $this->tester->createCustomer('c4@example.com');
+    $this->createOrder($customerId1, new Carbon('2023-01-01'));
+    $this->createOrder($customerId2, new Carbon('2023-01-02'));
+    $this->createOrder($customerId3, new Carbon('2023-01-03'));
+    $this->createOrder($customerId4, new Carbon('2023-01-04'));
+    $emails = $this->getSubscriberEmailsMatchingFilter('between', '2023-01-02', '2023-01-03');
+    verify(count($emails))->equals(2);
+    verify($emails)->equals(['c2@example.com', 'c3@example.com']);
+  }
+
   public function testOnOrAfterDate(): void {
     $customerId1 = $this->tester->createCustomer('c1@example.com');
     $customerId2 = $this->tester->createCustomer('c2@example.com');
@@ -148,14 +162,18 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['wc-processing@example.com', 'wc-completed@example.com'], $emails);
   }
 
-  private function getSubscriberEmailsMatchingFilter(string $operator, string $value): array {
+  private function getSubscriberEmailsMatchingFilter(string $operator, string $value, ?string $value2 = null): array {
+    $filterData = [
+      'operator' => $operator,
+      'value' => $value,
+    ];
+    if ($value2 !== null) {
+      $filterData['value2'] = $value2;
+    }
     $data = new DynamicSegmentFilterData(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       WooCommercePurchaseDate::ACTION,
-      [
-        'operator' => $operator,
-        'value' => $value,
-      ]
+      $filterData
     );
     return $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->wooCommercePurchaseDate);
   }
