@@ -514,7 +514,6 @@ class FilterDataMapper {
       $filterData['rating'] = $data['rating'];
       $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
-      $this->filterHelper->validateDaysPeriodData($data);
       if (
         !isset($data['total_spent_type'])
         || !isset($data['total_spent_amount']) || $data['total_spent_amount'] < 0
@@ -523,8 +522,7 @@ class FilterDataMapper {
       }
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
-      $filterData['days'] = $data['days'] ?? 0;
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
       $this->filterHelper->validateDaysPeriodData($data);
       if (

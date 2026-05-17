@@ -69,9 +69,7 @@ export function TotalSpentFields({ filterIndex }: FilterProps): JSX.Element {
         />
         <div>{wooCurrencySymbol}</div>
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }
