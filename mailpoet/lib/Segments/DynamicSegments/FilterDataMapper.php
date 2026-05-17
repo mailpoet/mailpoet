@@ -622,6 +622,39 @@ class FilterDataMapper {
     return new DynamicSegmentFilterData($filterType, $action, $filterData);
   }
 
+  private function copyDatePeriodData(array $data, array &$filterData, string $defaultTimeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST): void {
+    $timeframe = $data['timeframe'] ?? $defaultTimeframe;
+    $datePeriodData = [
+      'timeframe' => $timeframe,
+      'days' => $data['days'] ?? 0,
+    ];
+    if (in_array($timeframe, [DynamicSegmentFilterData::TIMEFRAME_BEFORE, DynamicSegmentFilterData::TIMEFRAME_AFTER, DynamicSegmentFilterData::TIMEFRAME_ON, DynamicSegmentFilterData::TIMEFRAME_BETWEEN], true)) {
+      $datePeriodData['value'] = $data['value'] ?? null;
+    }
+    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_BETWEEN) {
+      $datePeriodData['value2'] = $data['value2'] ?? null;
+      if (is_string($datePeriodData['value']) && is_string($datePeriodData['value2'])) {
+        [$datePeriodData['value'], $datePeriodData['value2']] = $this->orderDateRange($datePeriodData['value'], $datePeriodData['value2']);
+      }
+    }
+    $this->filterHelper->validateDaysPeriodData($datePeriodData);
+    $filterData['timeframe'] = $datePeriodData['timeframe'];
+    $filterData['days'] = $timeframe === DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST ? $datePeriodData['days'] : 0;
+    if (isset($datePeriodData['value'])) {
+      $filterData['value'] = $datePeriodData['value'];
+    }
+    if (isset($datePeriodData['value2'])) {
+      $filterData['value2'] = $datePeriodData['value2'];
+    }
+  }
+
+  /**
+   * @return array{0: string, 1: string}
+   */
+  private function orderDateRange(string $value, string $value2): array {
+    return strcmp($value, $value2) <= 0 ? [$value, $value2] : [$value2, $value];
+  }
+
   /**
    * @throws InvalidFilterException
    */
