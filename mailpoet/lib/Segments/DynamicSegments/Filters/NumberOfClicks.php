@@ -29,18 +29,15 @@ class NumberOfClicks implements Filter {
     $filterData = $filter->getFilterData();
     $clickCount = $filterData->getIntParam('clicks');
     $operator = $filterData->getStringParam('operator');
-    $timeframe = $filterData->getStringParam('timeframe');
     $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
     $subscribersTable = $this->filterHelper->getSubscribersTable();
-
-    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
-      $queryBuilder->leftJoin($subscribersTable, $statsTable, 'clicks', "{$subscribersTable}.id = clicks.subscriber_id");
-    } else {
-      $days = $filterData->getIntParam('days');
-      $dateParam = $this->filterHelper->getUniqueParameterName('days');
-      $queryBuilder->leftJoin($subscribersTable, $statsTable, 'clicks', "{$subscribersTable}.id = clicks.subscriber_id AND clicks.created_at >= :$dateParam");
-      $queryBuilder->setParameter($dateParam, $this->filterHelper->getDateNDaysAgoImmutable($days)->startOfDay());
+    $dateCondition = $this->filterHelper->getDatePeriodCondition($queryBuilder, 'clicks.created_at', $filterData, true);
+    $joinCondition = "{$subscribersTable}.id = clicks.subscriber_id";
+    if ($dateCondition !== null) {
+      $joinCondition .= " AND $dateCondition";
     }
+
+    $queryBuilder->leftJoin($subscribersTable, $statsTable, 'clicks', $joinCondition);
 
     $queryBuilder->groupBy("$subscribersTable.id");
     $clicksCountParam = $this->filterHelper->getUniqueParameterName('clicks');

@@ -390,15 +390,13 @@ class FilterDataMapper {
     }
 
     if ($data['action'] === NumberOfClicks::ACTION) {
-      $this->filterHelper->validateDaysPeriodData($data);
       if (!isset($data['clicks'])) {
         throw new InvalidFilterException('Missing click count value', InvalidFilterException::MISSING_VALUE);
       }
       $filterData['clicks'] = $data['clicks'];
       $filterData['operator'] = $data['operator'];
-      $filterData['timeframe'] = $data['timeframe'];
       $filterData['connect'] = $data['connect'];
-      $filterData['days'] = $data['days'] ?? 0;
+      $this->copyDatePeriodData($data, $filterData);
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $data['action'], $filterData);
     }
 
