@@ -467,6 +467,7 @@ class FilterDataMapper {
       }
       $filterData['operator'] = $data['operator'];
       $filterData['category_ids'] = $data['category_ids'];
+      $this->copyDatePeriodData($data, $filterData, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     } elseif ($data['action'] === WooCommerceProduct::ACTION_PRODUCT) {
       if (!isset($data['product_ids'])) {
         throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
