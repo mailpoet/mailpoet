@@ -215,6 +215,36 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItGetsSubscribersThatPurchasedCategoryBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+
+    $category = $this->createCategory('productCatBetween');
+    $product = $this->createProduct('productBetween', [$category]);
+
+    $orderInRange = $this->createOrder($customerInRange, Carbon::parse('2023-05-11'));
+    $this->addToOrder(11, $orderInRange, $product, $customerInRange);
+    $orderBefore = $this->createOrder($customerBefore, Carbon::parse('2023-05-09'));
+    $this->addToOrder(12, $orderBefore, $product, $customerBefore);
+    $orderAfter = $this->createOrder($customerAfter, Carbon::parse('2023-05-13'));
+    $this->addToOrder(13, $orderAfter, $product, $customerAfter);
+
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      WooCommerceCategory::ACTION_CATEGORY,
+      [
+        'category_ids' => [$category],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+        'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+        'value' => '2023-05-10',
+        'value2' => '2023-05-12',
+      ]
+    );
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->wooCommerceCategoryFilter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $category1name = 'category' . rand();
     $category2name = 'category' . rand();

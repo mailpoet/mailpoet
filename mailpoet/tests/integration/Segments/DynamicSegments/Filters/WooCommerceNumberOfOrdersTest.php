@@ -122,6 +122,25 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     ], $emails);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $this->createOrder($customerInRange, Carbon::parse('2023-05-11'));
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $this->createOrder($customerBefore, Carbon::parse('2023-05-09'));
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+    $this->createOrder($customerAfter, Carbon::parse('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
+      'number_of_orders_type' => '>',
+      'number_of_orders_count' => 0,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   public function testItWorksWithNumberOfOrdersWithCoupon(): void {
     $customerWithoutCouponOrder = $this->tester->createCustomer('customerwithoutcoupon@example.com');
     $this->createOrder($customerWithoutCouponOrder, Carbon::now()->subDays(2));

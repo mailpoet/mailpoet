@@ -116,6 +116,25 @@ class WooCommerceUsedPaymentMethodTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('none', ['cash', 'paypal'], 1, 'allTime', []);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@e.com');
+    $this->createOrder($customerInRange, Carbon::parse('2023-05-11'), 'paypal');
+    $customerBefore = $this->tester->createCustomer('between-before@e.com');
+    $this->createOrder($customerBefore, Carbon::parse('2023-05-09'), 'paypal');
+    $customerAfter = $this->tester->createCustomer('between-after@e.com');
+    $this->createOrder($customerAfter, Carbon::parse('2023-05-13'), 'paypal');
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedPaymentMethod::ACTION, [
+      'operator' => 'any',
+      'payment_methods' => ['paypal'],
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@e.com'], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedPaymentMethod::ACTION, [
       'operator' => 'all',

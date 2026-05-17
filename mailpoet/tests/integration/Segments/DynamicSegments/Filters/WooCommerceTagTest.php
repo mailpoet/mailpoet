@@ -5,6 +5,7 @@ namespace integration\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTag;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @group woo
@@ -88,6 +89,33 @@ class WooCommerceTagTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('none', [$tag1, $tag2], ['customer3@example.com']);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+
+    $tag = $this->tester->createWooTag('between-tag');
+    $product = $this->tester->createWooCommerceProduct(['tag_ids' => [$tag]]);
+
+    $this->createOrder($customerInRange, [$product], Carbon::parse('2023-05-11'));
+    $this->createOrder($customerBefore, [$product], Carbon::parse('2023-05-09'));
+    $this->createOrder($customerAfter, [$product], Carbon::parse('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      WooCommerceTag::ACTION,
+      [
+        'operator' => 'any',
+        'tag_ids' => [(string)$tag],
+        'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+        'value' => '2023-05-10',
+        'value2' => '2023-05-12',
+      ]
+    );
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $tagId1 = $this->tester->createWooTag('tag50');
     $tagId2 = $this->tester->createWooTag('tag51');
@@ -156,10 +184,13 @@ class WooCommerceTagTest extends \MailPoetTest {
     ];
   }
 
-  private function createOrder(int $customerId, array $products = []): int {
+  private function createOrder(int $customerId, array $products = [], ?Carbon $createdAt = null): int {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);
     $order->set_status('wc-completed');
+    if ($createdAt !== null) {
+      $order->set_date_created($createdAt->toDateTimeString());
+    }
     foreach ($products as $product) {
       $order->add_product($product);
     }

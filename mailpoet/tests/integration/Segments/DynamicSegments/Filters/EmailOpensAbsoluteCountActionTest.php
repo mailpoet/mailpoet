@@ -145,6 +145,37 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     ], $emails);
   }
 
+  public function testBetweenDates(): void {
+    $newsletter = $this->createNewsletter();
+    $this->entityManager->flush();
+
+    $inRangeSub = $this->createSubscriber('between-in-range@example.com');
+    $this->createStatsNewsletter($inRangeSub, $newsletter);
+    $open = $this->createStatisticsOpens($inRangeSub, $newsletter);
+    $open->setCreatedAt(new CarbonImmutable('2023-05-11'));
+
+    $beforeRangeSub = $this->createSubscriber('between-before-range@example.com');
+    $this->createStatsNewsletter($beforeRangeSub, $newsletter);
+    $open = $this->createStatisticsOpens($beforeRangeSub, $newsletter);
+    $open->setCreatedAt(new CarbonImmutable('2023-05-09'));
+
+    $afterRangeSub = $this->createSubscriber('between-after-range@example.com');
+    $this->createStatsNewsletter($afterRangeSub, $newsletter);
+    $open = $this->createStatisticsOpens($afterRangeSub, $newsletter);
+    $open->setCreatedAt(new CarbonImmutable('2023-05-13'));
+    $this->entityManager->flush();
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::TYPE, [
+      'operator' => 'equals',
+      'opens' => 1,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->action);
+    $this->assertEqualsCanonicalizing(['between-in-range@example.com'], $emails);
+  }
+
   private function getSegmentFilterData(int $opens, string $operator, int $days, string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,

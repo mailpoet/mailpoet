@@ -111,6 +111,39 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItGetsSubscribersThatPurchasedVariationBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+
+    $variationId = $this->variationIds[0];
+    $productId = $this->productIds[0];
+
+    $orderInRange = $this->createOrder($customerInRange, Carbon::parse('2023-05-11'));
+    $this->orderIds[] = $orderInRange;
+    $this->addToOrder(100, $orderInRange, $productId, $variationId, $customerInRange);
+    $orderBefore = $this->createOrder($customerBefore, Carbon::parse('2023-05-09'));
+    $this->orderIds[] = $orderBefore;
+    $this->addToOrder(101, $orderBefore, $productId, $variationId, $customerBefore);
+    $orderAfter = $this->createOrder($customerAfter, Carbon::parse('2023-05-13'));
+    $this->orderIds[] = $orderAfter;
+    $this->addToOrder(102, $orderAfter, $productId, $variationId, $customerAfter);
+
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      WooCommerceProductVariation::ACTION_PRODUCT_VARIATION,
+      [
+        'variation_ids' => [$variationId],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+        'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+        'value' => '2023-05-10',
+        'value2' => '2023-05-12',
+      ]
+    );
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->wooCommerceProductVariationFilter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $segmentFilterData = $this->getSegmentFilterData(
       [$this->variationIds[0], 999999],
