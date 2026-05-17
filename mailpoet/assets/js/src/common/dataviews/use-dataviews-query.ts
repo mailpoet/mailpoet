@@ -7,7 +7,12 @@ import {
   type SetStateAction,
 } from 'react';
 import type { View } from '@wordpress/dataviews';
-import type { ListingMeta, ListingQueryParams, ListingResponse } from './types';
+import type {
+  ListingFilters,
+  ListingMeta,
+  ListingQueryParams,
+  ListingResponse,
+} from './types';
 
 export type LoadListing<T> = (
   params: ListingQueryParams,
@@ -30,7 +35,7 @@ type UseDataViewsQueryResult<T> = {
   onChangeView: (nextView: View) => void;
   items: T[];
   meta: ListingMeta;
-  filters: ListingResponse<T>['filters'];
+  filters: ListingFilters;
   groups: ListingResponse<T>['groups'];
   isLoading: boolean;
   error: string | null;
@@ -39,6 +44,7 @@ type UseDataViewsQueryResult<T> = {
 };
 
 const EMPTY_META: ListingMeta = { count: 0, pages: 0 };
+const EMPTY_FILTERS: ListingFilters = {};
 
 function wasInitialUrlStateReset(currentView: View, nextView: View): boolean {
   const pageReset = (currentView.page ?? 1) > 1 && (nextView.page ?? 1) === 1;
@@ -62,8 +68,7 @@ export function useDataViewsQuery<T>({
   const [view, setView] = useState<View>(initialView);
   const [items, setItems] = useState<T[]>([]);
   const [meta, setMeta] = useState<ListingMeta>(EMPTY_META);
-  const [filters, setFilters] =
-    useState<ListingResponse<T>['filters']>(undefined);
+  const [filters, setFilters] = useState<ListingFilters>(EMPTY_FILTERS);
   const [groups, setGroups] = useState<ListingResponse<T>['groups']>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -144,7 +149,7 @@ export function useDataViewsQuery<T>({
         }
         setItems(result.items);
         setMeta(result.meta);
-        setFilters(result.filters);
+        setFilters(result.filters ?? EMPTY_FILTERS);
         setGroups(result.groups);
         setError(null);
       })
@@ -161,7 +166,7 @@ export function useDataViewsQuery<T>({
             : '';
         setItems([]);
         setMeta({ count: 0, pages: 0 });
-        setFilters([]);
+        setFilters(EMPTY_FILTERS);
         setGroups([]);
         setError(message || 'Failed to load data.');
       })

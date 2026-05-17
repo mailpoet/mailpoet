@@ -73,8 +73,6 @@ export function List({ defaultFrom }: Props): JSX.Element {
         return Promise.resolve({
           items: [],
           meta: { count: 0, pages: 0 },
-          filters: [],
-          groups: [],
         });
       }
       return getLogs(buildLogsRequestParams(params, dateFilters), signal);

@@ -17,6 +17,13 @@ export type ListingMeta = {
   pages: number;
 };
 
+export type ListingFilterOption = {
+  label: string;
+  value: string | number;
+};
+
+export type ListingFilters = Record<string, ListingFilterOption[]>;
+
 export type ListingGroup = {
   name: string;
   label: string;
@@ -26,7 +33,7 @@ export type ListingGroup = {
 export type ListingResponse<T> = {
   items: T[];
   meta: ListingMeta;
-  filters?: Record<string, unknown> | Array<Record<string, unknown>>;
+  filters?: ListingFilters;
   groups?: ListingGroup[];
 };
 
