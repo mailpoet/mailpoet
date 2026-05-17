@@ -599,6 +599,7 @@ class FilterDataMapper {
       $this->wooCommerceTag->validateFilterData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['tag_ids'] = $data['tag_ids'];
+      $this->copyDatePeriodData($data, $filterData, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
