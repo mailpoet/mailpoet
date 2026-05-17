@@ -509,11 +509,10 @@ class FilterDataMapper {
       $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceNumberOfReviews::ACTION) {
       $this->wooCommerceNumberOfReviews->validateFilterData($data);
-      $filterData['days'] = $data['days'];
       $filterData['count_type'] = $data['count_type'];
       $filterData['count'] = $data['count'];
       $filterData['rating'] = $data['rating'];
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
       $this->filterHelper->validateDaysPeriodData($data);
       if (
