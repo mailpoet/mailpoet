@@ -1388,6 +1388,48 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]]]);
   }
 
+  public function testItOrdersReversedBetweenDatesForSubscriberDateField(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-05',
+      'value2' => '2023-01-02',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItRejectsSubscriberDateBetweenMissingValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-02',
+    ]]]);
+  }
+
+  public function testItRejectsSubscriberDateBetweenInvalidValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => 'invalid-date',
+    ]]]);
+  }
+
   public function testItPersistsBetweenValueAndValue2ForCountStyleFilter(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
