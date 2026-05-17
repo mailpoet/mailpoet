@@ -103,6 +103,38 @@ class ExportDownloadTest extends \MailPoetTest {
     ))->null();
   }
 
+  public function testItPurgesLegacyExportFilesWhenCreatingDirectory() {
+    foreach ($this->getExportFiles() as $file) {
+      unlink($file);
+    }
+    rmdir(ExportDownload::getExportDirectory());
+
+    $legacySubscriberFile = $this->tempDir . '/' . Export::getFilePrefix() . 'legacy.csv';
+    $legacyStatsFile = $this->tempDir . '/' . StatisticsExporter::FILE_PREFIX . 'legacy.csv';
+    $unrelatedFile = $this->tempDir . '/unrelated.txt';
+    file_put_contents($legacySubscriberFile, 'legacy');
+    file_put_contents($legacyStatsFile, 'legacy');
+    file_put_contents($unrelatedFile, 'keep');
+
+    ExportDownload::ensureExportDirectory(new WPFunctions());
+
+    $this->assertFileNotExists($legacySubscriberFile);
+    $this->assertFileNotExists($legacyStatsFile);
+    $this->assertFileExists($unrelatedFile);
+
+    unlink($unrelatedFile);
+  }
+
+  public function testItDoesNotPurgeLegacyExportFilesWhenDirectoryAlreadyExists() {
+    $legacySubscriberFile = $this->tempDir . '/' . Export::getFilePrefix() . 'legacy.csv';
+    file_put_contents($legacySubscriberFile, 'legacy');
+
+    ExportDownload::ensureExportDirectory(new WPFunctions());
+
+    $this->assertFileExists($legacySubscriberFile);
+    unlink($legacySubscriberFile);
+  }
+
   public function testItFailsWhenExportDirectoryCannotBeCreated() {
     $previousTempPath = Env::$tempPath;
     Env::$tempPath = $this->tempDir . '/missing';

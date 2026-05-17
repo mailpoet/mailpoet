@@ -80,7 +80,8 @@ class ExportDownload {
   public static function ensureExportDirectory(?WPFunctions $wp = null): void {
     $wp = $wp ?? WPFunctions::get();
     $exportDirectory = self::getExportDirectory();
-    if (!is_dir($exportDirectory) && !$wp->wpMkdirP($exportDirectory)) {
+    $wasJustCreated = !is_dir($exportDirectory);
+    if ($wasJustCreated && !$wp->wpMkdirP($exportDirectory)) {
       throw new \RuntimeException('Could not create the export directory.');
     }
     if (!is_dir($exportDirectory)) {
@@ -103,6 +104,23 @@ class ExportDownload {
     );
     if (!$htaccessWritten) {
       throw new \RuntimeException('Could not protect the export directory.');
+    }
+    if ($wasJustCreated) {
+      self::purgeLegacyExportFiles();
+    }
+  }
+
+  private static function purgeLegacyExportFiles(): void {
+    $patterns = [
+      Env::$tempPath . '/' . Export::getFilePrefix() . '*.*',
+      Env::$tempPath . '/' . StatisticsExporter::FILE_PREFIX . '*.*',
+    ];
+    foreach ($patterns as $pattern) {
+      foreach (glob($pattern) ?: [] as $file) {
+        if (is_file($file)) {
+          unlink($file);
+        }
+      }
     }
   }
 
