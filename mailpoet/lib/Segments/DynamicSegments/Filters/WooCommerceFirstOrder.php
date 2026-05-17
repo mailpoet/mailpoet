@@ -33,20 +33,23 @@ class WooCommerceFirstOrder implements Filter {
     $operator = $this->dateFilterHelper->getOperatorFromFilter($filter);
     $dateValue = $this->dateFilterHelper->getDateValueFromFilter($filter);
     $date = $this->dateFilterHelper->getDateStringForOperator($operator, $dateValue);
+    $date2 = $operator === DateFilterHelper::BETWEEN
+      ? $this->dateFilterHelper->getDateStringForOperator($operator, $this->dateFilterHelper->getSecondDateValueFromFilter($filter))
+      : null;
     $subscribersTable = $this->filterHelper->getSubscribersTable();
 
     if (in_array($operator, [DateFilterHelper::NOT_ON, DateFilterHelper::NOT_IN_THE_LAST])) {
       $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-      $this->applyConditionsToQueryBuilder($operator, $date, $subQuery);
+      $this->applyConditionsToQueryBuilder($operator, $date, $subQuery, $date2);
       $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$subscribersTable}.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
     } else {
-      $this->applyConditionsToQueryBuilder($operator, $date, $queryBuilder);
+      $this->applyConditionsToQueryBuilder($operator, $date, $queryBuilder, $date2);
     }
 
     return $queryBuilder;
   }
 
-  private function applyConditionsToQueryBuilder(string $operator, string $date, QueryBuilder $queryBuilder): QueryBuilder {
+  private function applyConditionsToQueryBuilder(string $operator, string $date, QueryBuilder $queryBuilder, ?string $date2): QueryBuilder {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
     $dateParam = $this->filterHelper->getUniqueParameterName('date');
     $subscribersTable = $this->filterHelper->getSubscribersTable();
@@ -72,6 +75,15 @@ class WooCommerceFirstOrder implements Filter {
       case DateFilterHelper::ON_OR_BEFORE:
         $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) <= :$dateParam");
         break;
+      case DateFilterHelper::BETWEEN:
+        if ($date2 === null) {
+          throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
+        }
+        $date2Param = $this->filterHelper->getUniqueParameterName('date');
+        $queryBuilder->andHaving("MIN($orderStatsAlias.date_created) >= :$dateParam AND MIN($orderStatsAlias.date_created) < :$date2Param");
+        $queryBuilder->setParameter($dateParam, $date . ' 00:00:00');
+        $queryBuilder->setParameter($date2Param, $this->dateFilterHelper->getNextDayStart($date2));
+        return $queryBuilder;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
