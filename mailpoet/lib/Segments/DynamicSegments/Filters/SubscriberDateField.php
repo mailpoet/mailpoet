@@ -84,9 +84,9 @@ class SubscriberDateField implements Filter {
           throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
         }
         $parameter2 = $this->filterHelper->getUniqueParameterName('date');
-        $queryBuilder->andWhere("$columnName >= :$parameter AND $columnName < :$parameter2");
-        $queryBuilder->setParameter($parameter, $date . ' 00:00:00');
-        $queryBuilder->setParameter($parameter2, $this->dateFilterHelper->getNextDayStart($date2));
+        $queryBuilder->andWhere("DATE($columnName) >= :$parameter AND DATE($columnName) <= :$parameter2");
+        $queryBuilder->setParameter($parameter, $date);
+        $queryBuilder->setParameter($parameter2, $date2);
         return $queryBuilder;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
