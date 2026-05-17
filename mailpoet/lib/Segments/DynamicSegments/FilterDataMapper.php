@@ -563,11 +563,9 @@ class FilterDataMapper {
       if (!isset($data['shipping_methods']) || !is_array($data['shipping_methods']) || empty($data['shipping_methods'])) {
         throw new InvalidFilterException('Missing shipping methods', InvalidFilterException::MISSING_VALUE);
       }
-      $this->filterHelper->validateDaysPeriodData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['shipping_methods'] = $data['shipping_methods'];
-      $filterData['days'] = intval($data['days'] ?? 0);
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
     } elseif (in_array($data['action'], WooCommerceCustomerTextField::ACTIONS)) {
       if (empty($data['value'])) {
         throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);

@@ -95,9 +95,7 @@ export function UsedShippingMethodFields({
           automationId="select-shipping-methods"
         />
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }
