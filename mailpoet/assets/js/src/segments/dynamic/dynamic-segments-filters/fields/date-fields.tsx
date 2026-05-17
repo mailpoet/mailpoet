@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { isValid, parseISO } from 'date-fns';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
@@ -9,6 +8,7 @@ import { Input } from 'common/form/input/input';
 
 import { DateFormItem, FilterProps } from '../../types';
 import { storeName } from '../../store';
+import { convertDateToString, parseDate } from './date-helpers';
 
 export enum DateOperator {
   BEFORE = 'before',
@@ -17,6 +17,7 @@ export enum DateOperator {
   ON_OR_BEFORE = 'onOrBefore',
   ON_OR_AFTER = 'onOrAfter',
   NOT_ON = 'notOn',
+  BETWEEN = 'between',
   IN_THE_LAST = 'inTheLast',
   NOT_IN_THE_LAST = 'notInTheLast',
 }
@@ -32,30 +33,10 @@ const availableOperators = [
   DateOperator.ON_OR_AFTER,
   DateOperator.ON_OR_BEFORE,
   DateOperator.NOT_ON,
+  DateOperator.BETWEEN,
   DateOperator.IN_THE_LAST,
   DateOperator.NOT_IN_THE_LAST,
 ];
-
-const convertDateToString = (
-  value: Date | [Date, Date],
-): string | undefined => {
-  if (value === null) {
-    return undefined;
-  }
-  if (Array.isArray(value)) {
-    throw new Error(
-      'convertDateToString can process only single date array given',
-    );
-  }
-  return MailPoet.Date.format(value, { format: 'Y-m-d' });
-};
-
-const parseDate = (value: string): Date | undefined => {
-  if (!value) return undefined;
-  const date = parseISO(value);
-  if (!isValid(date)) return undefined;
-  return date;
-};
 
 function DateFields({
   filterIndex,
@@ -79,12 +60,23 @@ function DateFields({
         segment.operator === DateOperator.ON ||
         segment.operator === DateOperator.ON_OR_AFTER ||
         segment.operator === DateOperator.ON_OR_BEFORE ||
+        segment.operator === DateOperator.BETWEEN ||
         segment.operator === DateOperator.NOT_ON) &&
       (parseDate(segment.value) === undefined ||
         !/^\d+-\d+-\d+$/.test(segment.value))
     ) {
       void updateSegmentFilter(
         { value: convertDateToString(new Date()) },
+        filterIndex,
+      );
+    }
+    if (
+      segment.operator === DateOperator.BETWEEN &&
+      (parseDate(segment.value2 || '') === undefined ||
+        !/^\d+-\d+-\d+$/.test(segment.value2 || ''))
+    ) {
+      void updateSegmentFilter(
+        { value2: convertDateToString(new Date()) },
         filterIndex,
       );
     }
@@ -114,6 +106,9 @@ function DateFields({
         </option>
         <option value={DateOperator.ON}>{MailPoet.I18n.t('on')}</option>
         <option value={DateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
+        <option value={DateOperator.BETWEEN}>
+          {MailPoet.I18n.t('between')}
+        </option>
         <option value={DateOperator.ON_OR_AFTER}>
           {MailPoet.I18n.t('onOrAfter')}
         </option>
@@ -142,6 +137,32 @@ function DateFields({
           }}
           selected={segment.value ? parseDate(segment.value) : undefined}
         />
+      )}
+      {segment.operator === DateOperator.BETWEEN && (
+        <>
+          <Datepicker
+            className="mailpoet-segments-datepicker-small"
+            dateFormat="MMM d, yyyy"
+            onChange={(value): void => {
+              void updateSegmentFilter(
+                { value: convertDateToString(value) },
+                filterIndex,
+              );
+            }}
+            selected={segment.value ? parseDate(segment.value) : undefined}
+          />
+          <Datepicker
+            className="mailpoet-segments-datepicker-small"
+            dateFormat="MMM d, yyyy"
+            onChange={(value): void => {
+              void updateSegmentFilter(
+                { value2: convertDateToString(value) },
+                filterIndex,
+              );
+            }}
+            selected={segment.value2 ? parseDate(segment.value2) : undefined}
+          />
+        </>
       )}
       {(segment.operator === DateOperator.IN_THE_LAST ||
         segment.operator === DateOperator.NOT_IN_THE_LAST) && (
@@ -190,6 +211,11 @@ export function validateDateField(formItems: DateFormItem): boolean {
   ) {
     const re = /^\d+$/;
     return re.test(formItems.value) && Number(formItems.value) > 0;
+  }
+
+  if (formItems.operator === DateOperator.BETWEEN) {
+    const re = /^\d+-\d+-\d+$/;
+    return re.test(formItems.value) && re.test(formItems.value2 || '');
   }
 
   return false;
