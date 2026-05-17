@@ -121,8 +121,8 @@ class ShareMetadataBuilderTest extends \MailPoetTest {
     $dom = \MailPoet\Util\pQuery\pQuery::parseStr($result);
     $main = $dom->query('[data-mailpoet-share-host] main');
     verify(count($main))->equals(0);
-    // no replace-state attribute on the public path
-    verify($result)->stringNotContainsString('data-mailpoet-share-replace-state');
+    // no replace-state attribute on the public path (the script still references the name)
+    verify($result)->stringNotContainsString('data-mailpoet-share-replace-state="');
   }
 
   public function testItScrubsTokenisedUrlFromAddressBarWhenReplaceStateGiven(): void {
