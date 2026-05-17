@@ -13,6 +13,7 @@ class DateFilterHelper {
   const ON_OR_BEFORE = 'onOrBefore';
   const ON_OR_AFTER = 'onOrAfter';
   const NOT_ON = 'notOn';
+  const BETWEEN = 'between';
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
@@ -40,6 +41,7 @@ class DateFilterHelper {
       self::ON_OR_BEFORE,
       self::ON_OR_AFTER,
       self::NOT_ON,
+      self::BETWEEN,
     ];
   }
 
@@ -72,6 +74,23 @@ class DateFilterHelper {
       throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
     }
     return $dateValue;
+  }
+
+  public function getSecondDateValueFromFilter(DynamicSegmentFilterEntity $filter): string {
+    $filterData = $filter->getFilterData();
+    $dateValue = $filterData->getParam('value2');
+    if (!is_string($dateValue)) {
+      throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
+    }
+    return $dateValue;
+  }
+
+  public function getNextDayStart(string $dateString): string {
+    $date = CarbonImmutable::createFromFormat('Y-m-d', $dateString);
+    if (!$date instanceof CarbonImmutable) {
+      throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+    }
+    return $date->addDay()->startOfDay()->toDateTimeString();
   }
 
   public function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
