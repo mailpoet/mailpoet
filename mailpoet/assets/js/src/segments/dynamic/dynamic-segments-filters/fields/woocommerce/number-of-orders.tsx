@@ -70,9 +70,7 @@ export function NumberOfOrdersFields({
         />
         <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }

@@ -54,7 +54,6 @@ class WooCommerceNumberOfOrders implements Filter {
     /** @var string $count - for PHPStan because intval() doesn't accept a value of mixed */
     $count = $filterData->getParam('number_of_orders_count');
     $count = intval($count);
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $collation = $this->collationChecker->getCollateIfNeeded(
       $subscribersTable,
@@ -63,13 +62,12 @@ class WooCommerceNumberOfOrders implements Filter {
       'email'
     );
 
-    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
-    $days = $filterData->getParam('days');
-    $date = $this->filterHelper->getDateNDaysAgo(intval($days));
+    $dateCondition = $this->filterHelper->getDatePeriodCondition($queryBuilder, 'orderStats.date_created', $filterData);
 
-    $joinCondition = $isAllTime
-      ? 'customer.customer_id = orderStats.customer_id AND orderStats.status NOT IN (:excludedStatuses' . $parameterSuffix . ')'
-      : 'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix . ' AND orderStats.status NOT IN (:excludedStatuses' . $parameterSuffix . ')';
+    $joinCondition = 'customer.customer_id = orderStats.customer_id AND orderStats.status NOT IN (:excludedStatuses' . $parameterSuffix . ')';
+    if ($dateCondition !== null) {
+      $joinCondition .= " AND $dateCondition";
+    }
 
     $subQuery = $this->entityManager->getConnection()
       ->createQueryBuilder()
@@ -102,7 +100,6 @@ class WooCommerceNumberOfOrders implements Filter {
         'joinCondition' => "$subscribersTable.email = selectedCustomers.email $collation",
       ],
     ], \true)
-      ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
       ->setParameter('excludedStatuses' . $parameterSuffix, $this->wooFilterHelper->defaultExcludedStatuses(), ArrayParameterType::STRING)
       ->groupBy('inner_subscriber_id');
 
