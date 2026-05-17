@@ -36,9 +36,6 @@ class WooCommerceNumberOfReviews implements Filter {
     /** @var string $rating - for PHPStan because strval() doesn't accept a value of mixed */
     $rating = $filterData->getParam('rating');
     $rating = strval($rating);
-    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
-    $days = $filterData->getParam('days');
-    $days = intval($days);
     /** @var int $count - for PHPStan because intval() doesn't accept a value of mixed */
     $count = $filterData->getParam('count');
     $count = intval($count);
@@ -51,15 +48,12 @@ class WooCommerceNumberOfReviews implements Filter {
       'comment_author_email'
     );
 
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $joinCondition = "$subscribersTable.email = comments.comment_author_email $collation
       AND comments.comment_type = 'review'";
 
-    if (!$isAllTime) {
-      $date = $this->filterHelper->getDateNDaysAgo($days);
-      $dateParam = $this->filterHelper->getUniqueParameterName('date');
-      $joinCondition .= " AND comments.comment_date >= :$dateParam";
-      $queryBuilder->setParameter($dateParam, $date->toDateTimeString());
+    $dateCondition = $this->filterHelper->getDatePeriodCondition($queryBuilder, 'comments.comment_date', $filterData);
+    if ($dateCondition !== null) {
+      $joinCondition .= " AND $dateCondition";
     }
 
     $commentMetaJoinCondition = "comments.comment_ID = commentmeta.comment_id AND commentmeta.meta_key = 'rating'";
