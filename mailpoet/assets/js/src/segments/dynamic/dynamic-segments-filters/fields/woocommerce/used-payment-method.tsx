@@ -95,9 +95,7 @@ export function UsedPaymentMethodFields({
           automationId="select-payment-methods"
         />
       </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }
