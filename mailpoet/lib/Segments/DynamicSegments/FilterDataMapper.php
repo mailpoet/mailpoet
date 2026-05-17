@@ -439,14 +439,12 @@ class FilterDataMapper {
     if (!isset($data['opens'])) {
       throw new InvalidFilterException('Missing number of opens', InvalidFilterException::MISSING_VALUE);
     }
-    $this->filterHelper->validateDaysPeriodData($data);
     $filterData = [
       'opens' => $data['opens'],
-      'days' => $data['days'] ?? 0,
       'operator' => $data['operator'] ?? 'more',
-      'timeframe' => $data['timeframe'] ?? DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, // backwards compatibility
       'connect' => $data['connect'],
     ];
+    $this->copyDatePeriodData($data, $filterData);
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
     $action = $data['action'];
     return new DynamicSegmentFilterData($filterType, $action, $filterData);

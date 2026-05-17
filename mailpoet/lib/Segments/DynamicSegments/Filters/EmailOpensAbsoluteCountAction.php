@@ -31,31 +31,18 @@ class EmailOpensAbsoluteCountAction implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
-    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
-    $days = $filterData->getParam('days');
     $operator = $filterData->getParam('operator');
     $action = $filterData->getAction();
-    $timeframe = $filterData->getParam('timeframe');
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $statsTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-
-    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
-      $queryBuilder->leftJoin(
-        $subscribersTable,
-        $statsTable,
-        'opens',
-        "{$subscribersTable}.id = opens.subscriber_id AND opens.user_agent_type = :userAgentType{$parameterSuffix}"
-      );
-    } else {
-      $queryBuilder->leftJoin(
-        $subscribersTable,
-        $statsTable,
-        'opens',
-        "{$subscribersTable}.id = opens.subscriber_id AND opens.created_at > :newer{$parameterSuffix} AND opens.user_agent_type = :userAgentType{$parameterSuffix}"
-      );
-      $queryBuilder->setParameter('newer' . $parameterSuffix, $this->filterHelper->getDateNDaysAgoImmutable(intval($days))->startOfDay());
+    $dateCondition = $this->filterHelper->getDatePeriodCondition($queryBuilder, 'opens.created_at', $filterData, true);
+    $joinCondition = "{$subscribersTable}.id = opens.subscriber_id AND opens.user_agent_type = :userAgentType{$parameterSuffix}";
+    if ($dateCondition !== null) {
+      $joinCondition .= " AND $dateCondition";
     }
+
+    $queryBuilder->leftJoin($subscribersTable, $statsTable, 'opens', $joinCondition);
 
     $queryBuilder->groupBy("$subscribersTable.id");
     if ($operator === 'equals') {
