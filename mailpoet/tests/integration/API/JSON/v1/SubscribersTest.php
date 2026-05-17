@@ -26,10 +26,9 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
-use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscribers\BulkActionController;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
@@ -38,7 +37,6 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\Subscribers\SubscriberTagRepository;
-use MailPoet\Tags\TagRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -100,12 +98,10 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersRepository::class),
       $this->responseBuilder,
       $container->get(SubscriberListingRepository::class),
-      $container->get(SegmentsRepository::class),
-      $container->get(TagRepository::class),
       $container->get(SubscriberSaveController::class),
       $container->get(SubscriberSubscribeController::class),
       $container->get(SettingsController::class),
-      $container->get(Unsubscribes::class),
+      $container->get(BulkActionController::class),
       $container->get(BulkConfirmationEmailResender::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');

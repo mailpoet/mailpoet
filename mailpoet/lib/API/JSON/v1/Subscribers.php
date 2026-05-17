@@ -11,23 +11,18 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\Config\AccessControl;
 use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\TagEntity;
 use MailPoet\Exception;
 use MailPoet\Listing;
-use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscribers\BulkActionController;
+use MailPoet\Subscribers\BulkActionException;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
-use MailPoet\Tags\TagRepository;
-use MailPoet\UnexpectedValueException;
 use MailPoet\Util\Helpers;
 
 class Subscribers extends APIEndpoint {
@@ -53,12 +48,6 @@ class Subscribers extends APIEndpoint {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
-  /** @var SegmentsRepository */
-  private $segmentsRepository;
-
-  /** @var TagRepository */
-  private $tagRepository;
-
   /** @var SubscriberSaveController */
   private $saveController;
 
@@ -68,8 +57,8 @@ class Subscribers extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
-  /** @var Unsubscribes */
-  private $unsubscribesTracker;
+  /** @var BulkActionController */
+  private $bulkActionController;
 
   /** @var BulkConfirmationEmailResender */
   private $bulkConfirmationEmailResender;
@@ -80,12 +69,10 @@ class Subscribers extends APIEndpoint {
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
-    SegmentsRepository $segmentsRepository,
-    TagRepository $tagRepository,
     SubscriberSaveController $saveController,
     SubscriberSubscribeController $subscribeController,
     SettingsController $settings,
-    Unsubscribes $unsubscribesTracker,
+    BulkActionController $bulkActionController,
     BulkConfirmationEmailResender $bulkConfirmationEmailResender
   ) {
     $this->listingHandler = $listingHandler;
@@ -93,12 +80,10 @@ class Subscribers extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
-    $this->segmentsRepository = $segmentsRepository;
-    $this->tagRepository = $tagRepository;
     $this->saveController = $saveController;
     $this->subscribeController = $subscribeController;
     $this->settings = $settings;
-    $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->bulkActionController = $bulkActionController;
     $this->bulkConfirmationEmailResender = $bulkConfirmationEmailResender;
   }
 
@@ -113,6 +98,10 @@ class Subscribers extends APIEndpoint {
     return $this->successResponse($result);
   }
 
+  /**
+   * @deprecated Use the REST endpoint `GET /mailpoet/v1/subscribers` instead.
+   *   Kept callable for third-party integrations posting to the legacy JSON API.
+   */
   public function listing($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data);
     $items = $this->subscriberListingRepository->getData($definition);
@@ -277,9 +266,16 @@ class Subscribers extends APIEndpoint {
     }
   }
 
+  /**
+   * @deprecated Use the REST endpoint `POST /mailpoet/v1/subscribers/bulk-action`
+   *   instead. Kept callable for third-party integrations that still post to the
+   *   legacy JSON API. The orchestration lives in {@see BulkActionController}.
+   */
   public function bulkAction($data = []) {
+    $action = (string)($data['action'] ?? '');
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    if (($data['action'] ?? null) === 'resendConfirmationEmails') {
+
+    if ($action === 'resendConfirmationEmails') {
       if (!$this->bulkConfirmationEmailResender->canCurrentUserResend()) {
         return $this->errorResponse([
           APIError::FORBIDDEN => __('You do not have permission to resend confirmation emails.', 'mailpoet'),
@@ -298,63 +294,22 @@ class Subscribers extends APIEndpoint {
       return $this->successResponse($this->bulkConfirmationEmailResender->queue($definition, $data));
     }
 
-    $ids = $this->subscriberListingRepository->getActionableIds($definition);
-
-    $count = 0;
-    $segment = null;
-    if (isset($data['segment_id'])) {
-      $segment = $this->getSegment($data);
-      if (!$segment) {
-        return $this->errorResponse([
-          APIError::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
-        ]);
-      }
+    try {
+      $result = $this->bulkActionController->execute($action, $definition, $data);
+    } catch (BulkActionException $exception) {
+      return $this->errorResponse(
+        [$exception->getErrorCode() => $exception->getMessage()],
+        [],
+        $exception->getStatusCode()
+      );
     }
 
-    $tag = null;
-    if (isset($data['tag_id'])) {
-      $tag = $this->getTag($data);
-      if (!$tag) {
-        return $this->errorResponse([
-          APIError::NOT_FOUND => __('This tag does not exist.', 'mailpoet'),
-        ]);
-      }
+    $meta = ['count' => $result['count']];
+    if (isset($result['segment']['name'])) {
+      $meta['segment'] = $result['segment']['name'];
     }
-
-    if ($data['action'] === 'trash') {
-      $count = $this->subscribersRepository->bulkTrash($ids);
-    } elseif ($data['action'] === 'restore') {
-      $count = $this->subscribersRepository->bulkRestore($ids);
-    } elseif ($data['action'] === 'delete') {
-      $count = $this->subscribersRepository->bulkDelete($ids);
-    } elseif ($data['action'] === 'removeFromAllLists') {
-      $count = $this->subscribersRepository->bulkRemoveFromAllSegments($ids);
-    } elseif ($data['action'] === 'removeFromList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkRemoveFromSegment($segment, $ids);
-    } elseif ($data['action'] === 'addToList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkAddToSegment($segment, $ids);
-    } elseif ($data['action'] === 'moveToList' && $segment instanceof SegmentEntity) {
-      $count = $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
-    } elseif ($data['action'] === 'unsubscribe') {
-      $this->trackBulkUnsubscribe($ids);
-      $count = $this->subscribersRepository->bulkUnsubscribe($ids);
-    } elseif ($data['action'] === 'addTag' && $tag instanceof TagEntity) {
-      $count = $this->subscribersRepository->bulkAddTag($tag, $ids);
-    } elseif ($data['action'] === 'removeTag' && $tag instanceof TagEntity) {
-      $count = $this->subscribersRepository->bulkRemoveTag($tag, $ids);
-    } else {
-      throw UnexpectedValueException::create()
-        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
-    }
-    $meta = [
-      'count' => $count,
-    ];
-
-    if ($segment) {
-      $meta['segment'] = $segment->getName();
-    }
-    if ($tag) {
-      $meta['tag'] = $tag->getName();
+    if (isset($result['tag']['name'])) {
+      $meta['tag'] = $result['tag']['name'];
     }
     return $this->successResponse(null, $meta);
   }
@@ -367,33 +322,6 @@ class Subscribers extends APIEndpoint {
     return isset($data['id'])
       ? $this->subscribersRepository->findOneById((int)$data['id'])
       : null;
-  }
-
-  private function getSegment(array $data): ?SegmentEntity {
-    return isset($data['segment_id'])
-      ? $this->segmentsRepository->findOneById((int)$data['segment_id'])
-      : null;
-  }
-
-  private function getTag(array $data): ?TagEntity {
-    return isset($data['tag_id'])
-      ? $this->tagRepository->findOneById((int)$data['tag_id'])
-      : null;
-  }
-
-  private function trackBulkUnsubscribe(array $ids): void {
-    $subscribers = $this->subscribersRepository->findBy(['id' => $ids]);
-    foreach ($subscribers as $subscriber) {
-      if (
-        $subscriber instanceof SubscriberEntity
-        && $subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
-      ) {
-        $this->unsubscribesTracker->track(
-          (int)$subscriber->getId(),
-          StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR
-        );
-      }
-    }
   }
 
   private function getErrorMessage(ValidationException $exception): string {

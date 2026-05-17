@@ -486,6 +486,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailMailer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\BulkConfirmationEmailResender::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RequiredCustomFieldValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberActions::class)->setPublic(true);
