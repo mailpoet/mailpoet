@@ -1,6 +1,5 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from 'react';
-import { Grid } from 'common/grid';
 import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { storeName } from '../../../store';
@@ -72,9 +71,7 @@ export function AverageSpentFields({ filterIndex }: FilterProps): JSX.Element {
         }}
       />
       <div>{wooCurrencySymbol}</div>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      <DaysPeriodField filterIndex={filterIndex} />
     </>
   );
 }

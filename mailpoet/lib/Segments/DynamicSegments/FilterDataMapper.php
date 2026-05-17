@@ -537,15 +537,13 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
-      $this->filterHelper->validateDaysPeriodData($data);
       if (
         !isset($data['average_spent_type'])
         || !isset($data['average_spent_amount']) || $data['average_spent_amount'] < 0
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_AVERAGE_SPENT_FIELDS);
       }
-      $filterData['days'] = $data['days'] ?? 0;
-      $filterData['timeframe'] = $data['timeframe'];
+      $this->copyDatePeriodData($data, $filterData);
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
     } elseif ($data['action'] === WooCommerceUsedPaymentMethod::ACTION) {
