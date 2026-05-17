@@ -7,6 +7,8 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
+use MailPoet\Router\Endpoints\ExportDownload;
+use MailPoet\Router\Router;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,8 +32,11 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
   }
 
   public function _after() {
-    foreach (glob($this->tempDir . '/*') ?: [] as $file) {
+    foreach ($this->getExportFiles() as $file) {
       unlink($file);
+    }
+    if (is_dir(ExportDownload::getExportDirectory())) {
+      rmdir(ExportDownload::getExportDirectory());
     }
     if (is_dir($this->tempDir)) {
       rmdir($this->tempDir);
@@ -48,11 +53,11 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $result = $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
 
     verify($result['totalExported'])->equals(1);
-    verify($result['exportFileURL'])->stringStartsWith('https://example.test/uploads/mailpoet/MailPoet_stats_export_');
-    verify($result['exportFileURL'])->stringEndsWith('.csv');
+    $this->verifyStatisticsDownloadUrl($result['exportFileURL'], StatisticsExporter::FORMAT_CSV);
 
-    $files = glob($this->tempDir . '/*.csv') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
     verify($files)->arrayCount(1);
+    verify($result['exportFileURL'])->stringNotContainsString(basename($files[0]));
 
     $content = (string)file_get_contents($files[0]);
     // Starts with the UTF-8 BOM (EF BB BF).
@@ -79,7 +84,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $exporter = $this->createExporter($stats);
     $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
 
-    $files = glob($this->tempDir . '/*.csv') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
     $rows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
     verify($rows[1][10])->equals('1234.56');
     verify($rows[1][11])->equals('USD');
@@ -93,8 +98,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $exporter = $this->createExporter($stats);
     $result = $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_XLSX);
 
-    verify($result['exportFileURL'])->stringEndsWith('.xlsx');
-    $files = glob($this->tempDir . '/*.xlsx') ?: [];
+    $this->verifyStatisticsDownloadUrl($result['exportFileURL'], StatisticsExporter::FORMAT_XLSX);
+    $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
     verify($files)->arrayCount(1);
     verify(filesize($files[0]))->greaterThan(0);
   }
@@ -128,7 +133,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $result = $exporter->exportBulkAggregate([$newsletterA, $newsletterB], StatisticsExporter::FORMAT_CSV);
 
     verify($result['totalExported'])->equals(2);
-    $files = glob($this->tempDir . '/*.csv') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
     verify($files)->arrayCount(1);
 
     $body = substr((string)file_get_contents($files[0]), 3);
@@ -159,20 +164,23 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
 
     $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
     $wp = $this->makeEmpty(WPFunctions::class, [
-      'wpMkdirP' => true,
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
       'applyFilters' => function (string $hook, $value) use ($rows) {
         if ($hook === StatisticsExporter::FILTER_RECIPIENT_ROWS) {
           return $rows;
         }
         return $value;
       },
+      'homeUrl' => 'https://example.test',
     ]);
     $exporter = new StatisticsExporter($repository, $wp);
 
     $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
     verify($result['totalExported'])->equals(1);
 
-    $files = glob($this->tempDir . '/*.csv') ?: [];
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
     verify($files)->arrayCount(1);
     $body = substr((string)file_get_contents($files[0]), 3);
     $exportedRows = $this->parseCsvRows($body);
@@ -185,10 +193,13 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $newsletter = $this->createNewsletter(99, 'Empty', null, '2026-02-01 00:00:00');
     $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
     $wp = $this->makeEmpty(WPFunctions::class, [
-      'wpMkdirP' => true,
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
       'applyFilters' => function (string $hook, $value) {
         return $value;
       },
+      'homeUrl' => 'https://example.test',
     ]);
     $exporter = new StatisticsExporter($repository, $wp);
 
@@ -201,9 +212,30 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       'getStatistics' => $stats,
     ]);
     $wp = $this->makeEmpty(WPFunctions::class, [
-      'wpMkdirP' => true,
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
+      'homeUrl' => 'https://example.test',
     ]);
     return new StatisticsExporter($repository, $wp);
+  }
+
+  private function verifyStatisticsDownloadUrl(string $url, string $extension): void {
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
+    verify($query[Router::NAME] ?? null)->equals('');
+    verify($query['endpoint'] ?? null)->equals(ExportDownload::ENDPOINT);
+    verify($query['action'] ?? null)->equals('statistics_export');
+    $data = Router::decodeRequestData($query['data'] ?? '');
+    verify($data['token'] ?? null)->stringMatchesRegExp('/^[a-z0-9]{32}$/');
+    verify($data['format'] ?? null)->equals($extension);
+    verify(isset($data['filename']))->false();
+  }
+
+  private function getExportFiles(): array {
+    return array_merge(
+      glob(ExportDownload::getExportDirectory() . '/*') ?: [],
+      glob(ExportDownload::getExportDirectory() . '/.htaccess') ?: []
+    );
   }
 
   /**

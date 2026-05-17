@@ -7,6 +7,8 @@ use MailPoet\Cron\Workers\StatisticsExport as StatisticsExportWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
+use MailPoet\Router\Endpoints\ExportDownload;
+use MailPoet\Router\Router;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class StatisticsExportTest extends \MailPoetTest {
@@ -39,8 +41,11 @@ class StatisticsExportTest extends \MailPoetTest {
   }
 
   public function _after() {
-    foreach (glob($this->tempDir . '/*') ?: [] as $file) {
+    foreach ($this->getExportFiles() as $file) {
       unlink($file);
+    }
+    if (is_dir(ExportDownload::getExportDirectory())) {
+      rmdir(ExportDownload::getExportDirectory());
     }
     if (is_dir($this->tempDir)) {
       rmdir($this->tempDir);
@@ -63,7 +68,7 @@ class StatisticsExportTest extends \MailPoetTest {
     verify($result)->true();
 
     $meta = $task->getMeta() ?? [];
-    verify($meta['export_file_url'])->stringContainsString('MailPoet_stats_export_');
+    $this->verifyStatisticsDownloadUrl($meta['export_file_url'], StatisticsExporter::FORMAT_CSV);
     verify($meta['total_exported'])->equals(0);
     verify(isset($meta['error']))->false();
   }
@@ -81,7 +86,7 @@ class StatisticsExportTest extends \MailPoetTest {
     verify($result)->true();
 
     $meta = $task->getMeta() ?? [];
-    verify($meta['export_file_url'])->stringContainsString('MailPoet_stats_export_');
+    $this->verifyStatisticsDownloadUrl($meta['export_file_url'], StatisticsExporter::FORMAT_CSV);
     verify($meta['total_exported'])->equals(2);
   }
 
@@ -106,5 +111,23 @@ class StatisticsExportTest extends \MailPoetTest {
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
     return $task;
+  }
+
+  private function verifyStatisticsDownloadUrl(string $url, string $extension): void {
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
+    verify($query[Router::NAME] ?? null)->equals('');
+    verify($query['endpoint'] ?? null)->equals(ExportDownload::ENDPOINT);
+    verify($query['action'] ?? null)->equals('statistics_export');
+    $data = Router::decodeRequestData($query['data'] ?? '');
+    verify($data['token'] ?? null)->stringMatchesRegExp('/^[a-z0-9]{32}$/');
+    verify($data['format'] ?? null)->equals($extension);
+    verify(isset($data['filename']))->false();
+  }
+
+  private function getExportFiles(): array {
+    return array_merge(
+      glob(ExportDownload::getExportDirectory() . '/*') ?: [],
+      glob(ExportDownload::getExportDirectory() . '/.htaccess') ?: []
+    );
   }
 }

@@ -2,12 +2,11 @@
 
 namespace MailPoet\Newsletter\Statistics\Export;
 
-use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
-use MailPoet\Util\Security;
+use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\XLSXWriter;
 
@@ -16,8 +15,6 @@ class StatisticsExporter {
   public const FORMAT_XLSX = 'xlsx';
 
   public const FILE_PREFIX = 'MailPoet_stats_export_';
-  private const RANDOM_NAME_LENGTH = 15;
-
   /**
    * Filter applied to populate per-recipient rows when exporting recipients.
    * The free plugin ships an empty implementation; the premium plugin
@@ -53,11 +50,11 @@ class StatisticsExporter {
     $row = $this->buildAggregateRow($newsletter, $stats);
 
     $this->ensureExportDirectory();
-    $filePath = $this->getExportFilePath($format);
-    $this->writeFile($filePath, $headers, [$row], $format);
+    $file = ExportDownload::createExportFile(self::FILE_PREFIX, $format);
+    $this->writeFile($file['path'], $headers, [$row], $format);
 
     return [
-      'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
+      'exportFileURL' => $this->getExportFileUrl($file['token'], $format),
       'totalExported' => 1,
     ];
   }
@@ -83,11 +80,11 @@ class StatisticsExporter {
     }
 
     $this->ensureExportDirectory();
-    $filePath = $this->getExportFilePath($format);
-    $this->writeFile($filePath, $headers, $rows, $format);
+    $file = ExportDownload::createExportFile(self::FILE_PREFIX, $format);
+    $this->writeFile($file['path'], $headers, $rows, $format);
 
     return [
-      'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
+      'exportFileURL' => $this->getExportFileUrl($file['token'], $format),
       'totalExported' => count($rows),
     ];
   }
@@ -107,11 +104,11 @@ class StatisticsExporter {
     $rows = (array)$this->wp->applyFilters(self::FILTER_RECIPIENT_ROWS, [], $newsletter);
 
     $this->ensureExportDirectory();
-    $filePath = $this->getExportFilePath($format);
-    $this->writeFile($filePath, $headers, $rows, $format);
+    $file = ExportDownload::createExportFile(self::FILE_PREFIX, $format);
+    $this->writeFile($file['path'], $headers, $rows, $format);
 
     return [
-      'exportFileURL' => $this->getExportFileUrl(basename($filePath)),
+      'exportFileURL' => $this->getExportFileUrl($file['token'], $format),
       'totalExported' => count($rows),
     ];
   }
@@ -240,18 +237,11 @@ class StatisticsExporter {
   }
 
   private function ensureExportDirectory(): void {
-    $path = Env::$tempPath;
-    if (!is_dir($path)) {
-      $this->wp->wpMkdirP($path);
-    }
+    ExportDownload::ensureExportDirectory($this->wp);
   }
 
-  private function getExportFilePath(string $format): string {
-    return Env::$tempPath . '/' . self::FILE_PREFIX . Security::generateRandomString(self::RANDOM_NAME_LENGTH) . '.' . $format;
-  }
-
-  private function getExportFileUrl(string $filename): string {
-    return Env::$tempUrl . '/' . $filename;
+  private function getExportFileUrl(string $token, string $format): string {
+    return ExportDownload::buildStatisticsExportUrl($token, $format, $this->wp->homeUrl());
   }
 
   private function normalizeFormat(string $format): string {
