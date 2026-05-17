@@ -9,10 +9,12 @@ import {
   AnyValueTypes,
   FilterProps,
   SelectOption,
+  Timeframe,
   WindowLocalProductAttributes,
   WindowProductAttributes,
   WooCommerceFormItem,
 } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 export function validatePurchasedWithAttribute(
   formItems: WooCommerceFormItem,
@@ -28,7 +30,8 @@ export function validatePurchasedWithAttribute(
       (!formItems.attribute_local_name ||
         formItems.attribute_local_name.length === 0 ||
         !Array.isArray(formItems.attribute_local_values) ||
-        formItems.attribute_local_values.length === 0));
+        formItems.attribute_local_values.length === 0)) ||
+    !validateDaysPeriod(formItems);
 
   return !purchasedProductWithAttributeIsInvalid;
 }
@@ -265,6 +268,10 @@ export function PurchasedWithAttributeFields({
           onChange={attributeValuesOnChange}
         />
       )}
+      <DaysPeriodField
+        filterIndex={filterIndex}
+        defaultTimeframe={Timeframe.ALL_TIME}
+      />
     </>
   );
 }
