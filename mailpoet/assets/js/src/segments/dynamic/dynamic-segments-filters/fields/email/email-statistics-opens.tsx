@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { MailPoet } from 'mailpoet';
-import { filter, map, parseInt } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react-select/react-select';
@@ -10,10 +9,13 @@ import {
   EmailActionTypes,
   EmailFormItem,
   FilterProps,
-  SelectOption,
   WindowNewslettersList,
 } from '../../../types';
 import { storeName } from '../../../store';
+import {
+  getGroupedNewsletterOptions,
+  NewsletterOption,
+} from './newsletter-options';
 
 export function EmailOpenStatisticsFields({
   filterIndex,
@@ -31,16 +33,8 @@ export function EmailOpenStatisticsFields({
     [],
   );
 
-  const newsletterOptions = newslettersList?.map((newsletter) => {
-    const sentAt = newsletter.sent_at
-      ? MailPoet.Date.format(newsletter.sent_at)
-      : MailPoet.I18n.t('notSentYet');
-    return {
-      label: newsletter.name,
-      tag: sentAt,
-      value: Number(newsletter.id),
-    };
-  });
+  const { flatOptions, groupedOptions } =
+    getGroupedNewsletterOptions(newslettersList);
 
   useEffect(() => {
     if (
@@ -82,16 +76,14 @@ export function EmailOpenStatisticsFields({
         dimension="small"
         isMulti
         placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-        options={newsletterOptions}
+        options={groupedOptions}
         automationId="segment-email"
-        value={filter((option) => {
-          if (!segment.newsletters) return undefined;
-          const newsletterId = option.value;
-          return segment.newsletters.indexOf(newsletterId) !== -1;
-        }, newsletterOptions)}
-        onChange={(options: SelectOption[]): void => {
+        value={flatOptions.filter(({ value }) =>
+          segment.newsletters?.includes(value),
+        )}
+        onChange={(options: NewsletterOption[]): void => {
           void updateSegmentFilter(
-            { newsletters: map(parseInt(10), map('value', options)) },
+            { newsletters: (options || []).map(({ value }) => value) },
             filterIndex,
           );
         }}

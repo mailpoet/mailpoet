@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { find, filter } from 'lodash/fp';
+import { filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { APIErrorsNotice } from 'notices/api-errors-notice';
@@ -15,9 +14,15 @@ import {
   WindowNewslettersList,
 } from '../../../types';
 import { storeName } from '../../../store';
+import {
+  getGroupedNewsletterOptions,
+  NewsletterOption,
+} from './newsletter-options';
 
-const shouldDisplayLinks = (itemNewsletterId?: string): boolean =>
+const shouldDisplayLinks = (itemNewsletterId?: string | number): boolean =>
   !!itemNewsletterId;
+
+type EmailLinkOption = SelectOption<string | number>;
 
 export function EmailClickStatisticsFields({
   filterIndex,
@@ -36,21 +41,17 @@ export function EmailClickStatisticsFields({
   );
 
   const [errors, setErrors] = useState([]);
-  const [links, setLinks] = useState<SelectOption[]>([]);
+  // Standard newsletters return numeric link ids; the newsletter_links endpoint
+  // collapses automation link rows down to one row per URL and returns the URL
+  // as the id, so link_ids in this filter is a mixed-type list (see
+  // EmailFormItem.link_ids and the API in NewsletterLinks::getAutomationLinks).
+  const [links, setLinks] = useState<EmailLinkOption[]>([]);
   const [loadingLinks, setLoadingLinks] = useState<boolean>(false);
 
-  const newsletterOptions = newslettersList?.map((newsletter) => {
-    const sentAt = newsletter.sent_at
-      ? MailPoet.Date.format(newsletter.sent_at)
-      : __('Not sent yet', 'mailpoet');
-    return {
-      label: newsletter.name,
-      tag: sentAt,
-      value: Number(newsletter.id),
-    };
-  });
+  const { flatOptions, groupedOptions } =
+    getGroupedNewsletterOptions(newslettersList);
 
-  function loadLinks(newsletterId: string): void {
+  function loadLinks(newsletterId: string | number): void {
     setErrors([]);
     setLoadingLinks(true);
     void MailPoet.Ajax.post({
@@ -66,7 +67,7 @@ export function EmailClickStatisticsFields({
           label: link.url,
         }));
         setLoadingLinks(false);
-        setLinks(loadedLinks as SelectOption[]);
+        setLinks(loadedLinks as EmailLinkOption[]);
       })
       .fail((response: ErrorResponse) => {
         setErrors(response.errors as { message: string }[]);
@@ -98,9 +99,11 @@ export function EmailClickStatisticsFields({
       {errors.length > 0 && <APIErrorsNotice errors={errors} />}
       <ReactSelect
         placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-        options={newsletterOptions}
-        value={find(['value', segment.newsletter_id], newsletterOptions)}
-        onChange={(option: SelectOption): void => {
+        options={groupedOptions}
+        value={flatOptions.find(
+          ({ value }) => value === Number(segment.newsletter_id),
+        )}
+        onChange={(option: NewsletterOption): void => {
           void updateSegmentFilter(
             { newsletter_id: option.value, link_ids: [] },
             filterIndex,
@@ -144,7 +147,7 @@ export function EmailClickStatisticsFields({
             if (!segment.link_ids) return false;
             return segment.link_ids.indexOf(option.value) !== -1;
           }, links)}
-          onChange={(options: SelectOption[]): void => {
+          onChange={(options: EmailLinkOption[]): void => {
             void updateSegmentFilter(
               { link_ids: (options || []).map((x) => x.value) },
               filterIndex,

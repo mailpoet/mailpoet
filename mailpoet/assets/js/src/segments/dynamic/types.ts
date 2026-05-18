@@ -65,8 +65,8 @@ export type GroupFilterValue = {
   options: FilterValue[];
 };
 
-export interface SelectOption {
-  value: string;
+export interface SelectOption<TValue = string> {
+  value: TValue;
   label: string;
 }
 
@@ -190,9 +190,9 @@ export interface WooCommerceSubscriptionFormItem extends FormItem {
 }
 
 export interface EmailFormItem extends FormItem {
-  newsletter_id?: string;
+  newsletter_id?: string | number;
   newsletters?: number[];
-  link_ids?: string[];
+  link_ids?: Array<string | number>;
   operator?: string;
   opens?: string;
   emails?: string;
@@ -303,6 +303,7 @@ export type WindowNewslettersList = {
   subject: string;
   name: string;
   id: string;
+  type: 'standard' | 'automation' | 'automation_transactional';
 }[];
 
 export type WindowWooCommerceCountries = {
