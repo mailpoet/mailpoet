@@ -439,15 +439,36 @@ class FilterDataMapper {
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
     $action = $data['action'];
     if (isset($data['link_ids']) && is_array($data['link_ids'])) {
-      $filterData['link_ids'] = array_values(
-        array_map('intval', array_filter($data['link_ids'], 'is_scalar'))
-      );
+      $filterData['link_ids'] = $this->normalizeEmailLinkIds($data['link_ids']);
       if (!isset($data['operator'])) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       }
       $filterData['operator'] = $data['operator'];
     }
     return new DynamicSegmentFilterData($filterType, $action, $filterData);
+  }
+
+  private function normalizeEmailLinkIds(array $linkIds): array {
+    $normalizedLinkIds = [];
+    foreach ($linkIds as $linkId) {
+      if (is_int($linkId)) {
+        $normalizedLinkIds[] = $linkId;
+        continue;
+      }
+      if (is_float($linkId) && floor($linkId) === $linkId) {
+        $normalizedLinkIds[] = (int)$linkId;
+        continue;
+      }
+      if (!is_string($linkId)) {
+        continue;
+      }
+      $linkId = trim($linkId);
+      if ($linkId === '') {
+        continue;
+      }
+      $normalizedLinkIds[] = ctype_digit($linkId) ? (int)$linkId : $linkId;
+    }
+    return $normalizedLinkIds;
   }
 
   /**

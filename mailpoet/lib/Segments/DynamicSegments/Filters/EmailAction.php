@@ -40,6 +40,11 @@ class EmailAction implements Filter {
     NumberOfClicks::ACTION,
   ];
 
+  const AUTOMATION_EMAIL_TYPES = [
+    NewsletterEntity::TYPE_AUTOMATION,
+    NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+  ];
+
   /** @var EntityManager */
   private $entityManager;
   /** @var FilterHelper */
@@ -80,66 +85,122 @@ class EmailAction implements Filter {
   private function applyForClickedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix): QueryBuilder {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
-    $newsletterId = $filterData->getParam('newsletter_id');
-    $linkIds = $filterData->getParam('link_ids');
-    if (!is_array($linkIds)) {
-      $linkIds = [];
+    $newsletterId = $this->normalizeNewsletterId($filterData->getParam('newsletter_id'));
+    $rawLinkIds = $filterData->getParam('link_ids');
+    if (!is_array($rawLinkIds)) {
+      $rawLinkIds = [];
+    }
+    $linkFilter = $this->buildEmailLinkFilter($newsletterId, $rawLinkIds, $parameterSuffix);
+    $isAllOperator = $operator === DynamicSegmentFilterData::OPERATOR_ALL;
+
+    $linksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+    $where = '1';
+
+    $isNoneOperator = ($action === self::ACTION_NOT_CLICKED) || ($operator === DynamicSegmentFilterData::OPERATOR_NONE);
+    if ($isNoneOperator) {
+      $queryBuilder = $this->joinStatsForNoneOperator($queryBuilder, $linkFilter, $newsletterId, $parameterSuffix);
+      $where .= ' AND stats.id IS NULL';
+    } else {
+      $queryBuilder = $this->joinStatsForAnyOrAllOperator($queryBuilder, $linkFilter, $newsletterId, $linksTable, $parameterSuffix, $isAllOperator);
     }
 
+    if (!$isNoneOperator && $linkFilter->hasSpecificLinks()) {
+      $where .= ' AND ' . $this->buildSelectedLinkWhere($linkFilter, $parameterSuffix);
+    }
+    if ($isAllOperator) {
+      $queryBuilder->groupBy('subscriber_id');
+      $queryBuilder->having($this->buildClickedAllHavingClause($linkFilter, $newsletterId, $linksTable));
+    }
+    $queryBuilder = $queryBuilder->andWhere($where);
+    $this->bindLinkFilterParameters($queryBuilder, $linkFilter, $parameterSuffix);
+    return $queryBuilder;
+  }
+
+  private function joinStatsForNoneOperator(QueryBuilder $queryBuilder, EmailLinkFilter $linkFilter, int $newsletterId, string $parameterSuffix): QueryBuilder {
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
 
-    $where = '1';
+    return $queryBuilder->innerJoin(
+      $subscribersTable,
+      $statsSentTable,
+      'statssent',
+      "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id = :newsletter" . $parameterSuffix
+    )->leftJoin(
+      'statssent',
+      $statsTable,
+      'stats',
+      $this->createNotStatsJoinCondition($parameterSuffix, $linkFilter->getLinkIds(), $linkFilter->getLinkUrls())
+    )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
+  }
 
-    if (($action === self::ACTION_NOT_CLICKED) || ($operator === DynamicSegmentFilterData::OPERATOR_NONE)) {
-      $queryBuilder = $queryBuilder->innerJoin(
-        $subscribersTable,
-        $statsSentTable,
-        'statssent',
-        "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id = :newsletter" . $parameterSuffix
-      )->leftJoin(
-        'statssent',
-        $statsTable,
-        'stats',
-        $this->createNotStatsJoinCondition($parameterSuffix, $linkIds)
-      )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
-      $where .= ' AND stats.id IS NULL';
-    } else {
-      $queryBuilder = $queryBuilder->innerJoin(
-        $subscribersTable,
-        $statsTable,
-        'stats',
-        "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id = :newsletter" . $parameterSuffix
-      )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
-    }
+  private function joinStatsForAnyOrAllOperator(
+    QueryBuilder $queryBuilder,
+    EmailLinkFilter $linkFilter,
+    int $newsletterId,
+    string $linksTable,
+    string $parameterSuffix,
+    bool $isAllOperator
+  ): QueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
 
-    if ($action === EmailAction::ACTION_CLICKED && $operator !== DynamicSegmentFilterData::OPERATOR_NONE && $linkIds) {
-      $where .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
-    }
-    if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $queryBuilder->groupBy('subscriber_id');
-      if ($linkIds) {
-        $queryBuilder->having('COUNT(1) = ' . count($linkIds));
-      } else {
-        // Case when a user selects all of, but doesn't specify links == all of all links.
-        $linksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
-        $linksQueryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
-        $linkCount = $linksQueryBuilder->select('count(id)')
-          ->from($linksTable)
-          ->where('newsletter_id = :newsletter_id')
-          ->setParameter('newsletter_id', $newsletterId)
-          ->execute()
-          ->fetchOne();
-        $queryBuilder->having('COUNT(1) = ' . (is_scalar($linkCount) ? (int)$linkCount : 0));
-      }
-    }
-    $queryBuilder = $queryBuilder->andWhere($where);
-    if ($linkIds) {
-      $queryBuilder = $queryBuilder
-        ->setParameter('links' . $parameterSuffix, $linkIds, ArrayParameterType::STRING);
+    $queryBuilder->innerJoin(
+      $subscribersTable,
+      $statsTable,
+      'stats',
+      "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id = :newsletter" . $parameterSuffix
+    )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
+
+    if ($linkFilter->needsLinkJoin($isAllOperator)) {
+      $alias = $linkFilter->getStatsLinkAlias();
+      $queryBuilder->innerJoin('stats', $linksTable, $alias, "stats.link_id = $alias.id");
     }
     return $queryBuilder;
+  }
+
+  private function buildSelectedLinkWhere(EmailLinkFilter $linkFilter, string $parameterSuffix): string {
+    if ($linkFilter->matchesByUrl()) {
+      $alias = $linkFilter->getStatsLinkAlias();
+      return "LOWER($alias.url) IN (:linkUrls$parameterSuffix)";
+    }
+    return 'stats.link_id IN (:links' . $parameterSuffix . ')';
+  }
+
+  private function buildClickedAllHavingClause(EmailLinkFilter $linkFilter, int $newsletterId, string $linksTable): string {
+    if ($linkFilter->matchesByUrl()) {
+      $alias = $linkFilter->getStatsLinkAlias();
+      return "COUNT(DISTINCT LOWER($alias.url)) = " . count($linkFilter->getLinkUrls());
+    }
+    if ($linkFilter->getLinkIds()) {
+      return 'COUNT(DISTINCT stats.link_id) = ' . count($linkFilter->getLinkIds());
+    }
+    // User selected "all of" but no specific links — they need to have clicked every link of the newsletter.
+    $alias = $linkFilter->getStatsLinkAlias();
+    $totalLinkCount = $this->countNewsletterLinks($linksTable, $newsletterId, $linkFilter->isAutomationNewsletter());
+    $clickCountSelect = $linkFilter->aggregatesAllLinksByUrl() ? "COUNT(DISTINCT LOWER($alias.url))" : 'COUNT(1)';
+    return $clickCountSelect . ' = ' . $totalLinkCount;
+  }
+
+  private function countNewsletterLinks(string $linksTable, int $newsletterId, bool $isAutomationNewsletter): int {
+    $linksQueryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
+    $linkCountSelect = $isAutomationNewsletter ? 'COUNT(DISTINCT LOWER(url))' : 'COUNT(id)';
+    $linkCount = $linksQueryBuilder->select($linkCountSelect)
+      ->from($linksTable)
+      ->where('newsletter_id = :newsletter_id')
+      ->setParameter('newsletter_id', $newsletterId)
+      ->execute()
+      ->fetchOne();
+    return is_scalar($linkCount) ? (int)$linkCount : 0;
+  }
+
+  private function bindLinkFilterParameters(QueryBuilder $queryBuilder, EmailLinkFilter $linkFilter, string $parameterSuffix): void {
+    if ($linkFilter->getLinkIds()) {
+      $queryBuilder->setParameter('links' . $parameterSuffix, $linkFilter->getLinkIds(), ArrayParameterType::INTEGER);
+    }
+    if ($linkFilter->getLinkUrls()) {
+      $queryBuilder->setParameter('linkUrls' . $parameterSuffix, $linkFilter->getLinkUrls(), ArrayParameterType::STRING);
+    }
   }
 
   private function applyForOpenedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix): QueryBuilder {
@@ -177,7 +238,7 @@ class EmailAction implements Filter {
 
       if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
         $queryBuilder->groupBy('subscriber_id');
-        $queryBuilder->having('COUNT(1) = ' . count($newsletters));
+        $queryBuilder->having('COUNT(DISTINCT stats.newsletter_id) = ' . count($newsletters));
       }
     }
     if (($action === EmailAction::ACTION_OPENED) && ($operator !== DynamicSegmentFilterData::OPERATOR_NONE)) {
@@ -192,9 +253,15 @@ class EmailAction implements Filter {
     return $queryBuilder;
   }
 
-  private function createNotStatsJoinCondition(string $parameterSuffix, ?array $linkIds = null): string {
+  private function createNotStatsJoinCondition(string $parameterSuffix, array $linkIds = [], array $linkUrls = []): string {
     $clause = "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = :newsletter" . $parameterSuffix;
-    if ($linkIds) {
+    if ($linkUrls) {
+      $linksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+      $statsLinkAlias = 'notstatslinks' . $parameterSuffix;
+      $clause .= " AND stats.link_id IN (SELECT $statsLinkAlias.id FROM $linksTable $statsLinkAlias";
+      $clause .= " WHERE $statsLinkAlias.newsletter_id = :newsletter" . $parameterSuffix;
+      $clause .= ' AND LOWER(' . $statsLinkAlias . '.url) IN (:linkUrls' . $parameterSuffix . '))';
+    } elseif ($linkIds) {
       $clause .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
     }
     return $clause;
@@ -225,7 +292,7 @@ class EmailAction implements Filter {
 
       if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
         $queryBuilder->groupBy('subscriber_id');
-        $queryBuilder->having('COUNT(1) = ' . count($newsletters));
+        $queryBuilder->having('COUNT(DISTINCT statisticsNewsletter.newsletter_id) = ' . count($newsletters));
       }
     }
 
@@ -266,6 +333,10 @@ class EmailAction implements Filter {
 
     foreach ($linkIds as $linkId) {
       if (!is_numeric($linkId)) {
+        if (is_string($linkId) && trim($linkId) !== '') {
+          $linkUrl = trim($linkId);
+          $lookupData['links'][$linkUrl] = $linkUrl;
+        }
         continue;
       }
       $linkIdInt = (int)$linkId;
@@ -276,5 +347,82 @@ class EmailAction implements Filter {
     }
 
     return $lookupData;
+  }
+
+  /** @param mixed $newsletterId */
+  private function normalizeNewsletterId($newsletterId): int {
+    if (is_int($newsletterId)) {
+      return $newsletterId;
+    }
+    if (is_float($newsletterId) && floor($newsletterId) === $newsletterId) {
+      return (int)$newsletterId;
+    }
+    if (is_string($newsletterId)) {
+      $newsletterId = trim($newsletterId);
+      if (ctype_digit($newsletterId)) {
+        return (int)$newsletterId;
+      }
+    }
+    return 0;
+  }
+
+  /** @param mixed[] $rawLinkIds */
+  private function buildEmailLinkFilter(int $newsletterId, array $rawLinkIds, string $parameterSuffix): EmailLinkFilter {
+    $isAutomationNewsletter = $this->isAutomationNewsletter($newsletterId);
+    $matchByUrl = $isAutomationNewsletter || $this->hasUrlLinkIds($rawLinkIds);
+    $selectedLinkIds = [];
+    $selectedLinkUrls = [];
+    foreach ($rawLinkIds as $linkId) {
+      if ($this->isNumericLinkId($linkId)) {
+        if ($matchByUrl) {
+          $link = $this->newsletterLinkRepository->findOneById((int)$linkId);
+          if ($link instanceof NewsletterLinkEntity) {
+            $selectedLinkUrls[] = $this->normalizeUrlForMatching($link->getUrl());
+          }
+        } else {
+          $selectedLinkIds[] = (int)$linkId;
+        }
+        continue;
+      }
+      if (is_string($linkId) && trim($linkId) !== '') {
+        $selectedLinkUrls[] = $this->normalizeUrlForMatching($linkId);
+      }
+    }
+    return new EmailLinkFilter(
+      $isAutomationNewsletter,
+      array_values(array_unique($selectedLinkIds)),
+      array_values(array_unique($selectedLinkUrls)),
+      'statslinks' . $parameterSuffix
+    );
+  }
+
+  private function normalizeUrlForMatching(string $url): string {
+    return strtolower(trim($url));
+  }
+
+  /**
+   * @param mixed $linkId
+   * @phpstan-assert-if-true int|float|numeric-string $linkId
+   */
+  private function isNumericLinkId($linkId): bool {
+    return is_int($linkId)
+      || (is_float($linkId) && floor($linkId) === $linkId)
+      || (is_string($linkId) && ctype_digit($linkId));
+  }
+
+  private function isAutomationNewsletter(int $newsletterId): bool {
+    $newsletter = $this->newslettersRepository->findOneById($newsletterId);
+    return $newsletter instanceof NewsletterEntity
+      && in_array($newsletter->getType(), self::AUTOMATION_EMAIL_TYPES, true);
+  }
+
+  /** @param mixed[] $linkIds */
+  private function hasUrlLinkIds(array $linkIds): bool {
+    foreach ($linkIds as $linkId) {
+      if (is_string($linkId) && !$this->isNumericLinkId($linkId) && trim($linkId) !== '') {
+        return true;
+      }
+    }
+    return false;
   }
 }

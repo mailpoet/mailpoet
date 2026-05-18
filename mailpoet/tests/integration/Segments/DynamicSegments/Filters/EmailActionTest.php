@@ -143,6 +143,26 @@ class EmailActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['not_opened@example.com'], $emails);
   }
 
+  public function testGetOpenedOperatorAllCountsRepeatedAutomationEmailSendsOnce(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriber = $this->createSubscriber('automation_opened_twice@example.com');
+    $this->createStatsNewsletter($subscriber, $automationEmail);
+    $this->createStatsNewsletter($subscriber, $automationEmail);
+    $this->createStatisticsOpens($subscriber, $automationEmail);
+    $this->createStatisticsOpens($subscriber, $automationEmail);
+
+    $segmentFilterData = $this->getSegmentFilterData(
+      EmailAction::ACTION_OPENED,
+      [
+        'newsletters' => [(int)$automationEmail->getId()],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+      ]
+    );
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_opened_twice@example.com'], $emails);
+  }
+
   public function testGetClickedWithoutSavedLinks(): void {
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
@@ -226,6 +246,135 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
     $this->assertEqualsCanonicalizing(['opened_not_clicked@example.com', 'not_opened@example.com'], $emails);
+  }
+
+  public function testGetClickedAutomationEmailWithAnyOfUrlLinks(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedSelected = $this->createSubscriber('automation_clicked_selected@example.com');
+    $subscriberClickedOther = $this->createSubscriber('automation_clicked_other@example.com');
+    $this->createStatsNewsletter($subscriberClickedSelected, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOther, $automationEmail);
+    $this->createClickedLink('https://example.com/automation-selected', $automationEmail, $subscriberClickedSelected);
+    $this->createClickedLink('https://example.com/automation-other', $automationEmail, $subscriberClickedOther);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => ['https://example.com/automation-selected'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_clicked_selected@example.com'], $emails);
+  }
+
+  public function testGetClickedAutomationEmailWithAllOfUrlLinks(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedAll = $this->createSubscriber('automation_clicked_all@example.com');
+    $subscriberClickedOne = $this->createSubscriber('automation_clicked_one@example.com');
+    $this->createStatsNewsletter($subscriberClickedAll, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOne, $automationEmail);
+    $this->createClickedLink('https://example.com/automation-first', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/automation-second', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/automation-first', $automationEmail, $subscriberClickedOne);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => [
+        'https://example.com/automation-first',
+        'https://example.com/automation-second',
+      ],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_clicked_all@example.com'], $emails);
+  }
+
+  public function testGetClickedAutomationEmailWithAllLinksCountsDistinctUrls(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedAll = $this->createSubscriber('automation_clicked_all_links@example.com');
+    $subscriberClickedDuplicateUrl = $this->createSubscriber('automation_clicked_duplicate_url@example.com');
+    $this->createStatsNewsletter($subscriberClickedAll, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedDuplicateUrl, $automationEmail);
+    $this->createClickedLink('https://example.com/automation-first', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/automation-second', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/automation-first', $automationEmail, $subscriberClickedDuplicateUrl);
+    $this->createClickedLink('https://example.com/automation-first', $automationEmail, $subscriberClickedDuplicateUrl);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => [],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_clicked_all_links@example.com'], $emails);
+  }
+
+  public function testGetClickedAutomationEmailMatchesUrlsCaseInsensitively(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedMixed = $this->createSubscriber('automation_clicked_mixed_case@example.com');
+    $subscriberClickedLower = $this->createSubscriber('automation_clicked_lower_case@example.com');
+    $this->createStatsNewsletter($subscriberClickedMixed, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedLower, $automationEmail);
+    $this->createClickedLink('https://Example.com/Automation-Target', $automationEmail, $subscriberClickedMixed);
+    $this->createClickedLink('https://example.com/automation-target', $automationEmail, $subscriberClickedLower);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => ['HTTPS://EXAMPLE.COM/automation-TARGET'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(
+      ['automation_clicked_mixed_case@example.com', 'automation_clicked_lower_case@example.com'],
+      $emails
+    );
+  }
+
+  public function testGetClickedAutomationEmailWithNoneOfUrlLinks(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedSelected = $this->createSubscriber('automation_clicked_selected@example.com');
+    $subscriberClickedOther = $this->createSubscriber('automation_clicked_other@example.com');
+    $this->createStatsNewsletter($subscriberClickedSelected, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOther, $automationEmail);
+    $this->createClickedLink('https://example.com/automation-selected', $automationEmail, $subscriberClickedSelected);
+    $this->createClickedLink('https://example.com/automation-other', $automationEmail, $subscriberClickedOther);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => ['https://example.com/automation-selected'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_clicked_other@example.com'], $emails);
+  }
+
+  public function testGetClickedAutomationEmailWithNoneOfUrlLinksAcrossMultipleSends(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    // Each automation send creates a fresh newsletter_links row for the same URL,
+    // so the NONE branch must look up matching link ids by URL — not just by the
+    // numeric id the user picked — or a subscriber who clicked the target URL on
+    // an earlier send would slip through the filter.
+    $subscriberClickedTargetOnFirstSend = $this->createSubscriber('automation_clicked_target_first_send@example.com');
+    $subscriberClickedOtherOnly = $this->createSubscriber('automation_clicked_other_only@example.com');
+    $this->createStatsNewsletter($subscriberClickedTargetOnFirstSend, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOtherOnly, $automationEmail);
+    $this->createClickedLink('https://example.com/automation-target', $automationEmail, $subscriberClickedTargetOnFirstSend);
+    $this->createClickedLink('https://example.com/automation-other', $automationEmail, $subscriberClickedTargetOnFirstSend);
+    $this->createClickedLink('https://example.com/automation-other', $automationEmail, $subscriberClickedOtherOnly);
+    $this->createClickedLink('https://example.com/automation-other', $automationEmail, $subscriberClickedOtherOnly);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => ['https://example.com/automation-target'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(['automation_clicked_other_only@example.com'], $emails);
   }
 
   public function testOpensNotIncludeMachineOpens(): void {
@@ -335,6 +484,22 @@ class EmailActionTest extends \MailPoetTest {
     verify($emails)->arrayNotContains('3@example.com');
   }
 
+  public function testSentEmailAllCountsRepeatedAutomationEmailSendsOnce(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriber = $this->createSubscriber('automation_sent_twice@example.com');
+    $this->createStatsNewsletter($subscriber, $automationEmail);
+    $this->createStatsNewsletter($subscriber, $automationEmail);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_WAS_SENT, [
+      'newsletters' => [$automationEmail->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+    ]);
+
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    verify($emails)->arrayContains('automation_sent_twice@example.com');
+  }
+
   public function testSentEmailNone(): void {
     $subscriber1 = $this->createSubscriber('1@example.com');
     $subscriber2 = $this->createSubscriber('2@example.com');
@@ -389,6 +554,48 @@ class EmailActionTest extends \MailPoetTest {
     ], $lookupData);
   }
 
+  public function testItRetrievesLookupDataForUrlLinkIds(): void {
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_ids' => ['https://example.com/from-url', '[link:subscription_manage_url]'],
+    ]);
+    $lookupData = $this->emailAction->getLookupData($segmentFilterData);
+    $this->assertEqualsCanonicalizing([
+      'newsletters' => [
+        $this->newsletter->getId() => $this->newsletter->getSubject(),
+      ],
+      'links' => [
+        'https://example.com/from-url' => 'https://example.com/from-url',
+        '[link:subscription_manage_url]' => '[link:subscription_manage_url]',
+      ],
+    ], $lookupData);
+  }
+
+  public function testGetClickedAutomationEmailResolvesNumericLinkIdsToUrls(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedTarget = $this->createSubscriber('automation_matches_url@example.com');
+    $subscriberClickedOther = $this->createSubscriber('automation_clicks_other@example.com');
+    $this->createStatsNewsletter($subscriberClickedTarget, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOther, $automationEmail);
+    // The UI selects a single numeric id, but each automation send creates
+    // a fresh link row for the same URL. The filter must still match clicks
+    // on any other send of the same URL — not only the id that was picked.
+    $pickedLink = $this->createClickedLink('https://example.com/automation-target', $automationEmail, $subscriberClickedTarget);
+    $this->createClickedLink('https://example.com/automation-target', $automationEmail, $subscriberClickedOther);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$automationEmail->getId(),
+      'link_ids' => [$pickedLink->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    $this->assertEqualsCanonicalizing(
+      ['automation_matches_url@example.com', 'automation_clicks_other@example.com'],
+      $emails
+    );
+  }
+
   private function getSegmentFilterData(string $action, array $data): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
   }
@@ -404,8 +611,25 @@ class EmailActionTest extends \MailPoetTest {
     return $subscriber;
   }
 
+  private function createNewsletterWithQueue(string $type, string $status): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+    $newsletter->getQueues()->add($queue);
+    $newsletter->setSubject('automation email');
+    $newsletter->setStatus($status);
+    $newsletter->setType($type);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
   private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter): StatisticsNewsletterEntity {
-    $queue = $this->newsletter->getLatestQueue();
+    $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $stats = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($stats);
@@ -425,7 +649,7 @@ class EmailActionTest extends \MailPoetTest {
   private function createClickedLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber): NewsletterLinkEntity {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    $link = new NewsletterLinkEntity($this->newsletter, $queue, $link, uniqid());
+    $link = new NewsletterLinkEntity($newsletter, $queue, $link, uniqid());
     $this->entityManager->persist($link);
     $this->entityManager->flush();
     $click = new StatisticsClickEntity(
