@@ -267,10 +267,17 @@ class SubscriberSubscribeController {
     ) {
       $stashed = $this->captchaSession->getFormData($data['captcha_session_id']);
       if (is_array($stashed)) {
-        $data = array_merge(
-          $stashed,
-          ['captcha' => $data['captcha'], 'captcha_session_id' => $data['captcha_session_id']]
-        );
+        // Keep the current request's behavioral signals over the stash so the
+        // resubmit's signal check reflects accumulated interaction, not the
+        // (possibly bot-like) snapshot that triggered the original challenge.
+        $preserve = [
+          'captcha' => $data['captcha'],
+          'captcha_session_id' => $data['captcha_session_id'],
+        ];
+        if (isset($data[BehavioralSignals::FIELD_NAME])) {
+          $preserve[BehavioralSignals::FIELD_NAME] = $data[BehavioralSignals::FIELD_NAME];
+        }
+        $data = array_merge($stashed, $preserve);
       }
     }
 
@@ -286,7 +293,7 @@ class SubscriberSubscribeController {
       }
       if ($type === CaptchaConstants::TYPE_BUILTIN) {
         $this->builtInCaptchaValidator->validate($data);
-        $this->enforceBehavioralSignalsAfterBuiltinCaptcha($data, $form);
+        $this->requireHumanSignals($data, $form);
       }
       if (CaptchaConstants::isReCaptcha($type)) {
         $this->recaptchaValidator->validate($data);
@@ -305,42 +312,29 @@ class SubscriberSubscribeController {
    * look human, otherwise escalate to the built-in CAPTCHA inline challenge.
    * isRequired()'s IP-history heuristic is intentionally bypassed here — the
    * decision is made on per-submission signals, not on the IP's CAPTCHA history.
+   * On resubmit (after a previous escalation), signals are re-checked so that
+   * solving the CAPTCHA alone isn't enough to bypass the baseline.
    */
   private function enforceBehavioralBaseline(array $data, FormEntity $form): void {
-    // Resubmit: user already received a challenge, verify their answer
-    // regardless of isRequired() (the caller already decided one was needed).
     if (!empty($data['captcha_session_id'])) {
       $this->builtInCaptchaValidator->validateChallenge($data);
-      return;
     }
-    // Admin/editor exemption mirrors the configured built-in CAPTCHA path.
-    if ($this->builtInCaptchaValidator->isUserExemptFromCaptcha()) {
-      return;
-    }
-    if ($this->behavioralSignals->looksHuman($data)) {
-      return;
-    }
-    // Stash form data so the non-JS captcha-page fallback can restore it.
-    $stash = array_merge($data, ['form_id' => $form->getId()]);
-    $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
-    throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
+    $this->requireHumanSignals($data, $form);
   }
 
   /**
-   * Layered defense for the built-in CAPTCHA: even when the CAPTCHA answer is
-   * correct, suspicious behavioral signals trigger a fresh challenge. Catches
-   * solver services and JS-running bots that can solve a CAPTCHA but don't
-   * produce human-like interaction counters.
+   * Throws a fresh CAPTCHA challenge unless behavioral signals look human.
+   * Admin/editor exempt. The suspect signals are dropped from the stash so the
+   * resubmit is evaluated on the current request's freshest counters (via
+   * initCaptcha's preserve step).
    */
-  private function enforceBehavioralSignalsAfterBuiltinCaptcha(array $data, FormEntity $form): void {
+  private function requireHumanSignals(array $data, FormEntity $form): void {
     if ($this->builtInCaptchaValidator->isUserExemptFromCaptcha()) {
       return;
     }
     if ($this->behavioralSignals->looksHuman($data)) {
       return;
     }
-    // Drop the suspect signals from the stash so the resubmit is evaluated on
-    // the current request's freshest counters (via initCaptcha's preserve step).
     $stash = array_merge($data, ['form_id' => $form->getId()]);
     unset($stash[BehavioralSignals::FIELD_NAME]);
     $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
