@@ -133,6 +133,17 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     echo "<?php add_filter('site_transient_woocommerce_blocks_patterns', '__return_false');" > "/wp-core/wp-content/mu-plugins/woo-cache-disable.php"
   fi
 
+  # Always treat submissions as human-like in the test environment. Selenium
+  # completes form interactions faster than the production thresholds and
+  # integration tests subscribe directly without ever populating signals, so the
+  # baseline check would otherwise escalate every form-driven test to the inline
+  # CAPTCHA. Production thresholds stay untouched.
+  mkdir -p /wp-core/wp-content/mu-plugins
+  cat > /wp-core/wp-content/mu-plugins/mailpoet-test-behavioral-signals.php <<'PHP'
+<?php
+add_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
+PHP
+
   ACTIVATION_CONTEXT=$HTTP_HOST
   # For integration tests in multisite environment we need to activate the plugin for correct site that is loaded in tests
   # The acceptance tests activate/deactivate plugins using a helper.
