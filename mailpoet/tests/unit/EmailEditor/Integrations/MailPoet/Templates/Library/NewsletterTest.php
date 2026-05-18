@@ -30,7 +30,7 @@ class NewsletterTest extends \MailPoetUnitTest {
 
     $content = (new Newsletter($this->wp))->getContent();
 
-    $this->assertStringContainsString('<!-- wp:site-title', $content);
+    $this->assertStringContainsString('<!-- wp:site-title {"level":2,"textAlign":"center"', $content);
     $this->assertStringNotContainsString('wp:site-logo', $content);
     $this->assertStringNotContainsString('your-logo-placeholder.png', $content);
   }
