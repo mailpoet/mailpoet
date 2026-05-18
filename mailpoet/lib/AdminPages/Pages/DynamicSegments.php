@@ -257,11 +257,12 @@ class DynamicSegments {
 
   private function getNewslettersList(): array {
     $result = [];
-    foreach ($this->newslettersRepository->getStandardNewsletterList() as $newsletter) {
+    foreach ($this->newslettersRepository->getStandardAndAutomationNewsletterList() as $newsletter) {
       $result[] = [
         'id' => (string)$newsletter->getId(),
         'subject' => $newsletter->getSubject(),
         'name' => $newsletter->getCampaignNameOrSubject(),
+        'type' => $newsletter->getType(),
         'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format('Y-m-d H:i:s') : null,
       ];
     }

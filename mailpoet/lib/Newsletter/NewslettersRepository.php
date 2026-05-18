@@ -584,7 +584,10 @@ class NewslettersRepository extends Repository {
   }
 
   /**
-   * Returns standard newsletters and active automation emails ordered by sentAt
+   * Returns standard newsletters and active automation emails ordered by sentAt.
+   * Drafts (which includes deactivated automations) are excluded to keep the
+   * dropdown focused on automations the user is currently running.
+   *
    * @return NewsletterEntity[]
    */
   public function getStandardAndAutomationNewsletterList(): array {

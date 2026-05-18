@@ -28,9 +28,12 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   public function testItGetsStandardAndAutomationNewsletterList() {
     $standardNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
-    $automationEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
-    $automationTransactionalEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_ACTIVE);
-    $automationDraftEmail = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_DRAFT);
+    $activeAutomation = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $transactionalAutomation = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_ACTIVE);
+    $draftAutomation = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_DRAFT);
+    $deletedAutomation = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $deletedAutomation->setDeletedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
     $notification = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
 
     $newsletterIds = array_map(function(NewsletterEntity $newsletter) {
@@ -38,9 +41,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     }, $this->repository->getStandardAndAutomationNewsletterList());
 
     $this->assertContains($standardNewsletter->getId(), $newsletterIds);
-    $this->assertContains($automationEmail->getId(), $newsletterIds);
-    $this->assertContains($automationTransactionalEmail->getId(), $newsletterIds);
-    $this->assertNotContains($automationDraftEmail->getId(), $newsletterIds);
+    $this->assertContains($activeAutomation->getId(), $newsletterIds);
+    $this->assertContains($transactionalAutomation->getId(), $newsletterIds);
+    $this->assertNotContains($draftAutomation->getId(), $newsletterIds);
+    $this->assertNotContains($deletedAutomation->getId(), $newsletterIds);
     $this->assertNotContains($notification->getId(), $newsletterIds);
   }
 
