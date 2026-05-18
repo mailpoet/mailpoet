@@ -34,7 +34,6 @@ type Props = {
 function buildInitialView(defaultFrom: string): {
   view: View;
   dateFilters: DateFilters;
-  legacyOffset?: number;
 } {
   const state = parseLogsUrlState(window.location.href, defaultFrom);
 
@@ -46,11 +45,11 @@ function buildInitialView(defaultFrom: string): {
       search: state.search,
     },
     dateFilters: state.dateFilters,
-    legacyOffset: state.legacyOffset,
   };
 }
 
 export function List({ defaultFrom }: Props): JSX.Element {
+  const dateRangeErrorId = 'mailpoet-logs-date-error';
   const initialState = useMemo(
     () => buildInitialView(defaultFrom),
     [defaultFrom],
@@ -65,7 +64,6 @@ export function List({ defaultFrom }: Props): JSX.Element {
     () => new Set(),
   );
   const didMountRef = useRef(false);
-  const legacyOffsetRef = useRef(initialState.legacyOffset);
 
   const load = useCallback(
     (params: ListingQueryParams) => {
@@ -77,11 +75,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
           groups: [],
         });
       }
-      const legacyOffset = legacyOffsetRef.current;
-      if (legacyOffset !== undefined) {
-        legacyOffsetRef.current = undefined;
-      }
-      return getLogs(buildLogsRequestParams(params, dateFilters, legacyOffset));
+      return getLogs(buildLogsRequestParams(params, dateFilters));
     },
     [dateFilters],
   );
@@ -101,10 +95,13 @@ export function List({ defaultFrom }: Props): JSX.Element {
   });
 
   const dateRangeError = getDateRangeError(pendingDateFilters);
+  const emptyState =
+    loadError || dateRangeError ? null : (
+      <div>{__('No logs found.', 'mailpoet')}</div>
+    );
 
   const updateView = useCallback(
     (nextView: View) => {
-      legacyOffsetRef.current = undefined;
       const searchChanged = (nextView.search ?? '') !== (view.search ?? '');
       const perPageChanged = nextView.perPage !== view.perPage;
 
@@ -152,14 +149,12 @@ export function List({ defaultFrom }: Props): JSX.Element {
     if (dateRangeError) {
       return;
     }
-    legacyOffsetRef.current = undefined;
     setDateFilters(pendingDateFilters);
     setView((currentView) => ({ ...currentView, page: 1 }));
   }, [dateRangeError, pendingDateFilters, setView]);
 
   const clearDateFilters = useCallback((): void => {
     const emptyFilters: DateFilters = {};
-    legacyOffsetRef.current = undefined;
     setPendingDateFilters(emptyFilters);
     setDateFilters(emptyFilters);
     setView((currentView) => ({ ...currentView, page: 1 }));
@@ -197,7 +192,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
         defaultLayouts={{ table: {} }}
         getItemId={(item) => String(item.id)}
         isLoading={isLoading}
-        empty={<div>{__('No logs found.', 'mailpoet')}</div>}
+        empty={emptyState}
       >
         <div className="mailpoet-logs-dataviews__toolbar">
           <DataViews.Search label={__('Search logs', 'mailpoet')} />
@@ -222,6 +217,8 @@ export function List({ defaultFrom }: Props): JSX.Element {
                 disabled={isLoading}
                 isClearable
                 aria-label={__('Filter logs from date', 'mailpoet')}
+                aria-invalid={Boolean(dateRangeError) || undefined}
+                aria-describedby={dateRangeError ? dateRangeErrorId : undefined}
               />
             </label>
             <label
@@ -244,6 +241,8 @@ export function List({ defaultFrom }: Props): JSX.Element {
                 disabled={isLoading}
                 isClearable
                 aria-label={__('Filter logs to date', 'mailpoet')}
+                aria-invalid={Boolean(dateRangeError) || undefined}
+                aria-describedby={dateRangeError ? dateRangeErrorId : undefined}
               />
             </label>
             <Button
@@ -263,7 +262,11 @@ export function List({ defaultFrom }: Props): JSX.Element {
             </Button>
           </div>
           {dateRangeError && (
-            <div className="mailpoet-logs-date-error" role="alert">
+            <div
+              className="mailpoet-logs-date-error"
+              id={dateRangeErrorId}
+              role="alert"
+            >
               {dateRangeError}
             </div>
           )}

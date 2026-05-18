@@ -179,6 +179,49 @@ class LogsEndpointsTest extends Test {
     $this->assertNotSame((int)$newest->getId(), (int)$oldest->getId());
   }
 
+  public function testGetDefaultsEmptySortOrderToNewestFirst(): void {
+    $suffix = uniqid();
+    $old = (new LogFactory())->withName("empty-order-old-{$suffix}")->withCreatedAt(new Carbon('2025-03-01 00:00:00'))->create();
+    $new = (new LogFactory())->withName("empty-order-new-{$suffix}")->withCreatedAt(new Carbon('2025-03-02 00:00:00'))->create();
+
+    $order = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'order' => '',
+      'per_page' => 100,
+    ]]);
+    $sortOrder = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'sort_order' => '',
+      'per_page' => 100,
+    ]]);
+
+    $expectedIds = [(int)$new->getId(), (int)$old->getId()];
+    $this->assertSame($expectedIds, array_map('intval', array_column($order['data']['items'], 'id')));
+    $this->assertSame($expectedIds, array_map('intval', array_column($sortOrder['data']['items'], 'id')));
+  }
+
+  public function testGetUsesStableOrderingForLogsWithSameTimestamp(): void {
+    $suffix = uniqid();
+    $createdAt = new Carbon('2025-03-03 00:00:00');
+    $first = (new LogFactory())->withName("same-time-first-{$suffix}")->withCreatedAt($createdAt)->create();
+    $second = (new LogFactory())->withName("same-time-second-{$suffix}")->withCreatedAt($createdAt)->create();
+    $third = (new LogFactory())->withName("same-time-third-{$suffix}")->withCreatedAt($createdAt)->create();
+
+    $pageOne = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'page' => 1,
+      'per_page' => 2,
+    ]]);
+    $pageTwo = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'page' => 2,
+      'per_page' => 2,
+    ]]);
+
+    $this->assertSame([(int)$third->getId(), (int)$second->getId()], array_map('intval', array_column($pageOne['data']['items'], 'id')));
+    $this->assertSame([(int)$first->getId()], array_map('intval', array_column($pageTwo['data']['items'], 'id')));
+  }
+
   public function testGetRejectsInvalidListingParams(): void {
     $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'name']])['code']);
     $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['sort_by' => 'name']])['code']);

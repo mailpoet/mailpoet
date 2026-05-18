@@ -126,7 +126,7 @@ abstract class AbstractListingEndpoint extends Endpoint {
     $sortBy = is_string($orderByParam) && $orderByParam !== '' ? $orderByParam : $this->getDefaultSortBy();
 
     $orderParam = $request->getParam('order') ?? $request->getParam('sort_order');
-    $sortOrder = is_string($orderParam) ? strtolower($orderParam) : $this->getDefaultSortOrder();
+    $sortOrder = is_string($orderParam) && $orderParam !== '' ? strtolower($orderParam) : $this->getDefaultSortOrder();
 
     $searchParam = $request->getParam('search');
     $search = is_string($searchParam) ? $searchParam : null;

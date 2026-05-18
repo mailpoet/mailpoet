@@ -21,6 +21,9 @@ class LogListingRepository extends ListingRepository {
 
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
     $queryBuilder->addOrderBy("l.$sortBy", $sortOrder);
+    if ($sortBy !== 'id') {
+      $queryBuilder->addOrderBy('l.id', $sortOrder);
+    }
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters) {
