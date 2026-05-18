@@ -49,6 +49,19 @@ $form-line-height: 1.4;
     }
   }
 
+  // Form controls inherit font-family from the parent so the form matches the
+  // active theme. Browsers' UA stylesheets default form controls to a separate
+  // font, which otherwise overrides theme typography. Inline font-family from
+  // BlockStylesRenderer still wins when the user sets a form-level font.
+  .mailpoet_text,
+  .mailpoet_textarea,
+  .mailpoet_select,
+  .mailpoet_submit,
+  .mailpoet_paragraph label,
+  .mailpoet_form_paragraph label {
+    font-family: inherit;
+  }
+
   &.mailpoet_form_successfully_send {
     position: relative;
 
