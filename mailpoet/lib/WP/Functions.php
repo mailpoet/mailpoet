@@ -212,6 +212,10 @@ class Functions {
     return get_bloginfo($show, $filter);
   }
 
+  public function hasCustomLogo() {
+    return has_custom_logo();
+  }
+
   public function getCategories($args = '') {
     return get_categories($args);
   }
