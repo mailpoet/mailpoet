@@ -3,6 +3,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  word-break: break-word;
 }
 
 .mailpoet-logs-message-full {
@@ -37,5 +38,39 @@
 
   .mailpoet-logs-limit .mailpoet-form-input-small {
     width: 100px;
+  }
+}
+
+.mailpoet-logs-dataviews {
+  .mailpoet-logs-dataviews__toolbar {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $grid-gap;
+    margin-bottom: $grid-gap;
+  }
+
+  .mailpoet-logs-date-filters,
+  .mailpoet-logs-error {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $grid-gap-half;
+  }
+
+  .mailpoet-logs-date-filter {
+    align-items: center;
+    display: flex;
+    gap: $grid-gap-half;
+  }
+
+  .mailpoet-datepicker {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .mailpoet-logs-date-error {
+    color: #d63638;
+    flex-basis: 100%;
   }
 }

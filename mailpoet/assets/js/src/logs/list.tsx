@@ -1,237 +1,273 @@
-import { useCallback, useState } from 'react';
-import { MailPoet } from 'mailpoet';
-import { curry } from 'lodash';
-import { parseISO } from 'date-fns';
-import { __, _x } from '@wordpress/i18n';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Notice } from '@wordpress/components';
+import { DataViews, View } from '@wordpress/dataviews';
+import { __ } from '@wordpress/i18n';
 
+import { Button } from 'common';
+import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
 import { Datepicker } from '../common/datepicker/datepicker';
-import { Button, ErrorBoundary, Input } from '../common';
-import { Icon } from '../listing/assets/search-icon';
+import { getLogs, type LogListingItem } from './api';
+import { getLogFields } from './fields';
+import {
+  buildLogsUrl,
+  dateFromString,
+  formatDateAsYmd,
+  getDateRangeError,
+  parseLogsUrlState,
+  type DateFilters,
+} from './url-state';
 
-type LogData = {
-  id: number;
-  name: string;
-  message: string;
-  created_at: string;
+const DEFAULT_VIEW: View = {
+  type: 'table',
+  perPage: 20,
+  page: 1,
+  sort: { field: 'created_at', direction: 'desc' },
+  fields: ['message', 'action', 'created_at'],
+  titleField: 'name',
+  showTitle: true,
 };
 
-export type Logs = LogData[];
-
-type LogProps = {
-  log: LogData;
+type Props = {
+  defaultFrom: string;
 };
 
-function Log({ log }: LogProps): JSX.Element {
-  const [showFullMessage, setShowFullMessage] = useState(false);
+function buildInitialView(defaultFrom: string): {
+  view: View;
+  dateFilters: DateFilters;
+} {
+  const state = parseLogsUrlState(window.location.href, defaultFrom);
 
-  const toggleFullMessage = () => {
-    setShowFullMessage(!showFullMessage);
+  return {
+    view: {
+      ...DEFAULT_VIEW,
+      page: state.page,
+      perPage: state.perPage,
+      search: state.search,
+    },
+    dateFilters: state.dateFilters,
   };
-
-  return (
-    <tr key={`log-row-${log.id}`}>
-      <td role="gridcell" className="mailpoet-logs-min-width">
-        {log.name}
-      </td>
-      <td role="gridcell">
-        <div
-          className={`mailpoet-logs-message ${
-            showFullMessage ? 'mailpoet-logs-message-full' : ''
-          }`}
-        >
-          {log.message}
-        </div>
-      </td>
-      <td role="gridcell" className="mailpoet-logs-min-width">
-        <Button
-          dimension="small"
-          variant="secondary"
-          onClick={toggleFullMessage}
-        >
-          {showFullMessage
-            ? __('Show less', 'mailpoet')
-            : __('Show more', 'mailpoet')}
-        </Button>
-      </td>
-      <td className="mailpoet-logs-min-width" role="gridcell">
-        {MailPoet.Date.full(log.created_at)}
-      </td>
-    </tr>
-  );
 }
 
-Log.displayName = 'Log';
-export type FilterType = {
-  from?: string;
-  to?: string;
-  search?: string;
-  offset?: string;
-  limit?: string;
-};
+export function List({ defaultFrom }: Props): JSX.Element {
+  const initialState = useMemo(
+    () => buildInitialView(defaultFrom),
+    [defaultFrom],
+  );
+  const [dateFilters, setDateFilters] = useState<DateFilters>(
+    initialState.dateFilters,
+  );
+  const [pendingDateFilters, setPendingDateFilters] = useState<DateFilters>(
+    initialState.dateFilters,
+  );
+  const [expandedLogIds, setExpandedLogIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const didMountRef = useRef(false);
 
-type ListProps = {
-  logs: Logs;
-  originalFrom?: string;
-  originalTo?: string;
-  originalSearch?: string;
-  originalOffset?: string;
-  originalLimit?: string;
-  onFilter: (FilterType) => void;
-};
-
-function List({
-  logs,
-  onFilter,
-  originalFrom,
-  originalTo,
-  originalSearch,
-  originalOffset,
-  originalLimit,
-}: ListProps): JSX.Element {
-  const [from, setFrom] = useState(originalFrom ?? undefined);
-  const [to, setTo] = useState(originalTo ?? undefined);
-  const [offset, setOffset] = useState(originalOffset ?? '');
-  const [limit, setLimit] = useState(originalLimit ?? '');
-  const [search, setSearch] = useState(originalSearch || '');
-
-  const dateChanged = curry(
-    (setter: (value: string) => void, value: string): void => {
-      if (value === null) {
-        setter(undefined);
-        return;
+  const load = useCallback(
+    (params: ListingQueryParams) => {
+      if (getDateRangeError(dateFilters)) {
+        return Promise.resolve({
+          items: [],
+          meta: { count: 0, pages: 0 },
+          filters: [],
+          groups: [],
+        });
       }
-      // Swap display format to storage format
-      const formatting = {
-        format: 'Y-m-d',
-      };
-      setter(MailPoet.Date.format(value, formatting));
+      const search = params.search?.trim();
+      return getLogs({
+        ...params,
+        search: search || undefined,
+        filter: dateFilters,
+      });
     },
+    [dateFilters],
   );
 
-  const filterClick = useCallback((): void => {
-    const data: FilterType = {};
-    if (from) {
-      data.from = from;
+  const {
+    view,
+    setView,
+    items,
+    meta,
+    isLoading,
+    error: loadError,
+    clearError: clearLoadError,
+    refresh,
+  } = useDataViewsQuery<LogListingItem>({
+    initialView: initialState.view,
+    load,
+  });
+
+  const dateRangeError = getDateRangeError(pendingDateFilters);
+
+  const updateView = useCallback(
+    (nextView: View) => {
+      const searchChanged = (nextView.search ?? '') !== (view.search ?? '');
+      const perPageChanged = nextView.perPage !== view.perPage;
+
+      setView({
+        ...nextView,
+        page: searchChanged || perPageChanged ? 1 : nextView.page,
+      });
+    },
+    [setView, view],
+  );
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
     }
-    if (to) {
-      data.to = to;
+
+    const nextUrl = buildLogsUrl(window.location.href, view, dateFilters);
+    window.history.replaceState({}, '', nextUrl);
+  }, [dateFilters, view]);
+
+  const toggleExpanded = useCallback((logId: number): void => {
+    setExpandedLogIds((current) => {
+      const next = new Set(current);
+      if (next.has(logId)) {
+        next.delete(logId);
+      } else {
+        next.add(logId);
+      }
+      return next;
+    });
+  }, []);
+
+  const fields = useMemo(
+    () => getLogFields(expandedLogIds, toggleExpanded),
+    [expandedLogIds, toggleExpanded],
+  );
+
+  const paginationInfo = useMemo(
+    () => ({ totalItems: meta.count, totalPages: meta.pages }),
+    [meta],
+  );
+
+  const applyDateFilters = useCallback((): void => {
+    if (dateRangeError) {
+      return;
     }
-    if (offset && offset.trim() !== '') {
-      data.offset = offset;
-    }
-    if (limit && limit.trim() !== '') {
-      data.limit = limit;
-    }
-    if (search && search.trim() !== '') {
-      data.search = search.trim();
-    }
-    onFilter(data);
-  }, [from, limit, offset, search, to, onFilter]);
+    setDateFilters(pendingDateFilters);
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  }, [dateRangeError, pendingDateFilters, setView]);
+
+  const clearDateFilters = useCallback((): void => {
+    const emptyFilters: DateFilters = {};
+    setPendingDateFilters(emptyFilters);
+    setDateFilters(emptyFilters);
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  }, [setView]);
+
+  const retryLoading = useCallback((): void => {
+    clearLoadError();
+    refresh();
+  }, [clearLoadError, refresh]);
 
   return (
-    <div className="mailpoet-listing mailpoet-logs">
-      <div className="mailpoet-listing-header">
-        <div className="mailpoet-listing-search">
-          <label htmlFor="search_input" className="screen-reader-text">
-            {__('Search', 'mailpoet')}
-          </label>
-          <Input
-            dimension="small"
-            iconStart={Icon}
-            type="search"
-            id="search_input"
-            name="s"
-            onChange={(event): void => setSearch(event.target.value)}
-            value={search}
-            placeholder={__('Search', 'mailpoet')}
-          />
-        </div>
-        <div className="mailpoet-listing-filters">
-          {
-            // translators: Date from when filtering
-            `${__('From', 'mailpoet')}:`
-          }
-          <ErrorBoundary>
-            <Datepicker
-              dateFormat="MMMM d, yyyy"
-              onChange={dateChanged(setFrom)}
-              maxDate={new Date()}
-              selected={from ? parseISO(from) : undefined}
+    <div className="mailpoet-listing mailpoet-logs mailpoet-logs-dataviews">
+      {loadError && (
+        <Notice status="error" isDismissible={false}>
+          <div className="mailpoet-logs-error">
+            <span>{__('Logs could not be loaded.', 'mailpoet')}</span>
+            <Button
               dimension="small"
-            />
-            {
-              // translators: Date to when filtering
-              `${__('To', 'mailpoet')}:`
-            }
-            <Datepicker
-              dateFormat="MMMM d, yyyy"
-              onChange={dateChanged(setTo)}
-              maxDate={new Date()}
-              selected={to ? parseISO(to) : undefined}
-              dimension="small"
-            />
-          </ErrorBoundary>
-        </div>
-        <div className="mailpoet-logs-limit">
-          <label htmlFor="offset_input" className="screen-reader-text">
-            {
-              // translators: Offset of search results when filtering
-              __('Offset', 'mailpoet')
-            }
-          </label>
-          <Input
-            dimension="small"
-            id="offset_input"
-            name="o"
-            type="number"
-            onChange={(event): void => setOffset(event.target.value)}
-            value={offset}
-            placeholder={__('Offset', 'mailpoet')}
-          />
-        </div>
-        <div className="mailpoet-logs-limit">
-          <label htmlFor="limit_input" className="screen-reader-text">
-            {__('Limit', 'mailpoet')}
-          </label>
-          <Input
-            dimension="small"
-            id="limit_input"
-            name="l"
-            type="number"
-            onChange={(event): void => setLimit(event.target.value)}
-            value={limit}
-            placeholder={__('Limit', 'mailpoet')}
-          />
-        </div>
-        <Button dimension="small" onClick={filterClick}>
-          {
-            // translators: Button to filter logs
-            _x('Filter', 'verb', 'mailpoet')
-          }
-        </Button>
-      </div>
+              variant="secondary"
+              onClick={retryLoading}
+              isDisabled={isLoading}
+            >
+              {__('Retry', 'mailpoet')}
+            </Button>
+          </div>
+        </Notice>
+      )}
 
-      <table className="mailpoet-listing-table widefat striped" role="grid">
-        <thead>
-          <tr>
-            <th>{__('Name', 'mailpoet')}</th>
-            <th>{__('Message', 'mailpoet')}</th>
-            <th>{__('Action', 'mailpoet')}</th>
-            <th>{__('Created On', 'mailpoet')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <ErrorBoundary>
-            {logs.map((log) => (
-              <Log log={log} key={`log-${log.id}`} />
-            ))}
-          </ErrorBoundary>
-        </tbody>
-      </table>
+      <DataViews<LogListingItem>
+        data={items}
+        fields={fields}
+        view={view}
+        onChangeView={updateView}
+        paginationInfo={paginationInfo}
+        defaultLayouts={{ table: {} }}
+        getItemId={(item) => String(item.id)}
+        isLoading={isLoading}
+        empty={<div>{__('No logs found.', 'mailpoet')}</div>}
+      >
+        <div className="mailpoet-logs-dataviews__toolbar">
+          <DataViews.Search label={__('Search logs', 'mailpoet')} />
+          <div className="mailpoet-logs-date-filters">
+            <label
+              className="mailpoet-logs-date-filter"
+              htmlFor="mailpoet-logs-from"
+            >
+              <span>{__('From', 'mailpoet')}</span>
+              <Datepicker
+                id="mailpoet-logs-from"
+                dateFormat="MMMM d, yyyy"
+                onChange={(date: Date | null): void =>
+                  setPendingDateFilters((current) => ({
+                    ...current,
+                    from: formatDateAsYmd(date),
+                  }))
+                }
+                maxDate={new Date()}
+                selected={dateFromString(pendingDateFilters.from)}
+                dimension="small"
+                disabled={isLoading}
+                isClearable
+                aria-label={__('Filter logs from date', 'mailpoet')}
+              />
+            </label>
+            <label
+              className="mailpoet-logs-date-filter"
+              htmlFor="mailpoet-logs-to"
+            >
+              <span>{__('To', 'mailpoet')}</span>
+              <Datepicker
+                id="mailpoet-logs-to"
+                dateFormat="MMMM d, yyyy"
+                onChange={(date: Date | null): void =>
+                  setPendingDateFilters((current) => ({
+                    ...current,
+                    to: formatDateAsYmd(date),
+                  }))
+                }
+                maxDate={new Date()}
+                selected={dateFromString(pendingDateFilters.to)}
+                dimension="small"
+                disabled={isLoading}
+                isClearable
+                aria-label={__('Filter logs to date', 'mailpoet')}
+              />
+            </label>
+            <Button
+              dimension="small"
+              onClick={applyDateFilters}
+              isDisabled={isLoading || Boolean(dateRangeError)}
+            >
+              {__('Apply', 'mailpoet')}
+            </Button>
+            <Button
+              dimension="small"
+              variant="secondary"
+              onClick={clearDateFilters}
+              isDisabled={isLoading}
+            >
+              {__('Clear', 'mailpoet')}
+            </Button>
+          </div>
+          {dateRangeError && (
+            <div className="mailpoet-logs-date-error" role="alert">
+              {dateRangeError}
+            </div>
+          )}
+        </div>
+        <DataViews.Layout />
+        <DataViews.Footer />
+      </DataViews>
     </div>
   );
 }
 
 List.displayName = 'LogsList';
-
-export { List };
