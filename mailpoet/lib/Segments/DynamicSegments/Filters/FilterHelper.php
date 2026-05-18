@@ -115,9 +115,6 @@ class FilterHelper {
         throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
       }
       $days = intval($days);
-      if ($days < 1) {
-        throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
-      }
       $date = $this->getDateNDaysAgoImmutable($days);
       if ($startOfDayForInTheLast) {
         $date = $date->startOfDay();
