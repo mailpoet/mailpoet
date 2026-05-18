@@ -71,7 +71,7 @@ abstract class ListingRepository {
     $search = $definition->getSearch();
     $parameters = $definition->getParameters();
 
-    if ($search && strlen(trim($search)) > 0) {
+    if ($search !== null && strlen(trim($search)) > 0) {
       $this->applySearch($queryBuilder, $search, $parameters ?: []);
     }
 

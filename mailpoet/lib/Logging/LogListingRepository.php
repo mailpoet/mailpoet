@@ -30,12 +30,12 @@ class LogListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    if (isset($filters['from'])) {
+    if (!empty($filters['from'])) {
       $queryBuilder
         ->andWhere('l.createdAt >= :dateFrom')
         ->setParameter('dateFrom', $filters['from'] . ' 00:00:00');
     }
-    if (isset($filters['to'])) {
+    if (!empty($filters['to'])) {
       $queryBuilder
         ->andWhere('l.createdAt <= :dateTo')
         ->setParameter('dateTo', $filters['to'] . ' 23:59:59');

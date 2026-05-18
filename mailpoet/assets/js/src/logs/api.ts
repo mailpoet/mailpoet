@@ -5,6 +5,7 @@ import type {
   ListingQueryParams,
   ListingResponse,
 } from 'common/dataviews';
+import type { DateFilters } from './url-state';
 
 declare global {
   interface Window {
@@ -30,6 +31,27 @@ export type LogListingItem = {
   message: string;
   created_at: string | null;
 };
+
+export function buildLogsRequestParams(
+  params: ListingQueryParams,
+  dateFilters: DateFilters,
+  legacyOffset?: number,
+): ListingQueryParams {
+  const search = params.search?.trim();
+  const requestParams: ListingQueryParams = {
+    ...params,
+    search: search || undefined,
+    filter: dateFilters,
+  };
+
+  if (legacyOffset !== undefined) {
+    delete requestParams.page;
+    requestParams.offset = legacyOffset;
+    requestParams.limit = requestParams.per_page;
+  }
+
+  return requestParams;
+}
 
 export async function getLogs(
   params: ListingQueryParams,

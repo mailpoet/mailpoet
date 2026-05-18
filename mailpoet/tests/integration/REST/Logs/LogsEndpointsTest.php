@@ -83,6 +83,16 @@ class LogsEndpointsTest extends Test {
     $this->assertSame([(int)$backslash->getId()], $backslashIds);
   }
 
+  public function testGetSearchesZeroAsLiteralTerm(): void {
+    $match = (new LogFactory())->withName('0')->withMessage('matching zero log')->create();
+    $nonMatch = (new LogFactory())->withName('one')->withMessage('matching one log')->create();
+
+    $ids = $this->getIdsForSearch('0');
+
+    $this->assertContains((int)$match->getId(), $ids);
+    $this->assertNotContains((int)$nonMatch->getId(), $ids);
+  }
+
   public function testGetAppliesInclusiveDateFiltersAndNewestFirstOrdering(): void {
     $suffix = uniqid();
     $before = (new LogFactory())
@@ -115,6 +125,30 @@ class LogsEndpointsTest extends Test {
     $this->assertSame([(int)$end->getId(), (int)$start->getId()], $ids);
     $this->assertNotContains((int)$before->getId(), $ids);
     $this->assertNotContains((int)$after->getId(), $ids);
+  }
+
+  public function testGetIgnoresEmptyDateFilters(): void {
+    $suffix = uniqid();
+    $old = (new LogFactory())
+      ->withName("empty-date-old-{$suffix}")
+      ->withCreatedAt(new Carbon('2025-01-01 00:00:00'))
+      ->create();
+    $new = (new LogFactory())
+      ->withName("empty-date-new-{$suffix}")
+      ->withCreatedAt(new Carbon('2025-01-02 00:00:00'))
+      ->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'filter' => [
+        'from' => '',
+        'to' => '',
+      ],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    $this->assertSame([(int)$new->getId(), (int)$old->getId()], $ids);
   }
 
   public function testGetSupportsCanonicalAndLegacyPagination(): void {

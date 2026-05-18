@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'common';
 import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
 import { Datepicker } from '../common/datepicker/datepicker';
-import { getLogs, type LogListingItem } from './api';
+import { buildLogsRequestParams, getLogs, type LogListingItem } from './api';
 import { getLogFields } from './fields';
 import {
   buildLogsUrl,
@@ -34,6 +34,7 @@ type Props = {
 function buildInitialView(defaultFrom: string): {
   view: View;
   dateFilters: DateFilters;
+  legacyOffset?: number;
 } {
   const state = parseLogsUrlState(window.location.href, defaultFrom);
 
@@ -45,6 +46,7 @@ function buildInitialView(defaultFrom: string): {
       search: state.search,
     },
     dateFilters: state.dateFilters,
+    legacyOffset: state.legacyOffset,
   };
 }
 
@@ -63,6 +65,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
     () => new Set(),
   );
   const didMountRef = useRef(false);
+  const legacyOffsetRef = useRef(initialState.legacyOffset);
 
   const load = useCallback(
     (params: ListingQueryParams) => {
@@ -74,12 +77,11 @@ export function List({ defaultFrom }: Props): JSX.Element {
           groups: [],
         });
       }
-      const search = params.search?.trim();
-      return getLogs({
-        ...params,
-        search: search || undefined,
-        filter: dateFilters,
-      });
+      const legacyOffset = legacyOffsetRef.current;
+      if (legacyOffset !== undefined) {
+        legacyOffsetRef.current = undefined;
+      }
+      return getLogs(buildLogsRequestParams(params, dateFilters, legacyOffset));
     },
     [dateFilters],
   );
@@ -102,6 +104,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
 
   const updateView = useCallback(
     (nextView: View) => {
+      legacyOffsetRef.current = undefined;
       const searchChanged = (nextView.search ?? '') !== (view.search ?? '');
       const perPageChanged = nextView.perPage !== view.perPage;
 
@@ -149,12 +152,14 @@ export function List({ defaultFrom }: Props): JSX.Element {
     if (dateRangeError) {
       return;
     }
+    legacyOffsetRef.current = undefined;
     setDateFilters(pendingDateFilters);
     setView((currentView) => ({ ...currentView, page: 1 }));
   }, [dateRangeError, pendingDateFilters, setView]);
 
   const clearDateFilters = useCallback((): void => {
     const emptyFilters: DateFilters = {};
+    legacyOffsetRef.current = undefined;
     setPendingDateFilters(emptyFilters);
     setDateFilters(emptyFilters);
     setView((currentView) => ({ ...currentView, page: 1 }));
