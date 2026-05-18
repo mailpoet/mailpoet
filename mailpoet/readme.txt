@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.26.1
+Stable tag: 5.27.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,8 +227,23 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.26.1 - 2026-05-12 =
-* Fixed: Activation error 'Illegal mix of collations' during WordPress user sync when wp_users and MailPoet subscribers tables use different collations;
-* Fixed: Avoid breaking third-party integrations that call MailPoet public API before init hook.
+= 5.27.0 - 2026-05-18 =
+* Added: Public share URLs for sent newsletters;
+* Added: Sharing controls for sent emails;
+* Added: Public sharing bars and archive links for emails; sent emails are public by default and the default can be changed in Settings → Advanced → Email sharing visibility, with a per-email override on each email's settings;
+* Added: (premium) Customer's saved card expires automation trigger;
+* Added: Send latest newsletter automation action;
+* Added: (premium) WooCommerce Order Paid trigger;
+* Added: (premium) WordPress Change user role action;
+* Added: (premium) WooCommerce triggers and actions;
+* Added: Manage Subscription page style setting;
+* Added: Combine segment filter conditions into groups with mixed AND/OR logic;
+* Added: Before, after, on, and between date options for dynamic segment filters, with date filtering now available on purchased product, category, tag, variation, and attribute conditions;
+* Updated: WooCommerce email editor package to version 2.1.0 and enabled template editing from the canvas;
+* Improved: Allow editing active automations. Existing in-flight subscribers continue on the previous version, and you can optionally cancel them;
+* Improved: Export downloads require MailPoet permissions;
+* Improved: Show the subscriber email address on the unsubscribe confirmation page;
+* Improved: Add last subscribed date to subscriber exports;
+* Fixed: Date and time formatting regressions caused by respecting WordPress date settings.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
