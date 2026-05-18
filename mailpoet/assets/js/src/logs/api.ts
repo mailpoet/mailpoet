@@ -35,22 +35,13 @@ export type LogListingItem = {
 export function buildLogsRequestParams(
   params: ListingQueryParams,
   dateFilters: DateFilters,
-  legacyOffset?: number,
 ): ListingQueryParams {
   const search = params.search?.trim();
-  const requestParams: ListingQueryParams = {
+  return {
     ...params,
     search: search || undefined,
     filter: dateFilters,
   };
-
-  if (legacyOffset !== undefined) {
-    delete requestParams.page;
-    requestParams.offset = legacyOffset;
-    requestParams.limit = requestParams.per_page;
-  }
-
-  return requestParams;
 }
 
 export async function getLogs(

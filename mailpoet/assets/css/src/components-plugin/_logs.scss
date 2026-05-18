@@ -42,6 +42,62 @@
 }
 
 .mailpoet-logs-dataviews {
+  .dataviews-view-table {
+    max-width: 100%;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .dataviews-view-table col.dataviews-view-table__col-first-data {
+    width: 240px !important;
+  }
+
+  .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-message {
+    width: auto !important;
+  }
+
+  .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-action {
+    width: 120px !important;
+  }
+
+  .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-created_at {
+    width: 180px !important;
+  }
+
+  .dataviews-view-table tr > :nth-child(1) {
+    width: 240px;
+  }
+
+  .dataviews-view-table tr > :nth-child(3) {
+    width: 120px;
+  }
+
+  .dataviews-view-table tr > :nth-child(4) {
+    width: 180px;
+  }
+
+  .dataviews-view-table td,
+  .dataviews-view-table th {
+    overflow: hidden;
+  }
+
+  .dataviews-view-table__cell-content-wrapper:not(.dataviews-column-primary__media),
+  .dataviews-view-table__primary-column-content:not(.dataviews-column-primary__media) {
+    max-width: none;
+    min-width: 0;
+  }
+
+  .mailpoet-logs-min-width {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: auto;
+  }
+
   .mailpoet-logs-dataviews__toolbar {
     align-items: flex-start;
     display: flex;
@@ -67,6 +123,10 @@
   .mailpoet-datepicker {
     margin-left: 0;
     margin-right: 0;
+  }
+
+  .react-datepicker-popper {
+    z-index: 20;
   }
 
   .mailpoet-logs-date-error {

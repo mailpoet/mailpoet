@@ -60,6 +60,7 @@ export function getLogFields(
       type: 'text',
       enableSorting: false,
       enableGlobalSearch: false,
+      filterBy: false,
       render: ({ item }) =>
         createElement(
           'span',
@@ -73,6 +74,7 @@ export function getLogFields(
       type: 'text',
       enableSorting: false,
       enableGlobalSearch: false,
+      filterBy: false,
       render: ({ item }) => {
         const isExpanded = expandedLogIds.has(item.id);
         return createElement(
@@ -92,6 +94,7 @@ export function getLogFields(
       label: __('Action', 'mailpoet'),
       enableSorting: false,
       enableGlobalSearch: false,
+      filterBy: false,
       render: ({ item }) =>
         createElement(LogExpansionButton, {
           item,
@@ -105,6 +108,7 @@ export function getLogFields(
       type: 'datetime',
       enableSorting: false,
       enableGlobalSearch: false,
+      filterBy: false,
       render: ({ item }) =>
         createElement(
           'span',
