@@ -562,10 +562,23 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
       if ($data['operator'] === DateFilterHelper::BETWEEN) {
-        if (!isset($data['value2']) || !is_string($data['value2']) || $data['value2'] === '' || !is_string($filterData['value'])) {
-          throw new InvalidFilterException('Missing second date for between operator', InvalidFilterException::INVALID_DATE_VALUE);
+        $betweenData = [
+          'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+          'value' => $filterData['value'],
+          'value2' => $data['value2'] ?? null,
+        ];
+        if (is_string($betweenData['value']) && is_string($betweenData['value2'])) {
+          [$betweenData['value'], $betweenData['value2']] = $this->orderDateRange($betweenData['value'], $betweenData['value2']);
         }
-        [$filterData['value'], $filterData['value2']] = $this->orderDateRange($filterData['value'], $data['value2']);
+        try {
+          $this->filterHelper->validateDaysPeriodData($betweenData);
+        } catch (InvalidFilterException $e) {
+          throw $e;
+        } catch (\Throwable $e) {
+          throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+        }
+        $filterData['value'] = $betweenData['value'];
+        $filterData['value2'] = $betweenData['value2'];
       }
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
       if (
