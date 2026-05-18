@@ -53,6 +53,7 @@ class WooCommerceTag implements Filter {
 
   public function applyForAnyOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData): void {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData, false, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $tagIdsParam = $this->filterHelper->getUniqueParameterName('tagIds');
     $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
     $queryBuilder->join(

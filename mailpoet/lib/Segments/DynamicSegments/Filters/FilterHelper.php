@@ -75,7 +75,7 @@ class FilterHelper {
   }
 
   public function validateDaysPeriodData(array $data): void {
-    if (!isset($data['timeframe']) || !in_array($data['timeframe'], [DynamicSegmentFilterData::TIMEFRAME_ALL_TIME, DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST], true)) {
+    if (!isset($data['timeframe']) || !in_array($data['timeframe'], DynamicSegmentFilterData::TIMEFRAMES, true)) {
       throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
     }
 
@@ -83,11 +83,105 @@ class FilterHelper {
       return;
     }
 
-    $days = intval($data['days'] ?? null);
+    if ($data['timeframe'] === DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST) {
+      $days = intval($data['days'] ?? null);
 
-    if ($days < 1) {
-      throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+      if ($days < 1) {
+        throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+      }
+      return;
     }
+
+    $this->getValidDateValue($data['value'] ?? null);
+    if ($data['timeframe'] === DynamicSegmentFilterData::TIMEFRAME_BETWEEN) {
+      $this->getValidDateValue($data['value2'] ?? null);
+    }
+  }
+
+  public function getDatePeriodCondition(QueryBuilder $queryBuilder, string $dateExpression, DynamicSegmentFilterData $filterData, bool $startOfDayForInTheLast = false, string $defaultTimeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST): ?string {
+    $timeframe = $filterData->getParam('timeframe') ?? $defaultTimeframe;
+    if (!is_string($timeframe) || !in_array($timeframe, DynamicSegmentFilterData::TIMEFRAMES, true)) {
+      throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
+    }
+
+    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
+      return null;
+    }
+
+    $dateParam = $this->getUniqueParameterName('date');
+    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST) {
+      $days = $filterData->getParam('days');
+      if (!is_int($days) && !is_string($days)) {
+        throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+      }
+      $days = intval($days);
+      $date = $this->getDateNDaysAgoImmutable($days);
+      if ($startOfDayForInTheLast) {
+        $date = $date->startOfDay();
+      }
+      $queryBuilder->setParameter($dateParam, $date->toDateTimeString());
+      return "$dateExpression >= :$dateParam";
+    }
+
+    $startOfDay = $this->getDayBoundary($filterData, 'value');
+    $startOfNextDay = $this->getNextDayBoundary($filterData, 'value');
+
+    switch ($timeframe) {
+      case DynamicSegmentFilterData::TIMEFRAME_BEFORE:
+        $queryBuilder->setParameter($dateParam, $startOfDay);
+        return "$dateExpression < :$dateParam";
+      case DynamicSegmentFilterData::TIMEFRAME_AFTER:
+        $queryBuilder->setParameter($dateParam, $startOfNextDay);
+        return "$dateExpression >= :$dateParam";
+      case DynamicSegmentFilterData::TIMEFRAME_ON:
+        $endParam = $this->getUniqueParameterName('date');
+        $queryBuilder->setParameter($dateParam, $startOfDay);
+        $queryBuilder->setParameter($endParam, $startOfNextDay);
+        return "$dateExpression >= :$dateParam AND $dateExpression < :$endParam";
+      case DynamicSegmentFilterData::TIMEFRAME_BETWEEN:
+        $endParam = $this->getUniqueParameterName('date');
+        $queryBuilder->setParameter($dateParam, $startOfDay);
+        $queryBuilder->setParameter($endParam, $this->getNextDayBoundary($filterData, 'value2'));
+        return "$dateExpression >= :$dateParam AND $dateExpression < :$endParam";
+      default:
+        throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
+    }
+  }
+
+  private function getDayBoundary(DynamicSegmentFilterData $filterData, string $paramName): string {
+    return $this->parseValidDate($filterData->getParam($paramName))->startOfDay()->toDateTimeString();
+  }
+
+  private function getNextDayBoundary(DynamicSegmentFilterData $filterData, string $paramName): string {
+    return $this->parseValidDate($filterData->getParam($paramName))->addDay()->startOfDay()->toDateTimeString();
+  }
+
+  public function applyDatePeriodFilter(QueryBuilder $queryBuilder, string $dateExpression, DynamicSegmentFilterData $filterData, bool $startOfDayForInTheLast = false, string $defaultTimeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST): void {
+    $condition = $this->getDatePeriodCondition($queryBuilder, $dateExpression, $filterData, $startOfDayForInTheLast, $defaultTimeframe);
+    if ($condition !== null) {
+      $queryBuilder->andWhere($condition);
+    }
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function parseValidDate($value): CarbonImmutable {
+    if (!is_string($value)) {
+      throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+    }
+    $date = CarbonImmutable::createFromFormat('Y-m-d', $value);
+    if (!$date instanceof CarbonImmutable || $date->toDateString() !== $value) {
+      throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+    }
+    return $date;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function getValidDateValue($value): string {
+    return $this->parseValidDate($value)->toDateString();
   }
 
   /**

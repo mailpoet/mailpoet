@@ -127,6 +127,25 @@ class WooCommerceUsedShippingMethodTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('all', [2], 1, 'allTime', ['c1@e.com']);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@e.com');
+    $this->createOrder($customerInRange, Carbon::parse('2023-05-11'), 'flat_rate', 1);
+    $customerBefore = $this->tester->createCustomer('between-before@e.com');
+    $this->createOrder($customerBefore, Carbon::parse('2023-05-09'), 'flat_rate', 1);
+    $customerAfter = $this->tester->createCustomer('between-after@e.com');
+    $this->createOrder($customerAfter, Carbon::parse('2023-05-13'), 'flat_rate', 1);
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedShippingMethod::ACTION, [
+      'operator' => 'any',
+      'shipping_methods' => [1],
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@e.com'], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $defaultZone = WC_Shipping_Zones::get_zone(0);
     $this->assertInstanceOf(WC_Shipping_Zone::class, $defaultZone);

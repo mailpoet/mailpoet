@@ -28,19 +28,10 @@ class WooCommerceTotalSpent implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('total_spent_type');
     $amount = $filterData->getParam('total_spent_amount');
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
 
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-
-    if (!$isAllTime) {
-      /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
-      $days = $filterData->getParam('days');
-      $date = $this->filterHelper->getDateNDaysAgo(intval($days));
-      $dateParam = "date_$parameterSuffix";
-      $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-        ->setParameter($dateParam, $date->toDateTimeString());
-    }
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData);
 
     $queryBuilder->groupBy('inner_subscriber_id');
 

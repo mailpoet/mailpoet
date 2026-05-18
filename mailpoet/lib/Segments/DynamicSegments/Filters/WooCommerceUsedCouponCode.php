@@ -60,18 +60,9 @@ class WooCommerceUsedCouponCode implements Filter {
   private function applyForAnyOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): void {
     $filterData = $filter->getFilterData();
     $couponIds = $this->getNormalizedCouponIds($filterData);
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
 
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-
-    if (!$isAllTime) {
-      /** @var int $days */
-      $days = $filterData->getParam('days');
-      $date = $this->filterHelper->getDateNDaysAgo(intval($days));
-      $dateParam = $this->filterHelper->getUniqueParameterName('date');
-      $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-        ->setParameter($dateParam, $date->toDateTimeString());
-    }
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData);
 
     $queryBuilder->innerJoin(
       $orderStatsAlias,

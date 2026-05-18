@@ -90,16 +90,23 @@ export interface FormItem {
 export interface DateFormItem extends FormItem {
   operator?: string;
   value?: string;
+  value2?: string;
 }
 
 export interface DaysPeriodItem extends FormItem {
   days?: string;
   timeframe?: Timeframe;
+  value?: string;
+  value2?: string;
 }
 
 export enum Timeframe {
   ALL_TIME = 'allTime',
   IN_THE_LAST = 'inTheLast',
+  BEFORE = 'before',
+  AFTER = 'after',
+  ON = 'on',
+  BETWEEN = 'between',
 }
 
 export interface TextFormItem extends FormItem {
@@ -139,6 +146,9 @@ export interface WooCommerceFormItem extends FormItem {
   category_ids?: string[];
   product_ids?: string[];
   variation_ids?: string[];
+  timeframe?: Timeframe;
+  value?: string;
+  value2?: string;
   operator?: string;
   number_of_orders_type?: string;
   number_of_orders_count?: number;

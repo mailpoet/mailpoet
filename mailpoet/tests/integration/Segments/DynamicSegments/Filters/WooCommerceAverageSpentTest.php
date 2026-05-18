@@ -131,6 +131,39 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com', '3@e.com'], $matchingEmails);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@e.com');
+    $this->tester->createWooCommerceOrder([
+      'date_created' => '2023-05-11 12:00:00',
+      'status' => 'wc-completed',
+      'customer_id' => $customerInRange,
+      'total' => '100',
+    ]);
+    $customerBefore = $this->tester->createCustomer('between-before@e.com');
+    $this->tester->createWooCommerceOrder([
+      'date_created' => '2023-05-09 12:00:00',
+      'status' => 'wc-completed',
+      'customer_id' => $customerBefore,
+      'total' => '100',
+    ]);
+    $customerAfter = $this->tester->createCustomer('between-after@e.com');
+    $this->tester->createWooCommerceOrder([
+      'date_created' => '2023-05-13 12:00:00',
+      'status' => 'wc-completed',
+      'customer_id' => $customerAfter,
+      'total' => '100',
+    ]);
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceAverageSpent::ACTION, [
+      'average_spent_type' => '=',
+      'average_spent_amount' => 100,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $matchingEmails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->averageSpentFilter);
+    $this->assertEqualsCanonicalizing(['between-in@e.com'], $matchingEmails);
+  }
+
   public function testItWorksWithAllTimeOption(): void {
     $id1 = $this->tester->createCustomer('1@e.com');
     $this->createOrder($id1, 100, 3);

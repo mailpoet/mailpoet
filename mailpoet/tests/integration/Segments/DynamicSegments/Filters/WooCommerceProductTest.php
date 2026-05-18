@@ -96,6 +96,40 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItGetsSubscribersThatPurchasedProductBetweenDates(): void {
+    $customerIdBefore = $this->tester->createCustomer('customer-before-range@example.com');
+    $customerIdStart = $this->tester->createCustomer('customer-start-range@example.com');
+    $customerIdEnd = $this->tester->createCustomer('customer-end-range@example.com');
+    $customerIdAfter = $this->tester->createCustomer('customer-after-range@example.com');
+    $customerIdDifferentProduct = $this->tester->createCustomer('customer-different-product@example.com');
+
+    $orderIdBefore = $this->createOrder($customerIdBefore, new Carbon('2023-05-09'));
+    $this->addToOrder(7, $orderIdBefore, $this->productIds[0], $customerIdBefore);
+    $orderIdStart = $this->createOrder($customerIdStart, new Carbon('2023-05-10'));
+    $this->addToOrder(8, $orderIdStart, $this->productIds[0], $customerIdStart);
+    $orderIdEnd = $this->createOrder($customerIdEnd, new Carbon('2023-05-12'));
+    $this->addToOrder(9, $orderIdEnd, $this->productIds[0], $customerIdEnd);
+    $orderIdAfter = $this->createOrder($customerIdAfter, new Carbon('2023-05-13'));
+    $this->addToOrder(10, $orderIdAfter, $this->productIds[0], $customerIdAfter);
+    $orderIdDifferentProduct = $this->createOrder($customerIdDifferentProduct, new Carbon('2023-05-11'));
+    $this->addToOrder(11, $orderIdDifferentProduct, $this->productIds[1], $customerIdDifferentProduct);
+
+    $segmentFilterData = $this->getSegmentFilterData(
+      [$this->productIds[0]],
+      DynamicSegmentFilterData::OPERATOR_ANY,
+      [
+        'timeframe' => 'between',
+        'value' => '2023-05-10',
+        'value2' => '2023-05-12',
+      ]
+    );
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
+    $this->assertEqualsCanonicalizing([
+      'customer-start-range@example.com',
+      'customer-end-range@example.com',
+    ], $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $productId1 = $this->createProduct('product one');
     $productId2 = $this->createProduct('product two');
@@ -113,7 +147,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     ], $lookupData);
   }
 
-  private function getSegmentFilterData(array $productIds, string $operator): DynamicSegmentFilterData {
+  private function getSegmentFilterData(array $productIds, string $operator, array $dateFilterData = []): DynamicSegmentFilterData {
     $filterData = [
       'product_ids' => $productIds,
       'operator' => $operator,
@@ -122,7 +156,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     return new DynamicSegmentFilterData(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       WooCommerceProduct::ACTION_PRODUCT,
-      $filterData
+      array_merge($filterData, $dateFilterData)
     );
   }
 

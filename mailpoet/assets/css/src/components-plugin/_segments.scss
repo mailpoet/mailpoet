@@ -35,6 +35,17 @@
     margin-left: 0 !important;
     width: 110px;
   }
+
+  .mailpoet-segments-date-period-controls {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .mailpoet-segments-datepicker-small {
+      width: 150px;
+    }
+  }
 }
 
 .mailpoet-segments-filter-group {

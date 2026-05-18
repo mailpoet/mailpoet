@@ -190,6 +190,27 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('none', [$coupon1Id], 0, 'allTime', ['customer2@example.com']);
   }
 
+  public function testBetweenDates(): void {
+    $customerInRange = $this->tester->createCustomer('between-in@example.com');
+    $customerBefore = $this->tester->createCustomer('between-before@example.com');
+    $customerAfter = $this->tester->createCustomer('between-after@example.com');
+    $coupon1Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 1']);
+
+    $this->createOrder($customerInRange, ['Coupon 1'], Carbon::parse('2023-05-11'));
+    $this->createOrder($customerBefore, ['Coupon 1'], Carbon::parse('2023-05-09'));
+    $this->createOrder($customerAfter, ['Coupon 1'], Carbon::parse('2023-05-13'));
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedCouponCode::ACTION, [
+      'operator' => 'any',
+      'coupon_code_ids' => [$coupon1Id],
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['between-in@example.com'], $emails);
+  }
+
   /**
    * @dataProvider filterDataProvider
    */

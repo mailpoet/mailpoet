@@ -10,15 +10,18 @@ import {
   AnyValueTypes,
   FilterProps,
   SelectOption,
+  Timeframe,
   WindowProductCategories,
   WooCommerceFormItem,
 } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 export function validatePurchasedTag(formItems: WooCommerceFormItem): boolean {
   const purchasedTagIsInvalid =
     formItems.tag_ids === undefined ||
     formItems.tag_ids.length === 0 ||
-    !formItems.operator;
+    !formItems.operator ||
+    !validateDaysPeriod(formItems);
 
   return !purchasedTagIsInvalid;
 }
@@ -86,6 +89,10 @@ export function PurchasedTagFields({ filterIndex }: FilterProps): JSX.Element {
           );
         }}
         automationId="select-segment-tags"
+      />
+      <DaysPeriodField
+        filterIndex={filterIndex}
+        defaultTimeframe={Timeframe.ALL_TIME}
       />
     </>
   );

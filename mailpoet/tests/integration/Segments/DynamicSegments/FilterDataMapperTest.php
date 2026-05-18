@@ -220,6 +220,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'category_ids' => ['1', '3'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -276,6 +278,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'product_ids' => ['10', '11'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -308,6 +312,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'variation_ids' => ['20', '21'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -1169,6 +1175,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'attribute_type' => 'taxonomy',
       'attribute_local_name' => null,
       'attribute_local_values' => null,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -1197,6 +1205,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'attribute_type' => 'local',
       'attribute_local_name' => 'color',
       'attribute_local_values' => ['red', 'blue'],
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -1219,6 +1229,8 @@ class FilterDataMapperTest extends \MailPoetTest {
       'tag_ids' => ['1', '3'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      'days' => 0,
     ]);
   }
 
@@ -1314,5 +1326,220 @@ class FilterDataMapperTest extends \MailPoetTest {
       'filters' => $filters,
       'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
     ]);
+  }
+
+  public function testItPersistsBetweenValueAndValue2ForPurchaseDate(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'purchaseDate',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItOrdersReversedBetweenDatesForPurchaseDate(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'purchaseDate',
+      'operator' => 'between',
+      'value' => '2023-01-05',
+      'value2' => '2023-01-02',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItRejectsPurchaseDateBetweenMissingValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'purchaseDate',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+    ]]]);
+  }
+
+  public function testItRejectsFirstOrderBetweenMissingValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'firstOrder',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+    ]]]);
+  }
+
+  public function testItOrdersReversedBetweenDatesForSubscriberDateField(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-05',
+      'value2' => '2023-01-02',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItRejectsSubscriberDateBetweenMissingValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-02',
+    ]]]);
+  }
+
+  public function testItRejectsSubscriberDateBetweenInvalidValue2(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberDateField::SUBSCRIBED_DATE,
+      'operator' => 'between',
+      'value' => '2023-01-02',
+      'value2' => 'invalid-date',
+    ]]]);
+  }
+
+  public function testItPersistsBetweenValueAndValue2ForCountStyleFilter(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'between',
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'between',
+      'days' => 0,
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItOrdersReversedBetweenDatesForCountStyleFilter(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'between',
+      'value' => '2023-01-05',
+      'value2' => '2023-01-02',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'between',
+      'days' => 0,
+      'value' => '2023-01-02',
+      'value2' => '2023-01-05',
+    ]);
+  }
+
+  public function testItPersistsAbsoluteTimeframeWithoutDaysForCountStyleFilter(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'before',
+      'value' => '2023-01-02',
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'before',
+      'days' => 0,
+      'value' => '2023-01-02',
+    ]);
+  }
+
+  public function testItRejectsBetweenMissingValue2OnCountStyleFilter(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'between',
+      'value' => '2023-01-02',
+    ]]]);
+  }
+
+  public function testItRejectsAbsoluteTimeframeMissingValueOnCountStyleFilter(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::INVALID_DATE_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '1',
+      'timeframe' => 'on',
+    ]]]);
+  }
+
+  public function testItDefaultsTimeframeToAllTimeForFiltersThatGainedTimeframe(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceProduct::ACTION_PRODUCT,
+      'operator' => 'any',
+      'product_ids' => [1],
+    ]]];
+    $filters = $this->mapper->map($data);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    $persisted = $filter->getData();
+    $this->assertIsArray($persisted);
+    verify($persisted['timeframe'])->equals(DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
+    verify($persisted['days'])->equals(0);
+    $this->assertArrayNotHasKey('value', $persisted);
+    $this->assertArrayNotHasKey('value2', $persisted);
   }
 }

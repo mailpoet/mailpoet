@@ -28,22 +28,10 @@ class WooCommerceSingleOrderValue implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('single_order_value_type');
     $amount = $filterData->getParam('single_order_value_amount');
-    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
 
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-
-    if (!$isAllTime) {
-      $days = $filterData->getParam('days');
-      if (!is_string($days)) {
-        $days = '1'; // Default to last day
-      }
-      $date = $this->filterHelper->getDateNDaysAgo(intval($days));
-      $dateParam = "date_$parameterSuffix";
-      $queryBuilder
-        ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-        ->setParameter($dateParam, $date->toDateTimeString());
-    }
+    $this->filterHelper->applyDatePeriodFilter($queryBuilder, "$orderStatsAlias.date_created", $filterData);
 
     if ($type === '=') {
       $queryBuilder->andWhere("$orderStatsAlias.total_sales = :amount" . $parameterSuffix);

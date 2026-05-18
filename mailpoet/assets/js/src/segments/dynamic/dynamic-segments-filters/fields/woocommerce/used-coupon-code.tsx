@@ -207,9 +207,7 @@ export function UsedCouponCodeFields({
               onMenuScrollToBottom={handleMenuScrollToBottom}
             />
           </Grid.CenteredRow>
-          <Grid.CenteredRow>
-            <DaysPeriodField filterIndex={filterIndex} />
-          </Grid.CenteredRow>
+          <DaysPeriodField filterIndex={filterIndex} />
         </>
       ) : (
         <Grid.CenteredRow>

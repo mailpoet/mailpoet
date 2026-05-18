@@ -29,18 +29,15 @@ class EmailsReceived implements Filter {
     $filterData = $filter->getFilterData();
     $emailCount = $filterData->getIntParam('emails');
     $operator = $filterData->getStringParam('operator');
-    $timeframe = $filterData->getStringParam('timeframe');
     $statsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->filterHelper->getSubscribersTable();
-
-    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
-      $queryBuilder->leftJoin($subscribersTable, $statsTable, 'emails', "{$subscribersTable}.id = emails.subscriber_id");
-    } else {
-      $days = $filterData->getIntParam('days');
-      $dateParam = $this->filterHelper->getUniqueParameterName('days');
-      $queryBuilder->leftJoin($subscribersTable, $statsTable, 'emails', "{$subscribersTable}.id = emails.subscriber_id AND emails.sent_at >= :$dateParam");
-      $queryBuilder->setParameter($dateParam, $this->filterHelper->getDateNDaysAgoImmutable($days)->startOfDay());
+    $dateCondition = $this->filterHelper->getDatePeriodCondition($queryBuilder, 'emails.sent_at', $filterData, true);
+    $joinCondition = "{$subscribersTable}.id = emails.subscriber_id";
+    if ($dateCondition !== null) {
+      $joinCondition .= " AND $dateCondition";
     }
+
+    $queryBuilder->leftJoin($subscribersTable, $statsTable, 'emails', $joinCondition);
 
     $queryBuilder->groupBy("$subscribersTable.id");
     $emailCountParam = $this->filterHelper->getUniqueParameterName('emails');

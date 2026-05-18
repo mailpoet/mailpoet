@@ -96,6 +96,37 @@ class EmailsReceivedTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['1@e.com'], $emails);
   }
 
+  public function testBetweenDates(): void {
+    $sub1 = (new Subscriber())->withEmail('1@e.com')->create();
+    $newsletter1 = (new Newsletter())->withSendingQueue()->withSentStatus()->create();
+    $stats1 = new StatisticsNewsletterEntity($newsletter1, $newsletter1->getLatestQueue(), $sub1);
+    $stats1->setSentAt(new CarbonImmutable('2023-05-10'));
+    $this->entityManager->persist($stats1);
+
+    $sub2 = (new Subscriber())->withEmail('2@e.com')->create();
+    $newsletter2 = (new Newsletter())->withSendingQueue()->withSentStatus()->create();
+    $stats2 = new StatisticsNewsletterEntity($newsletter2, $newsletter2->getLatestQueue(), $sub2);
+    $stats2->setSentAt(new CarbonImmutable('2023-05-12'));
+    $this->entityManager->persist($stats2);
+
+    $sub3 = (new Subscriber())->withEmail('3@e.com')->create();
+    $newsletter3 = (new Newsletter())->withSendingQueue()->withSentStatus()->create();
+    $stats3 = new StatisticsNewsletterEntity($newsletter3, $newsletter3->getLatestQueue(), $sub3);
+    $stats3->setSentAt(new CarbonImmutable('2023-05-20'));
+    $this->entityManager->persist($stats3);
+    $this->entityManager->flush();
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, EmailsReceived::ACTION, [
+      'operator' => 'equals',
+      'emails' => 1,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_BETWEEN,
+      'value' => '2023-05-10',
+      'value2' => '2023-05-12',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com'], $emails);
+  }
+
   private function getSegmentFilterData(int $emails, string $operator, int $days, string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, string $action = EmailsReceived::ACTION): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,
