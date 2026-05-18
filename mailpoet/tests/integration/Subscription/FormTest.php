@@ -57,6 +57,16 @@ class FormTest extends \MailPoetTest {
       'data' => [
         'form_id' => $this->form->getId(),
         $obfuscatedEmail => $this->testEmail,
+        // Human-like signals so the disabled-CAPTCHA baseline doesn't
+        // escalate this submission to an inline CAPTCHA challenge.
+        'behavioral_signals' => [
+          'time_ms' => 5000,
+          'mm_count' => 10,
+          'kd_count' => 10,
+          'scroll_count' => 0,
+          'focus_count' => 1,
+          'touch' => false,
+        ],
       ],
       'token' => WPFunctions::get()->wpCreateNonce('mailpoet_token'),
       'api_version' => 'v1',
