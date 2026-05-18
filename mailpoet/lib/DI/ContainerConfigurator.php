@@ -437,6 +437,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Logging
     $container->autowire(\MailPoet\Logging\LoggerFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\LogRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Logging\LogListingRepository::class)->setPublic(true);
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     $container->autowire(\MailPoet\Util\Notices\PendingApprovalNotice::class)->setPublic(true);
@@ -752,6 +753,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\RestApi\Endpoints\SegmentsBulkActionEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\RestApi\Endpoints\DynamicSegmentsListingEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\RestApi\Endpoints\DynamicSegmentsBulkActionEndpoint::class)->setPublic(true);
+    // Logs REST API
+    $container->autowire(\MailPoet\Logging\RestApi\Api::class)->setPublic(true);
+    $container->autowire(\MailPoet\Logging\RestApi\Endpoints\LogsListingEndpoint::class)->setPublic(true);
     // CAPTCHA
     $container->autowire(\MailPoet\Captcha\ReCaptchaHooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\ReCaptchaValidator::class)->setPublic(true);

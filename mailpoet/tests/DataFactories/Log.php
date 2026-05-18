@@ -31,6 +31,20 @@ class Log {
     return $this->update('created_at', $date);
   }
 
+  /**
+   * @return static
+   */
+  public function withName(?string $name): Log {
+    return $this->update('name', $name);
+  }
+
+  /**
+   * @return static
+   */
+  public function withMessage(?string $message): Log {
+    return $this->update('message', $message);
+  }
+
   public function create(): LogEntity {
     $entity = new LogEntity();
     $entity->setName($this->data['name']);
