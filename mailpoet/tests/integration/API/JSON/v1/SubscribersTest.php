@@ -1203,6 +1203,14 @@ class SubscribersTest extends \MailPoetTest {
       'captcha_session_id' => $captchaSessionId,
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
       'captcha' => $captchaValue['phrase'],
+      'behavioral_signals' => [
+        'time_ms' => 5000,
+        'mm_count' => 5,
+        'kd_count' => 5,
+        'scroll_count' => 0,
+        'focus_count' => 1,
+        'touch' => false,
+      ],
     ]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $this->settings->set('captcha', []);

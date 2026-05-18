@@ -246,8 +246,14 @@ class SubscriberSubscribeController {
         // Save form data to session
         $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
       } elseif ($this->captchaSession->getFormData($sessionId)) {
-        // Restore form data from session
-        $data = array_merge($this->captchaSession->getFormData($sessionId), ['captcha' => $data['captcha']]);
+        // Restore form data from session, but keep the current request's captcha
+        // and behavioral signals so the resubmit reflects accumulated interaction
+        // rather than the (possibly bot-like) snapshot from the first submit.
+        $preserve = ['captcha' => $data['captcha']];
+        if (isset($data[BehavioralSignals::FIELD_NAME])) {
+          $preserve[BehavioralSignals::FIELD_NAME] = $data[BehavioralSignals::FIELD_NAME];
+        }
+        $data = array_merge($this->captchaSession->getFormData($sessionId), $preserve);
       }
       return $data;
     }
@@ -280,6 +286,7 @@ class SubscriberSubscribeController {
       }
       if ($type === CaptchaConstants::TYPE_BUILTIN) {
         $this->builtInCaptchaValidator->validate($data);
+        $this->enforceBehavioralSignalsAfterBuiltinCaptcha($data, $form);
       }
       if (CaptchaConstants::isReCaptcha($type)) {
         $this->recaptchaValidator->validate($data);
@@ -315,6 +322,27 @@ class SubscriberSubscribeController {
     }
     // Stash form data so the non-JS captcha-page fallback can restore it.
     $stash = array_merge($data, ['form_id' => $form->getId()]);
+    $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
+    throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
+  }
+
+  /**
+   * Layered defense for the built-in CAPTCHA: even when the CAPTCHA answer is
+   * correct, suspicious behavioral signals trigger a fresh challenge. Catches
+   * solver services and JS-running bots that can solve a CAPTCHA but don't
+   * produce human-like interaction counters.
+   */
+  private function enforceBehavioralSignalsAfterBuiltinCaptcha(array $data, FormEntity $form): void {
+    if ($this->builtInCaptchaValidator->isUserExemptFromCaptcha()) {
+      return;
+    }
+    if ($this->behavioralSignals->looksHuman($data)) {
+      return;
+    }
+    // Drop the suspect signals from the stash so the resubmit is evaluated on
+    // the current request's freshest counters (via initCaptcha's preserve step).
+    $stash = array_merge($data, ['form_id' => $form->getId()]);
+    unset($stash[BehavioralSignals::FIELD_NAME]);
     $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
     throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
   }
