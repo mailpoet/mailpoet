@@ -125,6 +125,31 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItMapsEmailFilterForClicksWithUrlLinks(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED,
+      'newsletter_id' => 1,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'link_ids' => ['https://example.com/automation-link', '[link:subscription_manage_url]'],
+    ]],
+    ];
+    $filters = $this->mapper->map($data);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    verify($filter->getAction())->equals(EmailAction::ACTION_CLICKED);
+    verify($filter->getData())->equals([
+      'newsletter_id' => 1,
+      'link_ids' => ['https://example.com/automation-link', '[link:subscription_manage_url]'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
   public function testItChecksOperatorForEmailFilterForClicksWithLinks(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
