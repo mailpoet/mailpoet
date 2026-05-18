@@ -81,6 +81,6 @@ class Newsletter {
       return '<!-- wp:site-logo {"width":130,"isLink":false,"align":"center"} /-->';
     }
 
-    return '<!-- wp:site-title {"level":2,"style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} /-->';
+    return '<!-- wp:site-title {"level":2,"textAlign":"center","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} /-->';
   }
 }
