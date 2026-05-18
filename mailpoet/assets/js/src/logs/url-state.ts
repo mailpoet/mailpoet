@@ -15,6 +15,7 @@ export type LogsUrlState = {
   perPage: number;
   search?: string;
   dateFilters: DateFilters;
+  legacyOffset?: number;
 };
 
 function parsePositiveInt(value: string | null): number | undefined {
@@ -147,6 +148,14 @@ function getPage(searchParams: URLSearchParams, perPage: number): number {
   return DEFAULT_PAGE;
 }
 
+function getLegacyOffset(searchParams: URLSearchParams): number | undefined {
+  if (parsePositiveInt(searchParams.get('logs_page'))) {
+    return undefined;
+  }
+
+  return parseOffset(searchParams.get('offset'));
+}
+
 function getPerPage(searchParams: URLSearchParams): number {
   const logsPerPage = parsePositiveInt(searchParams.get('per_page'));
   if (logsPerPage) {
@@ -162,13 +171,20 @@ export function parseLogsUrlState(
 ): LogsUrlState {
   const searchParams = new URL(url).searchParams;
   const perPage = getPerPage(searchParams);
+  const legacyOffset = getLegacyOffset(searchParams);
 
-  return {
+  const state: LogsUrlState = {
     page: getPage(searchParams, perPage),
     perPage,
     search: getSearch(searchParams),
     dateFilters: getDateFilters(searchParams, defaultFrom),
   };
+
+  if (legacyOffset !== undefined) {
+    state.legacyOffset = legacyOffset;
+  }
+
+  return state;
 }
 
 export function buildLogsUrl(

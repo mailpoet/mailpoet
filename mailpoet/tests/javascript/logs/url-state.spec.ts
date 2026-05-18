@@ -32,6 +32,7 @@ describe('logs URL state', () => {
 
     expect(state.page).to.equal(2);
     expect(state.perPage).to.equal(20);
+    expect(state.legacyOffset).to.equal(35);
   });
 
   it('prefers logs_page and per_page over legacy pagination', () => {
@@ -42,6 +43,7 @@ describe('logs URL state', () => {
 
     expect(state.page).to.equal(4);
     expect(state.perPage).to.equal(50);
+    expect(state.legacyOffset).to.equal(undefined);
   });
 
   it('does not use the WordPress admin page parameter for listing pagination', () => {
