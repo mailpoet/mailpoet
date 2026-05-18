@@ -25,11 +25,9 @@ class BehavioralSignals {
   }
 
   public function looksHuman(array $data): bool {
-    $result = true;
-    $signals = $data[self::FIELD_NAME] ?? null;
-    if (!is_array($signals)) {
-      $result = false;
-    }
+    $rawSignals = $data[self::FIELD_NAME] ?? null;
+    $result = is_array($rawSignals);
+    $signals = is_array($rawSignals) ? $rawSignals : [];
 
     $thresholds = [
       'min_time_ms' => self::DEFAULT_MIN_TIME_MS,
@@ -63,7 +61,7 @@ class BehavioralSignals {
       }
     }
 
-    return (bool)$this->wp->applyFilters('mailpoet_behavioral_signals_looks_human', $result, $signals, $data);
+    return (bool)$this->wp->applyFilters('mailpoet_behavioral_signals_looks_human', $result, $rawSignals, $data);
   }
 
   private function intSignal(array $signals, string $key): int {
