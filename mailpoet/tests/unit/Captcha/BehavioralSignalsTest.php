@@ -6,13 +6,13 @@ use Codeception\Stub;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BehavioralSignalsTest extends \MailPoetUnitTest {
-  private function makeTestee(?array $customThresholds = null): BehavioralSignals {
+  private function makeTestee(?callable $looksHumanFilter = null): BehavioralSignals {
     $wp = Stub::make(
       WPFunctions::class,
       [
-        'applyFilters' => function ($filter, $value) use ($customThresholds) {
-          if ($filter === 'mailpoet_behavioral_signals_thresholds' && $customThresholds !== null) {
-            return $customThresholds;
+        'applyFilters' => function ($filter, $value, ...$args) use ($looksHumanFilter) {
+          if ($filter === 'mailpoet_behavioral_signals_looks_human' && $looksHumanFilter !== null) {
+            return $looksHumanFilter($value, ...$args);
           }
           return $value;
         },
@@ -135,31 +135,45 @@ class BehavioralSignalsTest extends \MailPoetUnitTest {
     verify($testee->looksHuman($data))->false();
   }
 
-  public function testThresholdsAreFilterable() {
-    $testee = $this->makeTestee([
-      'min_time_ms' => 100,
-      'min_interactions' => 1,
-      'min_field_focus' => 1,
-    ]);
-    $data = ['behavioral_signals' => [
-      'time_ms' => 150,
-      'mm_count' => 1,
-      'kd_count' => 0,
-      'focus_count' => 1,
-      'touch' => false,
-    ]];
-    verify($testee->looksHuman($data))->true();
+  public function testLooksHumanFilterCanOverrideToTrue() {
+    // Allows test environments and integration code to short-circuit the
+    // baseline check (e.g. WPLoader scenarios that subscribe without signals).
+    $testee = $this->makeTestee(function () {
+      return true;
+    });
+    verify($testee->looksHuman([]))->true();
   }
 
-  public function testInvalidFilterValueFallsBackToDefaults() {
-    $testee = $this->makeTestee(['nonsense' => 'data']);
+  public function testLooksHumanFilterReceivesSignalsAndData() {
     $data = ['behavioral_signals' => [
       'time_ms' => 3000,
       'mm_count' => 25,
-      'kd_count' => 0,
       'focus_count' => 1,
       'touch' => false,
     ]];
-    verify($testee->looksHuman($data))->true();
+    $invocations = 0;
+    $testee = $this->makeTestee(function ($value, $signals, $contextData) use ($data, &$invocations) {
+      $invocations++;
+      verify($value)->true();
+      verify($signals)->equals($data['behavioral_signals']);
+      verify($contextData)->equals($data);
+      return $value;
+    });
+    $testee->looksHuman($data);
+    verify($invocations)->equals(1);
+  }
+
+  public function testLooksHumanFilterCanOverrideToFalse() {
+    $testee = $this->makeTestee(function () {
+      return false;
+    });
+    $data = ['behavioral_signals' => [
+      'time_ms' => 5000,
+      'mm_count' => 50,
+      'kd_count' => 10,
+      'focus_count' => 2,
+      'touch' => false,
+    ]];
+    verify($testee->looksHuman($data))->false();
   }
 }
