@@ -25,20 +25,25 @@ class BehavioralSignals {
   }
 
   public function looksHuman(array $data): bool {
+    $result = true;
     $signals = $data[self::FIELD_NAME] ?? null;
     if (!is_array($signals)) {
-      return false;
+      $result = false;
     }
 
-    $thresholds = $this->getThresholds();
+    $thresholds = [
+      'min_time_ms' => self::DEFAULT_MIN_TIME_MS,
+      'min_interactions' => self::DEFAULT_MIN_INTERACTIONS,
+      'min_field_focus' => self::DEFAULT_MIN_FIELD_FOCUS,
+    ];
     $timeMs = $this->intSignal($signals, 'time_ms');
     $fieldFocusCount = $this->intSignal($signals, 'focus_count');
 
     if ($timeMs < $thresholds['min_time_ms']) {
-      return false;
+      $result = false;
     }
     if ($fieldFocusCount < $thresholds['min_field_focus']) {
-      return false;
+      $result = false;
     }
 
     $mousemoveCount = $this->intSignal($signals, 'mm_count');
@@ -46,31 +51,23 @@ class BehavioralSignals {
     $scrollCount = $this->intSignal($signals, 'scroll_count');
     $isTouch = !empty($signals['touch']);
 
-    // OR-logic across device-appropriate interaction channels handles
-    // password-manager autofill (no keydown), mobile (no mousemove),
-    // and pure-mouse users (no keydown).
-    if ($isTouch) {
-      return $scrollCount >= 1 || $keydownCount >= $thresholds['min_interactions'];
+    if ($result) {
+      // OR-logic across device-appropriate interaction channels handles
+      // password-manager autofill (no keydown), mobile (no mousemove),
+      // and pure-mouse users (no keydown).
+      if ($isTouch) {
+        $result = $scrollCount >= 1 || $keydownCount >= $thresholds['min_interactions'];
+      } else {
+        $result = $mousemoveCount >= $thresholds['min_interactions']
+                  || $keydownCount >= $thresholds['min_interactions'];
+      }
     }
-    return $mousemoveCount >= $thresholds['min_interactions']
-      || $keydownCount >= $thresholds['min_interactions'];
+
+    return (bool)$this->wp->applyFilters('mailpoet_behavioral_signals_looks_human', $result, $signals, $data);
   }
 
   private function intSignal(array $signals, string $key): int {
     $value = $signals[$key] ?? null;
     return is_numeric($value) ? (int)$value : 0;
-  }
-
-  private function getThresholds(): array {
-    $defaults = [
-      'min_time_ms' => self::DEFAULT_MIN_TIME_MS,
-      'min_interactions' => self::DEFAULT_MIN_INTERACTIONS,
-      'min_field_focus' => self::DEFAULT_MIN_FIELD_FOCUS,
-    ];
-    $filtered = $this->wp->applyFilters('mailpoet_behavioral_signals_thresholds', $defaults);
-    if (!is_array($filtered)) {
-      return $defaults;
-    }
-    return array_merge($defaults, $filtered);
   }
 }
