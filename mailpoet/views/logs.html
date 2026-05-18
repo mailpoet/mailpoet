@@ -9,8 +9,8 @@
 
   <script type="text/javascript">
     <% autoescape 'js' %>
-      var mailpoet_logs = <%= json_encode(logs) %>;
       var mailpoet_logs_default_from = '<%= logs_default_from %>';
+      var mailpoet_logs_api = <%= json_encode(api) %>;
     <% endautoescape %>
   </script>
 </div>

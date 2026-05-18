@@ -20,6 +20,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEdito
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
+use MailPoet\Logging\RestApi\Api as LogsRestApi;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\Newsletter\Sharing\PublicEmailRoute;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -129,6 +130,9 @@ class Initializer {
   /** @var SegmentsRestApi */
   private $segmentsRestApi;
 
+  /** @var LogsRestApi */
+  private $logsRestApi;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -194,6 +198,7 @@ class Initializer {
     CustomFieldsRestApi $customFieldsRestApi,
     FormsRestApi $formsRestApi,
     SegmentsRestApi $segmentsRestApi,
+    LogsRestApi $logsRestApi,
     PublicEmailRoute $publicEmailRoute
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -231,6 +236,7 @@ class Initializer {
     $this->customFieldsRestApi = $customFieldsRestApi;
     $this->formsRestApi = $formsRestApi;
     $this->segmentsRestApi = $segmentsRestApi;
+    $this->logsRestApi = $logsRestApi;
     $this->publicEmailRoute = $publicEmailRoute;
 
     $emailEditorContainer = Email_Editor_Container::container();
@@ -403,6 +409,7 @@ class Initializer {
       $this->customFieldsRestApi->initialize();
       $this->formsRestApi->initialize();
       $this->segmentsRestApi->initialize();
+      $this->logsRestApi->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
