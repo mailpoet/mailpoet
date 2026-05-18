@@ -85,14 +85,6 @@ class DateFilterHelper {
     return $dateValue;
   }
 
-  public function getNextDayStart(string $dateString): string {
-    $date = CarbonImmutable::createFromFormat('Y-m-d', $dateString);
-    if (!$date instanceof CarbonImmutable) {
-      throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
-    }
-    return $date->addDay()->startOfDay()->toDateTimeString();
-  }
-
   public function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
