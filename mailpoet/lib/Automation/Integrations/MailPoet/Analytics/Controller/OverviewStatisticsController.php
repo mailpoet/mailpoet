@@ -37,8 +37,8 @@ class OverviewStatisticsController {
   }
 
   public function getStatisticsForAutomation(Automation $automation, QueryWithCompare $query): array {
-    $currentEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
-    $previousEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
+    $currentEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore(), $query->getVersionId());
+    $previousEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore(), $query->getVersionId());
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
