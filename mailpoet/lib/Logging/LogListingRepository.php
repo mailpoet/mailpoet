@@ -34,7 +34,7 @@ class LogListingRepository extends ListingRepository {
 
     // LOCATE() keeps SQL wildcard characters literal for admin log searches.
     $queryBuilder
-      ->andWhere('LOCATE(:search, l.name) > 0 or LOCATE(:search, l.message) > 0')
+      ->andWhere('(LOCATE(:search, l.name) > 0 OR LOCATE(:search, l.message) > 0)')
       ->setParameter('search', $search);
   }
 

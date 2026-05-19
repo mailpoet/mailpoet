@@ -93,6 +93,33 @@ class LogsEndpointsTest extends Test {
     $this->assertNotContains((int)$nonMatch->getId(), $ids);
   }
 
+  public function testGetAppliesDateFiltersToNameAndMessageSearchResults(): void {
+    $suffix = uniqid();
+    $matchingNameOutsideDate = (new LogFactory())
+      ->withName("grouped-search-{$suffix}")
+      ->withMessage('plain')
+      ->withCreatedAt(new Carbon('2025-01-09 23:59:59'))
+      ->create();
+    $matchingMessageInsideDate = (new LogFactory())
+      ->withName('plain')
+      ->withMessage("grouped-search-{$suffix}")
+      ->withCreatedAt(new Carbon('2025-01-10 12:00:00'))
+      ->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => "grouped-search-{$suffix}",
+      'filter' => [
+        'from' => '2025-01-10',
+        'to' => '2025-01-10',
+      ],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    $this->assertSame([(int)$matchingMessageInsideDate->getId()], $ids);
+    $this->assertNotContains((int)$matchingNameOutsideDate->getId(), $ids);
+  }
+
   public function testGetIgnoresWhitespaceOnlySearch(): void {
     $suffix = uniqid();
     $old = (new LogFactory())
