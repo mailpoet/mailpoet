@@ -31,6 +31,7 @@ export { TreeSelect as WordpressComponentsTreeSelect } from '@wordpress/componen
 export { Spinner as WordpressComponentsSpinner } from '@wordpress/components';
 export { ToggleControl as WordpressComponentsToggleControl } from '@wordpress/components';
 export * as WordPressAPIFetch from '@wordpress/api-fetch';
+export * as WordPressDataViews from '@wordpress/dataviews';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressDate from '@wordpress/date';
 export * as WordPressUrl from '@wordpress/url';

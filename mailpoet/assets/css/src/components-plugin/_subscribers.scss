@@ -341,6 +341,37 @@
   padding: $grid-gap 0;
 }
 
+.mailpoet-subscriber-stats-activity-dataviews {
+  .dataviews-wrapper {
+    min-height: 240px;
+  }
+
+  .dataviews-view-table__cell-content-wrapper:not(.dataviews-column-primary__media),
+  .dataviews-view-table__primary-column-content:not(.dataviews-column-primary__media) {
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+.mailpoet-subscriber-stats-activity-dataviews__toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: $grid-gap-half;
+}
+
+.mailpoet-subscriber-stats-activity-dataviews__details {
+  min-width: 0;
+}
+
+.mailpoet-subscriber-stats-activity-dataviews__event {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .mailpoet-subscriber-stats-activity-list-sample {
   opacity: 0.72;
 }

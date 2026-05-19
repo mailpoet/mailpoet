@@ -29,6 +29,7 @@ type UseDataViewsQueryResult<T> = {
   setView: Dispatch<SetStateAction<View>>;
   items: T[];
   meta: ListingMeta;
+  filters: ListingResponse<T>['filters'];
   groups: ListingResponse<T>['groups'];
   isLoading: boolean;
   error: string | null;
@@ -53,6 +54,8 @@ export function useDataViewsQuery<T>({
   const [view, setView] = useState<View>(initialView);
   const [items, setItems] = useState<T[]>([]);
   const [meta, setMeta] = useState<ListingMeta>(EMPTY_META);
+  const [filters, setFilters] =
+    useState<ListingResponse<T>['filters']>(undefined);
   const [groups, setGroups] = useState<ListingResponse<T>['groups']>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,6 +105,7 @@ export function useDataViewsQuery<T>({
         }
         setItems(result.items);
         setMeta(result.meta);
+        setFilters(result.filters);
         setGroups(result.groups);
         setError(null);
       })
@@ -118,6 +122,7 @@ export function useDataViewsQuery<T>({
             : '';
         setItems([]);
         setMeta({ count: 0, pages: 0 });
+        setFilters([]);
         setGroups([]);
         setError(message || 'Failed to load data.');
       })
@@ -139,6 +144,7 @@ export function useDataViewsQuery<T>({
     setView,
     items,
     meta,
+    filters,
     groups,
     isLoading,
     error,

@@ -14,6 +14,7 @@ export * from './functions';
 export * from './utils';
 export * from './thumbnail';
 export * from './controls';
+export * from './dataviews';
 export * from './confirm-alert';
 export * from './newsletter-status-string';
 export * from './notices/inline-notice';
