@@ -66,8 +66,10 @@ export function List({ defaultFrom }: Props): JSX.Element {
   const didMountRef = useRef(false);
 
   const load = useCallback(
-    (params: ListingQueryParams) => {
+    (params: ListingQueryParams, signal?: AbortSignal) => {
       if (getDateRangeError(dateFilters)) {
+        // Invalid bookmarked ranges are rendered as validation errors instead
+        // of being sent to REST.
         return Promise.resolve({
           items: [],
           meta: { count: 0, pages: 0 },
@@ -75,7 +77,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
           groups: [],
         });
       }
-      return getLogs(buildLogsRequestParams(params, dateFilters));
+      return getLogs(buildLogsRequestParams(params, dateFilters), signal);
     },
     [dateFilters],
   );
@@ -122,6 +124,10 @@ export function List({ defaultFrom }: Props): JSX.Element {
     const nextUrl = buildLogsUrl(window.location.href, view, dateFilters);
     window.history.replaceState({}, '', nextUrl);
   }, [dateFilters, view]);
+
+  useEffect(() => {
+    setExpandedLogIds((current) => (current.size > 0 ? new Set() : current));
+  }, [dateFilters, view.page, view.perPage, view.search]);
 
   const toggleExpanded = useCallback((logId: number): void => {
     setExpandedLogIds((current) => {

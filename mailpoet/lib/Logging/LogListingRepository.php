@@ -27,9 +27,15 @@ class LogListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters) {
+    $search = trim($search);
+    if ($search === '') {
+      return;
+    }
+
+    // LOCATE() keeps SQL wildcard characters literal for admin log searches.
     $queryBuilder
       ->andWhere('LOCATE(:search, l.name) > 0 or LOCATE(:search, l.message) > 0')
-      ->setParameter('search', trim($search));
+      ->setParameter('search', $search);
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {

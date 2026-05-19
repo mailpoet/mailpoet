@@ -206,6 +206,8 @@ export function buildLogsUrl(
 }
 
 export function getDateRangeError(dateFilters: DateFilters): string | null {
+  // Keep in sync with LogsListingEndpoint::validateFilters; the browser blocks
+  // invalid ranges, while REST validates direct requests.
   if (dateFilters.from && dateFilters.to && dateFilters.from > dateFilters.to) {
     return __(
       'The start date must be before or equal to the end date.',
