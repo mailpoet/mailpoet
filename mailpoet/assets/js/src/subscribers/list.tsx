@@ -956,17 +956,13 @@ function SubscriberList() {
           __('1 confirmation email has been sent.', 'mailpoet'),
         );
       } catch (error) {
-        const message = (error as SubscriberApiError).message;
-        MailPoet.Notice.error(
-          message ||
-            __(
-              'There was a problem sending the confirmation email.',
-              'mailpoet',
-            ),
-        );
+        // Route through `handleApiError` with the bulk action key so the
+        // `mailpoet_subscribers_confirmation_disabled` response gets the
+        // same actionable Settings-link notice as the bulk path.
+        handleApiError(error as SubscriberApiError, 'resendConfirmationEmails');
       }
     },
-    [],
+    [handleApiError],
   );
 
   const actions = useMemo<Action<Subscriber>[]>(
