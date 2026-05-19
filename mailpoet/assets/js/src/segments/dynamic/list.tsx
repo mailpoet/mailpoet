@@ -526,7 +526,7 @@ export function DynamicSegmentList(): JSX.Element {
       >
         {() => (
           <div
-            className="mailpoet-segments-dataviews mailpoet-segments-listing"
+            className="mailpoet-dataviews mailpoet-segments-dataviews mailpoet-segments-listing"
             data-automation-id="dynamic_segments_listing"
           >
             <DataViews<DynamicSegmentListingItem>
