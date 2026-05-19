@@ -125,6 +125,9 @@
   color: $color-text;
   font-size: $font-size;
   margin-left: -1px;
+  // Stack above @wordpress/components Modal overlay (z-index: 100000) so the
+  // dropdown is clickable when Select2 is used inside a WP modal.
+  z-index: 100001;
 
   &.select2-dropdown--below {
     margin-top: -4px;
