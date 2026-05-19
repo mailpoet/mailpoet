@@ -4,6 +4,7 @@ namespace MailPoet\Test\REST\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\REST\Test;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
@@ -125,6 +126,21 @@ class SubscribersEndpointsTest extends Test {
     ]]);
 
     $this->assertSame('mailpoet_subscribers_invalid_group', $response['code']);
+    $this->assertSame(400, $response['data']['status']);
+  }
+
+  public function testResendConfirmationReturnsDisabledErrorWhenSignupConfirmationIsOff(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('rest-resend-confirmation-disabled-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('signup_confirmation.enabled', false);
+
+    $response = $this->post(self::LISTING_PATH . '/' . $subscriber->getId() . '/resend-confirmation-email');
+
+    $settings->set('signup_confirmation.enabled', true);
+    $this->assertSame('mailpoet_subscribers_confirmation_disabled', $response['code']);
     $this->assertSame(400, $response['data']['status']);
   }
 }

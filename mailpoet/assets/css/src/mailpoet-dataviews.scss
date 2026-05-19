@@ -8,10 +8,10 @@
 
 .mailpoet-dataviews__tabs,
 .mailpoet-segments-dataviews__tabs {
+  background: #fff;
   margin-top: $grid-gap-half;
 
   > [role='tablist'] {
-    background: #fff;
     border-bottom: 1px solid #ddd;
     margin: 0;
     padding: 0 8px;

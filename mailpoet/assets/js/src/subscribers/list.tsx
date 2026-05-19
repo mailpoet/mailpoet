@@ -1,214 +1,421 @@
 import classnames from 'classnames';
-import jQuery from 'jquery';
 import {
   Button as WordPressButton,
   CheckboxControl,
   Modal as WordPressModal,
+  Notice,
   __experimentalText as Text,
   __experimentalVStack as VStack,
 } from '@wordpress/components';
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { createInterpolateElement } from '@wordpress/element';
+import { DataViews, View, Action } from '@wordpress/dataviews';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type SetStateAction,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import { Button, SegmentTags, SubscriberTags } from 'common';
-import { Listing } from 'listing/listing.jsx';
+import { Button } from 'common';
+import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import type { ListingFilters, ListingGroup } from 'common/dataviews/types';
+import { Select } from 'common/form/select/select';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Selection } from 'form/fields/selection.jsx';
 import { MssAccessNotices } from 'notices/mss-access-notices';
-import { ListingsEngagementScore } from './listings-engagement-score';
+import { GlobalContext, type GlobalContextValue } from 'context';
 import { SubscribersHeading } from './heading';
+import { getSubscriberFields } from './fields';
+import {
+  bulkAction,
+  getSubscribers,
+  sendConfirmationEmail,
+  type Segment,
+  type Subscriber,
+  type SubscriberApiError,
+  type SubscriberBulkAction,
+  type SubscriberBulkActionResult,
+  type SubscriberBulkActionScope,
+  type SubscriberListingParams,
+} from './api';
 
-type Segment = {
-  id: string;
-  name: string;
-  subscribers: string;
-  type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
-};
+type Group =
+  | 'all'
+  | 'subscribed'
+  | 'unconfirmed'
+  | 'unsubscribed'
+  | 'inactive'
+  | 'bounced'
+  | 'trash';
 
-type Subscriber = {
-  id: number;
-  wp_user_id: number;
-  count_confirmations: number;
-  status: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  engagement_score: number;
-  created_at: string;
-  last_subscribed_at: string;
-  subscriptions: Array<{
-    id: number;
-    status: string;
-    segment_id: number;
-  }>;
-  tags: Array<{
-    id: string;
-    tag_id: string;
-    subscriber_id: string;
-    name: string;
-  }>;
-};
+type PendingModalAction =
+  | 'moveToList'
+  | 'addToList'
+  | 'removeFromList'
+  | 'unsubscribe'
+  | 'resendConfirmationEmails'
+  | 'addTag'
+  | 'removeTag';
 
-type Response = {
-  data?: {
-    selected_count: number;
-    eligible_count: number;
-    queued_count: number;
-    skipped_count: number;
-    skipped_by_reason: Record<string, number>;
-    task_id: number | null;
-    message: string;
-  };
-  meta: {
-    count: number;
-    segment: string;
-    tag: string;
-    errors?: string[];
-  };
-};
+type PendingAction = {
+  action: PendingModalAction;
+  targets: Subscriber[];
+} | null;
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const bulkConfirmationResendLimit =
   window.mailpoet_bulk_confirmation_resend_limit;
 const bulkConfirmationCheckboxId = 'bulk-resend-confirmation-checkbox-input';
+const listingPerPage = Number(window.mailpoet_listing_per_page);
 
-const getColumns = () => [
-  {
-    name: 'email',
-    label: __('Subscriber', 'mailpoet'),
-    sortable: true,
-  },
-  {
-    name: 'status',
-    label: __('Status', 'mailpoet'),
-    sortable: true,
-  },
-  {
-    name: 'segments',
-    label: __('Lists', 'mailpoet'),
-  },
-  {
-    name: 'tags',
-    label: __('Tags', 'mailpoet'),
-  },
-  {
-    name: 'statistics',
-    label: __('Score', 'mailpoet'),
-    display: mailpoetTrackingEnabled,
-  },
-  {
-    name: 'last_subscribed_at',
-    label: __('Subscribed on', 'mailpoet'),
-    sortable: true,
-  },
-  {
-    name: 'created_at',
-    label: __('Created on', 'mailpoet'),
-    sortable: true,
-  },
-];
+const DEFAULT_VIEW: View = {
+  type: 'table',
+  perPage: listingPerPage,
+  page: 1,
+  sort: { field: 'created_at', direction: 'desc' },
+  fields: [
+    'status',
+    'segments',
+    'tags',
+    ...(mailpoetTrackingEnabled ? ['statistics'] : []),
+    'last_subscribed_at',
+    'created_at',
+  ],
+  titleField: 'email',
+  showTitle: true,
+};
 
-const getMessages = () => ({
-  onTrash: (response: Response) => {
-    const count = Number(response.meta.count);
-    let message = null;
+function parseFilter(value: string): Record<string, string> {
+  const parsed = new URLSearchParams(value);
+  return Array.from(parsed.entries()).reduce<Record<string, string>>(
+    (filters, [key, filterValue]) =>
+      filterValue ? { ...filters, [key]: filterValue } : filters,
+    {},
+  );
+}
 
-    if (count === 1) {
-      message = __('1 subscriber was moved to the trash.', 'mailpoet');
-    } else {
-      message = __(
-        '%1$d subscribers were moved to the trash.',
+function parseHash(): Partial<{
+  group: Group;
+  page: number;
+  perPage: number;
+  orderby: string;
+  order: 'asc' | 'desc';
+  search: string;
+  filter: Record<string, string>;
+}> {
+  return window.location.hash
+    .split('/')
+    .map((part) => part.replace(/\]$/, '').split('['))
+    .reduce((params, [key, value]) => {
+      if (!value) return params;
+      if (
+        key === 'group' &&
+        [
+          'all',
+          'subscribed',
+          'unconfirmed',
+          'unsubscribed',
+          'inactive',
+          'bounced',
+          'trash',
+        ].includes(value)
+      ) {
+        return { ...params, group: value as Group };
+      }
+      if ((key === 'page' || key === 'paged') && Number(value) > 0) {
+        return { ...params, page: Number(value) };
+      }
+      if ((key === 'per_page' || key === 'limit') && Number(value) > 0) {
+        return { ...params, perPage: Number(value) };
+      }
+      if (key === 'sort_by' || key === 'orderby') {
+        return { ...params, orderby: value };
+      }
+      if (
+        (key === 'sort_order' || key === 'order') &&
+        (value === 'asc' || value === 'desc')
+      ) {
+        return { ...params, order: value };
+      }
+      if (key === 'search') {
+        return { ...params, search: decodeURIComponent(value) };
+      }
+      if (key === 'filter') {
+        return { ...params, filter: parseFilter(value) };
+      }
+      return params;
+    }, {});
+}
+
+function getListingPath(
+  group: Group,
+  view: View,
+  filter: Record<string, string>,
+): string {
+  const filterValue = new URLSearchParams(filter).toString();
+  const entries: Array<[string, string | number | undefined]> = [
+    ['group', group],
+    ['filter', filterValue || undefined],
+    ['search', view.search ? encodeURIComponent(view.search) : undefined],
+    ['page', view.page && view.page !== 1 ? view.page : undefined],
+    [
+      'limit',
+      view.perPage && view.perPage !== listingPerPage
+        ? view.perPage
+        : undefined,
+    ],
+    [
+      'sort_by',
+      view.sort?.field && view.sort.field !== 'created_at'
+        ? view.sort.field
+        : undefined,
+    ],
+    [
+      'sort_order',
+      view.sort?.direction && view.sort.direction !== 'desc'
+        ? view.sort.direction
+        : undefined,
+    ],
+  ];
+  const path = entries.reduce(
+    (hash, [key, value]) => (value ? `${hash}/${key}[${value}]` : hash),
+    '',
+  );
+  return path || '/';
+}
+
+function updateHash(
+  group: Group,
+  view: View,
+  filter: Record<string, string>,
+): void {
+  const path = getListingPath(group, view, filter);
+  const hash = `#${path}`;
+  if (window.location.hash !== hash) {
+    window.history.replaceState(null, '', hash);
+  }
+}
+
+function isItemDeletable(subscriber: Subscriber): boolean {
+  return (
+    Number(subscriber.wp_user_id) === 0 &&
+    Number(subscriber.is_woocommerce_user) === 0
+  );
+}
+
+function formatCount(count: number): string {
+  return count.toLocaleString();
+}
+
+type PickerKind = 'segment' | 'tag';
+
+type PickerConfig = {
+  kind: PickerKind;
+  fieldId: string;
+  endpoint: 'segments' | 'tags';
+  filter?: (segment: Segment) => boolean;
+};
+
+const PICKERS: Record<
+  Exclude<PendingModalAction, 'unsubscribe' | 'resendConfirmationEmails'>,
+  PickerConfig
+> = {
+  moveToList: {
+    kind: 'segment',
+    fieldId: 'move_to_segment',
+    endpoint: 'segments',
+    filter: (segment) => !!(!segment.deleted_at && segment.type === 'default'),
+  },
+  addToList: {
+    kind: 'segment',
+    fieldId: 'add_to_segment',
+    endpoint: 'segments',
+    filter: (segment) => !!(!segment.deleted_at && segment.type === 'default'),
+  },
+  removeFromList: {
+    kind: 'segment',
+    fieldId: 'remove_from_segment',
+    endpoint: 'segments',
+    filter: (segment) => segment.type === 'default',
+  },
+  addTag: {
+    kind: 'tag',
+    fieldId: 'add_tag',
+    endpoint: 'tags',
+  },
+  removeTag: {
+    kind: 'tag',
+    fieldId: 'remove_tag',
+    endpoint: 'tags',
+  },
+};
+
+function modalTitle(action: PendingModalAction): string {
+  const titles = {
+    moveToList: __('Move to list...', 'mailpoet'),
+    addToList: __('Add to list...', 'mailpoet'),
+    removeFromList: __('Remove from list...', 'mailpoet'),
+    addTag: __('Add tag...', 'mailpoet'),
+    removeTag: __('Remove tag...', 'mailpoet'),
+    unsubscribe: __('Unsubscribe', 'mailpoet'),
+    resendConfirmationEmails: __('Resend confirmation emails', 'mailpoet'),
+  };
+  return titles[action];
+}
+
+function actionSuccessMessage(
+  action: SubscriberBulkAction,
+  result: SubscriberBulkActionResult,
+): void {
+  const count = Number(result.count ?? 0);
+  const segmentName = result.segment?.name ?? '';
+  const tagName = result.tag?.name ?? '';
+  if (action === 'trash') {
+    MailPoet.Notice.success(
+      count === 1
+        ? __('1 subscriber was moved to the trash.', 'mailpoet')
+        : __('%1$d subscribers were moved to the trash.', 'mailpoet').replace(
+            '%1$d',
+            formatCount(count),
+          ),
+    );
+  } else if (action === 'delete') {
+    MailPoet.Notice.success(
+      count === 1
+        ? __('1 subscriber was permanently deleted.', 'mailpoet')
+        : __('%1$d subscribers were permanently deleted.', 'mailpoet').replace(
+            '%1$d',
+            formatCount(count),
+          ),
+    );
+  } else if (action === 'restore') {
+    MailPoet.Notice.success(
+      count === 1
+        ? __('1 subscriber has been restored from the trash.', 'mailpoet')
+        : __(
+            '%1$d subscribers have been restored from the trash.',
+            'mailpoet',
+          ).replace('%1$d', formatCount(count)),
+    );
+  } else if (action === 'moveToList') {
+    MailPoet.Notice.success(
+      __(
+        '%1$d subscribers were moved to list <strong>%2$s</strong>.',
         'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
-    }
-    MailPoet.Notice.success(message);
-  },
-  onDelete: (response: Response) => {
-    const count = Number(response.meta.count);
-    let message = null;
-
-    if (count === 1) {
-      message = __('1 subscriber was permanently deleted.', 'mailpoet');
-    } else {
-      message = __(
-        '%1$d subscribers were permanently deleted.',
+      )
+        .replace('%1$d', formatCount(count))
+        .replace('%2$s', segmentName),
+    );
+  } else if (action === 'addToList') {
+    MailPoet.Notice.success(
+      __(
+        '%1$d subscribers were added to list <strong>%2$s</strong>.',
         'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
-    }
-    MailPoet.Notice.success(message);
-  },
-  onRestore: (response: Response) => {
-    const count = Number(response.meta.count);
-    let message = null;
-
-    if (count === 1) {
-      message = __(
-        '1 subscriber has been restored from the trash.',
+      )
+        .replace('%1$d', formatCount(count))
+        .replace('%2$s', segmentName),
+    );
+  } else if (action === 'removeFromList') {
+    MailPoet.Notice.success(
+      __(
+        '%1$d subscribers were removed from list <strong>%2$s</strong>.',
         'mailpoet',
-      );
-    } else {
-      message = __(
-        '%1$d subscribers have been restored from the trash.',
+      )
+        .replace('%1$d', formatCount(count))
+        .replace('%2$s', segmentName),
+    );
+  } else if (action === 'removeFromAllLists') {
+    MailPoet.Notice.success(
+      __('%1$d subscribers were removed from all lists.', 'mailpoet').replace(
+        '%1$d',
+        formatCount(count),
+      ),
+    );
+  } else if (action === 'addTag') {
+    MailPoet.Notice.success(
+      __('Tag <strong>%1$s</strong> was added to %2$d subscribers.', 'mailpoet')
+        .replace('%1$s', tagName)
+        .replace('%2$d', formatCount(count)),
+    );
+  } else if (action === 'removeTag') {
+    MailPoet.Notice.success(
+      __(
+        'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
         'mailpoet',
-      ).replace('%1$d', count.toLocaleString());
-    }
-    MailPoet.Notice.success(message);
-  },
-  onNoItemsFound: (group: string, search: string) => {
-    if (
-      group === 'bounced' &&
-      !window.mailpoet_premium_active &&
-      !window.mailpoet_mss_active
-    ) {
-      return (
-        <div>
-          <p>
-            {__(
-              "Email addresses that are invalid or don't exist anymore are called \"bounced addresses\". It's a good practice not to send emails to bounced addresses to keep a good reputation with spam filters. Send your emails with MailPoet and we'll automatically ensure to keep a list of bounced addresses without any setup.",
-              'mailpoet',
-            )}
-          </p>
-          <p>
-            <a
-              href="admin.php?page=mailpoet-upgrade"
-              className="button-primary"
-            >
-              {__('Get premium version!', 'mailpoet')}
-            </a>
-          </p>
-        </div>
-      );
-    }
-    if (group !== 'trash' && search) {
-      const encodedSearch = encodeURIComponent(search);
-      return (
-        <p>
-          {__('No items found.', 'mailpoet')}{' '}
-          <a
-            href={`#/group[trash]/search[${encodedSearch}]`}
-            className="button button-link"
-          >
-            {__('Have you checked the Trash?', 'mailpoet')}
-          </a>
-        </p>
-      );
-    }
-    // use default message
-    return false;
-  },
-});
+      )
+        .replace('%1$s', tagName)
+        .replace('%2$d', formatCount(count)),
+    );
+  }
+}
 
-const createModal = (submitModal, closeModal, field, title) => (
-  <Modal title={title} onRequestClose={closeModal} isDismissible>
-    <Selection field={field} />
-    <span className="mailpoet-gap-half" />
-    <Button onClick={submitModal} dimension="small" variant="secondary">
-      {__('Apply', 'mailpoet')}
-    </Button>
-  </Modal>
-);
+function showBulkResendConfirmationNotice(
+  result: SubscriberBulkActionResult,
+): void {
+  const queue = result.queue;
+  if (!queue) {
+    MailPoet.Notice.success(
+      __('Confirmation emails are being resent.', 'mailpoet'),
+    );
+    return;
+  }
+
+  const queuedCount = Number(queue.queued_count);
+  const skippedCount = Number(queue.skipped_count);
+
+  if (queuedCount === 0) {
+    MailPoet.Notice.success(
+      __(
+        'No confirmation emails were resent. The selected subscribers could not receive another confirmation email right now.',
+        'mailpoet',
+      ),
+    );
+    return;
+  }
+
+  const messageParts = [
+    String(
+      sprintf(
+        _n(
+          'MailPoet is resending confirmation emails to %d subscriber.',
+          'MailPoet is resending confirmation emails to %d subscribers.',
+          queuedCount,
+          'mailpoet',
+        ),
+        queuedCount,
+      ),
+    ),
+  ];
+
+  if (skippedCount > 0) {
+    messageParts.push(
+      String(
+        sprintf(
+          _n(
+            '%d selected subscriber was skipped.',
+            '%d selected subscribers were skipped.',
+            skippedCount,
+            'mailpoet',
+          ),
+          skippedCount,
+        ),
+      ),
+    );
+  }
+
+  MailPoet.Notice.success(messageParts.join(' '), {
+    onOpen: (element) => {
+      element.attr('role', 'status');
+      element.attr('aria-live', 'polite');
+    },
+  });
+}
 
 function BulkResendConfirmationEmailsModal({
   submitModal,
@@ -284,523 +491,741 @@ function BulkResendConfirmationEmailsModal({
   );
 }
 
-const showBulkResendConfirmationNotice = (response: Response) => {
-  const data = response.data;
-  if (!data) {
-    MailPoet.Notice.success(
-      __('Confirmation emails are being resent.', 'mailpoet'),
-    );
-    return;
-  }
+function PickerModal({
+  title,
+  config,
+  onApply,
+  onClose,
+}: {
+  title: string;
+  config: PickerConfig;
+  onApply: (value: number) => void;
+  onClose: () => void;
+}) {
+  // The legacy `Selection` form widget wraps Select2 + jQuery. We treat it as
+  // a controlled component by reading values out of its `onValueChange` callback
+  // — no jQuery DOM lookups leak into this file.
+  const [value, setValue] = useState<number>(0);
+  const fieldConfig = useMemo(
+    () => ({
+      id: config.fieldId,
+      name: config.fieldId,
+      endpoint: config.endpoint,
+      filter: config.filter,
+      forceSelect2: true,
+    }),
+    [config],
+  );
 
-  const queuedCount = Number(data.queued_count);
-  const skippedCount = Number(data.skipped_count);
+  const handleApply = (): void => {
+    if (!value) return;
+    onApply(value);
+  };
 
-  if (queuedCount === 0) {
-    MailPoet.Notice.success(
-      __(
-        'No confirmation emails were resent. The selected subscribers could not receive another confirmation email right now.',
-        'mailpoet',
+  return (
+    <Modal title={title} onRequestClose={onClose} isDismissible>
+      <Selection
+        field={fieldConfig}
+        onValueChange={(event: { target: { value: string | number } }) => {
+          const next = Number(event.target.value);
+          setValue(Number.isFinite(next) ? next : 0);
+        }}
+      />
+      <span className="mailpoet-gap-half" />
+      <Button
+        onClick={handleApply}
+        dimension="small"
+        variant="secondary"
+        isDisabled={!value}
+      >
+        {__('Apply', 'mailpoet')}
+      </Button>
+    </Modal>
+  );
+}
+
+function SubscriberFilters({
+  filters,
+  filter,
+  group,
+  onSelectFilter,
+  onEmptyTrash,
+}: {
+  filters: ListingFilters;
+  filter: Record<string, string>;
+  group: Group;
+  onSelectFilter: (name: string, value: string) => void;
+  onEmptyTrash: () => void;
+}) {
+  const availableFilters = Object.keys(filters).filter(
+    (filterName) =>
+      !(
+        filters[filterName].length === 0 ||
+        (filters[filterName].length === 1 && !filters[filterName][0].value)
       ),
-    );
-    return;
-  }
+  );
 
-  const messageParts = [
-    String(
-      sprintf(
-        /* translators: %d is the number of subscribers. */
-        _n(
-          'MailPoet is resending confirmation emails to %d subscriber.',
-          'MailPoet is resending confirmation emails to %d subscribers.',
-          queuedCount,
-          'mailpoet',
-        ),
-        queuedCount,
-      ),
-    ),
-  ];
-
-  if (skippedCount > 0) {
-    messageParts.push(
-      String(
-        sprintf(
-          /* translators: %d is the number of subscribers. */
-          _n(
-            '%d selected subscriber was skipped.',
-            '%d selected subscribers were skipped.',
-            skippedCount,
-            'mailpoet',
-          ),
-          skippedCount,
-        ),
-      ),
-    );
-  }
-
-  MailPoet.Notice.success(messageParts.join(' '), {
-    onOpen: (element) => {
-      element.attr('role', 'status');
-      element.attr('aria-live', 'polite');
-    },
-  });
-};
-
-const getBulkActions = () => {
-  const bulkActions = [
-    {
-      name: 'moveToList',
-      label: __('Move to list...', 'mailpoet'),
-      onSelect: function onSelect(submitModal, closeModal) {
-        const field = {
-          id: 'move_to_segment',
-          name: 'move_to_segment',
-          endpoint: 'segments',
-          filter: function filter(segment) {
-            return !!(!segment.deleted_at && segment.type === 'default');
-          },
-        };
-
-        return createModal(
-          submitModal,
-          closeModal,
-          field,
-          __('Move to list...', 'mailpoet'),
-        );
-      },
-      getData: function getData() {
-        return {
-          segment_id: Number(jQuery('#move_to_segment').val()),
-        };
-      },
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            '%1$d subscribers were moved to list <strong>%2$s</strong>.',
-            'mailpoet',
-          )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
-        );
-      },
-    },
-    {
-      name: 'addToList',
-      label: __('Add to list...', 'mailpoet'),
-      onSelect: function onSelect(submitModal, closeModal) {
-        const field = {
-          id: 'add_to_segment',
-          name: 'add_to_segment',
-          endpoint: 'segments',
-          filter: function filter(segment) {
-            return !!(!segment.deleted_at && segment.type === 'default');
-          },
-        };
-
-        return createModal(
-          submitModal,
-          closeModal,
-          field,
-          __('Add to list...', 'mailpoet'),
-        );
-      },
-      getData: function getData() {
-        return {
-          segment_id: Number(jQuery('#add_to_segment').val()),
-        };
-      },
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            '%1$d subscribers were added to list <strong>%2$s</strong>.',
-            'mailpoet',
-          )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
-        );
-      },
-    },
-    {
-      name: 'removeFromList',
-      label: __('Remove from list...', 'mailpoet'),
-      onSelect: function onSelect(submitModal, closeModal) {
-        const field = {
-          id: 'remove_from_segment',
-          name: 'remove_from_segment',
-          endpoint: 'segments',
-          filter: function filter(segment) {
-            return segment.type === 'default';
-          },
-        };
-
-        return createModal(
-          submitModal,
-          closeModal,
-          field,
-          __('Remove from list...', 'mailpoet'),
-        );
-      },
-      getData: function getData() {
-        return {
-          segment_id: Number(jQuery('#remove_from_segment').val()),
-        };
-      },
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            '%1$d subscribers were removed from list <strong>%2$s</strong>.',
-            'mailpoet',
-          )
-            .replace('%1$d', Number(response.meta.count).toLocaleString())
-            .replace('%2$s', response.meta.segment),
-        );
-      },
-    },
-    {
-      name: 'removeFromAllLists',
-      label: __('Remove from all lists', 'mailpoet'),
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            '%1$d subscribers were removed from all lists.',
-            'mailpoet',
-          ).replace('%1$d', Number(response.meta.count).toLocaleString()),
-        );
-      },
-    },
-    {
-      name: 'trash',
-      label: __('Move to trash', 'mailpoet'),
-      onSuccess: getMessages().onTrash,
-    },
-    {
-      name: 'unsubscribe',
-      label: __('Unsubscribe', 'mailpoet'),
-      display: ({ group }) => group !== 'unsubscribed',
-      onSelect: (submitModal, closeModal, bulkActionProps) => {
-        const count =
-          bulkActionProps.selection !== 'all'
-            ? bulkActionProps.selected_ids.length
-            : bulkActionProps.count;
-        return (
-          <Modal
-            title={__('Unsubscribe', 'mailpoet')}
-            onRequestClose={closeModal}
-            isDismissible
+  return (
+    <div className="mailpoet-listing-filters">
+      {availableFilters.map((filterName) => (
+        <Select
+          isMinWidth
+          dimension="small"
+          key={`filter-${filterName}`}
+          name={filterName}
+          value={filter[filterName] ?? ''}
+          automationId={`listing_filter_${filterName}`}
+          onChange={(event) =>
+            onSelectFilter(filterName, event.currentTarget.value)
+          }
+        >
+          {filters[filterName].map((option) => (
+            <option value={option.value} key={`filter-option-${option.value}`}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      ))}
+      {group === 'trash' && (
+        <span className="mailpoet-listing-filters-empty-trash">
+          <Button
+            variant="secondary"
+            onClick={onEmptyTrash}
+            automationId="empty_trash"
           >
-            <p>
-              {__(
-                'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
-                'mailpoet',
-              ).replace('%s', Number(count).toLocaleString())}
-            </p>
-            <span className="mailpoet-gap-half" />
-            <Button
-              onClick={submitModal}
-              dimension="small"
-              variant="secondary"
-              automationId="bulk-unsubscribe-confirm"
-            >
-              {__('Apply', 'mailpoet')}
-            </Button>
-          </Modal>
-        );
-      },
-    },
-    {
-      name: 'resendConfirmationEmails',
-      label: __('Resend confirmation emails', 'mailpoet'),
-      display: ({ group }) =>
-        group === 'unconfirmed' && window.mailpoet_signup_confirmation_enabled,
-      onSelect: (submitModal, closeModal, bulkActionProps) => {
-        const count =
-          bulkActionProps.selection !== 'all'
-            ? bulkActionProps.selected_ids.length
-            : bulkActionProps.count;
-        return (
-          <BulkResendConfirmationEmailsModal
-            submitModal={submitModal}
-            closeModal={closeModal}
-            count={count}
-          />
-        );
-      },
-      onSuccess: showBulkResendConfirmationNotice,
-    },
-    {
-      name: 'addTag',
-      label: __('Add tag...', 'mailpoet'),
-      onSelect: function onSelect(submitModal, closeModal) {
-        const field = {
-          id: 'add_tag',
-          name: 'add_tag',
-          endpoint: 'tags',
-        };
+            {__('Empty Trash', 'mailpoet')}
+          </Button>
+        </span>
+      )}
+    </div>
+  );
+}
 
-        return createModal(
-          submitModal,
-          closeModal,
-          field,
-          __('Add tag...', 'mailpoet'),
-        );
-      },
-      getData: function getData() {
-        return {
-          tag_id: Number(jQuery('#add_tag').val()),
-        };
-      },
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            'Tag <strong>%1$s</strong> was added to %2$d subscribers.',
+function EmptyContent({
+  group,
+  search,
+  onCheckTrash,
+}: {
+  group: Group;
+  search?: string;
+  onCheckTrash: () => void;
+}) {
+  if (
+    group === 'bounced' &&
+    !window.mailpoet_premium_active &&
+    !window.mailpoet_mss_active
+  ) {
+    return (
+      <div>
+        <p>
+          {__(
+            "Email addresses that are invalid or don't exist anymore are called \"bounced addresses\". It's a good practice not to send emails to bounced addresses to keep a good reputation with spam filters. Send your emails with MailPoet and we'll automatically ensure to keep a list of bounced addresses without any setup.",
             'mailpoet',
-          )
-            .replace('%1$s', response.meta.tag)
-            .replace('%2$d', Number(response.meta.count).toLocaleString()),
-        );
-      },
-    },
-    {
-      name: 'removeTag',
-      label: __('Remove tag...', 'mailpoet'),
-      onSelect: function onSelect(submitModal, closeModal) {
-        const field = {
-          id: 'remove_tag',
-          name: 'remove_tag',
-          endpoint: 'tags',
-        };
-
-        return createModal(
-          submitModal,
-          closeModal,
-          field,
-          __('Remove tag...', 'mailpoet'),
-        );
-      },
-      getData: function getData() {
-        return {
-          tag_id: Number(jQuery('#remove_tag').val()),
-        };
-      },
-      onSuccess: function onSuccess(response: Response) {
-        MailPoet.Notice.success(
-          __(
-            'Tag <strong>%1$s</strong> was removed from %2$d subscribers.',
-            'mailpoet',
-          )
-            .replace('%1$s', response.meta.tag)
-            .replace('%2$d', Number(response.meta.count).toLocaleString()),
-        );
-      },
-    },
-  ];
-
-  return bulkActions;
-};
-
-const getItemActions = () => [
-  {
-    name: 'statistics',
-    label: __('Statistics', 'mailpoet'),
-    link: function link(subscriber: Subscriber, location) {
-      return (
-        <Link
-          to={`/stats/${subscriber.id}`}
-          state={{
-            backUrl: location?.pathname,
+          )}
+        </p>
+        <p>
+          <a href="admin.php?page=mailpoet-upgrade" className="button-primary">
+            {__('Get premium version!', 'mailpoet')}
+          </a>
+        </p>
+      </div>
+    );
+  }
+  if (group !== 'trash' && search) {
+    return (
+      <p>
+        {__('No items found.', 'mailpoet')}{' '}
+        <a
+          href={`#/group[trash]/search[${encodeURIComponent(search)}]`}
+          className="button button-link"
+          onClick={(event) => {
+            event.preventDefault();
+            onCheckTrash();
           }}
         >
-          {__('Statistics', 'mailpoet')}
-        </Link>
-      );
-    },
-  },
-  {
-    name: 'edit',
-    label: __('Edit', 'mailpoet'),
-    link: function link(subscriber: Subscriber, location) {
-      return (
-        <Link
-          to={`/edit/${subscriber.id}`}
-          state={{
-            backUrl: location?.pathname,
-          }}
-        >
-          {__('Edit', 'mailpoet')}
-        </Link>
-      );
-    },
-  },
-  {
-    name: 'sendConfirmationEmail',
-    className: 'mailpoet-hide-on-mobile',
-    label: __('Resend confirmation email', 'mailpoet'),
-    display: function display(subscriber: Subscriber) {
-      return subscriber.status === 'unconfirmed';
-    },
-    onClick: function onClick(subscriber) {
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'subscribers',
-        action: 'sendConfirmationEmail',
-        data: {
-          id: subscriber.id,
-        },
-      })
-        .done(() =>
-          MailPoet.Notice.success(
-            __('1 confirmation email has been sent.', 'mailpoet'),
-          ),
-        )
-        .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
-    },
-  },
-  {
-    name: 'trash',
-    className: 'mailpoet-hide-on-mobile',
-  },
-];
-
-const isItemDeletable = (subscriber) =>
-  Number(subscriber.wp_user_id) === 0 &&
-  Number(subscriber.is_woocommerce_user) === 0;
-
-const getSegmentFromId = (segmentId): Segment => {
-  let result: Segment | null = null;
-  window.mailpoet_segments.forEach((segment: Segment) => {
-    if (segment.id === segmentId) {
-      result = segment;
-    }
-  });
-  return result;
-};
+          {__('Have you checked the Trash?', 'mailpoet')}
+        </a>
+      </p>
+    );
+  }
+  return <div>{__('No items found.', 'mailpoet')}</div>;
+}
 
 function SubscriberList() {
-  const location = useLocation();
-  const params = useParams();
+  const navigate = useNavigate();
+  const { notices } = useContext<GlobalContextValue>(GlobalContext);
+  const hashState = parseHash();
+  const [group, setGroup] = useState<Group>(hashState.group ?? 'all');
+  const [filter, setFilter] = useState<Record<string, string>>(
+    hashState.filter ?? {},
+  );
+  const [selection, setSelection] = useState<string[]>([]);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const triggerElementRef = useRef<HTMLElement | null>(null);
+  const [initialView] = useState<View>(() => ({
+    ...DEFAULT_VIEW,
+    page: hashState.page ?? DEFAULT_VIEW.page,
+    perPage: hashState.perPage ?? DEFAULT_VIEW.perPage,
+    search: hashState.search,
+    sort: {
+      field: hashState.orderby ?? DEFAULT_VIEW.sort?.field ?? 'created_at',
+      direction: hashState.order ?? DEFAULT_VIEW.sort?.direction ?? 'desc',
+    },
+  }));
 
-  const renderItem = (subscriber: Subscriber, actions) => {
-    const rowClasses = classnames(
-      'manage-column',
-      'column-primary',
-      'has-row-actions',
-      'column-username',
-    );
+  const load = useCallback(
+    (params: ListingQueryParams) =>
+      getSubscribers({
+        ...params,
+        group,
+        filter,
+      }),
+    [filter, group],
+  );
 
-    let status = '';
+  const {
+    view,
+    setView,
+    items,
+    meta,
+    filters,
+    groups,
+    isLoading,
+    error: loadError,
+    clearError: clearLoadError,
+    refresh,
+  } = useDataViewsQuery<Subscriber>({
+    initialView,
+    load,
+  });
 
-    switch (subscriber.status) {
-      case 'subscribed':
-        status = __('Subscribed', 'mailpoet');
-        break;
+  useEffect(() => {
+    updateHash(group, view, filter);
+  }, [filter, group, view]);
 
-      case 'unconfirmed':
-        status = __('Unconfirmed', 'mailpoet');
-        break;
+  // DataViews has no built-in URL state, so back/forward inside the listing
+  // is wired manually. Browser navigation fires `hashchange`; programmatic
+  // `replaceState` from `updateHash` does not, so this can't loop with our
+  // own writes.
+  useEffect(() => {
+    const applyHash = (): void => {
+      const next = parseHash();
+      setGroup((current) => next.group ?? current);
+      setFilter(next.filter ?? {});
+      setSelection([]);
+      clearLoadError();
+      setView((currentView) => ({
+        ...currentView,
+        page: next.page ?? 1,
+        perPage: next.perPage ?? currentView.perPage,
+        search: next.search ?? '',
+        sort: {
+          field: next.orderby ?? currentView.sort?.field ?? 'created_at',
+          direction: next.order ?? currentView.sort?.direction ?? 'desc',
+        },
+      }));
+    };
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, [clearLoadError, setView]);
 
-      case 'unsubscribed':
-        status = __('Unsubscribed', 'mailpoet');
-        break;
+  const listingParams = useMemo<SubscriberListingParams>(
+    () => ({
+      group,
+      filter,
+      search: view.search || '',
+      page: view.page ?? 1,
+      per_page: view.perPage ?? listingPerPage,
+      orderby: view.sort?.field,
+      order: view.sort?.direction,
+    }),
+    [filter, group, view],
+  );
+  const backUrl = useMemo(
+    () => getListingPath(group, view, filter),
+    [filter, group, view],
+  );
 
-      case 'inactive':
-        status = __('Inactive', 'mailpoet');
-        break;
+  const groupCounts = useMemo(() => {
+    const counts: Record<Group, number | null> = {
+      all: null,
+      subscribed: null,
+      unconfirmed: null,
+      unsubscribed: null,
+      inactive: null,
+      bounced: null,
+      trash: null,
+    };
+    (groups ?? []).forEach((entry: ListingGroup) => {
+      if (entry.name in counts) {
+        counts[entry.name as Group] = entry.count;
+      }
+    });
+    return counts;
+  }, [groups]);
 
-      case 'bounced':
-        status = __('Bounced', 'mailpoet');
-        break;
-
-      default:
-        status = 'Invalid';
-        break;
+  useEffect(() => {
+    if (
+      group === 'trash' &&
+      !isLoading &&
+      !loadError &&
+      groupCounts.trash === 0 &&
+      !view.search &&
+      Object.keys(filter).length === 0
+    ) {
+      setGroup('all');
+      setSelection([]);
+      setView((currentView) => ({ ...currentView, page: 1 }));
     }
+  }, [
+    filter,
+    group,
+    groupCounts.trash,
+    isLoading,
+    loadError,
+    setView,
+    view.search,
+  ]);
 
-    const subscribedSegments = [];
+  const restoreTriggerFocus = useCallback((): void => {
+    const triggerElement = triggerElementRef.current;
+    triggerElementRef.current = null;
+    if (triggerElement && document.contains(triggerElement)) {
+      triggerElement.focus();
+    }
+  }, []);
 
-    // Subscriptions
-    if (subscriber.subscriptions.length > 0) {
-      subscriber.subscriptions.forEach((subscription) => {
-        const segment = getSegmentFromId(subscription.segment_id);
-        if (segment === null) return;
-        if (subscription.status === 'subscribed') {
-          subscribedSegments.push(segment);
+  const closePendingAction = useCallback((): void => {
+    setPendingAction(null);
+    window.setTimeout(restoreTriggerFocus);
+  }, [restoreTriggerFocus]);
+
+  const openPendingAction = useCallback(
+    (action: PendingModalAction, targets: Subscriber[]): void => {
+      triggerElementRef.current = document.activeElement as HTMLElement | null;
+      setPendingAction({ action, targets });
+    },
+    [],
+  );
+
+  const handleViewChange = useCallback(
+    (nextView: SetStateAction<View>) => {
+      setSelection([]);
+      setView(nextView);
+    },
+    [setView],
+  );
+
+  const handleApiError = useCallback(
+    (error: SubscriberApiError, action?: SubscriberBulkAction): void => {
+      if (
+        action === 'resendConfirmationEmails' &&
+        error.code === 'mailpoet_subscribers_confirmation_disabled'
+      ) {
+        notices.error(
+          <p>
+            {createInterpolateElement(
+              __(
+                'Sign-up confirmation is disabled in your <link>MailPoet settings</link>. Please enable it to resend confirmation emails or update your subscriber’s status manually.',
+                'mailpoet',
+              ),
+              {
+                link: <a href="admin.php?page=mailpoet-settings#/signup"> </a>,
+              },
+            )}
+          </p>,
+          { scroll: true },
+        );
+        return;
+      }
+      const message =
+        error.message ||
+        __(
+          'The bulk action could not be completed. Please try again.',
+          'mailpoet',
+        );
+      MailPoet.Notice.error(message, { scroll: true });
+    },
+    [notices],
+  );
+
+  const runBulkAction = useCallback(
+    async (
+      action: SubscriberBulkAction,
+      scope: SubscriberBulkActionScope,
+      extra: Record<string, unknown>,
+    ): Promise<void> => {
+      try {
+        const response = await bulkAction(action, scope, extra);
+        const result = response.data;
+        setSelection([]);
+        if (action === 'resendConfirmationEmails') {
+          showBulkResendConfirmationNotice(result);
+        } else {
+          actionSuccessMessage(action, result);
         }
-      });
+        refresh();
+      } catch (error) {
+        handleApiError(error as SubscriberApiError, action);
+      }
+    },
+    [handleApiError, refresh],
+  );
+
+  const handleBulkAction = useCallback(
+    async (
+      action: SubscriberBulkAction,
+      targets: Subscriber[],
+      extra: Record<string, unknown> = {},
+    ): Promise<void> => {
+      if (targets.length === 0) return;
+      const selectedIds = targets.map((subscriber) => Number(subscriber.id));
+      await runBulkAction(
+        action,
+        {
+          group: listingParams.group ?? 'all',
+          filter: listingParams.filter ?? {},
+          search: listingParams.search ?? '',
+          selection: selectedIds,
+        },
+        extra,
+      );
+    },
+    [listingParams, runBulkAction],
+  );
+
+  // "Empty Trash" is the only listing-scoped destructive call we make with no
+  // selected ids — it asks the backend to delete everything in the current
+  // group. Keep it out of `handleBulkAction` so the destructive "no-selection
+  // means everything" semantics are visible at the call site instead of
+  // hiding behind a guard in the generic handler.
+  const handleEmptyTrash = useCallback(async (): Promise<void> => {
+    if (group !== 'trash') return;
+    await runBulkAction(
+      'delete',
+      {
+        group: 'trash',
+        filter: listingParams.filter ?? {},
+        search: listingParams.search ?? '',
+        selection: [],
+      },
+      {},
+    );
+  }, [group, listingParams.filter, listingParams.search, runBulkAction]);
+
+  const handlePendingActionSubmit = useCallback(
+    (extra: Record<string, unknown> = {}): void => {
+      if (!pendingAction) return;
+      const { action, targets } = pendingAction;
+      setPendingAction(null);
+      void handleBulkAction(action, targets, extra);
+      window.setTimeout(restoreTriggerFocus);
+    },
+    [handleBulkAction, pendingAction, restoreTriggerFocus],
+  );
+
+  const handleSendConfirmationEmail = useCallback(
+    async (subscriber: Subscriber): Promise<void> => {
+      try {
+        await sendConfirmationEmail(Number(subscriber.id));
+        MailPoet.Notice.success(
+          __('1 confirmation email has been sent.', 'mailpoet'),
+        );
+      } catch (error) {
+        const message = (error as SubscriberApiError).message;
+        MailPoet.Notice.error(
+          message ||
+            __(
+              'There was a problem sending the confirmation email.',
+              'mailpoet',
+            ),
+        );
+      }
+    },
+    [],
+  );
+
+  const actions = useMemo<Action<Subscriber>[]>(
+    () => [
+      {
+        id: 'statistics',
+        label: __('Statistics', 'mailpoet'),
+        context: 'single',
+        supportsBulk: false,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => {
+          const subscriber = targets[0];
+          if (subscriber) {
+            navigate(`/stats/${subscriber.id}`, {
+              state: { backUrl },
+            });
+          }
+        },
+      },
+      {
+        id: 'edit',
+        label: __('Edit', 'mailpoet'),
+        context: 'single',
+        isPrimary: true,
+        supportsBulk: false,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => {
+          const subscriber = targets[0];
+          if (subscriber) {
+            navigate(`/edit/${subscriber.id}`, {
+              state: { backUrl },
+            });
+          }
+        },
+      },
+      {
+        id: 'sendConfirmationEmail',
+        label: __('Resend confirmation email', 'mailpoet'),
+        context: 'single',
+        supportsBulk: false,
+        isEligible: (item) =>
+          group !== 'trash' &&
+          item.status === 'unconfirmed' &&
+          window.mailpoet_signup_confirmation_enabled,
+        callback: (targets) => {
+          if (targets[0]) {
+            void handleSendConfirmationEmail(targets[0]);
+          }
+        },
+      },
+      {
+        id: 'trash',
+        label: __('Move to trash', 'mailpoet'),
+        context: 'single',
+        supportsBulk: false,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => {
+          void handleBulkAction('trash', targets);
+        },
+      },
+      {
+        id: 'restore',
+        label: __('Restore', 'mailpoet'),
+        context: 'single',
+        supportsBulk: false,
+        isEligible: () => group === 'trash',
+        callback: (targets) => {
+          void handleBulkAction('restore', targets);
+        },
+      },
+      {
+        id: 'delete',
+        label: __('Delete permanently', 'mailpoet'),
+        context: 'single',
+        supportsBulk: false,
+        isDestructive: true,
+        isEligible: (item) => group === 'trash' && isItemDeletable(item),
+        callback: (targets) => {
+          void handleBulkAction('delete', targets);
+        },
+      },
+      {
+        id: 'moveToList',
+        label: __('Move to list...', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => openPendingAction('moveToList', targets),
+      },
+      {
+        id: 'addToList',
+        label: __('Add to list...', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => openPendingAction('addToList', targets),
+      },
+      {
+        id: 'removeFromList',
+        label: __('Remove from list...', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => openPendingAction('removeFromList', targets),
+      },
+      {
+        id: 'removeFromAllLists',
+        label: __('Remove from all lists', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => {
+          void handleBulkAction('removeFromAllLists', targets);
+        },
+      },
+      {
+        id: 'unsubscribe',
+        label: __('Unsubscribe', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash' && group !== 'unsubscribed',
+        callback: (targets) => openPendingAction('unsubscribe', targets),
+      },
+      {
+        id: 'resendConfirmationEmails',
+        label: __('Resend confirmation emails', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () =>
+          group === 'unconfirmed' &&
+          window.mailpoet_signup_confirmation_enabled,
+        callback: (targets) =>
+          openPendingAction('resendConfirmationEmails', targets),
+      },
+      {
+        id: 'addTag',
+        label: __('Add tag...', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => openPendingAction('addTag', targets),
+      },
+      {
+        id: 'removeTag',
+        label: __('Remove tag...', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => openPendingAction('removeTag', targets),
+      },
+      {
+        id: 'bulkRestore',
+        label: __('Restore', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group === 'trash',
+        callback: (targets) => {
+          void handleBulkAction('restore', targets);
+        },
+      },
+      {
+        id: 'bulkDelete',
+        label: __('Delete permanently', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isDestructive: true,
+        isEligible: (item) => group === 'trash' && isItemDeletable(item),
+        callback: (targets) => {
+          void handleBulkAction('delete', targets.filter(isItemDeletable));
+        },
+      },
+    ],
+    [
+      backUrl,
+      group,
+      handleBulkAction,
+      handleSendConfirmationEmail,
+      navigate,
+      openPendingAction,
+    ],
+  );
+
+  const handleGroupSelect = (nextGroup: Group): void => {
+    if (nextGroup === group) return;
+    setGroup(nextGroup);
+    setSelection([]);
+    clearLoadError();
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  };
+
+  const handleFilterSelect = (filterName: string, value: string): void => {
+    setFilter((currentFilter) => {
+      const nextFilter = { ...currentFilter };
+      if (value) {
+        nextFilter[filterName] = value;
+      } else {
+        delete nextFilter[filterName];
+      }
+      return nextFilter;
+    });
+    setSelection([]);
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  };
+
+  const handleCheckTrash = (): void => {
+    setGroup('trash');
+    setSelection([]);
+    clearLoadError();
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  };
+
+  const groupsToRender = useMemo(
+    () =>
+      (groups ?? [])
+        .filter(
+          (entry) =>
+            !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
+        )
+        .filter((entry) => entry.name in groupCounts),
+    [group, groupCounts, groups],
+  );
+
+  const fields = useMemo(() => getSubscriberFields(backUrl), [backUrl]);
+
+  const paginationInfo = useMemo(
+    () => ({ totalItems: meta.count, totalPages: meta.pages }),
+    [meta],
+  );
+
+  const renderPendingActionModal = (): JSX.Element | null => {
+    if (!pendingAction) return null;
+    const { action, targets } = pendingAction;
+
+    if (action === 'unsubscribe') {
+      return (
+        <Modal
+          title={__('Unsubscribe', 'mailpoet')}
+          onRequestClose={closePendingAction}
+          isDismissible
+        >
+          <p>
+            {__(
+              'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
+              'mailpoet',
+            ).replace('%s', formatCount(targets.length))}
+          </p>
+          <span className="mailpoet-gap-half" />
+          <Button
+            onClick={() => handlePendingActionSubmit()}
+            dimension="small"
+            variant="secondary"
+            automationId="bulk-unsubscribe-confirm"
+          >
+            {__('Apply', 'mailpoet')}
+          </Button>
+        </Modal>
+      );
     }
 
+    if (action === 'resendConfirmationEmails') {
+      return (
+        <BulkResendConfirmationEmailsModal
+          submitModal={() => handlePendingActionSubmit()}
+          closeModal={closePendingAction}
+          count={targets.length}
+        />
+      );
+    }
+
+    const config = PICKERS[action];
     return (
-      <>
-        <td className={rowClasses}>
-          <Link
-            className="mailpoet-listing-title"
-            to={`/edit/${subscriber.id}`}
-            state={{
-              backUrl: location?.pathname,
-            }}
-          >
-            {subscriber.email}
-          </Link>
-          <div className="mailpoet-listing-subtitle">
-            {subscriber.first_name} {subscriber.last_name}
-          </div>
-          {actions}
-        </td>
-        <td className="column" data-colname={__('Status', 'mailpoet')}>
-          {status}
-        </td>
-        <td className="column" data-colname={__('Lists', 'mailpoet')}>
-          <SegmentTags segments={subscribedSegments} dimension="large" />
-        </td>
-        <td className="column" data-colname={__('Tags', 'mailpoet')}>
-          <SubscriberTags
-            subscribers={subscriber.tags}
-            variant="wordpress"
-            isInverted
-          />
-        </td>
-        {mailpoetTrackingEnabled === true ? (
-          <td
-            className="column mailpoet-listing-stats-column"
-            data-colname={__('Score', 'mailpoet')}
-          >
-            <div className="mailpoet-listing-stats">
-              <a
-                key={`stats-link-${subscriber.id}`}
-                href={`#/stats/${subscriber.id}`}
-              >
-                <ListingsEngagementScore
-                  id={subscriber.id}
-                  engagementScore={subscriber.engagement_score}
-                />
-              </a>
-            </div>
-          </td>
-        ) : null}
-        <td
-          className="column-date mailpoet-hide-on-mobile"
-          data-colname={__('Confirmed on', 'mailpoet')}
-        >
-          {subscriber.last_subscribed_at ? (
-            <>
-              {MailPoet.Date.short(subscriber.last_subscribed_at)}
-              <br />
-              {MailPoet.Date.time(subscriber.last_subscribed_at)}
-            </>
-          ) : null}
-        </td>
-        <td
-          className="column-date mailpoet-hide-on-mobile"
-          data-colname={__('Subscribed on', 'mailpoet')}
-        >
-          {subscriber.created_at ? (
-            <>
-              {MailPoet.Date.short(subscriber.created_at)}
-              <br />
-              {MailPoet.Date.time(subscriber.created_at)}
-            </>
-          ) : null}
-        </td>
-      </>
+      <PickerModal
+        title={modalTitle(action)}
+        config={config}
+        onApply={(value) =>
+          handlePendingActionSubmit(
+            config.kind === 'segment'
+              ? { segment_id: value }
+              : { tag_id: value },
+          )
+        }
+        onClose={closePendingAction}
+      />
     );
   };
 
@@ -810,20 +1235,90 @@ function SubscriberList() {
 
       <MssAccessNotices />
 
-      <Listing
-        limit={window.mailpoet_listing_per_page}
-        location={location}
-        params={params}
-        endpoint="subscribers"
-        onRenderItem={renderItem}
-        columns={getColumns()}
-        bulk_actions={getBulkActions()}
-        item_actions={getItemActions()}
-        messages={getMessages()}
-        sort_by="created_at"
-        sort_order="desc"
-        isItemDeletable={isItemDeletable}
-      />
+      {loadError && (
+        <Notice status="error" onRemove={clearLoadError}>
+          {loadError === 'Failed to load data.'
+            ? __('Failed to load subscribers.', 'mailpoet')
+            : loadError}
+        </Notice>
+      )}
+
+      <div className="mailpoet-categories mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs">
+        <div className="components-tab-panel__tabs">
+          {groupsToRender.map((entry) => {
+            const tabClasses = classnames(
+              'components-button',
+              'components-tab-panel__tabs-item',
+              `mailpoet-dataviews-group-${entry.name}`,
+              {
+                'is-active': entry.name === group,
+              },
+            );
+            return (
+              <a
+                key={entry.name}
+                href="#"
+                className={tabClasses}
+                data-automation-id={`filters_${entry.name}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleGroupSelect(entry.name as Group);
+                }}
+              >
+                <span data-title={entry.label}>{entry.label}</span>
+                {Number(entry.count) > 0 && (
+                  <span className="count">
+                    {Number(entry.count).toLocaleString()}
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      <div
+        className="mailpoet-dataviews mailpoet-subscribers-dataviews"
+        data-automation-id="subscribers_listing"
+      >
+        <DataViews<Subscriber>
+          data={items}
+          fields={fields}
+          view={view}
+          onChangeView={handleViewChange}
+          actions={actions}
+          paginationInfo={paginationInfo}
+          defaultLayouts={{ table: {} }}
+          getItemId={(item) => String(item.id)}
+          selection={selection}
+          onChangeSelection={setSelection}
+          isLoading={isLoading}
+          empty={
+            <EmptyContent
+              group={group}
+              search={view.search}
+              onCheckTrash={handleCheckTrash}
+            />
+          }
+        >
+          <div className="mailpoet-dataviews__toolbar mailpoet-subscribers-dataviews__toolbar">
+            <DataViews.Search label={__('Search', 'mailpoet')} />
+            <SubscriberFilters
+              filters={filters}
+              filter={filter}
+              group={group}
+              onSelectFilter={handleFilterSelect}
+              onEmptyTrash={() => {
+                void handleEmptyTrash();
+              }}
+            />
+          </div>
+          <DataViews.Layout />
+          <DataViews.Footer />
+        </DataViews>
+      </div>
+
+      {renderPendingActionModal()}
     </div>
   );
 }

@@ -87,6 +87,13 @@ class SubscriberConfirmationEmailEndpoint extends Endpoint {
         'mailpoet_subscribers_recently_sent'
       );
     }
+    if ($reason === 'confirmation_disabled') {
+      throw new ApiException(
+        __('Sign-up confirmation is disabled in your MailPoet settings. Please enable it to resend confirmation emails or update your subscriber\'s status manually.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_confirmation_disabled'
+      );
+    }
 
     throw new ApiException(
       __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
