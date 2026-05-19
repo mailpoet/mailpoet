@@ -6,7 +6,13 @@ import { apiFetch } from '@wordpress/data-controls';
 import { store as noticesStore } from '@wordpress/notices';
 import { Hooks } from 'wp-js-hooks';
 import { Data } from 'common/premium-modal/upgrade-info';
-import { CurrentView, Query, Section, SectionData } from '../types';
+import {
+  AutomationVersion,
+  CurrentView,
+  Query,
+  Section,
+  SectionData,
+} from '../types';
 import { storeName } from '../constants';
 import { getSampleData } from '../samples';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
@@ -20,6 +26,50 @@ export function setQuery(query: Query) {
     type: 'SET_QUERY',
     payload: query,
   };
+}
+
+export function setVersions(versions: AutomationVersion[]) {
+  return {
+    type: 'SET_VERSIONS',
+    payload: versions,
+  } as const;
+}
+
+export function* setSelectedVersionId(versionId: number | undefined) {
+  yield {
+    type: 'SET_SELECTED_VERSION_ID',
+    payload: versionId,
+  };
+  const sections = select(storeName).getSections();
+  sections.forEach((section: Section) => {
+    void dispatch(storeName).updateSection(section);
+  });
+}
+
+export function* loadVersions() {
+  const id = select(editorStoreName).getAutomationData().id;
+  if (!id) {
+    return { type: 'NOOP' } as const;
+  }
+  try {
+    const response: { data: { items: AutomationVersion[] } } = yield apiFetch({
+      path: `/automations/${id}/versions`,
+      method: 'GET',
+    });
+    const items = response?.data?.items ?? [];
+    void dispatch(storeName).setVersions(items);
+
+    const current = items.length > 1 ? items.find((v) => v.is_current) : null;
+    if (current && select(storeName).getSelectedVersionId() === undefined) {
+      yield {
+        type: 'SET_SELECTED_VERSION_ID',
+        payload: current.id,
+      };
+    }
+  } catch (_error) {
+    // ignore — analytics still loads, just without version filtering
+  }
+  return { type: 'NOOP' } as const;
 }
 
 export function setSectionData(payload: Section) {
@@ -105,7 +155,15 @@ export function* updateSection(
 
   const id = select(editorStoreName).getAutomationData().id;
   const customQuery = section.customQuery ?? {};
-  const args = { id, query: { ...dates, ...customQuery } };
+  const versionId = select(storeName).getSelectedVersionId();
+  const args = {
+    id,
+    query: {
+      ...dates,
+      ...customQuery,
+      ...(versionId ? { version_id: versionId } : {}),
+    },
+  };
 
   const response: { data: SectionData } = yield apiFetch({
     path: addQueryArgs(section.endpoint, args),

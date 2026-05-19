@@ -1,4 +1,4 @@
-import { Query, Section, State } from '../types';
+import { AutomationVersion, Query, Section, State } from '../types';
 
 export function getCurrentQuery(state: State): Query {
   return state.query;
@@ -18,4 +18,12 @@ export function getPremiumModal(state: State): State['premiumModal'] {
 
 export function getRunStatusUpdate(state: State, runId: number) {
   return state.runStatusUpdates[runId];
+}
+
+export function getVersions(state: State): AutomationVersion[] {
+  return state.versions;
+}
+
+export function getSelectedVersionId(state: State): number | undefined {
+  return state.selectedVersionId;
 }
