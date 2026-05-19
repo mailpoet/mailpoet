@@ -166,6 +166,38 @@ class AutomationTimeSpanControllerTest extends \MailPoetTest {
     $this->assertEquals($expectedIds, $actualIds);
   }
 
+  public function testItReturnsExplicitVersionOutsideTheDateRange(): void {
+    $automation = $this->tester->createAutomation('test');
+    $automation->setName('updated test');
+    $this->automationStorage->updateAutomation($automation);
+    $updatedAutomation = $this->automationStorage->getAutomation($automation->getId());
+    $this->assertInstanceOf(Automation::class, $updatedAutomation);
+
+    $automations = $this->testee->getAutomationsInTimespan(
+      $updatedAutomation,
+      new \DateTimeImmutable('2022-01-01 00:00:00'),
+      new \DateTimeImmutable('2022-01-02 00:00:00'),
+      $updatedAutomation->getVersionId()
+    );
+
+    $this->assertCount(1, $automations);
+    $this->assertSame($updatedAutomation->getVersionId(), $automations[0]->getVersionId());
+  }
+
+  public function testItDoesNotReturnVersionFromAnotherAutomation(): void {
+    $automation = $this->tester->createAutomation('test');
+    $otherAutomation = $this->tester->createAutomation('other test');
+
+    $automations = $this->testee->getAutomationsInTimespan(
+      $automation,
+      new \DateTimeImmutable('2022-01-01 00:00:00'),
+      new \DateTimeImmutable('2022-01-02 00:00:00'),
+      $otherAutomation->getVersionId()
+    );
+
+    $this->assertSame([], $automations);
+  }
+
   private function createEmail(string $subject = 'subject'): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
