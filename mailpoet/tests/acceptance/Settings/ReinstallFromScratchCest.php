@@ -7,7 +7,6 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
-use PHPUnit\Framework\Assert;
 
 class ReinstallFromScratchCest {
   public function reinstallFromScratch(\AcceptanceTester $i) {
@@ -57,14 +56,16 @@ class ReinstallFromScratchCest {
     $i->seeNumberOfElements('.mailpoet-listing-title', 2);
     // Check subscribers
     $i->amOnMailPoetPage('Subscribers');
-    $i->waitForText('admin', 30, '.mailpoet-listing-table');
+    $i->waitForListingItemsToLoad();
+    $i->waitForText('admin', 30, '.mailpoet-dataviews');
 
     for ($index = 0; $index <= 5; $index++) {
       $i->waitForText('imported' . $index . '@from.wordpress');
     }
 
-    $subscribersCount = $i->grabTextFrom('.mailpoet-listing-pages-num');
-    Assert::assertIsString($subscribersCount);
-    Assert::assertSame(7, (int)$subscribersCount);
+    // The legacy listing exposed a `.mailpoet-listing-pages-num` total. DataViews
+    // doesn't render that node; count the rendered row titles instead — the
+    // expected 7 entries fit comfortably under the default per-page limit.
+    $i->seeNumberOfElements('.mailpoet-listing-title', 7);
   }
 }

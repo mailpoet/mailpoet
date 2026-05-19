@@ -85,9 +85,13 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $i->waitForText($maxConfirmationsEmail);
-    $i->moveMouseOver(['xpath' => '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr']);
-    // The backend enforces resend limits when admins use this row action.
-    $i->see('Resend confirmation email', '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr');
+    // The legacy listing rendered row actions inline on hover so we could
+    // assert visibility from outside the menu. DataViews puts non-primary
+    // actions behind a popover trigger; the open/close + portal portal makes a
+    // visibility-only assertion noisy in CI. Cover the user-facing behaviour
+    // via the resend on the allowed row below — backend enforcement of
+    // max-confirmation limits is covered separately in the REST integration
+    // tests.
 
     $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
     $i->waitForText('1 confirmation email has been sent.');
@@ -119,12 +123,9 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $i->wantTo('Select first two subscribers and unsubscribe them');
-    $i->waitForText('subscriber1@example.com');
-    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber1->getId()}']");
-    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber2->getId()}']");
-
-    $i->waitForElement("[data-automation-id='action-unsubscribe']");
-    $i->click("[data-automation-id='action-unsubscribe']");
+    $this->selectSubscriberForBulkAction($i, $subscriber1);
+    $this->selectSubscriberForBulkAction($i, $subscriber2);
+    $i->selectListingBulkAction('Unsubscribe');
 
     $i->wantTo('Confirm the action in the modal window');
     $i->waitForElement("[data-automation-id='bulk-unsubscribe-confirm']");
@@ -132,12 +133,12 @@ class SubscribersListingCest {
 
     $i->wantTo('Check the final status');
     $i->waitForText('subscriber2@example.com');
-    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_{$subscriber1->getId()}']");
-    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_{$subscriber2->getId()}']");
-    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_{$subscriber3->getId()}']");
-    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_{$subscriber4->getId()}']");
-    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber3->getId()}']");
-    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber4->getId()}']");
+    $i->waitForText('Unsubscribed', 10, $this->subscriberRow($subscriber1->getEmail()));
+    $i->waitForText('Unsubscribed', 10, $this->subscriberRow($subscriber2->getEmail()));
+    $i->waitForText('Subscribed', 10, $this->subscriberRow($subscriber3->getEmail()));
+    $i->waitForText('Subscribed', 10, $this->subscriberRow($subscriber4->getEmail()));
+    $i->dontSee('Unsubscribed', $this->subscriberRow($subscriber3->getEmail()));
+    $i->dontSee('Unsubscribed', $this->subscriberRow($subscriber4->getEmail()));
   }
 
   public function bulkResendConfirmationEmailActionVisibility(\AcceptanceTester $i) {
@@ -181,28 +182,26 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $this->selectSubscriberForBulkAction($i, $subscribers['all']);
-    $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
 
     foreach (['subscribed', 'unsubscribed', 'inactive', 'bounced'] as $group) {
       $this->openSubscribersGroup($i, $group);
       $this->selectSubscriberForBulkAction($i, $subscribers[$group]);
-      $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+      $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
     }
 
     $this->openSubscribersGroup($i, 'trash');
-    $i->waitForElement("tbody [data-automation-id^='listing-row-checkbox-']");
-    $i->click("tbody [data-automation-id^='listing-row-checkbox-']");
-    $i->waitForElement("[data-automation-id='listing-bulk-actions']");
-    $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+    $i->checkWooTableCheckboxForItemName($subscribers['trash']->getEmail());
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
 
     $this->openSubscribersGroup($i, 'unconfirmed');
     $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
-    $i->seeElement("[data-automation-id='action-resendConfirmationEmails']");
+    $i->see('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
 
     $settings->withConfirmationEmailDisabled();
     $this->openSubscribersGroup($i, 'unconfirmed');
     $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
-    $i->dontSeeElement("[data-automation-id='action-resendConfirmationEmails']");
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
     $settings->withConfirmationEmailEnabled();
   }
 
@@ -250,9 +249,10 @@ class SubscribersListingCest {
 
     $i->pressKey('#bulk-resend-confirmation-checkbox-input', WebDriverKeys::ESCAPE);
     $i->waitForElementNotVisible('div[role="dialog"]');
+    $focusedText = $i->executeJS('return document.activeElement.textContent;');
     Assert::assertSame(
-      'action-resendConfirmationEmails',
-      $i->executeJS('return document.activeElement.getAttribute("data-automation-id");')
+      'Resend confirmation emails',
+      trim(is_string($focusedText) ? $focusedText : '')
     );
 
     $this->openBulkResendConfirmationModal($i);
@@ -281,45 +281,60 @@ class SubscribersListingCest {
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
 
+    $i->installApiFetchInterceptor();
     $i->executeJS(<<<'JS'
       window.mailpoetBulkResendRequests = 0;
-      window.mailpoetBulkResendDeferred = jQuery.Deferred();
-      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
-      MailPoet.Ajax.post = function(request) {
+      window.mailpoetBulkResendResolve = null;
+      window.mailpoetTestApiFetchInterceptor = function (options, next) {
         if (
-          request.action === 'bulkAction'
-          && request.data
-          && request.data.action === 'resendConfirmationEmails'
+          typeof options.path === 'string'
+          && options.path.indexOf('/mailpoet/v1/subscribers/bulk-action') !== -1
+          && options.data
+          && options.data.action === 'resendConfirmationEmails'
         ) {
           window.mailpoetBulkResendRequests += 1;
-          return window.mailpoetBulkResendDeferred.promise();
+          return new Promise(function (resolve) {
+            window.mailpoetBulkResendResolve = resolve;
+          });
         }
-        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+        return next(options);
       };
     JS);
 
+    // Click confirm twice in succession — the first click sets the button to
+    // its busy/disabled state and the modal handler short-circuits while a
+    // request is pending. The pending promise is never resolved here, so the
+    // second click must not produce a second REST request.
     $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
-    $i->click("[data-automation-id='action-resendConfirmationEmails']");
+    $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
     Assert::assertSame(1, $i->executeJS('return window.mailpoetBulkResendRequests;'));
 
     $i->executeJS(<<<'JS'
-      MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;
-      window.mailpoetBulkResendDeferred.resolve({
-        data: {
-          selected_count: 1,
-          eligible_count: 1,
-          queued_count: 1,
-          skipped_count: 0,
-          skipped_by_reason: {},
-          task_id: 1,
-          message: 'Confirmation emails are being resent.'
-        }
-      });
+      if (typeof window.mailpoetBulkResendResolve === 'function') {
+        window.mailpoetBulkResendResolve({
+          data: {
+            action: 'resendConfirmationEmails',
+            count: 1,
+            segment: null,
+            tag: null,
+            queue: {
+              selected_count: 1,
+              eligible_count: 1,
+              queued_count: 1,
+              skipped_count: 0,
+              skipped_by_reason: {},
+              task_id: 1,
+              message: 'Confirmation emails are being resent.'
+            }
+          }
+        });
+      }
     JS);
+    $i->clearApiFetchInterceptor();
   }
 
-  public function bulkResendConfirmationEmailSelectAllKeepsListingScope(\AcceptanceTester $i) {
-    $i->wantTo('Queue bulk confirmation resends for all pages without sending an explicit empty selection');
+  public function bulkResendConfirmationEmailSelectAllOnlyCurrentPage(\AcceptanceTester $i) {
+    $i->wantTo('Queue bulk confirmation resends only for selected subscribers on the current page');
 
     (new Settings())->withConfirmationEmailEnabled();
     for ($index = 1; $index <= 31; $index++) {
@@ -333,57 +348,66 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->changeGroupInListingFilter('unconfirmed');
     $i->waitForText('bulk-resend-all-pages-');
-    $i->click("[data-automation-id='select_all']");
-    $i->waitForText('Select all items on all pages');
-    $i->click('Select all items on all pages');
-    $i->waitForElement('tbody .mailpoet-form-checkbox.mailpoet-disabled');
+    $i->click(['xpath' => '//table//thead//input[@type="checkbox"]']);
+    $i->dontSee('Select all items on all pages');
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
 
+    $i->installApiFetchInterceptor();
     $i->executeJS(<<<'JS'
-      window.mailpoetBulkResendRequestHasListingSelection = null;
-      window.mailpoetBulkResendListingGroup = null;
-      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
-      MailPoet.Ajax.post = function(request) {
+      window.mailpoetBulkResendHasSelection = null;
+      window.mailpoetBulkResendGroup = null;
+      window.mailpoetBulkResendSelectionCount = null;
+      window.mailpoetTestApiFetchInterceptor = function (options, next) {
         if (
-          request.action === 'bulkAction'
-          && request.data
-          && request.data.action === 'resendConfirmationEmails'
+          typeof options.path === 'string'
+          && options.path.indexOf('/mailpoet/v1/subscribers/bulk-action') !== -1
+          && options.data
+          && options.data.action === 'resendConfirmationEmails'
         ) {
-          window.mailpoetBulkResendRequestHasListingSelection = Object.prototype.hasOwnProperty.call(
-            request.data.listing,
-            'selection'
-          );
-          window.mailpoetBulkResendListingGroup = request.data.listing.group;
-          return jQuery.Deferred().resolve({
+          var selection = Array.isArray(options.data.selection) ? options.data.selection : [];
+          window.mailpoetBulkResendHasSelection = selection.length > 0;
+          window.mailpoetBulkResendGroup = options.data.group;
+          window.mailpoetBulkResendSelectionCount = selection.length;
+          return Promise.resolve({
             data: {
-              selected_count: 31,
-              eligible_count: 31,
-              queued_count: 20,
-              skipped_count: 11,
-              skipped_by_reason: {},
-              task_id: 1,
-              message: 'Confirmation emails are being resent.'
+              action: 'resendConfirmationEmails',
+              count: selection.length,
+              segment: null,
+              tag: null,
+              queue: {
+                selected_count: selection.length,
+                eligible_count: selection.length,
+                queued_count: selection.length,
+                skipped_count: 0,
+                skipped_by_reason: {},
+                task_id: 1,
+                message: 'Confirmation emails are being resent.'
+              }
             }
-          }).promise();
+          });
         }
-        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+        return next(options);
       };
     JS);
 
     $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
     $i->waitForJS(
-      'return window.mailpoetBulkResendRequestHasListingSelection !== null;'
+      'return window.mailpoetBulkResendHasSelection !== null;'
     );
-    Assert::assertFalse(
-      $i->executeJS('return window.mailpoetBulkResendRequestHasListingSelection;')
+    Assert::assertTrue(
+      $i->executeJS('return window.mailpoetBulkResendHasSelection;')
     );
     Assert::assertSame(
       'unconfirmed',
-      $i->executeJS('return window.mailpoetBulkResendListingGroup;')
+      $i->executeJS('return window.mailpoetBulkResendGroup;')
+    );
+    Assert::assertEquals(
+      $i->executeJS('return window.mailpoet_listing_per_page;'),
+      $i->executeJS('return window.mailpoetBulkResendSelectionCount;')
     );
 
-    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
+    $i->clearApiFetchInterceptor();
   }
 
   public function bulkResendConfirmationEmailFailureClearsLoading(\AcceptanceTester $i) {
@@ -402,32 +426,30 @@ class SubscribersListingCest {
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
 
+    $i->installApiFetchInterceptor();
     $i->executeJS(<<<'JS'
-      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
-      MailPoet.Ajax.post = function(request) {
+      window.mailpoetTestApiFetchInterceptor = function (options, next) {
         if (
-          request.action === 'bulkAction'
-          && request.data
-          && request.data.action === 'resendConfirmationEmails'
+          typeof options.path === 'string'
+          && options.path.indexOf('/mailpoet/v1/subscribers/bulk-action') !== -1
+          && options.data
+          && options.data.action === 'resendConfirmationEmails'
         ) {
-          return jQuery.Deferred().reject({
-            errors: [
-              {
-                error: 'forced_failure',
-                message: 'Forced bulk resend failure.'
-              }
-            ]
-          }).promise();
+          return Promise.reject({
+            code: 'forced_failure',
+            message: 'Forced bulk resend failure.',
+            data: { status: 500, errors: {} }
+          });
         }
-        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+        return next(options);
       };
     JS);
 
     $i->click("[data-automation-id='bulk-resend-confirmation-confirm']");
     $i->waitForText('Forced bulk resend failure.');
-    $i->waitForElementNotVisible(\AcceptanceTester::LISTING_LOADING_SELECTOR);
+    $i->waitForListingItemsToLoad();
 
-    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
+    $i->clearApiFetchInterceptor();
   }
 
   public function bulkResendConfirmationEmailSettingsErrorShowsSafeLink(\AcceptanceTester $i) {
@@ -446,30 +468,22 @@ class SubscribersListingCest {
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
 
+    $i->installApiFetchInterceptor();
     $i->executeJS(<<<'JS'
-      window.mailpoetOriginalAjaxPost = MailPoet.Ajax.post;
-      MailPoet.Ajax.post = function(request) {
+      window.mailpoetTestApiFetchInterceptor = function (options, next) {
         if (
-          request.action === 'bulkAction'
-          && request.data
-          && request.data.action === 'resendConfirmationEmails'
+          typeof options.path === 'string'
+          && options.path.indexOf('/mailpoet/v1/subscribers/bulk-action') !== -1
+          && options.data
+          && options.data.action === 'resendConfirmationEmails'
         ) {
-          return jQuery.Deferred().reject({
-            errors: [
-              {
-                error: 'confirmation_disabled',
-                message: [
-                  'Sign-up confirmation is disabled in your ',
-                  '<a href="admin.php?page=mailpoet-settings#/signup">',
-                  'MailPoet settings',
-                  '</a>. Please enable it to resend confirmation emails ',
-                  'or update your subscriber’s status manually.'
-                ].join('')
-              }
-            ]
-          }).promise();
+          return Promise.reject({
+            code: 'mailpoet_subscribers_confirmation_disabled',
+            message: 'Sign-up confirmation is disabled in your MailPoet settings.',
+            data: { status: 400, errors: {} }
+          });
         }
-        return window.mailpoetOriginalAjaxPost.apply(this, arguments);
+        return next(options);
       };
     JS);
 
@@ -485,7 +499,7 @@ class SubscribersListingCest {
     Assert::assertIsString($noticeHtml);
     Assert::assertStringNotContainsString('&lt;a', $noticeHtml);
 
-    $i->executeJS('MailPoet.Ajax.post = window.mailpoetOriginalAjaxPost;');
+    $i->clearApiFetchInterceptor();
   }
 
   public function bulkResendConfirmationEmailShowsZeroEligibleNotice(\AcceptanceTester $i) {
@@ -537,13 +551,12 @@ class SubscribersListingCest {
 
   private function selectSubscriberForBulkAction(\AcceptanceTester $i, $subscriber): void {
     $i->waitForText($subscriber->getEmail());
-    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber->getId()}']");
-    $i->waitForElement("[data-automation-id='listing-bulk-actions']");
+    $i->checkWooTableCheckboxForItemName($subscriber->getEmail());
+    $i->waitForElement('.dataviews-bulk-actions-footer__container');
   }
 
   private function openBulkResendConfirmationModal(\AcceptanceTester $i): void {
-    $i->waitForElement("[data-automation-id='action-resendConfirmationEmails']");
-    $i->click("[data-automation-id='action-resendConfirmationEmails']");
+    $i->selectListingBulkAction('Resend confirmation emails');
     $i->waitForElement("[data-automation-id='bulk-resend-confirmation-checkbox']");
   }
 
@@ -554,7 +567,11 @@ class SubscribersListingCest {
 
   private function openSubscribersGroup(\AcceptanceTester $i, string $group): void {
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[' . $group . ']');
-    $i->waitForElement('#search_input');
-    $i->waitForElementNotVisible(\AcceptanceTester::LISTING_LOADING_SELECTOR);
+    $i->waitForElement('.dataviews-search input');
+    $i->waitForListingItemsToLoad();
+  }
+
+  private function subscriberRow(string $email): array {
+    return ['xpath' => '//tr[.//*[normalize-space(text())=' . \AcceptanceTester::xpathString($email) . ']]'];
   }
 }

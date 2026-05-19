@@ -372,7 +372,36 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function waitForListingItemsToLoad() {
     $i = $this;
+    $i->waitForElement([
+      'xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")] | '
+        . '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-listing ")]',
+    ]);
     $i->waitForElementNotVisible('.mailpoet-listing-loading');
+    // `waitForElementNotVisible` succeeds vacuously when the element has not
+    // appeared yet — so on a fresh DataViews-backed page, callers could probe
+    // text before the first fetch committed. When a DataViews container is
+    // present, wait for a non-busy table or the empty-state message, then for
+    // the row snapshot to be stable across two polling ticks.
+    $hasDataViews = $i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;');
+    if ($hasDataViews) {
+      $i->executeJS('window.__mailpoetDataViewsStableSnapshot = null;');
+      $i->waitForJS(<<<'JS'
+        const root = document.querySelector('.mailpoet-dataviews');
+        if (!root) return true;
+        if (root.querySelector('.dataviews-loading, table[aria-busy="true"]')) return false;
+        return root.querySelector('table[aria-busy="false"], .dataviews-no-results') !== null;
+      JS);
+      $i->waitForJS(<<<'JS'
+        const root = document.querySelector('.mailpoet-dataviews');
+        if (!root) return true;
+        const rows = Array.from(root.querySelectorAll('tbody tr')).map((row) => row.textContent.trim());
+        const noResults = root.querySelector('.dataviews-no-results')?.textContent.trim() || '';
+        const snapshot = JSON.stringify({ rows, noResults });
+        if (window.__mailpoetDataViewsStableSnapshot === snapshot) return true;
+        window.__mailpoetDataViewsStableSnapshot = snapshot;
+        return false;
+      JS);
+    }
   }
 
   public function waitForEmailSendingOrSent() {
@@ -417,12 +446,45 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function searchFor($query, $element = '#search_input') {
     $i = $this;
+    $isDataViews = false;
+    if ($element === '#search_input') {
+      // Detect the listing's search input — legacy listings use `#search_input`,
+      // DataViews-backed ones use `.dataviews-search input`. Probe in a short
+      // loop because the page may still be rendering; otherwise an unconditional
+      // `waitForElement('#search_input')` below would time out on the new DOM.
+      $i->waitForElement(['xpath' => '//*[@id="search_input"] | //*[contains(@class, "dataviews-search")]//input']);
+      $detected = $i->executeJS(
+        'if (document.querySelector("#search_input")) return "legacy";'
+        . ' if (document.querySelector(".dataviews-search input")) return "dataviews";'
+        . ' return "";'
+      );
+      if ($detected === 'dataviews') {
+        $element = '.dataviews-search input';
+        $isDataViews = true;
+      }
+    }
     $i->waitForElement($element);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
-    $i->clearField($element);
-    $i->fillField($element, $query);
-    $i->pressKey($element, WebDriverKeys::ENTER);
-    $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
+    if ($isDataViews) {
+      // SearchControl is a React-controlled input — `clearField`/`fillField`
+      // mutate `.value` without going through React's tracker, so a second
+      // searchFor() can leave React's state holding the previous query and
+      // append the new one. Drive the value through React's native setter and
+      // fire the input event the controlled component listens to.
+      $i->executeJS(
+        'var input = document.querySelector(' . json_encode($element) . ');'
+        . 'if (input) {'
+        . '  var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;'
+        . '  setter.call(input, ' . json_encode((string)$query) . ');'
+        . '  input.dispatchEvent(new Event("input", { bubbles: true }));'
+        . '}'
+      );
+    } else {
+      $i->clearField($element);
+      $i->fillField($element, $query);
+      $i->pressKey($element, WebDriverKeys::ENTER);
+    }
+    $i->waitForListingItemsToLoad();
   }
 
   public function createListWithSubscriber() {
@@ -472,6 +534,10 @@ class AcceptanceTester extends \Codeception\Actor {
           || strpos($message, 'element not interactable') !== false
           || strpos($message, 'stale element reference') !== false;
         if ($retries > 0 && $isTransient) {
+          if (strpos($message, 'data-backdrop') !== false) {
+            $this->pressKey('body', WebDriverKeys::ESCAPE);
+            $this->waitForJS('return document.querySelector("[data-backdrop][data-open=\"true\"]") === null;', 2);
+          }
           $this->wait(0.2);
           continue;
         }
@@ -972,15 +1038,19 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->searchFor($email);
     $i->waitForListingItemsToLoad();
     $i->waitForText($email);
-    $i->see(ucfirst($status), 'td[data-colname="Status"]');
+    // Legacy MailPoet `Listing` rendered cells with `data-colname="Status"`/
+    // `data-colname="Lists"`; DataViews doesn't carry that attribute, so scope
+    // to the table row containing the email instead — works for either DOM.
+    $rowXpath = '//tr[.//*[normalize-space(text())=' . self::xpathString($email) . ']]';
+    $i->see(ucfirst($status), $rowXpath);
     if (is_array($listsSubscribed)) {
       foreach ($listsSubscribed as $list) {
-        $i->see($list, 'td[data-colname="Lists"]');
+        $i->see($list, $rowXpath);
       }
     }
     if (is_array($listsNotSubscribed)) {
       foreach ($listsNotSubscribed as $list) {
-        $i->dontSee($list, 'td[data-colname="Lists"]');
+        $i->dontSee($list, $rowXpath);
       }
     }
   }
@@ -1088,6 +1158,8 @@ class AcceptanceTester extends \Codeception\Actor {
       try {
         $i->waitForElementClickable($dataViewsSelector, 3);
         $i->click($dataViewsSelector);
+        $i->waitForElement($dataViewsSelector . '.is-active');
+        $i->waitForListingItemsToLoad();
         return;
       } catch (Exception $dataViewsException) {
         $lastException = $dataViewsException;
@@ -1099,11 +1171,63 @@ class AcceptanceTester extends \Codeception\Actor {
     throw $lastException;
   }
 
+  /**
+   * Install a `@wordpress/api-fetch` middleware that lets the test mock or
+   * inspect REST calls made by the listing pages. Pass JS that defines a
+   * `window.mailpoetTestApiFetchInterceptor = function (options, next) {…}`
+   * (idempotent — registering the middleware multiple times is safe).
+   *
+   * The interceptor receives the raw `options` object (with `path`, `method`,
+   * `data`) and a `next` callback that performs the real request. Return a
+   * promise to short-circuit, or just call `next(options)` for pass-through.
+   */
+  public function installApiFetchInterceptor(): void {
+    $this->executeJS(<<<'JS'
+      (function () {
+        var lib = window.MailPoetLib && window.MailPoetLib.WordPressAPIFetch;
+        if (!lib || !lib.default) return;
+        if (lib.__mailpoetTestMiddlewareInstalled) return;
+        lib.__mailpoetTestMiddlewareInstalled = true;
+        lib.default.use(function (options, next) {
+          var interceptor = window.mailpoetTestApiFetchInterceptor;
+          if (typeof interceptor === 'function') {
+            return interceptor(options, next);
+          }
+          return next(options);
+        });
+      })();
+    JS);
+  }
+
+  public function clearApiFetchInterceptor(): void {
+    $this->executeJS('window.mailpoetTestApiFetchInterceptor = null;');
+  }
+
   public function checkWooTableCheckboxForItemName(string $itemName): void {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//input[@type="checkbox"]'];
+    $xpath = ['xpath' => '//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]//input[@type="checkbox"]'];
     $i->scrollListingRowIntoViewByItemName($itemName);
     $i->click($xpath);
+  }
+
+  /**
+   * Escape an arbitrary PHP string into an XPath 1.0 string literal so it can be
+   * interpolated into a locator without breaking on embedded quotes. XPath 1.0
+   * has no escape syntax, so strings containing both `'` and `"` must be split
+   * and reassembled with `concat()`.
+   */
+  public static function xpathString(string $value): string {
+    if (strpos($value, '"') === false) {
+      return '"' . $value . '"';
+    }
+    if (strpos($value, "'") === false) {
+      return "'" . $value . "'";
+    }
+    $parts = explode('"', $value);
+    $quoted = array_map(static function (string $part): string {
+      return '"' . $part . '"';
+    }, $parts);
+    return 'concat(' . implode(', \'"\', ', $quoted) . ')';
   }
 
   private function scrollListingRowIntoViewByItemName(string $itemName): void {
