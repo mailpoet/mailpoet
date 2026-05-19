@@ -325,7 +325,7 @@ function FormListComponent(): JSX.Element {
       >
         {() => (
           <div
-            className="mailpoet-forms-dataviews"
+            className="mailpoet-dataviews mailpoet-forms-dataviews"
             data-automation-id="forms_listing"
           >
             <DataViews<FormListingItem>
