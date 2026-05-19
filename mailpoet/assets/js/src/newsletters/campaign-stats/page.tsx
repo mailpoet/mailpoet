@@ -13,10 +13,52 @@ import { NewsletterType } from './newsletter-type';
 import { NewsletterStatsInfo } from './newsletter-stats-info';
 import { PremiumBanner } from './premium-banner';
 
+type StatsTabKey =
+  | 'clicked'
+  | 'products'
+  | 'engagement'
+  | 'bounces'
+  | 'unsubscribe-reasons';
+
 type State = {
   item?: NewsletterType;
   loading: boolean;
 };
+
+const statsTabKeys: StatsTabKey[] = [
+  'clicked',
+  'products',
+  'engagement',
+  'bounces',
+  'unsubscribe-reasons',
+];
+
+const legacyListingParamKeys = [
+  'group',
+  'filter',
+  'search',
+  'page',
+  'sort_by',
+  'sort_order',
+];
+
+function getActiveStatsTab(path?: string): StatsTabKey {
+  const firstPart = (path || '').split('/').filter(Boolean)[0];
+  if (statsTabKeys.includes(firstPart as StatsTabKey)) {
+    return firstPart as StatsTabKey;
+  }
+  if (legacyListingParamKeys.some((key) => firstPart?.startsWith(`${key}[`))) {
+    return 'engagement';
+  }
+  return 'clicked';
+}
+
+function getStatsTabUrl(newsletterId: string, tabKey: string): string {
+  if (tabKey === 'clicked') {
+    return `/stats/${newsletterId}`;
+  }
+  return `/stats/${newsletterId}/${tabKey}`;
+}
 
 export function CampaignStatsPage() {
   const [state, setState] = useState<State>({
@@ -75,11 +117,16 @@ export function CampaignStatsPage() {
 
   const { item, loading } = state;
   const newsletter = item;
+  let activeTab = getActiveStatsTab(params['*']);
 
   if (loading) return null;
 
   if (!newsletter) {
     return <h3> {__('This email does not exist.', 'mailpoet')} </h3>;
+  }
+
+  if (activeTab === 'products' && !MailPoet.isWoocommerceActive) {
+    activeTab = 'clicked';
   }
 
   return (
@@ -99,7 +146,12 @@ export function CampaignStatsPage() {
           />
         </ErrorBoundary>
 
-        <Tabs activeKey="clicked">
+        <Tabs
+          activeKey={activeTab}
+          onSwitch={(tabKey) => {
+            navigate(getStatsTabUrl(newsletter.id, tabKey));
+          }}
+        >
           <Tab key="clicked" title={__('Clicked Links', 'mailpoet')}>
             {Hooks.applyFilters(
               'mailpoet_newsletters_clicked_links_table',
