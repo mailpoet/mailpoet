@@ -20,7 +20,9 @@ class AutomationVersionsGetEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $automationId = (int)$request->getParam('id');
+    /** @var int $automationId */
+    $automationId = $request->getParam('id');
+    $automationId = intval($automationId);
     $automation = $this->automationStorage->getAutomation($automationId);
     if (!$automation) {
       throw Exceptions::automationNotFound($automationId);
