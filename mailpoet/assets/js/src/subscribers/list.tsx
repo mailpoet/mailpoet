@@ -1103,6 +1103,16 @@ function SubscriberList() {
         callback: (targets) => openPendingAction('removeTag', targets),
       },
       {
+        id: 'bulkTrash',
+        label: __('Move to trash', 'mailpoet'),
+        context: 'list',
+        supportsBulk: true,
+        isEligible: () => group !== 'trash',
+        callback: (targets) => {
+          void handleBulkAction('trash', targets);
+        },
+      },
+      {
         id: 'bulkRestore',
         label: __('Restore', 'mailpoet'),
         context: 'list',
