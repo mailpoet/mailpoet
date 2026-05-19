@@ -758,6 +758,11 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Logs REST API
     $container->autowire(\MailPoet\Logging\RestApi\Api::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\RestApi\Endpoints\LogsListingEndpoint::class)->setPublic(true);
+    // Subscribers REST API
+    $container->autowire(\MailPoet\Subscribers\RestApi\Api::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\RestApi\Endpoints\SubscribersListingEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\RestApi\Endpoints\SubscribersBulkActionEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\RestApi\Endpoints\SubscriberConfirmationEmailEndpoint::class)->setPublic(true);
     // CAPTCHA
     $container->autowire(\MailPoet\Captcha\ReCaptchaHooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\ReCaptchaValidator::class)->setPublic(true);

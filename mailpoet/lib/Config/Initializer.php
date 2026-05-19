@@ -29,6 +29,7 @@ use MailPoet\Router;
 use MailPoet\Segments\RestApi\Api as SegmentsRestApi;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
+use MailPoet\Subscribers\RestApi\Api as SubscribersRestApi;
 use MailPoet\Tags\RestApi\Api as TagsRestApi;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\LegacyDatabase;
@@ -133,6 +134,9 @@ class Initializer {
   /** @var LogsRestApi */
   private $logsRestApi;
 
+  /** @var SubscribersRestApi */
+  private $subscribersRestApi;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -199,6 +203,7 @@ class Initializer {
     FormsRestApi $formsRestApi,
     SegmentsRestApi $segmentsRestApi,
     LogsRestApi $logsRestApi,
+    SubscribersRestApi $subscribersRestApi,
     PublicEmailRoute $publicEmailRoute
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -237,6 +242,7 @@ class Initializer {
     $this->formsRestApi = $formsRestApi;
     $this->segmentsRestApi = $segmentsRestApi;
     $this->logsRestApi = $logsRestApi;
+    $this->subscribersRestApi = $subscribersRestApi;
     $this->publicEmailRoute = $publicEmailRoute;
 
     $emailEditorContainer = Email_Editor_Container::container();
@@ -410,6 +416,7 @@ class Initializer {
       $this->formsRestApi->initialize();
       $this->segmentsRestApi->initialize();
       $this->logsRestApi->initialize();
+      $this->subscribersRestApi->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {

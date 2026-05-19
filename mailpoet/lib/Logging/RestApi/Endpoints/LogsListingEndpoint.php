@@ -10,6 +10,7 @@ use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Listing\Handler as ListingHandler;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Logging\LogListingRepository;
 use MailPoet\Validator\Builder;
@@ -51,7 +52,7 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     return $this->logListingRepository;
   }
 
-  protected function buildItems(array $rows): array {
+  protected function buildItems(array $rows, ListingDefinition $definition): array {
     $items = [];
     foreach ($rows as $row) {
       if (!$row instanceof LogEntity) {
