@@ -84,7 +84,7 @@ class AutomatedLatestContent extends APIEndpoint {
       ]);
       $parentMap = [];
       foreach ($parents as $parent) {
-        $parentMap[$parent->term_id] = $parent->name;
+        $parentMap[$parent->term_id] = $parent->name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       }
       foreach ($terms as $term) {
         if ($term->parent && isset($parentMap[$term->parent])) {
