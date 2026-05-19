@@ -46,11 +46,13 @@ export function buildLogsRequestParams(
 
 export async function getLogs(
   params: ListingQueryParams,
+  signal?: AbortSignal,
 ): Promise<ListingResponse<LogListingItem>> {
   ensureInitialized();
   const response = await apiFetch<ListingEnvelope<LogListingItem>>({
     path: addQueryArgs('/mailpoet/v1/logs', params as Record<string, unknown>),
     method: 'GET',
+    signal,
   });
   return response.data;
 }

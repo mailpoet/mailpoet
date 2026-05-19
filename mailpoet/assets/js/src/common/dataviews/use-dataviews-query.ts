@@ -11,6 +11,7 @@ import type { ListingMeta, ListingQueryParams, ListingResponse } from './types';
 
 export type LoadListing<T> = (
   params: ListingQueryParams,
+  signal?: AbortSignal,
 ) => Promise<ListingResponse<T>>;
 
 type UseDataViewsQueryOptions<T> = {
@@ -71,6 +72,7 @@ export function useDataViewsQuery<T>({
   const clearError = useCallback(() => setError(null), []);
 
   useEffect(() => {
+    const controller = new AbortController();
     const requestId = latestRequestIdRef.current + 1;
     latestRequestIdRef.current = requestId;
     setIsLoading(true);
@@ -85,7 +87,7 @@ export function useDataViewsQuery<T>({
       ...(extraParamsRef.current ? extraParamsRef.current(view) : {}),
     };
 
-    load(params)
+    load(params, controller.signal)
       .then((result) => {
         if (requestId !== latestRequestIdRef.current) {
           return;
@@ -107,6 +109,9 @@ export function useDataViewsQuery<T>({
         if (requestId !== latestRequestIdRef.current) {
           return;
         }
+        if (controller.signal.aborted) {
+          return;
+        }
         const message =
           err && typeof err === 'object' && 'message' in err
             ? String((err as { message?: unknown }).message ?? '')
@@ -121,6 +126,7 @@ export function useDataViewsQuery<T>({
           setIsLoading(false);
         }
       });
+    return () => controller.abort();
     // `extraParams` is read via a ref above so the effect doesn't depend on
     // its identity (callers don't need to memoize it). The effect re-runs
     // whenever the DataViews view changes (sort, search, page, perPage,

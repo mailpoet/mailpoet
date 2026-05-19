@@ -93,6 +93,31 @@ class LogsEndpointsTest extends Test {
     $this->assertNotContains((int)$nonMatch->getId(), $ids);
   }
 
+  public function testGetIgnoresWhitespaceOnlySearch(): void {
+    $suffix = uniqid();
+    $old = (new LogFactory())
+      ->withName("whitespace-old-{$suffix}")
+      ->withCreatedAt(new Carbon('2025-01-01 00:00:00'))
+      ->create();
+    $new = (new LogFactory())
+      ->withName("whitespace-new-{$suffix}")
+      ->withCreatedAt(new Carbon('2025-01-02 00:00:00'))
+      ->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => '   ',
+      'filter' => [
+        'from' => '2025-01-01',
+        'to' => '2025-01-02',
+      ],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    $this->assertContains((int)$new->getId(), $ids);
+    $this->assertContains((int)$old->getId(), $ids);
+  }
+
   public function testGetAppliesInclusiveDateFiltersAndNewestFirstOrdering(): void {
     $suffix = uniqid();
     $before = (new LogFactory())

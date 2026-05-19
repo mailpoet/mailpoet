@@ -180,6 +180,7 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
 
     $from = $this->validateDateFilter($normalizedFilters, 'from');
     $to = $this->validateDateFilter($normalizedFilters, 'to');
+    // Keep in sync with getDateRangeError() in logs/url-state.ts.
     if ($from && $to && $from > $to) {
       throw new ApiException(
         __('The from date must be before or equal to the to date.', 'mailpoet'),

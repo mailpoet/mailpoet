@@ -48,6 +48,8 @@
     width: 100%;
   }
 
+  // DataViews table column sizing is exposed through generated column classes;
+  // keep these selectors aligned with getLogFields() when columns change.
   .dataviews-view-table col.dataviews-view-table__col-first-data {
     width: 240px !important;
   }
