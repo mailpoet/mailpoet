@@ -26,7 +26,7 @@ export type ListingGroup = {
 export type ListingResponse<T> = {
   items: T[];
   meta: ListingMeta;
-  filters?: Array<Record<string, unknown>>;
+  filters?: Record<string, unknown> | Array<Record<string, unknown>>;
   groups?: ListingGroup[];
 };
 

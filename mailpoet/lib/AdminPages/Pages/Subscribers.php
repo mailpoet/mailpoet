@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\CustomFields\CustomFieldsRepository;
@@ -15,6 +16,9 @@ use MailPoet\Subscribers\BulkConfirmationEmailResender;
 class Subscribers {
   /** @var PageRenderer */
   private $pageRenderer;
+
+  /** @var AssetsController */
+  private $assetsController;
 
   /** @var PageLimit */
   private $listingPageLimit;
@@ -36,6 +40,7 @@ class Subscribers {
 
   public function __construct(
     PageRenderer $pageRenderer,
+    AssetsController $assetsController,
     PageLimit $listingPageLimit,
     Block\Date $dateBlock,
     SegmentsSimpleListRepository $segmentsListRepository,
@@ -44,6 +49,7 @@ class Subscribers {
     SettingsController $settings
   ) {
     $this->pageRenderer = $pageRenderer;
+    $this->assetsController = $assetsController;
     $this->listingPageLimit = $listingPageLimit;
     $this->dateBlock = $dateBlock;
     $this->segmentsListRepository = $segmentsListRepository;
@@ -78,6 +84,7 @@ class Subscribers {
       'signup_confirmation.enabled'
     );
     $data['bulk_confirmation_resend_limit'] = BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT;
+    $this->assetsController->setupDataViewsDependencies();
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
 }

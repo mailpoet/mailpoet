@@ -48,6 +48,131 @@
   }
 }
 
+.mailpoet-campaign-stats-dataviews {
+  .dataviews-wrapper {
+    background: $color-white;
+  }
+
+  .dataviews-view-table__cell-content-wrapper:not(.dataviews-column-primary__media),
+  .dataviews-view-table__primary-column-content:not(.dataviews-column-primary__media) {
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+.mailpoet-campaign-stats-dataviews__subscriber {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mailpoet-campaign-stats-dataviews__subscriber-email {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.mailpoet-campaign-stats-dataviews__subscriber-name {
+  color: $color-text-light;
+  display: block;
+  line-height: 1.4;
+}
+
+.mailpoet-campaign-stats-dataviews__product,
+.mailpoet-campaign-stats-dataviews__product-link {
+  align-items: center;
+  color: $color-text;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mailpoet-campaign-stats-dataviews__product-link {
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: $color-text;
+    text-decoration: none;
+
+    .mailpoet-campaign-stats-dataviews__product-name {
+      text-decoration: underline;
+    }
+  }
+}
+
+.mailpoet-campaign-stats-dataviews__product-image {
+  background-color: $color-tertiary-light;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: $form-control-border-radius;
+  flex: 0 0 40px;
+  height: 40px;
+  width: 40px;
+}
+
+.mailpoet-campaign-stats-dataviews__product-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailpoet-campaign-stats-dataviews__groups,
+.mailpoet-campaign-stats-dataviews__toolbar {
+  align-items: center;
+  background: $color-white;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: $grid-gap-half $grid-gap;
+}
+
+.mailpoet-campaign-stats-dataviews__groups {
+  border-bottom: 1px solid $color-tertiary-light;
+
+  button {
+    align-items: center;
+    background: $color-white;
+    border: 1px solid $color-tertiary-light;
+    border-radius: $form-control-border-radius;
+    color: $color-text-light;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 400;
+    line-height: 1.25;
+    min-height: 32px;
+    padding: 6px 10px;
+
+    &:hover {
+      border-color: $color-tertiary;
+      color: $color-text;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-text;
+      outline-offset: 1px;
+    }
+
+    &.is-active {
+      background: $color-white;
+      border-color: $color-tertiary-light;
+      box-shadow: none;
+      color: $color-text;
+      font-weight: 700;
+    }
+  }
+}
+
 .mailpoet-stats-info,
 .mailpoet-stats-general {
   background-color: $color-white;
@@ -177,79 +302,4 @@
 
 .mailpoet-stats-premium-required .mailpoet-premium-required {
   margin: 70px auto;
-}
-
-.mailpoet-stats-products {
-  display: grid;
-  grid-gap: $grid-gap;
-  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
-
-  @include respond-to(small-screen) {
-    grid-template-columns: 1fr;
-    padding-top: $grid-gap;
-  }
-}
-
-.mailpoet-stats-product {
-  background: #fff;
-  border: 1px solid $color-tertiary-light;
-  border-radius: $form-control-border-radius;
-  color: $color-text;
-  display: grid;
-  grid-gap: $grid-gap;
-  grid-template-columns: 176px 1fr;
-  height: 136px;
-
-  @include respond-to(small-screen) {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-}
-
-a.mailpoet-stats-product {
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover,
-  &:focus {
-    box-shadow: 0 2px 4px 0 rgba($color-tertiary-light, 0.4),
-      0 10px 30px 0 $color-tertiary-light;
-    color: $color-text;
-    text-decoration: none;
-
-    .mailpoet-h5 {
-      color: $color-secondary;
-    }
-  }
-}
-
-.mailpoet-stats-product-image {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-
-  @include respond-to(small-screen) {
-    height: 136px;
-  }
-}
-
-.mailpoet-stats-product-info {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  .mailpoet-h5 {
-    font-weight: bold;
-    margin: 0 0 $grid-gap;
-  }
-
-  p {
-    font-size: $font-size-small;
-    margin: 0;
-  }
-
-  @include respond-to(small-screen) {
-    padding: 0 $grid-gap $grid-gap;
-  }
 }
