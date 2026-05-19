@@ -851,7 +851,7 @@ function SubscriberList() {
           'The bulk action could not be completed. Please try again.',
           'mailpoet',
         );
-      MailPoet.Notice.error(message, { scroll: true });
+      notices.error(<p>{message}</p>, { scroll: true });
     },
     [notices],
   );
