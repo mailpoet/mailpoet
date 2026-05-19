@@ -8,6 +8,7 @@ import {
   __experimentalVStack as VStack,
 } from '@wordpress/components';
 import { createInterpolateElement } from '@wordpress/element';
+import { escapeHTML } from '@wordpress/escape-html';
 import { DataViews, View, Action } from '@wordpress/dataviews';
 import {
   useCallback,
@@ -273,8 +274,11 @@ function actionSuccessMessage(
   result: SubscriberBulkActionResult,
 ): void {
   const count = Number(result.count ?? 0);
-  const segmentName = result.segment?.name ?? '';
-  const tagName = result.tag?.name ?? '';
+  // Segment / tag names are user-controlled and end up rendered as HTML by
+  // `MailPoet.Notice.success` (jQuery `.html()`), so escape before splicing
+  // into the `<strong>%s</strong>` templates below.
+  const segmentName = escapeHTML(result.segment?.name ?? '');
+  const tagName = escapeHTML(result.tag?.name ?? '');
   if (action === 'trash') {
     MailPoet.Notice.success(
       count === 1
