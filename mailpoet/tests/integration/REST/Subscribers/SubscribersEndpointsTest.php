@@ -13,7 +13,7 @@ require_once __DIR__ . '/../Test.php';
 /**
  * Covers the contract surface of the subscribers REST endpoints. Per-action
  * behaviour for the bulk dispatcher lives in
- * {@see \MailPoet\Test\Subscribers\BulkActionControllerTest}; this file only
+ * {@see \MailPoet\Subscribers\BulkActionControllerTest}; this file only
  * asserts that the HTTP layer wires those services and returns the expected
  * envelope shape.
  */

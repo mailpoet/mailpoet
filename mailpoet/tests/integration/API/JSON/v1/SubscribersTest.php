@@ -703,15 +703,15 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotRunAnInvalidBulkAction() {
-    try {
-      $this->endpoint->bulkAction([
-        'action' => 'invalidAction',
-        'listing' => [],
-      ]);
-    } catch (UnexpectedValueException $exception) {
-      verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
-      verify($exception->getErrors()[Error::BAD_REQUEST])->stringContainsString('Invalid bulk action');
-    }
+    $response = $this->endpoint->bulkAction([
+      'action' => 'invalidAction',
+      'listing' => [],
+    ]);
+
+    $this->assertInstanceOf(ErrorResponse::class, $response);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals('mailpoet_subscribers_invalid_bulk_action');
+    verify($response->errors[0]['message'])->stringContainsString('Invalid bulk action');
   }
 
   public function testItQueuesBulkConfirmationEmailResendsWithEligibilityCounts() {
