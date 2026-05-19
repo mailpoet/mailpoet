@@ -123,7 +123,7 @@ class AutomationStatisticsStorage {
           SELECT steps
           FROM %i
           WHERE automation_id = %d
-          AND version_id = %d
+          AND id = %d
         ',
         [$versionsTable, $automationId, $versionId]
       );

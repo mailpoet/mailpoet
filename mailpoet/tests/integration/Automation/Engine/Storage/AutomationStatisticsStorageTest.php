@@ -4,9 +4,17 @@ namespace MailPoet\Test\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\NextStep;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 
 class AutomationStatisticsStorageTest extends \MailPoetTest {
 
@@ -213,6 +221,32 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
     ], $array['emails']);
   }
 
+  public function testItCalculatesEmailStatisticsForSpecificVersion(): void {
+    $newsletter = $this->createEmail();
+    $trigger = new Step(
+      'trigger',
+      Step::TYPE_TRIGGER,
+      'mailpoet:someone-subscribes',
+      [],
+      [
+        new NextStep('email'),
+      ]
+    );
+    $email = new Step(
+      'email',
+      Step::TYPE_ACTION,
+      SendEmailAction::KEY,
+      ['email_id' => $newsletter->getId()],
+      []
+    );
+    $automation = $this->tester->createAutomation('with-email', $trigger, $email);
+    $this->createCompletedQueue($newsletter, 3);
+
+    $statistics = $this->testee->getAutomationStats($automation->getId(), $automation->getVersionId());
+
+    $this->assertEquals(3, $statistics->getEmailsSent());
+  }
+
   private function createRun(Automation $automation, string $status) {
     $run = AutomationRun::fromArray([
       'automation_id' => $automation->getId(),
@@ -225,5 +259,22 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
       'updated_at' => (new \DateTimeImmutable())->format(\DateTimeImmutable::W3C),
     ]);
     $this->automationRunStorage->createAutomationRun($run);
+  }
+
+  private function createEmail(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setSubject('subject');
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function createCompletedQueue(NewsletterEntity $newsletter, int $countProcessed): void {
+    $task = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+    $queue->setCountProcessed($countProcessed);
+    $this->entityManager->flush();
   }
 }
