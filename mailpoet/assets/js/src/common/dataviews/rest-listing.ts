@@ -81,12 +81,14 @@ export function createRestListingLoader<T>(
   path: string,
 ): (
   params: ListingQueryParams & Record<string, unknown>,
+  signal?: AbortSignal,
 ) => Promise<ListingResponse<T>> {
-  return async (params) => {
+  return async (params, signal) => {
     try {
       const response = await apiFetch<ListingEnvelope<T>>({
         path: addQueryArgs(path, params as Record<string, unknown>),
         method: 'GET',
+        signal,
       });
       return response.data;
     } catch (error) {

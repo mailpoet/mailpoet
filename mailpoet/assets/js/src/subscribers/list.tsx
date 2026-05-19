@@ -42,7 +42,6 @@ import {
   type SubscriberBulkAction,
   type SubscriberBulkActionResult,
   type SubscriberBulkActionScope,
-  type SubscriberListingParams,
 } from './api';
 
 type Group =
@@ -688,12 +687,15 @@ function SubscriberList() {
   }));
 
   const load = useCallback(
-    (params: ListingQueryParams) =>
-      getSubscribers({
-        ...params,
-        group,
-        filter,
-      }),
+    (params: ListingQueryParams, signal?: AbortSignal) =>
+      getSubscribers(
+        {
+          ...params,
+          group,
+          filter,
+        },
+        signal,
+      ),
     [filter, group],
   );
 
@@ -743,22 +745,13 @@ function SubscriberList() {
     return () => window.removeEventListener('hashchange', applyHash);
   }, [clearLoadError, setView]);
 
-  const listingParams = useMemo<SubscriberListingParams>(
-    () => ({
-      group,
-      filter,
-      search: view.search || '',
-      page: view.page ?? 1,
-      per_page: view.perPage ?? listingPerPage,
-      orderby: view.sort?.field,
-      order: view.sort?.direction,
-    }),
-    [filter, group, view],
-  );
   const backUrl = useMemo(
     () => getListingPath(group, view, filter),
     [filter, group, view],
   );
+  const backUrlRef = useRef(backUrl);
+  backUrlRef.current = backUrl;
+  const getBackUrl = useCallback((): string => backUrlRef.current, []);
 
   const groupCounts = useMemo(() => {
     const counts: Record<Group, number | null> = {
@@ -897,15 +890,15 @@ function SubscriberList() {
       await runBulkAction(
         action,
         {
-          group: listingParams.group ?? 'all',
-          filter: listingParams.filter ?? {},
-          search: listingParams.search ?? '',
+          group,
+          filter,
+          search: view.search || '',
           selection: selectedIds,
         },
         extra,
       );
     },
-    [listingParams, runBulkAction],
+    [filter, group, runBulkAction, view.search],
   );
 
   // "Empty Trash" is the only listing-scoped destructive call we make with no
@@ -919,13 +912,13 @@ function SubscriberList() {
       'delete',
       {
         group: 'trash',
-        filter: listingParams.filter ?? {},
-        search: listingParams.search ?? '',
+        filter,
+        search: view.search || '',
         selection: [],
       },
       {},
     );
-  }, [group, listingParams.filter, listingParams.search, runBulkAction]);
+  }, [filter, group, runBulkAction, view.search]);
 
   const handlePendingActionSubmit = useCallback(
     async (extra: Record<string, unknown> = {}): Promise<void> => {
@@ -976,7 +969,7 @@ function SubscriberList() {
           const subscriber = targets[0];
           if (subscriber) {
             navigate(`/stats/${subscriber.id}`, {
-              state: { backUrl },
+              state: { backUrl: getBackUrl() },
             });
           }
         },
@@ -992,7 +985,7 @@ function SubscriberList() {
           const subscriber = targets[0];
           if (subscriber) {
             navigate(`/edit/${subscriber.id}`, {
-              state: { backUrl },
+              state: { backUrl: getBackUrl() },
             });
           }
         },
@@ -1145,7 +1138,7 @@ function SubscriberList() {
       },
     ],
     [
-      backUrl,
+      getBackUrl,
       group,
       handleBulkAction,
       handleSendConfirmationEmail,
@@ -1194,7 +1187,7 @@ function SubscriberList() {
     [group, groupCounts, groups],
   );
 
-  const fields = useMemo(() => getSubscriberFields(backUrl), [backUrl]);
+  const fields = useMemo(() => getSubscriberFields(getBackUrl), [getBackUrl]);
 
   const paginationInfo = useMemo(
     () => ({ totalItems: meta.count, totalPages: meta.pages }),

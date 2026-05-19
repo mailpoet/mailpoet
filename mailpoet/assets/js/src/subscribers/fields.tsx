@@ -58,7 +58,9 @@ function dateTime(value: string | null): JSX.Element | null {
   );
 }
 
-export function getSubscriberFields(backUrl: string): Field<Subscriber>[] {
+export function getSubscriberFields(
+  getBackUrl: () => string,
+): Field<Subscriber>[] {
   return [
     {
       id: 'email',
@@ -72,7 +74,7 @@ export function getSubscriberFields(backUrl: string): Field<Subscriber>[] {
             className="mailpoet-listing-title"
             data-automation-id={`listing_item_${item.id}`}
             to={`/edit/${item.id}`}
-            state={{ backUrl }}
+            state={{ backUrl: getBackUrl() }}
           >
             {item.email}
           </Link>
@@ -121,7 +123,10 @@ export function getSubscriberFields(backUrl: string): Field<Subscriber>[] {
             enableGlobalSearch: false,
             render: ({ item }) => (
               <div className="mailpoet-listing-stats">
-                <Link to={`/stats/${String(item.id)}`} state={{ backUrl }}>
+                <Link
+                  to={`/stats/${String(item.id)}`}
+                  state={{ backUrl: getBackUrl() }}
+                >
                   <ListingsEngagementScore
                     id={Number(item.id)}
                     engagementScore={item.engagement_score}
