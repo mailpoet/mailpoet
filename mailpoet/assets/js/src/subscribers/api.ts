@@ -103,8 +103,9 @@ const loadSubscribers = createRestListingLoader<Subscriber>(LISTING_PATH);
 
 export function getSubscribers(
   params: SubscriberListingParams,
+  signal?: AbortSignal,
 ): Promise<ListingResponse<Subscriber>> {
-  return loadSubscribers(params);
+  return loadSubscribers(params, signal);
 }
 
 export function bulkAction(
