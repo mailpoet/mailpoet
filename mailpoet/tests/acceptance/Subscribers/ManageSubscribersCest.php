@@ -393,7 +393,7 @@ class ManageSubscribersCest {
       . '  select.dispatchEvent(new Event("change", { bubbles: true }));'
       . '}'
     );
-    $applyButton = ['xpath' => '//div[contains(@class, "mailpoet-modal-content")]//button[not(contains(@class, "mailpoet-button-disabled"))]'];
+    $applyButton = ['xpath' => '//div[contains(@class, "mailpoet-modal-content")]//button[normalize-space(.)="Apply" and not(contains(@class, "mailpoet-button-disabled"))]'];
     $i->waitForElementClickable($applyButton);
     $i->click($applyButton);
   }
