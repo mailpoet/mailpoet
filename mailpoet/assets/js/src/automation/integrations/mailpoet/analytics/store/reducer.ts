@@ -25,6 +25,16 @@ export function reducer(state: State, action): State {
         ...state,
         query: action.payload,
       };
+    case 'SET_VERSIONS':
+      return {
+        ...state,
+        versions: action.payload,
+      };
+    case 'SET_SELECTED_VERSION_ID':
+      return {
+        ...state,
+        selectedVersionId: action.payload,
+      };
     case 'SET_SECTION_DATA':
       return {
         ...state,

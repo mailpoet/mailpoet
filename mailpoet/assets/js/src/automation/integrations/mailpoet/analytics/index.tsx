@@ -71,8 +71,9 @@ function App(): JSX.Element {
   );
 }
 
-function boot() {
+async function boot() {
   initializeApi();
+  await dispatch(storeName).loadVersions();
   select(storeName)
     .getSections()
     .forEach((section: Section) => {
@@ -89,7 +90,7 @@ window.addEventListener('DOMContentLoaded', () => {
   editorStoreCreate();
   initializeIntegrations();
   registerApiErrorHandler();
-  boot();
+  void boot();
   const root = createRoot(container);
   root.render(<App />);
 });
