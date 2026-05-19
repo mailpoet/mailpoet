@@ -337,6 +337,15 @@ function actionSuccessMessage(
         formatCount(count),
       ),
     );
+  } else if (action === 'unsubscribe') {
+    MailPoet.Notice.success(
+      count === 1
+        ? __('1 subscriber was unsubscribed from all lists.', 'mailpoet')
+        : __(
+            '%1$d subscribers were unsubscribed from all lists.',
+            'mailpoet',
+          ).replace('%1$d', formatCount(count)),
+    );
   } else if (action === 'addTag') {
     MailPoet.Notice.success(
       __('Tag <strong>%1$s</strong> was added to %2$d subscribers.', 'mailpoet')
