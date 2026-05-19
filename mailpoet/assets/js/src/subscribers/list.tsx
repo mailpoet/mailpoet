@@ -1266,7 +1266,7 @@ function SubscriberList() {
       )}
 
       <div className="mailpoet-categories mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs">
-        <div className="components-tab-panel__tabs">
+        <div className="components-tab-panel__tabs" role="tablist">
           {groupsToRender.map((entry) => {
             const tabClasses = classnames(
               'components-button',
