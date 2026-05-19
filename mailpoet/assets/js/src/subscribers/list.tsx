@@ -100,6 +100,14 @@ function parseFilter(value: string): Record<string, string> {
   );
 }
 
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function parseHash(): Partial<{
   group: Group;
   page: number;
@@ -144,7 +152,7 @@ function parseHash(): Partial<{
         return { ...params, order: value };
       }
       if (key === 'search') {
-        return { ...params, search: decodeURIComponent(value) };
+        return { ...params, search: safeDecode(value) };
       }
       if (key === 'filter') {
         return { ...params, filter: parseFilter(value) };
