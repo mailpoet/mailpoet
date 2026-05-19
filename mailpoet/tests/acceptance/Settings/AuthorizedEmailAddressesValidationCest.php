@@ -81,7 +81,12 @@ class AuthorizedEmailAddressesValidationCest {
     $i->waitForElement('[name="sender_address"]');
     $i->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
     $i->click('Activate');
-    $i->waitForListingItemsToLoad();
+    // Activating a welcome email redirects to the Automation listing
+    // (see newsletters/send.tsx::redirectToListing). Wait for that navigation
+    // to land before asserting the unauthorized-email notice cleared, instead
+    // of waiting on the listing container itself — the automation bundle
+    // sometimes mounts later than 10s on CI.
+    $i->waitForJS('return window.location.search.indexOf("page=mailpoet-automation") !== -1;', 10);
     $i->cantSee('Your automatic emails have been paused because some email addresses haven’t been authorized yet.');
     $i->cantSee('Update the from address of Subject 1');
   }
