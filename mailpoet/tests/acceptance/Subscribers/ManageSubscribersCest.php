@@ -202,10 +202,14 @@ class ManageSubscribersCest {
     $i->see(self::MULTIPLE_SEGMENT_NAME_COOKING);
 
     $i->wantTo('Add a subscriber to a list from the listing page');
-    $i->click("[data-automation-id='listing-row-checkbox-2']");
-    $i->click('[data-automation-id="action-addToList"]');
-    $i->selectOption('#add_to_segment', self::MULTIPLE_SEGMENT_NAME_CAMPING);
-    $i->click('.mailpoet-modal-content > button');
+    $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
+    $i->selectListingBulkAction('Add to list...');
+    // The picker modal wraps a Select2 widget. Selenium's `selectOption` works
+    // by clicking the option, but Select2 hides the underlying <select> and
+    // the click on the hidden option doesn't reliably propagate the change up
+    // through React's onValueChange. Drive value + jQuery change directly so
+    // Select2's bound `on('change')` handler runs and React's `setValue` flushes.
+    $this->setPickerModalSegment($i, 'add_to_segment', self::MULTIPLE_SEGMENT_NAME_CAMPING);
     $i->waitForText('1 subscribers were added to list ' . self::MULTIPLE_SEGMENT_NAME_CAMPING . '.');
     $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
@@ -252,10 +256,9 @@ class ManageSubscribersCest {
     $i->waitForText(self::SUBSCRIBER_UPDATED_NOTICE);
     $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
-    $i->click("[data-automation-id='listing-row-checkbox-2']");
-    $i->click('[data-automation-id="action-removeFromList"]');
-    $i->selectOption('#remove_from_segment', self::SINGLE_SEGMENT_NAME);
-    $i->click('.mailpoet-modal-content > button');
+    $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
+    $i->selectListingBulkAction('Remove from list...');
+    $this->setPickerModalSegment($i, 'remove_from_segment', self::SINGLE_SEGMENT_NAME);
     $i->waitForNoticeAndClose('1 subscribers were removed from list ' . self::SINGLE_SEGMENT_NAME);
     $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
@@ -337,8 +340,18 @@ class ManageSubscribersCest {
     $i->waitForListingItemsToLoad();
     $i->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
 
-    // Check inactive status in subscriber detail
-    $i->click('@example.com');
+    // Check inactive status in subscriber detail. The listing re-renders
+    // between Selenium's element lookup and click (router navigation flush,
+    // DataViews row reorder), which produced a stale-element reference even
+    // after `waitForElementClickable`. Find and click in a single JS step.
+    $i->waitForElement(['css' => '.mailpoet-listing-title']);
+    $i->executeJS(
+      'var link = document.querySelector(".mailpoet-listing-title");'
+      . 'if (link) {'
+      . '  link.scrollIntoView({ block: "center" });'
+      . '  link.click();'
+      . '}'
+    );
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Inactive');
 
@@ -356,5 +369,32 @@ class ManageSubscribersCest {
       $count,
       "//*[@class='mailpoet-listing-title'][contains(text(), '$listName')]/ancestor::tr//*[@data-automation-id and contains(@data-automation-id, '_{$status}_count')]"
     );
+  }
+
+  /**
+   * Picks an option in the Add to list / Remove from list bulk-action modal
+   * by driving the underlying <select> + jQuery change directly. Selenium's
+   * `selectOption` clicks the option element, but Select2 hides that node
+   * (`select2-hidden-accessible`), so the click doesn't fire reliably and
+   * the modal's Apply button stays disabled.
+   */
+  private function setPickerModalSegment(\AcceptanceTester $i, string $selectId, string $segmentName): void {
+    $i->waitForElement(['css' => '#' . $selectId]);
+    $i->executeJS(
+      'var select = document.getElementById(' . json_encode($selectId) . ');'
+      . 'if (!select) return;'
+      . 'var name = ' . json_encode($segmentName) . ';'
+      . 'var option = Array.from(select.options).find(function(o) { return o.textContent.trim() === name; });'
+      . 'if (!option) return;'
+      . 'if (window.jQuery) {'
+      . '  window.jQuery(select).val(option.value).trigger("change");'
+      . '} else {'
+      . '  select.value = option.value;'
+      . '  select.dispatchEvent(new Event("change", { bubbles: true }));'
+      . '}'
+    );
+    $applyButton = ['xpath' => '//div[contains(@class, "mailpoet-modal-content")]//button[not(contains(@class, "mailpoet-button-disabled"))]'];
+    $i->waitForElementClickable($applyButton);
+    $i->click($applyButton);
   }
 }

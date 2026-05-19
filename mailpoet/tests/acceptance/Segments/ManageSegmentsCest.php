@@ -54,10 +54,20 @@ class ManageSegmentsCest {
     $i->click($applyListingSettingsButton);
     $i->reloadPage(); // to avoid flakyness we reload page manually
     $i->wantTo('Reorder subscribers by email and check if correct subscribes are present');
-    $i->waitForElement('.mailpoet-listing-pages-next');
-    $i->click('Subscriber', '[data-automation-id="listing-column-header-email"]');
+    // DataViews wraps sortable column labels in a button that opens a sort
+    // popover (Sort ascending / descending), and exposes pagination via
+    // aria-labelled icon buttons in `.dataviews-pagination`. Pick "Sort
+    // ascending" explicitly, then page forward.
+    $nextPageButton = ['xpath' => '//*[contains(@class, "dataviews-pagination")]//button[@aria-label="Next page"]'];
+    $subscriberHeaderButton = ['xpath' => '//th//button[normalize-space(.)="Subscriber"]'];
+    $sortAscendingItem = ['xpath' => '//*[@role="menuitem" or @role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]'];
+    $i->waitForElementClickable($nextPageButton);
+    $i->click($subscriberHeaderButton);
+    $i->waitForElementClickable($sortAscendingItem);
+    $i->click($sortAscendingItem);
     $i->waitForText($wpEditorEmail, 20);
-    $i->click('.mailpoet-listing-pages-next');
+    $i->waitForElementClickable($nextPageButton);
+    $i->click($nextPageButton);
     $i->waitForText($wpEditorEmail2, 20);
   }
 
