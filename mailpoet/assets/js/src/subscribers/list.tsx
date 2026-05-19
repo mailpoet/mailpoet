@@ -671,6 +671,11 @@ function SubscriberList() {
   const [selection, setSelection] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const triggerElementRef = useRef<HTMLElement | null>(null);
+  // Synchronous guard that blocks re-entrancy while a confirmation-modal action
+  // is in flight. The modal stays mounted until the REST call settles, so a
+  // double-click on Apply / Resend emails / Unsubscribe must not fan out into
+  // two bulk-action requests.
+  const pendingActionInFlightRef = useRef(false);
   const [initialView] = useState<View>(() => ({
     ...DEFAULT_VIEW,
     page: hashState.page ?? DEFAULT_VIEW.page,
@@ -923,12 +928,17 @@ function SubscriberList() {
   }, [group, listingParams.filter, listingParams.search, runBulkAction]);
 
   const handlePendingActionSubmit = useCallback(
-    (extra: Record<string, unknown> = {}): void => {
-      if (!pendingAction) return;
+    async (extra: Record<string, unknown> = {}): Promise<void> => {
+      if (!pendingAction || pendingActionInFlightRef.current) return;
+      pendingActionInFlightRef.current = true;
       const { action, targets } = pendingAction;
-      setPendingAction(null);
-      void handleBulkAction(action, targets, extra);
-      window.setTimeout(restoreTriggerFocus);
+      try {
+        await handleBulkAction(action, targets, extra);
+      } finally {
+        pendingActionInFlightRef.current = false;
+        setPendingAction(null);
+        window.setTimeout(restoreTriggerFocus);
+      }
     },
     [handleBulkAction, pendingAction, restoreTriggerFocus],
   );

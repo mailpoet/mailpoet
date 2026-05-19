@@ -66,6 +66,11 @@ class SubscribersListingCest {
   public function sendConfirmationEmail(\AcceptanceTester $i) {
     $i->wantTo('Send confirmation email');
 
+    // The row-level "Resend confirmation email" action is only eligible when
+    // signup confirmation is enabled; tests are not run in isolation so make
+    // the dependency explicit.
+    (new Settings())->withConfirmationEmailEnabled();
+
     $maxConfirmationsEmail = 'disallowed@example.com';
     $allowedEmail = 'allowed@example.com';
 
