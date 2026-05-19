@@ -5,6 +5,7 @@ namespace MailPoet\Segments\RestApi\Endpoints;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Listing\Handler as ListingHandler;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -39,7 +40,7 @@ class SegmentsListingEndpoint extends AbstractSegmentsListingEndpoint {
     return $this->segmentListingRepository;
   }
 
-  protected function buildItems(array $rows): array {
+  protected function buildItems(array $rows, ListingDefinition $definition): array {
     return $this->segmentsResponseBuilder->buildForListing($rows);
   }
 

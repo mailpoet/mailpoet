@@ -53,7 +53,7 @@ abstract class AbstractListingEndpoint extends Endpoint {
     $pages = $count === 0 ? 0 : (int)ceil($count / max(1, $perPage));
 
     return new Response([
-      'items' => $this->buildItems($rows),
+      'items' => $this->buildItems($rows, $definition),
       'meta' => [
         'count' => $count,
         'pages' => $pages,
@@ -81,9 +81,12 @@ abstract class AbstractListingEndpoint extends Endpoint {
 
   /**
    * @param mixed[] $rows Rows returned by {@see ListingRepository::getData()}.
+   * @param ListingDefinition $definition Parsed request — exposed so subclasses
+   *   can branch on filter/group when shaping items without stashing per-request
+   *   state on the (shared) endpoint instance.
    * @return array<int, array<string, mixed>> Items ready to be serialized.
    */
-  abstract protected function buildItems(array $rows): array;
+  abstract protected function buildItems(array $rows, ListingDefinition $definition): array;
 
   protected function getDefaultSortBy(): string {
     return 'id';

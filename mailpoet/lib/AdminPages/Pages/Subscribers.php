@@ -12,6 +12,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers {
   /** @var PageRenderer */
@@ -38,6 +39,9 @@ class Subscribers {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     PageRenderer $pageRenderer,
     AssetsController $assetsController,
@@ -46,7 +50,8 @@ class Subscribers {
     SegmentsSimpleListRepository $segmentsListRepository,
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
-    SettingsController $settings
+    SettingsController $settings,
+    WPFunctions $wp
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->assetsController = $assetsController;
@@ -56,13 +61,19 @@ class Subscribers {
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
     $this->settings = $settings;
+    $this->wp = $wp;
   }
 
   public function render() {
     $data = [];
+    $this->assetsController->setupDataViewsDependencies();
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
     $data['segments'] = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
+    $data['api'] = [
+      'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+      'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+    ];
 
     $data['custom_fields'] = array_map(function(CustomFieldEntity $customField): array {
       $field = $this->customFieldsResponseBuilder->build($customField);
