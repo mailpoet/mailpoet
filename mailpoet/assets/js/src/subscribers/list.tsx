@@ -119,7 +119,7 @@ function parseHash(): Partial<{
 }> {
   return window.location.hash
     .split('/')
-    .map((part) => part.replace(/\]$/, '').split('['))
+    .map((part) => (part.endsWith(']') ? part.slice(0, -1) : part).split('['))
     .reduce((params, [key, value]) => {
       if (!value) return params;
       if (
