@@ -19,19 +19,51 @@ export type RestApiConfig = {
  * Pass the same config object exposed by the admin page (e.g.
  * `window.mailpoet_subscribers_api` = `{root, nonce}`).
  */
-let configuredRoot: string | null = null;
-let configuredNonce: string | null = null;
+let configuredRoot = '';
+let configuredNonce = '';
+let isConfigured = false;
+
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith('/') ? value : `${value}/`;
+}
+
+function ensureLeadingSlash(value: string): string {
+  return value.startsWith('/') ? value : `/${value}`;
+}
+
+function configureMiddleware(): void {
+  if (isConfigured) return;
+
+  apiFetch.use((options, next) => {
+    const path = typeof options.path === 'string' ? options.path : '';
+    const hasUrl = typeof options.url === 'string' && options.url.length > 0;
+    const normalizedPath = path ? ensureLeadingSlash(path) : path;
+    const root = ensureTrailingSlash(configuredRoot);
+
+    return next({
+      ...options,
+      ...(hasUrl ? {} : { path: `${root}${normalizedPath.slice(1)}` }),
+    });
+  });
+
+  apiFetch.use((options, next) =>
+    next({
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        'X-WP-Nonce': configuredNonce,
+      },
+    }),
+  );
+
+  isConfigured = true;
+}
 
 export function configureRestApi(config: RestApiConfig): void {
   if (!config) return;
-  if (configuredRoot !== config.root) {
-    apiFetch.use(apiFetch.createRootURLMiddleware(`${config.root}/`));
-    configuredRoot = config.root;
-  }
-  if (configuredNonce !== config.nonce) {
-    apiFetch.use(apiFetch.createNonceMiddleware(config.nonce));
-    configuredNonce = config.nonce;
-  }
+  configuredRoot = config.root;
+  configuredNonce = config.nonce;
+  configureMiddleware();
 }
 
 /**
