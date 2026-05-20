@@ -6,6 +6,7 @@ use Automattic\WooCommerce\EmailEditor\Bootstrap as EmailEditorBootstrap;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger;
 use MailPoet\API\JSON\API;
+use MailPoet\Abilities\Abilities;
 use MailPoet\API\REST\API as RestApi;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Automation\Engine\Engine;
@@ -279,6 +280,7 @@ class Initializer {
     );
 
     $this->emailEditorBootstrap->init();
+    $this->setupAbilities();
 
     $this->wpFunctions->addAction('activated_plugin', [
       new PluginActivatedHook(new DeferredAdminNotices),
@@ -351,6 +353,11 @@ class Initializer {
     ]);
 
     $this->hooks->initEarlyHooks();
+  }
+
+  private function setupAbilities(): void {
+    require_once __DIR__ . '/../Abilities/Abilities.php';
+    Abilities::init();
   }
 
   public function runActivator() {
