@@ -79,6 +79,10 @@ class AuthorizedEmailAddressesValidationCest {
     $i->click($updateLinkText);
     $i->switchToNextTab();
     $i->waitForElement('[name="sender_address"]');
+    // The Send page pre-fills sender_address with the newsletter's current
+    // (unauthorized) sender — fillField appends rather than replaces, so clear
+    // it first or activation fails on the concatenated, invalid address.
+    $i->clearFormField('[name="sender_address"]');
     $i->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
     $i->click('Activate');
     // Activating a welcome email redirects to the Automation listing
