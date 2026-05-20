@@ -117,7 +117,18 @@ export function CampaignStatsPage() {
 
   const { item, loading } = state;
   const newsletter = item;
-  let activeTab = getActiveStatsTab(params['*']);
+  const requestedTab = getActiveStatsTab(params['*']);
+  let activeTab = requestedTab;
+
+  useEffect(() => {
+    if (loading || !newsletter) {
+      return;
+    }
+
+    if (requestedTab === 'products' && !MailPoet.isWoocommerceActive) {
+      navigate(getStatsTabUrl(newsletter.id, 'clicked'), { replace: true });
+    }
+  }, [loading, navigate, newsletter, requestedTab]);
 
   if (loading) return null;
 
