@@ -27,6 +27,7 @@ type UseDataViewsQueryOptions<T> = {
 type UseDataViewsQueryResult<T> = {
   view: View;
   setView: Dispatch<SetStateAction<View>>;
+  onChangeView: (nextView: View) => void;
   items: T[];
   meta: ListingMeta;
   filters: ListingResponse<T>['filters'];
@@ -38,6 +39,13 @@ type UseDataViewsQueryResult<T> = {
 };
 
 const EMPTY_META: ListingMeta = { count: 0, pages: 0 };
+
+function wasInitialUrlStateReset(currentView: View, nextView: View): boolean {
+  const pageReset = (currentView.page ?? 1) > 1 && (nextView.page ?? 1) === 1;
+  const searchReset = Boolean(currentView.search) && !nextView.search;
+
+  return pageReset || searchReset;
+}
 
 /**
  * Bind a `@wordpress/dataviews` view to a MailPoet REST listing endpoint.
@@ -61,6 +69,7 @@ export function useDataViewsQuery<T>({
   const [error, setError] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const latestRequestIdRef = useRef(0);
+  const completedInitialRequestRef = useRef(false);
   // Stash `extraParams` in a ref so a non-memoized callback from the caller
   // doesn't retrigger the fetch effect on every render. Reading from the ref
   // also lets us keep `extraParams` out of the effect's dependency array
@@ -74,19 +83,45 @@ export function useDataViewsQuery<T>({
 
   const clearError = useCallback(() => setError(null), []);
 
+  const onChangeView = useCallback((nextView: View): void => {
+    setView((currentView) => {
+      if (
+        !completedInitialRequestRef.current &&
+        wasInitialUrlStateReset(currentView, nextView)
+      ) {
+        return currentView;
+      }
+
+      const searchChanged =
+        (nextView.search ?? '') !== (currentView.search ?? '');
+      const perPageChanged = nextView.perPage !== currentView.perPage;
+
+      return {
+        ...nextView,
+        page: searchChanged || perPageChanged ? 1 : nextView.page,
+      };
+    });
+  }, []);
+
+  const queryPage = view.page ?? 1;
+  const queryPerPage = view.perPage ?? 20;
+  const queryOrderBy = view.sort?.field;
+  const queryOrder = view.sort?.direction;
+  const querySearch = view.search || undefined;
+
   useEffect(() => {
     const controller = new AbortController();
     const requestId = latestRequestIdRef.current + 1;
     latestRequestIdRef.current = requestId;
     setIsLoading(true);
 
-    const requestedPage = view.page ?? 1;
+    const requestedPage = queryPage;
     const params: ListingQueryParams = {
       page: requestedPage,
-      per_page: view.perPage ?? 20,
-      orderby: view.sort?.field,
-      order: view.sort?.direction,
-      search: view.search || undefined,
+      per_page: queryPerPage,
+      orderby: queryOrderBy,
+      order: queryOrder,
+      search: querySearch,
       ...(extraParamsRef.current ? extraParamsRef.current(view) : {}),
     };
 
@@ -100,7 +135,7 @@ export function useDataViewsQuery<T>({
           // Avoid leaving a stale error visible while we re-fetch the
           // clamped page below.
           setError(null);
-          setView({ ...view, page: lastValidPage });
+          setView((currentView) => ({ ...currentView, page: lastValidPage }));
           return;
         }
         setItems(result.items);
@@ -128,20 +163,30 @@ export function useDataViewsQuery<T>({
       })
       .finally(() => {
         if (requestId === latestRequestIdRef.current) {
+          completedInitialRequestRef.current = true;
           setIsLoading(false);
         }
       });
     return () => controller.abort();
     // `extraParams` is read via a ref above so the effect doesn't depend on
     // its identity (callers don't need to memoize it). The effect re-runs
-    // whenever the DataViews view changes (sort, search, page, perPage,
-    // filters), the load function changes, or refresh() bumps the token.
+    // whenever the query-relevant DataViews view values change (sort, search,
+    // page, perPage), the load function changes, or refresh() bumps the token.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, load, refreshToken]);
+  }, [
+    queryPage,
+    queryPerPage,
+    queryOrderBy,
+    queryOrder,
+    querySearch,
+    load,
+    refreshToken,
+  ]);
 
   return {
     view,
     setView,
+    onChangeView,
     items,
     meta,
     filters,
