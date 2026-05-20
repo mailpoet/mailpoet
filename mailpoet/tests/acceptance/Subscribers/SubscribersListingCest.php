@@ -237,7 +237,7 @@ class SubscribersListingCest {
       'bulk-resend-confirmation-checkbox-input',
       $i->executeJS('return document.activeElement.id;')
     );
-    $i->seeElement('div[role="dialog"][aria-labelledby]');
+    $i->waitForElement('div[role="dialog"][aria-labelledby]');
     $i->seeElement('div[role="dialog"] button[aria-label="Close"]');
     $modalTitleId = $i->grabAttributeFrom('div[role="dialog"]', 'aria-labelledby');
     Assert::assertSame(
