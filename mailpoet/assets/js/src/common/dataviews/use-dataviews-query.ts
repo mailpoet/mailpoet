@@ -108,6 +108,10 @@ export function useDataViewsQuery<T>({
   const queryOrderBy = view.sort?.field;
   const queryOrder = view.sort?.direction;
   const querySearch = view.search || undefined;
+  const extraQueryParams = extraParamsRef.current
+    ? extraParamsRef.current(view)
+    : {};
+  const extraQueryParamsKey = JSON.stringify(extraQueryParams);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -122,7 +126,7 @@ export function useDataViewsQuery<T>({
       orderby: queryOrderBy,
       order: queryOrder,
       search: querySearch,
-      ...(extraParamsRef.current ? extraParamsRef.current(view) : {}),
+      ...extraQueryParams,
     };
 
     load(params, controller.signal)
@@ -169,9 +173,9 @@ export function useDataViewsQuery<T>({
       });
     return () => controller.abort();
     // `extraParams` is read via a ref above so the effect doesn't depend on
-    // its identity (callers don't need to memoize it). The effect re-runs
-    // whenever the query-relevant DataViews view values change (sort, search,
-    // page, perPage), the load function changes, or refresh() bumps the token.
+    // its identity (callers don't need to memoize it). The effect re-runs when
+    // query params change, including listing-specific params derived from the
+    // full DataViews view.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     queryPage,
@@ -179,6 +183,7 @@ export function useDataViewsQuery<T>({
     queryOrderBy,
     queryOrder,
     querySearch,
+    extraQueryParamsKey,
     load,
     refreshToken,
   ]);
