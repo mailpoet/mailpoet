@@ -61,6 +61,13 @@ const segments: MailPoetSegment[] = [
   { id: '02', name: 'Customers', subscribers: '20', type: 'default' },
   { id: '3', name: 'Engaged', subscribers: '5', type: 'dynamic' },
   {
+    id: '5',
+    name: 'Deleted dynamic',
+    subscribers: '0',
+    type: 'dynamic',
+    deleted_at: '2026-05-21 10:00:00',
+  },
+  {
     id: '4',
     name: 'Deleted',
     subscribers: '0',

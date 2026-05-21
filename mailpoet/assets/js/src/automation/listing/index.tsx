@@ -255,6 +255,7 @@ export function AutomationListing(): JSX.Element {
   const latestGroupRef = useRef(group);
   const latestViewRef = useRef(view);
   const manualStartTriggerElementRef = useRef<HTMLElement | null>(null);
+  const manualStartFocusFallbackHrefRef = useRef<string | null>(null);
 
   const automations = useSelect((select) =>
     select(storeName).getAllAutomations(),
@@ -512,8 +513,20 @@ export function AutomationListing(): JSX.Element {
   const restoreManualStartTriggerFocus = useCallback((): void => {
     const triggerElement = manualStartTriggerElementRef.current;
     manualStartTriggerElementRef.current = null;
+    const fallbackHref = manualStartFocusFallbackHrefRef.current;
+    manualStartFocusFallbackHrefRef.current = null;
     if (triggerElement && document.contains(triggerElement)) {
       triggerElement.focus();
+      return;
+    }
+
+    if (fallbackHref) {
+      const fallbackLink = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>(
+          '.mailpoet-automation-dataviews .dataviews-title-field a',
+        ),
+      ).find((link) => link.getAttribute('href') === fallbackHref);
+      fallbackLink?.focus();
     }
   }, []);
 
@@ -526,6 +539,8 @@ export function AutomationListing(): JSX.Element {
     (automation: AutomationItem): void => {
       manualStartTriggerElementRef.current =
         document.activeElement as HTMLElement | null;
+      manualStartFocusFallbackHrefRef.current =
+        getAutomationEditorUrl(automation);
       setManualStartAutomation(automation);
     },
     [],

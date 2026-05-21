@@ -399,6 +399,8 @@ export function ManualStartModal({
         normalizedError.data.preview
       ) {
         setPreview(normalizedError.data.preview);
+      } else {
+        setPreview(null);
       }
       setStartError(normalizedError);
     } finally {
