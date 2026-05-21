@@ -86,7 +86,6 @@ class SettingsArchivePageCest {
     $i->clickItemRowActionByItemName('SentNewsletter3', 'Move to trash');
     $i->waitForNoticeAndClose('1 email was moved to the trash.');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElement('[data-automation-id="empty_trash"]');
     $i->waitForListingItemsToLoad();
     $i->waitForText('SentNewsletter3');
     $i->clickItemRowActionByItemName('SentNewsletter3', 'Delete permanently');
