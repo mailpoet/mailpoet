@@ -45,21 +45,33 @@ export type SendingStatusExtras = {
   current_time: string;
 };
 
-export type SendingStatusListingParams = ListingQueryParams & {
-  group?: string;
-};
-
 export type SendingStatusApiError = RestApiError;
+
+const loaders = new Map<
+  number,
+  (
+    params: ListingQueryParams & Record<string, unknown>,
+    signal?: AbortSignal,
+  ) => Promise<ListingResponse<SendingStatusItem>>
+>();
+
+function getLoader(newsletterId: number) {
+  let loader = loaders.get(newsletterId);
+  if (!loader) {
+    loader = createRestListingLoader<SendingStatusItem>(
+      listingPath(newsletterId),
+    );
+    loaders.set(newsletterId, loader);
+  }
+  return loader;
+}
 
 export function getSendingStatusSubscribers(
   newsletterId: number,
-  params: SendingStatusListingParams,
+  params: ListingQueryParams,
   signal?: AbortSignal,
 ): Promise<ListingResponse<SendingStatusItem> & Partial<SendingStatusExtras>> {
-  const loader = createRestListingLoader<SendingStatusItem>(
-    listingPath(newsletterId),
-  );
-  return loader(params, signal);
+  return getLoader(newsletterId)(params, signal);
 }
 
 export function resendFailedEmail(
