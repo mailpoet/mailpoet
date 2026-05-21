@@ -40,116 +40,11 @@ import {
   type NewsletterType,
 } from '../api';
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
+import { buildHash, parseHash } from './hash-state';
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
 type Group = string;
-
-type RouteHashState = Partial<{
-  group: Group;
-  page: number;
-  perPage: number;
-  orderby: string;
-  order: 'asc' | 'desc';
-  search: string;
-  filter: Record<string, string>;
-}>;
-
-function parseFilter(value: string): Record<string, string> {
-  const parsed = new URLSearchParams(value);
-  return Array.from(parsed.entries()).reduce<Record<string, string>>(
-    (filters, [key, filterValue]) =>
-      filterValue ? { ...filters, [key]: filterValue } : filters,
-    {},
-  );
-}
-
-function safeDecode(value: string): string {
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-}
-
-function parseHash(baseUrl: string, supportedGroups: string[]): RouteHashState {
-  // The newsletter listing has historically used the hash form
-  // `#/<base>/group[trash]/page[2]/sort_by[updated_at]/...`. We keep the same
-  // grammar so deep links continue to work after the DataViews migration.
-  const prefix = `#/${baseUrl}`;
-  if (!window.location.hash.startsWith(prefix)) return {};
-  const tail = window.location.hash.slice(prefix.length).replace(/^\//, '');
-  return tail
-    .split('/')
-    .map((part) => (part.endsWith(']') ? part.slice(0, -1) : part).split('['))
-    .reduce<RouteHashState>((params, [key, value]) => {
-      if (!value) return params;
-      if (key === 'group' && supportedGroups.includes(value)) {
-        return { ...params, group: value };
-      }
-      if ((key === 'page' || key === 'paged') && Number(value) > 0) {
-        return { ...params, page: Number(value) };
-      }
-      if ((key === 'per_page' || key === 'limit') && Number(value) > 0) {
-        return { ...params, perPage: Number(value) };
-      }
-      if (key === 'sort_by' || key === 'orderby') {
-        return { ...params, orderby: value };
-      }
-      if (
-        (key === 'sort_order' || key === 'order') &&
-        (value === 'asc' || value === 'desc')
-      ) {
-        return { ...params, order: value };
-      }
-      if (key === 'search') {
-        return { ...params, search: safeDecode(value) };
-      }
-      if (key === 'filter') {
-        return { ...params, filter: parseFilter(value) };
-      }
-      return params;
-    }, {});
-}
-
-function buildHash(
-  baseUrl: string,
-  group: Group,
-  view: View,
-  filter: Record<string, string>,
-  defaults: { sort: string; order: 'asc' | 'desc' },
-): string {
-  const filterValue = new URLSearchParams(filter).toString();
-  const entries: Array<[string, string | number | undefined]> = [
-    ['group', group !== 'all' ? group : undefined],
-    ['filter', filterValue || undefined],
-    ['search', view.search ? encodeURIComponent(view.search) : undefined],
-    ['page', view.page && view.page !== 1 ? view.page : undefined],
-    [
-      'limit',
-      view.perPage && view.perPage !== listingPerPage
-        ? view.perPage
-        : undefined,
-    ],
-    [
-      'sort_by',
-      view.sort?.field && view.sort.field !== defaults.sort
-        ? view.sort.field
-        : undefined,
-    ],
-    [
-      'sort_order',
-      view.sort?.direction && view.sort.direction !== defaults.order
-        ? view.sort.direction
-        : undefined,
-    ],
-  ];
-  const path = entries.reduce(
-    (hash, [key, value]) => (value ? `${hash}/${key}[${value}]` : hash),
-    '',
-  );
-  return `#/${baseUrl}${path}`;
-}
 
 function formatCount(count: number): string {
   return count.toLocaleString();
@@ -317,7 +212,7 @@ export function NewslettersListing({
   const location = useLocation();
   const navigate = useNavigate();
   const hashState = useMemo(
-    () => parseHash(baseUrl, [...supportedGroups]),
+    () => parseHash(window.location.hash, baseUrl, [...supportedGroups]),
     [baseUrl, supportedGroups],
   );
   const [group, setGroup] = useState<Group>(hashState.group ?? 'all');
@@ -415,6 +310,7 @@ export function NewslettersListing({
     const hash = buildHash(baseUrl, group, view, filter, {
       sort: defaultSort.field,
       order: defaultSort.direction,
+      perPage: listingPerPage,
     });
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
@@ -423,7 +319,9 @@ export function NewslettersListing({
 
   useEffect(() => {
     const applyHash = (): void => {
-      const next = parseHash(baseUrl, [...supportedGroups]);
+      const next = parseHash(window.location.hash, baseUrl, [
+        ...supportedGroups,
+      ]);
       setGroup(next.group ?? 'all');
       setFilter(next.filter ?? {});
       setSelection([]);
@@ -674,11 +572,17 @@ export function NewslettersListing({
   const handleEmptyTrash = useCallback(() => {
     // Empty Trash clears the whole trash for this email type, ignoring any
     // active search term or list filter that scopes the current view.
-    void executeBulkAction('delete', [], true, {}, {
-      type,
-      group: 'trash',
-      parent_id: parentId,
-    });
+    void executeBulkAction(
+      'delete',
+      [],
+      true,
+      {},
+      {
+        type,
+        group: 'trash',
+        parent_id: parentId,
+      },
+    );
   }, [executeBulkAction, parentId, type]);
 
   const availableFilters = useMemo(
