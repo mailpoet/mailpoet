@@ -2,7 +2,11 @@ import { __, sprintf } from '@wordpress/i18n';
 import { __unstableAwaitPromise as AwaitPromise } from '@wordpress/data-controls';
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
-import { getLegacyNewsletters, legacyApiFetch, ListingItem } from './legacy-api';
+import {
+  getLegacyNewsletters,
+  legacyApiFetch,
+  ListingItem,
+} from './legacy-api';
 import { getDescription } from './legacy-description';
 import { AutomationItem } from './types';
 import { Automation, AutomationStatus } from '../automation';

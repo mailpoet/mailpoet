@@ -161,10 +161,10 @@ const initializeEditor = (config) => {
             }
           })
           .catch((pauseFailResponse) => {
-            MailPoet.Notice.error(
-              [pauseFailResponse.message],
-              { scroll: true, static: true },
-            );
+            MailPoet.Notice.error([pauseFailResponse.message], {
+              scroll: true,
+              static: true,
+            });
           });
       }
       Promise.resolve(fetchAutomaticEmailShortcodes(config, newsletter))
