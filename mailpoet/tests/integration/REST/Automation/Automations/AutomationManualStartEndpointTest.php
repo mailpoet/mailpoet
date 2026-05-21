@@ -6,6 +6,7 @@ require_once __DIR__ . '/../AutomationTest.php';
 
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\ManualStart\ManualStartAudienceRepository;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
@@ -18,6 +19,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\REST\Automation\AutomationTest;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\AutomationRun;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -123,6 +125,44 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $this->assertNotSame($preview['preview_signature'], $response['data']['preview']['preview_signature']);
   }
 
+  public function testPreviewAndStartAcceptExplicitNullFilterSegmentId(): void {
+    $segment = (new Segment())->create();
+    (new Subscriber())->withSegments([$segment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId(), null, true)['data'];
+    $this->assertNull($preview['filter_segment_id']);
+    $this->assertSame(1, $preview['eligible_count']);
+
+    $start = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature'], null, true)['data'];
+    $this->assertNull($start['filter_segment_id']);
+    $this->assertSame(1, $start['queued_count']);
+  }
+
+  public function testDynamicFilterNarrowsEligibleSubscribers(): void {
+    $segment = (new Segment())->create();
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $eligible = (new Subscriber())->withSegments([$segment])->withEngagementScore(50)->create();
+    (new Subscriber())->withSegments([$segment])->withEngagementScore(10)->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId(), $filterSegment->getId())['data'];
+    $this->assertSame($filterSegment->getId(), $preview['filter_segment_id']);
+    $this->assertSame(2, $preview['selected_count']);
+    $this->assertSame(1, $preview['eligible_count']);
+    $this->assertSame(1, $preview['skipped_by_reason']['dynamic_filter_mismatch']);
+
+    $start = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature'], $filterSegment->getId())['data'];
+    $this->assertSame(1, $start['queued_count']);
+    $this->assertTrue($this->taskHasSubscriber($start['task_id'], (int)$eligible->getId()));
+  }
+
   public function testPreviewValidatesSupportedAutomationAndSegments(): void {
     $defaultSegment = (new Segment())->create();
     $dynamicSegment = (new Segment())->withType(SegmentEntity::TYPE_DYNAMIC)->create();
@@ -169,18 +209,91 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $this->assertSame(400, $response['data']['status']);
   }
 
-  private function postPreview(int $automationId, ?int $segmentId, ?int $filterSegmentId = null): array {
+  public function testManualStartActiveTaskBlocksOnlyInProgressTasks(): void {
+    $segment = (new Segment())->create();
+    $otherSegment = (new Segment())->create();
+    (new Subscriber())->withSegments([$segment])->create();
+    (new Subscriber())->withSegments([$otherSegment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId())['data'];
+    $start = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature'])['data'];
+    $task = $this->scheduledTasksRepository->findOneById($start['task_id']);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    $duplicateStart = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature']);
+    $this->assertSame('manual_start_in_progress', $duplicateStart['code']);
+    $this->assertSame(409, $duplicateStart['data']['status']);
+
+    $otherListPreview = $this->postPreview($automation->getId(), $otherSegment->getId());
+    $this->assertSame('manual_start_in_progress', $otherListPreview['code']);
+
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->em->flush();
+    $allowedAfterCompleted = $this->postPreview($automation->getId(), $segment->getId());
+    $this->assertArrayHasKey('data', $allowedAfterCompleted);
+
+    $task->setStatus('failed');
+    $this->em->flush();
+    $allowedAfterFailed = $this->postPreview($automation->getId(), $segment->getId());
+    $this->assertArrayHasKey('data', $allowedAfterFailed);
+
+    $task->setStatus(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING);
+    $this->em->flush();
+    $blockedWhileRunning = $this->postPreview($automation->getId(), $segment->getId());
+    $this->assertSame('manual_start_in_progress', $blockedWhileRunning['code']);
+  }
+
+  public function testPreviewAndStartRejectGuests(): void {
+    $segment = (new Segment())->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    wp_set_current_user(0);
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId());
+    $this->assertSame('rest_forbidden', $preview['code']);
+    $this->assertSame(401, $preview['data']['status']);
+
+    $start = $this->postStart($automation->getId(), $segment->getId(), 'signature');
+    $this->assertSame('rest_forbidden', $start['code']);
+    $this->assertSame(401, $start['data']['status']);
+  }
+
+  public function testStartQueuesSubscribersAcrossBoundedChunks(): void {
+    $segment = (new Segment())->create();
+    for ($i = 0; $i < ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5; $i++) {
+      (new Subscriber())->withSegments([$segment])->create();
+    }
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId())['data'];
+    $start = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature'])['data'];
+
+    $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5, $start['queued_count']);
+    $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5, $this->countTaskSubscribers($start['task_id']));
+  }
+
+  private function postPreview(int $automationId, ?int $segmentId, ?int $filterSegmentId = null, bool $includeFilterSegmentId = false): array {
     if ($segmentId === null) {
       $this->fail('Segment ID is required for manual start preview requests.');
     }
     $payload = ['segment_id' => $segmentId];
-    if ($filterSegmentId !== null) {
+    if ($filterSegmentId !== null || $includeFilterSegmentId) {
       $payload['filter_segment_id'] = $filterSegmentId;
     }
     return $this->post("/mailpoet/v1/automations/$automationId/manual-start/preview", ['json' => $payload]);
   }
 
-  private function postStart(int $automationId, ?int $segmentId, string $previewSignature, ?int $filterSegmentId = null): array {
+  private function postStart(int $automationId, ?int $segmentId, string $previewSignature, ?int $filterSegmentId = null, bool $includeFilterSegmentId = false): array {
     if ($segmentId === null) {
       $this->fail('Segment ID is required for manual start requests.');
     }
@@ -188,7 +301,7 @@ class AutomationManualStartEndpointTest extends AutomationTest {
       'segment_id' => $segmentId,
       'preview_signature' => $previewSignature,
     ];
-    if ($filterSegmentId !== null) {
+    if ($filterSegmentId !== null || $includeFilterSegmentId) {
       $payload['filter_segment_id'] = $filterSegmentId;
     }
     return $this->post("/mailpoet/v1/automations/$automationId/manual-start", ['json' => $payload]);

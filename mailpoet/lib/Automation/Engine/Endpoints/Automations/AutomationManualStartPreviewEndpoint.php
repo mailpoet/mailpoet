@@ -30,7 +30,7 @@ class AutomationManualStartPreviewEndpoint extends Endpoint {
     return [
       'id' => Builder::integer()->required(),
       'segment_id' => Builder::integer()->required(),
-      'filter_segment_id' => Builder::integer(),
+      'filter_segment_id' => Builder::integer()->nullable(),
     ];
   }
 

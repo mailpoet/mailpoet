@@ -84,8 +84,8 @@ class ManualAutomationStartWorker extends SimpleWorker {
     }
 
     $automation = $this->automationStorage->getAutomation($automationId, $automationVersionId);
-    $processedIds = [];
     $counts = $this->getWorkerCounts($task);
+    $segmentIneligibleReason = $this->audienceRepository->getSegmentIneligibleReason($segmentId, $filterSegmentId);
 
     foreach ($subscriberIds as $subscriberId) {
       $this->cronHelper->enforceExecutionLimit($timer);
@@ -94,6 +94,11 @@ class ManualAutomationStartWorker extends SimpleWorker {
 
       if (!$automation instanceof Automation || $automation->getStatus() !== Automation::STATUS_ACTIVE) {
         $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_AUTOMATION_INACTIVE, $counts);
+        continue;
+      }
+
+      if ($segmentIneligibleReason !== null) {
+        $this->saveSkipped($task, $subscriberId, $segmentIneligibleReason, $counts);
         continue;
       }
 
@@ -120,16 +125,14 @@ class ManualAutomationStartWorker extends SimpleWorker {
       }
 
       if ($result->isCreated()) {
-        $processedIds[] = $subscriberId;
         $counts['created_count']++;
+        $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [$subscriberId]);
+        $this->saveWorkerCounts($task, $counts);
         continue;
       }
 
       $this->saveSkipped($task, $subscriberId, $this->mapCreationResultToReason($result), $counts);
     }
-
-    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, $processedIds);
-    $this->saveWorkerCounts($task, $counts);
 
     if ($this->scheduledTaskSubscribersRepository->countUnprocessed($task) > 0) {
       return false;
@@ -179,6 +182,7 @@ class ManualAutomationStartWorker extends SimpleWorker {
     $counts['failed_count']++;
     $counts['skipped_by_reason'][$reason] = ($counts['skipped_by_reason'][$reason] ?? 0) + 1;
     $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, 'skipped:' . $reason);
+    $this->saveWorkerCounts($task, $counts);
   }
 
   private function mapCreationResultToReason(AutomationRunCreationResult $result): string {
@@ -214,8 +218,6 @@ class ManualAutomationStartWorker extends SimpleWorker {
     if ($counts['completion_log_saved']) {
       return;
     }
-    $counts['completion_log_saved'] = true;
-    $this->saveWorkerCounts($task, $counts);
 
     $meta = $task->getMeta() ?? [];
     $log = new LogEntity();
@@ -236,6 +238,8 @@ class ManualAutomationStartWorker extends SimpleWorker {
       'final_status' => ScheduledTaskEntity::STATUS_COMPLETED,
     ]);
     $this->logRepository->saveLog($log);
+    $counts['completion_log_saved'] = true;
+    $this->saveWorkerCounts($task, $counts);
   }
 
   /** @param mixed $value */

@@ -18,6 +18,8 @@ use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ManualStartAudienceRepository {
+  public const QUEUE_CHUNK_SIZE = 100;
+
   public const REASON_ALREADY_ENTERED = 'already_entered';
   public const REASON_NOT_SUBSCRIBED = 'not_subscribed';
   public const REASON_UNCONFIRMED = 'unconfirmed';
@@ -98,23 +100,55 @@ class ManualStartAudienceRepository {
     $eligibleQueryBuilder = $this->createSubscribedInListQueryBuilder($segment, $filterSegment);
     $this->addAlreadyEnteredCondition($eligibleQueryBuilder, $automationId, true);
 
-    $params = array_merge($eligibleQueryBuilder->getParameters(), [
-      'taskId' => $taskId,
-      'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-    ]);
-    $types = array_merge($eligibleQueryBuilder->getParameterTypes(), [
-      'taskId' => ParameterType::INTEGER,
-      'processed' => ParameterType::INTEGER,
-    ]);
+    $queuedCount = 0;
+    $lastSubscriberId = 0;
+    do {
+      $insertedCount = (int)$this->entityManager->getConnection()->executeStatement(
+        "INSERT IGNORE INTO $scheduledTaskSubscribersTable
+         (`task_id`, `subscriber_id`, `processed`)
+         SELECT :taskId, candidates.id, :processed
+         FROM ({$eligibleQueryBuilder->getSQL()}) candidates
+         WHERE candidates.id > :lastSubscriberId
+         ORDER BY candidates.id ASC
+         LIMIT :queueLimit",
+        array_merge($eligibleQueryBuilder->getParameters(), [
+          'taskId' => $taskId,
+          'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+          'lastSubscriberId' => $lastSubscriberId,
+          'queueLimit' => self::QUEUE_CHUNK_SIZE,
+        ]),
+        array_merge($eligibleQueryBuilder->getParameterTypes(), [
+          'taskId' => ParameterType::INTEGER,
+          'processed' => ParameterType::INTEGER,
+          'lastSubscriberId' => ParameterType::INTEGER,
+          'queueLimit' => ParameterType::INTEGER,
+        ])
+      );
+      $queuedCount += $insertedCount;
+      if ($insertedCount > 0) {
+        $lastSubscriberId = $this->getMaxQueuedSubscriberId((int)$taskId);
+      }
+    } while ($insertedCount === self::QUEUE_CHUNK_SIZE);
 
-    return (int)$this->entityManager->getConnection()->executeStatement(
-      "INSERT IGNORE INTO $scheduledTaskSubscribersTable
-       (`task_id`, `subscriber_id`, `processed`)
-       SELECT :taskId, candidates.id, :processed
-       FROM ({$eligibleQueryBuilder->getSQL()}) candidates",
-      $params,
-      $types
-    );
+    return $queuedCount;
+  }
+
+  public function getSegmentIneligibleReason(int $segmentId, ?int $filterSegmentId): ?string {
+    $segment = $this->segmentsRepository->findOneById($segmentId);
+    if (!$segment instanceof SegmentEntity || $segment->getDeletedAt() !== null || $segment->getType() !== SegmentEntity::TYPE_DEFAULT) {
+      return self::REASON_NOT_IN_LIST;
+    }
+
+    if ($filterSegmentId === null) {
+      return null;
+    }
+
+    $filterSegment = $this->segmentsRepository->findOneById($filterSegmentId);
+    if (!$filterSegment instanceof SegmentEntity || $filterSegment->getDeletedAt() !== null || $filterSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
+      return self::REASON_DYNAMIC_FILTER_MISMATCH;
+    }
+
+    return null;
   }
 
   public function getSubscriberIneligibleReason(int $subscriberId, int $segmentId, ?int $filterSegmentId): ?string {
@@ -296,6 +330,17 @@ class ManualStartAudienceRepository {
     $queryBuilder->andWhere($excludeAlreadyEntered ? "NOT $existsCondition" : $existsCondition)
       ->setParameter('automationId', $automationId, ParameterType::INTEGER)
       ->setParameter('subscriberSubjectKey', SubscriberSubject::KEY, ParameterType::STRING);
+  }
+
+  private function getMaxQueuedSubscriberId(int $taskId): int {
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $maxSubscriberId = $this->entityManager->getConnection()->executeQuery(
+      "SELECT MAX(subscriber_id) FROM $scheduledTaskSubscribersTable WHERE task_id = :taskId",
+      ['taskId' => $taskId],
+      ['taskId' => ParameterType::INTEGER]
+    )->fetchOne();
+
+    return $this->toInt($maxSubscriberId);
   }
 
   private function isSubscriberSubscribedToSegment(int $subscriberId, int $segmentId): bool {

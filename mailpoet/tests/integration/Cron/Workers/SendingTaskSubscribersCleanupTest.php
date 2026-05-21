@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
+use MailPoet\Cron\Workers\Automations\ManualAutomationStartWorker;
 use MailPoet\Cron\Workers\SendingTaskSubscribersCleanup;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -50,6 +51,29 @@ class SendingTaskSubscribersCleanupTest extends \MailPoetTest {
     $subscriber = $this->subscriberFactory->create();
     $oldTask = $this->taskFactory->create(
       'sending',
+      ScheduledTaskEntity::STATUS_COMPLETED,
+      null,
+      null,
+      null,
+      $now->copy()->subDays(90)
+    );
+    $this->taskSubscriberFactory->createProcessed($oldTask, $subscriber);
+
+    $task = new ScheduledTaskEntity();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $remaining = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findAll();
+    verify(count($remaining))->equals(0);
+
+  }
+
+  public function testItDeletesOldCompletedManualStartTaskSubscribers() {
+    $now = Carbon::now();
+    Carbon::setTestNow($now);
+
+    $subscriber = $this->subscriberFactory->create();
+    $oldTask = $this->taskFactory->create(
+      ManualAutomationStartWorker::TASK_TYPE,
       ScheduledTaskEntity::STATUS_COMPLETED,
       null,
       null,
