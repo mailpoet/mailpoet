@@ -49,7 +49,6 @@ class AcceptanceTester extends \Codeception\Actor {
   const WP_URL = 'http://' . self::WP_DOMAIN;
   const MAIL_URL = 'http://mailhog:8025';
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
-  const LISTING_LOADING_SELECTOR = '.mailpoet-listing-loading';
   const WOO_COMMERCE_PLUGIN = 'woocommerce';
   const WOO_COMMERCE_BLOCKS_PLUGIN = 'woo-gutenberg-products-block';
   const WOO_COMMERCE_MEMBERSHIPS_PLUGIN = 'woocommerce-memberships';
@@ -138,9 +137,6 @@ class AcceptanceTester extends \Codeception\Actor {
   public function clickItemRowActionByItemName($itemName, $link) {
     $i = $this;
     $rowCellXpath = ['xpath' => '//tr//*[normalize-space(text())="' . $itemName . '"]//ancestor::td'];
-    // Legacy MailPoet `Listing` component: row actions render as <a> links in
-    // the same <td> as the item title (revealed on hover).
-    $legacyActionXpath = ['xpath' => '//*[normalize-space(text())="' . $itemName . '"]//ancestor::td//a[normalize-space(text())="' . $link . '"]'];
     // DataViews primary actions render as inline <button> elements anywhere
     // in the row (typically in the trailing actions column).
     $dataViewsPrimaryXpath = ['xpath' => '//tr[.//*[normalize-space(text())="' . $itemName . '"]]//button[normalize-space(text())="' . $link . '"]'];
@@ -163,16 +159,6 @@ class AcceptanceTester extends \Codeception\Actor {
         $lastException = $hoverException;
         $this->wait(1);
         continue;
-      }
-
-      // Try the legacy <a> link first.
-      try {
-        $i->waitForElementClickable($legacyActionXpath, 3);
-        $i->click($legacyActionXpath);
-        return;
-      } catch (Exception $legacyException) {
-        $lastException = $legacyException;
-        // ignore and fall through to DataViews variants
       }
 
       // DataViews primary action (inline button).
@@ -354,34 +340,24 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function selectAllListingItems() {
     $i = $this;
-    try {
-      $i->waitForElementVisible('[data-automation-id="select_all"]', 3);
-      try {
-        $i->checkOption('#select_all');
-      } catch (Exception $exception) {
-        $i->click('[data-automation-id="select_all"]');
-      }
-      $i->waitForElementVisible('[data-automation-id="listing-bulk-actions"]', 5);
-      return;
-    } catch (Exception $exception) {
-      $dataViewsSelectAll = ['xpath' => '//table//thead//input[@type="checkbox"]'];
-      $i->waitForElementVisible($dataViewsSelectAll);
-      $i->click($dataViewsSelectAll);
-    }
+    $dataViewsSelectAll = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]//table//thead//input[@type="checkbox"]'];
+    $i->waitForElementVisible($dataViewsSelectAll);
+    $i->click($dataViewsSelectAll);
+    $i->waitForJS(<<<'JS'
+      const root = document.querySelector('.mailpoet-dataviews');
+      if (!root) return false;
+      return root.querySelector('.dataviews-bulk-actions-footer') !== null
+        || Array.from(root.querySelectorAll('tbody input[type="checkbox"]')).some((checkbox) => checkbox.checked);
+    JS);
   }
 
   public function waitForListingItemsToLoad() {
     $i = $this;
     $i->waitForElement([
-      'xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")] | '
-        . '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-listing ")]',
+      'xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]',
     ]);
-    $i->waitForElementNotVisible('.mailpoet-listing-loading');
-    // `waitForElementNotVisible` succeeds vacuously when the element has not
-    // appeared yet — so on a fresh DataViews-backed page, callers could probe
-    // text before the first fetch committed. When a DataViews container is
-    // present, wait for a non-busy table or the empty-state message, then for
-    // the row snapshot to be stable across two polling ticks.
+    // Wait for a non-busy table or the empty-state message, then for the row
+    // snapshot to be stable across two polling ticks.
     $hasDataViews = $i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;');
     if ($hasDataViews) {
       $i->executeJS('window.__mailpoetDataViewsStableSnapshot = null;');
@@ -444,28 +420,10 @@ class AcceptanceTester extends \Codeception\Actor {
     verify($attributeValue)->stringNotContainsString($notContains);
   }
 
-  public function searchFor($query, $element = '#search_input') {
+  public function searchFor($query, $element = '.dataviews-search input') {
     $i = $this;
-    $isDataViews = false;
-    if ($element === '#search_input') {
-      // Detect the listing's search input — legacy listings use `#search_input`,
-      // DataViews-backed ones use `.dataviews-search input`. Probe in a short
-      // loop because the page may still be rendering; otherwise an unconditional
-      // `waitForElement('#search_input')` below would time out on the new DOM.
-      $i->waitForElement(['xpath' => '//*[@id="search_input"] | //*[contains(@class, "dataviews-search")]//input']);
-      $detected = $i->executeJS(
-        'if (document.querySelector("#search_input")) return "legacy";'
-        . ' if (document.querySelector(".dataviews-search input")) return "dataviews";'
-        . ' return "";'
-      );
-      if ($detected === 'dataviews') {
-        $element = '.dataviews-search input';
-        $isDataViews = true;
-      }
-    }
     $i->waitForElement($element);
-    $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
-    if ($isDataViews) {
+    if ($element === '.dataviews-search input') {
       // SearchControl is a React-controlled input — `clearField`/`fillField`
       // mutate `.value` without going through React's tracker, so a second
       // searchFor() can leave React's state holding the previous query and
@@ -1038,9 +996,6 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->searchFor($email);
     $i->waitForListingItemsToLoad();
     $i->waitForText($email);
-    // Legacy MailPoet `Listing` rendered cells with `data-colname="Status"`/
-    // `data-colname="Lists"`; DataViews doesn't carry that attribute, so scope
-    // to the table row containing the email instead — works for either DOM.
     $rowXpath = '//tr[.//*[normalize-space(text())=' . self::xpathString($email) . ']]';
     $i->see(ucfirst($status), $rowXpath);
     if (is_array($listsSubscribed)) {
@@ -1135,26 +1090,10 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function changeGroupInListingFilter(string $name): void {
     $i = $this;
-    $legacySelector = '[data-automation-id="filters_' . $name . '"]';
-    $activeLegacySelector = $legacySelector . '.is-active';
-    // DataViews-backed listings render group tabs as @wordpress/components
-    // TabPanel buttons; the "mailpoet-dataviews-group-X" class is a stable
-    // hook all migrations are expected to apply.
     $dataViewsSelector = '.mailpoet-dataviews-group-' . $name;
     $lastException = new Exception("Unable to change listing filter group to $name.");
 
     for ($x = 1; $x <= 3; $x++) {
-      try {
-        $i->waitForElementClickable($legacySelector, 3);
-        $i->click($legacySelector);
-        $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
-        $i->waitForElement($activeLegacySelector);
-        return;
-      } catch (Exception $legacyException) {
-        $lastException = $legacyException;
-        // ignore and try DataViews variant
-      }
-
       try {
         $i->waitForElementClickable($dataViewsSelector, 3);
         $i->click($dataViewsSelector);

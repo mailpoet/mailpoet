@@ -146,7 +146,7 @@ class ManageSubscribersCest {
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete permanently');
     $i->waitForText('1 subscriber was permanently deleted.');
-    $i->waitForElementNotVisible('.mailpoet-listing-loading');
+    $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail2, 20);
     $i->dontSee($newSubscriberEmail);
 
