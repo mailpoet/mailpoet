@@ -148,3 +148,22 @@ export async function restPost<T>(
     throw normalizeApiError(error);
   }
 }
+
+/**
+ * Thin PUT helper for non-listing REST routes (e.g. updating a single resource).
+ * Shares the same nonce middleware + error normalization as {@link restPost}.
+ */
+export async function restPut<T>(
+  path: string,
+  data: Record<string, unknown>,
+): Promise<T> {
+  try {
+    return await apiFetch<T>({
+      path,
+      method: 'PUT',
+      data,
+    });
+  } catch (error) {
+    throw normalizeApiError(error);
+  }
+}
