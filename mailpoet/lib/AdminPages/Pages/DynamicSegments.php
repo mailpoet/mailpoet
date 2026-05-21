@@ -12,7 +12,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
@@ -27,9 +26,6 @@ class DynamicSegments {
 
   /** @var PageRenderer */
   private $pageRenderer;
-
-  /** @var PageLimit */
-  private $listingPageLimit;
 
   /** @var WPFunctions */
   private $wp;
@@ -64,7 +60,6 @@ class DynamicSegments {
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
-    PageLimit $listingPageLimit,
     WPFunctions $wp,
     WooCommerceHelper $woocommerceHelper,
     WPPostListLoader $wpPostListLoader,
@@ -78,7 +73,6 @@ class DynamicSegments {
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
-    $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wpPostListLoader = $wpPostListLoader;
@@ -96,12 +90,6 @@ class DynamicSegments {
    */
   public function render() {
     $data = [];
-    $data['dynamic_segment_count'] = $this->segmentsRepository->countBy([
-      'deletedAt' => null,
-      'type' => SegmentEntity::TYPE_DYNAMIC,
-    ]);
-    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
-
     $customFields = $this->customFieldsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
     $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
 
