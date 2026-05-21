@@ -23,6 +23,7 @@ use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\RestApi\Api as LogsRestApi;
 use MailPoet\Migrator\Cli as MigratorCli;
+use MailPoet\Newsletter\RestApi\Api as NewslettersRestApi;
 use MailPoet\Newsletter\Sharing\PublicEmailRoute;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration;
@@ -138,6 +139,9 @@ class Initializer {
   /** @var SubscribersRestApi */
   private $subscribersRestApi;
 
+  /** @var NewslettersRestApi */
+  private $newslettersRestApi;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -205,6 +209,7 @@ class Initializer {
     SegmentsRestApi $segmentsRestApi,
     LogsRestApi $logsRestApi,
     SubscribersRestApi $subscribersRestApi,
+    NewslettersRestApi $newslettersRestApi,
     PublicEmailRoute $publicEmailRoute
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -244,6 +249,7 @@ class Initializer {
     $this->segmentsRestApi = $segmentsRestApi;
     $this->logsRestApi = $logsRestApi;
     $this->subscribersRestApi = $subscribersRestApi;
+    $this->newslettersRestApi = $newslettersRestApi;
     $this->publicEmailRoute = $publicEmailRoute;
 
     $emailEditorContainer = Email_Editor_Container::container();
@@ -424,6 +430,7 @@ class Initializer {
       $this->segmentsRestApi->initialize();
       $this->logsRestApi->initialize();
       $this->subscribersRestApi->initialize();
+      $this->newslettersRestApi->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
