@@ -154,61 +154,6 @@ class DynamicSegmentsTest extends \MailPoetTest {
     verify($this->entityManager->find(DynamicSegmentFilterEntity::class, $dynamicSegmentFilter->getId()))->null();
   }
 
-  public function testItCanBulkDeleteSegments() {
-    $dynamicSegment1 = $this->createDynamicSegmentEntity('Test 1', 'description');
-    $dynamicSegment2 = $this->createDynamicSegmentEntity('Test 2', 'description');
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'trash',
-      'listing' => ['group' => 'all'],
-    ]);
-    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    verify($response->meta['count'])->equals(2);
-
-    $this->entityManager->refresh($dynamicSegment1);
-    $this->entityManager->refresh($dynamicSegment2);
-    verify($dynamicSegment1->getDeletedAt())->notNull();
-    verify($dynamicSegment2->getDeletedAt())->notNull();
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'restore',
-      'listing' => ['group' => 'trash'],
-    ]);
-
-    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    verify($response->meta['count'])->equals(2);
-
-    $this->entityManager->refresh($dynamicSegment1);
-    $this->entityManager->refresh($dynamicSegment2);
-    verify($dynamicSegment1->getDeletedAt())->null();
-    verify($dynamicSegment2->getDeletedAt())->null();
-
-    $this->endpoint->bulkAction([
-      'action' => 'trash',
-      'listing' => ['group' => 'all'],
-    ]);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    verify($response->meta['count'])->equals(2);
-
-    // Second delete doesn't delete anything
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    verify($response->meta['count'])->equals(0);
-
-    $this->entityManager->clear();
-
-    verify($this->entityManager->find(SegmentEntity::class, $dynamicSegment1->getId()))->null();
-    verify($this->entityManager->find(SegmentEntity::class, $dynamicSegment2->getId()))->null();
-  }
-
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, $description);
     $filterData = new DynamicSegmentFilterData(

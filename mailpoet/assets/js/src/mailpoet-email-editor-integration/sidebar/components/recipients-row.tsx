@@ -18,6 +18,8 @@ import { closeSmall } from '@wordpress/icons';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 import { MailPoet } from 'mailpoet';
 
 type Segment = {
@@ -38,7 +40,49 @@ type Segment = {
   };
 };
 
+type ListingResponse<T> = {
+  data: {
+    items: T[];
+    meta: {
+      pages: number;
+    };
+  };
+};
+
 const EMPTY_ARRAY = [];
+const SEGMENTS_PER_PAGE = 100;
+
+async function fetchSegmentPage<T>(
+  path: string,
+  page: number,
+): Promise<ListingResponse<T>> {
+  return apiFetch<ListingResponse<T>>({
+    url: addQueryArgs(`${window.mailpoet_segments_api.root}${path}`, {
+      page,
+      per_page: SEGMENTS_PER_PAGE,
+    }),
+    method: 'GET',
+    headers: {
+      'X-WP-Nonce': window.mailpoet_segments_api.nonce,
+    },
+  });
+}
+
+async function fetchAllSegments<T>(path: string): Promise<T[]> {
+  let page = 1;
+  let pages = 1;
+  const items: T[] = [];
+
+  do {
+    // eslint-disable-next-line no-await-in-loop
+    const response = await fetchSegmentPage<T>(path, page);
+    items.push(...response.data.items);
+    pages = response.data.meta.pages;
+    page += 1;
+  } while (page <= pages);
+
+  return items;
+}
 
 export function RecipientsRow() {
   const [mailpoetEmailData] = useEntityProp(
@@ -64,30 +108,25 @@ export function RecipientsRow() {
     setIsLoadingSegments(true);
 
     // Fetch both segments and dynamic_segments in parallel
-    const segmentsPromise = MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'segments',
-      action: 'listing',
-      data: {},
-    });
-
-    const dynamicSegmentsPromise = MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'dynamic_segments',
-      action: 'listing',
-      data: {},
-    });
+    const segmentsPromise = fetchAllSegments<Segment>('/mailpoet/v1/segments');
+    const dynamicSegmentsPromise = fetchAllSegments<Segment>(
+      '/mailpoet/v1/dynamic-segments',
+    );
 
     Promise.all([segmentsPromise, dynamicSegmentsPromise])
-      .then(([segmentsResponse, dynamicSegmentsResponse]) => {
-        const staticSegments = segmentsResponse.data || [];
-        const dynamicSegments = dynamicSegmentsResponse.data || [];
-        const allSegments = [...staticSegments, ...dynamicSegments];
+      .then(([staticSegments, dynamicSegments]) => {
+        const allSegments = [
+          ...staticSegments,
+          ...dynamicSegments.map((segment) => ({
+            ...segment,
+            type: 'dynamic',
+          })),
+        ];
         const activeSegments = allSegments.filter(
           (segment: Segment) => !segment.deleted_at,
         );
         if (mounted) {
-          setSegments(activeSegments as Segment[]);
+          setSegments(activeSegments);
         }
       })
       .catch(() => {

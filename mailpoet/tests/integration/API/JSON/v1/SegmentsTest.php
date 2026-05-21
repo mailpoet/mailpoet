@@ -11,11 +11,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Subscribers\SubscriberSegmentRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 
 class SegmentsTest extends \MailPoetTest {
   /** @var SegmentEntity */
@@ -34,19 +30,11 @@ class SegmentsTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentRepository;
 
-  /** @var SubscribersRepository */
-  private $subscriberRepository;
-
-  /** @var SubscriberSegmentRepository */
-  private $subscriberSegmentRepository;
-
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Segments::class);
     $this->responseBuilder = ContainerWrapper::getInstance()->get(SegmentsResponseBuilder::class);
     $this->segmentRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
-    $this->subscriberRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
-    $this->subscriberSegmentRepository = ContainerWrapper::getInstance()->get(SubscriberSegmentRepository::class);
 
     $this->segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
     $this->segment2 = $this->segmentRepository->createOrUpdate('Segment 2');
@@ -67,21 +55,6 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->responseBuilder->build($this->segment1)
     );
-  }
-
-  public function testItCanGetListingData(): void {
-    $response = $this->endpoint->listing();
-
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-
-    verify($response->meta)->arrayHasKey('filters');
-    verify($response->meta)->arrayHasKey('groups');
-    verify($response->meta['count'])->equals(3);
-
-    verify($response->data)->arrayCount(3);
-    verify($response->data[0]['name'])->equals($this->segment1->getName());
-    verify($response->data[1]['name'])->equals($this->segment2->getName());
-    verify($response->data[2]['name'])->equals($this->segment3->getName());
   }
 
   public function testItCanSaveASegment(): void {
@@ -124,13 +97,9 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['public_description'])->equals($publicDescription);
 
-    $response = $this->endpoint->listing();
+    $response = $this->endpoint->get(['id' => $segment->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    $segmentListingItems = array_filter($response->data, function(array $item) use ($segment): bool {
-      return (int)$item['id'] === (int)$segment->getId();
-    });
-    $segmentListingItem = reset($segmentListingItems);
-    verify($segmentListingItem['public_description'])->equals($publicDescription);
+    verify($response->data['public_description'])->equals($publicDescription);
   }
 
   public function testItPreservesAndClearsPublicDescriptionOnSave(): void {
@@ -282,56 +251,11 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(1);
   }
 
-  public function testItCanBulkDeleteSegments() {
-    $subscriber = $this->createSubscriber('test@mailpoet.com');
-    $subscriberSegment = $this->createSubscriberSegment($subscriber, $this->segment1);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'trash',
-      'listing' => ['group' => 'all'],
-    ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(3);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(3);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(0);
-
-    $subsribers = $this->subscriberSegmentRepository->findBy(['segment' => $this->segment1]);
-    verify($subsribers)->arrayCount(0);
-  }
-
   private function createForm(string $formName, array $settings) {
     $form = new FormEntity($formName);
     $form->setSettings($settings);
     $this->entityManager->persist($form);
     $this->entityManager->flush();
     return $form;
-  }
-
-  private function createSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
-    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->entityManager->persist($subscriberSegment);
-    $this->entityManager->flush();
-    return $subscriberSegment;
-  }
-
-  private function createSubscriber(string $email): SubscriberEntity {
-    $subscriber = new SubscriberEntity();
-    $subscriber->setEmail($email);
-    $this->subscriberRepository->persist($subscriber);
-    $this->subscriberRepository->flush();
-    return $subscriber;
   }
 }

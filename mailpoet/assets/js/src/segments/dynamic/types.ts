@@ -209,7 +209,7 @@ export type DynamicSegment = {
   count_all: string;
   count_subscribed: string;
   created_at: string;
-  deleted_at: string;
+  deleted_at: string | null;
   subscribers_url: string;
   selected?: boolean;
   is_plugin_missing: boolean;
