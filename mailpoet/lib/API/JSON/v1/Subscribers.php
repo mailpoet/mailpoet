@@ -13,13 +13,8 @@ use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
-use MailPoet\Listing;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\BulkActionController;
-use MailPoet\Subscribers\BulkActionException;
-use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
-use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
@@ -33,9 +28,6 @@ class Subscribers extends APIEndpoint {
     'methods' => ['subscribe' => AccessControl::NO_ACCESS_RESTRICTION],
   ];
 
-  /** @var Listing\Handler */
-  private $listingHandler;
-
   /** @var ConfirmationEmailMailer */
   private $confirmationEmailMailer;
 
@@ -44,9 +36,6 @@ class Subscribers extends APIEndpoint {
 
   /** @var SubscribersResponseBuilder */
   private $subscribersResponseBuilder;
-
-  /** @var SubscriberListingRepository */
-  private $subscriberListingRepository;
 
   /** @var SubscriberSaveController */
   private $saveController;
@@ -57,34 +46,20 @@ class Subscribers extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
-  /** @var BulkActionController */
-  private $bulkActionController;
-
-  /** @var BulkConfirmationEmailResender */
-  private $bulkConfirmationEmailResender;
-
   public function __construct(
-    Listing\Handler $listingHandler,
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
-    SubscriberListingRepository $subscriberListingRepository,
     SubscriberSaveController $saveController,
     SubscriberSubscribeController $subscribeController,
-    SettingsController $settings,
-    BulkActionController $bulkActionController,
-    BulkConfirmationEmailResender $bulkConfirmationEmailResender
+    SettingsController $settings
   ) {
-    $this->listingHandler = $listingHandler;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
-    $this->subscriberListingRepository = $subscriberListingRepository;
     $this->saveController = $saveController;
     $this->subscribeController = $subscribeController;
     $this->settings = $settings;
-    $this->bulkActionController = $bulkActionController;
-    $this->bulkConfirmationEmailResender = $bulkConfirmationEmailResender;
   }
 
   public function get($data = []) {
@@ -96,46 +71,6 @@ class Subscribers extends APIEndpoint {
     }
     $result = $this->subscribersResponseBuilder->build($subscriber);
     return $this->successResponse($result);
-  }
-
-  /**
-   * @deprecated Use the REST endpoint `GET /mailpoet/v1/subscribers` instead.
-   *   Kept callable for third-party integrations posting to the legacy JSON API.
-   */
-  public function listing($data = []) {
-    $definition = $this->listingHandler->getListingDefinition($data);
-    $items = $this->subscriberListingRepository->getData($definition);
-    $count = $this->subscriberListingRepository->getCount($definition);
-    $filters = $this->subscriberListingRepository->getFilters($definition);
-    $groups = $this->subscriberListingRepository->getGroups($definition);
-    $subscribers = $this->subscribersResponseBuilder->buildForListing($items);
-    if ($data['filter']['segment'] ?? false) {
-      foreach ($subscribers as $key => $subscriber) {
-        $subscribers[$key] = $this->preferUnsubscribedStatusFromSegment($subscriber, $data['filter']['segment']);
-      }
-    }
-    return $this->successResponse($subscribers, [
-      'count' => $count,
-      'filters' => $filters,
-      'groups' => $groups,
-    ]);
-  }
-
-  private function preferUnsubscribedStatusFromSegment(array $subscriber, $segmentId) {
-    $segmentStatus = $this->findSegmentStatus($subscriber, $segmentId);
-
-    if ($segmentStatus === SubscriberEntity::STATUS_UNSUBSCRIBED) {
-      $subscriber['status'] = $segmentStatus;
-    }
-    return $subscriber;
-  }
-
-  private function findSegmentStatus(array $subscriber, $segmentId) {
-    foreach ($subscriber['subscriptions'] as $segment) {
-      if ($segment['segment_id'] === $segmentId) {
-        return $segment['status'];
-      }
-    }
   }
 
   public function subscribe($data = []) {
@@ -264,54 +199,6 @@ class Subscribers extends APIEndpoint {
         APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet'),
       ]);
     }
-  }
-
-  /**
-   * @deprecated Use the REST endpoint `POST /mailpoet/v1/subscribers/bulk-action`
-   *   instead. Kept callable for third-party integrations that still post to the
-   *   legacy JSON API. The orchestration lives in {@see BulkActionController}.
-   */
-  public function bulkAction($data = []) {
-    $action = (string)($data['action'] ?? '');
-    $definition = $this->listingHandler->getListingDefinition($data['listing']);
-
-    if ($action === 'resendConfirmationEmails') {
-      if (!$this->bulkConfirmationEmailResender->canCurrentUserResend()) {
-        return $this->errorResponse([
-          APIError::FORBIDDEN => __('You do not have permission to resend confirmation emails.', 'mailpoet'),
-        ], [], Response::STATUS_FORBIDDEN);
-      }
-      if ($definition->getGroup() !== SubscriberEntity::STATUS_UNCONFIRMED) {
-        return $this->badRequest([
-          'invalid_group' => __('Confirmation emails can be resent in bulk only from the Unconfirmed subscribers view.', 'mailpoet'),
-        ]);
-      }
-      if (!$this->bulkConfirmationEmailResender->isSignupConfirmationEnabled()) {
-        return $this->errorResponse([
-          'confirmation_disabled' => $this->bulkConfirmationEmailResender->getConfirmationDisabledMessage(),
-        ], [], Response::STATUS_BAD_REQUEST);
-      }
-      return $this->successResponse($this->bulkConfirmationEmailResender->queue($definition, $data));
-    }
-
-    try {
-      $result = $this->bulkActionController->execute($action, $definition, $data);
-    } catch (BulkActionException $exception) {
-      return $this->errorResponse(
-        [$exception->getErrorCode() => $exception->getMessage()],
-        [],
-        $exception->getStatusCode()
-      );
-    }
-
-    $meta = ['count' => $result['count']];
-    if (isset($result['segment']['name'])) {
-      $meta['segment'] = $result['segment']['name'];
-    }
-    if (isset($result['tag']['name'])) {
-      $meta['tag'] = $result['tag']['name'];
-    }
-    return $this->successResponse(null, $meta);
   }
 
   /**
