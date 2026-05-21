@@ -2,4 +2,4 @@
 
 # Description
 
-WooCommerce order review URL personalization tag for automation emails
+Direct review links in WooCommerce post-purchase automation emails
