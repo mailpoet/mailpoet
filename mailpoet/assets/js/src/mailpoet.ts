@@ -30,7 +30,9 @@ const getNewsletterEditorUrl = (
 };
 
 const getActiveEmailEditorUrl = (
-  newsletter: NewsletterType,
+  newsletter:
+    | NewsletterType
+    | { id: string | number; wp_post_id?: number | null },
   context = '',
 ): string => {
   if (!newsletter || !newsletter.id) {

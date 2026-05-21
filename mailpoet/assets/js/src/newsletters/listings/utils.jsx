@@ -1,7 +1,4 @@
-import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
-import { Link } from 'react-router-dom';
-import ReactStringReplace from 'react-string-replace';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
@@ -11,27 +8,28 @@ export const trackStatsCTAClicked = () => {
   MailPoet.trackEvent('User has clicked a CTA to view detailed stats');
 };
 
-export const addStatsCTAAction = (actions) => {
+export const addStatsCTAAction = (actions, navigate) => {
   actions.unshift({
-    name: 'stats',
-    link: function link(newsletter) {
-      return (
-        <Link
-          to={`/stats/${newsletter.id}`}
-          onClick={Hooks.applyFilters(
-            'mailpoet_newsletters_listing_stats_tracking',
-            trackStatsCTAClicked,
-          )}
-        >
-          {__('Statistics', 'mailpoet')}
-        </Link>
-      );
-    },
-    display: function display(newsletter) {
+    id: 'stats',
+    label: __('Statistics', 'mailpoet'),
+    context: 'single',
+    supportsBulk: false,
+    isEligible: function isEligible(newsletter) {
       // welcome emails provide explicit total_sent value
       const countProcessed =
         newsletter.queue && newsletter.queue.count_processed;
       return Number(newsletter.total_sent || countProcessed) > 0;
+    },
+    callback: function callback(targets) {
+      const target = targets[0];
+      if (!target) {
+        return;
+      }
+      Hooks.applyFilters(
+        'mailpoet_newsletters_listing_stats_tracking',
+        trackStatsCTAClicked,
+      )();
+      navigate(`/stats/${target.id}`);
     },
   });
   return actions;
@@ -63,33 +61,24 @@ export const checkCronStatus = (state) => {
     return;
   }
 
-  const cronPingCheckNotice = ReactStringReplace(
-    __(
-      'Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.',
-      'mailpoet',
-    ),
-    /\[link\](.*?)\[\/link\]/g,
-    (match) => (
-      <a
-        href="https://kb.mailpoet.com/article/231-sending-does-not-work"
-        target="_blank"
-        rel="noopener noreferrer"
-        key="check-cron"
-      >
-        {match}
-      </a>
-    ),
-  );
+  // Render the notice as HTML rather than mounting a React root into the
+  // jQuery-managed notice node. The notice system re-renders that node when
+  // the check runs again (e.g. on a tab switch), which removes React's
+  // content out-of-band and leaves an empty notice.
+  const cronPingCheckNotice = __(
+    'Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.',
+    'mailpoet',
+  )
+    .replace(
+      '[link]',
+      '<a href="https://kb.mailpoet.com/article/231-sending-does-not-work" target="_blank" rel="noopener noreferrer">',
+    )
+    .replace('[/link]', '</a>');
 
-  MailPoet.Notice.error('', { static: true, id: 'mailpoet_cron_error' });
-  const container = jQuery('[data-id="mailpoet_cron_error"]')[0];
-  const root = createRoot(container);
-
-  root.render(
-    <div>
-      <p>{cronPingCheckNotice}</p>
-    </div>,
-  );
+  MailPoet.Notice.error(cronPingCheckNotice, {
+    static: true,
+    id: 'mailpoet_cron_error',
+  });
 };
 
 export const newsletterTypesWithActivation = [
@@ -103,6 +92,25 @@ export const automationTypes = ['automation', 'automation_transactional'];
 
 export const confirmEdit = (newsletter) => {
   const editorHref = MailPoet.getActiveEmailEditorUrl(newsletter);
+
+  // A newsletter that is mid-send (status `sending`, queue not yet paused)
+  // must be paused before it can be edited.
+  if (
+    newsletter.queue &&
+    newsletter.status === 'sending' &&
+    newsletter.queue.status === null
+  ) {
+    confirmAlert({
+      message: __(
+        'Sending is in progress. Do you want to pause sending and edit the newsletter?',
+        'mailpoet',
+      ),
+      onConfirm: () => {
+        window.location.href = `${editorHref}&pauseConfirmed=yes`;
+      },
+    });
+    return;
+  }
 
   if (
     newsletterTypesWithActivation.includes(newsletter.type) &&
