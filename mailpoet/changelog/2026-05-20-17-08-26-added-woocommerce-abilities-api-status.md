@@ -2,4 +2,4 @@
 
 # Description
 
-WooCommerce Abilities API status for MailPoet marketing settings
+WooCommerce Abilities API status and automation templates for MailPoet marketing settings

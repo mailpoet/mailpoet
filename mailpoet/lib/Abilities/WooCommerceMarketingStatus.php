@@ -7,10 +7,21 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromACategoryTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromATagTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCompletedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCreatedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 use MailPoet\Config\AccessControl;
-use MailPoet\Config\Env;
+use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -60,26 +71,25 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
     $woocommerceHelper = $container->get(WooCommerceHelper::class);
     /** @var NewslettersRepository $newslettersRepository */
     $newslettersRepository = $container->get(NewslettersRepository::class);
+    /** @var SegmentsRepository $segmentsRepository */
+    $segmentsRepository = $container->get(SegmentsRepository::class);
+    /** @var AutomationStorage $automationStorage */
+    $automationStorage = $container->get(AutomationStorage::class);
+
+    $checkoutSegmentIds = array_values(array_unique(array_map('absint', (array)$settings->get(Subscription::OPTIN_SEGMENTS_SETTING_NAME, []))));
 
     return [
-      'woocommerce' => [
-        'active' => $woocommerceHelper->isWooCommerceActive(),
-        'version' => (string)($woocommerceHelper->getWooCommerceVersion() ?? ''),
-        'currency' => $woocommerceHelper->isWooCommerceActive() ? (string)$woocommerceHelper->getWoocommerceCurrency() : '',
-        'custom_orders_table_enabled' => $woocommerceHelper->isWooCommerceCustomOrdersTableEnabled(),
-        'blocks_active' => $woocommerceHelper->isWooCommerceBlocksActive('8.0.0'),
-      ],
       'checkout_optin' => [
         'enabled' => (bool)$settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false),
         'message' => wp_strip_all_tags((string)$settings->get(Subscription::OPTIN_MESSAGE_SETTING_NAME, '')),
-        'position' => (string)$settings->get(Subscription::OPTIN_POSITION_SETTING_NAME, ''),
-        'segment_ids' => array_values(array_map('absint', (array)$settings->get(Subscription::OPTIN_SEGMENTS_SETTING_NAME, []))),
+        'position' => (string)$settings->get(Subscription::OPTIN_POSITION_SETTING_NAME, Hooks::DEFAULT_OPTIN_POSITION),
+        'segments' => self::formatSegments($segmentsRepository, $checkoutSegmentIds),
       ],
       'transactional_email_editor' => [
         'enabled' => (bool)$settings->get('woocommerce.use_mailpoet_editor', false),
-        'template_newsletter_id' => absint($settings->get(TransactionalEmails::SETTING_EMAIL_ID, 0)),
+        'template_configured' => absint($settings->get(TransactionalEmails::SETTING_EMAIL_ID, 0)) > 0,
       ],
-      'automatic_emails' => [
+      'legacy_automatic_emails' => [
         'active_counts' => [
           'abandoned_cart' => $newslettersRepository->getCountOfActiveAutomaticEmailsForEvent(AbandonedCart::SLUG),
           'first_purchase' => $newslettersRepository->getCountOfActiveAutomaticEmailsForEvent(FirstPurchase::SLUG),
@@ -87,12 +97,14 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
           'purchased_product' => $newslettersRepository->getCountOfActiveAutomaticEmailsForEvent(PurchasedProduct::SLUG),
         ],
       ],
-      'tracking' => [
-        'level' => (string)$settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
-        'analytics_enabled' => (bool)$settings->get('analytics.enabled', false),
-        'purchase_states' => $woocommerceHelper->getPurchaseStates(),
+      'automations' => [
+        'active_email_counts' => self::getAutomationEmailCounts($automationStorage),
       ],
-      'plugin_version' => (string)Env::$version,
+      'measurement' => [
+        'tracking_level' => (string)$settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
+        'analytics_enabled' => (bool)$settings->get('analytics.enabled', false),
+        'revenue_attribution_order_statuses' => $woocommerceHelper->getPurchaseStates(),
+      ],
     ];
   }
 
@@ -104,42 +116,41 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
     return [
       'type' => 'object',
       'properties' => [
-        'woocommerce' => [
-          'type' => 'object',
-          'properties' => [
-            'active' => ['type' => 'boolean'],
-            'version' => ['type' => 'string'],
-            'currency' => ['type' => 'string'],
-            'custom_orders_table_enabled' => ['type' => 'boolean'],
-            'blocks_active' => ['type' => 'boolean'],
-          ],
-          'required' => ['active', 'version', 'currency', 'custom_orders_table_enabled', 'blocks_active'],
-          'additionalProperties' => false,
-        ],
         'checkout_optin' => [
           'type' => 'object',
           'properties' => [
             'enabled' => ['type' => 'boolean'],
             'message' => ['type' => 'string'],
-            'position' => ['type' => 'string'],
-            'segment_ids' => [
+            'position' => [
+              'type' => 'string',
+              'enum' => array_keys(Hooks::OPTIN_HOOKS),
+            ],
+            'segments' => [
               'type' => 'array',
-              'items' => ['type' => 'integer'],
+              'items' => [
+                'type' => 'object',
+                'properties' => [
+                  'id' => ['type' => 'integer'],
+                  'name' => ['type' => 'string'],
+                ],
+                'required' => ['id', 'name'],
+                'additionalProperties' => false,
+              ],
             ],
           ],
-          'required' => ['enabled', 'message', 'position', 'segment_ids'],
+          'required' => ['enabled', 'message', 'position', 'segments'],
           'additionalProperties' => false,
         ],
         'transactional_email_editor' => [
           'type' => 'object',
           'properties' => [
             'enabled' => ['type' => 'boolean'],
-            'template_newsletter_id' => ['type' => 'integer'],
+            'template_configured' => ['type' => 'boolean'],
           ],
-          'required' => ['enabled', 'template_newsletter_id'],
+          'required' => ['enabled', 'template_configured'],
           'additionalProperties' => false,
         ],
-        'automatic_emails' => [
+        'legacy_automatic_emails' => [
           'type' => 'object',
           'properties' => [
             'active_counts' => [
@@ -157,26 +168,84 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
           'required' => ['active_counts'],
           'additionalProperties' => false,
         ],
-        'tracking' => [
+        'automations' => [
           'type' => 'object',
           'properties' => [
-            'level' => [
+            'active_email_counts' => [
+              'type' => 'object',
+              'properties' => [
+                'abandoned_cart' => ['type' => 'integer'],
+                'order_completed' => ['type' => 'integer'],
+                'order_created' => ['type' => 'integer'],
+                'order_status_changed' => ['type' => 'integer'],
+                'purchased_in_category' => ['type' => 'integer'],
+                'purchased_product' => ['type' => 'integer'],
+                'purchased_with_tag' => ['type' => 'integer'],
+              ],
+              'required' => ['abandoned_cart', 'order_completed', 'order_created', 'order_status_changed', 'purchased_in_category', 'purchased_product', 'purchased_with_tag'],
+              'additionalProperties' => false,
+            ],
+          ],
+          'required' => ['active_email_counts'],
+          'additionalProperties' => false,
+        ],
+        'measurement' => [
+          'type' => 'object',
+          'properties' => [
+            'tracking_level' => [
               'type' => 'string',
               'enum' => [TrackingConfig::LEVEL_FULL, TrackingConfig::LEVEL_PARTIAL, TrackingConfig::LEVEL_BASIC],
             ],
             'analytics_enabled' => ['type' => 'boolean'],
-            'purchase_states' => [
+            'revenue_attribution_order_statuses' => [
               'type' => 'array',
               'items' => ['type' => 'string'],
             ],
           ],
-          'required' => ['level', 'analytics_enabled', 'purchase_states'],
+          'required' => ['tracking_level', 'analytics_enabled', 'revenue_attribution_order_statuses'],
           'additionalProperties' => false,
         ],
-        'plugin_version' => ['type' => 'string'],
       ],
-      'required' => ['woocommerce', 'checkout_optin', 'transactional_email_editor', 'automatic_emails', 'tracking', 'plugin_version'],
+      'required' => ['checkout_optin', 'transactional_email_editor', 'legacy_automatic_emails', 'automations', 'measurement'],
       'additionalProperties' => false,
+    ];
+  }
+
+  private static function formatSegments(SegmentsRepository $segmentsRepository, array $segmentIds): array {
+    if (!$segmentIds) {
+      return [];
+    }
+
+    $segmentsById = [];
+    foreach ($segmentsRepository->findByIds($segmentIds) as $segment) {
+      if (!$segment instanceof SegmentEntity || $segment->getId() === null) {
+        continue;
+      }
+      $segmentsById[(int)$segment->getId()] = [
+        'id' => (int)$segment->getId(),
+        'name' => $segment->getName(),
+      ];
+    }
+
+    $selectedSegments = [];
+    foreach ($segmentIds as $segmentId) {
+      if (isset($segmentsById[$segmentId])) {
+        $selectedSegments[] = $segmentsById[$segmentId];
+      }
+    }
+
+    return $selectedSegments;
+  }
+
+  private static function getAutomationEmailCounts(AutomationStorage $automationStorage): array {
+    return [
+      'abandoned_cart' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([AbandonedCartTrigger::KEY], SendEmailAction::KEY),
+      'order_completed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderCompletedTrigger::KEY], SendEmailAction::KEY),
+      'order_created' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderCreatedTrigger::KEY], SendEmailAction::KEY),
+      'order_status_changed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderStatusChangedTrigger::KEY], SendEmailAction::KEY),
+      'purchased_in_category' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysFromACategoryTrigger::KEY], SendEmailAction::KEY),
+      'purchased_product' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysAProductTrigger::KEY], SendEmailAction::KEY),
+      'purchased_with_tag' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysFromATagTrigger::KEY], SendEmailAction::KEY),
     ];
   }
 }
