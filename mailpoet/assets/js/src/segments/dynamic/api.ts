@@ -63,6 +63,7 @@ export type DynamicSegmentBulkActionResult = {
 
 export async function getDynamicSegments(
   params: ListingQueryParams,
+  signal?: AbortSignal,
 ): Promise<ListingResponse<DynamicSegmentListingItem>> {
   ensureInitialized();
   const response = await apiFetch<ListingEnvelope<DynamicSegmentListingItem>>({
@@ -71,6 +72,7 @@ export async function getDynamicSegments(
       cleanQueryParams(params),
     ),
     method: 'GET',
+    signal,
   });
   return response.data;
 }

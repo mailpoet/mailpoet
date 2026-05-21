@@ -72,6 +72,6 @@ export const getInitialState = (): StateType => ({
       ],
     },
   },
-  dynamicSegmentsLoading: { value: true, request: undefined },
+  dynamicSegmentsLoading: { value: true, abortController: undefined },
   dynamicSegmentSelection: [],
 });

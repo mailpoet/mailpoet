@@ -21,7 +21,7 @@ function setDynamicSegments(
   return {
     ...state,
     dynamicSegments: action.dynamicSegments,
-    dynamicSegmentsLoading: { value: false, request: undefined },
+    dynamicSegmentsLoading: { value: false, abortController: undefined },
   };
 }
 

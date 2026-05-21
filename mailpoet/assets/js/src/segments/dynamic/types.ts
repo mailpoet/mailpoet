@@ -387,7 +387,7 @@ export interface StateType {
   dynamicSegments: DynamicSegmentsList;
   dynamicSegmentsLoading: {
     value: boolean;
-    request: XMLHttpRequest | undefined;
+    abortController: AbortController | undefined;
   };
   dynamicSegmentSelection: Record<number, boolean>;
 }
@@ -439,7 +439,7 @@ export interface SetDynamicSegmentsActionType extends ActionType {
 
 export interface SetDynamicSegmentsLoadingActionType extends ActionType {
   value: boolean;
-  request: XMLHttpRequest | undefined;
+  abortController: AbortController | undefined;
 }
 
 export interface SetSegmentActionType extends ActionType {
