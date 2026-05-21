@@ -18,7 +18,7 @@ import { APIErrorsNotice } from '../notices/api-errors-notice';
 import { Info } from './types/info';
 
 interface Props {
-  filter?: () => void;
+  filter?: ((type: { slug: string }) => boolean) | null;
   hideScreenOptions?: boolean;
 }
 

@@ -205,7 +205,8 @@ const QueuePropType = PropTypes.shape({
 
 Statistics.propTypes = {
   newsletter: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    // The REST listing returns `id` as a string; legacy callers pass a number.
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     queue: PropTypes.oneOfType([QueuePropType, PropTypes.bool]),
     total_sent: PropTypes.number,
     statistics: PropTypes.oneOfType([StatisticsPropType, PropTypes.bool]),

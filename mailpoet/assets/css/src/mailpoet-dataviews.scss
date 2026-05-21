@@ -27,6 +27,13 @@
   }
 }
 
+// The Emails listing renders inside the shared `<Tabs>` component, whose
+// `.mailpoet-tab-content` wrapper adds padding meant for legacy content.
+// DataViews brings its own spacing, so drop the wrapper padding here.
+.mailpoet-tab-content:has(.mailpoet-newsletters-dataviews) {
+  padding: 0;
+}
+
 .mailpoet-dataviews__toolbar,
 .mailpoet-segments-dataviews__toolbar {
   align-items: center;
