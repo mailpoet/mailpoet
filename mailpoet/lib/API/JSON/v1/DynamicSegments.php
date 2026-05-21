@@ -10,15 +10,12 @@ use MailPoet\Config\AccessControl;
 use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
-use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterDataMapper;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
-use MailPoet\UnexpectedValueException;
 use Throwable;
 
 class DynamicSegments extends APIEndpoint {
@@ -26,12 +23,6 @@ class DynamicSegments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
-
-  /** @var Handler */
-  private $listingHandler;
-
-  /** @var DynamicSegmentsListingRepository */
-  private $dynamicSegmentsListingRepository;
 
   /** @var SegmentsRepository */
   private $segmentsRepository;
@@ -52,8 +43,6 @@ class DynamicSegments extends APIEndpoint {
   private $newsletterSegmentRepository;
 
   public function __construct(
-    Handler $handler,
-    DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentsRepository $segmentsRepository,
     SegmentSubscribersRepository $segmentSubscribersRepository,
@@ -61,8 +50,6 @@ class DynamicSegments extends APIEndpoint {
     SegmentSaveController $saveController,
     NewsletterSegmentRepository $newsletterSegmentRepository
   ) {
-    $this->listingHandler = $handler;
-    $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentsRepository = $segmentsRepository;
     $this->saveController = $saveController;
@@ -267,43 +254,6 @@ class DynamicSegments extends APIEndpoint {
 
     $this->segmentsRepository->bulkDelete([$segment->getId()], SegmentEntity::TYPE_DYNAMIC);
     return $this->successResponse(null, ['count' => 1]);
-  }
-
-  public function listing($data = []) {
-    $data['params'] = $data['params'] ?? ['segments']; // Dummy param to apply constraints properly
-    $definition = $this->listingHandler->getListingDefinition($data);
-    $items = $this->dynamicSegmentsListingRepository->getData($definition);
-    $count = $this->dynamicSegmentsListingRepository->getCount($definition);
-    $filters = $this->dynamicSegmentsListingRepository->getFilters($definition);
-    $groups = $this->dynamicSegmentsListingRepository->getGroups($definition);
-    $segments = $this->segmentsResponseBuilder->buildForListing($items);
-
-    return $this->successResponse($segments, [
-      'count' => $count,
-      'filters' => $filters,
-      'groups' => $groups,
-    ]);
-  }
-
-  public function bulkAction($data = []) {
-    $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
-    $meta = [];
-    if ($data['action'] === 'trash') {
-      $errors = $this->getErrorMessagesForSegmentsUsedInActiveNewsletters($ids);
-      if (count($errors) > 0) {
-        $meta['errors'] = $errors;
-      }
-      $meta['count'] = $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
-    } elseif ($data['action'] === 'restore') {
-      $meta['count'] = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
-    } elseif ($data['action'] === 'delete') {
-      $meta['count'] = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
-    } else {
-      throw UnexpectedValueException::create()
-        ->withErrors([Error::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
-    }
-    return $this->successResponse(null, $meta);
   }
 
   private function getSegment(array $data): ?SegmentEntity {

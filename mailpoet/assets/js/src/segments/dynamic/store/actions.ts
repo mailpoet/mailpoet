@@ -1,5 +1,6 @@
 import { ChangeEvent } from 'react';
 import { select, dispatch } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 
 import * as ROUTES from '../../routes';
@@ -21,8 +22,8 @@ import {
   DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
-import { isErrorResponse } from '../../../ajax';
 import { Query, getSegmentsQuery } from '../list/query';
+import { getDynamicSegments } from '../api';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
@@ -250,26 +251,25 @@ export async function loadDynamicSegments(query?: Query) {
 
   try {
     select(storeName).getDynamicSegmentsLoading().request?.abort();
+    void dispatch(storeName).setDynamicSegmentsLoading(true);
 
-    const response = await MailPoet.Ajax.post({
-      api_version: 'v1',
-      endpoint: 'dynamic_segments',
-      action: 'listing',
-      data: segmentsQuery,
-      onRequestStart: (request: XMLHttpRequest) =>
-        void dispatch(storeName).setDynamicSegmentsLoading(true, request),
+    const response = await getDynamicSegments({
+      ...segmentsQuery,
+      sort_order: segmentsQuery.sort_order as 'asc' | 'desc',
     });
-    const keys = Object.keys(response);
-    if (keys.includes('data') && keys.includes('meta')) {
-      data = response as DynamicSegmentsList;
-    }
+    data = {
+      data: response.items.map((segment) => ({ ...segment, stats: '' })),
+      meta: {
+        count: response.meta.count,
+        groups: response.groups ?? [],
+      },
+    };
   } catch (res: unknown) {
     if (res === 'abort') {
       return { type: 'NOOP' };
     }
-    if (isErrorResponse(res)) {
-      MailPoet.Notice.showApiErrorNotice(res);
-    }
+    const error = res as { message?: string };
+    MailPoet.Notice.error(error.message ?? __('Request failed.', 'mailpoet'));
   }
 
   return {

@@ -195,6 +195,10 @@ class EditorPageRenderer {
       'mailpoet_site_url' => $this->wp->siteUrl(),
       'mailpoet_review_request_illustration_url' => $this->cdnAssetUrl->generateCdnUrl('review-request/review-request-illustration.20190815-1427.svg'),
       'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
+      'mailpoet_segments_api' => [
+        'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+        'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+      ],
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
       'mailpoet_automation_id' => $automationId,
       'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')

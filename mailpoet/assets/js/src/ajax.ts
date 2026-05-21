@@ -7,13 +7,6 @@ export type Response = {
   meta?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
-export interface DynamicSegmentResponse extends Response {
-  meta: {
-    count: number;
-    errors?: string[];
-  };
-}
-
 export type ErrorResponse = {
   errors: {
     error?: string;
