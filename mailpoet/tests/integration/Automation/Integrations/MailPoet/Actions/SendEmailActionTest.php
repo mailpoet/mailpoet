@@ -26,6 +26,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\AbandonedCartSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -214,6 +215,47 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->assertSame($email->getId(), $step->getArgs()['email_id']);
   }
 
+  public function testItRequiresOrderSubjectForOrderReviewUrlToken(): void {
+    $email = $this->createBlockEditorAutomationEmail('<!-- wp:button {"url":"http://%5Bwoocommerce/order-review-url%5D"} --><div class="wp-block-button"><a href="http://%5Bwoocommerce/order-review-url%5D">Leave a review</a></div><!-- /wp:button -->');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->expects($this->never())->method('isSupported');
+    $action = $this->getServiceWithOverrides(SendEmailAction::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $error = null;
+    try {
+      $action->validate(new StepValidationArgs($automation, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame('Use this email in an automation with a WooCommerce order subject or remove the order review link.', $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
+  }
+
+  public function testItRequiresWooCommerceSupportForOrderReviewUrlToken(): void {
+    $email = $this->createBlockEditorAutomationEmail('<!-- wp:button {"url":"[woocommerce/order-review-url]"} --><div class="wp-block-button"><a href="[woocommerce/order-review-url]">Leave a review</a></div><!-- /wp:button -->');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = $this->createOrderTriggeredAutomation($step);
+
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->expects($this->once())->method('isSupported')->willReturn(false);
+    $action = $this->getServiceWithOverrides(SendEmailAction::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $error = null;
+    try {
+      $action->validate(new StepValidationArgs($automation, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame('Update WooCommerce or remove the order review link from this email.', $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
+  }
+
   public function testItDoesNotRunBlockEditorContentValidationForClassicEmails(): void {
     $email = (new Newsletter())->withAutomationType()->withBody(null)->create();
     $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
@@ -268,6 +310,68 @@ class SendEmailActionTest extends \MailPoetTest {
     $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 2);
     $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
     $this->action->run($args, $controller);
+  }
+
+  public function testItDoesNotScheduleEmailWhenOrderReviewUrlCannotBeGenerated(): void {
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $order = $this->tester->createWooCommerceOrder();
+    $email = $this->createBlockEditorAutomationEmail('<!-- wp:button {"url":"[woocommerce/order-review-url]"} --><div class="wp-block-button"><a href="[woocommerce/order-review-url]">Leave a review</a></div><!-- /wp:button -->');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = $this->createOrderTriggeredAutomation($step);
+    $run = new AutomationRun(1, 1, 'trigger-key', [
+      new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]),
+      new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()]),
+    ], 1);
+
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->expects($this->once())->method('getUrl')->willReturn('');
+    $action = $this->getServiceWithOverrides(SendEmailAction::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubscriberAndOrderSubjectEntries($subscriber, $order), 1);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
+
+    $this->assertThrowsExceptionWithMessage(
+      'Cannot send the email because WooCommerce cannot generate an order review link for this order.',
+      function() use ($action, $args, $controller) {
+        $action->run($args, $controller);
+      }
+    );
+
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(0);
+  }
+
+  public function testItSchedulesEmailWhenOrderReviewUrlCanBeGenerated(): void {
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $order = $this->tester->createWooCommerceOrder();
+    $email = $this->createBlockEditorAutomationEmail('<!-- wp:button {"url":"[woocommerce/order-review-url]"} --><div class="wp-block-button"><a href="[woocommerce/order-review-url]">Leave a review</a></div><!-- /wp:button -->');
+    $step = new Step('step-id', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $email->getId()], []);
+    $automation = $this->createOrderTriggeredAutomation($step);
+    $run = new AutomationRun(1, 1, 'trigger-key', [
+      new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]),
+      new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()]),
+    ], 1);
+
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->expects($this->once())->method('getUrl')->willReturn('https://example.com/review-order/1/?key=abc');
+    $action = $this->getServiceWithOverrides(SendEmailAction::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubscriberAndOrderSubjectEntries($subscriber, $order), 1);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
+    $action->run($args, $controller);
+
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(1);
   }
 
   public function testItChecksThatEmailWasSent(): void {
@@ -932,6 +1036,18 @@ class SendEmailActionTest extends \MailPoetTest {
     ];
   }
 
+  private function createOrderTriggeredAutomation(Step $sendEmailStep): Automation {
+    $root = new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]);
+    $trigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-completed', [], [new NextStep($sendEmailStep->getId())]);
+    $automation = new Automation('some-automation', [
+      $root->getId() => $root,
+      $trigger->getId() => $trigger,
+      $sendEmailStep->getId() => $sendEmailStep,
+    ], new \WP_User(), 1);
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+    return $automation;
+  }
+
   private function getSubjectEntries(array $subjects): array {
     $segmentData = array_filter($subjects, function (Subject $subject) {
       return $subject->getKey() === 'mailpoet:segment';
@@ -942,6 +1058,13 @@ class SendEmailActionTest extends \MailPoetTest {
     return [
       new SubjectEntry($this->segmentSubject, reset($segmentData)),
       new SubjectEntry($this->subscriberSubject, reset($subscriberData)),
+    ];
+  }
+
+  private function getSubscriberAndOrderSubjectEntries(SubscriberEntity $subscriber, \WC_Order $order): array {
+    return [
+      new SubjectEntry($this->subscriberSubject, new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()])),
+      new SubjectEntry($this->diContainer->get(OrderSubject::class), new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()])),
     ];
   }
 

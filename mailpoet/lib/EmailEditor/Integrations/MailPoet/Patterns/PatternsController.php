@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AskForReviewPostPurchasePattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EducationalCampaignPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EventInvitationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\FirstPurchaseThankYouPattern;
@@ -96,6 +97,10 @@ class PatternsController {
         new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
         new AbandonedCartPattern($this->cdnAssetUrl),
       ]);
+
+      if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {
+        $this->patterns[] = new AskForReviewPostPurchasePattern($this->cdnAssetUrl);
+      }
 
       // Patterns using generated coupons require WooCommerce 10.8.0+
       $wooCommerceVersion = $this->wooCommerceHelper->getWooCommerceVersion();

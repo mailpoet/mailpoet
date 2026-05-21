@@ -2,20 +2,25 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\AutomationEmailContextProvider;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailContextBuilder {
   private WPFunctions $wp;
+  private ?AutomationEmailContextProvider $automationEmailContextProvider;
 
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    ?AutomationEmailContextProvider $automationEmailContextProvider = null
   ) {
     $this->wp = $wp;
+    $this->automationEmailContextProvider = $automationEmailContextProvider;
   }
 
   public function build(NewsletterEntity $newsletter, ?SendingQueueEntity $sendingQueue, bool $preview): array {
+    $isAutomationType = $this->isAutomationType($newsletter);
     $context = [
       'integration' => 'mailpoet',
       'newsletter_id' => (int)$newsletter->getId(),
@@ -25,10 +30,17 @@ class EmailContextBuilder {
       'is_preview' => $preview,
       'is_single_recipient' => false,
       'subscriber_count' => 0,
-      'mailpoet_is_automation' => false,
+      'mailpoet_is_automation' => $isAutomationType,
     ];
 
-    if ($preview || !$sendingQueue || !$this->isAutomationType($newsletter)) {
+    if ($this->automationEmailContextProvider) {
+      $context = array_merge(
+        $context,
+        $this->automationEmailContextProvider->build($newsletter, $sendingQueue, $preview)
+      );
+    }
+
+    if ($preview || !$sendingQueue || !$isAutomationType) {
       if (!$preview && $sendingQueue && $newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
         $context['is_real_send'] = true;
         $context['subscriber_count'] = $this->getQueueSubscriberCount($sendingQueue);
@@ -40,7 +52,6 @@ class EmailContextBuilder {
     $subscribers = $task ? $task->getSubscribers() : null;
     $subscriberCount = $subscribers ? count($subscribers) : 0;
     $context['subscriber_count'] = $subscriberCount;
-    $context['mailpoet_is_automation'] = true;
 
     if ($subscriberCount !== 1) {
       return $context;

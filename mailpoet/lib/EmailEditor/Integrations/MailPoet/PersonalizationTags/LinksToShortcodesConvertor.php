@@ -18,23 +18,141 @@ class LinksToShortcodesConvertor {
     '[mailpoet/newsletter-view-in-browser-url]' => '[link:newsletter_view_in_browser_url]',
   ];
 
+  private const PERSONALIZED_URL_TOKENS = [
+    '[woocommerce/order-review-url]' => true,
+  ];
+
   public function convertLinkTagsToShortcodes(string $content): string {
     $contentProcessor = new HTML_Tag_Processor($content);
     while ($contentProcessor->next_token()) {
-      if ($contentProcessor->get_token_type() === '#tag' && $contentProcessor->get_tag() === 'A' && $contentProcessor->get_attribute('data-link-href')) {
-        $href = $contentProcessor->get_attribute('data-link-href');
-        if (!isset(self::TOKEN_MAP[$href])) {
+      if ($contentProcessor->get_token_type() !== '#tag' || $contentProcessor->get_tag() !== 'A') {
+        continue;
+      }
+
+      $href = $contentProcessor->get_attribute('data-link-href');
+      if (is_string($href)) {
+        if (isset(self::TOKEN_MAP[$href])) {
+          $contentProcessor->set_attribute('href', 'http://' . self::TOKEN_MAP[$href]);
+          $contentProcessor->remove_attribute('data-link-href');
+          $contentProcessor->remove_attribute('contenteditable');
           continue;
         }
-        $contentProcessor->set_attribute('href', 'http://' . self::TOKEN_MAP[$href]);
-        $contentProcessor->remove_attribute('data-link-href');
-        $contentProcessor->remove_attribute('contenteditable');
+
+        $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
+        if ($personalizedUrlToken !== null) {
+          $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
+          $contentProcessor->remove_attribute('href');
+        }
+        continue;
+      }
+
+      $href = $contentProcessor->get_attribute('href');
+      if (!is_string($href)) {
+        continue;
+      }
+
+      $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
+      if ($personalizedUrlToken !== null) {
+        $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
+        $contentProcessor->remove_attribute('href');
       }
     }
     $contentProcessor->flush_updates();
     $updated = $contentProcessor->get_updated_html();
-    // Remove temporary prefix. It was needed so hat the HTML_Tag_Processor could add value to href.
+    // Remove temporary prefix. It was needed so that the HTML_Tag_Processor could add value to href.
     $updated = str_replace('http://[', '[', $updated);
     return $updated;
+  }
+
+  /**
+   * @param array<string, string> $personalizedUrlTokens
+   */
+  public function restorePersonalizedLinkHrefs(string $content, array $personalizedUrlTokens = []): string {
+    $contentProcessor = new HTML_Tag_Processor($content);
+    while ($contentProcessor->next_token()) {
+      if ($contentProcessor->get_token_type() !== '#tag' || $contentProcessor->get_tag() !== 'A') {
+        continue;
+      }
+
+      $href = $contentProcessor->get_attribute('data-link-href');
+      if (!is_string($href)) {
+        continue;
+      }
+
+      if ($href === '') {
+        $contentProcessor->remove_attribute('href');
+        $contentProcessor->remove_attribute('data-link-href');
+        $contentProcessor->remove_attribute('contenteditable');
+        continue;
+      }
+
+      $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
+      if ($personalizedUrlToken !== null) {
+        $resolvedHref = $personalizedUrlTokens[$personalizedUrlToken] ?? '';
+        if ($resolvedHref === '') {
+          $contentProcessor->remove_attribute('href');
+          $contentProcessor->remove_attribute('data-link-href');
+          $contentProcessor->remove_attribute('contenteditable');
+          continue;
+        }
+        $contentProcessor->set_attribute('href', $resolvedHref);
+        $contentProcessor->remove_attribute('data-link-href');
+        $contentProcessor->remove_attribute('contenteditable');
+        continue;
+      }
+
+      $contentProcessor->set_attribute('href', $href);
+      $contentProcessor->remove_attribute('data-link-href');
+      $contentProcessor->remove_attribute('contenteditable');
+    }
+    $contentProcessor->flush_updates();
+    return $contentProcessor->get_updated_html();
+  }
+
+  /**
+   * @param array<string, string> $personalizedUrlTokens
+   */
+  public function restorePersonalizedLinkUrls(string $content, array $personalizedUrlTokens = []): string {
+    foreach ($personalizedUrlTokens as $token => $resolvedUrl) {
+      $variants = $this->getPersonalizedUrlTokenVariants($token);
+      usort($variants, function(string $a, string $b): int {
+        return strlen($b) <=> strlen($a);
+      });
+      $content = str_replace($variants, $resolvedUrl, $content);
+    }
+    return $content;
+  }
+
+  private function normalizePersonalizedUrlToken(string $url): ?string {
+    $decodedUrl = rawurldecode($url);
+    foreach (array_keys(self::PERSONALIZED_URL_TOKENS) as $token) {
+      if ($decodedUrl === $token || $decodedUrl === 'http://' . $token || $decodedUrl === 'https://' . $token) {
+        return $token;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @return string[]
+   */
+  private function getPersonalizedUrlTokenVariants(string $token): array {
+    $encodedBracketsToken = str_replace(['[', ']'], ['%5B', '%5D'], $token);
+    $closingBracketEncodedToken = str_replace(']', '%5D', $token);
+
+    $tokens = [
+      $token,
+      $encodedBracketsToken,
+      $closingBracketEncodedToken,
+    ];
+
+    $variants = [];
+    foreach ($tokens as $tokenVariant) {
+      $variants[] = $tokenVariant;
+      $variants[] = 'http://' . $tokenVariant;
+      $variants[] = 'https://' . $tokenVariant;
+    }
+
+    return array_values(array_unique($variants));
   }
 }

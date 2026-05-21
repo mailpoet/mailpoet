@@ -204,9 +204,16 @@ class EditorPageRenderer {
       'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
     ];
-    $this->wp->wpAddInlineScript('email_editor_integration', implode('', array_map(function ($key) use ($inline_script_data) {
+    $inlineScript = implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, wp_json_encode($inline_script_data[$key], JSON_HEX_TAG | JSON_UNESCAPED_SLASHES));
-    }, array_keys($inline_script_data))), 'before');
+    }, array_keys($inline_script_data)));
+    $scriptHandles = [
+      'email_editor_integration',
+      'mailpoet-powered-by-mailpoet-block',
+    ];
+    foreach ($scriptHandles as $scriptHandle) {
+      $this->wp->wpAddInlineScript($scriptHandle, $inlineScript, 'before');
+    }
 
     // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');

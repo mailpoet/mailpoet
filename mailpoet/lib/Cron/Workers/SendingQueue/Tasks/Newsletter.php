@@ -440,6 +440,14 @@ class Newsletter {
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
       }
+      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
+      if (is_string($personalizedHtml)) {
+        $preparedNewsletter[1] = $personalizedHtml;
+      }
+      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $preparedNewsletter[2], $context);
+      if (is_string($personalizedText)) {
+        $preparedNewsletter[2] = $personalizedText;
+      }
     }
     return [
       'id' => $newsletter->getId(),
