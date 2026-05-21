@@ -363,13 +363,13 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->executeJS('window.__mailpoetDataViewsStableSnapshot = null;');
       $i->waitForJS(<<<'JS'
         const root = document.querySelector('.mailpoet-dataviews');
-        if (!root) return true;
+        if (!root) return false;
         if (root.querySelector('.dataviews-loading, table[aria-busy="true"]')) return false;
         return root.querySelector('table[aria-busy="false"], .dataviews-no-results') !== null;
       JS);
       $i->waitForJS(<<<'JS'
         const root = document.querySelector('.mailpoet-dataviews');
-        if (!root) return true;
+        if (!root) return false;
         const rows = Array.from(root.querySelectorAll('tbody tr')).map((row) => row.textContent.trim());
         const noResults = root.querySelector('.dataviews-no-results')?.textContent.trim() || '';
         const snapshot = JSON.stringify({ rows, noResults });
@@ -437,12 +437,12 @@ class AcceptanceTester extends \Codeception\Actor {
         . '  input.dispatchEvent(new Event("input", { bubbles: true }));'
         . '}'
       );
+      $i->waitForListingItemsToLoad();
     } else {
       $i->clearField($element);
       $i->fillField($element, $query);
       $i->pressKey($element, WebDriverKeys::ENTER);
     }
-    $i->waitForListingItemsToLoad();
   }
 
   public function createListWithSubscriber() {
