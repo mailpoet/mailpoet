@@ -67,6 +67,24 @@ describe('automation manual-start API helpers', () => {
     });
   });
 
+  it('rethrows aborted preview requests without manual-start error wrapping', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    apiFetch.setFetchHandler(async () => undefined);
+
+    try {
+      await previewManualStart(
+        7,
+        { segment_id: 11, filter_segment_id: null },
+        controller.signal,
+      );
+      throw new Error('Expected abort error.');
+    } catch (error) {
+      expect((error as { name?: string }).name).to.equal('AbortError');
+      expect((error as { code?: string }).code).to.equal(undefined);
+    }
+  });
+
   it('normalizes start responses and posts the preview signature', async () => {
     let capturedOptions: APIFetchOptions | undefined;
     apiFetch.setFetchHandler(async (options) => {

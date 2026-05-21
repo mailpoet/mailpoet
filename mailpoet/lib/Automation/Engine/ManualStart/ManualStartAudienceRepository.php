@@ -103,32 +103,31 @@ class ManualStartAudienceRepository {
     $queuedCount = 0;
     $lastSubscriberId = 0;
     do {
+      $candidateSubscriberIds = $this->getCandidateSubscriberIds($eligibleQueryBuilder, $lastSubscriberId);
+      if ($candidateSubscriberIds === []) {
+        break;
+      }
+
       $insertedCount = (int)$this->entityManager->getConnection()->executeStatement(
         "INSERT IGNORE INTO $scheduledTaskSubscribersTable
          (`task_id`, `subscriber_id`, `processed`)
-         SELECT :taskId, candidates.id, :processed
+         SELECT :manualStartTaskId, candidates.id, :manualStartProcessed
          FROM ({$eligibleQueryBuilder->getSQL()}) candidates
-         WHERE candidates.id > :lastSubscriberId
-         ORDER BY candidates.id ASC
-         LIMIT :queueLimit",
+         WHERE candidates.id IN (:manualStartSubscriberIds)",
         array_merge($eligibleQueryBuilder->getParameters(), [
-          'taskId' => $taskId,
-          'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-          'lastSubscriberId' => $lastSubscriberId,
-          'queueLimit' => self::QUEUE_CHUNK_SIZE,
+          'manualStartTaskId' => $taskId,
+          'manualStartProcessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+          'manualStartSubscriberIds' => $candidateSubscriberIds,
         ]),
         array_merge($eligibleQueryBuilder->getParameterTypes(), [
-          'taskId' => ParameterType::INTEGER,
-          'processed' => ParameterType::INTEGER,
-          'lastSubscriberId' => ParameterType::INTEGER,
-          'queueLimit' => ParameterType::INTEGER,
+          'manualStartTaskId' => ParameterType::INTEGER,
+          'manualStartProcessed' => ParameterType::INTEGER,
+          'manualStartSubscriberIds' => ArrayParameterType::INTEGER,
         ])
       );
       $queuedCount += $insertedCount;
-      if ($insertedCount > 0) {
-        $lastSubscriberId = $this->getMaxQueuedSubscriberId((int)$taskId);
-      }
-    } while ($insertedCount === self::QUEUE_CHUNK_SIZE);
+      $lastSubscriberId = (int)max($candidateSubscriberIds);
+    } while (count($candidateSubscriberIds) === self::QUEUE_CHUNK_SIZE);
 
     return $queuedCount;
   }
@@ -289,13 +288,13 @@ class ManualStartAudienceRepository {
         'subscribers',
         $subscriberSegmentTable,
         'subscriber_segment',
-        'subscriber_segment.subscriber_id = subscribers.id AND subscriber_segment.segment_id = :segmentId'
+        'subscriber_segment.subscriber_id = subscribers.id AND subscriber_segment.segment_id = :manualStartSegmentId'
       )
       ->where('subscribers.deleted_at IS NULL')
-      ->andWhere('subscribers.status = :subscribed')
-      ->andWhere('subscriber_segment.status = :subscribed')
-      ->setParameter('segmentId', (int)$segment->getId(), ParameterType::INTEGER)
-      ->setParameter('subscribed', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING);
+      ->andWhere('subscribers.status = :manualStartSubscribedStatus')
+      ->andWhere('subscriber_segment.status = :manualStartSubscribedStatus')
+      ->setParameter('manualStartSegmentId', (int)$segment->getId(), ParameterType::INTEGER)
+      ->setParameter('manualStartSubscribedStatus', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING);
 
     if ($filterSegment instanceof SegmentEntity) {
       $filterQueryBuilder = $this->segmentSubscribersRepository->createSubscribersInSegmentQueryBuilder($filterSegment, SubscriberEntity::STATUS_SUBSCRIBED);
@@ -322,25 +321,44 @@ class ManualStartAudienceRepository {
       SELECT 1
       FROM $subjectsTable automation_run_subjects
       INNER JOIN $runsTable automation_runs ON automation_runs.id = automation_run_subjects.automation_run_id
-      WHERE automation_runs.automation_id = :automationId
-        AND automation_run_subjects.`key` = :subscriberSubjectKey
-        AND automation_run_subjects.`hash` = MD5(CONCAT(:subscriberSubjectKey, CONCAT('a:1:{s:13:\"subscriber_id\";i:', subscribers.id, ';}')))
+      WHERE automation_runs.automation_id = :manualStartAutomationId
+        AND automation_run_subjects.`key` = :manualStartSubscriberSubjectKey
+        AND automation_run_subjects.`hash` = MD5(CONCAT(:manualStartSubscriberSubjectKey, CONCAT('a:1:{s:13:\"subscriber_id\";i:', subscribers.id, ';}')))
     )";
 
     $queryBuilder->andWhere($excludeAlreadyEntered ? "NOT $existsCondition" : $existsCondition)
-      ->setParameter('automationId', $automationId, ParameterType::INTEGER)
-      ->setParameter('subscriberSubjectKey', SubscriberSubject::KEY, ParameterType::STRING);
+      ->setParameter('manualStartAutomationId', $automationId, ParameterType::INTEGER)
+      ->setParameter('manualStartSubscriberSubjectKey', SubscriberSubject::KEY, ParameterType::STRING);
   }
 
-  private function getMaxQueuedSubscriberId(int $taskId): int {
-    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
-    $maxSubscriberId = $this->entityManager->getConnection()->executeQuery(
-      "SELECT MAX(subscriber_id) FROM $scheduledTaskSubscribersTable WHERE task_id = :taskId",
-      ['taskId' => $taskId],
-      ['taskId' => ParameterType::INTEGER]
-    )->fetchOne();
+  /**
+   * @return int[]
+   */
+  private function getCandidateSubscriberIds(QueryBuilder $eligibleQueryBuilder, int $lastSubscriberId): array {
+    $subscriberIds = $this->entityManager->getConnection()->executeQuery(
+      "SELECT candidates.id
+       FROM ({$eligibleQueryBuilder->getSQL()}) candidates
+       WHERE candidates.id > :manualStartLastSubscriberId
+       ORDER BY candidates.id ASC
+       LIMIT :manualStartQueueLimit",
+      array_merge($eligibleQueryBuilder->getParameters(), [
+        'manualStartLastSubscriberId' => $lastSubscriberId,
+        'manualStartQueueLimit' => self::QUEUE_CHUNK_SIZE,
+      ]),
+      array_merge($eligibleQueryBuilder->getParameterTypes(), [
+        'manualStartLastSubscriberId' => ParameterType::INTEGER,
+        'manualStartQueueLimit' => ParameterType::INTEGER,
+      ])
+    )->fetchFirstColumn();
 
-    return $this->toInt($maxSubscriberId);
+    $ids = [];
+    foreach ($subscriberIds as $subscriberId) {
+      if (is_numeric($subscriberId)) {
+        $ids[] = (int)$subscriberId;
+      }
+    }
+
+    return $ids;
   }
 
   private function isSubscriberSubscribedToSegment(int $subscriberId, int $segmentId): bool {

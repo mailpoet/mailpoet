@@ -31,10 +31,14 @@ class AutomationManualStartEndpointTest extends AutomationTest {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var ManualStartAudienceRepository */
+  private $audienceRepository;
+
   public function _before() {
     parent::_before();
     $this->em = $this->diContainer->get(EntityManager::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->audienceRepository = $this->diContainer->get(ManualStartAudienceRepository::class);
   }
 
   public function testPreviewReturnsCountsAndStartQueuesEligibleSubscribers(): void {
@@ -280,6 +284,37 @@ class AutomationManualStartEndpointTest extends AutomationTest {
 
     $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5, $start['queued_count']);
     $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5, $this->countTaskSubscribers($start['task_id']));
+  }
+
+  public function testQueueChunksContinueWhenInsertIgnoreSkipsExistingRows(): void {
+    $segment = (new Segment())->create();
+    $firstSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    for ($i = 1; $i < ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5; $i++) {
+      (new Subscriber())->withSegments([$segment])->create();
+    }
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+    $task = new ScheduledTaskEntity();
+    $task->setType(ManualAutomationStartWorker::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setScheduledAt(new \DateTimeImmutable());
+    $this->em->persist($task);
+    $this->em->flush();
+
+    $this->em->persist(new ScheduledTaskSubscriberEntity($task, $firstSubscriber));
+    $this->em->flush();
+
+    $queuedCount = $this->audienceRepository->queueEligibleSubscribers(
+      $task,
+      $automation->getId(),
+      $segment,
+      null
+    );
+
+    $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 4, $queuedCount);
+    $this->assertSame(ManualStartAudienceRepository::QUEUE_CHUNK_SIZE + 5, $this->countTaskSubscribers((int)$task->getId()));
   }
 
   private function postPreview(int $automationId, ?int $segmentId, ?int $filterSegmentId = null, bool $includeFilterSegmentId = false): array {

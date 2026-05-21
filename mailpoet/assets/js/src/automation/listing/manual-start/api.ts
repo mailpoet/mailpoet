@@ -36,6 +36,16 @@ function toThrowableManualStartError(error: unknown): ManualStartApiError {
   return new ManualStartApiError(normalizeManualStartError(error));
 }
 
+function createAbortError(): Error {
+  const error = new Error('Aborted');
+  error.name = 'AbortError';
+  return error;
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
 export async function previewManualStart(
   automationId: number,
   request: ManualStartPreviewRequest,
@@ -49,12 +59,19 @@ export async function previewManualStart(
       signal,
     });
 
+    if (signal?.aborted) {
+      throw createAbortError();
+    }
+
     if (!response?.data) {
       throw toThrowableManualStartError(null);
     }
 
     return response.data;
   } catch (error) {
+    if (isAbortError(error) || signal?.aborted) {
+      throw isAbortError(error) ? error : createAbortError();
+    }
     throw toThrowableManualStartError(error);
   }
 }
