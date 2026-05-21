@@ -2,7 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { __unstableAwaitPromise as AwaitPromise } from '@wordpress/data-controls';
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
-import { legacyApiFetch, ListingItem } from './legacy-api';
+import { getLegacyNewsletters, legacyApiFetch, ListingItem } from './legacy-api';
 import { getDescription } from './legacy-description';
 import { AutomationItem } from './types';
 import { Automation, AutomationStatus } from '../automation';
@@ -35,25 +35,15 @@ const mapToAutomation = (item: ListingItem): AutomationItem => ({
 });
 
 export function* loadLegacyAutomations() {
-  const response: unknown[] = yield AwaitPromise(
+  const response: ListingItem[][] = yield AwaitPromise(
     Promise.all([
-      legacyApiFetch({
-        endpoint: 'newsletters',
-        method: 'listing',
-        'data[params][type]': 'welcome',
-        'data[limit]': '400',
-      }),
-      legacyApiFetch({
-        endpoint: 'newsletters',
-        method: 'listing',
-        'data[params][type]': 'automatic',
-        'data[limit]': '400',
-      }),
+      getLegacyNewsletters('welcome'),
+      getLegacyNewsletters('automatic'),
     ]),
   );
 
   const automations = response
-    .flatMap<ListingItem>(({ data }: { data: ListingItem[] }) => data)
+    .flatMap((items) => items)
     .map<AutomationItem>(mapToAutomation);
 
   return {

@@ -9,6 +9,7 @@ import {
 } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic-emails/fetch-editor-shortcodes.jsx';
 import { ErrorBoundary } from 'common';
+import { setNewsletterStatus } from 'newsletters/api';
 import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
@@ -151,25 +152,17 @@ const initializeEditor = (config) => {
           window.location = `admin.php?page=mailpoet-newsletters#/${newsletter.type}`;
           return;
         }
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'newsletters',
-          action: 'setStatus',
-          data: {
-            id: newsletter.id,
-            status: 'draft',
-          },
-        })
-          .done((setStatusResponse) => {
+        setNewsletterStatus(Number(newsletter.id), 'draft')
+          .then((setStatusResponse) => {
             if (setStatusResponse.data.status === 'draft') {
               MailPoet.Notice.system(
                 __('This email was deactivated.', 'mailpoet'),
               );
             }
           })
-          .fail((pauseFailResponse) => {
+          .catch((pauseFailResponse) => {
             MailPoet.Notice.error(
-              pauseFailResponse.errors.map((error) => error.message),
+              [pauseFailResponse.message],
               { scroll: true, static: true },
             );
           });

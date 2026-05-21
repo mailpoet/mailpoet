@@ -31,6 +31,7 @@ import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
+import { setNewsletterStatus, type NewsletterApiError } from './api';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
 import { SendContext, SendContextType } from './send-context';
 
@@ -501,16 +502,8 @@ class NewsletterSendComponent extends Component<
       });
 
   activateNewsletter = (saveResponse: { data: NewsLetter }) =>
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'setStatus',
-      data: {
-        id: this.props.params.id,
-        status: 'active',
-      },
-    })
-      .done((response) => {
+    setNewsletterStatus(Number(this.props.params.id), 'active')
+      .then((response) => {
         // save template in recently sent category
         this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {
@@ -557,8 +550,8 @@ class NewsletterSendComponent extends Component<
           MailPoet.Modal.loading(false);
         });
       })
-      .fail((err) => {
-        this.showError(err);
+      .catch((err: NewsletterApiError) => {
+        this.showError({ errors: [{ message: err.message }] });
         this.setState({ loading: false });
         MailPoet.Modal.loading(false);
       });

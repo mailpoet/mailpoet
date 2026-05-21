@@ -7,46 +7,24 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Workers\StatisticsExport as StatisticsExportWorker;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Listing;
-use MailPoet\Newsletter\BulkActionController;
-use MailPoet\Newsletter\BulkActionException;
-use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
-use MailPoet\Newsletter\StatusController;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
-use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class Newsletters extends APIEndpoint {
 
-  /** @var Listing\Handler */
-  private $listingHandler;
-
   /** @var WPFunctions */
   private $wp;
-
-  /** @var SettingsController */
-  private $settings;
-
-  /** @var CronHelper */
-  private $cronHelper;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
@@ -54,9 +32,6 @@ class Newsletters extends APIEndpoint {
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
-
-  /** @var NewsletterListingRepository */
-  private $newsletterListingRepository;
 
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
@@ -78,28 +53,12 @@ class Newsletters extends APIEndpoint {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
-  /** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
-
-  /** @var CapabilitiesManager */
-  private $capabilitiesManager;
-
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
-  /** @var BulkActionController */
-  private $bulkActionController;
-
-  /** @var StatusController */
-  private $statusController;
-
   public function __construct(
-    Listing\Handler $listingHandler,
     WPFunctions $wp,
-    SettingsController $settings,
-    CronHelper $cronHelper,
     NewslettersRepository $newslettersRepository,
-    NewsletterListingRepository $newsletterListingRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
     Emoji $emoji,
     SendPreviewController $sendPreviewController,
@@ -107,18 +66,10 @@ class Newsletters extends APIEndpoint {
     NewsletterDeleteController $newsletterDeleteController,
     NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
-    ScheduledTasksRepository $scheduledTasksRepository,
-    CapabilitiesManager $capabilitiesManager,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
-    BulkActionController $bulkActionController,
-    StatusController $statusController
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer
   ) {
-    $this->listingHandler = $listingHandler;
     $this->wp = $wp;
-    $this->settings = $settings;
-    $this->cronHelper = $cronHelper;
     $this->newslettersRepository = $newslettersRepository;
-    $this->newsletterListingRepository = $newsletterListingRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
     $this->emoji = $emoji;
     $this->sendPreviewController = $sendPreviewController;
@@ -126,11 +77,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterDeleteController = $newsletterDeleteController;
     $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
-    $this->scheduledTasksRepository = $scheduledTasksRepository;
-    $this->capabilitiesManager = $capabilitiesManager;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
-    $this->bulkActionController = $bulkActionController;
-    $this->statusController = $statusController;
   }
 
   public function get($data = []) {
@@ -206,36 +153,6 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($response);
   }
 
-  /**
-   * @deprecated Use the REST endpoint `PUT /mailpoet/v1/newsletters/{id}/status`
-   *   instead. Kept callable for third-party integrations. The orchestration
-   *   lives in {@see StatusController}.
-   */
-  public function setStatus($data = []) {
-    $status = (isset($data['status']) ? $data['status'] : null);
-    if (!$status) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('You need to specify a status.', 'mailpoet'),
-      ]);
-    }
-    $newsletter = $this->getNewsletter($data);
-    if ($newsletter === null) {
-      return $this->errorResponse([
-        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
-      ]);
-    }
-    try {
-      $updated = $this->statusController->setStatus($newsletter, (string)$status);
-    } catch (BulkActionException $exception) {
-      return $this->errorResponse(
-        [$exception->getErrorCode() => $exception->getMessage()],
-        [],
-        $exception->getStatusCode()
-      );
-    }
-    return $this->successResponse($this->newslettersResponseBuilder->build($updated));
-  }
-
   public function restore($data = []) {
     $newsletter = $this->getNewsletter($data);
     if ($newsletter instanceof NewsletterEntity) {
@@ -275,27 +192,6 @@ class Newsletters extends APIEndpoint {
       $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
       $this->wp->doAction('mailpoet_api_newsletters_delete_after', [$newsletter->getId()]);
       return $this->successResponse(null, ['count' => 1]);
-    } else {
-      return $this->errorResponse([
-        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
-      ]);
-    }
-  }
-
-  /**
-   * @deprecated Use the REST endpoint `POST /mailpoet/v1/newsletters/{id}/duplicate`
-   *   instead. Kept callable for third-party integrations.
-   */
-  public function duplicate($data = []) {
-    $newsletter = $this->getNewsletter($data);
-
-    if ($newsletter instanceof NewsletterEntity) {
-      $duplicate = $this->newsletterSaveController->duplicate($newsletter);
-      $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
-      return $this->successResponse(
-        $this->newslettersResponseBuilder->build($duplicate),
-        ['count' => 1]
-      );
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
@@ -349,109 +245,6 @@ class Newsletters extends APIEndpoint {
       return $this->errorResponse([$e->getCode() => $e->getMessage()]);
     }
     return $this->successResponse($this->newslettersResponseBuilder->build($newsletter));
-  }
-
-  /**
-   * @deprecated Use the REST endpoint `GET /mailpoet/v1/newsletters` instead.
-   *   Kept callable for third-party integrations posting to the legacy JSON API.
-   */
-  public function listing($data = []) {
-    $definition = $this->listingHandler->getListingDefinition($data);
-    $items = $this->newsletterListingRepository->getData($definition);
-    $count = $this->newsletterListingRepository->getCount($definition);
-    $filters = $this->newsletterListingRepository->getFilters($definition);
-    $groups = $this->newsletterListingRepository->getGroups($definition);
-
-    $data = [];
-    foreach ($this->newslettersResponseBuilder->buildForListing($items) as $newsletterData) {
-      $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletterData);
-    }
-
-    return $this->successResponse($data, [
-      'count' => $count,
-      'filters' => $filters,
-      'groups' => $groups,
-      'mta_log' => $this->settings->get('mta_log'),
-      'mta_method' => $this->settings->get('mta.method'),
-      'cron_accessible' => $this->cronHelper->isDaemonAccessible(),
-      'current_time' => $this->wp->currentTime('mysql'),
-    ]);
-  }
-
-  /**
-   * @deprecated Use the REST endpoint `POST /mailpoet/v1/newsletters/bulk-action`
-   *   instead. Kept callable for third-party integrations. The orchestration
-   *   lives in {@see BulkActionController}; `export_stats` is still handled
-   *   inline because it is premium-gated and async.
-   */
-  public function bulkAction($data = []) {
-    $action = (string)($data['action'] ?? '');
-    $definition = $this->listingHandler->getListingDefinition($data['listing']);
-
-    if ($action === 'export_stats') {
-      $ids = $this->newsletterListingRepository->getActionableIds($definition);
-      return $this->scheduleStatsExport($ids, $data);
-    }
-
-    try {
-      $result = $this->bulkActionController->execute($action, $definition);
-    } catch (BulkActionException $exception) {
-      return $this->errorResponse(
-        [$exception->getErrorCode() => $exception->getMessage()],
-        [],
-        $exception->getStatusCode()
-      );
-    }
-    return $this->successResponse(null, ['count' => $result['count']]);
-  }
-
-  /**
-   * Schedules an asynchronous bulk stats export task and returns its id.
-   * Premium-gated via the detailedAnalytics capability.
-   *
-   * @param int[] $ids
-   */
-  private function scheduleStatsExport(array $ids, array $data) {
-    $capability = $this->capabilitiesManager->getCapability('detailedAnalytics');
-    if ($capability === null || $capability->isRestricted) {
-      return $this->errorResponse([
-        APIError::FORBIDDEN => __('Bulk statistics export requires a MailPoet plan with detailed analytics.', 'mailpoet'),
-      ], [], Response::STATUS_FORBIDDEN);
-    }
-
-    if (empty($ids)) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('No newsletters selected for export.', 'mailpoet'),
-      ]);
-    }
-
-    $format = isset($data['format']) && is_string($data['format'])
-      ? strtolower($data['format'])
-      : StatisticsExporter::FORMAT_CSV;
-    if ($format !== StatisticsExporter::FORMAT_CSV && $format !== StatisticsExporter::FORMAT_XLSX) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('Unsupported export format. Use csv or xlsx.', 'mailpoet'),
-      ]);
-    }
-
-    $task = new ScheduledTaskEntity();
-    $task->setType(StatisticsExportWorker::TASK_TYPE);
-    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $task->setScheduledAt(Carbon::now()->millisecond(0));
-    $task->setPriority(ScheduledTaskEntity::PRIORITY_HIGH);
-    $task->setMeta([
-      'job_type' => StatisticsExportWorker::JOB_TYPE_BULK,
-      'newsletter_ids' => array_values(array_map('intval', $ids)),
-      'format' => $format,
-      'requested_by' => (int)$this->wp->getCurrentUserId(),
-    ]);
-    $this->scheduledTasksRepository->persist($task);
-    $this->scheduledTasksRepository->flush();
-
-    return $this->successResponse([
-      'taskId' => (int)$task->getId(),
-      'count' => count($ids),
-    ]);
   }
 
   public function create($data = []) {

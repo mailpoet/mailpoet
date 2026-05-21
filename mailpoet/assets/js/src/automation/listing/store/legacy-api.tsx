@@ -1,4 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+import { api } from '../../config';
 import { AutomationStatus } from '../automation';
 
 type ApiOptions = {
@@ -26,6 +28,17 @@ export type ListingItem = {
   };
 };
 
+type ListingResponse = {
+  data: {
+    items: ListingItem[];
+    meta: {
+      pages: number;
+    };
+  };
+};
+
+const LEGACY_AUTOMATIONS_PER_PAGE = 100;
+
 export const legacyApiFetch = ({ endpoint, method, ...params }: ApiOptions) =>
   apiFetch({
     url: window.ajaxurl,
@@ -42,3 +55,31 @@ export const legacyApiFetch = ({ endpoint, method, ...params }: ApiOptions) =>
       ...params,
     }),
   });
+
+export async function getLegacyNewsletters(
+  type: ListingItem['type'],
+): Promise<ListingItem[]> {
+  let page = 1;
+  let pages = 1;
+  const items: ListingItem[] = [];
+
+  do {
+    // eslint-disable-next-line no-await-in-loop
+    const response = await apiFetch<ListingResponse>({
+      url: addQueryArgs(`${api.root}/mailpoet/v1/newsletters`, {
+        type,
+        page,
+        per_page: LEGACY_AUTOMATIONS_PER_PAGE,
+      }),
+      method: 'GET',
+      headers: {
+        'X-WP-Nonce': api.nonce,
+      },
+    });
+    items.push(...response.data.items);
+    pages = response.data.meta.pages;
+    page += 1;
+  } while (page <= pages);
+
+  return items;
+}

@@ -149,6 +149,10 @@ class NewsletterEditor {
       'brand_styles' => [
         'available' => $this->brandStyles->isAvailable(),
       ],
+      'api' => [
+        'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+        'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+      ],
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
