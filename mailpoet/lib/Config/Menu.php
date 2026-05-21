@@ -281,7 +281,7 @@ class Menu {
     $this->registerAutomationMenu();
 
     // Forms page
-    $formsPage = $this->wp->addSubmenuPage(
+    $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       esc_html__('Forms', 'mailpoet'),
@@ -292,18 +292,6 @@ class Menu {
         'forms',
       ]
     );
-
-    // add limit per page to screen options
-    $this->wp->addAction('load-' . $formsPage, function() {
-      $this->wp->addScreenOption('per_page', [
-        'label' => _x(
-          'Number of forms per page',
-          'forms per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_forms_per_page',
-      ]);
-    });
 
     // form editor
     $formEditorPage = $this->wp->addSubmenuPage(
@@ -429,6 +417,9 @@ class Menu {
     );
 
     // add limit per page to screen options
+    // The lists page renders the StaticSegments listing, which reads its limit
+    // via PageLimit::getLimitPerPage('segments') -- so the screen option must
+    // write to the `mailpoet_segments_per_page` user meta.
     $this->wp->addAction('load-' . $listsPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => _x(
@@ -436,12 +427,12 @@ class Menu {
           'lists per page (screen options)',
           'mailpoet'
         ),
-        'option' => 'mailpoet_lists_per_page',
+        'option' => 'mailpoet_segments_per_page',
       ]);
     });
 
     // Segments page
-    $segmentsPage = $this->wp->addSubmenuPage(
+    $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Segments', 'mailpoet')),
       esc_html__('Segments', 'mailpoet'),
@@ -452,18 +443,6 @@ class Menu {
         'segments',
       ]
     );
-
-    // add limit per page to screen options
-    $this->wp->addAction('load-' . $segmentsPage, function() {
-      $this->wp->addScreenOption('per_page', [
-        'label' => _x(
-          'Number of segments per page',
-          'segments per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_segments_per_page',
-      ]);
-    });
 
     // Settings page
     $this->wp->addSubmenuPage(
