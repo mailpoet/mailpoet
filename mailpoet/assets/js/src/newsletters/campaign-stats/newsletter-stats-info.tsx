@@ -20,6 +20,7 @@ import {
   Tag,
   getNewsletterStatusString,
 } from 'common';
+import { duplicateNewsletter as duplicateNewsletterRest } from 'newsletters/api';
 import { ExportButton } from './export-button';
 import { NewsletterType } from './newsletter-type';
 
@@ -64,16 +65,10 @@ const duplicateNewsletter = (
   newsletter: NewsletterType,
   performActionAfterUpdate = () => {},
 ) => {
-  void MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'newsletters',
-    action: 'duplicate',
-    data: {
-      id: newsletter.id,
-    },
-  })
-    .done((response) => {
-      const editorHref = getEditorLink(response.data as NewsletterType);
+  void duplicateNewsletterRest(Number(newsletter.id))
+    .then((response) => {
+      const duplicatedNewsletter = response.data as unknown as NewsletterType;
+      const editorHref = getEditorLink(duplicatedNewsletter);
 
       MailPoet.Notice.success(
         sprintf(
@@ -83,17 +78,15 @@ const duplicateNewsletter = (
           ),
           newsletter.subject,
           editorHref,
-          (response.data as NewsletterType).subject,
+          duplicatedNewsletter.subject,
         ),
         { static: true },
       );
     })
-    .fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
-      }
+    .catch((response: Error) => {
+      MailPoet.Notice.error(response.message, { scroll: true });
     })
-    .always(() => {
+    .finally(() => {
       performActionAfterUpdate();
     });
 };

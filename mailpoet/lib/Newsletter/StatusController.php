@@ -14,13 +14,12 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 
 /**
- * Centralized newsletter status-toggle (active/draft) flow shared by the
- * legacy {@see \MailPoet\API\JSON\v1\Newsletters::setStatus()} endpoint and
- * the REST endpoint at `PUT mailpoet/v1/newsletters/{id}/status`.
+ * Centralized newsletter status-toggle (active/draft) flow used by the REST
+ * endpoint at `PUT mailpoet/v1/newsletters/{id}/status`.
  *
  * Lifts the status change, paused-queue resume, post-notification reschedule,
- * and authorized-sender gating into one place so both transports share the
- * same semantics and the REST endpoint can stay a thin HTTP adapter.
+ * and authorized-sender gating into one place so the REST endpoint can stay a
+ * thin HTTP adapter.
  */
 class StatusController {
   /** @var NewslettersRepository */

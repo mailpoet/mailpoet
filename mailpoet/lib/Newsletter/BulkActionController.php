@@ -8,12 +8,10 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * Centralized newsletter bulk-action dispatcher used by both the legacy
- * {@see \MailPoet\API\JSON\v1\Newsletters::bulkAction()} JSON endpoint and
- * the REST endpoint at `mailpoet/v1/newsletters/bulk-action`. The
- * `export_stats` action is handled by the REST endpoint directly because it
- * is asynchronous and premium-gated; this controller covers the synchronous
- * destructive actions both transports share.
+ * Centralized newsletter bulk-action dispatcher used by the REST endpoint at
+ * `mailpoet/v1/newsletters/bulk-action`. The `export_stats` action is handled
+ * by the REST endpoint directly because it is asynchronous and premium-gated;
+ * this controller covers the synchronous destructive actions.
  */
 class BulkActionController {
   public const ACTION_TRASH = 'trash';
