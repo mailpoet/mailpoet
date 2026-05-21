@@ -273,11 +273,10 @@ export function NewslettersListing({
     load,
   });
 
-  // Mailer + cron envelope info used to come back with the legacy listing
-  // response and was dispatched through `checkMailerStatus` / `checkCronStatus`
-  // every time the listing reloaded. The new REST endpoint exposes the same
-  // values through a module-level subscription so we keep the side-effect
-  // wiring identical from the UI's perspective.
+  // Mailer + cron envelope info is dispatched through `checkMailerStatus` /
+  // `checkCronStatus` every time the listing reloads. The REST endpoint
+  // exposes those values through a module-level subscription so we keep the
+  // side-effect wiring identical from the UI's perspective.
   useEffect(
     () =>
       onNewslettersListingExtras((extras) => {
@@ -466,8 +465,8 @@ export function NewslettersListing({
     return counts;
   }, [groups, supportedGroups]);
 
-  // Mirror the legacy listing: if the user is in trash with no items and no
-  // filters/search active, bounce them back to All.
+  // If the user is in trash with no items and no filters/search active, bounce
+  // them back to All.
   useEffect(() => {
     if (
       group === 'trash' &&

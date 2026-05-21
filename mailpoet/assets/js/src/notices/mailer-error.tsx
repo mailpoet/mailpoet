@@ -13,9 +13,6 @@ const resumeMailerSending = () =>
   })
     .done(() => {
       MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
-      if (window.mailpoet_listing) {
-        window.mailpoet_listing.forceUpdate();
-      }
     })
     .fail((response) => {
       if (response.errors.length > 0) {
