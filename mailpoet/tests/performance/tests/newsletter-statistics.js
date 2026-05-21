@@ -24,6 +24,7 @@ import {
 import {
   gotoMailPoetNewsletterPage,
   login,
+  waitForDataViews,
   waitForSelectorToBeVisible,
 } from '../utils/helpers.js';
 
@@ -45,7 +46,7 @@ export async function newsletterStatistics() {
     });
 
     // Wait for the page to load and click sold tab
-    await page.waitForSelector('.mailpoet-listing-table');
+    await waitForDataViews(page, '.mailpoet-campaign-stats-dataviews');
     await page.waitForSelector('[data-automation-id="products-sold-tab"]');
     await page.waitForLoadState('networkidle');
     await page.locator('[data-automation-id="products-sold-tab"]').click();

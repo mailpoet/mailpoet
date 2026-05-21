@@ -95,6 +95,77 @@ export async function waitForSelectorToBeClickable(page, element) {
   await page.locator(element).waitFor({ trial: true });
 }
 
+export async function waitForDataViews(
+  page,
+  rootSelector = '.mailpoet-dataviews',
+) {
+  await page.waitForSelector(
+    `${rootSelector} table, ${rootSelector} .dataviews-no-results`,
+  );
+}
+
+export async function typeInDataViewsSearch(page, text, options = {}) {
+  await page.locator('.dataviews-search input').type(text, options);
+}
+
+export async function selectDataViewsPage(
+  page,
+  rootSelector = '.mailpoet-dataviews',
+) {
+  await page
+    .locator(`${rootSelector} table thead input[type="checkbox"]`)
+    .click();
+  await page.waitForSelector(`${rootSelector} .dataviews-bulk-actions-footer`);
+}
+
+export async function clickDataViewsAction(
+  page,
+  actionLabel,
+  rootSelector = '.mailpoet-dataviews',
+) {
+  const result = await page.evaluate(
+    ({ label, selector }) => {
+      const root = document.querySelector(selector);
+      if (!root) return false;
+
+      const clickMatching = (scope) => {
+        const elements = Array.from(
+          scope.querySelectorAll('button, [role="menuitem"]'),
+        );
+        const action = elements.find(
+          (element) => element.textContent.trim() === label,
+        );
+        if (!action) return false;
+        action.click();
+        return true;
+      };
+
+      const bulkFooter = root.querySelector('.dataviews-bulk-actions-footer');
+      if (bulkFooter && clickMatching(bulkFooter)) return true;
+
+      const menuToggle = bulkFooter?.querySelector(
+        'button[aria-haspopup="menu"]',
+      );
+      if (menuToggle) {
+        menuToggle.click();
+        return 'menu';
+      }
+
+      return false;
+    },
+    { label: actionLabel, selector: rootSelector },
+  );
+
+  if (result === 'menu') {
+    await clickMenuItemByText(page, actionLabel);
+    return;
+  }
+
+  if (!result) {
+    throw new Error(`No DataViews action found with text "${actionLabel}".`);
+  }
+}
+
 // Add an item to the automation workflow
 export async function addActionTriggerItemToWorkflow(page, actionName) {
   await page.locator('.components-input-control__input').type(actionName);

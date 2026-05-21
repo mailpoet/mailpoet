@@ -21,7 +21,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import {
+  login,
+  typeInDataViewsSearch,
+  waitForDataViews,
+} from '../utils/helpers.js';
 
 export async function subscribersFiltering() {
   const page = await browser.newPage();
@@ -63,7 +67,7 @@ export async function subscribersFiltering() {
     await page
       .locator('[data-automation-id="listing_filter_segment"]')
       .selectOption('3');
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-filtering: should be able to see Lists Filter 2nd time', async () => {
@@ -78,8 +82,8 @@ export async function subscribersFiltering() {
     });
 
     // Search for a subscriber in a filtered list
-    await page.locator('#search_input').type(adminEmail, { delay: 50 });
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await typeInDataViewsSearch(page, adminEmail, { delay: 50 });
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-filtering: should be able to see Lists Filter 3rd time', async () => {

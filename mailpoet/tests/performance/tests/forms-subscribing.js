@@ -22,6 +22,8 @@ import {
 } from '../config.js';
 import {
   login,
+  typeInDataViewsSearch,
+  waitForDataViews,
   waitAndType,
   waitForSelectorToBeVisible,
 } from '../utils/helpers.js';
@@ -77,8 +79,8 @@ export async function formsSubscribing() {
         waitUntil: 'networkidle',
       },
     );
-    await page.locator('#search_input').type(subscriberEmail, { delay: 25 });
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await typeInDataViewsSearch(page, subscriberEmail, { delay: 25 });
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
     const listingTitleElement = await page

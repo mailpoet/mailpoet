@@ -25,6 +25,7 @@ import {
   focusAndClick,
   waitForSelectorToBeClickable,
   clickFirstSelector,
+  waitForDataViews,
 } from '../utils/helpers.js';
 
 export async function segmentsSelectTemplate() {
@@ -64,7 +65,7 @@ export async function segmentsSelectTemplate() {
     );
     await focusAndClick(page, 'div.mailpoet-form-actions > button');
 
-    await page.waitForSelector('[data-automation-id="select_all"]');
+    await waitForDataViews(page, '.mailpoet-segments-dataviews');
     const segmentUpdatedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
     const noticeElement = await page.locator(segmentUpdatedMessage);
