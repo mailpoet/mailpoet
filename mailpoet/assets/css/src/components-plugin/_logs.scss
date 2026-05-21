@@ -16,28 +16,13 @@
 }
 
 .mailpoet-logs {
-  .mailpoet-listing-header {
-    align-items: flex-start;
-    display: inline-flex;
-    flex-wrap: wrap;
-  }
-
   .mailpoet-datepicker {
     margin-left: $grid-gap;
     margin-right: $grid-gap;
   }
 
-  .mailpoet-listing-filters {
-    align-items: center;
-    display: inline-flex;
-  }
-
   .mailpoet-form-input-small {
     margin-right: $grid-gap;
-  }
-
-  .mailpoet-logs-limit .mailpoet-form-input-small {
-    width: 100px;
   }
 }
 

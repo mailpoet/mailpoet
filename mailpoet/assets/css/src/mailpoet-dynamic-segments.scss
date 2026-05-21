@@ -1,40 +1,7 @@
-@import 'settings/colors';
-@import 'mailpoet-listing';
-
 #dynamic_segments_container * {
   box-sizing: border-box;
 }
 
 .mailpoet-confirm-dialog {
   max-width: 600px;
-}
-
-.mailpoet-segments-listing-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 120px auto;
-  padding: 16px;
-
-  .mailpoet-segments-listing-search {
-    max-width: 430px;
-  }
-
-  .components-base-control__field {
-    margin-bottom: 0;
-  }
-}
-
-.woocommerce-table {
-  .components-card__header {
-    display: none;
-  }
-
-  .mailpoet-listing-name {
-    width: 100%;
-  }
-
-  .mailpoet-listing-modified-date {
-    white-space: nowrap;
-  }
 }
