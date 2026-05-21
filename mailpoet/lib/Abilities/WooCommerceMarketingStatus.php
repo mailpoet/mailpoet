@@ -13,9 +13,6 @@ use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\Abandone
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromACategoryTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromATagTrigger;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCompletedTrigger;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCreatedTrigger;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
@@ -240,9 +237,9 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
   private static function getAutomationEmailCounts(AutomationStorage $automationStorage): array {
     return [
       'abandoned_cart' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([AbandonedCartTrigger::KEY], SendEmailAction::KEY),
-      'order_completed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderCompletedTrigger::KEY], SendEmailAction::KEY),
-      'order_created' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderCreatedTrigger::KEY], SendEmailAction::KEY),
-      'order_status_changed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([OrderStatusChangedTrigger::KEY], SendEmailAction::KEY),
+      'order_completed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction(['woocommerce:order-completed'], SendEmailAction::KEY),
+      'order_created' => $automationStorage->getCountOfActiveByTriggerKeysAndAction(['woocommerce:order-created'], SendEmailAction::KEY),
+      'order_status_changed' => $automationStorage->getCountOfActiveByTriggerKeysAndAction(['woocommerce:order-status-changed'], SendEmailAction::KEY),
       'purchased_in_category' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysFromACategoryTrigger::KEY], SendEmailAction::KEY),
       'purchased_product' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysAProductTrigger::KEY], SendEmailAction::KEY),
       'purchased_with_tag' => $automationStorage->getCountOfActiveByTriggerKeysAndAction([BuysFromATagTrigger::KEY], SendEmailAction::KEY),
