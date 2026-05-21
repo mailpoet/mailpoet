@@ -46,16 +46,19 @@ class SubscribersEndpointsTest extends Test {
     $this->assertIsArray($response);
     $payload = $response['data'];
     $this->assertIsArray($payload);
-    $this->assertIsArray($payload['items']);
-    $this->assertIsArray($payload['meta']);
-    $this->assertArrayHasKey('count', $payload['meta']);
-    $this->assertArrayHasKey('pages', $payload['meta']);
-    $this->assertIsArray($payload['groups']);
-    $groups = array_column($payload['groups'], 'count', 'name');
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $meta = $payload['meta'];
+    $this->assertIsArray($meta);
+    $this->assertArrayHasKey('count', $meta);
+    $this->assertArrayHasKey('pages', $meta);
+    $groupsList = $payload['groups'];
+    $this->assertIsArray($groupsList);
+    $groups = array_column($groupsList, 'count', 'name');
     $this->assertArrayHasKey('all', $groups);
     $this->assertArrayHasKey('subscribed', $groups);
 
-    $emails = array_column($payload['items'], 'email');
+    $emails = array_column($items, 'email');
     $this->assertContains("rest-listing-{$suffix}@example.com", $emails);
   }
 
@@ -74,7 +77,12 @@ class SubscribersEndpointsTest extends Test {
       'per_page' => 100,
       'search' => "needle-{$suffix}",
     ]]);
-    $emails = array_column($response['data']['items'], 'email');
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $emails = array_column($items, 'email');
     $this->assertContains("rest-search-needle-{$suffix}@example.com", $emails);
     $this->assertNotContains("rest-search-other-{$suffix}@example.com", $emails);
   }
@@ -93,12 +101,12 @@ class SubscribersEndpointsTest extends Test {
     ]]);
 
     $this->assertIsArray($response);
-    $data = $response['data'];
-    $this->assertIsArray($data);
-    $this->assertSame('trash', $data['action']);
-    $this->assertSame(1, $data['count']);
-    $this->assertNull($data['segment']);
-    $this->assertNull($data['tag']);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame('trash', $payload['action']);
+    $this->assertSame(1, $payload['count']);
+    $this->assertNull($payload['segment']);
+    $this->assertNull($payload['tag']);
 
     $this->subscribersRepository->refresh($subscriber);
     $this->assertNotNull($subscriber->getDeletedAt());
@@ -125,8 +133,11 @@ class SubscribersEndpointsTest extends Test {
       'selection' => [1],
     ]]);
 
+    $this->assertIsArray($response);
     $this->assertSame('mailpoet_subscribers_invalid_group', $response['code']);
-    $this->assertSame(400, $response['data']['status']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
   }
 
   public function testResendConfirmationReturnsDisabledErrorWhenSignupConfirmationIsOff(): void {
