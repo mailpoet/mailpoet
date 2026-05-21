@@ -21,6 +21,8 @@ import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
 import { automationFields } from './fields';
 import { getAutomationAnalyticsUrl, getAutomationEditorUrl } from './urls';
+import { isManualStartSupported } from './manual-start/helpers';
+import { ManualStartModal } from './manual-start/modal';
 
 type Group =
   | 'all'
@@ -248,8 +250,11 @@ export function AutomationListing(): JSX.Element {
   );
   const [selection, setSelection] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [manualStartAutomation, setManualStartAutomation] =
+    useState<AutomationItem | null>(null);
   const latestGroupRef = useRef(group);
   const latestViewRef = useRef(view);
+  const manualStartTriggerElementRef = useRef<HTMLElement | null>(null);
 
   const automations = useSelect((select) =>
     select(storeName).getAllAutomations(),
@@ -504,6 +509,28 @@ export function AutomationListing(): JSX.Element {
     setPendingAction(null);
   }, [pendingAction, runAutomationAction]);
 
+  const restoreManualStartTriggerFocus = useCallback((): void => {
+    const triggerElement = manualStartTriggerElementRef.current;
+    manualStartTriggerElementRef.current = null;
+    if (triggerElement && document.contains(triggerElement)) {
+      triggerElement.focus();
+    }
+  }, []);
+
+  const closeManualStartModal = useCallback((): void => {
+    setManualStartAutomation(null);
+    window.setTimeout(restoreManualStartTriggerFocus);
+  }, [restoreManualStartTriggerFocus]);
+
+  const openManualStartModal = useCallback(
+    (automation: AutomationItem): void => {
+      manualStartTriggerElementRef.current =
+        document.activeElement as HTMLElement | null;
+      setManualStartAutomation(automation);
+    },
+    [],
+  );
+
   const actions = useMemo<Action<AutomationItem>[]>(
     () => [
       {
@@ -526,6 +553,17 @@ export function AutomationListing(): JSX.Element {
         callback: (targets) => {
           if (targets[0]) {
             window.location.href = getAutomationEditorUrl(targets[0]);
+          }
+        },
+      },
+      {
+        id: 'manual-start',
+        label: __('Start automation', 'mailpoet'),
+        supportsBulk: false,
+        isEligible: isManualStartSupported,
+        callback: (targets) => {
+          if (targets[0]) {
+            openManualStartModal(targets[0]);
           }
         },
       },
@@ -574,7 +612,7 @@ export function AutomationListing(): JSX.Element {
         },
       },
     ],
-    [runAutomationAction],
+    [openManualStartModal, runAutomationAction],
   );
 
   const emptyLabel =
@@ -637,6 +675,12 @@ export function AutomationListing(): JSX.Element {
       >
         {actionCopy.message}
       </ConfirmDialog>
+      {manualStartAutomation && (
+        <ManualStartModal
+          automation={manualStartAutomation}
+          onClose={closeManualStartModal}
+        />
+      )}
     </>
   );
 }

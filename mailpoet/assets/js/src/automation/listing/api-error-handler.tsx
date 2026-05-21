@@ -3,6 +3,7 @@ import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { ApiError } from '../api';
+import { isManualStartApiPath } from './manual-start/helpers';
 
 export const registerApiErrorHandler = (): void =>
   apiFetch.use(
@@ -23,6 +24,13 @@ export const registerApiErrorHandler = (): void =>
         const status = errorObject.data?.status;
 
         if (status && status >= 400 && status < 500) {
+          if (
+            isManualStartApiPath(options.path) ||
+            isManualStartApiPath((options as { url?: unknown }).url)
+          ) {
+            throw error;
+          }
+
           const message = errorObject.message;
           void dispatch(noticesStore).createErrorNotice(
             message ?? __('An unknown error occurred.', 'mailpoet'),

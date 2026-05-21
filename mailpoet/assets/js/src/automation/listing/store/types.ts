@@ -1,14 +1,9 @@
 import { ReactNode } from 'react';
 import { Automation } from '../automation';
+import type { ManualStartMetadata } from '../manual-start/types';
 
 declare global {
   interface Window {
-    mailpoet_segments: {
-      id: string;
-      name: string;
-      subscribers: string;
-      type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
-    }[];
     mailpoet_roles: Record<string, string>;
     mailpoet_woocommerce_automatic_emails?: Record<
       string,
@@ -26,6 +21,7 @@ declare global {
 export type AutomationItem = Automation & {
   description?: ReactNode;
   isLegacy?: boolean;
+  manual_start?: ManualStartMetadata;
 };
 
 export type State = {
