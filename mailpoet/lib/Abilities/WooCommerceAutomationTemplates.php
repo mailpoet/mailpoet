@@ -52,7 +52,7 @@ class WooCommerceAutomationTemplates implements AbilityDefinition {
   }
 
   public static function execute($input = []): array {
-    $category = is_array($input) && isset($input['category']) ? (string)$input['category'] : '';
+    $category = is_array($input) && isset($input['category']) && is_string($input['category']) ? $input['category'] : '';
     if ($category !== '' && !in_array($category, self::CATEGORIES, true)) {
       return ['templates' => []];
     }
