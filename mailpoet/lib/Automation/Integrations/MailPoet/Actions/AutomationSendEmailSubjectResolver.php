@@ -29,7 +29,7 @@ class AutomationSendEmailSubjectResolver {
 
     $triggerSteps = $this->getTriggerStepsReachingStep($automation, $sendEmailStep);
     if ($triggerSteps === []) {
-      return $this->subjectTransformerHandler->getSubjectKeysForAutomation($automation);
+      return [];
     }
 
     return $this->intersectTriggerSubjectKeys($triggerSteps);

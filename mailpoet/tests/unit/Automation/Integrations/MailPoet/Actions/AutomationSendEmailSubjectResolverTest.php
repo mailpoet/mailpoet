@@ -69,6 +69,23 @@ class AutomationSendEmailSubjectResolverTest extends MailPoetUnitTest {
     );
   }
 
+  public function testItReturnsNoGuaranteedSubjectsWhenNoTriggerReachesTheSendStep(): void {
+    $resolver = $this->createResolver([
+      'woocommerce:order-completed' => [OrderSubject::KEY, 'mailpoet:subscriber'],
+    ]);
+    $sendEmail = new Step('send', Step::TYPE_ACTION, SendEmailAction::KEY, [], []);
+    $automation = $this->createAutomation([
+      new Step('root', Step::TYPE_ROOT, 'core:root', [], [new NextStep('trigger')]),
+      new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-completed', [], []),
+      $sendEmail,
+    ]);
+
+    $this->assertSame(
+      [],
+      $resolver->getGuaranteedSubjectKeysForStep($automation, $sendEmail)
+    );
+  }
+
   public function testSharedEmailRequiresEveryReferencingStepToHaveOrderSubject(): void {
     $resolver = $this->createResolver([
       'woocommerce:order-completed' => [OrderSubject::KEY, 'mailpoet:subscriber'],

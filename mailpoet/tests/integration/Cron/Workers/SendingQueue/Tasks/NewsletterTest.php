@@ -25,6 +25,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\Router\Router;
 use MailPoet\RuntimeException;
 use MailPoet\Test\DataFactories\DynamicSegment;
@@ -390,6 +391,47 @@ class NewsletterTest extends \MailPoetTest {
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     verify($result['body']['text'])
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
+  }
+
+  public function testItPausesSendingWhenOrderReviewUrlCannotBeResolved(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Order review email',
+      'post_content' => '<!-- wp:button {"url":"[woocommerce/order-review-url]"} --><div class="wp-block-button"><a href="[woocommerce/order-review-url]">Leave a review</a></div><!-- /wp:button -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $sendingQueue->setCountTotal(1);
+    $sendingQueue->setNewsletterRenderedSubject('Subject');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>',
+      'text' => '[Leave a review]([woocommerce/order-review-url])',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    try {
+      $this->newsletterTask->prepareNewsletterForSending(
+        $newsletter,
+        $this->subscriber,
+        $sendingQueue
+      );
+      self::fail('Expected order review URL resolution to stop sending.');
+    } catch (NewsletterProcessingException $exception) {
+      $this->assertSame('Cannot send the email because WooCommerce cannot generate an order review link for this order.', $exception->getMessage());
+    }
+
+    $this->entityManager->refresh($scheduledTask);
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $scheduledTask->getStatus());
   }
 
   public function testItLogsErrorWhenQueueWithCannotBeSaved() {

@@ -95,6 +95,10 @@ class Helper {
       return false;
     }
 
+    if ($this->getOrderReviewItemEligibilityCallback() === null) {
+      return false;
+    }
+
     if (!$this->isCustomerReviewRequestFeatureEnabled()) {
       return false;
     }
@@ -109,12 +113,17 @@ class Helper {
   }
 
   public function wcOrderHasActionableReviewItems(\WC_Order $order): bool {
-    $callback = ['\Automattic\WooCommerce\Internal\OrderReviews\ItemEligibility', 'has_actionable_items'];
-    if (!is_callable($callback)) {
-      return true;
+    $callback = $this->getOrderReviewItemEligibilityCallback();
+    if ($callback === null) {
+      return false;
     }
 
     return (bool)call_user_func($callback, $order);
+  }
+
+  private function getOrderReviewItemEligibilityCallback(): ?callable {
+    $callback = ['\Automattic\WooCommerce\Internal\OrderReviews\ItemEligibility', 'has_actionable_items'];
+    return is_callable($callback) ? $callback : null;
   }
 
   private function getCallableFunction(string $functionName): ?callable {

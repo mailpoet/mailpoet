@@ -240,9 +240,7 @@ class SendEmailAction implements Action {
 
     if (
       $wpPost instanceof \WP_Post
-      && $this->blockEmailContentDetector->hasMeaningfulContent($wpPost, [
-        'automation_subject_keys' => $subjectKeys,
-      ])
+      && $this->blockEmailContentDetector->hasMeaningfulContent($wpPost)
     ) {
       return;
     }

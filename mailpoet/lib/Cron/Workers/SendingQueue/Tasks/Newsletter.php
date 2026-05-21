@@ -10,6 +10,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -86,6 +87,7 @@ class Newsletter {
   private $automationRunStorage;
 
   private CouponBlockDetector $couponBlockDetector;
+  private OrderReviewUrl $orderReviewUrl;
 
   public function __construct(
     ?WPFunctions $wp = null,
@@ -123,6 +125,7 @@ class Newsletter {
     $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
     $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
+    $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
@@ -436,6 +439,8 @@ class Newsletter {
         }
       }
 
+      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
+
       $this->personalizer->set_context($context);
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
@@ -457,6 +462,63 @@ class Newsletter {
         'text' => $preparedNewsletter[2],
       ],
     ];
+  }
+
+  /**
+   * @param array<int|string, mixed> $contentParts
+   * @param array<string, mixed> $context
+   */
+  private function guardOrderReviewUrlPersonalization(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    array $contentParts,
+    array $context
+  ): void {
+    if (!$this->contentContainsOrderReviewUrlToken($contentParts)) {
+      return;
+    }
+
+    if ($this->orderReviewUrl->getUrl($context) !== '') {
+      return;
+    }
+
+    $message = __('Cannot send the email because WooCommerce cannot generate an order review link for this order.', 'mailpoet');
+    $this->failOrderReviewUrlSend($newsletter, $queue, $message);
+    throw NewsletterProcessingException::create()->withMessage($message);
+  }
+
+  /** @param mixed $content */
+  private function contentContainsOrderReviewUrlToken($content): bool {
+    if (is_array($content)) {
+      foreach ($content as $contentPart) {
+        if ($this->contentContainsOrderReviewUrlToken($contentPart)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (!is_string($content)) {
+      return false;
+    }
+
+    $normalizedContent = rawurldecode(str_replace('\\/', '/', $content));
+    return strpos($normalizedContent, '[woocommerce/order-review-url]') !== false;
+  }
+
+  private function failOrderReviewUrlSend(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    string $message
+  ): void {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+      $message,
+      [
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue->getId(),
+      ]
+    );
+    $this->sendingQueuesRepository->pause($queue);
   }
 
   public function markNewsletterAsSent(NewsletterEntity $newsletter) {

@@ -125,6 +125,17 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('%5Bwoocommerce/order-review-url%5D', $emailContent['html']);
   }
 
+  public function testItOnlyRemovesTemporaryHttpPrefixForKnownLinkTokens(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a data-link-href="[mailpoet/subscription-unsubscribe-url]">Unsubscribe</a><p>http://[not-a-mailpoet-token]</p>',
+    ]);
+
+    $this->assertStringContainsString('href="[link:subscription_unsubscribe_url]"', $emailContent['html']);
+    $this->assertStringContainsString('http://[not-a-mailpoet-token]', $emailContent['html']);
+  }
+
   public function testItRestoresPersonalizedLinkHrefsAfterPersonalization(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
