@@ -10,7 +10,7 @@ import {
   type View,
 } from '@wordpress/dataviews';
 import { createInterpolateElement } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
 import {
@@ -43,24 +43,16 @@ type Newsletter = {
 };
 
 const statusLabels = {
-  unprocessed: _x(
-    'Unprocessed',
-    'status when the sending of a newsletter has not been processed',
-    'mailpoet',
-  ),
-  sent: _x('Sent', 'status when a newsletter has been sent', 'mailpoet'),
-  failed: _x(
-    'Failed',
-    'status when the sending of a newsletter has failed',
-    'mailpoet',
-  ),
+  // translators: status when the sending of a newsletter has not been processed
+  unprocessed: __('Unprocessed', 'mailpoet'),
+  // translators: status when a newsletter has been sent
+  sent: __('Sent', 'mailpoet'),
+  // translators: status when the sending of a newsletter has failed
+  failed: __('Failed', 'mailpoet'),
 };
 
-const sendingStatusLabel = _x(
-  'Sending status',
-  'an email sending status: unprocessed, sent or failed.',
-  'mailpoet',
-);
+// translators: an email sending status: unprocessed, sent or failed
+const sendingStatusLabel = __('Sending status', 'mailpoet');
 
 function StatsLink({ newsletter }: { newsletter: Newsletter }) {
   if (!newsletter.id || !newsletter.subject || !newsletter.sent) return null;
@@ -333,11 +325,10 @@ export function SendingStatus() {
   return (
     <>
       <h1>
-        {_x(
-          'Sending status',
-          'Page title. This page displays a list of emails along with their sending status: unprocessed, sent or failed.',
-          'mailpoet',
-        )}
+        {
+          // translators: Page title. This page displays a list of emails along with their sending status: unprocessed, sent or failed.
+          __('Sending status', 'mailpoet')
+        }
       </h1>
       <StatsLink newsletter={newsletter} />
 
