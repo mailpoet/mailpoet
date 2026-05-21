@@ -3,6 +3,7 @@
 namespace MailPoet\REST\Automation\Automations;
 
 use MailPoet\REST\Automation\AutomationTest;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
@@ -15,7 +16,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
 
   public function testGetAllTemplates() {
     $result = $this->get(self::ENDPOINT_PATH, []);
-    $this->assertCount(22, $result['data']);
+    $this->assertCount($this->getExpectedTemplateCount(), $result['data']);
     $this->assertEquals('subscriber-welcome-email', $result['data'][0]['slug']);
   }
 
@@ -23,7 +24,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     wp_set_current_user($this->editorUserId);
     $data = $this->get(self::ENDPOINT_PATH, []);
 
-    $this->assertCount(22, $data['data']);
+    $this->assertCount($this->getExpectedTemplateCount(), $data['data']);
   }
 
   public function testGuestNotAllowed(): void {
@@ -65,7 +66,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
         'category' => 'review',
       ],
     ]);
-    $this->assertCount(3, $result['data']);
+    $this->assertCount($this->isOrderReviewUrlSupported() ? 3 : 2, $result['data']);
 
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
@@ -174,5 +175,13 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
       $this->assertEquals('svg', $template['icon_type'], "Abandoned cart template {$template['slug']} should use SVG icon");
       $this->assertStringEndsWith('/img/icons/cart.svg', $template['icon'], "Abandoned cart template {$template['slug']} should have cart icon URL");
     }
+  }
+
+  private function getExpectedTemplateCount(): int {
+    return $this->isOrderReviewUrlSupported() ? 22 : 21;
+  }
+
+  private function isOrderReviewUrlSupported(): bool {
+    return $this->diContainer->get(WooCommerceHelper::class)->wcSupportsOrderReviewUrl();
   }
 }

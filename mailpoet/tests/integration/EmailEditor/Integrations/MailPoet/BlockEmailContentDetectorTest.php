@@ -40,6 +40,7 @@ class BlockEmailContentDetectorTest extends \MailPoetTest {
       'product collection' => ['<!-- wp:woocommerce/product-collection --><div class="wp-block-woocommerce-product-collection"></div><!-- /wp:woocommerce/product-collection -->'],
       'product query post title' => ['<!-- wp:woocommerce/product-template --><!-- wp:post-title {"__woocommerceNamespace":"woocommerce/product-collection/product-title"} /--><!-- /wp:woocommerce/product-template -->'],
       'woocommerce token' => ['<!--[woocommerce/customer-first-name]-->'],
+      'woocommerce link token' => ['<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>'],
       'mailpoet link token' => ['<a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false"></a>'],
     ];
   }

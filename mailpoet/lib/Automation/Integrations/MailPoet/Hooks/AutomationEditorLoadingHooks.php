@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\MailPoet\Actions\AutomationSendEmailSubjectResolver;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\DI\ContainerWrapper;
@@ -28,19 +29,22 @@ class AutomationEditorLoadingHooks {
   private NewsletterDeleteController $newsletterDeleteController;
 
   private BlockEmailContentDetector $blockEmailContentDetector;
+  private AutomationSendEmailSubjectResolver $subjectResolver;
 
   public function __construct(
     WordPress $wp,
     AutomationStorage $automationStorage,
     NewslettersRepository $newslettersRepository,
     NewsletterDeleteController $newsletterDeleteController,
-    BlockEmailContentDetector $blockEmailContentDetector
+    BlockEmailContentDetector $blockEmailContentDetector,
+    AutomationSendEmailSubjectResolver $subjectResolver
   ) {
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterDeleteController = $newsletterDeleteController;
     $this->blockEmailContentDetector = $blockEmailContentDetector;
+    $this->subjectResolver = $subjectResolver;
   }
 
   public function init(): void {
@@ -83,7 +87,10 @@ class AutomationEditorLoadingHooks {
         $wpPostId = $newsletterEntity->getWpPostId();
         if ($wpPostId) {
           $wpPost = $this->wp->getPost($wpPostId);
-          $disconnectEmail = !$wpPost instanceof \WP_Post || !$this->blockEmailContentDetector->hasMeaningfulContent($wpPost);
+          $subjectKeys = $this->subjectResolver->getGuaranteedSubjectKeysForStep($automation, $step);
+          $disconnectEmail = !($wpPost instanceof \WP_Post) || !$this->blockEmailContentDetector->hasMeaningfulContent($wpPost, [
+            'automation_subject_keys' => $subjectKeys,
+          ]);
           if (!$disconnectEmail && (int)($args['email_wp_post_id'] ?? 0) !== (int)$wpPostId) {
             $args['email_wp_post_id'] = $wpPostId;
           }

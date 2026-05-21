@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\Config\Env;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper;
 use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WooCommerceSubscriptions;
 
@@ -27,18 +28,23 @@ class TemplatesFactory {
   /** @var WooCommerceBookingsHelper */
   private $woocommerceBookingsHelper;
 
+  /** @var WooCommerceHelper */
+  private $woocommerceHelper;
+
   public function __construct(
     AutomationBuilder $builder,
     WooCommerce $woocommerce,
     WooCommerceSubscriptions $woocommerceSubscriptions,
     EmailFactory $emailFactory,
-    WooCommerceBookingsHelper $woocommerceBookingsHelper
+    WooCommerceBookingsHelper $woocommerceBookingsHelper,
+    WooCommerceHelper $woocommerceHelper
   ) {
     $this->builder = $builder;
     $this->woocommerce = $woocommerce;
     $this->woocommerceSubscriptions = $woocommerceSubscriptions;
     $this->emailFactory = $emailFactory;
     $this->woocommerceBookingsHelper = $woocommerceBookingsHelper;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   public function createTemplates(): array {
@@ -58,7 +64,9 @@ class TemplatesFactory {
       $templates[] = $this->createPurchasedProductTemplate();
       $templates[] = $this->createPurchasedProductWithTagTemplate();
       $templates[] = $this->createPurchasedInCategoryTemplate();
-      $templates[] = $this->createAskForReviewTemplate();
+      if ($this->woocommerceHelper->wcSupportsOrderReviewUrl()) {
+        $templates[] = $this->createAskForReviewTemplate();
+      }
       $templates[] = $this->createFollowUpPositiveReviewTemplate();
       $templates[] = $this->createFollowUpNegativeReviewTemplate();
       if ($this->woocommerceSubscriptions->isWooCommerceSubscriptionsActive()) {

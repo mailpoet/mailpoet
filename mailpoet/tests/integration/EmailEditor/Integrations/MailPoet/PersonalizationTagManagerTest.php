@@ -2,10 +2,15 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use Codeception\Util\Fixtures;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -69,5 +74,88 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
 
     // Tag placed out of href was not replaced
     $this->assertStringContainsString('<!--[mailpoet/subscription-unsubscribe-url]-->', $rendered['html']);
+  }
+
+  public function testItRegistersOrderReviewUrlTagForOrderAutomations(): void {
+    if (!$this->diContainer->get(OrderReviewUrl::class)->isSupported()) {
+      $this->markTestSkipped('WooCommerce order review URL helper is not available.');
+    }
+
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->unregister('[woocommerce/order-review-url]');
+
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+    $personalizationManager->extendWooCommerceTagsForMailPoet($registry, [OrderSubject::KEY]);
+
+    $tag = $registry->get_by_token('[woocommerce/order-review-url]');
+    $this->assertNotNull($tag);
+    $this->assertSame('[woocommerce/order-review-url]', $tag->get_token());
+    $this->assertContains(EmailEditor::MAILPOET_EMAIL_POST_TYPE, $tag->get_post_types());
+  }
+
+  public function testItDoesNotRegisterOrderReviewUrlTagWithoutOrderSubject(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->unregister('[woocommerce/order-review-url]');
+
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+    $personalizationManager->extendWooCommerceTagsForMailPoet($registry, ['mailpoet:subscriber']);
+
+    $this->assertNull($registry->get_by_token('[woocommerce/order-review-url]'));
+  }
+
+  public function testItMovesOrderReviewUrlHrefToDataAttributeBeforeLinkTracking(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a href="[woocommerce/order-review-url]">Leave a review</a>',
+    ]);
+
+    $this->assertStringContainsString('data-link-href="[woocommerce/order-review-url]"', $emailContent['html']);
+    $this->assertStringNotContainsString(' href="[woocommerce/order-review-url]"', $emailContent['html']);
+  }
+
+  public function testItMovesEncodedOrderReviewUrlHrefToDataAttributeBeforeLinkTracking(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a href="http://%5Bwoocommerce/order-review-url%5D">Leave a review</a>',
+    ]);
+
+    $this->assertStringContainsString('data-link-href="[woocommerce/order-review-url]"', $emailContent['html']);
+    $this->assertStringNotContainsString('%5Bwoocommerce/order-review-url%5D', $emailContent['html']);
+  }
+
+  public function testItRestoresPersonalizedLinkHrefsAfterPersonalization(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $html = $personalizationManager->restorePersonalizedLinkHrefs(
+      '<a data-link-href="https://example.com/review-order/abc">Leave a review</a>'
+    );
+
+    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $html);
+    $this->assertStringNotContainsString('data-link-href=', $html);
+  }
+
+  public function testItResolvesOrderReviewUrlDataAttributeAfterPersonalization(): void {
+    $convertor = new LinksToShortcodesConvertor();
+
+    $html = $convertor->restorePersonalizedLinkHrefs(
+      '<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>',
+      ['[woocommerce/order-review-url]' => 'https://example.com/review-order/abc']
+    );
+
+    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $html);
+    $this->assertStringNotContainsString('data-link-href=', $html);
+  }
+
+  public function testItResolvesOrderReviewUrlInPlainTextAfterPersonalization(): void {
+    $convertor = new LinksToShortcodesConvertor();
+
+    $text = $convertor->restorePersonalizedLinkUrls(
+      '[Leave a review](http://[woocommerce/order-review-url%5D)',
+      ['[woocommerce/order-review-url]' => 'https://example.com/review-order/abc']
+    );
+
+    $this->assertSame('[Leave a review](https://example.com/review-order/abc)', $text);
   }
 }

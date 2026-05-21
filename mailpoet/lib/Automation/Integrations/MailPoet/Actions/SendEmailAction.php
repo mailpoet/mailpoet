@@ -18,7 +18,9 @@ use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\EmailEditor\Integrations\MailPoet\BlockEmailContentDetector;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -66,6 +68,7 @@ class SendEmailAction implements Action {
   ];
   private const WAIT_OPTIN = 'wait_optin';
   private const OPTIN_RETRIES = 'optin_retries';
+  private const ORDER_REVIEW_URL_TOKEN = '[woocommerce/order-review-url]';
 
   public const TRANSACTIONAL_TRIGGERS = [
     'mailpoet:custom-trigger',
@@ -112,6 +115,8 @@ class SendEmailAction implements Action {
   private NewsletterSaveController $newsletterSaveController;
 
   private BlockEmailContentDetector $blockEmailContentDetector;
+  private AutomationSendEmailSubjectResolver $subjectResolver;
+  private OrderReviewUrl $orderReviewUrl;
 
   public function __construct(
     AutomationController $automationController,
@@ -125,7 +130,9 @@ class SendEmailAction implements Action {
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     WordPress $wp,
     NewsletterSaveController $newsletterSaveController,
-    BlockEmailContentDetector $blockEmailContentDetector
+    BlockEmailContentDetector $blockEmailContentDetector,
+    AutomationSendEmailSubjectResolver $subjectResolver,
+    OrderReviewUrl $orderReviewUrl
   ) {
     $this->automationController = $automationController;
     $this->settings = $settings;
@@ -139,6 +146,8 @@ class SendEmailAction implements Action {
     $this->wp = $wp;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->blockEmailContentDetector = $blockEmailContentDetector;
+    $this->subjectResolver = $subjectResolver;
+    $this->orderReviewUrl = $orderReviewUrl;
   }
 
   public function getKey(): string {
@@ -214,7 +223,27 @@ class SendEmailAction implements Action {
     }
 
     $wpPost = $this->wp->getPost($wpPostId);
-    if ($wpPost instanceof \WP_Post && $this->blockEmailContentDetector->hasMeaningfulContent($wpPost)) {
+    $subjectKeys = $this->subjectResolver->getGuaranteedSubjectKeysForStep($args->getAutomation(), $args->getStep());
+    if ($this->newsletterContainsOrderReviewUrlToken($email)) {
+      if (!in_array(OrderSubject::KEY, $subjectKeys, true)) {
+        throw ValidationException::create()
+          ->withMessage(__('Cannot activate the automation because order review links require a WooCommerce order trigger.', 'mailpoet'))
+          ->withError('email_id', __('Use this email in an automation with a WooCommerce order subject or remove the order review link.', 'mailpoet'));
+      }
+
+      if (!$this->orderReviewUrl->isSupported()) {
+        throw ValidationException::create()
+          ->withMessage(__('Cannot activate the automation because WooCommerce cannot generate order review links.', 'mailpoet'))
+          ->withError('email_id', __('Update WooCommerce or remove the order review link from this email.', 'mailpoet'));
+      }
+    }
+
+    if (
+      $wpPost instanceof \WP_Post
+      && $this->blockEmailContentDetector->hasMeaningfulContent($wpPost, [
+        'automation_subject_keys' => $subjectKeys,
+      ])
+    ) {
       return;
     }
 
@@ -277,12 +306,50 @@ class SendEmailAction implements Action {
   }
 
   private function scheduleEmail(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
+    $this->validateOrderReviewUrlToken($args, $newsletter);
+
     $meta = $this->getNewsletterMeta($args);
     try {
       $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
     } catch (Throwable $e) {
       throw InvalidStateException::create()->withMessage(__('Could not create sending task.', 'mailpoet'));
     }
+  }
+
+  private function validateOrderReviewUrlToken(StepRunArgs $args, NewsletterEntity $newsletter): void {
+    if (!$this->newsletterContainsOrderReviewUrlToken($newsletter)) {
+      return;
+    }
+
+    try {
+      $orderPayload = $args->getSinglePayloadByClass(OrderPayload::class);
+    } catch (NotFoundException $e) {
+      throw InvalidStateException::create()->withMessage(__('Cannot send the email because an order is required to generate the review link.', 'mailpoet'));
+    }
+
+    if ($this->orderReviewUrl->getUrl(['order' => $orderPayload->getOrder()]) !== '') {
+      return;
+    }
+
+    throw InvalidStateException::create()->withMessage(__('Cannot send the email because WooCommerce cannot generate an order review link for this order.', 'mailpoet'));
+  }
+
+  private function newsletterContainsOrderReviewUrlToken(NewsletterEntity $newsletter): bool {
+    $wpPostId = $newsletter->getWpPostId();
+    if ($wpPostId) {
+      $wpPost = $this->wp->getPost($wpPostId);
+      if ($wpPost instanceof \WP_Post && $this->contentContainsOrderReviewUrlToken($wpPost->post_content)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        return true;
+      }
+    }
+
+    $body = json_encode($newsletter->getBody(), JSON_UNESCAPED_SLASHES);
+    return is_string($body) && $this->contentContainsOrderReviewUrlToken($body);
+  }
+
+  private function contentContainsOrderReviewUrlToken(string $content): bool {
+    $normalizedContent = rawurldecode(str_replace('\\/', '/', $content));
+    return strpos($normalizedContent, self::ORDER_REVIEW_URL_TOKEN) !== false;
   }
 
   private function getRunLogData(StepRunController $controller): array {

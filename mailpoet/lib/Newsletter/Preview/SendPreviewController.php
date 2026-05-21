@@ -106,7 +106,9 @@ class SendPreviewController {
       $this->personalizer->set_context($context);
       $renderedNewsletter['subject'] = $this->personalizer->personalize_content($renderedNewsletter['subject']);
       $renderedNewsletter['body']['html'] = $this->personalizer->personalize_content($renderedNewsletter['body']['html']);
+      $renderedNewsletter['body']['html'] = $this->personalizationTagManager->restorePersonalizedLinkHrefs($renderedNewsletter['body']['html'], $context);
       $renderedNewsletter['body']['text'] = $this->personalizer->personalize_content($renderedNewsletter['body']['text']);
+      $renderedNewsletter['body']['text'] = $this->personalizationTagManager->restorePersonalizedLinkUrls($renderedNewsletter['body']['text'], $context);
     }
 
     $renderedNewsletter['id'] = $newsletter->getId();

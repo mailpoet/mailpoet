@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -18,6 +19,7 @@ class PersonalizationTagManager {
   private Subscriber $subscriber;
   private Site $site;
   private Link $link;
+  private OrderReviewUrl $orderReviewUrl;
   private WPFunctions $wp;
   private LinksToShortcodesConvertor $linksToShortcodesConvertor;
   private AutomationStorage $automationStorage;
@@ -28,6 +30,7 @@ class PersonalizationTagManager {
     Subscriber $subscriber,
     Site $site,
     Link $link,
+    OrderReviewUrl $orderReviewUrl,
     WPFunctions $wp,
     LinksToShortcodesConvertor $linksToShortcodesConvertor,
     AutomationStorage $automationStorage,
@@ -37,6 +40,7 @@ class PersonalizationTagManager {
     $this->subscriber = $subscriber;
     $this->site = $site;
     $this->link = $link;
+    $this->orderReviewUrl = $orderReviewUrl;
     $this->wp = $wp;
     $this->linksToShortcodesConvertor = $linksToShortcodesConvertor;
     $this->automationStorage = $automationStorage;
@@ -70,11 +74,17 @@ class PersonalizationTagManager {
    * @param int $automationId The automation ID
    */
   public function extendPersonalizationTagsByAutomationSubjects(int $automationId): void {
+    $this->extendPersonalizationTagsBySubjects($this->getAutomationSubjects($automationId));
+  }
+
+  /**
+   * @param string[] $availableSubjects
+   */
+  public function extendPersonalizationTagsBySubjects(array $availableSubjects): void {
     $registry = Email_Editor_Container::container()->get(
       Personalization_Tags_Registry::class
     );
 
-    $availableSubjects = $this->getAutomationSubjects($automationId);
     $this->extendWooCommerceTagsForMailPoet($registry, $availableSubjects);
 
     $this->wp->applyFilters('mailpoet_automation_email_extend_personalization_tags', $registry, $availableSubjects);
@@ -83,6 +93,7 @@ class PersonalizationTagManager {
   public function initialize() {
     // Extend tags when WooCommerce Email Editor requests personalization tags for a specific post
     $this->wp->addAction('woocommerce_email_editor_personalization_tags_for_post', [$this, 'extendPersonalizationTagsForPost']);
+    $this->wp->addAction('mailpoet_automation_email_extend_personalization_tags_for_sending', [$this, 'extendPersonalizationTagsBySubjects']);
 
     $this->wp->addFilter('woocommerce_email_editor_register_personalization_tags', function( Personalization_Tags_Registry $registry ): Personalization_Tags_Registry {
       // Subscriber Personalization Tags
@@ -190,6 +201,18 @@ class PersonalizationTagManager {
       'mailpoet_sending_newsletter_render_after_pre_process',
       [$this, 'convertLinksToShortcodes']
     );
+    $this->wp->addFilter(
+      'mailpoet_automation_email_personalize_html_after',
+      [$this, 'restorePersonalizedLinkHrefs'],
+      10,
+      2
+    );
+    $this->wp->addFilter(
+      'mailpoet_automation_email_personalize_text_after',
+      [$this, 'restorePersonalizedLinkUrls'],
+      10,
+      2
+    );
   }
 
   public function convertLinksToShortcodes(array $emailContent): array {
@@ -198,6 +221,30 @@ class PersonalizationTagManager {
     }
     $emailContent['html'] = $this->linksToShortcodesConvertor->convertLinkTagsToShortcodes($emailContent['html']);
     return $emailContent;
+  }
+
+  /**
+   * @param array<string, mixed> $context
+   */
+  public function restorePersonalizedLinkHrefs(string $html, array $context = []): string {
+    return $this->linksToShortcodesConvertor->restorePersonalizedLinkHrefs($html, $this->getPersonalizedUrlTokens($context));
+  }
+
+  /**
+   * @param array<string, mixed> $context
+   */
+  public function restorePersonalizedLinkUrls(string $content, array $context = []): string {
+    return $this->linksToShortcodesConvertor->restorePersonalizedLinkUrls($content, $this->getPersonalizedUrlTokens($context));
+  }
+
+  /**
+   * @param array<string, mixed> $context
+   * @return array<string, string>
+   */
+  private function getPersonalizedUrlTokens(array $context): array {
+    return [
+      '[woocommerce/order-review-url]' => $this->orderReviewUrl->getUrl($context),
+    ];
   }
 
   /**
@@ -236,7 +283,36 @@ class PersonalizationTagManager {
       }
     }
 
+    $this->registerOrderReviewUrlTag($registry, $availableSubjects);
+
     return $registry;
+  }
+
+  /**
+   * @param string[] $availableSubjects
+   */
+  private function registerOrderReviewUrlTag(Personalization_Tags_Registry $registry, array $availableSubjects): void {
+    if (!$this->shouldExtendTagCategory('Order', $availableSubjects)) {
+      return;
+    }
+
+    if (!$this->orderReviewUrl->isSupported()) {
+      return;
+    }
+
+    if ($registry->get_by_token('[woocommerce/order-review-url]')) {
+      return;
+    }
+
+    $registry->register(new Personalization_Tag(
+      __('Order Review URL', 'mailpoet'),
+      'woocommerce/order-review-url',
+      __('Order', 'mailpoet'),
+      [$this->orderReviewUrl, 'getUrl'],
+      [],
+      null,
+      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+    ));
   }
 
   /**
