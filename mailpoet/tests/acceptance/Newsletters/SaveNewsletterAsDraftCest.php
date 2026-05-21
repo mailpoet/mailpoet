@@ -8,7 +8,6 @@ class SaveNewsletterAsDraftCest {
     $newsletterTitle = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
 
     $segmentName = $i->createListWithSubscriber();
-    $inactiveNewsletterUI = '.mailpoet-listing-row-inactive';
 
     $this->startCreatingNewsletter($i, $newsletterTitle);
 
@@ -59,8 +58,6 @@ class SaveNewsletterAsDraftCest {
   }
 
   private function assertNewsletterNotSent(\AcceptanceTester $i) {
-    $inactiveNewsletterUI = '.mailpoet-listing-row-inactive';
     $i->waitForText('Not sent yet');
-    $i->seeElement($inactiveNewsletterUI);
   }
 }

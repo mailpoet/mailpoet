@@ -38,13 +38,16 @@ class NewsletterCreationCest {
     $searchFieldElement = 'textarea.select2-search__field';
     $i->waitForElement($searchFieldElement);
     $i->see('Select a frequency');
-    $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
+    $newsletterId = basename($i->getCurrentUrl());
+    // The listing item id sits on the subject link only; match the whole table
+    // row so the frequency and segment columns are in scope too.
+    $newsletterListingRow = ['xpath' => '//tr[.//a[@data-automation-id="listing_item_' . $newsletterId . '"]]'];
     $i->selectOptionInSelect2($segmentName);
     $i->click('Activate');
-    $i->waitForElement($newsletterListingElement);
-    $i->see($newsletterTitle, $newsletterListingElement);
-    $i->see('Immediately', $newsletterListingElement);
-    $i->see('Send to ' . $segmentName, $newsletterListingElement);
+    $i->waitForElement($newsletterListingRow);
+    $i->see($newsletterTitle, $newsletterListingRow);
+    $i->see('Immediately', $newsletterListingRow);
+    $i->see('Send to ' . $segmentName, $newsletterListingRow);
   }
 
   public function createStandardNewsletter(\AcceptanceTester $i) {

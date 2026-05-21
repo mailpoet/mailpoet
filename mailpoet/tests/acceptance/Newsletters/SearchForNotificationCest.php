@@ -43,7 +43,7 @@ class SearchForNotificationCest {
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 5 - Filter by Inactive and search for the active post notification
-    $i->click('[data-automation-id="filters_not_active"]');
+    $i->click('[data-automation-id="filters_draft"]');
     $i->searchFor($newsletterTitle);
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
