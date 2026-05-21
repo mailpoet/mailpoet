@@ -239,28 +239,32 @@ class ScheduledTaskSubscribersRepository extends Repository {
     return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
   }
 
-  public function purgeOldTaskSubscribers(int $daysToKeep, int $taskBatchSize, int $rowLimit): int {
+  public function purgeOldTaskSubscribers(int $daysToKeep, int $taskBatchSize, int $rowLimit, array $taskTypes = ['sending']): int {
     $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $cutoff = Carbon::now()->subDays($daysToKeep)->toDateTimeString();
+    $taskTypes = array_values(array_unique(array_filter($taskTypes)));
+    if (!$taskTypes) {
+      return 0;
+    }
 
     $taskIds = $this->entityManager->getConnection()->executeQuery(
       "SELECT DISTINCT st.`id`
        FROM `{$stTable}` st
        INNER JOIN `{$stsTable}` sts ON sts.`task_id` = st.`id`
-       WHERE st.`type` = :type
+       WHERE st.`type` IN (:types)
          AND st.`status` = :status
          AND st.`processed_at` < :cutoff
          AND st.`deleted_at` IS NULL
        LIMIT :taskBatchSize",
       [
-        'type' => 'sending',
+        'types' => $taskTypes,
         'status' => ScheduledTaskEntity::STATUS_COMPLETED,
         'cutoff' => $cutoff,
         'taskBatchSize' => $taskBatchSize,
       ],
       [
-        'type' => ParameterType::STRING,
+        'types' => ArrayParameterType::STRING,
         'status' => ParameterType::STRING,
         'cutoff' => ParameterType::STRING,
         'taskBatchSize' => ParameterType::INTEGER,

@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
+use MailPoet\Cron\Workers\Automations\ManualAutomationStartWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
@@ -33,6 +34,7 @@ class WorkersFactory {
     BackfillEngagementData::TASK_TYPE,
     Mixpanel::TASK_TYPE,
     AbandonedCartWorker::TASK_TYPE,
+    ManualAutomationStartWorker::TASK_TYPE,
     LogCleanup::TASK_TYPE,
     SendingTaskSubscribersCleanup::TASK_TYPE,
     SendingQueueBodyCleanup::TASK_TYPE,
@@ -179,6 +181,11 @@ class WorkersFactory {
   /** @return AbandonedCartWorker */
   public function createAbandonedCartWorker() {
     return $this->container->get(AbandonedCartWorker::class);
+  }
+
+  /** @return ManualAutomationStartWorker */
+  public function createManualAutomationStartWorker() {
+    return $this->container->get(ManualAutomationStartWorker::class);
   }
 
   /** @return BackfillEngagementData */

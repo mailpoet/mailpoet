@@ -5,6 +5,8 @@ namespace MailPoet\Automation\Engine;
 use MailPoet\Automation\Engine\API\API;
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationManualStartEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationManualStartPreviewEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint;
@@ -84,6 +86,8 @@ class Engine {
       $api->registerGetRoute('automations/(?P<id>\d+)/versions', AutomationVersionsGetEndpoint::class);
       $api->registerDeleteRoute('automations/(?P<id>\d+)', AutomationsDeleteEndpoint::class);
       $api->registerPostRoute('automations/(?P<id>\d+)/duplicate', AutomationsDuplicateEndpoint::class);
+      $api->registerPostRoute('automations/(?P<id>\d+)/manual-start/preview', AutomationManualStartPreviewEndpoint::class);
+      $api->registerPostRoute('automations/(?P<id>\d+)/manual-start', AutomationManualStartEndpoint::class);
       $api->registerPostRoute('automations/create-from-template', AutomationsCreateFromTemplateEndpoint::class);
       $api->registerGetRoute('automation-templates', AutomationTemplatesGetEndpoint::class);
       $api->registerGetRoute('automation-templates/(?P<slug>.+)', AutomationTemplateGetEndpoint::class);

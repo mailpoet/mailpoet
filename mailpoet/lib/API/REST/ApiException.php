@@ -15,20 +15,26 @@ class ApiException extends PhpException implements Exception {
   /** @var array<string, string> */
   private $errors;
 
+  /** @var array<string, mixed> */
+  private $data;
+
   /**
    * @param array<string, string> $errors
+   * @param array<string, mixed> $data
    */
   public function __construct(
     string $message,
     int $statusCode = 400,
     string $errorCode = 'mailpoet_rest_api_error',
     array $errors = [],
-    ?Throwable $previous = null
+    ?Throwable $previous = null,
+    array $data = []
   ) {
     parent::__construct($message, 0, $previous);
     $this->statusCode = $statusCode;
     $this->errorCode = $errorCode;
     $this->errors = $errors;
+    $this->data = $data;
   }
 
   public function getStatusCode(): int {
@@ -41,5 +47,9 @@ class ApiException extends PhpException implements Exception {
 
   public function getErrors(): array {
     return $this->errors;
+  }
+
+  public function getData(): array {
+    return $this->data;
   }
 }

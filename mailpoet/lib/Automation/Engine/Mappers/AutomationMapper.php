@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\ManualStart\ManualStartService;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 
@@ -18,12 +19,17 @@ class AutomationMapper {
   /** @var AutomationRunStorage */
   private $runStorage;
 
+  /** @var ManualStartService */
+  private $manualStartService;
+
   public function __construct(
     AutomationStatisticsStorage $statisticsStorage,
-    AutomationRunStorage $runStorage
+    AutomationRunStorage $runStorage,
+    ManualStartService $manualStartService
   ) {
     $this->statisticsStorage = $statisticsStorage;
     $this->runStorage = $runStorage;
+    $this->manualStartService = $manualStartService;
   }
 
   public function buildAutomation(Automation $automation, ?AutomationStatistics $statistics = null): array {
@@ -88,6 +94,7 @@ class AutomationMapper {
         'created_at' => $lastRun->getCreatedAt()->format(DateTimeImmutable::W3C),
         'updated_at' => $lastRun->getUpdatedAt()->format(DateTimeImmutable::W3C),
       ] : null,
+      'manual_start' => $this->manualStartService->getMetadata($automation),
     ];
   }
 }

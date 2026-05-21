@@ -30,23 +30,33 @@ class StepScheduler {
   }
 
   public function scheduleNextStep(StepRunArgs $args, ?int $timestamp = null): int {
+    $result = $this->scheduleNextStepWithResult($args, $timestamp);
+    return $result->getActionId() ?? 0;
+  }
+
+  public function scheduleNextStepWithResult(StepRunArgs $args, ?int $timestamp = null): StepSchedulingResult {
     $step = $args->getStep();
     $nextSteps = $step->getNextSteps();
 
     // complete the automation run if there are no more steps
     if (count($nextSteps) === 0) {
       $this->completeAutomationRun($args);
-      return 0;
+      return StepSchedulingResult::completedNoNextStep();
     }
 
     if (count($nextSteps) > 1) {
       throw Exceptions::nextStepNotScheduled($step->getId());
     }
 
-    return $this->scheduleNextStepByIndex($args, 0, $timestamp);
+    return $this->scheduleNextStepByIndexWithResult($args, 0, $timestamp);
   }
 
   public function scheduleNextStepByIndex(StepRunArgs $args, int $nextStepIndex, ?int $timestamp = null): int {
+    $result = $this->scheduleNextStepByIndexWithResult($args, $nextStepIndex, $timestamp);
+    return $result->getActionId() ?? 0;
+  }
+
+  private function scheduleNextStepByIndexWithResult(StepRunArgs $args, int $nextStepIndex, ?int $timestamp = null): StepSchedulingResult {
     $step = $args->getStep();
     $nextStep = $step->getNextSteps()[$nextStepIndex] ?? null;
     if (!$nextStep) {
@@ -57,13 +67,16 @@ class StepScheduler {
     $nextStepId = $nextStep->getId();
     if (!$nextStepId) {
       $this->completeAutomationRun($args);
-      return 0;
+      return StepSchedulingResult::completedNoNextStep();
     }
 
     $data = $this->getActionData($runId, $nextStepId);
     $id = $this->scheduleStepAction($data, $timestamp);
+    if ($id <= 0) {
+      return StepSchedulingResult::enqueueFailed($nextStepId);
+    }
     $this->automationRunStorage->updateNextStep($runId, $nextStepId);
-    return $id;
+    return StepSchedulingResult::scheduled($id, $nextStepId);
   }
 
   public function hasScheduledNextStep(StepRunArgs $args): bool {

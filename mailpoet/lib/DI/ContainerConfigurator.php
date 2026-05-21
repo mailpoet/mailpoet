@@ -138,6 +138,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Builder\UpdateAutomationController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\ActionScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\AutomationController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Control\AutomationRunCreator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\RootStep::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\FilterHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\StepHandler::class)->setPublic(true);
@@ -149,6 +150,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Control\TriggerHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Engine::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Hooks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\ManualStart\ManualStartAudienceRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\ManualStart\ManualStartService::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Mappers\AutomationMapper::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Registry::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationRunStorage::class)->setPublic(true);
@@ -173,6 +176,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationManualStartPreviewEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationManualStartEndpoint::class)->setPublic(true);
     // Automation - core integration
     $container->autowire(\MailPoet\Automation\Integrations\Core\Actions\DelayAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\Core\Actions\IfElseAction::class)->setPublic(true);
@@ -358,6 +363,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SubscribersStatsReport::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\NewsletterTemplateThumbnails::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Automations\AbandonedCartWorker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\Automations\ManualAutomationStartWorker::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SubscriberLimitNotificationWorker::class)->setPublic(true);
     // Custom field
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);

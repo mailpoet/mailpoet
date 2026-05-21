@@ -7,16 +7,17 @@ class ErrorResponse extends Response {
     int $status,
     string $message,
     string $code,
-    array $errors = []
+    array $errors = [],
+    array $data = []
   ) {
     parent::__construct(null, $status);
     $this->set_data([
       'code' => $code,
       'message' => $message,
-      'data' => [
+      'data' => array_merge([
         'status' => $status,
         'errors' => $errors,
-      ],
+      ], $data),
     ]);
   }
 }

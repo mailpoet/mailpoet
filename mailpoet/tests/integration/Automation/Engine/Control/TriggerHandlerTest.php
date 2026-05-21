@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\FilterGroup;
 use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -159,6 +160,36 @@ class TriggerHandlerTest extends \MailPoetTest {
     $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
     $this->testee->processTrigger($trigger, [$segmentSubject]);
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation1));
+  }
+
+  public function testRunCreateFilterCanOverrideTriggerMismatch(): void {
+    $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
+    $automation = $this->tester->createAutomation(
+      'automation-1',
+      new Step(
+        'trigger',
+        Step::TYPE_TRIGGER,
+        $trigger->getKey(),
+        [
+          'segment_ids' => [$this->segments['segment_1']->getId()],
+        ],
+        []
+      )
+    );
+
+    $createRunFilter = function (): bool {
+      return true;
+    };
+    add_filter(Hooks::AUTOMATION_RUN_CREATE, $createRunFilter);
+
+    try {
+      $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_2']->getId()]);
+      $this->testee->processTrigger($trigger, [$segmentSubject]);
+    } finally {
+      remove_filter(Hooks::AUTOMATION_RUN_CREATE, $createRunFilter);
+    }
+
+    $this->assertCount(1, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
   }
 
   public function testItAppliesFilters(): void {

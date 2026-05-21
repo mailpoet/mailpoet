@@ -117,6 +117,19 @@ class SegmentSubscribersRepository {
     }
   }
 
+  public function createSubscribersInSegmentQueryBuilder(SegmentEntity $segment, ?string $status = null): QueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id")
+      ->from($subscribersTable);
+
+    return $segment->isStatic()
+      ? $this->filterSubscribersInStaticSegment($queryBuilder, $segment, $status)
+      : $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, $status);
+  }
+
   /**
    * @param DynamicSegmentFilterData[] $filters
    * @return int

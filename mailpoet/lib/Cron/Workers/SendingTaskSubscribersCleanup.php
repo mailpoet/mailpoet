@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Cron\Workers\Automations\ManualAutomationStartWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Settings\SettingsController;
@@ -57,7 +58,8 @@ class SendingTaskSubscribersCleanup extends SimpleWorker {
       $deleted = $this->scheduledTaskSubscribersRepository->purgeOldTaskSubscribers(
         $retentionDays,
         self::TASK_BATCH_SIZE,
-        self::ROW_BATCH_SIZE
+        self::ROW_BATCH_SIZE,
+        ['sending', ManualAutomationStartWorker::TASK_TYPE]
       );
 
       if (

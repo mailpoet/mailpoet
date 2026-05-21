@@ -321,6 +321,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createReEngagementEmailsSchedulerWorker' => $worker,
       'createNewsletterTemplateThumbnailsWorker' => $worker,
       'createAbandonedCartWorker' => $worker,
+      'createManualAutomationStartWorker' => $worker,
       'createBackfillEngagementDataWorker' => $worker,
       'createMixpanelWorker' => $worker,
       'createTracksWorker' => $worker,

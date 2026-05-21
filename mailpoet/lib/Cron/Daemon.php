@@ -115,6 +115,7 @@ class Daemon {
     yield $this->workersFactory->createReEngagementEmailsSchedulerWorker();
     yield $this->workersFactory->createNewsletterTemplateThumbnailsWorker();
     yield $this->workersFactory->createAbandonedCartWorker();
+    yield $this->workersFactory->createManualAutomationStartWorker();
     yield $this->workersFactory->createBackfillEngagementDataWorker();
     yield $this->workersFactory->createMixpanelWorker();
     yield $this->workersFactory->createTracksWorker();

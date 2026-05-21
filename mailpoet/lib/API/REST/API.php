@@ -79,9 +79,12 @@ class API {
   }
 
   private function convertToErrorResponse(Throwable $e): ErrorResponse {
-    $response = $e instanceof Exception
-      ? new ErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrorCode(), $e->getErrors())
-      : new ErrorResponse(500, __('An unknown error occurred.', 'mailpoet'), 'mailpoet_automation_unknown_error');
+    if ($e instanceof Exception) {
+      $data = method_exists($e, 'getData') ? $e->getData() : [];
+      $response = new ErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrorCode(), $e->getErrors(), $data);
+    } else {
+      $response = new ErrorResponse(500, __('An unknown error occurred.', 'mailpoet'), 'mailpoet_automation_unknown_error');
+    }
 
     if ($response->get_status() >= 500 && function_exists('error_log')) {
       // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
