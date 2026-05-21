@@ -232,12 +232,12 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
 
 export async function setDynamicSegmentsLoading(
   value: boolean,
-  request?: XMLHttpRequest,
+  abortController?: AbortController,
 ) {
   return {
     type: 'SET_DYNAMIC_SEGMENTS_LOADING',
     value,
-    request: value ? request : undefined,
+    abortController: value ? abortController : undefined,
   } as const;
 }
 
@@ -249,14 +249,19 @@ export async function loadDynamicSegments(query?: Query) {
     meta: { count: 0, groups: [] },
   };
 
-  try {
-    select(storeName).getDynamicSegmentsLoading().request?.abort();
-    void dispatch(storeName).setDynamicSegmentsLoading(true);
+  const abortController = new AbortController();
 
-    const response = await getDynamicSegments({
-      ...segmentsQuery,
-      sort_order: segmentsQuery.sort_order as 'asc' | 'desc',
-    });
+  try {
+    select(storeName).getDynamicSegmentsLoading().abortController?.abort();
+    void dispatch(storeName).setDynamicSegmentsLoading(true, abortController);
+
+    const response = await getDynamicSegments(
+      {
+        ...segmentsQuery,
+        sort_order: segmentsQuery.sort_order as 'asc' | 'desc',
+      },
+      abortController.signal,
+    );
     data = {
       data: response.items.map((segment) => ({ ...segment, stats: '' })),
       meta: {
@@ -265,7 +270,7 @@ export async function loadDynamicSegments(query?: Query) {
       },
     };
   } catch (res: unknown) {
-    if (res === 'abort') {
+    if ((res as { name?: string })?.name === 'AbortError') {
       return { type: 'NOOP' };
     }
     const error = res as { message?: string };
