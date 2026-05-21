@@ -68,6 +68,10 @@ progress::-moz-progress-bar {
   }
 }
 
+.mailpoet_form_loading div.mailpoet-form-grid {
+  opacity: 0.2;
+}
+
 .mailpoet-form-actions {
   grid-column: span 2;
 

@@ -8,11 +8,6 @@
     margin: $grid-gap;
   }
 
-  .mailpoet-listing-table td,
-  .mailpoet-listing-table p {
-    font-size: $font-size-small;
-  }
-
   .mailpoet-stats-link {
     color: $color-text;
     font-weight: 600;
@@ -27,18 +22,6 @@
 
   @include respond-to(small-screen) {
     margin-left: -10px;
-
-    .mailpoet-listing-table {
-      tr {
-        padding-bottom: 5px;
-      }
-
-      td {
-        float: none !important;
-        padding: 5px 10px !important;
-        text-align: left !important;
-      }
-    }
   }
 
   .components-dropdown {

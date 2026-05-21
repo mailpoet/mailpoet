@@ -381,30 +381,6 @@
   gap: $grid-gap;
 }
 
-.mailpoet-subscriber-stats-activity-listing {
-  .mailpoet-listing-table {
-    border: 0;
-    box-shadow: none;
-
-    thead {
-      display: none;
-    }
-
-    tbody td {
-      padding: 0;
-    }
-
-    tr {
-      border-bottom: 0;
-      box-shadow: none;
-    }
-
-    tr:hover {
-      background: transparent;
-    }
-  }
-}
-
 .mailpoet-subscriber-stats-no-access-content {
   display: flex;
   justify-content: center;
@@ -412,10 +388,6 @@
 }
 
 .mailpoet-subscriber-stats {
-  .mailpoet-listing-table thead tr {
-    box-shadow: 0 2px 4px -2px $color-tertiary-light;
-  }
-
   thead td {
     color: $color-wordpress-grey-dark;
     padding-right: 8px;
@@ -442,10 +414,6 @@
 
   .mailpoet-tooltip-message a {
     color: $color-white;
-  }
-
-  .mailpoet-listing-table tr:last-child td {
-    border-bottom: 0;
   }
 }
 
