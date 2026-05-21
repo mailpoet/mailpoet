@@ -24,6 +24,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -32,6 +33,12 @@ if (!interface_exists(AbilityDefinition::class)) {
 }
 
 class WooCommerceMarketingStatus implements AbilityDefinition {
+  private const TRACKING_LEVELS = [
+    TrackingConfig::LEVEL_FULL,
+    TrackingConfig::LEVEL_PARTIAL,
+    TrackingConfig::LEVEL_BASIC,
+  ];
+
   public static function get_name(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required by WooCommerce's AbilityDefinition interface.
     return 'mailpoet/get-woocommerce-marketing-status';
   }
@@ -74,12 +81,20 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
     $automationStorage = $container->get(AutomationStorage::class);
 
     $checkoutSegmentIds = array_values(array_unique(array_map('absint', (array)$settings->get(Subscription::OPTIN_SEGMENTS_SETTING_NAME, []))));
+    $position = $settings->get(Subscription::OPTIN_POSITION_SETTING_NAME, Hooks::DEFAULT_OPTIN_POSITION);
+    if (!is_string($position) || !array_key_exists($position, Hooks::OPTIN_HOOKS)) {
+      $position = Hooks::DEFAULT_OPTIN_POSITION;
+    }
+    $trackingLevel = $settings->get('tracking.level', TrackingConfig::LEVEL_FULL);
+    if (!is_string($trackingLevel) || !in_array($trackingLevel, self::TRACKING_LEVELS, true)) {
+      $trackingLevel = TrackingConfig::LEVEL_FULL;
+    }
 
     return [
       'checkout_optin' => [
         'enabled' => (bool)$settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false),
         'message' => wp_strip_all_tags((string)$settings->get(Subscription::OPTIN_MESSAGE_SETTING_NAME, '')),
-        'position' => (string)$settings->get(Subscription::OPTIN_POSITION_SETTING_NAME, Hooks::DEFAULT_OPTIN_POSITION),
+        'position' => $position,
         'segments' => self::formatSegments($segmentsRepository, $checkoutSegmentIds),
       ],
       'transactional_email_editor' => [
@@ -98,7 +113,7 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
         'active_email_counts' => self::getAutomationEmailCounts($automationStorage),
       ],
       'measurement' => [
-        'tracking_level' => (string)$settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
+        'tracking_level' => $trackingLevel,
         'analytics_enabled' => (bool)$settings->get('analytics.enabled', false),
         'revenue_attribution_order_statuses' => $woocommerceHelper->getPurchaseStates(),
       ],
@@ -106,7 +121,7 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
   }
 
   public static function canReadStatus(): bool {
-    return current_user_can(AccessControl::PERMISSION_MANAGE_SETTINGS);
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_SETTINGS);
   }
 
   private static function getOutputSchema(): array {
@@ -191,7 +206,7 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
           'properties' => [
             'tracking_level' => [
               'type' => 'string',
-              'enum' => [TrackingConfig::LEVEL_FULL, TrackingConfig::LEVEL_PARTIAL, TrackingConfig::LEVEL_BASIC],
+              'enum' => self::TRACKING_LEVELS,
             ],
             'analytics_enabled' => ['type' => 'boolean'],
             'revenue_attribution_order_statuses' => [

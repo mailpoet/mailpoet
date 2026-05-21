@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
@@ -73,7 +74,7 @@ class WooCommerceAutomationTemplates implements AbilityDefinition {
   }
 
   public static function canReadTemplates(): bool {
-    return current_user_can(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
   }
 
   private static function formatTemplate(AutomationTemplate $template): array {
