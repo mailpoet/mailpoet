@@ -26,6 +26,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoet\Newsletter\StatusController;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -222,9 +223,14 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
+    // The subscribers-limit check now lives in StatusController, so the stub
+    // has to be injected there rather than on the Newsletters endpoint.
+    $statusController = $this->getServiceWithOverrides(StatusController::class, [
+      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
+    ]);
     $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
+      'statusController' => $statusController,
     ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->getId(),

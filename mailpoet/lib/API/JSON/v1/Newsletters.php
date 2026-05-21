@@ -11,30 +11,25 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\StatisticsExport as StatisticsExportWorker;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\InvalidStateException;
 use MailPoet\Listing;
+use MailPoet\Newsletter\BulkActionController;
+use MailPoet\Newsletter\BulkActionException;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
-use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
-use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
+use MailPoet\Newsletter\StatusController;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\CapabilitiesManager;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -66,14 +61,8 @@ class Newsletters extends APIEndpoint {
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
 
-  /** @var PostNotificationScheduler */
-  private $postNotificationScheduler;
-
   /** @var Emoji */
   private $emoji;
-
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
 
   /** @var SendPreviewController */
   private $sendPreviewController;
@@ -89,15 +78,6 @@ class Newsletters extends APIEndpoint {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
-  /** @var NewsletterValidator */
-  private $newsletterValidator;
-
-  /** @var Scheduler */
-  private $scheduler;
-
-  /** @var AuthorizedEmailsController */
-  private $authorizedEmailsController;
-
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
@@ -107,6 +87,12 @@ class Newsletters extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
+  /** @var BulkActionController */
+  private $bulkActionController;
+
+  /** @var StatusController */
+  private $statusController;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -115,20 +101,17 @@ class Newsletters extends APIEndpoint {
     NewslettersRepository $newslettersRepository,
     NewsletterListingRepository $newsletterListingRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
-    PostNotificationScheduler $postNotificationScheduler,
-    SubscribersFeature $subscribersFeature,
     Emoji $emoji,
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterDeleteController $newsletterDeleteController,
     NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
-    Scheduler $scheduler,
-    NewsletterValidator $newsletterValidator,
-    AuthorizedEmailsController $authorizedEmailsController,
     ScheduledTasksRepository $scheduledTasksRepository,
     CapabilitiesManager $capabilitiesManager,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
+    BulkActionController $bulkActionController,
+    StatusController $statusController
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -137,20 +120,17 @@ class Newsletters extends APIEndpoint {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterListingRepository = $newsletterListingRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
-    $this->postNotificationScheduler = $postNotificationScheduler;
-    $this->subscribersFeature = $subscribersFeature;
     $this->emoji = $emoji;
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterDeleteController = $newsletterDeleteController;
     $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
-    $this->scheduler = $scheduler;
-    $this->newsletterValidator = $newsletterValidator;
-    $this->authorizedEmailsController = $authorizedEmailsController;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->capabilitiesManager = $capabilitiesManager;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
+    $this->bulkActionController = $bulkActionController;
+    $this->statusController = $statusController;
   }
 
   public function get($data = []) {
@@ -226,87 +206,34 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($response);
   }
 
+  /**
+   * @deprecated Use the REST endpoint `PUT /mailpoet/v1/newsletters/{id}/status`
+   *   instead. Kept callable for third-party integrations. The orchestration
+   *   lives in {@see StatusController}.
+   */
   public function setStatus($data = []) {
     $status = (isset($data['status']) ? $data['status'] : null);
-
     if (!$status) {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('You need to specify a status.', 'mailpoet'),
       ]);
     }
-
-    if ($status === NewsletterEntity::STATUS_ACTIVE && $this->subscribersFeature->check()) {
-      return $this->errorResponse([
-        APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
-      ], [], Response::STATUS_FORBIDDEN);
-    }
-
     $newsletter = $this->getNewsletter($data);
     if ($newsletter === null) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
-
-    if ($status === NewsletterEntity::STATUS_ACTIVE && !$this->authorizedEmailsController->isSenderAddressValid($newsletter)) {
-          return $this->errorResponse([
-            APIError::FORBIDDEN => __('The sender address is not an authorized sender domain.', 'mailpoet'),
-          ], [], Response::STATUS_FORBIDDEN);
+    try {
+      $updated = $this->statusController->setStatus($newsletter, (string)$status);
+    } catch (BulkActionException $exception) {
+      return $this->errorResponse(
+        [$exception->getErrorCode() => $exception->getMessage()],
+        [],
+        $exception->getStatusCode()
+      );
     }
-
-    if ($status === NewsletterEntity::STATUS_ACTIVE) {
-      $validationError = $this->newsletterValidator->validate($newsletter);
-      if ($validationError !== null) {
-        return $this->errorResponse([APIError::FORBIDDEN => $validationError], [], Response::STATUS_FORBIDDEN);
-      }
-    }
-
-    $this->newslettersRepository->prefetchOptions([$newsletter]);
-    $newsletter->setStatus($status);
-
-    // if there are paused tasks unpause them
-    if ($newsletter->getStatus() === NewsletterEntity::STATUS_ACTIVE) {
-      $queues = $newsletter->getUnfinishedQueues();
-      foreach ($queues as $queue) {
-        $task = $queue->getTask();
-        if ($task && $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
-          $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-        }
-      }
-    }
-
-    // if there are past due notifications, reschedule them for the next send date
-    if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION && $status === NewsletterEntity::STATUS_ACTIVE) {
-      $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-      if ($scheduleOption === null) {
-        return $this->errorResponse([
-          APIError::BAD_REQUEST => __('This email has incorrect state.', 'mailpoet'),
-        ]);
-      }
-      $nextRunDate = $this->scheduler->getNextRunDate($scheduleOption->getValue());
-      $queues = $newsletter->getQueues();
-      foreach ($queues as $queue) {
-        $task = $queue->getTask();
-        if (
-          $task &&
-          $task->getScheduledAt() <= Carbon::now()->millisecond(0) &&
-          $task->getStatus() === SendingQueueEntity::STATUS_SCHEDULED
-        ) {
-          $nextRunDate = $nextRunDate ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDate) : null;
-          if ($nextRunDate === false) {
-            throw InvalidStateException::create()->withMessage('Invalid next run date generated');
-          }
-          $task->setScheduledAt($nextRunDate);
-        }
-      }
-      $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    }
-
-    $this->newslettersRepository->flush();
-
-    return $this->successResponse(
-      $this->newslettersResponseBuilder->build($newsletter)
-    );
+    return $this->successResponse($this->newslettersResponseBuilder->build($updated));
   }
 
   public function restore($data = []) {
@@ -355,6 +282,10 @@ class Newsletters extends APIEndpoint {
     }
   }
 
+  /**
+   * @deprecated Use the REST endpoint `POST /mailpoet/v1/newsletters/{id}/duplicate`
+   *   instead. Kept callable for third-party integrations.
+   */
   public function duplicate($data = []) {
     $newsletter = $this->getNewsletter($data);
 
@@ -420,6 +351,10 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($this->newslettersResponseBuilder->build($newsletter));
   }
 
+  /**
+   * @deprecated Use the REST endpoint `GET /mailpoet/v1/newsletters` instead.
+   *   Kept callable for third-party integrations posting to the legacy JSON API.
+   */
   public function listing($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data);
     $items = $this->newsletterListingRepository->getData($definition);
@@ -443,24 +378,31 @@ class Newsletters extends APIEndpoint {
     ]);
   }
 
+  /**
+   * @deprecated Use the REST endpoint `POST /mailpoet/v1/newsletters/bulk-action`
+   *   instead. Kept callable for third-party integrations. The orchestration
+   *   lives in {@see BulkActionController}; `export_stats` is still handled
+   *   inline because it is premium-gated and async.
+   */
   public function bulkAction($data = []) {
+    $action = (string)($data['action'] ?? '');
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
-    $ids = $this->newsletterListingRepository->getActionableIds($definition);
-    if ($data['action'] === 'trash') {
-      $this->newslettersRepository->bulkTrash($ids);
-    } elseif ($data['action'] === 'restore') {
-      $this->newslettersRepository->bulkRestore($ids);
-    } elseif ($data['action'] === 'delete') {
-      $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
-      $this->newsletterDeleteController->bulkDelete($ids);
-      $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
-    } elseif ($data['action'] === 'export_stats') {
+
+    if ($action === 'export_stats') {
+      $ids = $this->newsletterListingRepository->getActionableIds($definition);
       return $this->scheduleStatsExport($ids, $data);
-    } else {
-      throw UnexpectedValueException::create()
-        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
-    return $this->successResponse(null, ['count' => count($ids)]);
+
+    try {
+      $result = $this->bulkActionController->execute($action, $definition);
+    } catch (BulkActionException $exception) {
+      return $this->errorResponse(
+        [$exception->getErrorCode() => $exception->getMessage()],
+        [],
+        $exception->getStatusCode()
+      );
+    }
+    return $this->successResponse(null, ['count' => $result['count']]);
   }
 
   /**
