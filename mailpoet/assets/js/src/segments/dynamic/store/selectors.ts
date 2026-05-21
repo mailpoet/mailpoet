@@ -1,8 +1,6 @@
 import {
   AnyFormItem,
   Automation,
-  DynamicSegment,
-  DynamicSegmentGroup,
   FilterRow,
   FilterValue,
   GroupFilterValue,
@@ -111,21 +109,3 @@ export const findFiltersValueForSegment = (
   return found;
 };
 export const getPreviousPage = (state: StateType): string => state.previousPage;
-
-export const getDynamicSegments = (state: StateType): DynamicSegment[] =>
-  state.dynamicSegments.data;
-
-export const getDynamicSegmentsLoading = (
-  state: StateType,
-): StateType['dynamicSegmentsLoading'] => state.dynamicSegmentsLoading;
-
-export const getDynamicSegmentsGroups = (
-  state: StateType,
-): DynamicSegmentGroup[] => state.dynamicSegments.meta.groups;
-
-export const getDynamicSegmentsCount = (state: StateType): number =>
-  state.dynamicSegments.meta.count;
-
-export const getDynamicSelection = (
-  state: StateType,
-): Record<number, boolean> => state.dynamicSegmentSelection;

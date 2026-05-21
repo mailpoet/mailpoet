@@ -1,6 +1,5 @@
 import { ChangeEvent } from 'react';
-import { select, dispatch } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { select } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 
 import * as ROUTES from '../../routes';
@@ -17,13 +16,8 @@ import {
   Segment,
   SegmentTemplate,
   SetPreviousPageActionType,
-  DynamicSegmentsList,
-  SelectDynamicSegmentActionType,
-  DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
-import { Query, getSegmentsQuery } from '../list/query';
-import { getDynamicSegments } from '../api';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
@@ -158,7 +152,6 @@ export function* handleSave(
     if (newsletterId && savedSegmentId) {
       window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}?filterSegmentId=${savedSegmentId}`;
     } else {
-      void dispatch(storeName).loadDynamicSegments();
       window.location.href = 'admin.php?page=mailpoet-segments#/segments';
 
       if (isNewSegment) {
@@ -227,88 +220,5 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
   return {
     type: Actions.SET_PREVIOUS_PAGE,
     previousPage: data,
-  };
-}
-
-export async function setDynamicSegmentsLoading(
-  value: boolean,
-  abortController?: AbortController,
-) {
-  return {
-    type: 'SET_DYNAMIC_SEGMENTS_LOADING',
-    value,
-    abortController: value ? abortController : undefined,
-  } as const;
-}
-
-export async function loadDynamicSegments(query?: Query) {
-  const segmentsQuery = query ?? getSegmentsQuery();
-
-  let data: DynamicSegmentsList = {
-    data: [],
-    meta: { count: 0, groups: [] },
-  };
-
-  const abortController = new AbortController();
-
-  try {
-    select(storeName).getDynamicSegmentsLoading().abortController?.abort();
-    void dispatch(storeName).setDynamicSegmentsLoading(true, abortController);
-
-    const response = await getDynamicSegments(
-      {
-        ...segmentsQuery,
-        sort_order: segmentsQuery.sort_order as 'asc' | 'desc',
-      },
-      abortController.signal,
-    );
-    data = {
-      data: response.items.map((segment) => ({ ...segment, stats: '' })),
-      meta: {
-        count: response.meta.count,
-        groups: response.groups ?? [],
-      },
-    };
-  } catch (res: unknown) {
-    if ((res as { name?: string })?.name === 'AbortError') {
-      return { type: 'NOOP' };
-    }
-    const error = res as { message?: string };
-    MailPoet.Notice.error(error.message ?? __('Request failed.', 'mailpoet'));
-  }
-
-  return {
-    type: 'SET_DYNAMIC_SEGMENTS',
-    dynamicSegments: data,
-  } as const;
-}
-
-export function selectDynamicSection(
-  segment: DynamicSegment,
-): SelectDynamicSegmentActionType {
-  return {
-    type: Actions.SELECT_DYNAMIC_SEGMENT,
-    segment,
-  };
-}
-
-export function unselectDynamicSection(
-  segment: DynamicSegment,
-): SelectDynamicSegmentActionType {
-  return {
-    type: Actions.UNSELECT_DYNAMIC_SEGMENT,
-    segment,
-  };
-}
-
-export function selectAllDynamicSections(): ActionType {
-  return {
-    type: Actions.SELECT_ALL_DYNAMIC_SEGMENTS,
-  };
-}
-
-export function unselectAllDynamicSections(): ActionType {
-  return {
-    type: Actions.UNSELECT_ALL_DYNAMIC_SEGMENTS,
   };
 }
