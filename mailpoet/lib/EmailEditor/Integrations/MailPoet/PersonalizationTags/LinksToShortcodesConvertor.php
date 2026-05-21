@@ -59,8 +59,10 @@ class LinksToShortcodesConvertor {
     }
     $contentProcessor->flush_updates();
     $updated = $contentProcessor->get_updated_html();
-    // Remove temporary prefix. It was needed so that the HTML_Tag_Processor could add value to href.
-    $updated = str_replace('http://[', '[', $updated);
+    // Remove the temporary prefix needed for HTML_Tag_Processor href updates.
+    foreach (self::TOKEN_MAP as $shortcode) {
+      $updated = str_replace('http://' . $shortcode, $shortcode, $updated);
+    }
     return $updated;
   }
 

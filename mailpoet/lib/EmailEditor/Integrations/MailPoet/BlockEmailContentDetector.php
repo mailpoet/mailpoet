@@ -32,11 +32,8 @@ class BlockEmailContentDetector {
     $this->wp = $wp;
   }
 
-  /**
-   * @param \WP_Post|string $postOrContent
-   * @param array{automation_subject_keys?: string[]} $context
-   */
-  public function hasMeaningfulContent($postOrContent, array $context = []): bool {
+  /** @param \WP_Post|string $postOrContent */
+  public function hasMeaningfulContent($postOrContent): bool {
     if ($postOrContent instanceof \WP_Post) {
       $content = (string)$postOrContent->post_content; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     } elseif (is_string($postOrContent)) {
@@ -54,27 +51,27 @@ class BlockEmailContentDetector {
     }
 
     $blocks = $this->wp->parseBlocks($content);
-    if ($this->blocksHaveMeaningfulContent($blocks, false, $context)) {
+    if ($this->blocksHaveMeaningfulContent($blocks)) {
       return true;
     }
 
     return $this->htmlHasVisibleText($content);
   }
 
-  private function blocksHaveMeaningfulContent(array $blocks, bool $insideProductTemplate = false, array $context = []): bool {
+  private function blocksHaveMeaningfulContent(array $blocks, bool $insideProductTemplate = false): bool {
     foreach ($blocks as $block) {
       if (!is_array($block)) {
         continue;
       }
 
-      if ($this->blockHasMeaningfulContent($block, $insideProductTemplate, $context)) {
+      if ($this->blockHasMeaningfulContent($block, $insideProductTemplate)) {
         return true;
       }
     }
     return false;
   }
 
-  private function blockHasMeaningfulContent(array $block, bool $insideProductTemplate, array $context): bool {
+  private function blockHasMeaningfulContent(array $block, bool $insideProductTemplate): bool {
     $blockName = isset($block['blockName']) && is_string($block['blockName']) ? $block['blockName'] : null;
     $attrs = $this->getBlockAttrs($block);
 
@@ -92,7 +89,7 @@ class BlockEmailContentDetector {
     }
 
     $innerBlocks = isset($block['innerBlocks']) && is_array($block['innerBlocks']) ? $block['innerBlocks'] : [];
-    return $this->blocksHaveMeaningfulContent($innerBlocks, $insideProductTemplate || $blockName === 'woocommerce/product-template', $context);
+    return $this->blocksHaveMeaningfulContent($innerBlocks, $insideProductTemplate || $blockName === 'woocommerce/product-template');
   }
 
   private function isKnownRenderableDynamicBlock(?string $blockName, array $attrs, bool $insideProductTemplate): bool {
