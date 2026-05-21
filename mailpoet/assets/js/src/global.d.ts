@@ -224,9 +224,6 @@ interface Window {
   mailpoet_transactional_emails_opt_in_notice_dismissed: boolean;
 
   mailpoet_mta_log?: MtaLog;
-  mailpoet_listing: {
-    forceUpdate: () => void;
-  };
   mailpoet_welcome_wizard_url: string;
   mailpoet_welcome_wizard_current_step: string;
   mailpoet_homepage_data: {

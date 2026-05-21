@@ -174,8 +174,8 @@ export function SendingStatus() {
         { ...queryParams, group },
         signal,
       );
-      // The legacy listing surfaced mailer / cron problems on every reload via
-      // these checks; the REST endpoint carries the same envelope fields.
+      // Keep surfacing mailer / cron problems on every reload; the REST
+      // endpoint carries those envelope fields.
       const mtaLog =
         response.mta_log && typeof response.mta_log === 'object'
           ? response.mta_log
@@ -243,7 +243,7 @@ export function SendingStatus() {
     return () => window.removeEventListener('hashchange', applyHash);
   }, [baseUrl, clearError, setView]);
 
-  // Auto-refresh on the WP heartbeat tick, mirroring the legacy listing.
+  // Auto-refresh on the WP heartbeat tick.
   useEffect(() => {
     const handler = (): void => refresh();
     jQuery(document).on('heartbeat-tick.mailpoet-sending-status', handler);

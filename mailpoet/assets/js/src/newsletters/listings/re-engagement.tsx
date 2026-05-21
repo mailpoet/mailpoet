@@ -65,8 +65,8 @@ function renderSettings(item: NewsletterListingItem) {
 
   const options = (item.options ?? {}) as ReEngagementOptions;
   const number = Number(options.afterTimeNumber ?? 0);
-  // Default to months when the option is missing or unexpected, matching the
-  // legacy listing — only an explicit 'weeks' value renders week strings.
+  // Default to months when the option is missing or unexpected; only an
+  // explicit 'weeks' value renders week strings.
   const isMonths = options.afterTimeType !== 'weeks';
 
   let frequency: string = isMonths
