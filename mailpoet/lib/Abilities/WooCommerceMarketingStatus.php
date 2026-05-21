@@ -12,6 +12,7 @@ use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -23,11 +24,11 @@ if (!interface_exists(AbilityDefinition::class)) {
 }
 
 class WooCommerceMarketingStatus implements AbilityDefinition {
-  public static function get_name(): string {
+  public static function get_name(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required by WooCommerce's AbilityDefinition interface.
     return 'mailpoet/get-woocommerce-marketing-status';
   }
 
-  public static function get_registration_args(): array {
+  public static function get_registration_args(): array { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required by WooCommerce's AbilityDefinition interface.
     return [
       'label' => __('Get MailPoet WooCommerce marketing status', 'mailpoet'),
       'description' => __('Read MailPoet WooCommerce marketing, checkout opt-in, and email editor status.', 'mailpoet'),
@@ -87,7 +88,7 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
         ],
       ],
       'tracking' => [
-        'level' => (string)$settings->get('tracking.level', ''),
+        'level' => (string)$settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
         'analytics_enabled' => (bool)$settings->get('analytics.enabled', false),
         'purchase_states' => $woocommerceHelper->getPurchaseStates(),
       ],
@@ -159,7 +160,10 @@ class WooCommerceMarketingStatus implements AbilityDefinition {
         'tracking' => [
           'type' => 'object',
           'properties' => [
-            'level' => ['type' => 'string'],
+            'level' => [
+              'type' => 'string',
+              'enum' => [TrackingConfig::LEVEL_FULL, TrackingConfig::LEVEL_PARTIAL, TrackingConfig::LEVEL_BASIC],
+            ],
             'analytics_enabled' => ['type' => 'boolean'],
             'purchase_states' => [
               'type' => 'array',

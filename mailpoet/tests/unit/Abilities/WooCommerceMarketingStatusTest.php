@@ -1,19 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Automattic\WooCommerce\Abilities {
-  if (!interface_exists(AbilityDefinition::class)) {
-    interface AbilityDefinition {
-      public static function get_name(): string;
-
-      public static function get_registration_args(): array;
-    }
-  }
-}
-
-namespace MailPoet\Test\Abilities {
+namespace MailPoet\Test\Abilities;
 
 use MailPoet\Abilities\WooCommerceMarketingStatus;
+use MailPoet\Settings\TrackingConfig;
 
+require_once __DIR__ . '/AbilityDefinition.php';
 require_once __DIR__ . '/../../../lib/Abilities/WooCommerceMarketingStatus.php';
 
 class WooCommerceMarketingStatusTest extends \MailPoetUnitTest {
@@ -29,5 +21,14 @@ class WooCommerceMarketingStatusTest extends \MailPoetUnitTest {
     verify($args['meta']['annotations']['destructive'])->false();
     verify($args['meta']['annotations']['idempotent'])->true();
   }
-}
+
+  public function testItConstrainsTrackingLevelToRuntimeValues() {
+    $args = WooCommerceMarketingStatus::get_registration_args();
+
+    verify($args['output_schema']['properties']['tracking']['properties']['level']['enum'])->equals([
+      TrackingConfig::LEVEL_FULL,
+      TrackingConfig::LEVEL_PARTIAL,
+      TrackingConfig::LEVEL_BASIC,
+    ]);
+  }
 }
