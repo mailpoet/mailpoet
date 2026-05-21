@@ -20,7 +20,13 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
+import {
+  clickDataViewsAction,
+  login,
+  selectDataViewsPage,
+  waitForDataViews,
+  waitForSelectorToBeVisible,
+} from '../utils/helpers.js';
 
 export async function subscribersTrashingRestoring() {
   const page = await browser.newPage();
@@ -52,16 +58,21 @@ export async function subscribersTrashingRestoring() {
     });
 
     // Select all subscribers
-    await page.locator('[data-automation-id="select_all"]').click();
-    await page.waitForSelector('.mailpoet-listing-select-all');
-    await page.locator('.mailpoet-listing-select-all > a').click();
-    await page.waitForSelector('.mailpoet-listing-select-all');
+    await selectDataViewsPage(page, '.mailpoet-subscribers-dataviews');
 
     // Move to trash all the subscribers
-    await page.locator('[data-automation-id="action-trash"]').click();
+    await clickDataViewsAction(
+      page,
+      'Move to trash',
+      '.mailpoet-subscribers-dataviews',
+    );
     await page.waitForSelector('.notice-success');
-    await page.waitForSelector('.colspanchange');
-    const noticeElement = await page.locator('.colspanchange').innerText();
+    await page.waitForSelector(
+      '.mailpoet-subscribers-dataviews .dataviews-no-results',
+    );
+    const noticeElement = await page
+      .locator('.mailpoet-subscribers-dataviews .dataviews-no-results')
+      .innerText();
     describe(subscribersPageTitle, () => {
       describe('subscribers-trashing-restoring: should be able to see the message', async () => {
         expect(noticeElement).to.contain('No items found.');
@@ -77,13 +88,14 @@ export async function subscribersTrashingRestoring() {
     await page.locator('[data-automation-id="filters_trash"]').click();
     await page.waitForSelector('[data-automation-id="empty_trash"]');
     await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-    await page.locator('[data-automation-id="select_all"]').click();
-    await page.waitForSelector('.mailpoet-listing-select-all');
-    await page.locator('.mailpoet-listing-select-all > a').click();
-    await page.waitForSelector('[data-automation-id="action-restore"]');
-    await page.locator('[data-automation-id="action-restore"]').click();
+    await selectDataViewsPage(page, '.mailpoet-subscribers-dataviews');
+    await clickDataViewsAction(
+      page,
+      'Restore',
+      '.mailpoet-subscribers-dataviews',
+    );
     await page.waitForSelector('.notice-success');
-    await waitForSelectorToBeVisible(page, '.colspanchange');
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await waitForSelectorToBeVisible(
       page,
       '[data-automation-id="filters_subscribed"]',

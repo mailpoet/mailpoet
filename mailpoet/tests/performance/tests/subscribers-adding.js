@@ -24,7 +24,12 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2 } from '../utils/helpers.js';
+import {
+  login,
+  selectInSelect2,
+  typeInDataViewsSearch,
+  waitForDataViews,
+} from '../utils/helpers.js';
 
 export async function subscribersAdding() {
   const page = await browser.newPage();
@@ -68,7 +73,7 @@ export async function subscribersAdding() {
         expect(noticeElement).to.exist;
       });
     });
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     const listingFilterElement = await page.locator(
       '[data-automation-id="listing_filter_segment"]',
@@ -86,8 +91,8 @@ export async function subscribersAdding() {
     });
 
     // Search for a newly added subscriber and verify
-    await page.locator('#search_input').type(subscriberEmail, { delay: 25 });
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await typeInDataViewsSearch(page, subscriberEmail, { delay: 25 });
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
     const listingTitleElement = await page

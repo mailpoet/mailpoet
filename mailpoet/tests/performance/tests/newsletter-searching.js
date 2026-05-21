@@ -21,7 +21,12 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { gotoMailPoetNewsletterPage, login } from '../utils/helpers.js';
+import {
+  gotoMailPoetNewsletterPage,
+  login,
+  typeInDataViewsSearch,
+  waitForDataViews,
+} from '../utils/helpers.js';
 
 export async function newsletterSearching() {
   const page = await browser.newPage();
@@ -41,8 +46,8 @@ export async function newsletterSearching() {
     });
 
     // Search for a newsletter
-    await page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await typeInDataViewsSearch(page, 'Newsletter 1st', { delay: 50 });
+    await waitForDataViews(page, '.mailpoet-newsletters-dataviews');
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     const listingTitleElement = await page
@@ -58,7 +63,7 @@ export async function newsletterSearching() {
     await page
       .locator('[data-automation-id="listing_filter_segment"]')
       .selectOption('3');
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await waitForDataViews(page, '.mailpoet-newsletters-dataviews');
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     const listingFilterElement = await page.locator(

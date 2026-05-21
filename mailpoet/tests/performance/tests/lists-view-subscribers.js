@@ -22,7 +22,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import { login, waitForDataViews } from '../utils/helpers.js';
 
 export async function listsViewSubscribers() {
   const page = await browser.newPage();
@@ -56,7 +56,7 @@ export async function listsViewSubscribers() {
       .click();
 
     // Wait for the page to load
-    await page.waitForSelector('.mailpoet-listing-no-items');
+    await waitForDataViews(page, '.mailpoet-subscribers-dataviews');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     const listingFilterElement = await page.locator(
       '[data-automation-id="listing_filter_segment"]',
