@@ -61,21 +61,6 @@ class FormsTest extends \MailPoetTest {
     );
   }
 
-  public function testItCanGetListingData() {
-    $response = $this->endpoint->listing();
-
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-
-    verify($response->meta)->arrayHasKey('filters');
-    verify($response->meta)->arrayHasKey('groups');
-    verify($response->meta['count'])->equals(3);
-
-    verify($response->data)->arrayCount(3);
-    verify($response->data[0]['name'])->equals('Form 1');
-    verify($response->data[1]['name'])->equals('Form 2');
-    verify($response->data[2]['name'])->equals('Form 3');
-  }
-
   public function testItCanCreateANewForm() {
     $response = $this->endpoint->saveEditor();
     verify($response->status)->equals(APIResponse::STATUS_OK);
@@ -272,29 +257,6 @@ class FormsTest extends \MailPoetTest {
       $form->toArray()
     );
     verify($response->meta['count'])->equals(1);
-  }
-
-  public function testItCanBulkDeleteForms() {
-    $response = $this->endpoint->bulkAction([
-      'action' => 'trash',
-      'listing' => ['group' => 'all'],
-    ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(3);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(3);
-
-    $response = $this->endpoint->bulkAction([
-      'action' => 'delete',
-      'listing' => ['group' => 'trash'],
-    ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->meta['count'])->equals(0);
   }
 
   public function testItCanUpdateFormStatus() {

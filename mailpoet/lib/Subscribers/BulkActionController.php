@@ -12,11 +12,10 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tags\TagRepository;
 
 /**
- * Centralized bulk-action dispatcher used by both the legacy
- * {@see \MailPoet\API\JSON\v1\Subscribers::bulkAction()} JSON endpoint and the
- * REST endpoint at `mailpoet/v1/subscribers/bulk-action`. Keeping the per-action
- * branch + reference-data resolution in one place avoids drift between the two
- * transports while the JSON variant is being deprecated.
+ * Centralized bulk-action dispatcher used by the REST endpoint at
+ * `mailpoet/v1/subscribers/bulk-action`. Keeping the per-action branch +
+ * reference-data resolution in one place keeps the REST endpoint a thin
+ * HTTP adapter.
  */
 class BulkActionController {
   public const ACTION_TRASH = 'trash';
