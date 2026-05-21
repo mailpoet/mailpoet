@@ -20,7 +20,7 @@ import { NewsletterListStandard } from 'newsletters/listings/standard';
 import { NewsletterListNotification } from 'newsletters/listings/notification';
 import { NewsletterListReEngagement } from 'newsletters/listings/re-engagement';
 import { NewsletterListNotificationHistory } from 'newsletters/listings/notification-history';
-import { SendingStatus } from 'newsletters/sending-status.jsx';
+import { SendingStatus } from 'newsletters/sending-status/sending-status';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
