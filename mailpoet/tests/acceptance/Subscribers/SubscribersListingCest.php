@@ -90,13 +90,11 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $i->waitForText($maxConfirmationsEmail);
-    // The legacy listing rendered row actions inline on hover so we could
-    // assert visibility from outside the menu. DataViews puts non-primary
-    // actions behind a popover trigger; the open/close + portal portal makes a
-    // visibility-only assertion noisy in CI. Cover the user-facing behaviour
-    // via the resend on the allowed row below — backend enforcement of
-    // max-confirmation limits is covered separately in the REST integration
-    // tests.
+    // DataViews puts non-primary actions behind a popover trigger; the
+    // open/close + portal makes a visibility-only assertion noisy in CI. Cover
+    // the user-facing behaviour via the resend on the allowed row below —
+    // backend enforcement of max-confirmation limits is covered separately in
+    // the REST integration tests.
 
     $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
     $i->waitForText('1 confirmation email has been sent.');

@@ -126,9 +126,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->waitForText($segmentTitle);
-    // The legacy listing column header had a `listing-column-header-created_at`
-    // automation id; DataViews doesn't expose per-header attributes. Wait for
-    // the search input — it only renders once the listing is mounted.
+    // Wait for the search input — it only renders once the listing is mounted.
     $i->waitForElementVisible('.dataviews-search input');
     $i->waitForListingItemsToLoad();
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);

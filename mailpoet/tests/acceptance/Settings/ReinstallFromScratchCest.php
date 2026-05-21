@@ -63,9 +63,8 @@ class ReinstallFromScratchCest {
       $i->waitForText('imported' . $index . '@from.wordpress');
     }
 
-    // The legacy listing exposed a `.mailpoet-listing-pages-num` total. DataViews
-    // doesn't render that node; count the rendered row titles instead — the
-    // expected 7 entries fit comfortably under the default per-page limit.
+    // Count the rendered row titles; the expected 7 entries fit comfortably
+    // under the default per-page limit.
     $i->seeNumberOfElements('.mailpoet-listing-title', 7);
   }
 }
