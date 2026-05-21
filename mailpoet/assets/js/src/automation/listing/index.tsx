@@ -573,7 +573,7 @@ export function AutomationListing(): JSX.Element {
       },
       {
         id: 'manual-start',
-        label: __('Start automation', 'mailpoet'),
+        label: __('Start automation for existing subscribers', 'mailpoet'),
         supportsBulk: false,
         isEligible: isManualStartSupported,
         callback: (targets) => {

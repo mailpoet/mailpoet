@@ -1,5 +1,6 @@
 import { Button, Modal, Spinner } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { Icon, help } from '@wordpress/icons';
 import {
   useCallback,
   useEffect,
@@ -9,7 +10,9 @@ import {
   type RefObject,
   type ReactNode,
 } from 'react';
-import { Select } from 'common/form/select/select';
+import { ReactSelect } from 'common/form/react-select/react-select';
+import { Toggle } from 'common/form/toggle/toggle';
+import { Tooltip } from 'common/tooltip/tooltip';
 import type { AutomationItem } from '../store/types';
 import { previewManualStart, startManualStart } from './api';
 import {
@@ -32,6 +35,12 @@ import type {
 type QueuedContext = {
   listName: string;
   filterName: string | null;
+};
+
+type SegmentSelectOption = {
+  value: string;
+  label: string;
+  count?: string;
 };
 
 type ManualStartModalProps = {
@@ -77,6 +86,28 @@ function findOptionName(
   return option?.name ?? null;
 }
 
+function formatOptionCount(
+  count: string | number | undefined,
+): string | undefined {
+  if (count === undefined) {
+    return undefined;
+  }
+  const numericCount = Number(count);
+  return Number.isFinite(numericCount)
+    ? numericCount.toLocaleString()
+    : String(count);
+}
+
+function toSelectOption(
+  segment: ManualStartSegmentOption,
+): SegmentSelectOption {
+  return {
+    value: segment.id,
+    label: segment.name,
+    count: formatOptionCount(segment.subscribers),
+  };
+}
+
 function Alert({
   children,
   alertRef,
@@ -105,6 +136,37 @@ function StatusNotice({ children }: { children: ReactNode }): JSX.Element {
       tabIndex={-1}
     >
       {children}
+    </div>
+  );
+}
+
+function PreviewCounts({
+  preview,
+}: {
+  preview: ManualStartPreview;
+}): JSX.Element {
+  return (
+    <div className="mailpoet-automation-manual-start-recipient-count">
+      {__('Estimated recipients', 'mailpoet')}:
+      <Tooltip place="right" id="manual-start-estimated-count-tooltip">
+        {__('This count may change before subscribers are queued.', 'mailpoet')}
+      </Tooltip>
+      <span
+        data-tip
+        data-tooltip-id="manual-start-estimated-count-tooltip"
+        className="estimated-recipient-count"
+      >
+        {formatCount(preview.eligible_count)}
+      </span>
+      {preview.selected_count !== preview.eligible_count && (
+        <span className="mailpoet-automation-manual-start-recipient-count-detail">
+          {sprintf(
+            // translators: %s is the number of selected subscribers before eligibility checks.
+            __('%s selected before skips', 'mailpoet'),
+            formatCount(preview.selected_count),
+          )}
+        </span>
+      )}
     </div>
   );
 }
@@ -216,11 +278,11 @@ export function ManualStartModal({
   automation,
   onClose,
 }: ManualStartModalProps): JSX.Element {
-  const listSelectRef = useRef<HTMLSelectElement>(null);
   const alertRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const [segmentId, setSegmentId] = useState('');
   const [filterSegmentId, setFilterSegmentId] = useState('');
+  const [isFilterSegmentEnabled, setIsFilterSegmentEnabled] = useState(false);
   const [preview, setPreview] = useState<ManualStartPreview | null>(null);
   const [previewError, setPreviewError] =
     useState<ManualStartErrorResponse | null>(null);
@@ -242,22 +304,48 @@ export function ManualStartModal({
     () => getManualStartDefaultListOptions(segments, automation.manual_start),
     [automation.manual_start, segments],
   );
+  const defaultListOptions = useMemo(
+    () => defaultLists.map(toSelectOption),
+    [defaultLists],
+  );
   const dynamicSegments = useMemo(
     () => getManualStartDynamicSegmentOptions(segments),
     [segments],
+  );
+  const dynamicSegmentOptions = useMemo(
+    () => dynamicSegments.map(toSelectOption),
+    [dynamicSegments],
   );
   const selectedListName = useMemo(
     () => findOptionName(defaultLists, segmentId),
     [defaultLists, segmentId],
   );
+  const selectedListOption = useMemo(
+    () =>
+      defaultListOptions.find((option) => option.value === segmentId) ?? null,
+    [defaultListOptions, segmentId],
+  );
+  const activeFilterSegmentId = isFilterSegmentEnabled ? filterSegmentId : '';
+  const filterSelectionRequired =
+    isFilterSegmentEnabled && !activeFilterSegmentId;
   const selectedFilterName = useMemo(
-    () => findOptionName(dynamicSegments, filterSegmentId),
-    [dynamicSegments, filterSegmentId],
+    () =>
+      activeFilterSegmentId
+        ? findOptionName(dynamicSegments, activeFilterSegmentId)
+        : null,
+    [activeFilterSegmentId, dynamicSegments],
+  );
+  const selectedFilterOption = useMemo(
+    () =>
+      dynamicSegmentOptions.find(
+        (option) => option.value === activeFilterSegmentId,
+      ) ?? null,
+    [activeFilterSegmentId, dynamicSegmentOptions],
   );
   const currentPreviewMatches = previewMatchesSelections(
     preview,
     segmentId,
-    filterSegmentId,
+    activeFilterSegmentId,
   );
   const startErrorState = getManualStartErrorState(startError);
   const previewErrorState = getManualStartErrorState(previewError);
@@ -265,8 +353,9 @@ export function ManualStartModal({
     isStarting ||
     isPreviewLoading ||
     startResult !== null ||
+    filterSelectionRequired ||
     isBlockingManualStartError(startError) ||
-    !canConfirmManualStart(preview, segmentId, filterSegmentId);
+    !canConfirmManualStart(preview, segmentId, activeFilterSegmentId);
 
   const focusHeading = useCallback((): void => {
     const heading = document.querySelector<HTMLElement>(
@@ -281,7 +370,9 @@ export function ManualStartModal({
   useEffect(() => {
     window.setTimeout(() => {
       if (defaultLists.length > 0) {
-        listSelectRef.current?.focus();
+        document
+          .getElementById('mailpoet-automation-manual-start-list')
+          ?.focus();
         return;
       }
       focusHeading();
@@ -289,9 +380,10 @@ export function ManualStartModal({
   }, [defaultLists.length, focusHeading]);
 
   useEffect(() => {
-    if (!segmentId || startResult) {
+    if (!segmentId || filterSelectionRequired || startResult) {
       setPreview(null);
       setPreviewError(null);
+      setStartError(null);
       setIsPreviewLoading(false);
       return undefined;
     }
@@ -301,7 +393,7 @@ export function ManualStartModal({
       return undefined;
     }
 
-    const numericFilterSegmentId = getSegmentIdNumber(filterSegmentId);
+    const numericFilterSegmentId = getSegmentIdNumber(activeFilterSegmentId);
     const controller = new AbortController();
     setIsPreviewLoading(true);
     setPreview(null);
@@ -337,7 +429,14 @@ export function ManualStartModal({
     return () => {
       controller.abort();
     };
-  }, [automation.id, filterSegmentId, refreshCount, segmentId, startResult]);
+  }, [
+    activeFilterSegmentId,
+    automation.id,
+    filterSelectionRequired,
+    refreshCount,
+    segmentId,
+    startResult,
+  ]);
 
   useEffect(() => {
     if (
@@ -357,11 +456,38 @@ export function ManualStartModal({
   }, [startResult]);
 
   const refreshPreview = useCallback((): void => {
-    if (!segmentId || isPreviewLoading || isStarting) {
+    if (
+      !segmentId ||
+      filterSelectionRequired ||
+      isPreviewLoading ||
+      isStarting
+    ) {
       return;
     }
     setRefreshCount((count) => count + 1);
-  }, [isPreviewLoading, isStarting, segmentId]);
+  }, [filterSelectionRequired, isPreviewLoading, isStarting, segmentId]);
+
+  const handleListChange = useCallback((selectedOption: unknown): void => {
+    const option = selectedOption as SegmentSelectOption | null;
+    const nextSegmentId = option?.value ?? '';
+    setSegmentId(nextSegmentId);
+    if (!nextSegmentId) {
+      setIsFilterSegmentEnabled(false);
+      setFilterSegmentId('');
+    }
+  }, []);
+
+  const handleFilterToggle = useCallback((checked: boolean): void => {
+    setIsFilterSegmentEnabled(checked);
+    if (!checked) {
+      setFilterSegmentId('');
+    }
+  }, []);
+
+  const handleFilterChange = useCallback((selectedOption: unknown): void => {
+    const option = selectedOption as SegmentSelectOption | null;
+    setFilterSegmentId(option?.value ?? '');
+  }, []);
 
   const handleStart = useCallback(async (): Promise<void> => {
     if (confirmDisabled || !preview) {
@@ -378,7 +504,7 @@ export function ManualStartModal({
     try {
       const result = await startManualStart(automation.id, {
         segment_id: numericSegmentId,
-        filter_segment_id: getSegmentIdNumber(filterSegmentId),
+        filter_segment_id: getSegmentIdNumber(activeFilterSegmentId),
         preview_signature: preview.preview_signature,
       });
       setQueuedContext({
@@ -408,8 +534,8 @@ export function ManualStartModal({
     }
   }, [
     automation.id,
+    activeFilterSegmentId,
     confirmDisabled,
-    filterSegmentId,
     preview,
     segmentId,
     selectedFilterName,
@@ -512,6 +638,17 @@ export function ManualStartModal({
       );
     }
 
+    if (filterSelectionRequired) {
+      return (
+        <p className="mailpoet-automation-manual-start-muted" role="status">
+          {__(
+            'Choose a segment filter to preview eligible subscribers.',
+            'mailpoet',
+          )}
+        </p>
+      );
+    }
+
     if (isPreviewLoading) {
       return (
         <div
@@ -531,7 +668,7 @@ export function ManualStartModal({
 
     return (
       <div aria-live="polite">
-        <Counts preview={preview} />
+        <PreviewCounts preview={preview} />
         <SkippedReasons
           skippedByReason={preview.skipped_by_reason}
           deferredReasonKeys={preview.deferred_reason_keys}
@@ -544,7 +681,7 @@ export function ManualStartModal({
     return (
       <Modal
         className="mailpoet-automation-manual-start-modal"
-        title={__('Start automation', 'mailpoet')}
+        title={__('Start automation for existing subscribers', 'mailpoet')}
         onRequestClose={handleClose}
       >
         <div ref={successRef} tabIndex={-1}>
@@ -600,13 +737,13 @@ export function ManualStartModal({
   return (
     <Modal
       className="mailpoet-automation-manual-start-modal"
-      title={__('Start automation', 'mailpoet')}
+      title={__('Start automation for existing subscribers', 'mailpoet')}
       onRequestClose={handleClose}
     >
       <div aria-busy={isPreviewLoading || isStarting}>
         <p>
           {__(
-            'Choose an existing list to queue eligible subscribers into this automation. An optional segment filter can narrow the selected list.',
+            'Choose which existing subscribers to queue into this automation.',
             'mailpoet',
           )}
         </p>
@@ -627,43 +764,80 @@ export function ManualStartModal({
           </Alert>
         )}
         <div className="mailpoet-automation-manual-start-fields">
-          <label htmlFor="mailpoet-automation-manual-start-list">
-            {__('List', 'mailpoet')}
-          </label>
-          <Select
-            id="mailpoet-automation-manual-start-list"
-            ref={listSelectRef}
-            value={segmentId}
+          <div>
+            <label
+              className="mailpoet-automation-manual-start-field-heading"
+              htmlFor="mailpoet-automation-manual-start-list"
+            >
+              {__('Send to', 'mailpoet')}
+            </label>
+            <p
+              id="mailpoet-automation-manual-start-list-description"
+              className="mailpoet-automation-manual-start-field-tip"
+            >
+              {__(
+                'Subscribers who already entered this automation will be skipped.',
+                'mailpoet',
+              )}
+            </p>
+          </div>
+          <ReactSelect
+            inputId="mailpoet-automation-manual-start-list"
+            value={selectedListOption}
+            options={defaultListOptions}
+            placeholder={__('Choose', 'mailpoet')}
             disabled={defaultLists.length === 0 || isStarting}
-            onChange={(event) => setSegmentId(event.currentTarget.value)}
-            isFullWidth
+            isDisabled={defaultLists.length === 0 || isStarting}
+            isClearable
+            onChange={handleListChange}
             automationId="automation_manual_start_list"
-          >
-            <option value="">{__('Select a list', 'mailpoet')}</option>
-            {defaultLists.map((segment) => (
-              <option value={segment.id} key={segment.id}>
-                {segment.name}
-              </option>
-            ))}
-          </Select>
-          <label htmlFor="mailpoet-automation-manual-start-filter">
-            {__('Segment filter', 'mailpoet')}
-          </label>
-          <Select
-            id="mailpoet-automation-manual-start-filter"
-            value={filterSegmentId}
-            disabled={isStarting || !segmentId}
-            onChange={(event) => setFilterSegmentId(event.currentTarget.value)}
             isFullWidth
-            automationId="automation_manual_start_filter"
-          >
-            <option value="">{__('No segment filter', 'mailpoet')}</option>
-            {dynamicSegments.map((segment) => (
-              <option value={segment.id} key={segment.id}>
-                {segment.name}
-              </option>
-            ))}
-          </Select>
+            aria-describedby="mailpoet-automation-manual-start-list-description"
+          />
+          <div className="mailpoet-automation-manual-start-filter-toggle">
+            <Toggle
+              checked={isFilterSegmentEnabled}
+              disabled={
+                isStarting || !segmentId || dynamicSegments.length === 0
+              }
+              name="manualStartFilterSegmentEnabled"
+              onCheck={handleFilterToggle}
+              automationId="automation_manual_start_filter_toggle"
+              aria-label={__('Filter by segment', 'mailpoet')}
+            />
+            <span className="mailpoet-form-toggle-text">
+              {__('Filter by segment', 'mailpoet')}
+              <Icon
+                data-tip
+                data-tooltip-id="manual-start-filter-segment-tooltip"
+                className="filter-segment-tooltip"
+                icon={help}
+              />
+            </span>
+            <Tooltip place="right" id="manual-start-filter-segment-tooltip">
+              <div>
+                {__(
+                  'Subscribers selected in Send to will only be queued if they also belong to this segment.',
+                  'mailpoet',
+                )}
+              </div>
+            </Tooltip>
+          </div>
+          {isFilterSegmentEnabled && (
+            <ReactSelect
+              inputId="mailpoet-automation-manual-start-filter"
+              value={selectedFilterOption}
+              options={dynamicSegmentOptions}
+              placeholder={__('Choose', 'mailpoet')}
+              disabled={isStarting || !segmentId}
+              isDisabled={isStarting || !segmentId}
+              isClearable
+              onChange={handleFilterChange}
+              automationId="automation_manual_start_filter"
+              isFullWidth
+              aria-label={__('Segment filter', 'mailpoet')}
+            />
+          )}
         </div>
         {renderBlockingAlert()}
         {renderPreview()}
