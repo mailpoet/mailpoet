@@ -4,6 +4,7 @@ export {
   configureRestApi,
   createRestListingLoader,
   restPost,
+  restPut,
 } from './rest-listing';
 export type { RestApiConfig, RestApiError } from './rest-listing';
 export type {
