@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Control\AutomationRunCreationResult;
+use MailPoet\Automation\Engine\Control\AutomationRunCreator;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Data\Filter;
 use MailPoet\Automation\Engine\Data\FilterGroup;
@@ -190,6 +192,40 @@ class TriggerHandlerTest extends \MailPoetTest {
     }
 
     $this->assertCount(1, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
+  }
+
+  public function testRunCreateHookRejectionWinsOverTriggerMismatch(): void {
+    $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
+    $automationRunCreator = $this->diContainer->get(AutomationRunCreator::class);
+    $automation = $this->tester->createAutomation(
+      'automation-1',
+      new Step(
+        'trigger',
+        Step::TYPE_TRIGGER,
+        $trigger->getKey(),
+        [
+          'segment_ids' => [$this->segments['segment_1']->getId()],
+        ],
+        []
+      )
+    );
+
+    $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_2']->getId()]);
+    $result = $automationRunCreator->createForAutomation($automation, $trigger, [$segmentSubject]);
+    $this->assertSame(AutomationRunCreationResult::STATUS_TRIGGER_FILTER_MISMATCH, $result->getStatus());
+
+    $rejectRunFilter = function (): bool {
+      return false;
+    };
+    add_filter(Hooks::AUTOMATION_RUN_CREATE, $rejectRunFilter);
+
+    try {
+      $result = $automationRunCreator->createForAutomation($automation, $trigger, [$segmentSubject]);
+    } finally {
+      remove_filter(Hooks::AUTOMATION_RUN_CREATE, $rejectRunFilter);
+    }
+
+    $this->assertSame(AutomationRunCreationResult::STATUS_RUN_CREATE_HOOK_REJECTED, $result->getStatus());
   }
 
   public function testItAppliesFilters(): void {

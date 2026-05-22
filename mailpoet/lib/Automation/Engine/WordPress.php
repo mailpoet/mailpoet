@@ -35,6 +35,20 @@ class WordPress {
     return add_filter($hookName, $callback, $priority, $acceptedArgs);
   }
 
+  public function getFilterCallbacksCount(string $hookName): int {
+    global $wp_filter;
+
+    if (!isset($wp_filter[$hookName]) || !($wp_filter[$hookName] instanceof \WP_Hook)) {
+      return 0;
+    }
+
+    $count = 0;
+    foreach ($wp_filter[$hookName]->callbacks as $callbacks) {
+      $count += count($callbacks);
+    }
+    return $count;
+  }
+
   /**
    * @param non-empty-string $hookName
    * @param mixed $value

@@ -39,8 +39,15 @@ class TriggerHandler {
       return;
     }
 
+    $preparedSubjects = $this->automationRunCreator->prepareSubjects($subjects);
     foreach ($automations as $automation) {
-      $this->automationRunCreator->createForAutomation($automation, $trigger, $subjects);
+      $this->automationRunCreator->createForAutomation(
+        $automation,
+        $trigger,
+        $preparedSubjects['subjects'],
+        [],
+        $preparedSubjects['subject_entries']
+      );
     }
   }
 }

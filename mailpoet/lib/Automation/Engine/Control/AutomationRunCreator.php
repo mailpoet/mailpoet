@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
@@ -57,16 +58,33 @@ class AutomationRunCreator {
 
   /**
    * @param Subject[] $subjects
+   * @return array{subjects: Subject[], subject_entries: SubjectEntry[]}
+   */
+  public function prepareSubjects(array $subjects): array {
+    $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
+    return [
+      'subjects' => $subjects,
+      'subject_entries' => $this->subjectLoader->getSubjectsEntries($subjects),
+    ];
+  }
+
+  /**
+   * @param Subject[] $subjects
+   * @param SubjectEntry[]|null $subjectEntries
    * @param array<string, scalar|array<array-key, scalar>> $triggerLogData
    */
   public function createForAutomation(
     Automation $automation,
     Trigger $trigger,
     array $subjects,
-    array $triggerLogData = []
+    array $triggerLogData = [],
+    ?array $subjectEntries = null
   ): AutomationRunCreationResult {
-    $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
-    $subjectEntries = $this->subjectLoader->getSubjectsEntries($subjects);
+    if ($subjectEntries === null) {
+      $preparedSubjects = $this->prepareSubjects($subjects);
+      $subjects = $preparedSubjects['subjects'];
+      $subjectEntries = $preparedSubjects['subject_entries'];
+    }
 
     $step = $automation->getTrigger($trigger->getKey());
     if (!$step) {
@@ -95,6 +113,7 @@ class AutomationRunCreator {
     if (!$createAutomationRun) {
       return AutomationRunCreationResult::skipped(
         $triggerMatches
+          || $this->wordPress->getFilterCallbacksCount(Hooks::AUTOMATION_RUN_CREATE) > 1
           ? AutomationRunCreationResult::STATUS_RUN_CREATE_HOOK_REJECTED
           : AutomationRunCreationResult::STATUS_TRIGGER_FILTER_MISMATCH
       );
