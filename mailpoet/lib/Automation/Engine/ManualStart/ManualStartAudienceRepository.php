@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\ManualStart;
 
+use MailPoet\Automation\Engine\Data\AutomationRun as AutomationRunData;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -19,6 +20,10 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ManualStartAudienceRepository {
   public const QUEUE_CHUNK_SIZE = 100;
+  private const ENTERED_RUN_STATUSES = [
+    AutomationRunData::STATUS_RUNNING,
+    AutomationRunData::STATUS_COMPLETE,
+  ];
 
   public const REASON_ALREADY_ENTERED = 'already_entered';
   public const REASON_NOT_SUBSCRIBED = 'not_subscribed';
@@ -196,15 +201,18 @@ class ManualStartAudienceRepository {
        FROM $runsTable automation_runs
        INNER JOIN $subjectsTable automation_run_subjects ON automation_run_subjects.automation_run_id = automation_runs.id
        WHERE automation_runs.automation_id = :automationId
+         AND automation_runs.status IN (:enteredRunStatuses)
          AND automation_run_subjects.`key` = :subjectKey
          AND automation_run_subjects.`hash` = :subjectHash",
       [
         'automationId' => $automationId,
+        'enteredRunStatuses' => self::ENTERED_RUN_STATUSES,
         'subjectKey' => $subject->getKey(),
         'subjectHash' => $subject->getHash(),
       ],
       [
         'automationId' => ParameterType::INTEGER,
+        'enteredRunStatuses' => ArrayParameterType::STRING,
         'subjectKey' => ParameterType::STRING,
         'subjectHash' => ParameterType::STRING,
       ]
@@ -317,17 +325,20 @@ class ManualStartAudienceRepository {
     global $wpdb;
     $runsTable = $wpdb->prefix . 'mailpoet_automation_runs';
     $subjectsTable = $wpdb->prefix . 'mailpoet_automation_run_subjects';
+    $subjectHashExpression = SubscriberSubject::getHashSqlExpression('subscribers.id', ':manualStartSubscriberSubjectKey');
     $existsCondition = "EXISTS (
       SELECT 1
       FROM $subjectsTable automation_run_subjects
       INNER JOIN $runsTable automation_runs ON automation_runs.id = automation_run_subjects.automation_run_id
       WHERE automation_runs.automation_id = :manualStartAutomationId
+        AND automation_runs.status IN (:manualStartEnteredRunStatuses)
         AND automation_run_subjects.`key` = :manualStartSubscriberSubjectKey
-        AND automation_run_subjects.`hash` = MD5(CONCAT(:manualStartSubscriberSubjectKey, CONCAT('a:1:{s:13:\"subscriber_id\";i:', subscribers.id, ';}')))
+        AND automation_run_subjects.`hash` = $subjectHashExpression
     )";
 
     $queryBuilder->andWhere($excludeAlreadyEntered ? "NOT $existsCondition" : $existsCondition)
       ->setParameter('manualStartAutomationId', $automationId, ParameterType::INTEGER)
+      ->setParameter('manualStartEnteredRunStatuses', self::ENTERED_RUN_STATUSES, ArrayParameterType::STRING)
       ->setParameter('manualStartSubscriberSubjectKey', SubscriberSubject::KEY, ParameterType::STRING);
   }
 

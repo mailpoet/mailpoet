@@ -31,6 +31,10 @@ class Subject {
     return md5($this->getKey() . serialize($this->getArgs()));
   }
 
+  public static function getHashSqlExpression(string $keyExpression, string $serializedArgsExpression): string {
+    return sprintf('MD5(CONCAT(%s, %s))', $keyExpression, $serializedArgsExpression);
+  }
+
   public function toArray(): array {
     return [
       'key' => $this->getKey(),

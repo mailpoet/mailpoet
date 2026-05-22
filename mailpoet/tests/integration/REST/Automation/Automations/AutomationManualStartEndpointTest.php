@@ -4,6 +4,8 @@ namespace MailPoet\REST\Automation\Automations;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
+use MailPoet\Automation\Engine\Data\Automation as AutomationData;
+use MailPoet\Automation\Engine\Data\AutomationRun as AutomationRunData;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\ManualStart\ManualStartAudienceRepository;
@@ -111,6 +113,37 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $this->assertSame(409, $duplicate['data']['status']);
   }
 
+  public function testPreviewOnlySkipsSubscribersWithEnteredRunStatuses(): void {
+    $segment = (new Segment())->create();
+    $completedSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $runningSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $failedSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $cancelledSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $eligibleSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $this->createRunForSubscriber($automation, $segment, $completedSubscriber, AutomationRunData::STATUS_COMPLETE);
+    $this->createRunForSubscriber($automation, $segment, $runningSubscriber, AutomationRunData::STATUS_RUNNING);
+    $this->createRunForSubscriber($automation, $segment, $failedSubscriber, AutomationRunData::STATUS_FAILED);
+    $this->createRunForSubscriber($automation, $segment, $cancelledSubscriber, AutomationRunData::STATUS_CANCELLED);
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId())['data'];
+    $this->assertSame(5, $preview['selected_count']);
+    $this->assertSame(3, $preview['eligible_count']);
+    $this->assertSame(2, $preview['skipped_by_reason']['already_entered']);
+
+    $start = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature'])['data'];
+    $this->assertSame(3, $start['queued_count']);
+    $this->assertFalse($this->taskHasSubscriber($start['task_id'], (int)$completedSubscriber->getId()));
+    $this->assertFalse($this->taskHasSubscriber($start['task_id'], (int)$runningSubscriber->getId()));
+    $this->assertTrue($this->taskHasSubscriber($start['task_id'], (int)$failedSubscriber->getId()));
+    $this->assertTrue($this->taskHasSubscriber($start['task_id'], (int)$cancelledSubscriber->getId()));
+    $this->assertTrue($this->taskHasSubscriber($start['task_id'], (int)$eligibleSubscriber->getId()));
+  }
+
   public function testStartRejectsStalePreviewSignatureWithRefreshedPreview(): void {
     $segment = (new Segment())->create();
     (new Subscriber())->withSegments([$segment])->create();
@@ -188,12 +221,19 @@ class AutomationManualStartEndpointTest extends AutomationTest {
   public function testPreviewValidatesSupportedAutomationAndSegments(): void {
     $defaultSegment = (new Segment())->create();
     $dynamicSegment = (new Segment())->withType(SegmentEntity::TYPE_DYNAMIC)->create();
+    $deletedSegment = (new Segment())->create();
+    $deletedSegment->setDeletedAt(new \DateTimeImmutable());
+    $this->em->flush();
     $automation = (new AutomationFactory())
       ->withStatusActive()
       ->withSomeoneSubscribesTrigger()
       ->create();
 
     $response = $this->postPreview($automation->getId(), $dynamicSegment->getId());
+    $this->assertSame('manual_start_invalid_segment', $response['code']);
+    $this->assertSame(400, $response['data']['status']);
+
+    $response = $this->postPreview($automation->getId(), $deletedSegment->getId());
     $this->assertSame('manual_start_invalid_segment', $response['code']);
     $this->assertSame(400, $response['data']['status']);
 
@@ -264,9 +304,53 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $this->assertArrayHasKey('data', $allowedAfterFailed);
 
     $task->setStatus(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING);
+    $task->setInProgress(true);
     $this->em->flush();
     $blockedWhileRunning = $this->postPreview($automation->getId(), $segment->getId());
     $this->assertSame('manual_start_in_progress', $blockedWhileRunning['code']);
+    $blockedStartWhileRunning = $this->postStart(
+      $automation->getId(),
+      $segment->getId(),
+      $preview['preview_signature']
+    );
+    $this->assertSame('manual_start_in_progress', $blockedStartWhileRunning['code']);
+  }
+
+  public function testStartRejectsWhenAnotherRequestHoldsQueueLock(): void {
+    $segment = (new Segment())->create();
+    (new Subscriber())->withSegments([$segment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId())['data'];
+    $lockName = sprintf('mailpoet_manual_start_%d', $automation->getId());
+    $lockConnection = new \mysqli(
+      (string)constant('DB_HOST'),
+      (string)constant('DB_USER'),
+      (string)constant('DB_PASSWORD'),
+      (string)constant('DB_NAME')
+    );
+    $lockNameSql = $lockConnection->real_escape_string($lockName);
+    $lockResult = $lockConnection->query("SELECT GET_LOCK('$lockNameSql', 0)");
+    $this->assertInstanceOf(\mysqli_result::class, $lockResult);
+    $lockRow = $lockResult->fetch_row();
+    $this->assertSame('1', $lockRow[0] ?? null);
+
+    try {
+      $response = $this->postStart(
+        $automation->getId(),
+        $segment->getId(),
+        $preview['preview_signature']
+      );
+    } finally {
+      $lockConnection->query("SELECT RELEASE_LOCK('$lockNameSql')");
+      $lockConnection->close();
+    }
+
+    $this->assertSame('manual_start_in_progress', $response['code']);
+    $this->assertSame(409, $response['data']['status']);
   }
 
   public function testPreviewAndStartRejectGuests(): void {
@@ -425,6 +509,16 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     )->fetchOne();
 
     return $this->getInt($count) === 1;
+  }
+
+  private function createRunForSubscriber(AutomationData $automation, SegmentEntity $segment, SubscriberEntity $subscriber, string $status): void {
+    (new AutomationRun())
+      ->withAutomation($automation)
+      ->withTriggerKey(SomeoneSubscribesTrigger::KEY)
+      ->withStatus($status)
+      ->withSubject(new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]))
+      ->withSubject(new Subject(SegmentSubject::KEY, ['segment_id' => $segment->getId()]))
+      ->create();
   }
 
   /** @param mixed $value */

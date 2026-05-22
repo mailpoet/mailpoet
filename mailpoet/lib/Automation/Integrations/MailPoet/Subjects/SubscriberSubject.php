@@ -19,6 +19,7 @@ use MailPoet\WPCOM\DotcomHelperFunctions;
  */
 class SubscriberSubject implements Subject {
   const KEY = 'mailpoet:subscriber';
+  private const SUBJECT_ID_ARG = 'subscriber_id';
 
   /** @var SubscriberFieldsFactory */
   private $subscriberFieldsFactory;
@@ -54,12 +55,12 @@ class SubscriberSubject implements Subject {
 
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
-      'subscriber_id' => Builder::integer()->required(),
+      self::SUBJECT_ID_ARG => Builder::integer()->required(),
     ]);
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
-    $id = $subjectData->getArgs()['subscriber_id'];
+    $id = $subjectData->getArgs()[self::SUBJECT_ID_ARG];
     $subscriber = $this->subscribersRepository->findOneById($id);
     if (!$subscriber) {
       // translators: %d is the ID.
@@ -71,5 +72,17 @@ class SubscriberSubject implements Subject {
   /** @return Field[] */
   public function getFields(): array {
     return $this->subscriberFieldsFactory->getFields();
+  }
+
+  public static function getHashSqlExpression(string $subscriberIdExpression, string $subjectKeyExpression): string {
+    return SubjectData::getHashSqlExpression(
+      $subjectKeyExpression,
+      sprintf(
+        "CONCAT('a:1:{s:%d:\"%s\";i:', %s, ';}')",
+        strlen(self::SUBJECT_ID_ARG),
+        self::SUBJECT_ID_ARG,
+        $subscriberIdExpression
+      )
+    );
   }
 }

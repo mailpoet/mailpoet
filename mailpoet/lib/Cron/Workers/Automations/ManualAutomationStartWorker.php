@@ -87,52 +87,58 @@ class ManualAutomationStartWorker extends SimpleWorker {
     $counts = $this->getWorkerCounts($task);
     $segmentIneligibleReason = $this->audienceRepository->getSegmentIneligibleReason($segmentId, $filterSegmentId);
 
-    foreach ($subscriberIds as $subscriberId) {
-      $this->cronHelper->enforceExecutionLimit($timer);
-      $subscriberId = (int)$subscriberId;
-      $counts['processed_count']++;
+    try {
+      foreach ($subscriberIds as $subscriberId) {
+        $this->cronHelper->enforceExecutionLimit($timer);
+        $subscriberId = (int)$subscriberId;
+        $counts['processed_count']++;
 
-      if (!$automation instanceof Automation || $automation->getStatus() !== Automation::STATUS_ACTIVE) {
-        $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_AUTOMATION_INACTIVE, $counts);
-        continue;
+        if (!$automation instanceof Automation || $automation->getStatus() !== Automation::STATUS_ACTIVE) {
+          $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_AUTOMATION_INACTIVE, $counts);
+          continue;
+        }
+
+        if ($segmentIneligibleReason !== null) {
+          $this->saveSkipped($task, $subscriberId, $segmentIneligibleReason, $counts);
+          continue;
+        }
+
+        $reason = $this->audienceRepository->getSubscriberIneligibleReason($subscriberId, $segmentId, $filterSegmentId);
+        if ($reason !== null) {
+          $this->saveSkipped($task, $subscriberId, $reason, $counts);
+          continue;
+        }
+        if ($this->audienceRepository->hasSubscriberEnteredAutomation($automationId, $subscriberId)) {
+          $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_ALREADY_ENTERED, $counts);
+          continue;
+        }
+
+        $subjects = [
+          new Subject(SegmentSubject::KEY, ['segment_id' => $segmentId]),
+          new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriberId]),
+        ];
+
+        try {
+          $result = $this->automationRunCreator->createForAutomation($automation, $this->trigger, $subjects, $this->getTriggerLogData($task));
+        } catch (Throwable $throwable) {
+          $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_STEP_SCHEDULING_FAILED, $counts);
+          continue;
+        }
+
+        if ($result->isCreated()) {
+          $counts['created_count']++;
+          $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [$subscriberId]);
+          continue;
+        }
+
+        $this->saveSkipped($task, $subscriberId, $this->mapCreationResultToReason($result), $counts);
       }
-
-      if ($segmentIneligibleReason !== null) {
-        $this->saveSkipped($task, $subscriberId, $segmentIneligibleReason, $counts);
-        continue;
-      }
-
-      $reason = $this->audienceRepository->getSubscriberIneligibleReason($subscriberId, $segmentId, $filterSegmentId);
-      if ($reason !== null) {
-        $this->saveSkipped($task, $subscriberId, $reason, $counts);
-        continue;
-      }
-      if ($this->audienceRepository->hasSubscriberEnteredAutomation($automationId, $subscriberId)) {
-        $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_ALREADY_ENTERED, $counts);
-        continue;
-      }
-
-      $subjects = [
-        new Subject(SegmentSubject::KEY, ['segment_id' => $segmentId]),
-        new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriberId]),
-      ];
-
-      try {
-        $result = $this->automationRunCreator->createForAutomation($automation, $this->trigger, $subjects, $this->getTriggerLogData($task));
-      } catch (Throwable $throwable) {
-        $this->saveSkipped($task, $subscriberId, ManualStartAudienceRepository::REASON_STEP_SCHEDULING_FAILED, $counts);
-        continue;
-      }
-
-      if ($result->isCreated()) {
-        $counts['created_count']++;
-        $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [$subscriberId]);
-        $this->saveWorkerCounts($task, $counts);
-        continue;
-      }
-
-      $this->saveSkipped($task, $subscriberId, $this->mapCreationResultToReason($result), $counts);
+    } catch (Throwable $throwable) {
+      $this->saveWorkerCounts($task, $counts);
+      throw $throwable;
     }
+
+    $this->saveWorkerCounts($task, $counts);
 
     if ($this->scheduledTaskSubscribersRepository->countUnprocessed($task) > 0) {
       return false;
@@ -182,7 +188,6 @@ class ManualAutomationStartWorker extends SimpleWorker {
     $counts['failed_count']++;
     $counts['skipped_by_reason'][$reason] = ($counts['skipped_by_reason'][$reason] ?? 0) + 1;
     $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, 'skipped:' . $reason);
-    $this->saveWorkerCounts($task, $counts);
   }
 
   private function mapCreationResultToReason(AutomationRunCreationResult $result): string {

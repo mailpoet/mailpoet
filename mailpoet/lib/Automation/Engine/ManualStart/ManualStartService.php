@@ -16,6 +16,7 @@ use MailPoet\Logging\LogRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use Throwable;
@@ -23,6 +24,7 @@ use Throwable;
 class ManualStartService {
   private const LOG_LEVEL_INFO = 200;
   private const AUDIT_LOG_MESSAGE_QUEUED = 'Manual automation start queued.';
+  private const START_LOCK_TIMEOUT_SECONDS = 0;
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -68,6 +70,9 @@ class ManualStartService {
   }
 
   /**
+   * Queues subscribers synchronously for now. The UI warns when the preview
+   * crosses the documented soft cap of 50,000 eligible subscribers.
+   *
    * @return array{task_id: int, automation_id: int, segment_id: int, filter_segment_id: int|null, selected_count: int, eligible_count: int, queued_count: int, skipped_by_reason: array<string, int>}
    */
   public function start(int $automationId, int $segmentId, ?int $filterSegmentId, string $previewSignature): array {
@@ -331,18 +336,27 @@ class ManualStartService {
        FROM $tasksTable
        WHERE type = :type
          AND deleted_at IS NULL
-         AND (status = :scheduled OR status IS NULL)
+         AND (
+           status IN (:activeStatuses)
+           OR status IS NULL
+           OR in_progress = :inProgress
+         )
          AND CAST(JSON_UNQUOTE(JSON_EXTRACT(meta, '$.automation_id')) AS UNSIGNED) = :automationId
        ORDER BY id DESC
        LIMIT 1",
       [
         'type' => ManualAutomationStartWorker::TASK_TYPE,
-        'scheduled' => ScheduledTaskEntity::STATUS_SCHEDULED,
+        'activeStatuses' => [
+          ScheduledTaskEntity::STATUS_SCHEDULED,
+          ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
+        ],
+        'inProgress' => 1,
         'automationId' => $automationId,
       ],
       [
         'type' => ParameterType::STRING,
-        'scheduled' => ParameterType::STRING,
+        'activeStatuses' => ArrayParameterType::STRING,
+        'inProgress' => ParameterType::INTEGER,
         'automationId' => ParameterType::INTEGER,
       ]
     )->fetchOne();
@@ -405,9 +419,15 @@ class ManualStartService {
 
   private function acquireLock(string $lockName): void {
     $result = $this->entityManager->getConnection()->executeQuery(
-      'SELECT GET_LOCK(:lockName, 10)',
-      ['lockName' => $lockName],
-      ['lockName' => ParameterType::STRING]
+      'SELECT GET_LOCK(:lockName, :timeout)',
+      [
+        'lockName' => $lockName,
+        'timeout' => self::START_LOCK_TIMEOUT_SECONDS,
+      ],
+      [
+        'lockName' => ParameterType::STRING,
+        'timeout' => ParameterType::INTEGER,
+      ]
     )->fetchOne();
     if (!is_numeric($result) || (int)$result !== 1) {
       throw new ApiException(

@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Control\AutomationRunCreationResult;
 use MailPoet\Automation\Engine\Control\AutomationRunCreator;
 use MailPoet\Automation\Engine\Control\StepSchedulingResult;
 use MailPoet\Automation\Engine\Data\Automation as AutomationData;
+use MailPoet\Automation\Engine\Data\AutomationRun as AutomationRunData;
 use MailPoet\Automation\Engine\Data\Filter;
 use MailPoet\Automation\Engine\Data\FilterGroup;
 use MailPoet\Automation\Engine\Data\Filters;
@@ -181,6 +182,48 @@ class ManualAutomationStartWorkerTest extends \MailPoetTest {
 
     $runs = $this->automationRunStorage->getAutomationRunsForAutomation($automation);
     $this->assertCount(1, $runs);
+  }
+
+  public function testItAllowsSubscribersWithFailedOrCancelledPriorRuns(): void {
+    $segment = (new Segment())->create();
+    $segmentId = $this->getSegmentId($segment);
+    $failedSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $cancelledSubscriber = (new Subscriber())->withSegments([$segment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    (new AutomationRun())
+      ->withAutomation($automation)
+      ->withTriggerKey(SomeoneSubscribesTrigger::KEY)
+      ->withStatus(AutomationRunData::STATUS_FAILED)
+      ->withSubject(new Subject(SubscriberSubject::KEY, ['subscriber_id' => $failedSubscriber->getId()]))
+      ->withSubject(new Subject(SegmentSubject::KEY, ['segment_id' => $segmentId]))
+      ->create();
+    (new AutomationRun())
+      ->withAutomation($automation)
+      ->withTriggerKey(SomeoneSubscribesTrigger::KEY)
+      ->withStatus(AutomationRunData::STATUS_CANCELLED)
+      ->withSubject(new Subject(SubscriberSubject::KEY, ['subscriber_id' => $cancelledSubscriber->getId()]))
+      ->withSubject(new Subject(SegmentSubject::KEY, ['segment_id' => $segmentId]))
+      ->create();
+
+    $preview = $this->manualStartService->preview($automation->getId(), $segmentId, null);
+    $this->assertSame(2, $preview['eligible_count']);
+    $this->assertSame(0, $preview['skipped_by_reason']['already_entered']);
+    $start = $this->manualStartService->start($automation->getId(), $segmentId, null, $preview['preview_signature']);
+
+    $task = $this->scheduledTasksRepository->findOneById($start['task_id']);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+    $this->assertTrue($completed);
+
+    $this->scheduledTasksRepository->refresh($task);
+    $workerCounts = $this->getWorkerCounts($task);
+    $this->assertSame(2, $workerCounts['created_count']);
+    $this->assertSame(0, $workerCounts['failed_count']);
+    $this->assertCount(4, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
   }
 
   public function testItRevalidatesDeletedListBeforeCreatingRuns(): void {
