@@ -72,7 +72,7 @@ class Assets extends AbstractExtension {
       $this->globals['assets_url'],
       strpos($script, 'lib/') === 0 ? 'js' : 'dist/js',
       $this->getAssetFileName($this->globals['assets_manifest_js'], $script),
-      Env::$version
+      Env::$assetsVersion
     );
   }
 

@@ -114,7 +114,7 @@ class AssetsController {
       $name,
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset("$asset.js"),
       array_merge($dependencies, ['mailpoet_admin']),
-      Env::$version,
+      Env::$assetsVersion,
       true
     );
     $this->wp->wpSetScriptTranslations($name, 'mailpoet');
@@ -184,6 +184,6 @@ class AssetsController {
   }
 
   private function registerFooterScript(string $handle, string $src, array $deps = []): void {
-    $this->wp->wpRegisterScript($handle, $src, $deps, Env::$version, true);
+    $this->wp->wpRegisterScript($handle, $src, $deps, Env::$assetsVersion, true);
   }
 }

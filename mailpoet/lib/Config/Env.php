@@ -8,6 +8,7 @@ class Env {
   const NEWSLETTER_CONTENT_WIDTH = 1320;
 
   public static $version;
+  public static $assetsVersion;
   public static $pluginName;
   public static $pluginPath;
   public static $baseUrl;
@@ -79,8 +80,9 @@ class Env {
   public static $plugin_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   public static $temp_path; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-  public static function init($file, $version) {
+  public static function init($file, $version, $assetsVersion = null) {
     self::$version = $version;
+    self::$assetsVersion = $assetsVersion ?? $version;
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$pluginName = 'mailpoet';

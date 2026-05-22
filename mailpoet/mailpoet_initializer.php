@@ -102,7 +102,8 @@ define('MAILPOET_VERSION', $mailpoetPlugin['version']);
 
 Env::init(
   $mailpoetPlugin['filename'],
-  $mailpoetPlugin['version']
+  $mailpoetPlugin['version'],
+  $mailpoetPlugin['assets_version'] ?? null
 );
 
 $requirements = new RequirementsChecker();

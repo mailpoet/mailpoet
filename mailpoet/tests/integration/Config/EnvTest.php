@@ -6,6 +6,7 @@ use MailPoet\Config\Env;
 
 class EnvTest extends \MailPoetTest {
   public $version;
+  public $assetsVersion;
   public $file;
 
   public function _before() {
@@ -13,7 +14,15 @@ class EnvTest extends \MailPoetTest {
     // Back up original environment values
     $this->file = Env::$file;
     $this->version = Env::$version;
+    $this->assetsVersion = Env::$assetsVersion;
     Env::init('file', '1.0.0');
+  }
+
+  public function testItCanUseSeparateAssetVersion() {
+    Env::init('file', '1.0.0', '1.0.1');
+
+    verify(Env::$version)->equals('1.0.0');
+    verify(Env::$assetsVersion)->equals('1.0.1');
   }
 
   public function testItCanReturnPluginPrefix() {
@@ -47,6 +56,6 @@ class EnvTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     // Restore the original environment
-    Env::init($this->file, $this->version);
+    Env::init($this->file, $this->version, $this->assetsVersion);
   }
 }
