@@ -425,7 +425,7 @@ class NewsletterTest extends \MailPoetTest {
         $this->subscriber,
         $sendingQueue
       );
-      self::fail('Expected order review URL resolution to stop sending.');
+      $this->fail('Expected order review URL resolution to stop sending.');
     } catch (NewsletterProcessingException $exception) {
       $this->assertSame('Cannot send the email because WooCommerce cannot generate an order review link for this order.', $exception->getMessage());
     }
