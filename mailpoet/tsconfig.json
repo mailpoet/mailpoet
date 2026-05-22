@@ -4,6 +4,7 @@
     "assets/js/src/**/*",
     "assets/js/src/**/*.json",
     "tests/javascript/**/*.ts",
+    "tests/javascript/**/*.tsx",
     "tests/javascript-newsletter-editor/**/*.ts"
   ],
   "compilerOptions": {

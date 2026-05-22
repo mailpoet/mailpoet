@@ -9,7 +9,7 @@
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
     "stylelint-check": "stylelint",
-    "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts",
+    "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts --extension spec.tsx",
     "test:unit": "./do test:unit",
     "test:integration": "./do test:integration --skip-deps",
     "test:acceptance": "./do test:acceptance --skip-deps",

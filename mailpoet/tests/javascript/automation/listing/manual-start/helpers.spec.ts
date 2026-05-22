@@ -165,6 +165,30 @@ describe('automation manual-start helpers', () => {
     expect(isBlockingManualStartError(error)).to.equal(true);
   });
 
+  it('ignores malformed preview data in manual-start errors', () => {
+    const error = normalizeManualStartError({
+      code: 'manual_start_stale_preview',
+      message: 'Refresh the preview.',
+      data: {
+        status: 409,
+        preview: {
+          preview_signature: 'signature',
+          automation_id: 1,
+          segment_id: 'not-a-number',
+          filter_segment_id: null,
+          selected_count: 10,
+          eligible_count: 5,
+          skipped_by_reason: {},
+          deferred_reason_keys: [],
+          duplicate_in_progress: false,
+        },
+      },
+    });
+
+    expect(error.data.status).to.equal(409);
+    expect(error.data.preview).to.equal(undefined);
+  });
+
   it('maps known error codes to modal states', () => {
     expect(
       getManualStartErrorState({

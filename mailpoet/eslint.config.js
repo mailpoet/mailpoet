@@ -27,7 +27,7 @@ module.exports = [
   })),
   ...esTsConfig.map((config) => ({
     ...config,
-    files: ['tests/javascript/**/*.ts'],
+    files: ['tests/javascript/**/*.{ts,tsx}'],
     languageOptions: {
       ...config.languageOptions,
       globals: {

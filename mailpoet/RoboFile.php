@@ -381,7 +381,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testJavascript($xmlOutputFile = null) {
-    $command = './node_modules/.bin/mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts';
+    $command = './node_modules/.bin/mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts --extension spec.tsx';
 
     if (!empty($xmlOutputFile)) {
       $command .= sprintf(

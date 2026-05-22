@@ -132,18 +132,128 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function getNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function getStringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
+}
+
+function getNumberRecord(value: unknown): Record<string, number> {
+  if (!isObject(value)) {
+    return {};
+  }
+
+  const record: Record<string, number> = {};
+  Object.entries(value).forEach(([key, count]) => {
+    const numericCount = getNumber(count);
+    if (numericCount !== null) {
+      record[key] = numericCount;
+    }
+  });
+  return record;
+}
+
+function getStringRecord(value: unknown): Record<string, string> | undefined {
+  if (!isObject(value)) {
+    return undefined;
+  }
+
+  const record: Record<string, string> = {};
+  Object.entries(value).forEach(([key, item]) => {
+    if (typeof item === 'string') {
+      record[key] = item;
+    }
+  });
+
+  return Object.keys(record).length > 0 ? record : undefined;
+}
+
+function normalizePreview(value: unknown): ManualStartPreview | undefined {
+  if (!isObject(value)) {
+    return undefined;
+  }
+
+  const automationId = getNumber(value.automation_id);
+  const segmentId = getNumber(value.segment_id);
+  const selectedCount = getNumber(value.selected_count);
+  const eligibleCount = getNumber(value.eligible_count);
+  if (
+    typeof value.preview_signature !== 'string' ||
+    automationId === null ||
+    segmentId === null ||
+    selectedCount === null ||
+    eligibleCount === null ||
+    typeof value.duplicate_in_progress !== 'boolean'
+  ) {
+    return undefined;
+  }
+
+  const filterSegmentId =
+    value.filter_segment_id === null
+      ? null
+      : getNumber(value.filter_segment_id);
+  if (filterSegmentId === null && value.filter_segment_id !== null) {
+    return undefined;
+  }
+
+  return {
+    preview_signature: value.preview_signature,
+    automation_id: automationId,
+    segment_id: segmentId,
+    filter_segment_id: filterSegmentId,
+    selected_count: selectedCount,
+    eligible_count: eligibleCount,
+    skipped_by_reason: getNumberRecord(value.skipped_by_reason),
+    deferred_reason_keys: getStringArray(value.deferred_reason_keys),
+    duplicate_in_progress: value.duplicate_in_progress,
+  };
+}
+
+function normalizeErrorData(data: unknown): ManualStartErrorResponse['data'] {
+  if (!isObject(data)) {
+    return {};
+  }
+
+  const normalizedData: ManualStartErrorResponse['data'] = {};
+  const status = getNumber(data.status);
+  if (status !== null) {
+    normalizedData.status = status;
+  }
+
+  const preview = normalizePreview(data.preview);
+  if (preview) {
+    normalizedData.preview = preview;
+  }
+
+  if (Array.isArray(data.errors) || isObject(data.errors)) {
+    normalizedData.errors = data.errors;
+  }
+  if (data.details !== undefined) {
+    normalizedData.details = data.details;
+  }
+  const params = getStringRecord(data.params);
+  if (params) {
+    normalizedData.params = params;
+  }
+
+  return normalizedData;
+}
+
 export function normalizeManualStartError(
   error: unknown,
 ): ManualStartErrorResponse {
   if (isObject(error)) {
-    const data = isObject(error.data) ? error.data : {};
     return {
       code:
         typeof error.code === 'string'
           ? error.code
           : 'manual_start_unknown_error',
       message: typeof error.message === 'string' ? error.message : '',
-      data,
+      data: normalizeErrorData(error.data),
     };
   }
 

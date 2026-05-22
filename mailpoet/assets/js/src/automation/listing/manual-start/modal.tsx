@@ -66,6 +66,8 @@ const skippedReasonLabels: Record<string, string> = {
   subscriber_missing: __('Subscriber no longer exists', 'mailpoet'),
   step_scheduling_failed: __('Step scheduling failed', 'mailpoet'),
 };
+const PREVIEW_DEBOUNCE_MS = 200;
+const LARGE_AUDIENCE_SOFT_CAP = 50000;
 
 function formatCount(count: number): string {
   return Number(count).toLocaleString();
@@ -131,6 +133,19 @@ function StatusNotice({ children }: { children: ReactNode }): JSX.Element {
   return (
     <div
       className="notice notice-success mailpoet-automation-manual-start-alert"
+      role="status"
+      aria-live="polite"
+      tabIndex={-1}
+    >
+      {children}
+    </div>
+  );
+}
+
+function WarningNotice({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <div
+      className="notice notice-warning mailpoet-automation-manual-start-alert"
       role="status"
       aria-live="polite"
       tabIndex={-1}
@@ -395,38 +410,49 @@ export function ManualStartModal({
 
     const numericFilterSegmentId = getSegmentIdNumber(activeFilterSegmentId);
     const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      void previewManualStart(
+        automation.id,
+        {
+          segment_id: numericSegmentId,
+          filter_segment_id: numericFilterSegmentId,
+        },
+        controller.signal,
+      )
+        .then((nextPreview) => {
+          if (!controller.signal.aborted) {
+            setPreview(nextPreview);
+            setPreviewError(null);
+            if (
+              previewMatchesSelections(
+                nextPreview,
+                segmentId,
+                activeFilterSegmentId,
+              )
+            ) {
+              setStartError(null);
+            }
+          }
+        })
+        .catch((error) => {
+          if (!controller.signal.aborted) {
+            setPreview(null);
+            setPreviewError(normalizeManualStartError(error));
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) {
+            setIsPreviewLoading(false);
+          }
+        });
+    }, PREVIEW_DEBOUNCE_MS);
+
     setIsPreviewLoading(true);
-    setPreview(null);
     setPreviewError(null);
     setStartError(null);
 
-    void previewManualStart(
-      automation.id,
-      {
-        segment_id: numericSegmentId,
-        filter_segment_id: numericFilterSegmentId,
-      },
-      controller.signal,
-    )
-      .then((nextPreview) => {
-        if (!controller.signal.aborted) {
-          setPreview(nextPreview);
-          setPreviewError(null);
-        }
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) {
-          setPreview(null);
-          setPreviewError(normalizeManualStartError(error));
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) {
-          setIsPreviewLoading(false);
-        }
-      });
-
     return () => {
+      window.clearTimeout(timeout);
       controller.abort();
     };
   }, [
@@ -464,6 +490,9 @@ export function ManualStartModal({
     ) {
       return;
     }
+    setStartError(null);
+    setPreviewError(null);
+    setIsPreviewLoading(true);
     setRefreshCount((count) => count + 1);
   }, [filterSelectionRequired, isPreviewLoading, isStarting, segmentId]);
 
@@ -649,6 +678,42 @@ export function ManualStartModal({
       );
     }
 
+    if (preview && currentPreviewMatches) {
+      return (
+        <div aria-live="polite">
+          {preview.eligible_count >= LARGE_AUDIENCE_SOFT_CAP && (
+            <WarningNotice>
+              <p>
+                {sprintf(
+                  // translators: %s is the recommended maximum number of eligible subscribers before narrowing the audience.
+                  __(
+                    'Large audiences may take longer to queue. We recommend narrowing audiences above %s eligible subscribers with a segment filter.',
+                    'mailpoet',
+                  ),
+                  formatCount(LARGE_AUDIENCE_SOFT_CAP),
+                )}
+              </p>
+            </WarningNotice>
+          )}
+          <PreviewCounts preview={preview} />
+          <SkippedReasons
+            skippedByReason={preview.skipped_by_reason}
+            deferredReasonKeys={preview.deferred_reason_keys}
+          />
+          {isPreviewLoading && (
+            <div
+              className="mailpoet-automation-manual-start-loading"
+              role="status"
+              aria-live="polite"
+            >
+              <Spinner />
+              <span>{__('Refreshing preview...', 'mailpoet')}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     if (isPreviewLoading) {
       return (
         <div
@@ -662,19 +727,7 @@ export function ManualStartModal({
       );
     }
 
-    if (!preview || !currentPreviewMatches) {
-      return null;
-    }
-
-    return (
-      <div aria-live="polite">
-        <PreviewCounts preview={preview} />
-        <SkippedReasons
-          skippedByReason={preview.skipped_by_reason}
-          deferredReasonKeys={preview.deferred_reason_keys}
-        />
-      </div>
-    );
+    return null;
   };
 
   if (startResult && queuedContext) {
