@@ -7,7 +7,7 @@
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: https://www.mailpoet.com
- * Requires at least: 6.8
+ * Requires at least: 6.9
  * Text Domain: mailpoet
  * Domain Path: /lang
  *
@@ -27,7 +27,7 @@ $mailpoetPlugin = [
   'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php',
 ];
 
-const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.8'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.9'; // L-1 version, not the latest
 const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '10.6'; // L-1 version, not the latest
 
 
