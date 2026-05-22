@@ -81,14 +81,6 @@ class ManualStartService {
       $this->assertNoActiveTask($automationId);
       $preview = $this->buildPreview($context);
 
-      if ($preview['eligible_count'] <= 0) {
-        throw new ApiException(
-          __('No subscribers are eligible to start this automation.', 'mailpoet'),
-          422,
-          'manual_start_zero_eligible'
-        );
-      }
-
       if (!hash_equals($preview['preview_signature'], $previewSignature)) {
         throw new ApiException(
           __('The audience changed since the last preview. Refresh the preview before queueing subscribers.', 'mailpoet'),
@@ -97,6 +89,14 @@ class ManualStartService {
           [],
           null,
           ['preview' => $preview]
+        );
+      }
+
+      if ($preview['eligible_count'] <= 0) {
+        throw new ApiException(
+          __('No subscribers are eligible to start this automation.', 'mailpoet'),
+          422,
+          'manual_start_zero_eligible'
         );
       }
 
@@ -293,7 +293,13 @@ class ManualStartService {
       if ($throwable instanceof ApiException) {
         throw $throwable;
       }
-      throw new ApiException(__('Could not queue subscribers for manual automation start.', 'mailpoet'), 500, 'manual_start_queue_failed');
+      throw new ApiException(
+        __('Could not queue subscribers for manual automation start.', 'mailpoet'),
+        500,
+        'manual_start_queue_failed',
+        [],
+        $throwable
+      );
     }
 
     return [

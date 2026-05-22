@@ -3,7 +3,33 @@ import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { ApiError } from '../api';
-import { isManualStartApiPath } from './manual-start/helpers';
+
+function isManualStartApiPath(path: unknown): boolean {
+  if (typeof path !== 'string') {
+    return false;
+  }
+
+  const [pathname] = path.split('?', 1);
+  const segments = pathname.split('/').filter(Boolean);
+  const automationIndex = segments.indexOf('automations');
+  const automationId = segments[automationIndex + 1];
+
+  if (
+    automationIndex === -1 ||
+    segments[automationIndex + 2] !== 'manual-start'
+  ) {
+    return false;
+  }
+
+  const numericAutomationId = Number(automationId);
+  return (
+    Number.isInteger(numericAutomationId) &&
+    numericAutomationId > 0 &&
+    (segments.length === automationIndex + 3 ||
+      (segments.length === automationIndex + 4 &&
+        segments[automationIndex + 3] === 'preview'))
+  );
+}
 
 export const registerApiErrorHandler = (): void =>
   apiFetch.use(

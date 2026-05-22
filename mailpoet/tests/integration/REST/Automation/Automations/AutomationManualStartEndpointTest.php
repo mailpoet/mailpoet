@@ -129,6 +129,24 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $this->assertNotSame($preview['preview_signature'], $response['data']['preview']['preview_signature']);
   }
 
+  public function testStartReportsStalePreviewBeforeZeroEligibleAudience(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->postPreview($automation->getId(), $segment->getId())['data'];
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->em->flush();
+
+    $response = $this->postStart($automation->getId(), $segment->getId(), $preview['preview_signature']);
+    $this->assertSame('manual_start_stale_preview', $response['code']);
+    $this->assertSame(409, $response['data']['status']);
+    $this->assertSame(0, $response['data']['preview']['eligible_count']);
+  }
+
   public function testPreviewAndStartAcceptExplicitNullFilterSegmentId(): void {
     $segment = (new Segment())->create();
     (new Subscriber())->withSegments([$segment])->create();
@@ -267,6 +285,36 @@ class AutomationManualStartEndpointTest extends AutomationTest {
     $start = $this->postStart($automation->getId(), $segment->getId(), 'signature');
     $this->assertSame('rest_forbidden', $start['code']);
     $this->assertSame(401, $start['data']['status']);
+  }
+
+  public function testPreviewAndStartRejectUsersWithoutAutomationCapability(): void {
+    $segment = (new Segment())->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+    $userId = wp_insert_user([
+      'user_login' => 'manual-start-subscriber',
+      'user_pass' => 'password',
+      'user_email' => 'manual-start-subscriber@example.com',
+      'role' => 'subscriber',
+    ]);
+    $this->assertIsNumeric($userId);
+
+    try {
+      wp_set_current_user((int)$userId);
+
+      $preview = $this->postPreview($automation->getId(), $segment->getId());
+      $this->assertSame('rest_forbidden', $preview['code']);
+      $this->assertSame(403, $preview['data']['status']);
+
+      $start = $this->postStart($automation->getId(), $segment->getId(), 'signature');
+      $this->assertSame('rest_forbidden', $start['code']);
+      $this->assertSame(403, $start['data']['status']);
+    } finally {
+      wp_set_current_user(1);
+      is_multisite() ? wpmu_delete_user((int)$userId) : wp_delete_user((int)$userId);
+    }
   }
 
   public function testStartQueuesSubscribersAcrossBoundedChunks(): void {

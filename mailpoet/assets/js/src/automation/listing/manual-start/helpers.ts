@@ -128,13 +128,6 @@ export function canConfirmManualStart(
   );
 }
 
-export function isManualStartApiPath(path: unknown): boolean {
-  return (
-    typeof path === 'string' &&
-    /(?:^|\/)automations\/\d+\/manual-start(?:\/preview)?(?:\?.*)?$/.test(path)
-  );
-}
-
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }

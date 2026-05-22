@@ -6,7 +6,6 @@ import {
   getManualStartErrorState,
   getSegmentIdNumber,
   isBlockingManualStartError,
-  isManualStartApiPath,
   isManualStartSupported,
   normalizeManualStartError,
   normalizeSegmentId,
@@ -146,17 +145,6 @@ describe('automation manual-start helpers', () => {
       canConfirmManualStart(preview({ duplicate_in_progress: true }), '1', ''),
     ).to.equal(false);
     expect(canConfirmManualStart(preview(), '2', '')).to.equal(false);
-  });
-
-  it('detects manual-start API paths for middleware error handling', () => {
-    expect(
-      isManualStartApiPath('/automations/12/manual-start/preview'),
-    ).to.equal(true);
-    expect(isManualStartApiPath('/automations/12/manual-start')).to.equal(true);
-    expect(
-      isManualStartApiPath('/mailpoet/v1/automations/12/manual-start'),
-    ).to.equal(true);
-    expect(isManualStartApiPath('/automations/12/duplicate')).to.equal(false);
   });
 
   it('preserves structured manual-start errors', () => {

@@ -30,6 +30,7 @@ use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\AutomationRun;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use RuntimeException;
@@ -113,6 +114,38 @@ class ManualAutomationStartWorkerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
     $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $taskSubscriber->getProcessed());
     $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_OK, $taskSubscriber->getFailed());
+  }
+
+  public function testItCreatesRunsWithConcreteListSubjectWhenDynamicFilterIsUsed(): void {
+    $segment = (new Segment())->create();
+    $segmentId = $this->getSegmentId($segment);
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $filterSegmentId = $this->getSegmentId($filterSegment);
+    $subscriber = (new Subscriber())->withSegments([$segment])->withEngagementScore(50)->create();
+    (new Subscriber())->withSegments([$segment])->withEngagementScore(10)->create();
+    $automation = (new AutomationFactory())
+      ->withStatusActive()
+      ->withSomeoneSubscribesTrigger()
+      ->create();
+
+    $preview = $this->manualStartService->preview($automation->getId(), $segmentId, $filterSegmentId);
+    $this->assertSame(1, $preview['eligible_count']);
+    $start = $this->manualStartService->start($automation->getId(), $segmentId, $filterSegmentId, $preview['preview_signature']);
+
+    $task = $this->scheduledTasksRepository->findOneById($start['task_id']);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+    $this->assertTrue($completed);
+
+    $runs = $this->automationRunStorage->getAutomationRunsForAutomation($automation);
+    $this->assertCount(1, $runs);
+    $run = $runs[0];
+    $this->assertSame(['subscriber_id' => $subscriber->getId()], $run->getSubjects(SubscriberSubject::KEY)[0]->getArgs());
+    $this->assertSame(['segment_id' => $segmentId], $run->getSubjects(SegmentSubject::KEY)[0]->getArgs());
+
+    $logs = $this->automationRunLogStorage->getLogsForAutomationRun($run->getId());
+    $this->assertCount(1, $logs);
+    $this->assertSame($filterSegmentId, $logs[0]->getData()['manual_start_filter_segment_id']);
   }
 
   public function testItSkipsSubscribersThatAlreadyEnteredBeforeWorkerRuns(): void {
