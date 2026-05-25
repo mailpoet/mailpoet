@@ -7,12 +7,12 @@
 * Added: Direct review links in WooCommerce post-purchase automation emails;
 * Updated: WordPress compatibility to version 7.0;
 * Improved: Subscription forms now require human-like interaction (mouse, scroll, keystroke timing) and challenge suspicious submissions with the built-in CAPTCHA, including on top of a correctly solved built-in CAPTCHA;
-* Improved: Improve the Logs listing page with DataViews controls;
-* Improved: Improve campaign statistics list views;
 * Improved: Distinguish duplicate subcategory names in the Automatic Latest Content block by showing the parent category;
-* Changed: Rebuilt the Subscribers admin listing on @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Rebuilt the Emails admin listing on @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Rebuilt the email sending status listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Subscribers listing use @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Emails listing use @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Sending status listing use @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Logs use @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Campaign statistics use @wordpress/dataviews with native WordPress REST endpoints;
 * Fixed: Form input fields now inherit font-family from the active theme when the "Inherit style from theme" option is enabled;
 * Removed: Legacy JSON API listing and bulk action endpoints for emails, subscribers, lists, and forms, superseded by the REST API.
 
