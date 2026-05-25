@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.27.0
+Stable tag: 5.28.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,23 +227,20 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.27.0 - 2026-05-18 =
-* Added: Public share URLs for sent newsletters;
-* Added: Sharing controls for sent emails;
-* Added: Public sharing bars and archive links for emails; sent emails are public by default and the default can be changed in Settings → Advanced → Email sharing visibility, with a per-email override on each email's settings;
-* Added: (premium) Customer's saved card expires automation trigger;
-* Added: Send latest newsletter automation action;
-* Added: (premium) WooCommerce Order Paid trigger;
-* Added: (premium) WordPress Change user role action;
-* Added: (premium) WooCommerce triggers and actions;
-* Added: Manage Subscription page style setting;
-* Added: Combine segment filter conditions into groups with mixed AND/OR logic;
-* Added: Before, after, on, and between date options for dynamic segment filters, with date filtering now available on purchased product, category, tag, variation, and attribute conditions;
-* Updated: WooCommerce email editor package to version 2.1.0 and enabled template editing from the canvas;
-* Improved: Allow editing active automations. Existing in-flight subscribers continue on the previous version, and you can optionally cancel them;
-* Improved: Export downloads require MailPoet permissions;
-* Improved: Show the subscriber email address on the unsubscribe confirmation page;
-* Improved: Add last subscribed date to subscriber exports;
-* Fixed: Date and time formatting regressions caused by respecting WordPress date settings.
+= 5.28.0 - 2026-05-25 =
+* Added: Filter automation analytics by saved version, or aggregate across all of them; new runs always use the latest version;
+* Added: Automation email support for opened, clicked, and sent email segment conditions;
+* Added: WooCommerce Abilities API status and automation templates for MailPoet marketing settings;
+* Added: Direct review links in WooCommerce post-purchase automation emails;
+* Updated: WordPress compatibility to version 7.0;
+* Improved: Subscription forms now require human-like interaction (mouse, scroll, keystroke timing) and challenge suspicious submissions with the built-in CAPTCHA, including on top of a correctly solved built-in CAPTCHA;
+* Improved: Improve the Logs listing page with DataViews controls;
+* Improved: Improve campaign statistics list views;
+* Improved: Distinguish duplicate subcategory names in the Automatic Latest Content block by showing the parent category;
+* Changed: Rebuilt the Subscribers admin listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Rebuilt the Emails admin listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Rebuilt the email sending status listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Fixed: Form input fields now inherit font-family from the active theme when the "Inherit style from theme" option is enabled;
+* Removed: Legacy JSON API listing and bulk action endpoints for emails, subscribers, lists, and forms, superseded by the REST API.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
