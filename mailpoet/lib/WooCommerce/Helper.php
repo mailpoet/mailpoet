@@ -131,7 +131,7 @@ class Helper {
   }
 
   private function isCustomerReviewRequestFeatureEnabled(): bool {
-    if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+    if (!$this->canUseWooCommerceFeatureUtilities()) {
       return false;
     }
 
@@ -438,10 +438,22 @@ class Helper {
   }
 
   public function isWooCommerceEmailImprovementsEnabled(): bool {
-    if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+    if (!$this->canUseWooCommerceFeatureUtilities()) {
       return false;
     }
     return \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled('email_improvements');
+  }
+
+  private function canUseWooCommerceFeatureUtilities(): bool {
+    if (!$this->isWooCommerceActive()) {
+      return false;
+    }
+
+    if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+      return false;
+    }
+
+    return function_exists('wc_get_container');
   }
 
   public function wcPlaceholderImgSrc(string $size = 'woocommerce_thumbnail'): string {
