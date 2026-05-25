@@ -1,5 +1,21 @@
 == Changelog ==
 
+= 5.28.0 - 2026-05-25 =
+* Added: Filter automation analytics by saved version, or aggregate across all of them; new runs always use the latest version;
+* Added: Automation email support for opened, clicked, and sent email segment conditions;
+* Added: WooCommerce Abilities API status and automation templates for MailPoet marketing settings;
+* Added: Direct review links in WooCommerce post-purchase automation emails;
+* Updated: WordPress compatibility to version 7.0;
+* Improved: Subscription forms now require human-like interaction (mouse, scroll, keystroke timing) and challenge suspicious submissions with the built-in CAPTCHA, including on top of a correctly solved built-in CAPTCHA;
+* Improved: Improve the Logs listing page with DataViews controls;
+* Improved: Improve campaign statistics list views;
+* Improved: Distinguish duplicate subcategory names in the Automatic Latest Content block by showing the parent category;
+* Changed: Rebuilt the Subscribers admin listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Rebuilt the Emails admin listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Changed: Rebuilt the email sending status listing on @wordpress/dataviews with native WordPress REST endpoints;
+* Fixed: Form input fields now inherit font-family from the active theme when the "Inherit style from theme" option is enabled;
+* Removed: Legacy JSON API listing and bulk action endpoints for emails, subscribers, lists, and forms, superseded by the REST API.
+
 = 5.27.0 - 2026-05-18 =
 * Added: Public share URLs for sent newsletters;
 * Added: Sharing controls for sent emails;
