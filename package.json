@@ -53,6 +53,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@tootallnate/once": "2.0.1",
       "@tanstack/react-router": "1.95.0",
       "@types/react": "18.3.28",
       "locutus": "^3.0.0"
