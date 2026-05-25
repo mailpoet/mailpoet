@@ -50,6 +50,78 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     $this->assertSame('Uncategorized', $response->data['0']->name);
   }
 
+  public function testItPrependsParentNameToHierarchicalTerms() {
+    $parent = $this->createCategory('Music');
+    $child = $this->createCategory('Rock', (int)$parent['term_id']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    try {
+      $response = $this->endpoint->getTerms(['taxonomies' => ['category']]);
+      $names = array_column((array)$response->data, 'name');
+      $this->assertContains('Music', $names);
+      $this->assertContains('Music > Rock', $names);
+      $this->assertNotContains('Rock', $names);
+    } finally {
+      wp_delete_term((int)$child['term_id'], 'category'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      wp_delete_term((int)$parent['term_id'], 'category'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+  }
+
+  public function testItAppliesSearchTermsArgsFilterToParentLookup() {
+    $parent = $this->createCategory('FilterMusic');
+    $child = $this->createCategory('FilterRock', (int)$parent['term_id']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $parentId = (int)$parent['term_id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    $filter = function ($args) use ($parentId) {
+      // get_terms() ignores `exclude` when `include` is set, so suppress the
+      // parent lookup by replacing `include` with an ID that cannot exist.
+      if (!empty($args['include']) && in_array($parentId, (array)$args['include'], true)) {
+        $args['include'] = [PHP_INT_MAX];
+      }
+      return $args;
+    };
+
+    $this->wp->addFilter('mailpoet_search_terms_args', $filter);
+    try {
+      $response = $this->endpoint->getTerms(['taxonomies' => ['category']]);
+      $names = array_column((array)$response->data, 'name');
+      $this->assertContains('FilterRock', $names);
+      $this->assertNotContains('FilterMusic > FilterRock', $names);
+    } finally {
+      $this->wp->removeFilter('mailpoet_search_terms_args', $filter);
+      wp_delete_term((int)$child['term_id'], 'category'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      wp_delete_term((int)$parent['term_id'], 'category'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+  }
+
+  public function testItDoesNotMutateCachedTermObjects() {
+    $parent = $this->createCategory('CacheMusic');
+    $child = $this->createCategory('CacheRock', (int)$parent['term_id']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $childId = (int)$child['term_id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    try {
+      $this->endpoint->getTerms(['taxonomies' => ['category']]);
+
+      $cachedTerm = get_term($childId, 'category');
+      $this->assertInstanceOf(\WP_Term::class, $cachedTerm);
+      $this->assertSame('CacheRock', $cachedTerm->name);
+    } finally {
+      wp_delete_term($childId, 'category');
+      wp_delete_term((int)$parent['term_id'], 'category'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+  }
+
+  private function createCategory(string $name, ?int $parentId = null): array {
+    $args = [];
+    if ($parentId) {
+      $args['parent'] = $parentId;
+    }
+    $term = wp_insert_term($name, 'category', $args);
+    if (is_wp_error($term)) {
+      $this->fail('Failed to create category "' . $name . '": ' . $term->get_error_message());
+    }
+    return $term;
+  }
+
   /**
    * @dataProvider dataForTestItGetsTransformedPostsWithDifferentStatus
    */
