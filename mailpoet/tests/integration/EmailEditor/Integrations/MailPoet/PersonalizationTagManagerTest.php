@@ -77,14 +77,14 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
   }
 
   public function testItRegistersOrderReviewUrlTagForOrderAutomations(): void {
-    if (!$this->diContainer->get(OrderReviewUrl::class)->isSupported()) {
-      $this->markTestSkipped('WooCommerce order review URL helper is not available.');
-    }
-
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $registry->unregister('[woocommerce/order-review-url]');
 
-    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->method('isSupported')->willReturn(true);
+    $personalizationManager = $this->getServiceWithOverrides(PersonalizationTagManager::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
     $personalizationManager->extendWooCommerceTagsForMailPoet($registry, [OrderSubject::KEY]);
 
     $tag = $registry->get_by_token('[woocommerce/order-review-url]');
