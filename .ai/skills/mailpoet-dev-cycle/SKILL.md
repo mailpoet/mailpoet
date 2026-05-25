@@ -86,7 +86,7 @@ Before committing, run these from the repo root:
 
 - [ ] `pnpm qa` -- all PHP and frontend QA checks pass
 - [ ] `pnpm qa:fix` -- formatting is clean
-- [ ] Run relevant tests (see the `writing-tests` skill for commands)
+- [ ] Run relevant tests (see the `runnig-tests` skill for commands)
 
 ## Premium Plugin
 
