@@ -49,6 +49,7 @@ overrides:
   'form-data@<=4.0.0': '>=4.0.4'
   'on-headers@<1.1.0': '>=1.1.0'
   'compression@<1.8.1': '>=1.8.1 <2.0.0'
+  '@babel/plugin-transform-modules-systemjs@<7.29.4': 7.29.4
   'ajv@<6.14.0': '>=6.14.0 <7.0.0'
   'ajv@>=7.0.0-alpha.0 <8.18.0': '>=8.18.0 <9.0.0'
   schema-utils@3.3.0>ajv: 6.14.0
