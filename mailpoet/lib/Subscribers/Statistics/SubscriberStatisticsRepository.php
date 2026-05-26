@@ -12,7 +12,6 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -20,6 +19,15 @@ use MailPoetVendor\Doctrine\ORM\QueryBuilder;
  * @extends Repository<SubscriberEntity>
  */
 class SubscriberStatisticsRepository extends Repository {
+  public const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
+  public const ENGAGEMENT_SCORE_DORMANT = 'dormant';
+  public const ENGAGEMENT_SCORE_LOW = 'low';
+  public const ENGAGEMENT_SCORE_GOOD = 'good';
+  public const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
+
+  public const MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE = 3;
+  private const ENGAGEMENT_SCORE_LOW_MAX = 20;
+  private const ENGAGEMENT_SCORE_GOOD_MAX = 50;
 
   /** @var WCHelper */
   private $wcHelper;
@@ -41,7 +49,7 @@ class SubscriberStatisticsRepository extends Repository {
     return SubscriberEntity::class;
   }
 
-  public function getStatistics(SubscriberEntity $subscriber, ?Carbon $startTime = null) {
+  public function getStatistics(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null) {
     return new SubscriberStatistics(
       $this->getStatisticsClickCount($subscriber, $startTime),
       $this->getStatisticsOpenCount($subscriber, $startTime),
@@ -51,7 +59,54 @@ class SubscriberStatisticsRepository extends Repository {
     );
   }
 
-  public function getStatisticsClickCount(SubscriberEntity $subscriber, ?Carbon $startTime = null): int {
+  public function getEngagementScoreType(SubscriberEntity $subscriber): string {
+    $scoreTypes = $this->getEngagementScoreTypes([$subscriber]);
+    return $scoreTypes[(int)$subscriber->getId()] ?? self::ENGAGEMENT_SCORE_UNKNOWN;
+  }
+
+  /**
+   * @param SubscriberEntity[] $subscribers
+   * @return array<int, string>
+   */
+  public function getEngagementScoreTypes(array $subscribers): array {
+    if (!$subscribers) {
+      return [];
+    }
+    $yearAgo = new \DateTimeImmutable('-1 year');
+    $lifetimeSentCounts = $this->getTotalSentCounts($subscribers);
+    $recentSentCounts = $this->getTotalSentCounts($subscribers, $yearAgo);
+    $scoreTypes = [];
+    foreach ($subscribers as $subscriber) {
+      $subscriberId = (int)$subscriber->getId();
+      $scoreTypes[$subscriberId] = self::getEngagementScoreTypeFromData(
+        $subscriber->getEngagementScore(),
+        $lifetimeSentCounts[$subscriberId] ?? 0,
+        $recentSentCounts[$subscriberId] ?? 0
+      );
+    }
+    return $scoreTypes;
+  }
+
+  public static function getEngagementScoreTypeFromData(?float $score, int $lifetimeSentCount, int $recentSentCount): string {
+    if ($score === null) {
+      if (
+        $lifetimeSentCount >= self::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+        && $recentSentCount < self::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+      ) {
+        return self::ENGAGEMENT_SCORE_DORMANT;
+      }
+      return self::ENGAGEMENT_SCORE_UNKNOWN;
+    }
+    if ($score < self::ENGAGEMENT_SCORE_LOW_MAX) {
+      return self::ENGAGEMENT_SCORE_LOW;
+    }
+    if ($score < self::ENGAGEMENT_SCORE_GOOD_MAX) {
+      return self::ENGAGEMENT_SCORE_GOOD;
+    }
+    return self::ENGAGEMENT_SCORE_EXCELLENT;
+  }
+
+  public function getStatisticsClickCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
     $queryBuilder = $this->getStatisticsCountQuery(StatisticsClickEntity::class, $subscriber);
     if ($startTime) {
       $this->applyDateConstraint($queryBuilder, $startTime);
@@ -61,7 +116,7 @@ class SubscriberStatisticsRepository extends Repository {
       ->getSingleScalarResult();
   }
 
-  public function getStatisticsOpenCountQuery(SubscriberEntity $subscriber, ?Carbon $startTime = null): QueryBuilder {
+  public function getStatisticsOpenCountQuery(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): QueryBuilder {
     $queryBuilder = $this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber);
     if ($startTime) {
       $this->applyDateConstraint($queryBuilder, $startTime);
@@ -69,7 +124,7 @@ class SubscriberStatisticsRepository extends Repository {
     return $queryBuilder;
   }
 
-  public function getStatisticsOpenCount(SubscriberEntity $subscriber, ?Carbon $startTime = null): int {
+  public function getStatisticsOpenCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
     $queryBuilder = $this->getStatisticsOpenCountQuery($subscriber, $startTime);
     if ($this->trackingConfig->areOpensSeparated()) {
       $queryBuilder
@@ -81,7 +136,7 @@ class SubscriberStatisticsRepository extends Repository {
       ->getSingleScalarResult();
   }
 
-  public function getStatisticsMachineOpenCount(SubscriberEntity $subscriber, ?Carbon $startTime = null): int {
+  public function getStatisticsMachineOpenCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
     return (int)$this->getStatisticsOpenCountQuery($subscriber, $startTime)
       ->andWhere('(stats.userAgentType = :userAgentType)')
       ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE)
@@ -89,7 +144,7 @@ class SubscriberStatisticsRepository extends Repository {
       ->getSingleScalarResult();
   }
 
-  public function getTotalSentCount(SubscriberEntity $subscriber, ?Carbon $startTime = null): int {
+  public function getTotalSentCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
     $queryBuilder = $this->getStatisticsCountQuery(StatisticsNewsletterEntity::class, $subscriber);
     if ($startTime) {
       $queryBuilder
@@ -101,6 +156,30 @@ class SubscriberStatisticsRepository extends Repository {
       ->getSingleScalarResult();
   }
 
+  /**
+   * @param SubscriberEntity[] $subscribers
+   * @return array<int, int>
+   */
+  private function getTotalSentCounts(array $subscribers, ?\DateTimeInterface $startTime = null): array {
+    $queryBuilder = $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(stats.subscriber) AS subscriber_id, COUNT(DISTINCT stats.newsletter) AS sent_count')
+      ->from(StatisticsNewsletterEntity::class, 'stats')
+      ->where('stats.subscriber IN (:subscribers)')
+      ->groupBy('stats.subscriber')
+      ->setParameter('subscribers', $subscribers);
+    if ($startTime) {
+      $queryBuilder
+        ->andWhere('stats.sentAt >= :dateTime')
+        ->setParameter('dateTime', $startTime);
+    }
+    $rows = $queryBuilder->getQuery()->getResult();
+    $counts = [];
+    foreach ($rows as $row) {
+      $counts[(int)$row['subscriber_id']] = (int)$row['sent_count'];
+    }
+    return $counts;
+  }
+
   public function getStatisticsCountQuery(string $entityName, SubscriberEntity $subscriber): QueryBuilder {
     return $this->entityManager->createQueryBuilder()
       ->select('COUNT(DISTINCT stats.newsletter) as cnt')
@@ -109,7 +188,7 @@ class SubscriberStatisticsRepository extends Repository {
       ->setParameter('subscriber', $subscriber);
   }
 
-  public function getWooCommerceRevenue(SubscriberEntity $subscriber, ?Carbon $startTime = null): ?WooCommerceRevenue {
+  public function getWooCommerceRevenue(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): ?WooCommerceRevenue {
     if (!$this->wcHelper->isWooCommerceActive()) {
       return null;
     }
@@ -145,7 +224,7 @@ class SubscriberStatisticsRepository extends Repository {
     );
   }
 
-  private function applyDateConstraint(QueryBuilder $queryBuilder, Carbon $startTime): QueryBuilder {
+  private function applyDateConstraint(QueryBuilder $queryBuilder, \DateTimeInterface $startTime): QueryBuilder {
     $queryBuilder->join(StatisticsNewsletterEntity::class, 'sent_stats', 'WITH', 'stats.newsletter = sent_stats.newsletter AND stats.subscriber = sent_stats.subscriber AND sent_stats.sentAt >= :dateTime')
       ->setParameter('dateTime', $startTime);
 
