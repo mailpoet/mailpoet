@@ -130,6 +130,7 @@ export function getSubscriberFields(
                   <ListingsEngagementScore
                     id={Number(item.id)}
                     engagementScore={item.engagement_score}
+                    engagementScoreType={item.engagement_score_type}
                   />
                 </Link>
               </div>

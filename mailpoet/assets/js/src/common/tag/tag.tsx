@@ -5,6 +5,7 @@ export type TagVariant =
   | 'average'
   | 'good'
   | 'excellent'
+  | 'dormant'
   | 'critical'
   | 'list'
   | 'unknown'

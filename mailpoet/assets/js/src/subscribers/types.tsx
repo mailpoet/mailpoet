@@ -1,6 +1,9 @@
+import type { EngagementScoreType } from './engagement-score-badge-type';
+
 export type StatsType = {
   email: string;
-  engagement_score: number;
+  engagement_score: number | null;
+  engagement_score_type: EngagementScoreType;
   last_engagement?: string;
   last_click?: string;
   last_open?: string;

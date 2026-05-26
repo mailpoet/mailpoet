@@ -30,6 +30,7 @@ const PERIOD_OPTIONS: Array<{ label: string; value: StatsPeriodKey }> = [
 function getEngagementBadgeLabel(type: EngagementScoreBadgeType): string {
   const labels = {
     unknown: __('Unknown', 'mailpoet'),
+    dormant: __('Dormant', 'mailpoet'),
     average: __('Average', 'mailpoet'),
     good: __('Good', 'mailpoet'),
     excellent: __('Excellent', 'mailpoet'),
@@ -120,6 +121,7 @@ export function EngagementCard({ stats }: Props): JSX.Element | null {
 
   const engagementBadgeType = getEngagementScoreBadgeType(
     stats.engagement_score,
+    stats.engagement_score_type,
   );
   const rows: Array<{
     label: string;
