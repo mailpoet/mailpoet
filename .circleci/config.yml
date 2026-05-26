@@ -26,7 +26,7 @@ slack-fail-post-step: &slack-fail-post-step
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Job*: ${CIRCLE_JOB}"
+                    "text": "*Job*: <${CIRCLE_BUILD_URL}|${CIRCLE_JOB}>"
                   },
                   {
                     "type": "mrkdwn",
