@@ -101,6 +101,9 @@ abstract class ListingRepository {
 
   protected function normalizeSortOrder(string $sortOrder): string {
     $sortOrder = strtolower(trim($sortOrder));
+    if ($sortOrder === '') {
+      return 'asc';
+    }
     return in_array($sortOrder, ['asc', 'desc'], true) ? $sortOrder : 'desc';
   }
 
