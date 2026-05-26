@@ -73,6 +73,7 @@ class SubscriberStats extends APIEndpoint {
     $response = [
       'email' => $subscriber->getEmail(),
       'engagement_score' => $subscriber->getEngagementScore(),
+      'engagement_score_type' => $this->subscribersStatisticsRepository->getEngagementScoreType($subscriber),
       'is_woo_active' => $isWooActive,
       'is_woocommerce_user' => $isWoocommerceUser,
       'avatar_url' => $this->wp->getAvatarUrl($subscriber->getEmail(), ['size' => 96]) ?: null,

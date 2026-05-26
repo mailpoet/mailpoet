@@ -6,6 +6,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
@@ -129,6 +130,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       $this->assertArrayHasKey('last_subscribed_at', $item);
       $this->assertArrayHasKey('count_confirmations', $item);
       $this->assertArrayHasKey('engagement_score', $item);
+      $this->assertSame(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN, $item['engagement_score_type']);
       // check subscriptions
       $this->checkSubscription($item, $subscriber);
       // check tags

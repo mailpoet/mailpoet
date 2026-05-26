@@ -10,6 +10,7 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\UnsubscribeReasonTracker;
+use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -31,30 +32,39 @@ class SubscribersResponseBuilder {
   /** @var UnsubscribeReasonTracker */
   private $unsubscribeReasonTracker;
 
+  /** @var SubscriberStatisticsRepository */
+  private $subscriberStatisticsRepository;
+
   public function __construct(
     EntityManager $entityManager,
     CustomFieldsRepository $customFieldsRepository,
     SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
     StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
-    UnsubscribeReasonTracker $unsubscribeReasonTracker
+    UnsubscribeReasonTracker $unsubscribeReasonTracker,
+    SubscriberStatisticsRepository $subscriberStatisticsRepository
   ) {
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
     $this->entityManager = $entityManager;
     $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
+    $this->subscriberStatisticsRepository = $subscriberStatisticsRepository;
   }
 
   public function buildForListing(array $subscribers): array {
     $this->prefetchRelations($subscribers);
+    $engagementScoreTypes = $this->subscriberStatisticsRepository->getEngagementScoreTypes($subscribers);
     $data = [];
     foreach ($subscribers as $subscriber) {
-      $data[] = $this->buildListingItem($subscriber);
+      $data[] = $this->buildListingItem(
+        $subscriber,
+        $engagementScoreTypes[(int)$subscriber->getId()] ?? SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN
+      );
     }
     return $data;
   }
 
-  private function buildListingItem(SubscriberEntity $subscriber): array {
+  private function buildListingItem(SubscriberEntity $subscriber, string $engagementScoreType): array {
     return [
       'id' => (string)$subscriber->getId(), // (string) for BC
       'email' => $subscriber->getEmail(),
@@ -69,6 +79,7 @@ class SubscribersResponseBuilder {
       'deleted_at' => ($deletedAt = $subscriber->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'last_subscribed_at' => ($lastSubscribedAt = $subscriber->getLastSubscribedAt()) ? $lastSubscribedAt->format(self::DATE_FORMAT) : null,
       'engagement_score' => $subscriber->getEngagementScore(),
+      'engagement_score_type' => $engagementScoreType,
       'tags' => $this->buildTags($subscriber),
     ];
   }

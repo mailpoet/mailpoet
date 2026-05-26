@@ -57,6 +57,7 @@ class SubscriberStatsTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['last_engagement'])->equals($lastEngagementAt->format('Y-m-d H:i:s'));
+    verify($response->data['engagement_score_type'])->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_EXCELLENT);
     verify($response->data['source_label'])->equals('WooCommerce checkout');
     verify($response->data['avatar_url'])->stringContainsString('gravatar.com');
     verify($response->data['profile']['status'])->equals(SubscriberEntity::STATUS_SUBSCRIBED);
