@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers\Statistics;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -153,6 +154,34 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     verify($this->repository->getTotalSentCount($subscriber, Carbon::now()->subDays(27)))->equals(0);
   }
 
+  public function testItGetsUnknownEngagementScoreTypeForSubscribersWithoutEnoughEmails(): void {
+    $subscriber = (new Subscriber())->create();
+    $subscriberWithTwoEmails = (new Subscriber())->create();
+    $this->createSentEmails($subscriberWithTwoEmails, 2, Carbon::now()->subMonth());
+
+    verify($this->repository->getEngagementScoreType($subscriber))->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN);
+    verify($this->repository->getEngagementScoreType($subscriberWithTwoEmails))->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN);
+  }
+
+  public function testItGetsDormantEngagementScoreTypeForSubscribersWithoutEnoughRecentEmails(): void {
+    $subscriber = (new Subscriber())->create();
+    $this->createSentEmails($subscriber, 3, Carbon::now()->subMonths(13));
+
+    verify($this->repository->getEngagementScoreType($subscriber))->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_DORMANT);
+  }
+
+  public function testItGetsEngagementScoreTypeFromScore(): void {
+    $low = (new Subscriber())->withEngagementScore(10)->create();
+    $good = (new Subscriber())->withEngagementScore(35)->create();
+    $excellent = (new Subscriber())->withEngagementScore(75)->create();
+
+    $scoreTypes = $this->repository->getEngagementScoreTypes([$low, $good, $excellent]);
+
+    verify($scoreTypes[(int)$low->getId()])->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_LOW);
+    verify($scoreTypes[(int)$good->getId()])->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_GOOD);
+    verify($scoreTypes[(int)$excellent->getId()])->equals(SubscriberStatisticsRepository::ENGAGEMENT_SCORE_EXCELLENT);
+  }
+
   public function testItFetchesWooCommerceRevenueData(): void {
     $subscriber = (new Subscriber())->create();
     $twoYearsAgo = Carbon::now()->subYears(2);
@@ -199,5 +228,12 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(WooCommerceRevenue::class, $daysAgoResult);
     verify($daysAgoResult->getOrdersCount())->equals(0);
     verify($daysAgoResult->getValue())->equals(0.00);
+  }
+
+  private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {
+    for ($i = 0; $i < $count; $i++) {
+      $newsletter = (new Newsletter())->withSendingQueue()->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($sentAt)->create();
+    }
   }
 }

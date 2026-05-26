@@ -7,7 +7,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -33,9 +32,9 @@ class StatisticsOpensRepository extends Repository {
 
   public function recalculateSubscriberScore(SubscriberEntity $subscriber): void {
     $subscriber->setEngagementScoreUpdatedAt(new \DateTimeImmutable());
-    $yearAgo = Carbon::now()->subYear();
+    $yearAgo = new \DateTimeImmutable('-1 year');
     $newslettersSentCount = $this->subscriberStatisticsRepository->getTotalSentCount($subscriber, $yearAgo);
-    if ($newslettersSentCount < 3) {
+    if ($newslettersSentCount < SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE) {
       $subscriber->setEngagementScore(null);
       $this->entityManager->flush();
       return;
