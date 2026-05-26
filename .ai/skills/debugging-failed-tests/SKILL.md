@@ -62,7 +62,7 @@ For acceptance the per-iteration cost makes this a last resort. `git bisect rese
 
 ## Reproducing locally
 
-Repro commands per suite (and premium variants, debug/multisite flags) live in the `running-tests` skill. Defer there.
+Repro commands per suite (and premium variants, debug/multisite flags) live in the [[running-tests]] skill. Defer there.
 
 Don't reproduce as a habit — reproduce when the source doesn't tell you enough, or when you're verifying a fix.
 
@@ -70,7 +70,7 @@ Don't reproduce as a habit — reproduce when the source doesn't tell you enough
 
 Before claiming done, prove both directions:
 
-1. **Reproduce the failure on the un-fixed code.** `git stash` your change, run the failing test, confirm it fails the same way it failed in CI.
+1. **Reproduce the failure on the un-fixed code.** `git stash --include-untracked` your change (the `--include-untracked` is important — a fix that adds a new fixture or helper file would otherwise stay in place and the run wouldn't actually be un-fixed). Run the failing test, confirm it fails the same way it failed in CI.
 2. **Reapply the fix.** `git stash pop`, run the failing test again, confirm it passes.
 
 A green run on its own does not prove your change is what fixed it. This matters most when the failure looked flaky or intermittent — those are the cases most likely to pass for unrelated reasons.
@@ -95,18 +95,18 @@ DI container changes are fine — they don't belong on this list.
 
 ## Branch hygiene
 
-If the failure ran against `trunk`, use the `starting-branch` skill to create a fix branch **before** editing — never land fixes directly on `trunk`. If it ran against a feature branch, `git fetch && git switch <branch>` and work on top of it; the fix belongs with the in-flight work.
+If the failure ran against `trunk`, use the [[starting-branch]] skill to create a fix branch **before** editing — never land fixes directly on `trunk`. If it ran against a feature branch, `git fetch && git switch <branch>` and work on top of it; the fix belongs with the in-flight work.
 
 For local failures, the target is whatever branch you're already on.
 
 ## Outcome
 
-Once the targeted suite is green locally and you've verified both directions, hand back with a short summary: failing test, root cause, what was changed, what was verified. Likely next-step skills: `creating-pull-requests`, `writing-changelog`, `mailpoet-dev-cycle`.
+Once the targeted suite is green locally and you've verified both directions, hand back with a short summary: failing test, root cause, what was changed, what was verified. Likely next-step skills: [[creating-pull-requests]], [[writing-changelog]], [[mailpoet-dev-cycle]].
 
 ## Related skills
 
-- `running-tests` — exact repro commands per suite, premium variants, debug/multisite modes.
-- `starting-branch` — used when the failure originated on `trunk`.
-- `creating-pull-requests` — draft PR after the fix.
-- `writing-changelog` — when the fix is user-facing.
-- `mailpoet-beta-compat-test` — broader beta/RC compatibility testing.
+- [[running-tests]] — exact repro commands per suite, premium variants, debug/multisite modes.
+- [[starting-branch]] — used when the failure originated on `trunk`.
+- [[creating-pull-requests]] — draft PR after the fix.
+- [[writing-changelog]] — when the fix is user-facing.
+- [[mailpoet-beta-compat-test]] — broader beta/RC compatibility testing.

@@ -13,7 +13,7 @@ CircleCI URLs come in two shapes:
 
 The trailing integer is the **job number** — that's what every endpoint below wants.
 
-## Job details — branch, SHA, status
+## Job details — status, pipeline id
 
 ```
 .ai/skills/debugging-failed-tests/circleci-api.sh /api/v2/project/gh/mailpoet/mailpoet/job/<job-number>
@@ -22,11 +22,23 @@ The trailing integer is the **job number** — that's what every endpoint below 
 Useful fields:
 
 - `status` — `success`, `failed`, `running`, `infrastructure_fail`, `canceled`. `infrastructure_fail` is CircleCI's problem; retry the job before debugging.
-- `pipeline.id` — needed to walk the workflow (siblings).
-- `pipeline.vcs.revision` — the commit SHA the job ran against.
-- `pipeline.vcs.branch` — the branch the job ran against.
+- `pipeline.id` — the pipeline UUID. Feed this into the **Pipeline details** call below to get the commit SHA and branch, and into the **Sibling jobs** call further down.
 - `web_url` — the human URL of the job (handy to paste into a report).
 - `parallel_runs` — Codeception parallel-shard count.
+
+The job endpoint does NOT carry the commit SHA or branch directly — only `pipeline.id`. Use the pipeline endpoint below.
+
+## Pipeline details — SHA, branch, commit message
+
+```
+.ai/skills/debugging-failed-tests/circleci-api.sh /api/v2/pipeline/<pipeline-id>
+```
+
+Useful fields:
+
+- `vcs.revision` — the commit SHA the pipeline ran against.
+- `vcs.branch` — the branch the pipeline ran against.
+- `vcs.commit.subject` / `vcs.commit.body` — the commit message (handy for spotting "what changed" without leaving the API).
 
 ## Test failures (structured)
 

@@ -10,7 +10,7 @@ Nightly CircleCI runs target the latest WordPress and WooCommerce betas / releas
 ## Investigating
 
 1. **Confirm the exact beta/RC version** from the entrypoint output.
-2. **Reproduce locally against the same version.** See the `running-tests` skill for the WP / WC version flags. If it passes on stable and fails on beta/RC, the version is implicated.
+2. **Reproduce locally against the same version.** See the [[running-tests]] skill for the WP / WC version flags. If it passes on stable and fails on beta/RC, the version is implicated.
 3. **Read the release notes** for breaking changes or deprecations in the area the failing test exercises (hooks, REST routes, function signatures, block API, HPOS, etc.):
    - WordPress: [wordpress.org/news/category/releases](https://wordpress.org/news/category/releases/), [Trac](https://core.trac.wordpress.org/), [WordPress/wordpress-develop](https://github.com/WordPress/wordpress-develop)
    - WooCommerce: [woocommerce/woocommerce releases](https://github.com/woocommerce/woocommerce/releases)
@@ -25,4 +25,4 @@ The default fix target is still our plugin or our test, not the upstream beta.
 
 ## Related
 
-- `mailpoet-beta-compat-test` — broader compatibility-testing flow when a new beta/RC ships.
+- [[mailpoet-beta-compat-test]] — broader compatibility-testing flow when a new beta/RC ships.
