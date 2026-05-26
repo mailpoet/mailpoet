@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
@@ -11,6 +12,7 @@ use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
@@ -25,6 +27,7 @@ class SubscriberListingRepository extends ListingRepository {
   const DEFAULT_SORT_BY = 'createdAt';
 
   private const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
+  private const ENGAGEMENT_SCORE_DORMANT = 'dormant';
   private const ENGAGEMENT_SCORE_LOW = 'low';
   private const ENGAGEMENT_SCORE_GOOD = 'good';
   private const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
@@ -315,7 +318,11 @@ class SubscriberListingRepository extends ListingRepository {
 
     $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
     if (!empty($engagementScoreInclude)) {
-      $conditions = $this->getEngagementScoreConditions(is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude]);
+      $engagementScoreInclude = is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude];
+      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreInclude, true)) {
+        $query->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'), ParameterType::STRING);
+      }
+      $conditions = $this->getDbalEngagementScoreConditions($engagementScoreInclude);
       if ($conditions) {
         $query->andWhere('(' . implode(' OR ', $conditions) . ')');
       }
@@ -323,9 +330,15 @@ class SubscriberListingRepository extends ListingRepository {
 
     $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
     if (!empty($engagementScoreExclude)) {
-      foreach (is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude] as $score) {
+      $engagementScoreExclude = is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude];
+      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreExclude, true)) {
+        $query->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'), ParameterType::STRING);
+      }
+      foreach ($engagementScoreExclude as $score) {
         if ($score === self::ENGAGEMENT_SCORE_UNKNOWN) {
-          $query->andWhere('s.engagement_score IS NOT NULL');
+          $query->andWhere('NOT ' . $this->getDbalUnknownEngagementScoreCondition());
+        } elseif ($score === self::ENGAGEMENT_SCORE_DORMANT) {
+          $query->andWhere('NOT ' . $this->getDbalDormantEngagementScoreCondition());
         } elseif ($score === self::ENGAGEMENT_SCORE_LOW) {
           $query->andWhere(sprintf('(s.engagement_score >= %d OR s.engagement_score IS NULL)', self::ENGAGEMENT_SCORE_LOW_MAX));
         } elseif ($score === self::ENGAGEMENT_SCORE_GOOD) {
@@ -353,10 +366,13 @@ class SubscriberListingRepository extends ListingRepository {
    * @param mixed[] $scores
    * @return string[]
    */
-  private function getEngagementScoreConditions(array $scores): array {
+  private function getDbalEngagementScoreConditions(array $scores): array {
     $conditions = [];
     if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $scores, true)) {
-      $conditions[] = '(s.engagement_score IS NULL)';
+      $conditions[] = $this->getDbalUnknownEngagementScoreCondition();
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $scores, true)) {
+      $conditions[] = $this->getDbalDormantEngagementScoreCondition();
     }
     if (in_array(self::ENGAGEMENT_SCORE_LOW, $scores, true)) {
       $conditions[] = sprintf('(s.engagement_score < %d)', self::ENGAGEMENT_SCORE_LOW_MAX);
@@ -368,6 +384,38 @@ class SubscriberListingRepository extends ListingRepository {
       $conditions[] = sprintf('(s.engagement_score >= %d)', self::ENGAGEMENT_SCORE_EXCELLENT_MIN);
     }
     return $conditions;
+  }
+
+  private function getDbalUnknownEngagementScoreCondition(): string {
+    $lifetimeSentCount = $this->getDbalSentCountSubquery('s.id');
+    return sprintf(
+      '(s.engagement_score IS NULL AND %s < %d)',
+      $lifetimeSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+    );
+  }
+
+  private function getDbalDormantEngagementScoreCondition(): string {
+    $lifetimeSentCount = $this->getDbalSentCountSubquery('s.id');
+    $recentSentCount = $this->getDbalSentCountSubquery('s.id', 'engagement_score_recent_cutoff');
+    return sprintf(
+      '(s.engagement_score IS NULL AND %s >= %d AND %s < %d)',
+      $lifetimeSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
+      $recentSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+    );
+  }
+
+  private function getDbalSentCountSubquery(string $subscriberIdColumn, ?string $sentAtParameter = null): string {
+    $statisticsNewslettersTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $sentAtCondition = $sentAtParameter ? " AND engagement_score_stats.sent_at >= :$sentAtParameter" : '';
+    return sprintf(
+      '(SELECT COUNT(DISTINCT engagement_score_stats.newsletter_id) FROM %s engagement_score_stats WHERE engagement_score_stats.subscriber_id = %s%s)',
+      $statisticsNewslettersTable,
+      $subscriberIdColumn,
+      $sentAtCondition
+    );
   }
 
   /**
@@ -609,30 +657,10 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
     if (!empty($engagementScoreInclude)) {
       $engagementScoreInclude = is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude];
-      $conditions = [];
-
-      if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $engagementScoreInclude, true)) {
-        $conditions[] = '(s.engagementScore IS NULL)';
+      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreInclude, true)) {
+        $queryBuilder->setParameter('engagementScoreRecentCutoff', new \DateTimeImmutable('-1 year'));
       }
-      if (in_array(self::ENGAGEMENT_SCORE_LOW, $engagementScoreInclude, true)) {
-        $conditions[] = sprintf(
-          '(s.engagementScore < %d)',
-          self::ENGAGEMENT_SCORE_LOW_MAX
-        );
-      }
-      if (in_array(self::ENGAGEMENT_SCORE_GOOD, $engagementScoreInclude, true)) {
-        $conditions[] = sprintf(
-          '(s.engagementScore >= %d AND s.engagementScore < %d)',
-          self::ENGAGEMENT_SCORE_GOOD_MIN,
-          self::ENGAGEMENT_SCORE_GOOD_MAX
-        );
-      }
-      if (in_array(self::ENGAGEMENT_SCORE_EXCELLENT, $engagementScoreInclude, true)) {
-        $conditions[] = sprintf(
-          '(s.engagementScore >= %d)',
-          self::ENGAGEMENT_SCORE_EXCELLENT_MIN
-        );
-      }
+      $conditions = $this->getDqlEngagementScoreConditions($engagementScoreInclude, 'engagementScoreInclude');
 
       if (!empty($conditions)) {
         $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
@@ -643,9 +671,15 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
     if (!empty($engagementScoreExclude)) {
       $engagementScoreExclude = is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude];
+      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreExclude, true)) {
+        $queryBuilder->setParameter('engagementScoreRecentCutoff', new \DateTimeImmutable('-1 year'));
+      }
 
       if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $engagementScoreExclude, true)) {
-        $queryBuilder->andWhere('s.engagementScore IS NOT NULL');
+        $queryBuilder->andWhere('NOT ' . $this->getDqlUnknownEngagementScoreCondition('engagementScoreExclude'));
+      }
+      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreExclude, true)) {
+        $queryBuilder->andWhere('NOT ' . $this->getDqlDormantEngagementScoreCondition('engagementScoreExclude'));
       }
       if (in_array(self::ENGAGEMENT_SCORE_LOW, $engagementScoreExclude, true)) {
         $queryBuilder->andWhere(sprintf(
@@ -667,6 +701,73 @@ class SubscriberListingRepository extends ListingRepository {
         ));
       }
     }
+  }
+
+  /**
+   * @param mixed[] $scores
+   * @return string[]
+   */
+  private function getDqlEngagementScoreConditions(array $scores, string $aliasPrefix): array {
+    $conditions = [];
+    if (in_array(self::ENGAGEMENT_SCORE_UNKNOWN, $scores, true)) {
+      $conditions[] = $this->getDqlUnknownEngagementScoreCondition($aliasPrefix);
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $scores, true)) {
+      $conditions[] = $this->getDqlDormantEngagementScoreCondition($aliasPrefix);
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_LOW, $scores, true)) {
+      $conditions[] = sprintf(
+        '(s.engagementScore < %d)',
+        self::ENGAGEMENT_SCORE_LOW_MAX
+      );
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_GOOD, $scores, true)) {
+      $conditions[] = sprintf(
+        '(s.engagementScore >= %d AND s.engagementScore < %d)',
+        self::ENGAGEMENT_SCORE_GOOD_MIN,
+        self::ENGAGEMENT_SCORE_GOOD_MAX
+      );
+    }
+    if (in_array(self::ENGAGEMENT_SCORE_EXCELLENT, $scores, true)) {
+      $conditions[] = sprintf(
+        '(s.engagementScore >= %d)',
+        self::ENGAGEMENT_SCORE_EXCELLENT_MIN
+      );
+    }
+    return $conditions;
+  }
+
+  private function getDqlUnknownEngagementScoreCondition(string $aliasPrefix): string {
+    $lifetimeSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'TotalStats');
+    return sprintf(
+      '(s.engagementScore IS NULL AND %s < %d)',
+      $lifetimeSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+    );
+  }
+
+  private function getDqlDormantEngagementScoreCondition(string $aliasPrefix): string {
+    $lifetimeSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'LifetimeStats');
+    $recentSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'RecentStats', 'engagementScoreRecentCutoff');
+    return sprintf(
+      '(s.engagementScore IS NULL AND %s >= %d AND %s < %d)',
+      $lifetimeSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
+      $recentSentCount,
+      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+    );
+  }
+
+  private function getDqlSentCountSubquery(string $alias, ?string $sentAtParameter = null): string {
+    $sentAtCondition = $sentAtParameter ? " AND $alias.sentAt >= :$sentAtParameter" : '';
+    return sprintf(
+      '(SELECT COUNT(DISTINCT %s.newsletter) FROM %s %s WHERE %s.subscriber = s%s)',
+      $alias,
+      StatisticsNewsletterEntity::class,
+      $alias,
+      $alias,
+      $sentAtCondition
+    );
   }
 
   private function isValidDateTime(string $dateTime): bool {

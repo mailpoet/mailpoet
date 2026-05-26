@@ -12,6 +12,8 @@ use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
@@ -783,6 +785,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   public function testFilterSubscribersByEngagementScoreCategories() {
     $unknownScore = (new Subscriber())->create(); // No engagement score set (null)
+    $dormantScore = (new Subscriber())->create();
+    $this->createSentEmails($dormantScore, 3, Carbon::now()->subMonths(13));
     $lowScore = (new Subscriber())->withEngagementScore(10)->create();
     $goodScore = (new Subscriber())->withEngagementScore(35)->create();
     $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
@@ -794,6 +798,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $data = $this->repository->getData($this->getListingDefinition());
     verify(count($data))->equals(1);
     verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+
+    // Test dormant category
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'dormant'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($dormantScore->getEmail());
 
     // Test low category
     $this->listingData['filter'] = ['engagementScoreInclude' => 'low'];
@@ -854,6 +864,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   public function testFilterSubscribersByMultipleEngagementScores() {
     $unknownScore = (new Subscriber())->create();
+    $dormantScore = (new Subscriber())->create();
+    $this->createSentEmails($dormantScore, 3, Carbon::now()->subMonths(13));
     $lowScore = (new Subscriber())->withEngagementScore(10)->create();
     $goodScore = (new Subscriber())->withEngagementScore(35)->create();
     $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
@@ -867,6 +879,13 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($data[0]->getEmail())->equals($unknownScore->getEmail());
     verify($data[1]->getEmail())->equals($excellentScore->getEmail());
 
+    // Filter by dormant and excellent
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['dormant', 'excellent']];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($dormantScore->getEmail());
+    verify($data[1]->getEmail())->equals($excellentScore->getEmail());
+
     // Filter by low and good
     $this->listingData['filter'] = ['engagementScoreInclude' => ['low', 'good']];
     $data = $this->repository->getData($this->getListingDefinition());
@@ -875,9 +894,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($data[1]->getEmail())->equals($goodScore->getEmail());
 
     // Filter by all categories
-    $this->listingData['filter'] = ['engagementScoreInclude' => ['unknown', 'low', 'good', 'excellent']];
+    $this->listingData['filter'] = ['engagementScoreInclude' => ['unknown', 'dormant', 'low', 'good', 'excellent']];
     $data = $this->repository->getData($this->getListingDefinition());
-    verify(count($data))->equals(4);
+    verify(count($data))->equals(5);
 
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
@@ -967,43 +986,58 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   public function testFilterSubscribersByEngagementScoreExcludeCategories() {
     $unknownScore = (new Subscriber())->create(); // No engagement score set (null)
+    $dormantScore = (new Subscriber())->create();
+    $this->createSentEmails($dormantScore, 3, Carbon::now()->subMonths(13));
     $lowScore = (new Subscriber())->withEngagementScore(10)->create();
     $goodScore = (new Subscriber())->withEngagementScore(35)->create();
     $excellentScore = (new Subscriber())->withEngagementScore(75)->create();
 
     $this->listingData['sort_by'] = 'id';
 
-    // Exclude unknown category - should return low, good, excellent
+    // Exclude unknown category - should return dormant, low, good, excellent
     $this->listingData['filter'] = ['engagementScoreExclude' => 'unknown'];
     $data = $this->repository->getData($this->getListingDefinition());
-    verify(count($data))->equals(3);
-    verify($data[0]->getEmail())->equals($lowScore->getEmail());
-    verify($data[1]->getEmail())->equals($goodScore->getEmail());
-    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
-
-    // Exclude low category - should return unknown, good, excellent
-    $this->listingData['filter'] = ['engagementScoreExclude' => 'low'];
-    $data = $this->repository->getData($this->getListingDefinition());
-    verify(count($data))->equals(3);
-    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
-    verify($data[1]->getEmail())->equals($goodScore->getEmail());
-    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
-
-    // Exclude good category - should return unknown, low, excellent
-    $this->listingData['filter'] = ['engagementScoreExclude' => 'good'];
-    $data = $this->repository->getData($this->getListingDefinition());
-    verify(count($data))->equals(3);
-    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($dormantScore->getEmail());
     verify($data[1]->getEmail())->equals($lowScore->getEmail());
-    verify($data[2]->getEmail())->equals($excellentScore->getEmail());
+    verify($data[2]->getEmail())->equals($goodScore->getEmail());
+    verify($data[3]->getEmail())->equals($excellentScore->getEmail());
 
-    // Exclude excellent category - should return unknown, low, good
-    $this->listingData['filter'] = ['engagementScoreExclude' => 'excellent'];
+    // Exclude dormant category - should return unknown, low, good, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'dormant'];
     $data = $this->repository->getData($this->getListingDefinition());
-    verify(count($data))->equals(3);
+    verify(count($data))->equals(4);
     verify($data[0]->getEmail())->equals($unknownScore->getEmail());
     verify($data[1]->getEmail())->equals($lowScore->getEmail());
     verify($data[2]->getEmail())->equals($goodScore->getEmail());
+    verify($data[3]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude low category - should return unknown, dormant, good, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'low'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($dormantScore->getEmail());
+    verify($data[2]->getEmail())->equals($goodScore->getEmail());
+    verify($data[3]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude good category - should return unknown, dormant, low, excellent
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'good'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($dormantScore->getEmail());
+    verify($data[2]->getEmail())->equals($lowScore->getEmail());
+    verify($data[3]->getEmail())->equals($excellentScore->getEmail());
+
+    // Exclude excellent category - should return unknown, dormant, low, good
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'excellent'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(4);
+    verify($data[0]->getEmail())->equals($unknownScore->getEmail());
+    verify($data[1]->getEmail())->equals($dormantScore->getEmail());
+    verify($data[2]->getEmail())->equals($lowScore->getEmail());
+    verify($data[3]->getEmail())->equals($goodScore->getEmail());
 
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
@@ -1144,6 +1178,13 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
+  }
+
+  private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {
+    for ($i = 0; $i < $count; $i++) {
+      $newsletter = (new Newsletter())->withSendingQueue()->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($sentAt)->create();
+    }
   }
 
   private function getListingDefinition(): ListingDefinition {
