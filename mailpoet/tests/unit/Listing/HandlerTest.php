@@ -55,6 +55,13 @@ class HandlerTest extends \MailPoetUnitTest {
     verify($definition->getSortOrder())->equals('asc');
   }
 
+  public function testItFallbacksWhitespaceSortOrderToAsc() {
+    $listingData = $this->listingData;
+    $listingData['sort_order'] = '   ';
+    $definition = $this->handler->getListingDefinition($listingData);
+    verify($definition->getSortOrder())->equals('asc');
+  }
+
   public function testItFallbacksSortOrderToDescForDisallowedValue() {
     $listingData = $this->listingData;
     $listingData['sort_order'] = 'asc, id';

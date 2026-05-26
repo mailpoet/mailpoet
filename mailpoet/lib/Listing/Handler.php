@@ -37,6 +37,9 @@ class Handler {
     $sortOrder = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
     // constrain sort order value to either be "asc" or "desc"
     $sortOrder = strtolower(trim((string)$sortOrder));
+    if ($sortOrder === '') {
+      $sortOrder = 'asc';
+    }
     $sortOrder = in_array($sortOrder, ['asc', 'desc'], true) ? $sortOrder : 'desc';
 
     // sanitize sort by
