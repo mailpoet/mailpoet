@@ -213,6 +213,30 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
+  public function testItUsesFallbackSortingForDynamicSegmentWhenDefinitionContainsSqlFragments() {
+    $wpUserEmail = 'user-role-test1@example.com';
+    $this->tester->deleteWordPressUser($wpUserEmail);
+    $this->tester->createWordPressUser($wpUserEmail, 'editor');
+    $list = $this->createDynamicSegmentEntity();
+    $this->entityManager->flush();
+
+    $definition = new ListingDefinition(
+      null,
+      ['segment' => $list->getId()],
+      null,
+      [],
+      'id, not_a_column',
+      'asc, not_a_column',
+      0,
+      20
+    );
+
+    $data = $this->repository->getData($definition);
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($wpUserEmail);
+    $this->tester->deleteWordPressUser($wpUserEmail);
+  }
+
   public function testReturnsCorrectCountForSubscribersInDynamicSegment() {
     $wpUserEmail1 = 'user-role-test1@example.com';
     $wpUserEmail2 = 'user-role-test2@example.com';

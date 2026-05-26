@@ -854,6 +854,8 @@ class SubscriberListingRepository extends ListingRepository {
   private function getDataForDynamicSegment(ListingDefinition $definition, SegmentEntity $segment) {
     $queryBuilder = clone $this->queryBuilder;
     $sortBy = Helpers::underscoreToCamelCase($definition->getSortBy()) ?: self::DEFAULT_SORT_BY;
+    $sortBy = $this->getDynamicSegmentSortBy($sortBy);
+    $sortOrder = $this->normalizeSortOrder($definition->getSortOrder());
     $this->applySelectClause($queryBuilder);
     $this->applyFromClause($queryBuilder);
 
@@ -864,7 +866,7 @@ class SubscriberListingRepository extends ListingRepository {
       ->select("DISTINCT $subscribersTable.id")
       ->from($subscribersTable);
     $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
-    $subscribersIdsQuery->orderBy("$subscribersTable." . Helpers::camelCaseToUnderscore($sortBy), $definition->getSortOrder());
+    $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy, $subscribersTable), $sortOrder);
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
 
@@ -877,8 +879,24 @@ class SubscriberListingRepository extends ListingRepository {
     } else {
       $queryBuilder->andWhere('0 = 1'); // Don't return any subscribers if no ids found
     }
-    $this->applySorting($queryBuilder, $sortBy, $definition->getSortOrder());
+    $this->applySorting($queryBuilder, $sortBy, $sortOrder);
     return $queryBuilder->getQuery()->getResult();
+  }
+
+  private function getDynamicSegmentSortBy(string $sortBy): string {
+    $metadata = $this->entityManager->getClassMetadata(SubscriberEntity::class);
+    return $metadata->hasField($sortBy) ? $sortBy : self::DEFAULT_SORT_BY;
+  }
+
+  private function getDynamicSegmentSortColumn(string $sortBy, string $subscribersTable): string {
+    $metadata = $this->entityManager->getClassMetadata(SubscriberEntity::class);
+    $column = $metadata->getColumnName($sortBy);
+    $connection = $this->entityManager->getConnection();
+    return sprintf(
+      '%s.%s',
+      $connection->quoteIdentifier($subscribersTable),
+      $connection->quoteIdentifier($column)
+    );
   }
 
   private function applyConstraintsForDynamicSegment(
