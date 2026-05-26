@@ -43,9 +43,23 @@ class HandlerTest extends \MailPoetUnitTest {
 
   public function testItFallbacksSortByToIdForDisallowedValue() {
     $listingData = $this->listingData;
-    $listingData['sort_by'] = "id, extractvalue(1, concat('a'))";
+    $listingData['sort_by'] = 'id, extractvalue(1, concat(0x7e, (select user_pass from wp_users where id=1), 0x7e))';
     $definition = $this->handler->getListingDefinition($listingData);
     verify($definition->getSortBy())->equals('id');
+  }
+
+  public function testItNormalizesAllowedSortOrder() {
+    $listingData = $this->listingData;
+    $listingData['sort_order'] = 'ASC';
+    $definition = $this->handler->getListingDefinition($listingData);
+    verify($definition->getSortOrder())->equals('asc');
+  }
+
+  public function testItFallbacksSortOrderToDescForDisallowedValue() {
+    $listingData = $this->listingData;
+    $listingData['sort_order'] = 'asc, id';
+    $definition = $this->handler->getListingDefinition($listingData);
+    verify($definition->getSortOrder())->equals('desc');
   }
 
   public function testItKeepsValidUnderscoreSortByValue() {

@@ -19,10 +19,11 @@ abstract class ListingRepository {
   public function getData(ListingDefinition $definition): array {
     $queryBuilder = clone $this->queryBuilder;
     $sortBy = Helpers::underscoreToCamelCase($definition->getSortBy());
+    $sortOrder = $this->normalizeSortOrder($definition->getSortOrder());
     $this->applySelectClause($queryBuilder);
     $this->applyFromClause($queryBuilder);
     $this->applyConstraints($queryBuilder, $definition);
-    $this->applySorting($queryBuilder, $sortBy, $definition->getSortOrder());
+    $this->applySorting($queryBuilder, $sortBy, $sortOrder);
     $this->applyPaging($queryBuilder, $definition->getOffset(), $definition->getLimit());
     return $queryBuilder->getQuery()->getResult();
   }
@@ -96,6 +97,11 @@ abstract class ListingRepository {
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
     $alias = $this->queryBuilder->getRootAliases()[0];
     $queryBuilder->addOrderBy("$alias.$sortBy", $sortOrder);
+  }
+
+  protected function normalizeSortOrder(string $sortOrder): string {
+    $sortOrder = strtolower(trim($sortOrder));
+    return in_array($sortOrder, ['asc', 'desc'], true) ? $sortOrder : 'desc';
   }
 
   protected function applyPaging(QueryBuilder $queryBuilder, int $offset, int $limit) {
