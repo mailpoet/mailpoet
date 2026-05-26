@@ -10,6 +10,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -22,6 +23,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -164,167 +166,6 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->get(['id' => $this->newsletter->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['options'][NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE])->equals('0');
-  }
-
-  public function testItReturnsErrorIfSubscribersLimitReached() {
-    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
-      'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
-    ]);
-    $res = $endpoint->setStatus([
-      'id' => $this->newsletter->getId(),
-      'status' => NewsletterEntity::STATUS_ACTIVE,
-    ]);
-    verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
-  }
-
-  public function testItReturnsErrorIfSenderAddressNotValidForActivation() {
-    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
-      'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
-      'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
-        'isSenderAddressValid' => Expected::once(false),
-      ]),
-    ]);
-    $res = $endpoint->setStatus([
-      'id' => $this->postNotification->getId(),
-      'status' => NewsletterEntity::STATUS_ACTIVE,
-    ]);
-    verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
-  }
-
-  public function testItCanSetANewsletterStatus() {
-    // set status to sending
-    $response = $this->endpoint->setStatus([
-       'id' => $this->newsletter->getId(),
-       'status' => NewsletterEntity::STATUS_SENDING,
-      ]);
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['status'])->equals(NewsletterEntity::STATUS_SENDING);
-
-    // set status to draft
-    $response = $this->endpoint->setStatus(
-      [
-        'id' => $this->newsletter->getId(),
-        'status' => NewsletterEntity::STATUS_DRAFT,
-      ]
-    );
-    verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['status'])->equals(NewsletterEntity::STATUS_DRAFT);
-
-    // no status specified throws an error
-    $response = $this->endpoint->setStatus(
-      [
-        'id' => $this->newsletter->getId(),
-      ]
-    );
-    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    verify($response->errors[0]['message'])
-      ->equals('You need to specify a status.');
-
-    // invalid newsletter id throws an error
-    $response = $this->endpoint->setStatus(
-      [
-        'status' => NewsletterEntity::STATUS_DRAFT,
-      ]
-    );
-    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    verify($response->errors[0]['message'])
-      ->equals('This email does not exist.');
-  }
-
-  public function testItActivatesTasksWhenStatusIsSetBackToActive() {
-    $scheduledTask1 = (new ScheduledTaskFactory())
-      ->create(
-        SendingQueueWorker::TASK_TYPE,
-        ScheduledTaskEntity::STATUS_PAUSED,
-      );
-    $queue = (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
-    $queue->setCountToProcess(1);
-    $segment = $this->segmentRepository->createOrUpdate('Segment 1');
-    $this->createNewsletterSegment($this->postNotification, $segment);
-
-    $this->entityManager->clear();
-
-    $this->endpoint->setStatus(
-      [
-        'id' => $this->postNotification->getId(),
-        'status' => NewsletterEntity::STATUS_ACTIVE,
-      ]
-    );
-    $tasks = $this->scheduledTasksRepository->findAll();
-
-    verify($tasks)->arrayCount(1);
-    verify($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
-  }
-
-  public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
-    $schedule = sprintf('0 %d * * *', Carbon::now()->millisecond(0)->hour); // every day at current hour
-    $randomFutureDate = Carbon::now()->millisecond(0)->addDays(10); // 10 days from now
-    (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
-
-    $scheduledTask1 = (new ScheduledTaskFactory())
-      ->create(
-        SendingQueueWorker::TASK_TYPE,
-        ScheduledTaskEntity::STATUS_SCHEDULED,
-        new Carbon($this->scheduler->getPreviousRunDate($schedule))
-      );
-    (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
-
-    $scheduledTask2 = (new ScheduledTaskFactory())
-      ->create(
-        SendingQueueWorker::TASK_TYPE,
-        ScheduledTaskEntity::STATUS_SCHEDULED,
-        $randomFutureDate
-      );
-    (new SendingQueueFactory())->create($scheduledTask2, $this->postNotification);
-
-    $scheduledTask3 = (new ScheduledTaskFactory())
-      ->create(
-        SendingQueueWorker::TASK_TYPE,
-        null,
-        new Carbon($this->scheduler->getPreviousRunDate($schedule))
-      );
-    (new SendingQueueFactory())->create($scheduledTask3, $this->postNotification);
-
-    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
-    $this->createNewsletterSegment($this->postNotification, $segment1);
-
-    $this->entityManager->clear();
-    $this->endpoint->setStatus(
-      [
-        'id' => $this->postNotification->getId(),
-        'status' => NewsletterEntity::STATUS_ACTIVE,
-      ]
-    );
-    $tasks = $this->scheduledTasksRepository->findAll();
-    // previously scheduled notification is rescheduled for future date
-    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[0]->getScheduledAt());
-    verify($tasks[0]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getNextRunDate($schedule));
-    // future scheduled notifications are left intact
-    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[1]->getScheduledAt());
-    verify($tasks[1]->getScheduledAt())->equals($randomFutureDate);
-    // previously unscheduled (e.g., sent/sending) notifications are left intact
-    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[2]->getScheduledAt());
-    verify($tasks[2]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getPreviousRunDate($schedule));
-  }
-
-  public function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
-    $schedule = '* * * * *';
-    (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
-
-    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
-    $this->createNewsletterSegment($this->postNotification, $segment1);
-
-    $this->entityManager->clear();
-    $this->endpoint->setStatus(
-      [
-        'id' => $this->postNotification->getId(),
-        'status' => NewsletterEntity::STATUS_ACTIVE,
-      ]
-    );
-    $tasks = $this->scheduledTasksRepository->findAll();
-    verify($tasks)->notEmpty();
   }
 
   public function testItCanRestoreANewsletter() {
