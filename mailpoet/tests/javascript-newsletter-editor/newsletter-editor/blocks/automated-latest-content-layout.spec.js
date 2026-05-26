@@ -467,6 +467,20 @@ describe('Automated latest content layout', function () {
         view.render();
       });
 
+      it('shows a link to post notifications documentation', function () {
+        var link = view.$(
+          '.mailpoet_automated_latest_content_post_notifications_help',
+        );
+
+        expect(link).to.have.length(1);
+        expect(link.text()).to.contain('Learn more');
+        expect(link.attr('href')).to.equal(
+          'https://kb.mailpoet.com/article/238-faq-post-notifications',
+        );
+        expect(link.attr('target')).to.equal('_blank');
+        expect(link.attr('rel')).to.equal('noopener noreferrer');
+      });
+
       it('changes the model if post amount changes', function () {
         var newValue = '11';
         view
