@@ -16,6 +16,8 @@ export enum SubscriberScoreOperator {
   NOT_EQUALS = 'not_equals',
   UNKNOWN = 'unknown',
   NOT_UNKNOWN = 'not_unknown',
+  DORMANT = 'dormant',
+  NOT_DORMANT = 'not_dormant',
 }
 
 const availableOperators = [
@@ -25,6 +27,8 @@ const availableOperators = [
   SubscriberScoreOperator.NOT_EQUALS,
   SubscriberScoreOperator.UNKNOWN,
   SubscriberScoreOperator.NOT_UNKNOWN,
+  SubscriberScoreOperator.DORMANT,
+  SubscriberScoreOperator.NOT_DORMANT,
 ];
 
 export function validateSubscriberScore(
@@ -47,7 +51,9 @@ export function validateSubscriberScore(
   }
   if (
     formItems.operator === SubscriberScoreOperator.UNKNOWN ||
-    formItems.operator === SubscriberScoreOperator.NOT_UNKNOWN
+    formItems.operator === SubscriberScoreOperator.NOT_UNKNOWN ||
+    formItems.operator === SubscriberScoreOperator.DORMANT ||
+    formItems.operator === SubscriberScoreOperator.NOT_DORMANT
   ) {
     return true;
   }
@@ -93,7 +99,9 @@ export function SubscriberScoreFields({
     }
     if (
       segment.operator === SubscriberScoreOperator.UNKNOWN ||
-      segment.operator === SubscriberScoreOperator.NOT_UNKNOWN
+      segment.operator === SubscriberScoreOperator.NOT_UNKNOWN ||
+      segment.operator === SubscriberScoreOperator.DORMANT ||
+      segment.operator === SubscriberScoreOperator.NOT_DORMANT
     ) {
       void updateSegmentFilter({ value: null }, filterIndex);
     }
@@ -130,6 +138,12 @@ export function SubscriberScoreFields({
               <option value={SubscriberScoreOperator.NOT_UNKNOWN}>
                 {MailPoet.I18n.t('notUnknown')}
               </option>
+              <option value={SubscriberScoreOperator.DORMANT}>
+                {MailPoet.I18n.t('dormant')}
+              </option>
+              <option value={SubscriberScoreOperator.NOT_DORMANT}>
+                {MailPoet.I18n.t('notDormant')}
+              </option>
             </Select>
           );
         }
@@ -156,7 +170,9 @@ export function SubscriberScoreFields({
         if (typeof match === 'string' && match.trim().length > 0) {
           return (
             segment.operator !== SubscriberScoreOperator.UNKNOWN &&
-            segment.operator !== SubscriberScoreOperator.NOT_UNKNOWN && (
+            segment.operator !== SubscriberScoreOperator.NOT_UNKNOWN &&
+            segment.operator !== SubscriberScoreOperator.DORMANT &&
+            segment.operator !== SubscriberScoreOperator.NOT_DORMANT && (
               <div key="score">{match}</div>
             )
           );

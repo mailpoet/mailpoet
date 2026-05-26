@@ -4,6 +4,9 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberScoreTest extends \MailPoetTest {
 
@@ -44,6 +47,12 @@ class SubscriberScoreTest extends \MailPoetTest {
     $subscriber->setEmail('e123456@example.com');
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
+
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('dormant@example.com');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    $this->createSentEmails($subscriber, 3, Carbon::now()->subMonths(13));
   }
 
   public function testGetHigherThan(): void {
@@ -79,7 +88,19 @@ class SubscriberScoreTest extends \MailPoetTest {
   public function testGetNotUnknown(): void {
     $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::NOT_UNKNOWN, '');
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
-    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com', 'dormant@example.com'], $emails);
+  }
+
+  public function testGetDormant(): void {
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::DORMANT, '');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['dormant@example.com'], $emails);
+  }
+
+  public function testGetNotDormant(): void {
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::NOT_DORMANT, '');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com', 'e123456@example.com'], $emails);
   }
 
   private function getSegmentFilterData(string $operator, string $value): DynamicSegmentFilterData {
@@ -87,5 +108,12 @@ class SubscriberScoreTest extends \MailPoetTest {
       'operator' => $operator,
       'value' => $value,
     ]);
+  }
+
+  private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {
+    for ($i = 0; $i < $count; $i++) {
+      $newsletter = (new Newsletter())->withSendingQueue()->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($sentAt)->create();
+    }
   }
 }
