@@ -6,6 +6,7 @@ import {
   type ListingResponse,
   type RestApiError,
 } from 'common/dataviews';
+import type { EngagementScoreType } from './engagement-score-badge-type';
 
 declare global {
   interface Window {
@@ -40,7 +41,8 @@ export type Subscriber = {
   email: string;
   first_name: string;
   last_name: string;
-  engagement_score: number;
+  engagement_score: number | null;
+  engagement_score_type: EngagementScoreType;
   created_at: string | null;
   deleted_at: string | null;
   last_subscribed_at: string | null;

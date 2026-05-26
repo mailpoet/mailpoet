@@ -8,7 +8,7 @@ type BadgeProps = {
   tooltip?: string | ReactNode;
   tooltipId?: string;
   tooltipPlace?: PlacesType;
-  type?: 'average' | 'good' | 'excellent' | 'critical' | 'unknown';
+  type?: 'average' | 'good' | 'excellent' | 'dormant' | 'critical' | 'unknown';
   isInverted?: boolean;
 };
 

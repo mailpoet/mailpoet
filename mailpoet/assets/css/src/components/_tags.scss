@@ -72,6 +72,15 @@
   }
 }
 
+.mailpoet-tag-dormant {
+  border-color: $color-stats-dormant;
+  color: $color-stats-dormant;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-dormant;
+  }
+}
+
 .mailpoet-tag-unknown {
   border-color: $color-stats-unknown;
   color: $color-stats-unknown;

@@ -1,35 +1,24 @@
 import { Badge } from '../common/listings/newsletter-stats/badge';
 import { MailPoet } from '../mailpoet';
+import {
+  getEngagementScoreBadgeType,
+  type EngagementScoreBadgeType,
+  type EngagementScoreType,
+} from './engagement-score-badge-type';
+
+export { getEngagementScoreBadgeType };
+export type { EngagementScoreBadgeType, EngagementScoreType };
 
 interface Props {
   id: number;
-  engagementScore?: number;
-}
-
-export type EngagementScoreBadgeType =
-  | 'unknown'
-  | 'average'
-  | 'good'
-  | 'excellent';
-
-export function getEngagementScoreBadgeType(
-  engagementScore?: number,
-): EngagementScoreBadgeType {
-  if (engagementScore == null) {
-    return 'unknown';
-  }
-  if (engagementScore < 20) {
-    return 'average';
-  }
-  if (engagementScore < 50) {
-    return 'good';
-  }
-  return 'excellent';
+  engagementScore?: number | null;
+  engagementScoreType?: EngagementScoreType;
 }
 
 export function ListingsEngagementScore({
   id,
   engagementScore,
+  engagementScoreType,
 }: Props): JSX.Element {
   const badges = {
     unknown: {
@@ -37,6 +26,12 @@ export function ListingsEngagementScore({
       type: 'unknown' as const,
       tooltipTitle: MailPoet.I18n.t('unknownBadgeTooltip'),
       tooltipText: MailPoet.I18n.t('tooltipUnknown'),
+    },
+    dormant: {
+      name: MailPoet.I18n.t('dormantBadgeName'),
+      type: 'dormant' as const,
+      tooltipTitle: MailPoet.I18n.t('dormantBadgeTooltip'),
+      tooltipText: MailPoet.I18n.t('tooltipDormant'),
     },
     excellent: {
       name: MailPoet.I18n.t('excellentBadgeName'),
@@ -58,7 +53,8 @@ export function ListingsEngagementScore({
     },
   };
   const tooltipId = `badge-${id}`;
-  const badge = badges[getEngagementScoreBadgeType(engagementScore)];
+  const badge =
+    badges[getEngagementScoreBadgeType(engagementScore, engagementScoreType)];
   const tooltipText = (
     <div key={`tooltip-${tooltipId}`}>
       <div className="mailpoet-listing-stats-tooltip-title">
@@ -71,6 +67,10 @@ export function ListingsEngagementScore({
         <Badge type="unknown" name={MailPoet.I18n.t('unknownBadgeName')} />
         {' : '}
         {badges.unknown.tooltipText}
+        <br />
+        <Badge type="dormant" name={MailPoet.I18n.t('dormantBadgeName')} />
+        {' : '}
+        {badges.dormant.tooltipText}
         <br />
         <Badge type="excellent" name={MailPoet.I18n.t('excellentBadgeName')} />
         {' : '}
