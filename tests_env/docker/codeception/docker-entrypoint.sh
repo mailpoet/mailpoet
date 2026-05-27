@@ -59,6 +59,21 @@ wp core version
 echo "TEST RUNNER PHP VERSION:"
 php --version
 
+# Force Action Scheduler to use the DB store. Tests deactivate WC often, which
+# wipes the migration_status option and reverts AS to the HybridStore — whose
+# claim path races on the legacy wpPostStore when async queue-runner requests
+# overlap during a test ("Unable to claim actions. Database error.").
+mkdir -p /wp-core/wp-content/mu-plugins
+cat > /wp-core/wp-content/mu-plugins/mailpoet-test-action-scheduler-store.php <<'PHP'
+<?php
+add_filter('action_scheduler_store_class', static function () {
+    return 'ActionScheduler_DBStore';
+}, 200);
+add_filter('action_scheduler_logger_class', static function () {
+    return 'ActionScheduler_DBLogger';
+}, 200);
+PHP
+
 # Load Composer dependencies
 # Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
 # Example: docker compose run -e SKIP_DEPS=1 codeception ...
