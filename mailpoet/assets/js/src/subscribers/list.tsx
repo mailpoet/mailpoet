@@ -1016,8 +1016,7 @@ function SubscriberList() {
       {
         id: 'trash',
         label: __('Move to trash', 'mailpoet'),
-        context: 'single',
-        supportsBulk: false,
+        supportsBulk: true,
         isEligible: () => group !== 'trash',
         callback: (targets) => {
           void handleBulkAction('trash', targets);
@@ -1026,8 +1025,7 @@ function SubscriberList() {
       {
         id: 'restore',
         label: __('Restore', 'mailpoet'),
-        context: 'single',
-        supportsBulk: false,
+        supportsBulk: true,
         isEligible: () => group === 'trash',
         callback: (targets) => {
           void handleBulkAction('restore', targets);
@@ -1036,12 +1034,11 @@ function SubscriberList() {
       {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
-        context: 'single',
-        supportsBulk: false,
+        supportsBulk: true,
         isDestructive: true,
         isEligible: (item) => group === 'trash' && isItemDeletable(item),
         callback: (targets) => {
-          void handleBulkAction('delete', targets);
+          void handleBulkAction('delete', targets.filter(isItemDeletable));
         },
       },
       {
@@ -1112,37 +1109,6 @@ function SubscriberList() {
         supportsBulk: true,
         isEligible: () => group !== 'trash',
         callback: (targets) => openPendingAction('removeTag', targets),
-      },
-      {
-        id: 'bulkTrash',
-        label: __('Move to trash', 'mailpoet'),
-        context: 'list',
-        supportsBulk: true,
-        isEligible: () => group !== 'trash',
-        callback: (targets) => {
-          void handleBulkAction('trash', targets);
-        },
-      },
-      {
-        id: 'bulkRestore',
-        label: __('Restore', 'mailpoet'),
-        context: 'list',
-        supportsBulk: true,
-        isEligible: () => group === 'trash',
-        callback: (targets) => {
-          void handleBulkAction('restore', targets);
-        },
-      },
-      {
-        id: 'bulkDelete',
-        label: __('Delete permanently', 'mailpoet'),
-        context: 'list',
-        supportsBulk: true,
-        isDestructive: true,
-        isEligible: (item) => group === 'trash' && isItemDeletable(item),
-        callback: (targets) => {
-          void handleBulkAction('delete', targets.filter(isItemDeletable));
-        },
       },
     ],
     [
