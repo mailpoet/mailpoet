@@ -14,7 +14,7 @@
           "columnLayout": false,
           "orientation": "horizontal",
           "image": { "src": null, "display": "scale" },
-          "styles": { "block": { "backgroundColor": "#ffffff" } },
+          "styles": { "block": { "backgroundColor": "transparent" } },
           "blocks": [
             {
               "type": "container",
@@ -49,7 +49,7 @@
           "columnLayout": false,
           "orientation": "horizontal",
           "image": { "src": null, "display": "scale" },
-          "styles": { "block": { "backgroundColor": "#ffffff" } },
+          "styles": { "block": { "backgroundColor": "transparent" } },
           "blocks": [
             {
               "type": "container",
@@ -107,8 +107,6 @@
                   "styles": {
                     "block": { "backgroundColor": "transparent" },
                     "text": {
-                      "fontColor": "#222222",
-                      "fontFamily": "Verdana",
                       "fontSize": "10px",
                       "textAlign": "left"
                     },
