@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect } from 'react';
+import { type RefObject, useEffect } from 'react';
 
 const findClosestScrollable = (element: HTMLElement): HTMLElement | null => {
   const style = window.getComputedStyle(element);
@@ -20,7 +20,7 @@ const findClosestScrollable = (element: HTMLElement): HTMLElement | null => {
 // Handle automation scrolling, including both X and Y axes simultaneously.
 // Use animation frames to sync with browser repaints for smooth scrolling.
 export const useAutomationScroll = (
-  automationRef?: MutableRefObject<HTMLDivElement>,
+  automationRef?: RefObject<HTMLDivElement | null>,
 ): void =>
   useEffect(() => {
     const automation = automationRef?.current;
