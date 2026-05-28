@@ -1,10 +1,10 @@
-import { MutableRefObject, useEffect, useRef } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 
 // Handle automation dragging to move the flow in a drag-to-scroll fashion.
 // Use animation frames to sync with browser repaints for smooth scrolling.
 // This handles mouse & trackpad. On touch devices, the drag runs natively.
 export const useAutomationDragToScroll = (
-  automationRef?: MutableRefObject<HTMLDivElement>,
+  automationRef?: RefObject<HTMLDivElement | null>,
 ): void => {
   // Using a ref here is crucial to avoid re-rendering the component tree
   // on every mouse move event. The event handlers must not modify state.

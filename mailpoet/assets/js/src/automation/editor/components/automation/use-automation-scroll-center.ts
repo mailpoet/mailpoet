@@ -1,7 +1,7 @@
-import { MutableRefObject, useEffect, useState } from 'react';
+import { type RefObject, useEffect, useState } from 'react';
 
 export const useAutomationScrollCenter = (
-  automationRef: MutableRefObject<HTMLDivElement>,
+  automationRef: RefObject<HTMLDivElement | null>,
 ) => {
   // We need to trigger one more render to center the scroll, because the sidebar
   // is using a React Portal, and it is not in the layout after the first render.

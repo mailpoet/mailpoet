@@ -1,4 +1,4 @@
-import { Children, ReactElement } from 'react';
+import { Children } from 'react';
 import {
   BrowserRouter,
   HashRouter,
@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
-import { Props as TabProps, Tabs } from './tabs';
+import { isTabElement, type Props as TabProps, Tabs } from './tabs';
 
 function RouterAwareTabs(
   props: TabProps & {
@@ -57,12 +57,18 @@ function RoutedTabs({
   children,
 }: Props) {
   const keyPathMap: { [key: string]: string } = {};
-  Children.map(children, (child: ReactElement) => {
-    if (child) {
-      keyPathMap[child.key] = `${routerPrefix}${
-        child.props.route || child.key
-      }`;
+  Children.forEach(children, (child) => {
+    if (!child) {
+      return;
     }
+
+    if (!isTabElement(child)) {
+      throw new Error(
+        'Child components of <RoutedTabs> must be instances of <Tab>',
+      );
+    }
+
+    keyPathMap[child.key] = `${routerPrefix}${child.props.route || child.key}`;
   });
 
   if (!keyPathMap[activeKey]) {
