@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 /* eslint-disable react/no-unused-prop-types -- all properties are used in the Tabs component */
-type Props = {
+export type TabProps = {
   title?: string;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
@@ -11,6 +11,6 @@ type Props = {
   className?: string;
 };
 
-export function Tab({ children }: Props) {
+export function Tab({ children }: TabProps) {
   return <>{children}</>;
 }

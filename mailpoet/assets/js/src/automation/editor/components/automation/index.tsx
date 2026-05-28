@@ -44,7 +44,7 @@ export function Automation({
   });
 
   // handle automation scrolling, dragging, and horizontal scroll centering
-  const automationRef = useRef<HTMLDivElement>();
+  const automationRef = useRef<HTMLDivElement | null>(null);
   useAutomationScroll(scroll ? automationRef : undefined);
   useAutomationScrollCenter(automationRef);
   useAutomationDragToScroll(drag ? automationRef : undefined);

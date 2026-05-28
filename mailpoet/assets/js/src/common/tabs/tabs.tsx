@@ -2,24 +2,29 @@ import classnames from 'classnames';
 import {
   Children,
   isValidElement,
-  ReactElement,
+  type ReactElement,
   ReactNode,
   useEffect,
   useState,
 } from 'react';
 import { noop } from 'lodash';
 
-import { Tab } from './tab';
+import { Tab, type TabProps } from './tab';
 
-const validateChildren = (children: ReactNode): ReactElement[] => {
-  const keys = {};
-  const validChildren: ReactElement[] = [];
-  Children.map(children, (child: ReactElement) => {
+type TabElement = ReactElement<TabProps, typeof Tab>;
+
+const isTabElement = (child: ReactNode): child is TabElement =>
+  isValidElement<TabProps>(child) && child.type === Tab;
+
+const validateChildren = (children: ReactNode): TabElement[] => {
+  const keys: Record<string, boolean> = {};
+  const validChildren: TabElement[] = [];
+  Children.forEach(children, (child) => {
     if (!child) {
       return;
     }
 
-    if (child.type !== Tab) {
+    if (!isTabElement(child)) {
       throw new Error('Child components of <Tabs> must be instances of <Tab>');
     }
 
@@ -40,8 +45,8 @@ const validateChildren = (children: ReactNode): ReactElement[] => {
 
 const getActiveChild = (
   activeTab: string,
-  children: ReactElement[],
-): ReactElement => {
+  children: TabElement[],
+): TabElement => {
   const activeChild = children.find(
     (child) => isValidElement(child) && child.key === activeTab,
   );
@@ -83,11 +88,15 @@ export function Tabs({
   const validChildren = validateChildren(children);
   const activeChild = getActiveChild(activeTab, validChildren);
 
-  const title = (props) => (
+  const renderTitle = ({
+    iconStart,
+    title: tabTitle,
+    iconEnd,
+  }: TabProps): JSX.Element => (
     <>
-      {props.iconStart}
-      {props.title && <span data-title={props.title}>{props.title}</span>}
-      {props.iconEnd}
+      {iconStart}
+      {tabTitle && <span data-title={tabTitle}>{tabTitle}</span>}
+      {iconEnd}
     </>
   );
 
@@ -97,7 +106,7 @@ export function Tabs({
       data-automation-id={automationId}
     >
       <div className="components-tab-panel__tabs">
-        {validChildren.map((child: ReactElement) => (
+        {validChildren.map((child) => (
           <button
             key={child.key}
             className={classnames(
@@ -111,7 +120,7 @@ export function Tabs({
             onClick={() => switchTab(child.key.toString())}
             data-automation-id={child.props.automationId}
           >
-            {title(child.props)}
+            {renderTitle(child.props)}
           </button>
         ))}
       </div>
@@ -122,3 +131,4 @@ export function Tabs({
 }
 
 export type { Props };
+export { isTabElement };

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Tag, TagVariant } from './tag';
 import { Tooltip } from '../tooltip/tooltip';
@@ -55,33 +55,38 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
     <div className="mailpoet-tags">
       {children}
       {tags.map((item) => {
-        const tag = (
+        const renderTag = (
+          tooltipAttributes: {
+            'data-tip'?: boolean;
+            'data-tooltip-id'?: string;
+          } = {},
+        ) => (
           <Tag
             key={item.name}
             dimension={dimension}
             variant={variant || 'list'}
             isInverted={isInverted}
+            {...tooltipAttributes}
           >
             {item.name}
           </Tag>
         );
         if (!item.target) {
           if (!item.tooltip) {
-            return tag;
+            return renderTag();
           }
           const randomId = Math.random().toString(36).substring(2, 15);
           const tooltipId = `tag-tooltip-${randomId}`;
-          const tagWithTooltip = React.cloneElement(tag, {
-            'data-tip': true,
-            'data-tooltip-id': tooltipId,
-          });
 
           return (
             <div key={randomId}>
               <Tooltip id={tooltipId} place="top">
                 {item.tooltip}
               </Tooltip>
-              {tagWithTooltip}
+              {renderTag({
+                'data-tip': true,
+                'data-tooltip-id': tooltipId,
+              })}
             </div>
           );
         }
@@ -97,7 +102,7 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
               </Tooltip>
             )}
             <a data-tip="" data-tooltip-id={tooltipId} href={item.target}>
-              {tag}
+              {renderTag()}
             </a>
           </div>
         );
