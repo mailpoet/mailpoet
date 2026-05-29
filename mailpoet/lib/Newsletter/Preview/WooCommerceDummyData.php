@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Preview;
 
+use MailPoet\WooCommerce\NonPersistablePreviewData;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -28,7 +29,9 @@ class WooCommerceDummyData {
     }
 
     try {
-      $order = new \WC_Order();
+      $order = new class extends \WC_Order {
+        use NonPersistablePreviewData;
+      };
       $order->set_id(12345);
 
       $this->setOrderAddress($order);
@@ -53,7 +56,9 @@ class WooCommerceDummyData {
 
     try {
       $address = $this->getAddress();
-      $customer = new \WC_Customer();
+      $customer = new class extends \WC_Customer {
+        use NonPersistablePreviewData;
+      };
       $customer->set_id(0);
 
       // Set basic info
@@ -220,7 +225,9 @@ class WooCommerceDummyData {
     }
 
     // Fallback: create default dummy product
-    $product = new \WC_Product();
+    $product = new class extends \WC_Product {
+      use NonPersistablePreviewData;
+    };
     $product->set_name(__('Dummy Product', 'woocommerce'));
     $product->set_price('25');
 
@@ -243,7 +250,9 @@ class WooCommerceDummyData {
     }
 
     // Fallback: create default dummy variation
-    $variation = new \WC_Product_Variation();
+    $variation = new class extends \WC_Product_Variation {
+      use NonPersistablePreviewData;
+    };
     $variation->set_name(__('Dummy Product Variation', 'woocommerce'));
     $variation->set_price('20');
 
