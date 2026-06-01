@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.28.0
+Stable tag: 5.28.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,20 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.28.0 - 2026-05-25 =
-* Added: Filter automation analytics by saved version, or aggregate across all of them; new runs always use the latest version;
-* Added: Automation email support for opened, clicked, and sent email segment conditions;
-* Added: WooCommerce Abilities API status and automation templates for MailPoet marketing settings;
-* Added: Direct review links in WooCommerce post-purchase automation emails;
-* Updated: WordPress compatibility to version 7.0;
-* Improved: Subscription forms now require human-like interaction (mouse, scroll, keystroke timing) and challenge suspicious submissions with the built-in CAPTCHA, including on top of a correctly solved built-in CAPTCHA;
-* Improved: Distinguish duplicate subcategory names in the Automatic Latest Content block by showing the parent category;
-* Changed: Subscribers listing use @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Emails listing use @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Sending status listing use @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Logs use @wordpress/dataviews with native WordPress REST endpoints;
-* Changed: Campaign statistics use @wordpress/dataviews with native WordPress REST endpoints;
-* Fixed: Form input fields now inherit font-family from the active theme when the "Inherit style from theme" option is enabled;
-* Removed: Legacy JSON API listing and bulk action endpoints for emails, subscribers, lists, and forms, superseded by the REST API.
+= 5.28.1 - 2026-06-01 =
+* Added: Per-newsletter archive visibility setting;
+* Added: Newsletter embed shortcode and block;
+* Added: A link to learn more about Automatic Latest Content block in its settings;
+* Changed: Subscriber engagement badges now identify dormant subscribers with no recent email activity;
+* Fixed: Remove duplicate Move to trash actions from the Subscribers page.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
