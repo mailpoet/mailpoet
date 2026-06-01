@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.28.1 - 2026-06-01 =
+* Added: Per-newsletter archive visibility setting;
+* Added: Newsletter embed shortcode and block;
+* Added: A link to learn more about Automatic Latest Content block in its settings;
+* Changed: Subscriber engagement badges now identify dormant subscribers with no recent email activity;
+* Fixed: Remove duplicate Move to trash actions from the Subscribers page.
+
 = 5.28.0 - 2026-05-25 =
 * Added: Filter automation analytics by saved version, or aggregate across all of them; new runs always use the latest version;
 * Added: Automation email support for opened, clicked, and sent email segment conditions;
