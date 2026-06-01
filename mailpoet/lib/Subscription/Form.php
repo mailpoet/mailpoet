@@ -25,6 +25,18 @@ class Form {
 
   public function onSubmit($requestData = false) {
     $requestData = ($requestData) ? $requestData : $_REQUEST;
+
+    // When the admin-post action URL is hit directly without a form payload
+    // (e.g. a crawler GETting the URL), redirect away before reaching the JSON
+    // API. Otherwise processRoute() throws "Invalid API endpoint." and the
+    // exception ends up in the WordPress debug log. Mirrors Manage::onSave().
+    $action = (isset($requestData['action']) && is_string($requestData['action']))
+      ? sanitize_text_field(wp_unslash($requestData['action']))
+      : '';
+    if ($action !== 'mailpoet_subscription_form' || empty($requestData['data'])) {
+      return $this->urlHelper->redirectBack();
+    }
+
     $this->api->setRequestData($requestData, Endpoint::TYPE_POST);
     $formId = (!empty($requestData['data']['form_id'])) ? (int)$requestData['data']['form_id'] : false;
     $response = $this->api->processRoute();

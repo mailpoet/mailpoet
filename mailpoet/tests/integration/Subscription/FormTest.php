@@ -152,6 +152,40 @@ class FormTest extends \MailPoetTest {
     verify($result)->equals($redirectUrl);
   }
 
+  public function testItRedirectsBackWhenRequestHasNoFormData() {
+    // A crawler hitting admin-post.php?action=mailpoet_subscription_form directly
+    // sends no 'data' payload. The guard must redirect back without invoking the
+    // JSON API, otherwise processRoute() throws "Invalid API endpoint." and the
+    // exception ends up in the WordPress debug log.
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $result = $formController->onSubmit(['action' => 'mailpoet_subscription_form']);
+    verify($result)->equals('redirected-back');
+  }
+
+  public function testItRedirectsBackWhenActionDoesNotMatch() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $result = $formController->onSubmit(['action' => 'unrelated_action', 'data' => ['form_id' => 1]]);
+    verify($result)->equals('redirected-back');
+  }
+
   public function _after() {
     parent::_after();
     wp_delete_post($this->post);
