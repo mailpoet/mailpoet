@@ -59,7 +59,8 @@ class PublicEmailController {
   }
 
   public function isCanonicalIdentifier(string $identifier, NewsletterEntity $newsletter): bool {
-    return $identifier === $this->newsletterUrl->getPublicShareIdentifier($newsletter);
+    return $this->normalizeIdentifierForCanonicalComparison($identifier)
+      === $this->normalizeIdentifierForCanonicalComparison($this->newsletterUrl->getPublicShareIdentifier($newsletter));
   }
 
   public function getCanonicalUrl(NewsletterEntity $newsletter): string {
@@ -72,5 +73,14 @@ class PublicEmailController {
     $html = $this->viewInBrowserRenderer->renderPublicShare($newsletter, $queue);
     $html = $this->shareMetadataBuilder->injectShareToolbar($html, $newsletter, $canonicalUrl);
     return $this->shareMetadataBuilder->injectMetadata($html, $newsletter, $canonicalUrl);
+  }
+
+  private function normalizeIdentifierForCanonicalComparison(string $identifier): string {
+    // Normalize only URL percent-escape hex digits, e.g. %F0 -> %f0.
+    // The slug text remains strict so genuinely stale slugs still redirect.
+    $normalized = preg_replace_callback('/%[0-9A-Fa-f]{2}/', function (array $matches): string {
+      return strtolower($matches[0]);
+    }, $identifier);
+    return is_string($normalized) ? $normalized : $identifier;
   }
 }
