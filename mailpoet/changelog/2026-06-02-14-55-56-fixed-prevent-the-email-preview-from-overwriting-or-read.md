@@ -1,0 +1,5 @@
+# Type: Fixed
+
+# Description
+
+Prevent the email preview from overwriting or reading from an existing order whose id collides with the preview dummy order id
