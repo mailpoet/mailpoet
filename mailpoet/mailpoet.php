@@ -28,7 +28,7 @@ $mailpoetPlugin = [
 ];
 
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.9'; // L-1 version, not the latest
-const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '10.6'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '10.7'; // L-1 version, not the latest
 
 
 // Display WP version error notice
