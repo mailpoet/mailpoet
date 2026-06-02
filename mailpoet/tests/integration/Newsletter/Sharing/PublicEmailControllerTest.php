@@ -124,4 +124,25 @@ class PublicEmailControllerTest extends \MailPoetTest {
     $this->diContainer->get(PublicEmailController::class)
       ->getNewsletter($this->diContainer->get(NewsletterUrl::class)->getPublicShareIdentifier($newsletter));
   }
+
+  public function testItTreatsPercentEncodedUnicodeIdentifierAsCanonicalRegardlessOfHexCase() {
+    $newsletter = (new Newsletter())
+      ->withSubject('🌍-s4f-update-03-25')
+      ->withSentStatus()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PUBLIC,
+      ])
+      ->create();
+    $newsletterUrl = $this->diContainer->get(NewsletterUrl::class);
+    $identifier = $newsletterUrl->getPublicShareIdentifier($newsletter);
+    $identifierWithUppercaseEscapes = str_replace(
+      ['%f0', '%9f', '%8c', '%8d'],
+      ['%F0', '%9F', '%8C', '%8D'],
+      $identifier
+    );
+
+    verify($identifierWithUppercaseEscapes)->notEquals($identifier);
+    verify($this->diContainer->get(PublicEmailController::class)
+      ->isCanonicalIdentifier($identifierWithUppercaseEscapes, $newsletter))->true();
+  }
 }
