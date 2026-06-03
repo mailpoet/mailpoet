@@ -9,6 +9,10 @@ use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromACategoryTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromATagTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCompletedTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper;
@@ -118,6 +122,98 @@ class TemplatesFactoryTest extends MailPoetTest {
     ];
   }
 
+  /**
+   * The first purchase template filters on WooCommerce order fields, which can
+   * only be built with an active WooCommerce, so these tests run in the woo jobs.
+   *
+   * @group woo
+   * @dataProvider postPurchaseTemplateEmailData
+   */
+  public function testPostPurchaseTemplateCreatesBlockEditorEmail(
+    string $slug,
+    string $expectedTriggerKey,
+    string $expectedPattern,
+    string $expectedName,
+    string $expectedSubject,
+    string $expectedPreheader
+  ): void {
+    $this->ensureWooCommerceTriggerRegistered($expectedTriggerKey);
+    $this->emailFactory->expects($this->once())
+      ->method('createBlockEditorEmail')
+      ->with([
+        'pattern' => $expectedPattern,
+        'subject' => $expectedSubject,
+        'preheader' => $expectedPreheader,
+      ])
+      ->willReturn([
+        'email_id' => 123,
+        'email_wp_post_id' => 456,
+      ]);
+
+    $factory = $this->createFactory();
+    $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
+    $this->assertInstanceOf(AutomationTemplate::class, $template);
+
+    $automation = $template->createAutomation();
+
+    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), $expectedTriggerKey));
+    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
+    $this->assertInstanceOf(Step::class, $sendEmailStep);
+    $args = $sendEmailStep->getArgs();
+
+    $this->assertSame($expectedName, $args['name']);
+    $this->assertSame($expectedSubject, $args['subject']);
+    $this->assertSame($expectedPreheader, $args['preheader']);
+    $this->assertSame(123, $args['email_id']);
+    $this->assertSame(456, $args['email_wp_post_id']);
+  }
+
+  /**
+   * @group woo
+   * @dataProvider postPurchaseTemplateEmailData
+   */
+  public function testPostPurchaseTemplatePreviewDoesNotCreatePersistentEmail(
+    string $slug,
+    string $expectedTriggerKey,
+    string $expectedPattern,
+    string $expectedName,
+    string $expectedSubject,
+    string $expectedPreheader
+  ): void {
+    $this->ensureWooCommerceTriggerRegistered($expectedTriggerKey);
+    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
+
+    $factory = $this->createFactory();
+    $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
+    $this->assertInstanceOf(AutomationTemplate::class, $template);
+
+    $automation = $template->createAutomation(true);
+
+    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), $expectedTriggerKey));
+    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
+    $this->assertInstanceOf(Step::class, $sendEmailStep);
+    $args = $sendEmailStep->getArgs();
+
+    $this->assertSame($expectedName, $args['name']);
+    $this->assertSame($expectedSubject, $args['subject']);
+    $this->assertSame($expectedPreheader, $args['preheader']);
+    $this->assertArrayNotHasKey('email_id', $args);
+    $this->assertArrayNotHasKey('email_wp_post_id', $args);
+  }
+
+  public function postPurchaseTemplateEmailData(): array {
+    return [
+      'first purchase' => [
+        'first-purchase',
+        'woocommerce:order-completed',
+        'first-purchase-thank-you',
+        'First purchase thank you',
+        'Thank you for your first order!',
+        'Welcome to the family! Check out what’s next for you.',
+      ],
+    ];
+  }
+
   public function testAbandonedCartTemplateCreatesBlockEditorEmail(): void {
     $this->ensureAbandonedCartTriggerRegistered();
     $this->emailFactory->expects($this->once())
@@ -171,12 +267,25 @@ class TemplatesFactoryTest extends MailPoetTest {
 
   // WooCommerce automation triggers are registered once into the shared Registry at engine init.
   // A test running earlier in the suite can leave the Registry without them, which would make
-  // createFromSequence() silently drop the trigger step. Re-register it so this test does not
+  // createFromSequence() silently drop the trigger step. Re-register them so these tests do not
   // depend on suite ordering.
   private function ensureAbandonedCartTriggerRegistered(): void {
     $registry = $this->diContainer->get(Registry::class);
     if ($registry->getStep(AbandonedCartTrigger::KEY) === null) {
       $registry->addTrigger($this->diContainer->get(AbandonedCartTrigger::class));
+    }
+  }
+
+  private function ensureWooCommerceTriggerRegistered(string $triggerKey): void {
+    $triggerClasses = [
+      'woocommerce:order-completed' => OrderCompletedTrigger::class,
+      BuysAProductTrigger::KEY => BuysAProductTrigger::class,
+      BuysFromATagTrigger::KEY => BuysFromATagTrigger::class,
+      BuysFromACategoryTrigger::KEY => BuysFromACategoryTrigger::class,
+    ];
+    $registry = $this->diContainer->get(Registry::class);
+    if ($registry->getStep($triggerKey) === null) {
+      $registry->addTrigger($this->diContainer->get($triggerClasses[$triggerKey]));
     }
   }
 
