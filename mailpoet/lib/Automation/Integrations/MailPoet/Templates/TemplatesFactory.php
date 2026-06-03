@@ -342,17 +342,23 @@ class TemplatesFactory {
         'Nudge your shoppers to complete the purchase after they have added a product to the cart but haven’t completed the order.',
         'mailpoet'
       ),
-      function (): Automation {
+      function (bool $preview = false): Automation {
+        $emailArgs = $this->createBlockEditorEmailArgs(
+          $preview,
+          'abandoned-cart-content',
+          __('Abandoned cart reminder', 'mailpoet'),
+          __('You left something behind!', 'mailpoet'),
+          __('Complete your purchase today', 'mailpoet'),
+          'abandoned-cart'
+        );
+
         return $this->builder->createFromSequence(
           __('Abandoned cart reminder', 'mailpoet'),
           [
             ['key' => 'woocommerce:abandoned-cart'],
             [
               'key' => 'mailpoet:send-email',
-              'args' => [
-                'name' => __('Abandoned cart', 'mailpoet'),
-                'subject' => __('Looks like you forgot something', 'mailpoet'),
-              ],
+              'args' => $emailArgs,
             ],
           ]
         );

@@ -116,14 +116,65 @@ class TemplatesFactoryTest extends MailPoetTest {
     ];
   }
 
+  public function testAbandonedCartTemplateCreatesBlockEditorEmail(): void {
+    $this->emailFactory->expects($this->once())
+      ->method('createBlockEditorEmail')
+      ->with([
+        'pattern' => 'abandoned-cart-content',
+        'subject' => 'You left something behind!',
+        'preheader' => 'Complete your purchase today',
+      ])
+      ->willReturn([
+        'email_id' => 123,
+        'email_wp_post_id' => 456,
+      ]);
+
+    $factory = $this->createFactory();
+    $template = $this->findTemplateBySlug($factory->createTemplates(), 'abandoned-cart');
+    $this->assertInstanceOf(AutomationTemplate::class, $template);
+
+    $automation = $template->createAutomation();
+    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), 'woocommerce:abandoned-cart'));
+
+    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
+    $this->assertInstanceOf(Step::class, $sendEmailStep);
+    $args = $sendEmailStep->getArgs();
+
+    $this->assertSame('Abandoned cart reminder', $args['name']);
+    $this->assertSame('You left something behind!', $args['subject']);
+    $this->assertSame('Complete your purchase today', $args['preheader']);
+    $this->assertSame(123, $args['email_id']);
+    $this->assertSame(456, $args['email_wp_post_id']);
+  }
+
+  public function testAbandonedCartTemplatePreviewDoesNotCreatePersistentEmail(): void {
+    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
+
+    $factory = $this->createFactory();
+    $template = $this->findTemplateBySlug($factory->createTemplates(), 'abandoned-cart');
+    $this->assertInstanceOf(AutomationTemplate::class, $template);
+
+    $automation = $template->createAutomation(true);
+    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
+    $this->assertInstanceOf(Step::class, $sendEmailStep);
+    $args = $sendEmailStep->getArgs();
+
+    $this->assertSame('Abandoned cart reminder', $args['name']);
+    $this->assertSame('You left something behind!', $args['subject']);
+    $this->assertSame('Complete your purchase today', $args['preheader']);
+    $this->assertArrayNotHasKey('email_id', $args);
+    $this->assertArrayNotHasKey('email_wp_post_id', $args);
+  }
+
   private function createFactory(): TemplatesFactory {
     $woocommerce = $this->createMock(WooCommerce::class);
-    $woocommerce->method('isWooCommerceActive')->willReturn(false);
+    $woocommerce->method('isWooCommerceActive')->willReturn(true);
     $woocommerceSubscriptions = $this->createMock(WooCommerceSubscriptions::class);
     $woocommerceSubscriptions->method('isWooCommerceSubscriptionsActive')->willReturn(false);
     $bookingsHelper = $this->createMock(WooCommerceBookingsHelper::class);
     $bookingsHelper->method('isWooCommerceBookingsActive')->willReturn(false);
     $woocommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $woocommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(false);
 
     return new TemplatesFactory(
       $this->builder,
