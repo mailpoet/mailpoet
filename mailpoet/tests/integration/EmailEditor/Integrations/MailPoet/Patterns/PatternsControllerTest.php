@@ -64,6 +64,10 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/booking-abandoned-spot', $patternNames);
     $this->assertContains('mailpoet/booking-new-booking-follow-up', $patternNames);
     $this->assertContains('mailpoet/booking-pre-visit-reminder', $patternNames);
+    $this->assertContains('mailpoet/booking-pre-visit-what-to-expect', $patternNames);
+    $this->assertContains('mailpoet/booking-pre-visit-tips', $patternNames);
+    $this->assertContains('mailpoet/booking-post-visit-review', $patternNames);
+    $this->assertContains('mailpoet/booking-next-booking-nudge', $patternNames);
 
     // WooCommerce 10.8.0+ patterns (uses generated coupon block)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -72,7 +76,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(35, $blockPatterns);
+    $this->assertCount(39, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -188,6 +192,10 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/booking-abandoned-spot', $patternNames);
     $this->assertContains('mailpoet/booking-new-booking-follow-up', $patternNames);
     $this->assertContains('mailpoet/booking-pre-visit-reminder', $patternNames);
+    $this->assertContains('mailpoet/booking-pre-visit-what-to-expect', $patternNames);
+    $this->assertContains('mailpoet/booking-pre-visit-tips', $patternNames);
+    $this->assertContains('mailpoet/booking-post-visit-review', $patternNames);
+    $this->assertContains('mailpoet/booking-next-booking-nudge', $patternNames);
 
     // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -197,7 +205,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
     // Verify total count (all patterns except 5 coupon patterns)
-    $this->assertCount(30, $blockPatterns);
+    $this->assertCount(34, $blockPatterns);
   }
 
   /**
@@ -535,6 +543,41 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
   }
 
+  public function testBookingFollowUpPatternsContainBookingCopy(): void {
+    $patterns = $this->createControllerWithWooCommerce();
+
+    $expectedContent = [
+      'booking-pre-visit-what-to-expect' => [
+        'heading' => 'What to expect at your booking',
+        'cta' => 'View our site',
+      ],
+      'booking-pre-visit-tips' => [
+        'heading' => 'Make the most of your booking',
+        'cta' => 'Review details',
+      ],
+      'booking-post-visit-review' => [
+        'heading' => 'How was your booking?',
+        'cta' => 'Leave feedback',
+      ],
+      'booking-next-booking-nudge' => [
+        'heading' => 'Ready for your next booking?',
+        'cta' => 'Book again',
+      ],
+    ];
+
+    foreach ($expectedContent as $patternName => $expected) {
+      $content = $patterns->getPatternContent($patternName);
+
+      $this->assertIsString($content);
+      $this->assertStringContainsString($expected['heading'], $content);
+      $this->assertStringContainsString($expected['cta'], $content);
+      $this->assertStringContainsString('<!--[mailpoet/subscriber-firstname default="there"]-->', $content);
+      $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-product-name]-->', $content);
+      $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-start-date]-->', $content);
+      $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
+    }
+  }
+
   public function testItDoesNotRegisterAskForReviewPatternWhenOrderReviewUrlIsUnsupported(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
@@ -600,6 +643,10 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/booking-abandoned-spot', $patternNames);
     $this->assertNotContains('mailpoet/booking-new-booking-follow-up', $patternNames);
     $this->assertNotContains('mailpoet/booking-pre-visit-reminder', $patternNames);
+    $this->assertNotContains('mailpoet/booking-pre-visit-what-to-expect', $patternNames);
+    $this->assertNotContains('mailpoet/booking-pre-visit-tips', $patternNames);
+    $this->assertNotContains('mailpoet/booking-post-visit-review', $patternNames);
+    $this->assertNotContains('mailpoet/booking-next-booking-nudge', $patternNames);
 
     // Verify total count (only non-WooCommerce patterns)
     $this->assertCount(9, $blockPatterns);
