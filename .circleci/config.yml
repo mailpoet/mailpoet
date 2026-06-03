@@ -1203,15 +1203,18 @@ workflows:
           wordpress_version: 6.9.4
           requires:
             - build
-      - performance_tests:
-          <<: *slack-fail-post-step
-          name: performance_latest
-          url: https://mpperftesting.com
-          us: $WP_TEST_PERFORMANCE_US
-          pw: $WP_TEST_PERFORMANCE_PW
-          scenario: nightlytests
-          requires:
-            - build
+      # Disabled: the performance testing site https://mpperftesting.com is no longer
+      # available (the domain has expired), so this step always fails. Re-enable once a
+      # valid performance testing URL is configured.
+      #      - performance_tests:
+      #          <<: *slack-fail-post-step
+      #          name: performance_latest
+      #          url: https://mpperftesting.com
+      #          us: $WP_TEST_PERFORMANCE_US
+      #          pw: $WP_TEST_PERFORMANCE_PW
+      #          scenario: nightlytests
+      #          requires:
+      #            - build
       - unit_tests:
           <<: *slack-fail-post-step
           name: unit_latest
