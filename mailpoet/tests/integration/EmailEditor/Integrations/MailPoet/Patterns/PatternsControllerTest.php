@@ -514,6 +514,27 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
   }
 
+  public function testBookingPreVisitReminderPatternContainsBookingCopy(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
+    $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $content = $patterns->getPatternContent('booking-pre-visit-reminder');
+
+    $this->assertIsString($content);
+    $this->assertStringContainsString('A reminder about your upcoming booking', $content);
+    $this->assertStringContainsString('Please arrive a few minutes early', $content);
+    $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-start-date]-->', $content);
+    $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
+  }
+
   public function testItDoesNotRegisterAskForReviewPatternWhenOrderReviewUrlIsUnsupported(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
