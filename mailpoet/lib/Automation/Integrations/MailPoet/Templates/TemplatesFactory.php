@@ -22,7 +22,6 @@ class TemplatesFactory {
   private $woocommerceSubscriptions;
 
   /** @var EmailFactory */
-  /** @phpstan-ignore-next-line Property is reserved for future use */
   private $emailFactory;
 
   /** @var WooCommerceBookingsHelper */
@@ -121,13 +120,22 @@ class TemplatesFactory {
         'Send a welcome email when someone subscribes to your list. Optionally, you can choose to send this email after a specified period.',
         'mailpoet'
       ),
-      function (): Automation {
+      function (bool $preview = false): Automation {
+        $emailArgs = $this->createBlockEditorEmailArgs(
+          $preview,
+          'welcome-email-content',
+          __('Welcome email', 'mailpoet'),
+          __('Welcome to our community!', 'mailpoet'),
+          __('Thanks for subscribing', 'mailpoet'),
+          'subscriber-welcome-email'
+        );
+
         return $this->builder->createFromSequence(
           __('Welcome new subscribers', 'mailpoet'),
           [
             ['key' => 'mailpoet:someone-subscribes'],
             ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES']],
-            ['key' => 'mailpoet:send-email'],
+            ['key' => 'mailpoet:send-email', 'args' => $emailArgs],
           ],
           [
             'mailpoet:run-once-per-subscriber' => true,
@@ -819,5 +827,41 @@ class TemplatesFactory {
       AutomationTemplate::TYPE_PREMIUM,
       'calendar'
     );
+  }
+
+  /**
+   * @return array<string, mixed>
+   */
+  private function createBlockEditorEmailArgs(
+    bool $preview,
+    string $pattern,
+    string $name,
+    string $subject,
+    string $preheader,
+    string $templateSlug
+  ): array {
+    $args = [
+      'name' => $name,
+      'subject' => $subject,
+      'preheader' => $preheader,
+    ];
+
+    if ($preview) {
+      return $args;
+    }
+
+    $emailIds = $this->emailFactory->createBlockEditorEmail([
+      'pattern' => $pattern,
+      'subject' => $subject,
+      'preheader' => $preheader,
+    ]);
+    if (
+      !is_array($emailIds)
+      || !is_int($emailIds['email_id'] ?? null)
+      || !is_int($emailIds['email_wp_post_id'] ?? null)
+    ) {
+      throw new \RuntimeException(sprintf('Could not create the %s block editor email.', $templateSlug));
+    }
+    return array_merge($args, $emailIds);
   }
 }
