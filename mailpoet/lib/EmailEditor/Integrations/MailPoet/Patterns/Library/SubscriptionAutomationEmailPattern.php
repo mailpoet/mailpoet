@@ -13,6 +13,9 @@ class SubscriptionAutomationEmailPattern extends Pattern {
   public const VARIANT_PURCHASE = 'purchase';
   public const VARIANT_RENEWAL = 'renewal';
   public const VARIANT_FAILED_RENEWAL = 'failed-renewal';
+  public const VARIANT_CHURNED = 'churned';
+  public const VARIANT_TRIAL_ENDED = 'trial-ended';
+  public const VARIANT_WIN_BACK = 'win-back';
 
   protected $name = 'subscription-purchase-follow-up';
   protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -34,6 +37,12 @@ class SubscriptionAutomationEmailPattern extends Pattern {
       $this->name = 'subscription-renewal-follow-up';
     } elseif ($variant === self::VARIANT_FAILED_RENEWAL) {
       $this->name = 'subscription-failed-renewal-follow-up';
+    } elseif ($variant === self::VARIANT_CHURNED) {
+      $this->name = 'subscription-churned-follow-up';
+    } elseif ($variant === self::VARIANT_TRIAL_ENDED) {
+      $this->name = 'subscription-trial-ended-follow-up';
+    } elseif ($variant === self::VARIANT_WIN_BACK) {
+      $this->name = 'subscription-win-back';
     }
   }
 
@@ -80,6 +89,69 @@ class SubscriptionAutomationEmailPattern extends Pattern {
       );
     }
 
+    if ($this->variant === self::VARIANT_CHURNED) {
+      return $this->buildContent(
+        __('We’d value your feedback', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: %s: Subscriber first name personalization tag */
+            __('Hi %s, we noticed your subscription has ended. We’re sorry to see you go.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag()
+          ),
+          sprintf(
+            /* translators: %s: WooCommerce subscription title personalization tag */
+            __('If %s was not the right fit, we’d be grateful to know what would have made it better for you.', 'mailpoet'),
+            '<!--[mailpoet/woocommerce-subscription-title]-->'
+          ),
+          __('You can reply directly to this email. Every note helps us improve the experience for future subscribers.', 'mailpoet'),
+        ],
+        __('Visit our site', 'mailpoet'),
+        __('Thanks for your feedback,', 'mailpoet')
+      );
+    }
+
+    if ($this->variant === self::VARIANT_TRIAL_ENDED) {
+      return $this->buildContent(
+        __('Your trial has ended', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: %s: Subscriber first name personalization tag */
+            __('Hi %s, thanks for trying us. We hope your trial gave you a useful look at what’s included.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag()
+          ),
+          sprintf(
+            /* translators: %s: WooCommerce subscription title personalization tag */
+            __('If %s helped you, you can keep the benefits going from your account on our site.', 'mailpoet'),
+            '<!--[mailpoet/woocommerce-subscription-title]-->'
+          ),
+          __('Still deciding? Reply with any questions and we’ll help you choose the next step.', 'mailpoet'),
+        ],
+        __('Visit our site', 'mailpoet'),
+        __('Thanks for trying us,', 'mailpoet')
+      );
+    }
+
+    if ($this->variant === self::VARIANT_WIN_BACK) {
+      return $this->buildContent(
+        __('See what’s new', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: %s: Subscriber first name personalization tag */
+            __('Hi %s, it’s been a while since your subscription ended, and we’d love to welcome you back.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag()
+          ),
+          sprintf(
+            /* translators: %s: WooCommerce subscription title personalization tag */
+            __('We’ve been improving the experience around %s, with new reasons to give it another look.', 'mailpoet'),
+            '<!--[mailpoet/woocommerce-subscription-title]-->'
+          ),
+          __('When you’re ready, visit our site to see what’s changed and start again.', 'mailpoet'),
+        ],
+        __('Visit our site', 'mailpoet'),
+        __('Hope to see you again,', 'mailpoet')
+      );
+    }
+
     return $this->buildContent(
       __('Welcome to your subscription', 'mailpoet'),
       [
@@ -107,6 +179,18 @@ class SubscriptionAutomationEmailPattern extends Pattern {
 
     if ($this->variant === self::VARIANT_FAILED_RENEWAL) {
       return __('Subscription Failed Renewal Follow-up', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_CHURNED) {
+      return __('Subscription Churned Follow-up', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_TRIAL_ENDED) {
+      return __('Subscription Trial Ended Follow-up', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_WIN_BACK) {
+      return __('Subscription Win-back', 'mailpoet');
     }
 
     return __('Subscription Purchase Follow-up', 'mailpoet');
