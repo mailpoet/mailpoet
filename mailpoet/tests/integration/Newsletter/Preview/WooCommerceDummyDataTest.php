@@ -18,12 +18,15 @@ class WooCommerceDummyDataTest extends \MailPoetTest {
     $order = $this->dummyData->getOrder();
     $this->assertInstanceOf(\WC_Order::class, $order);
 
-    $placeholderId = $order->get_id();
-    $this->assertGreaterThan(0, $placeholderId);
+    // The id stays 0 so the order can never touch a real row; the display
+    // number is surfaced through get_order_number() instead.
+    $this->assertSame(0, $order->get_id());
+    $this->assertSame('12345', $order->get_order_number());
 
-    // save() must be a no-op: it returns the placeholder ID but writes nothing.
-    $this->assertSame($placeholderId, $order->save());
-    $this->assertFalse(wc_get_order($placeholderId));
+    // save() must be a no-op: it returns the id (0) and creates no order.
+    $ordersBefore = wc_get_orders(['limit' => -1, 'return' => 'ids']);
+    $this->assertSame(0, $order->save());
+    $this->assertSame($ordersBefore, wc_get_orders(['limit' => -1, 'return' => 'ids']));
   }
 
   public function testDummyOrderSaveCannotOverwriteARealOrder(): void {
