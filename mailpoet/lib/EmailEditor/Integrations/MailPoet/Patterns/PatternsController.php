@@ -18,6 +18,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\PostPurchaseThan
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductRestockNotificationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SaleAnnouncementPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SubscriptionAutomationEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\TagPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeWithDiscountEmailPattern;
@@ -122,6 +123,9 @@ class PatternsController {
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'positive-follow-up'),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'negative-follow-up'),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_PURCHASE),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_RENEWAL),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_FAILED_RENEWAL),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {
@@ -288,6 +292,11 @@ class PatternsController {
         'name' => 'review',
         'label' => _x('Review', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of review follow-up email layouts.', 'mailpoet'),
+      ];
+      $categories[] = [
+        'name' => 'subscriptions',
+        'label' => _x('Subscriptions', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of subscription email layouts.', 'mailpoet'),
       ];
     }
 

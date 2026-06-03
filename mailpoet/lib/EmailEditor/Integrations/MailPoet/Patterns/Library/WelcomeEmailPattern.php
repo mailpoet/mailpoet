@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
+use MailPoet\Util\CdnAssetUrl;
 
 /**
  * Welcome email pattern for new subscribers.

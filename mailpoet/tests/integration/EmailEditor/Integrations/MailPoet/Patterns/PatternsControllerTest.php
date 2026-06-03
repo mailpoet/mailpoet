@@ -55,6 +55,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/reward-positive-reviewer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
+    $this->assertContains('mailpoet/subscription-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-renewal-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
 
     // WooCommerce 10.8.0+ patterns (uses generated coupon block)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -63,7 +66,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(26, $blockPatterns);
+    $this->assertCount(29, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -124,6 +127,11 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsArray($reviewCategory);
     $this->assertEquals('review', $reviewCategory['name']);
     $this->assertNotEmpty($reviewCategory['label']);
+
+    $subscriptionsCategory = $registry->get_registered('subscriptions');
+    $this->assertIsArray($subscriptionsCategory);
+    $this->assertEquals('subscriptions', $subscriptionsCategory['name']);
+    $this->assertNotEmpty($subscriptionsCategory['label']);
   }
 
   public function testItDoesNotRegisterCouponPatternsWhenWooCommerceVersionIsBelowMinimum(): void {
@@ -160,6 +168,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/negative-review-follow-up', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
+    $this->assertContains('mailpoet/subscription-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-renewal-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
 
     // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -169,7 +180,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
     // Verify total count (all patterns except 5 coupon patterns)
-    $this->assertCount(21, $blockPatterns);
+    $this->assertCount(24, $blockPatterns);
   }
 
   /**
@@ -405,6 +416,35 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertStringContainsString('Shop again', $content);
   }
 
+  public function testSubscriptionOnboardingPatternsContainSubscriptionCopy(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
+    $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $purchaseContent = $patterns->getPatternContent('subscription-purchase-follow-up');
+    $this->assertIsString($purchaseContent);
+    $this->assertStringContainsString('Welcome to your subscription', $purchaseContent);
+    $this->assertStringContainsString('<!--[mailpoet/subscriber-firstname default="there"]-->', $purchaseContent);
+    $this->assertStringContainsString('<!--[mailpoet/woocommerce-subscription-title]-->', $purchaseContent);
+
+    $renewalContent = $patterns->getPatternContent('subscription-renewal-follow-up');
+    $this->assertIsString($renewalContent);
+    $this->assertStringContainsString('Your subscription renewed', $renewalContent);
+    $this->assertStringContainsString('nothing you need to do right now', $renewalContent);
+
+    $failedRenewalContent = $patterns->getPatternContent('subscription-failed-renewal-follow-up');
+    $this->assertIsString($failedRenewalContent);
+    $this->assertStringContainsString('We couldn’t renew your subscription', $failedRenewalContent);
+    $this->assertStringContainsString('update your payment details', $failedRenewalContent);
+  }
+
   public function testItDoesNotRegisterAskForReviewPatternWhenOrderReviewUrlIsUnsupported(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
@@ -461,6 +501,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-purchase-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-renewal-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
 
     // Verify total count (only non-WooCommerce patterns)
     $this->assertCount(9, $blockPatterns);
@@ -496,6 +539,9 @@ class PatternsControllerTest extends \MailPoetTest {
 
     $reviewCategory = $registry->get_registered('review');
     $this->assertNull($reviewCategory);
+
+    $subscriptionsCategory = $registry->get_registered('subscriptions');
+    $this->assertNull($subscriptionsCategory);
   }
 
   public function testItAddsEmailContentToRestResponseForSplitPatterns(): void {
