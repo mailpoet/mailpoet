@@ -29,10 +29,20 @@ class WooCommerceDummyData {
     }
 
     try {
+      // Keep the id at 0 so the order can't read from or write to a real order;
+      // get_order_number() provides the display number.
       $order = new class extends \WC_Order {
         use NonPersistablePreviewData;
+
+        public function get_order_number() { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- overrides WC_Order::get_order_number().
+          return '12345';
+        }
+
+        /** @return array<int, \stdClass> */
+        public function get_customer_order_notes() { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- overrides WC_Order::get_customer_order_notes(), at id 0 the parent would return every order note on the site.
+          return [];
+        }
       };
-      $order->set_id(12345);
 
       $this->setOrderAddress($order);
       $this->addOrderItems($order);
