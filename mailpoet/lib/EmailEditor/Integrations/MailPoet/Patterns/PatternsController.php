@@ -126,6 +126,9 @@ class PatternsController {
         new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_PURCHASE),
         new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_RENEWAL),
         new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_FAILED_RENEWAL),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_CHURNED),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_TRIAL_ENDED),
+        new SubscriptionAutomationEmailPattern($this->cdnAssetUrl, SubscriptionAutomationEmailPattern::VARIANT_WIN_BACK),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {

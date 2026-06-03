@@ -58,6 +58,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/subscription-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/subscription-renewal-follow-up', $patternNames);
     $this->assertContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-churned-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-trial-ended-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-win-back', $patternNames);
 
     // WooCommerce 10.8.0+ patterns (uses generated coupon block)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -66,7 +69,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(29, $blockPatterns);
+    $this->assertCount(32, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -171,6 +174,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/subscription-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/subscription-renewal-follow-up', $patternNames);
     $this->assertContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-churned-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-trial-ended-follow-up', $patternNames);
+    $this->assertContains('mailpoet/subscription-win-back', $patternNames);
 
     // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -180,7 +186,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
     // Verify total count (all patterns except 5 coupon patterns)
-    $this->assertCount(24, $blockPatterns);
+    $this->assertCount(27, $blockPatterns);
   }
 
   /**
@@ -443,6 +449,21 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsString($failedRenewalContent);
     $this->assertStringContainsString('We couldn’t renew your subscription', $failedRenewalContent);
     $this->assertStringContainsString('update your payment details', $failedRenewalContent);
+
+    $churnedContent = $patterns->getPatternContent('subscription-churned-follow-up');
+    $this->assertIsString($churnedContent);
+    $this->assertStringContainsString('We’d value your feedback', $churnedContent);
+    $this->assertStringContainsString('reply directly to this email', $churnedContent);
+
+    $trialEndedContent = $patterns->getPatternContent('subscription-trial-ended-follow-up');
+    $this->assertIsString($trialEndedContent);
+    $this->assertStringContainsString('Your trial has ended', $trialEndedContent);
+    $this->assertStringContainsString('Still deciding?', $trialEndedContent);
+
+    $winBackContent = $patterns->getPatternContent('subscription-win-back');
+    $this->assertIsString($winBackContent);
+    $this->assertStringContainsString('See what’s new', $winBackContent);
+    $this->assertStringContainsString('welcome you back', $winBackContent);
   }
 
   public function testItDoesNotRegisterAskForReviewPatternWhenOrderReviewUrlIsUnsupported(): void {
@@ -504,6 +525,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/subscription-purchase-follow-up', $patternNames);
     $this->assertNotContains('mailpoet/subscription-renewal-follow-up', $patternNames);
     $this->assertNotContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-churned-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-trial-ended-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/subscription-win-back', $patternNames);
 
     // Verify total count (only non-WooCommerce patterns)
     $this->assertCount(9, $blockPatterns);
