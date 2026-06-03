@@ -106,6 +106,13 @@ class TemplatesFactoryTest extends MailPoetTest {
         'Welcome to our community!',
         'Thanks for subscribing',
       ],
+      'user welcome email' => [
+        'user-welcome-email',
+        'mailpoet:wp-user-registered',
+        'Welcome email',
+        'Welcome to our community!',
+        'Thanks for joining us',
+      ],
     ];
   }
 

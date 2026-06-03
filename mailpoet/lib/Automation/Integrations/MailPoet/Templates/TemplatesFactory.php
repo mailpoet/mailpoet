@@ -161,13 +161,22 @@ class TemplatesFactory {
         'Send a welcome email when a new WordPress user registers to your website. Optionally, you can choose to send this email after a specified period.',
         'mailpoet'
       ),
-      function (): Automation {
+      function (bool $preview = false): Automation {
+        $emailArgs = $this->createBlockEditorEmailArgs(
+          $preview,
+          'welcome-email-content',
+          __('Welcome email', 'mailpoet'),
+          __('Welcome to our community!', 'mailpoet'),
+          __('Thanks for joining us', 'mailpoet'),
+          'user-welcome-email'
+        );
+
         return $this->builder->createFromSequence(
           __('Welcome new WordPress users', 'mailpoet'),
           [
             ['key' => 'mailpoet:wp-user-registered'],
             ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES']],
-            ['key' => 'mailpoet:send-email'],
+            ['key' => 'mailpoet:send-email', 'args' => $emailArgs],
           ],
           [
             'mailpoet:run-once-per-subscriber' => true,
