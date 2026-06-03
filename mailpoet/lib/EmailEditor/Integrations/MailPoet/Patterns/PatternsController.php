@@ -116,6 +116,7 @@ class PatternsController {
         new CategoryPurchaseFollowUpPattern($this->cdnAssetUrl),
         new AbandonedCartPattern($this->cdnAssetUrl),
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
+        new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'positive-follow-up'),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {
@@ -270,6 +271,11 @@ class PatternsController {
         'name' => 'abandoned-cart',
         'label' => _x('Abandoned cart', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of abandoned cart email layouts.', 'mailpoet'),
+      ];
+      $categories[] = [
+        'name' => 'review',
+        'label' => _x('Review', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of review follow-up email layouts.', 'mailpoet'),
       ];
     }
 

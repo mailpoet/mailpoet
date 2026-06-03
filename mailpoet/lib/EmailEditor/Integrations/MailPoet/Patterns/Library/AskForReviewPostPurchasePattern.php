@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
+use MailPoet\Util\CdnAssetUrl;
 
 class AskForReviewPostPurchasePattern extends Pattern {
   protected $name = 'ask-for-review-post-purchase';
@@ -12,7 +13,26 @@ class AskForReviewPostPurchasePattern extends Pattern {
   protected $categories = ['purchase'];
   protected $post_types = [EmailEditor::MAILPOET_EMAIL_POST_TYPE]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
+  /** @var string */
+  private $variant;
+
+  public function __construct(
+    CdnAssetUrl $cdnAssetUrl,
+    string $variant = 'ask'
+  ) {
+    parent::__construct($cdnAssetUrl);
+    $this->variant = $variant;
+    if ($variant === 'positive-follow-up') {
+      $this->name = 'positive-review-follow-up';
+      $this->categories = ['review'];
+    }
+  }
+
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    if ($this->variant === 'positive-follow-up') {
+      return $this->getPositiveFollowUpContent();
+    }
+
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -51,7 +71,39 @@ class AskForReviewPostPurchasePattern extends Pattern {
     ';
   }
 
+  private function getPositiveFollowUpContent(): string {
+    return '
+    <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+    <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+      <!-- wp:heading {"level":1} -->
+      <h1 class="wp-block-heading">' . __('Thanks for your review!', 'mailpoet') . '</h1>
+      <!-- /wp:heading -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('Your review made our day. We’re thrilled you had a good experience and grateful that you took the time to share it.', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('Reviews like yours help other shoppers choose with confidence. Thanks for being part of our community.', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">' . __('With appreciation,', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">–<!--[woocommerce/site-title]--></p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+    ';
+  }
+
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    if ($this->variant === 'positive-follow-up') {
+      return __('Positive review follow-up', 'mailpoet');
+    }
+
     return __('Ask for a product review', 'mailpoet');
   }
 }
