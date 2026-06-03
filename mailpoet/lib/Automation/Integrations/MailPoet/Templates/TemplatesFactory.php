@@ -452,7 +452,16 @@ class TemplatesFactory {
         'Share care instructions or simply thank the customer for making an order.',
         'mailpoet'
       ),
-      function (): Automation {
+      function (bool $preview = false): Automation {
+        $emailArgs = $this->createBlockEditorEmailArgs(
+          $preview,
+          'tag-purchase-follow-up',
+          __('Important information about your order', 'mailpoet'),
+          __('Important information about your order', 'mailpoet'),
+          __('A few details about your purchase', 'mailpoet'),
+          'purchased-product-with-tag'
+        );
+
         return $this->builder->createFromSequence(
           __('Purchased a product with a tag', 'mailpoet'),
           [
@@ -461,10 +470,7 @@ class TemplatesFactory {
             ],
             [
               'key' => 'mailpoet:send-email',
-              'args' => [
-                'name' => __('Important information about your order', 'mailpoet'),
-                'subject' => __('Important information about your order', 'mailpoet'),
-              ],
+              'args' => $emailArgs,
             ],
           ]
         );
