@@ -117,6 +117,7 @@ class PatternsController {
         new AbandonedCartPattern($this->cdnAssetUrl),
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'positive-follow-up'),
+        new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'negative-follow-up'),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {

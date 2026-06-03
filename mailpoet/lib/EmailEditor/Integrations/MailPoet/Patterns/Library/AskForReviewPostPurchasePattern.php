@@ -25,12 +25,19 @@ class AskForReviewPostPurchasePattern extends Pattern {
     if ($variant === 'positive-follow-up') {
       $this->name = 'positive-review-follow-up';
       $this->categories = ['review'];
+    } elseif ($variant === 'negative-follow-up') {
+      $this->name = 'negative-review-follow-up';
+      $this->categories = ['review'];
     }
   }
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     if ($this->variant === 'positive-follow-up') {
       return $this->getPositiveFollowUpContent();
+    }
+
+    if ($this->variant === 'negative-follow-up') {
+      return $this->getNegativeFollowUpContent();
     }
 
     return '
@@ -99,9 +106,41 @@ class AskForReviewPostPurchasePattern extends Pattern {
     ';
   }
 
+  private function getNegativeFollowUpContent(): string {
+    return '
+    <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+    <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+      <!-- wp:heading {"level":1} -->
+      <h1 class="wp-block-heading">' . __('Sorry to hear that', 'mailpoet') . '</h1>
+      <!-- /wp:heading -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('Thank you for being honest in your review. We’re sorry your experience did not meet expectations.', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('We’d like to understand what happened and see how we can make things right. Reply to this email and our team will help.', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">' . __('We appreciate the chance to improve,', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">–<!--[woocommerce/site-title]--></p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+    ';
+  }
+
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     if ($this->variant === 'positive-follow-up') {
       return __('Positive review follow-up', 'mailpoet');
+    }
+
+    if ($this->variant === 'negative-follow-up') {
+      return __('Negative review follow-up', 'mailpoet');
     }
 
     return __('Ask for a product review', 'mailpoet');
