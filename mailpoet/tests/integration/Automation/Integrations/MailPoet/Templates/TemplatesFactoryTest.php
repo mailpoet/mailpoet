@@ -219,6 +219,14 @@ class TemplatesFactoryTest extends MailPoetTest {
         'Important information about your order',
         'A few details about your purchase',
       ],
+      'purchased product with tag' => [
+        'purchased-product-with-tag',
+        'woocommerce:buys-from-a-tag',
+        'tag-purchase-follow-up',
+        'Important information about your order',
+        'Important information about your order',
+        'A few details about your purchase',
+      ],
     ];
   }
 
