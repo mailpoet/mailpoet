@@ -28,6 +28,9 @@ class AskForReviewPostPurchasePattern extends Pattern {
     } elseif ($variant === 'negative-follow-up') {
       $this->name = 'negative-review-follow-up';
       $this->categories = ['review'];
+    } elseif ($variant === 'reward-positive') {
+      $this->name = 'reward-positive-reviewer';
+      $this->categories = ['review'];
     }
   }
 
@@ -38,6 +41,10 @@ class AskForReviewPostPurchasePattern extends Pattern {
 
     if ($this->variant === 'negative-follow-up') {
       return $this->getNegativeFollowUpContent();
+    }
+
+    if ($this->variant === 'reward-positive') {
+      return $this->getRewardPositiveContent();
     }
 
     return '
@@ -134,6 +141,46 @@ class AskForReviewPostPurchasePattern extends Pattern {
     ';
   }
 
+  private function getRewardPositiveContent(): string {
+    return '
+    <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+    <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+      <!-- wp:heading {"level":1} -->
+      <h1 class="wp-block-heading">' . __('Thanks for your review!', 'mailpoet') . '</h1>
+      <!-- /wp:heading -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('Thank you for taking the time to leave such a thoughtful review. We’re grateful for your support and happy to hear you enjoyed your purchase.', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|20"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--20);font-size:16px">' . __('As a thank you, here’s a discount coupon for your next order:', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"style":{"typography":{"fontSize":"20px","fontWeight":"700"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:20px;font-weight:700">[coupon code]</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:buttons {"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
+      <div class="wp-block-buttons" style="padding-bottom:var(--wp--preset--spacing--30)">
+      <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
+      <div class="wp-block-button"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop again', 'mailpoet') . '</a></div>
+      <!-- /wp:button -->
+      </div>
+      <!-- /wp:buttons -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">' . __('See you soon,', 'mailpoet') . '</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph {"fontSize":"medium"} -->
+      <p class="has-medium-font-size">–<!--[woocommerce/site-title]--></p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+    ';
+  }
+
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     if ($this->variant === 'positive-follow-up') {
       return __('Positive review follow-up', 'mailpoet');
@@ -141,6 +188,10 @@ class AskForReviewPostPurchasePattern extends Pattern {
 
     if ($this->variant === 'negative-follow-up') {
       return __('Negative review follow-up', 'mailpoet');
+    }
+
+    if ($this->variant === 'reward-positive') {
+      return __('Reward positive reviewer', 'mailpoet');
     }
 
     return __('Ask for a product review', 'mailpoet');
