@@ -211,6 +211,14 @@ class TemplatesFactoryTest extends MailPoetTest {
         'Thank you for your first order!',
         'Welcome to the family! Check out what’s next for you.',
       ],
+      'purchased product' => [
+        'purchased-product',
+        'woocommerce:buys-a-product',
+        'product-purchase-follow-up',
+        'Important information about your order',
+        'Important information about your order',
+        'A few details about your purchase',
+      ],
     ];
   }
 
