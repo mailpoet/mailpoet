@@ -104,6 +104,7 @@ class PatternsController {
       new ProductRestockNotificationPattern($this->cdnAssetUrl),
       new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
       new WelcomeEmailPattern($this->cdnAssetUrl),
+      new WelcomeEmailPattern($this->cdnAssetUrl, true),
     ];
 
     // WooCommerce-dependent patterns (uses product blocks or purchase/abandoned-cart categories)
@@ -261,6 +262,11 @@ class PatternsController {
         'name' => 'welcome',
         'label' => _x('Welcome', 'Block pattern category', 'mailpoet'),
         'description' => __('A collection of welcome email layouts.', 'mailpoet'),
+      ],
+      [
+        'name' => 'celebrations',
+        'label' => _x('Celebrations', 'Block pattern category', 'mailpoet'),
+        'description' => __('A collection of celebration email layouts.', 'mailpoet'),
       ],
     ];
 

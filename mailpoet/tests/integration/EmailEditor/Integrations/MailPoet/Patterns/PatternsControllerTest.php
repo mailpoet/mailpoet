@@ -38,6 +38,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/product-restock-notification', $patternNames);
     $this->assertContains('mailpoet/new-arrivals-announcement', $patternNames);
     $this->assertContains('mailpoet/welcome-email-content', $patternNames);
+    $this->assertContains('mailpoet/birthday-email-content', $patternNames);
 
     // WooCommerce-dependent patterns (uses product blocks or purchase/abandoned-cart categories)
     $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
@@ -60,7 +61,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(24, $blockPatterns);
+    $this->assertCount(25, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -102,6 +103,11 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertEquals('welcome', $welcomeCategory['name']);
     $this->assertNotEmpty($welcomeCategory['label']);
 
+    $celebrationsCategory = $registry->get_registered('celebrations');
+    $this->assertIsArray($celebrationsCategory);
+    $this->assertEquals('celebrations', $celebrationsCategory['name']);
+    $this->assertNotEmpty($celebrationsCategory['label']);
+
     $purchaseCategory = $registry->get_registered('purchase');
     $this->assertIsArray($purchaseCategory);
     $this->assertEquals('purchase', $purchaseCategory['name']);
@@ -137,6 +143,7 @@ class PatternsControllerTest extends \MailPoetTest {
     // Should include non-WooCommerce patterns
     $this->assertContains('mailpoet/newsletter-content', $patternNames);
     $this->assertContains('mailpoet/welcome-email-content', $patternNames);
+    $this->assertContains('mailpoet/birthday-email-content', $patternNames);
 
     // Should include WooCommerce patterns that don't require coupon block
     $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
@@ -159,7 +166,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
     // Verify total count (all patterns except 4 coupon patterns)
-    $this->assertCount(20, $blockPatterns);
+    $this->assertCount(21, $blockPatterns);
   }
 
   /**
@@ -390,6 +397,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/newsletter-content', $patternNames);
     $this->assertContains('mailpoet/sale-announcement', $patternNames);
     $this->assertContains('mailpoet/welcome-email-content', $patternNames);
+    $this->assertContains('mailpoet/birthday-email-content', $patternNames);
 
     // Should NOT include WooCommerce-dependent patterns
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -408,7 +416,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count (only non-WooCommerce patterns)
-    $this->assertCount(8, $blockPatterns);
+    $this->assertCount(9, $blockPatterns);
   }
 
   public function testItDoesNotRegisterWooCommerceCategoriesWhenWooCommerceIsInactive(): void {
@@ -430,6 +438,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertIsArray($registry->get_registered('event'));
     $this->assertIsArray($registry->get_registered('newsletter'));
     $this->assertIsArray($registry->get_registered('welcome'));
+    $this->assertIsArray($registry->get_registered('celebrations'));
 
     // Should NOT include WooCommerce-dependent categories
     $purchaseCategory = $registry->get_registered('purchase');
