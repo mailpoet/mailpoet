@@ -227,6 +227,14 @@ class TemplatesFactoryTest extends MailPoetTest {
         'Important information about your order',
         'A few details about your purchase',
       ],
+      'purchased in category' => [
+        'purchased-in-category',
+        'woocommerce:buys-from-a-category',
+        'category-purchase-follow-up',
+        'Important information about your order',
+        'Important information about your order',
+        'A few details about your purchase',
+      ],
     ];
   }
 
