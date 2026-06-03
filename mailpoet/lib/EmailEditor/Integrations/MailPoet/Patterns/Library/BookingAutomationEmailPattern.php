@@ -13,6 +13,10 @@ class BookingAutomationEmailPattern extends Pattern {
   public const VARIANT_ABANDONED_SPOT = 'abandoned-spot';
   public const VARIANT_NEW_BOOKING = 'new-booking';
   public const VARIANT_PRE_VISIT_REMINDER = 'pre-visit-reminder';
+  public const VARIANT_PRE_VISIT_WHAT_TO_EXPECT = 'pre-visit-what-to-expect';
+  public const VARIANT_PRE_VISIT_TIPS = 'pre-visit-tips';
+  public const VARIANT_POST_VISIT_REVIEW = 'post-visit-review';
+  public const VARIANT_NEXT_BOOKING_NUDGE = 'next-booking-nudge';
 
   protected $name = 'booking-abandoned-spot';
   protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -34,6 +38,14 @@ class BookingAutomationEmailPattern extends Pattern {
       $this->name = 'booking-new-booking-follow-up';
     } elseif ($variant === self::VARIANT_PRE_VISIT_REMINDER) {
       $this->name = 'booking-pre-visit-reminder';
+    } elseif ($variant === self::VARIANT_PRE_VISIT_WHAT_TO_EXPECT) {
+      $this->name = 'booking-pre-visit-what-to-expect';
+    } elseif ($variant === self::VARIANT_PRE_VISIT_TIPS) {
+      $this->name = 'booking-pre-visit-tips';
+    } elseif ($variant === self::VARIANT_POST_VISIT_REVIEW) {
+      $this->name = 'booking-post-visit-review';
+    } elseif ($variant === self::VARIANT_NEXT_BOOKING_NUDGE) {
+      $this->name = 'booking-next-booking-nudge';
     }
   }
 
@@ -77,6 +89,78 @@ class BookingAutomationEmailPattern extends Pattern {
       );
     }
 
+    if ($this->variant === self::VARIANT_PRE_VISIT_WHAT_TO_EXPECT) {
+      return $this->buildContent(
+        __('What to expect at your booking', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: 1: Subscriber first name personalization tag, 2: WooCommerce booking product name personalization tag */
+            __('Hi %1$s, here are a few details for your upcoming %2$s booking.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag(),
+            '<!--[mailpoet/woocommerce-booking-product-name]-->'
+          ),
+          $this->getBookingDetailsCopy(),
+          __('Please arrive a few minutes early and bring anything you need for the visit. If you have questions, reply to this email before your appointment.', 'mailpoet'),
+        ],
+        __('View our site', 'mailpoet'),
+        __('See you soon,', 'mailpoet')
+      );
+    }
+
+    if ($this->variant === self::VARIANT_PRE_VISIT_TIPS) {
+      return $this->buildContent(
+        __('Make the most of your booking', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: 1: Subscriber first name personalization tag, 2: WooCommerce booking product name personalization tag */
+            __('Hi %1$s, your %2$s booking is coming up soon. A little preparation can help you get the most out of it.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag(),
+            '<!--[mailpoet/woocommerce-booking-product-name]-->'
+          ),
+          $this->getBookingDetailsCopy(),
+          __('Review the details, plan enough time before and after your visit, and reply to this email if there is anything we should know ahead of time.', 'mailpoet'),
+        ],
+        __('Review details', 'mailpoet'),
+        __('We’ll see you soon,', 'mailpoet')
+      );
+    }
+
+    if ($this->variant === self::VARIANT_POST_VISIT_REVIEW) {
+      return $this->buildContent(
+        __('How was your booking?', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: 1: Subscriber first name personalization tag, 2: WooCommerce booking product name personalization tag */
+            __('Hi %1$s, thanks for joining us for %2$s. We hope everything went smoothly.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag(),
+            '<!--[mailpoet/woocommerce-booking-product-name]-->'
+          ),
+          $this->getBookingDetailsCopy(),
+          __('Your feedback helps us improve future bookings. Send us a quick note or visit our site to leave feedback.', 'mailpoet'),
+        ],
+        __('Leave feedback', 'mailpoet'),
+        __('Thank you,', 'mailpoet')
+      );
+    }
+
+    if ($this->variant === self::VARIANT_NEXT_BOOKING_NUDGE) {
+      return $this->buildContent(
+        __('Ready for your next booking?', 'mailpoet'),
+        [
+          sprintf(
+            /* translators: 1: Subscriber first name personalization tag, 2: WooCommerce booking product name personalization tag */
+            __('Hi %1$s, it has been a little while since your %2$s booking. We would love to see you again.', 'mailpoet'),
+            $this->getSubscriberFirstNameTag(),
+            '<!--[mailpoet/woocommerce-booking-product-name]-->'
+          ),
+          $this->getBookingDetailsCopy(),
+          __('Book your next visit whenever you are ready. If you need help choosing a time, reply to this email and we’ll point you in the right direction.', 'mailpoet'),
+        ],
+        __('Book again', 'mailpoet'),
+        __('Hope to see you soon,', 'mailpoet')
+      );
+    }
+
     return $this->buildContent(
       __('Your booking spot is waiting', 'mailpoet'),
       [
@@ -104,6 +188,22 @@ class BookingAutomationEmailPattern extends Pattern {
 
     if ($this->variant === self::VARIANT_PRE_VISIT_REMINDER) {
       return __('Booking Pre-visit Reminder', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_PRE_VISIT_WHAT_TO_EXPECT) {
+      return __('Booking Preparation', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_PRE_VISIT_TIPS) {
+      return __('Booking Tips', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_POST_VISIT_REVIEW) {
+      return __('Booking Review Request', 'mailpoet');
+    }
+
+    if ($this->variant === self::VARIANT_NEXT_BOOKING_NUDGE) {
+      return __('Next Booking Nudge', 'mailpoet');
     }
 
     return __('Abandoned Booking Reminder', 'mailpoet');

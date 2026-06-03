@@ -133,6 +133,10 @@ class PatternsController {
         new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_ABANDONED_SPOT),
         new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_NEW_BOOKING),
         new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_PRE_VISIT_REMINDER),
+        new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_PRE_VISIT_WHAT_TO_EXPECT),
+        new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_PRE_VISIT_TIPS),
+        new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_POST_VISIT_REVIEW),
+        new BookingAutomationEmailPattern($this->cdnAssetUrl, BookingAutomationEmailPattern::VARIANT_NEXT_BOOKING_NUDGE),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {
