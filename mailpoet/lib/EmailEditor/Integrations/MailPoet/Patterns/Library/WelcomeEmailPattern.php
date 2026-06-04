@@ -26,14 +26,14 @@ class WelcomeEmailPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading ">' .
-      /* translators: %s: Store name personalization tag */
-      sprintf(__('Welcome to %s!', 'mailpoet'), '<!--[woocommerce/store-name]-->') . '</h1>
+      /* translators: %s: Site title personalization tag */
+      sprintf(__('Welcome to %s!', 'mailpoet'), '<!--[mailpoet/site-title]-->') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: %s: Customer full name personalization tag */
-      sprintf(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'), '<!--[woocommerce/customer-full-name]-->') . '</p>
+      /* translators: %s: Subscriber first name personalization tag */
+      sprintf(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'), '<!--[mailpoet/subscriber-firstname default="subscriber"]-->') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:image {"sizeSlug":"full"} -->
@@ -60,7 +60,7 @@ class WelcomeEmailPattern extends Pattern {
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph -->
-      <p>–<!--[woocommerce/site-title]--></p>
+      <p>–<!--[mailpoet/site-title]--></p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:group -->
