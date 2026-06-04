@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 
-. "$(dirname "$0")/../mailpoet/.env"
+# Git runs hooks with the working directory at the worktree root, so $PWD/mailpoet
+# points at the worktree that triggered the hook — the same dir ./do uses.
+ENV_DIR="$PWD/mailpoet"
+# .env is gitignored, so fresh clones and new worktrees don't have one yet. Seed
+# it from the sample so sourcing it below (and ./do, which loads .env on every
+# run) doesn't fail.
+if [ ! -f "$ENV_DIR/.env" ] && [ -f "$ENV_DIR/.env.sample" ]; then
+  cp "$ENV_DIR/.env.sample" "$ENV_DIR/.env"
+fi
+
+. "$ENV_DIR/.env"
 
 export MP_GIT_HOOKS_ENABLE="${MP_GIT_HOOKS_ENABLE:-true}"
 export MP_GIT_HOOKS_ESLINT="${MP_GIT_HOOKS_ESLINT:-true}"
