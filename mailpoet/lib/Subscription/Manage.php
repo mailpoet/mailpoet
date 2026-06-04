@@ -112,7 +112,7 @@ class Manage {
             && $subscriber instanceof SubscriberEntity
             && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
           );
-          $subscriber = $this->subscriberSaveController->createOrUpdate($this->filterOutReservedColumns($subscriberData), $subscriber);
+          $subscriber = $this->subscriberSaveController->createOrUpdate($this->filterToEditableFields($subscriberData), $subscriber);
           if ($shouldTrackUnsubscribe) {
             $this->unsubscribesTracker->track(
               (int)$subscriber->getId(),
@@ -248,17 +248,17 @@ class Manage {
   }
 
   /**
-   * The manage-subscription form only edits name, email, subscription choices
-   * and global status. Reuse the save controller's reserved-column filter so
-   * system-maintained columns are left untouched, but keep `status`, which is
-   * editable here and is already validated by hasInvalidStatus().
+   * The manage-subscription form only edits the subscriber's name, email and
+   * global status. Subscription choices and custom fields are handled
+   * separately. Keep only those fields when saving the subscriber so any other
+   * submitted key is ignored. `status` is already validated by
+   * hasInvalidStatus().
    */
-  private function filterOutReservedColumns(array $subscriberData): array {
-    $filtered = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
-    if (array_key_exists('status', $subscriberData)) {
-      $filtered['status'] = $subscriberData['status'];
-    }
-    return $filtered;
+  private function filterToEditableFields(array $subscriberData): array {
+    return array_intersect_key(
+      $subscriberData,
+      array_flip(['email', 'first_name', 'last_name', 'status'])
+    );
   }
 
   private function hasInvalidStatus(array $subscriberData): bool {
