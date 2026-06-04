@@ -4,9 +4,11 @@ namespace MailPoet\Test\Automation\Integrations\MailPoet\Templates;
 
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper;
@@ -117,6 +119,7 @@ class TemplatesFactoryTest extends MailPoetTest {
   }
 
   public function testAbandonedCartTemplateCreatesBlockEditorEmail(): void {
+    $this->ensureAbandonedCartTriggerRegistered();
     $this->emailFactory->expects($this->once())
       ->method('createBlockEditorEmail')
       ->with([
@@ -164,6 +167,17 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('Complete your purchase today', $args['preheader']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
+  }
+
+  // WooCommerce automation triggers are registered once into the shared Registry at engine init.
+  // A test running earlier in the suite can leave the Registry without them, which would make
+  // createFromSequence() silently drop the trigger step. Re-register it so this test does not
+  // depend on suite ordering.
+  private function ensureAbandonedCartTriggerRegistered(): void {
+    $registry = $this->diContainer->get(Registry::class);
+    if ($registry->getStep(AbandonedCartTrigger::KEY) === null) {
+      $registry->addTrigger($this->diContainer->get(AbandonedCartTrigger::class));
+    }
   }
 
   private function createFactory(): TemplatesFactory {
