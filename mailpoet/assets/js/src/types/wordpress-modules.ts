@@ -80,6 +80,10 @@ declare module '@wordpress/preferences' {
     reducer: () => unknown;
     actions: {
       set: (scope: string, name: string, value: any) => void;
+      setPersistenceLayer: (persistenceLayer: {
+        get: () => Promise<Record<string, Record<string, any>>>;
+        set: (value: Record<string, Record<string, any>>) => void;
+      }) => Promise<object>;
       toggle: (scope: string, name: string) => void;
     };
     selectors: {

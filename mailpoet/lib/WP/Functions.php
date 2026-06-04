@@ -232,6 +232,15 @@ class Functions {
     return get_comment_meta($commentId, $key, $single);
   }
 
+  /**
+   * @param int|null $blogId
+   * @return string
+   */
+  public function getBlogPrefix($blogId = null) {
+    global $wpdb;
+    return $wpdb->get_blog_prefix($blogId);
+  }
+
   public function getCurrentScreen() {
     return get_current_screen();
   }

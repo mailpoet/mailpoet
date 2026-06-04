@@ -170,9 +170,28 @@ class AssetsController {
     $this->registerFooterScript(
       'mailpoet_admin',
       $this->getScriptUrl('admin.js'),
-      ['mailpoet_admin_vendor']
+      ['mailpoet_admin_vendor', 'wp-preferences-persistence']
     );
+    $this->wp->wpLocalizeScript('mailpoet_admin', 'mailpoet_preferences_data', [
+      'currentUserId' => $this->wp->getCurrentUserId(),
+      'preloadedData' => $this->getPersistedPreferences(),
+    ]);
     $this->wp->wpSetScriptTranslations('mailpoet_admin', 'mailpoet');
+  }
+
+  private function getPersistedPreferences(): \stdClass {
+    $currentUserId = $this->wp->getCurrentUserId();
+    if (!$currentUserId) {
+      return new \stdClass();
+    }
+
+    $preferences = $this->wp->getUserMeta(
+      $currentUserId,
+      $this->wp->getBlogPrefix() . 'persisted_preferences',
+      true
+    );
+
+    return is_array($preferences) ? (object)$preferences : new \stdClass();
   }
 
   private function getScriptUrl(string $name): string {

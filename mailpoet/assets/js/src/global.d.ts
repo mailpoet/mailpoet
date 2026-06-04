@@ -115,8 +115,36 @@ type NumberCapability = BaseCapability & {
 type Capability = BooleanCapability | NumberCapability;
 type Capabilities = Record<string, Capability>;
 
+type MailPoetPreferencesData = {
+  currentUserId: number;
+  preloadedData?: Record<string, Record<string, unknown>>;
+};
+
+type MailPoetPreferencesPersistenceLayer = {
+  get: () => Promise<Record<string, Record<string, unknown>>>;
+  set: (value: Record<string, Record<string, unknown>>) => void;
+};
+
+type MailPoetPreferencesPersistence = {
+  create?: (options: {
+    preloadedData?: Record<string, Record<string, unknown>>;
+    localStorageRestoreKey?: string;
+  }) => MailPoetPreferencesPersistenceLayer;
+  __unstableCreatePersistenceLayer?: (
+    preloadedData?: Record<string, Record<string, unknown>>,
+    currentUserId?: number,
+  ) => MailPoetPreferencesPersistenceLayer;
+};
+
+type MailPoetWpGlobal = {
+  i18n: { getLocaleData: typeof import('@wordpress/i18n').getLocaleData };
+  date: Record<string, unknown>;
+  preferencesPersistence?: MailPoetPreferencesPersistence;
+};
+
 interface Window {
   ajaxurl: string;
+  wp: MailPoetWpGlobal;
   mailpoet_wp_locale: string;
   mailpoet_token: string;
   mailpoet_feature_flags: string;
@@ -145,6 +173,7 @@ interface Window {
   mailpoet_time_format: string;
   mailpoet_date_format: string;
   mailpoet_listing_per_page: string;
+  mailpoet_preferences_data?: MailPoetPreferencesData;
   mailpoet_signup_confirmation_enabled: boolean;
   mailpoet_bulk_confirmation_resend_limit: number;
   mailpoet_3rd_party_libs_enabled: string;
