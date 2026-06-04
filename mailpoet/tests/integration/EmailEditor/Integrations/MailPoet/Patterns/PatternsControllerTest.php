@@ -45,6 +45,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
 
     // WooCommerce 10.8.0+ patterns (uses generated coupon block)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -52,7 +53,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(16, $blockPatterns);
+    $this->assertCount(17, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -131,6 +132,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
+    $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
 
     // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
@@ -138,7 +140,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count (all patterns except 3 coupon patterns)
-    $this->assertCount(13, $blockPatterns);
+    $this->assertCount(14, $blockPatterns);
   }
 
   /**
@@ -271,6 +273,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-content', $patternNames);
+    $this->assertNotContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count (only non-WooCommerce patterns)
@@ -335,6 +338,7 @@ class PatternsControllerTest extends \MailPoetTest {
       'mailpoet/product-purchase-follow-up',
       'mailpoet/win-back-customer',
       'mailpoet/abandoned-cart-content',
+      'mailpoet/abandoned-cart-reminder-content',
       'mailpoet/abandoned-cart-with-discount-content',
     ];
 
