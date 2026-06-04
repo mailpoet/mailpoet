@@ -41,6 +41,9 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Block-Editor-Subject');
 
+    $i->wantTo('Delete the pre-filled welcome email to choose an editor');
+    $this->deleteAssignedEmail($i);
+
     $i->wantTo('Verify that choosing the new editor redirects to block editor');
     $i->see('Design with the new editor');
     $i->see('Design with the classic editor');
@@ -128,6 +131,9 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Legacy-Editor-Subject');
 
+    $i->wantTo('Delete the pre-filled welcome email to choose an editor');
+    $this->deleteAssignedEmail($i);
+
     $i->wantTo('Verify that choosing the classic editor redirects to legacy newsletter editor');
     $i->see('Design with the new editor');
     $i->see('Design with the classic editor');
@@ -141,6 +147,14 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Verify we are in the legacy newsletter editor interface');
     $i->dontSeeElement('[name="editor-canvas"]'); // Block editor iframe should not be present
     $i->seeElement('#mailpoet_editor');
+  }
+
+  private function deleteAssignedEmail(\AcceptanceTester $i): void {
+    $i->waitForElementVisible('[aria-label="Delete email"]');
+    $i->click('[aria-label="Delete email"]');
+    $i->waitForText('This removes the email from the automation step.');
+    $i->click('Delete email', '.components-modal__frame');
+    $i->waitForText('Design with the classic editor');
   }
 
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
