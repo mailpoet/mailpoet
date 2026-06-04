@@ -31,6 +31,7 @@ use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Form\Util\CustomFonts;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomHelperFunctions;
@@ -758,11 +759,12 @@ class Menu {
       return $parentFile;
     }
 
-    // In case we are on the email editor page, we want to highlight the Emails menu item
+    // In case we are on the email editor page, we want to highlight the related MailPoet menu item
     if ($this->emailEditor->isEditorPage(false)) {
-      $plugin_page = self::EMAILS_PAGE_SLUG;
-      $submenu_file = self::EMAILS_PAGE_SLUG;
-      return self::EMAILS_PAGE_SLUG;
+      $emailEditorMenuPageSlug = $this->getEmailEditorMenuPageSlug();
+      $plugin_page = $emailEditorMenuPageSlug;
+      $submenu_file = $emailEditorMenuPageSlug;
+      return $emailEditorMenuPageSlug;
     }
 
     if ($parentFile === self::MAIN_PAGE_SLUG || !self::isOnMailPoetAdminPage()) {
@@ -789,6 +791,22 @@ class Menu {
       $plugin_page = self::MAIN_PAGE_SLUG;
     }
     return $parentFile;
+  }
+
+  private function getEmailEditorMenuPageSlug(): string {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- is_numeric guard plus int cast is the sanitization
+    $rawPostId = $_GET['post'] ?? null;
+    $postId = is_numeric($rawPostId) ? (int)$rawPostId : 0;
+    if (!$postId) {
+      return self::EMAILS_PAGE_SLUG;
+    }
+
+    $newslettersRepository = $this->container->get(NewslettersRepository::class);
+    $newsletter = $newslettersRepository->findOneBy(['wpPost' => $postId]);
+    if ($newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional())) {
+      return self::AUTOMATIONS_PAGE_SLUG;
+    }
+    return self::EMAILS_PAGE_SLUG;
   }
 
   public static function isOnMailPoetAutomationPage(): bool {
