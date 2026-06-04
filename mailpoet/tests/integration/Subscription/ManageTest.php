@@ -10,6 +10,7 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Manage;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -520,6 +521,9 @@ class ManageTest extends \MailPoetTest {
   }
 
   public function testItIgnoresReservedColumnsInSubmittedData(): void {
+    $this->subscriber->setSource(Source::FORM);
+    $this->entityManager->flush();
+
     $manage = $this->getManageService();
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';
@@ -528,13 +532,14 @@ class ManageTest extends \MailPoetTest {
       'last_name' => 'John',
       'email' => 'john.doe@example.com',
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
-      // reserved columns that the manage form never edits
+      // fields the manage form never edits
       'wp_user_id' => 1,
       'is_woocommerce_user' => 1,
       'subscribed_ip' => '88.88.88.88',
       'confirmed_ip' => '88.88.88.88',
       'confirmed_at' => '2003-04-05 06:07:08',
       'created_at' => '2004-05-06 07:08:09',
+      'source' => 'forged_source',
     ];
 
     $manage->onSave();
@@ -543,12 +548,13 @@ class ManageTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     // The editable fields are still applied.
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    // Reserved columns are left untouched.
+    // Non-editable fields are left untouched.
     verify($subscriber->getWpUserId())->null();
     verify($subscriber->getIsWoocommerceUser())->equals(false);
     verify($subscriber->getSubscribedIp())->null();
     verify($subscriber->getConfirmedIp())->null();
     verify($subscriber->getConfirmedAt())->null();
+    verify($subscriber->getSource())->equals(Source::FORM);
     $createdAt = $subscriber->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     verify($createdAt->format('Y-m-d'))->notEquals('2004-05-06');
