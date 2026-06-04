@@ -4,6 +4,7 @@
 // This is to avoid undefined import order & messy WebPack config.
 // Code can be gradually refactored to avoid side effects completely.
 
+import 'common/preferences/initialize';
 import 'homepage/homepage'; // side effect - renders ReactDOM to document
 import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to document
 import 'newsletters/newsletters'; // side effect - renders ReactDOM to window

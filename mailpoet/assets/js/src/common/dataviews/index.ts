@@ -1,6 +1,10 @@
 export { useDataViewsQuery } from './use-dataviews-query';
 export type { LoadListing } from './use-dataviews-query';
 export {
+  getDataViewsPreference,
+  getDataViewsPreferenceKey,
+} from './preferences';
+export {
   buildRestApiPath,
   configureRestApi,
   createRestListingLoader,
