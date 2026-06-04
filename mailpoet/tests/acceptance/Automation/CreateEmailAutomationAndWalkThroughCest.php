@@ -48,6 +48,9 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
 
+    $i->wantTo('Delete the pre-filled welcome email to design it manually');
+    $this->deleteAssignedEmail($i);
+
     $i->click('Design with the classic editor');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
@@ -123,6 +126,14 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->amOnMailboxAppPage();
     $i->see('Inbox (1)');
     $i->see('Automation-Test-Subject');
+  }
+
+  private function deleteAssignedEmail(\AcceptanceTester $i): void {
+    $i->waitForElementVisible('[aria-label="Delete email"]');
+    $i->click('[aria-label="Delete email"]');
+    $i->waitForText('This removes the email from the automation step.');
+    $i->click('Delete email', '.components-modal__frame');
+    $i->waitForText('Design with the classic editor');
   }
 
   private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {

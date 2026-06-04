@@ -75,7 +75,7 @@ class MailpoetMenuCest {
     $i->wantTo('Check if the menu is still selected if I go to the choose template page');
     $i->waitForText('Send email');
     $i->click('Send email');
-    $i->waitForText('Design with the classic editor');
+    $this->deleteAssignedEmail($i);
     $i->fillField('"From" name', 'From Test');
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
@@ -233,6 +233,14 @@ class MailpoetMenuCest {
     $i->amOnAdminPage('admin.php?page=mailpoet-landingpage');
     $i->waitForElement('#mailpoet_landingpage_container');
     $this->assertSelectedMailPoetTopMenu($i);
+  }
+
+  private function deleteAssignedEmail(\AcceptanceTester $i): void {
+    $i->waitForElementVisible('[aria-label="Delete email"]');
+    $i->click('[aria-label="Delete email"]');
+    $i->waitForText('This removes the email from the automation step.');
+    $i->click('Delete email', '.components-modal__frame');
+    $i->waitForText('Design with the classic editor');
   }
 
   private function clickMenuItem(\AcceptanceTester $i, string $label): void {
