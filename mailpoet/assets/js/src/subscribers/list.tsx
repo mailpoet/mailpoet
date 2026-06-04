@@ -23,7 +23,11 @@ import { useNavigate } from 'react-router-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { Button } from 'common';
-import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import {
+  getDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+} from 'common/dataviews';
 import type { ListingFilters, ListingGroup } from 'common/dataviews/types';
 import { Select } from 'common/form/select/select';
 import { MailPoet } from 'mailpoet';
@@ -687,16 +691,23 @@ function SubscriberList() {
   // double-click on Apply / Resend emails / Unsubscribe must not fan out into
   // two bulk-action requests.
   const pendingActionInFlightRef = useRef(false);
-  const [initialView] = useState<View>(() => ({
-    ...DEFAULT_VIEW,
-    page: hashState.page ?? DEFAULT_VIEW.page,
-    perPage: hashState.perPage ?? DEFAULT_VIEW.perPage,
-    search: hashState.search,
-    sort: {
-      field: hashState.orderby ?? DEFAULT_VIEW.sort?.field ?? 'created_at',
-      direction: hashState.order ?? DEFAULT_VIEW.sort?.direction ?? 'desc',
-    },
-  }));
+  const [initialView] = useState<View>(() => {
+    const preferredView = getDataViewsPreference(
+      'subscribers',
+      DEFAULT_VIEW,
+      getSubscriberFields(() => ''),
+    );
+    return {
+      ...preferredView,
+      page: hashState.page ?? preferredView.page,
+      perPage: hashState.perPage ?? preferredView.perPage,
+      search: hashState.search,
+      sort: {
+        field: hashState.orderby ?? preferredView.sort?.field ?? 'created_at',
+        direction: hashState.order ?? preferredView.sort?.direction ?? 'desc',
+      },
+    };
+  });
 
   const load = useCallback(
     (params: ListingQueryParams, signal?: AbortSignal) =>

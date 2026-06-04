@@ -7,7 +7,11 @@ import {
 } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
 import { escapeHTML } from '@wordpress/escape-html';
-import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import {
+  getDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+} from 'common/dataviews';
 import { Notices } from './list/notices';
 import { getSegmentsQuery, updateSegmentsQuery } from './list/query';
 import * as ROUTES from '../routes';
@@ -41,9 +45,12 @@ const DEFAULT_VIEW_BASE: View = {
   showTitle: true,
 };
 
-function viewFromQuery(query: ReturnType<typeof getSegmentsQuery>): View {
+function viewFromQuery(
+  query: ReturnType<typeof getSegmentsQuery>,
+  defaultView = DEFAULT_VIEW_BASE,
+): View {
   return {
-    ...DEFAULT_VIEW_BASE,
+    ...defaultView,
     perPage: query.limit,
     page: Math.floor(query.offset / query.limit) + 1,
     search: query.search,
@@ -196,6 +203,15 @@ function confirmCopy(pendingAction: PendingAction): {
 
 export function DynamicSegmentList(): JSX.Element {
   const [initialQuery] = useState(() => getSegmentsQuery());
+  const defaultView = useMemo(
+    () =>
+      getDataViewsPreference(
+        'dynamic-segments',
+        DEFAULT_VIEW_BASE,
+        dynamicSegmentFields,
+      ),
+    [],
+  );
   const [group, setGroup] = useState<Group>(initialQuery.group as Group);
   const [selection, setSelection] = useState<string[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -204,7 +220,7 @@ export function DynamicSegmentList(): JSX.Element {
   const legacyOffsetRef = useRef<number | null>(
     usesNonPageAlignedOffset(initialQuery) ? initialQuery.offset : null,
   );
-  const latestViewRef = useRef<View>(viewFromQuery(initialQuery));
+  const latestViewRef = useRef<View>(viewFromQuery(initialQuery, defaultView));
   const latestGroupRef = useRef<Group>(initialQuery.group as Group);
 
   const load = useCallback(
@@ -223,7 +239,7 @@ export function DynamicSegmentList(): JSX.Element {
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<DynamicSegmentListingItem>({
-    initialView: viewFromQuery(initialQuery),
+    initialView: viewFromQuery(initialQuery, defaultView),
     load,
     extraParams: (currentView) => {
       if (
@@ -285,7 +301,7 @@ export function DynamicSegmentList(): JSX.Element {
         setView((currentView) =>
           viewMatchesQuery(currentView, nextQuery)
             ? currentView
-            : viewFromQuery(nextQuery),
+            : viewFromQuery(nextQuery, defaultView),
         );
       }
       setSelection([]);
@@ -296,7 +312,7 @@ export function DynamicSegmentList(): JSX.Element {
 
     window.addEventListener('hashchange', applyHashState);
     return () => window.removeEventListener('hashchange', applyHashState);
-  }, [clearLoadError, setView]);
+  }, [clearLoadError, defaultView, setView]);
 
   const handleViewChange = (nextView: View): void => {
     legacyOffsetRef.current = null;

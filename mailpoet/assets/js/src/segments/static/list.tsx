@@ -9,7 +9,11 @@ import { escapeHTML } from '@wordpress/escape-html';
 import { DataViews, View, Action } from '@wordpress/dataviews';
 import { MailPoet } from 'mailpoet';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
-import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import {
+  getDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+} from 'common/dataviews';
 import { ListHeading } from 'segments/static/heading';
 import {
   bulkAction,
@@ -253,15 +257,22 @@ function SegmentListComponent(): JSX.Element {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
-  const [initialView] = useState<View>(() => ({
-    ...DEFAULT_VIEW,
-    page: hashState.page ?? DEFAULT_VIEW.page,
-    perPage: hashState.perPage ?? DEFAULT_VIEW.perPage,
-    sort: {
-      field: hashState.orderby ?? DEFAULT_VIEW.sort?.field ?? 'name',
-      direction: hashState.order ?? DEFAULT_VIEW.sort?.direction ?? 'asc',
-    },
-  }));
+  const [initialView] = useState<View>(() => {
+    const preferredView = getDataViewsPreference(
+      'static-segments',
+      DEFAULT_VIEW,
+      segmentFields,
+    );
+    return {
+      ...preferredView,
+      page: hashState.page ?? preferredView.page,
+      perPage: hashState.perPage ?? preferredView.perPage,
+      sort: {
+        field: hashState.orderby ?? preferredView.sort?.field ?? 'name',
+        direction: hashState.order ?? preferredView.sort?.direction ?? 'asc',
+      },
+    };
+  });
 
   const load = useCallback(
     (params: ListingQueryParams) => getSegments({ ...params, group }),

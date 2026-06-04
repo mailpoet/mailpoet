@@ -8,6 +8,7 @@ import {
   type LoadListing,
   useDataViewsQuery,
 } from 'common/dataviews/use-dataviews-query';
+import { getDataViewsPreference } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
 import { CustomFieldsForm } from './custom-fields-form';
 import { listFields } from './fields';
@@ -104,6 +105,9 @@ export function CustomFieldsPage() {
   const [selection, setSelection] = useState<string[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
+  const [initialView] = useState<View>(() =>
+    getDataViewsPreference('custom-fields', DEFAULT_VIEW, listFields),
+  );
 
   const load = useCallback<LoadListing<CustomField>>(
     async (params) => {
@@ -135,7 +139,7 @@ export function CustomFieldsPage() {
     refresh,
     clearError: clearLoadError,
   } = useDataViewsQuery<CustomField>({
-    initialView: DEFAULT_VIEW,
+    initialView,
     load,
   });
 

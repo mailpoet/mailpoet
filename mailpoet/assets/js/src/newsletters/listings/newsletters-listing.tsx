@@ -21,6 +21,7 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
+  getDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
@@ -225,22 +226,39 @@ export function NewslettersListing({
     log: NewsletterMailerLog;
   }>({ method: null, log: { status: '' } });
 
-  const [initialView] = useState<View>(() => ({
-    type: 'table',
-    perPage: hashState.perPage ?? listingPerPage,
-    page: hashState.page ?? 1,
-    search: hashState.search,
-    sort: {
-      field: hashState.orderby ?? defaultSort.field,
-      direction: hashState.order ?? defaultSort.direction,
-    },
-    fields: defaultFields,
-    // `fields` always leads with the subject/name column; that is the row
-    // title. `defaultFields` lists only the *other* visible columns, so the
-    // title renders once and is never duplicated as a regular column.
-    titleField: fields[0]?.id,
-    showTitle: true,
-  }));
+  const [initialView] = useState<View>(() => {
+    const defaultView: View = {
+      type: 'table',
+      perPage: listingPerPage,
+      page: 1,
+      sort: defaultSort,
+      fields: defaultFields,
+      // `fields` always leads with the subject/name column; that is the row
+      // title. `defaultFields` lists only the *other* visible columns, so the
+      // title renders once and is never duplicated as a regular column.
+      titleField: fields[0]?.id,
+      showTitle: true,
+    };
+    const preferredView = getDataViewsPreference(
+      `newsletters-${type}`,
+      defaultView,
+      fields,
+    );
+    return {
+      ...preferredView,
+      perPage: hashState.perPage ?? preferredView.perPage,
+      page: hashState.page ?? 1,
+      search: hashState.search,
+      sort: {
+        field:
+          hashState.orderby ?? preferredView.sort?.field ?? defaultSort.field,
+        direction:
+          hashState.order ??
+          preferredView.sort?.direction ??
+          defaultSort.direction,
+      },
+    };
+  });
 
   const load = useCallback(
     (params: ListingQueryParams, signal?: AbortSignal) => {
