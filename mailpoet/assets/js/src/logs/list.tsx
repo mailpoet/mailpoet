@@ -4,7 +4,11 @@ import { DataViews, View } from '@wordpress/dataviews';
 import { __ } from '@wordpress/i18n';
 
 import { Button } from 'common';
-import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import {
+  getDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+} from 'common/dataviews';
 import { Datepicker } from '../common/datepicker/datepicker';
 import { buildLogsRequestParams, getLogs, type LogListingItem } from './api';
 import { getLogFields } from './fields';
@@ -35,13 +39,22 @@ function buildInitialView(defaultFrom: string): {
   view: View;
   dateFilters: DateFilters;
 } {
-  const state = parseLogsUrlState(window.location.href, defaultFrom);
+  const currentUrl = window.location.href;
+  const state = parseLogsUrlState(currentUrl, defaultFrom);
+  const searchParams = new URL(currentUrl).searchParams;
+  const hasPerPageUrlState =
+    searchParams.has('per_page') || searchParams.has('limit');
+  const preferredView = getDataViewsPreference(
+    'logs',
+    DEFAULT_VIEW,
+    getLogFields(new Set(), () => undefined),
+  );
 
   return {
     view: {
-      ...DEFAULT_VIEW,
+      ...preferredView,
       page: state.page,
-      perPage: state.perPage,
+      perPage: hasPerPageUrlState ? state.perPage : preferredView.perPage,
       search: state.search,
     },
     dateFilters: state.dateFilters,

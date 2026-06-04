@@ -14,6 +14,7 @@ import { __ } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
 import {
+  getDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
@@ -152,20 +153,37 @@ export function SendingStatus() {
     [baseUrl],
   );
   const [group, setGroup] = useState<string>(hashState.group ?? 'all');
+  const fields = useMemo(() => buildFields(), []);
 
-  const [initialView] = useState<View>(() => ({
-    type: 'table',
-    perPage: hashState.perPage ?? listingPerPage,
-    page: hashState.page ?? 1,
-    search: hashState.search,
-    sort: {
-      field: hashState.orderby ?? DEFAULT_SORT.field,
-      direction: hashState.order ?? DEFAULT_SORT.direction,
-    },
-    fields: ['failed', 'error'],
-    titleField: 'subscriberId',
-    showTitle: true,
-  }));
+  const [initialView] = useState<View>(() => {
+    const preferredView = getDataViewsPreference(
+      'sending-status',
+      {
+        type: 'table',
+        perPage: listingPerPage,
+        page: 1,
+        sort: DEFAULT_SORT,
+        fields: ['failed', 'error'],
+        titleField: 'subscriberId',
+        showTitle: true,
+      },
+      fields,
+    );
+    return {
+      ...preferredView,
+      perPage: hashState.perPage ?? preferredView.perPage,
+      page: hashState.page ?? 1,
+      search: hashState.search,
+      sort: {
+        field:
+          hashState.orderby ?? preferredView.sort?.field ?? DEFAULT_SORT.field,
+        direction:
+          hashState.order ??
+          preferredView.sort?.direction ??
+          DEFAULT_SORT.direction,
+      },
+    };
+  });
 
   const load = useCallback(
     async (queryParams: ListingQueryParams, signal?: AbortSignal) => {
@@ -279,8 +297,6 @@ export function SendingStatus() {
     },
     [newsletterId, refresh],
   );
-
-  const fields = useMemo(() => buildFields(), []);
 
   const actions = useMemo<Action<SendingStatusItem>[]>(
     () => [

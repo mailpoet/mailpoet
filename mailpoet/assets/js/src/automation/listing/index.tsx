@@ -13,6 +13,7 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getDataViewsPreference } from 'common/dataviews';
 import { storeName } from './store/constants';
 import type { AutomationItem } from './store/types';
 import { AutomationStatus } from './automation';
@@ -72,23 +73,30 @@ function getGroupFromSearch(search: URLSearchParams): Group {
   return groupNames.includes(status as Group) ? (status as Group) : 'all';
 }
 
-function getViewFromSearch(search: URLSearchParams): View {
+function getViewFromSearch(
+  search: URLSearchParams,
+  defaultView = DEFAULT_VIEW,
+): View {
   const order = search.get('order');
   const orderby = search.get('orderby');
   return {
-    ...DEFAULT_VIEW,
-    page: parsePositiveInt(search.get('paged')) ?? DEFAULT_VIEW.page,
-    perPage: parsePositiveInt(search.get('per_page')) ?? DEFAULT_VIEW.perPage,
+    ...defaultView,
+    page: parsePositiveInt(search.get('paged')) ?? defaultView.page,
+    perPage: parsePositiveInt(search.get('per_page')) ?? defaultView.perPage,
     search: search.get('search') ?? undefined,
     sort:
       orderby && (order === 'asc' || order === 'desc')
         ? { field: orderby, direction: order }
-        : undefined,
+        : defaultView.sort,
   };
 }
 
-function viewMatchesSearch(view: View, search: URLSearchParams): boolean {
-  const searchView = getViewFromSearch(search);
+function viewMatchesSearch(
+  view: View,
+  search: URLSearchParams,
+  defaultView = DEFAULT_VIEW,
+): boolean {
+  const searchView = getViewFromSearch(search, defaultView);
   return (
     (view.page ?? 1) === (searchView.page ?? 1) &&
     (view.perPage ?? DEFAULT_PER_PAGE) ===
@@ -240,11 +248,15 @@ export function AutomationListingHeader(): JSX.Element {
 export function AutomationListing(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
+  const defaultView = useMemo(
+    () => getDataViewsPreference('automation', DEFAULT_VIEW, automationFields),
+    [],
+  );
   const [group, setGroup] = useState<Group>(() =>
     getGroupFromSearch(new URLSearchParams(location.search)),
   );
   const [view, setView] = useState<View>(() =>
-    getViewFromSearch(new URLSearchParams(location.search)),
+    getViewFromSearch(new URLSearchParams(location.search), defaultView),
   );
   const [selection, setSelection] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
@@ -284,14 +296,14 @@ export function AutomationListing(): JSX.Element {
       setGroup(nextGroup);
       selectionShouldBeCleared = true;
     }
-    if (!viewMatchesSearch(latestViewRef.current, nextSearch)) {
-      setView(getViewFromSearch(nextSearch));
+    if (!viewMatchesSearch(latestViewRef.current, nextSearch, defaultView)) {
+      setView(getViewFromSearch(nextSearch, defaultView));
       selectionShouldBeCleared = true;
     }
     if (selectionShouldBeCleared) {
       setSelection([]);
     }
-  }, [location.search]);
+  }, [defaultView, location.search]);
 
   const updateUrlSearchString = useCallback(
     (nextGroup: Group, nextView: View) => {

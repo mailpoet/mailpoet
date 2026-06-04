@@ -6,7 +6,11 @@ import { DataViews, View, Action } from '@wordpress/dataviews';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
 import { withNpsPoll } from 'nps-poll.jsx';
-import { useDataViewsQuery, type ListingQueryParams } from 'common/dataviews';
+import {
+  getDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+} from 'common/dataviews';
 import { FormsHeading, onAddNewForm } from './heading';
 import { listFields } from './fields';
 import {
@@ -76,6 +80,9 @@ function FormListComponent(): JSX.Element {
   const [selection, setSelection] = useState<string[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
+  const [initialView] = useState<View>(() =>
+    getDataViewsPreference('forms', DEFAULT_VIEW, listFields),
+  );
 
   const load = useCallback(
     (params: ListingQueryParams) => getForms({ ...params, group }),
@@ -93,7 +100,7 @@ function FormListComponent(): JSX.Element {
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<FormListingItem>({
-    initialView: DEFAULT_VIEW,
+    initialView,
     load,
   });
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
+import { getDataViewsPreference } from 'common/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { listFields } from './fields';
@@ -30,7 +31,9 @@ const DEFAULT_VIEW: View = {
 };
 
 export function TagsPage() {
-  const [view, setView] = useState<View>(DEFAULT_VIEW);
+  const [view, setView] = useState<View>(() =>
+    getDataViewsPreference('tags', DEFAULT_VIEW, listFields),
+  );
   const [items, setItems] = useState<Tag[]>([]);
   const [meta, setMeta] = useState<TagListMeta>({ count: 0, pages: 0 });
   const [isLoading, setIsLoading] = useState(false);
