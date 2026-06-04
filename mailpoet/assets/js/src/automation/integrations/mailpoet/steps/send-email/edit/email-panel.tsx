@@ -1,7 +1,13 @@
-import { ComponentProps } from 'react';
-import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
+import { ComponentProps, useState } from 'react';
+import {
+  __experimentalConfirmDialog as ConfirmDialog,
+  PanelBody,
+  TextareaControl,
+  TextControl,
+} from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { Icon, trash } from '@wordpress/icons';
 import { isEmail } from 'common/functions';
 import { ShortcodeHelpText } from './shortcode-help-text';
 import { SenderDomainNotice } from '../../../components/sender-domain-notice';
@@ -9,6 +15,7 @@ import { PlainBodyTitle } from '../../../../../editor/components';
 import { storeName } from '../../../../../editor/store';
 import { StepName } from '../../../../../editor/components/panel/step-name';
 import { EditNewsletter } from './edit-newsletter';
+import { TitleActionButton } from '../../../../../editor/components/panel/title-action-button';
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,
@@ -33,6 +40,62 @@ function SingleLineTextareaControl(
   );
 }
 
+function DeleteEmailButton({
+  stepId,
+  hasEmail,
+}: {
+  stepId: string;
+  hasEmail: boolean;
+}): JSX.Element | null {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  if (!hasEmail) {
+    return null;
+  }
+
+  const deleteEmail = () => {
+    setShowConfirmDialog(false);
+    void dispatch(storeName).updateStepArgs(stepId, 'email_id', undefined);
+    void dispatch(storeName).updateStepArgs(
+      stepId,
+      'email_wp_post_id',
+      undefined,
+    );
+    void dispatch(storeName).updateStepArgs(
+      stepId,
+      'stepDuplicated',
+      undefined,
+    );
+  };
+
+  return (
+    <>
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        title={__('Delete email', 'mailpoet')}
+        confirmButtonText={__('Delete email', 'mailpoet')}
+        onConfirm={deleteEmail}
+        onCancel={() => setShowConfirmDialog(false)}
+        __experimentalHideHeader={false}
+      >
+        {__(
+          'This removes the email from the automation step. Save the automation to make this change permanent.',
+          'mailpoet',
+        )}
+      </ConfirmDialog>
+      <TitleActionButton
+        label={__('Delete email', 'mailpoet')}
+        showTooltip
+        variant="tertiary"
+        isDestructive
+        onClick={() => setShowConfirmDialog(true)}
+      >
+        <Icon icon={trash} size={16} />
+      </TitleActionButton>
+    </>
+  );
+}
+
 export function EmailPanel(): JSX.Element {
   const { selectedStep, errors, isGarden } = useSelect(
     (select) => ({
@@ -51,6 +114,7 @@ export function EmailPanel(): JSX.Element {
   const senderAddressErrorMessage = errorFields?.sender_address ?? '';
   const subjectErrorMessage = errorFields?.subject ?? '';
   const showSenderDetailsFields = !isGarden;
+  const hasEmail = !!selectedStep.args.email_id;
 
   return (
     <PanelBody opened>
@@ -153,7 +217,9 @@ export function EmailPanel(): JSX.Element {
         help={<ShortcodeHelpText />}
       />
       <div className="mailpoet-automation-email-content-separator" />
-      <PlainBodyTitle title={__('Email', 'mailpoet')} />
+      <PlainBodyTitle title={__('Email', 'mailpoet')}>
+        <DeleteEmailButton stepId={selectedStep.id} hasEmail={hasEmail} />
+      </PlainBodyTitle>
       <EditNewsletter />
     </PanelBody>
   );
