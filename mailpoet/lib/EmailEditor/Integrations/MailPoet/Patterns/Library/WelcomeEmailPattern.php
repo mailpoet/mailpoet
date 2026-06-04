@@ -32,8 +32,15 @@ class WelcomeEmailPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: %s: Subscriber first name personalization tag */
-      sprintf(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'), '<!--[mailpoet/subscriber-firstname default="subscriber"]-->') . '</p>
+      sprintf(
+        /* translators: %s: Subscriber first name personalization tag */
+        __('Hi %s, we are so glad to have you onboard.', 'mailpoet'),
+        sprintf(
+          '<!--[mailpoet/subscriber-firstname default="%s"]-->',
+          /* translators: Default placeholder used when no subscriber name is available in "Hi %s" */
+          esc_attr(_x('there', 'subscriber name placeholder', 'mailpoet'))
+        )
+      ) . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:image {"sizeSlug":"full"} -->
