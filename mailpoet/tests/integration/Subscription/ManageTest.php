@@ -519,6 +519,41 @@ class ManageTest extends \MailPoetTest {
     verify($welcomeSegmentIds)->equals($expectedSegmentIds);
   }
 
+  public function testItIgnoresReservedColumnsInSubmittedData(): void {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      // reserved columns that the manage form never edits
+      'wp_user_id' => 1,
+      'is_woocommerce_user' => 1,
+      'subscribed_ip' => '88.88.88.88',
+      'confirmed_ip' => '88.88.88.88',
+      'confirmed_at' => '2003-04-05 06:07:08',
+      'created_at' => '2004-05-06 07:08:09',
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    // The editable fields are still applied.
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    // Reserved columns are left untouched.
+    verify($subscriber->getWpUserId())->null();
+    verify($subscriber->getIsWoocommerceUser())->equals(false);
+    verify($subscriber->getSubscribedIp())->null();
+    verify($subscriber->getConfirmedIp())->null();
+    verify($subscriber->getConfirmedAt())->null();
+    $createdAt = $subscriber->getCreatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
+    verify($createdAt->format('Y-m-d'))->notEquals('2004-05-06');
+  }
+
   public function testItRedirectsWithErrorAndDoesNotSaveWhenTokenVerificationFails(): void {
     $redirectParams = null;
     $manage = $this->getManageService([

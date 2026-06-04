@@ -112,7 +112,7 @@ class Manage {
             && $subscriber instanceof SubscriberEntity
             && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
           );
-          $subscriber = $this->subscriberSaveController->createOrUpdate($subscriberData, $subscriber);
+          $subscriber = $this->subscriberSaveController->createOrUpdate($this->filterOutReservedColumns($subscriberData), $subscriber);
           if ($shouldTrackUnsubscribe) {
             $this->unsubscribesTracker->track(
               (int)$subscriber->getId(),
@@ -245,6 +245,20 @@ class Manage {
         ? $this->getCurrentSubscribedSegmentIds($subscriber)
         : array_diff($subscribeIds, $currentSegmentIds)
     );
+  }
+
+  /**
+   * The manage-subscription form only edits name, email, subscription choices
+   * and global status. Reuse the save controller's reserved-column filter so
+   * system-maintained columns are left untouched, but keep `status`, which is
+   * editable here and is already validated by hasInvalidStatus().
+   */
+  private function filterOutReservedColumns(array $subscriberData): array {
+    $filtered = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
+    if (array_key_exists('status', $subscriberData)) {
+      $filtered['status'] = $subscriberData['status'];
+    }
+    return $filtered;
   }
 
   private function hasInvalidStatus(array $subscriberData): bool {
