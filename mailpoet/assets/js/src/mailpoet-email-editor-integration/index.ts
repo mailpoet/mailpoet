@@ -4,7 +4,7 @@
 
 import { addFilter, addAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-import { select } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { registerPlugin } from '@wordpress/plugins';
@@ -15,7 +15,11 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
+<<<<<<< HEAD
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
+=======
+import { store as emailEditorIntegrationStore } from './store';
+>>>>>>> 0f71c75863 (Implement the pre-send review panel in the email editor sidebar)
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
@@ -64,6 +68,46 @@ addFilter(
     }
 
     return __('Review & send', 'mailpoet');
+  },
+);
+
+// Open the in-editor review & send panel instead of navigating away. Automation
+// emails keep the default action (returning to the automation editor).
+addFilter(
+  'woocommerce_email_editor_send_action_callback',
+  'mailpoet/email-editor-integration',
+  (defaultAction: () => void) => {
+    if (isAutomationNewsletter) {
+      return defaultAction;
+    }
+
+    return () => {
+      const postId = select(editorStore).getCurrentPostId();
+      if (postId && select(editorStore).isEditedPostDirty()) {
+        void dispatch(coreDataStore)
+          .saveEditedEntityRecord('postType', 'mailpoet_email', postId)
+          .then(() => dispatch(emailEditorIntegrationStore).openReviewPanel());
+        return;
+      }
+      void dispatch(emailEditorIntegrationStore).openReviewPanel();
+    };
+  },
+);
+
+// Keep the review button enabled when there are unsaved changes — the
+// send button action saves before opening the review panel.
+// Empty and already-sent emails stay disabled.
+addFilter(
+  'woocommerce_email_editor_send_button_disabled',
+  'mailpoet/email-editor-integration',
+  (
+    isDisabled: boolean,
+    flags: { hasEmptyContent: boolean; isEmailSent: boolean },
+  ) => {
+    if (isAutomationNewsletter) {
+      return isDisabled;
+    }
+    return flags.hasEmptyContent || flags.isEmailSent;
   },
 );
 

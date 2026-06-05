@@ -77,15 +77,15 @@
 }
 
 .mailpoet-ai-suggestions {
-  min-width: 300px;
   max-width: 400px;
+  min-width: 300px;
   padding: $grid-unit-10;
 
   &__toggle {
-    margin-bottom: $grid-unit-15;
-    display: inline-flex !important;
     align-items: center;
+    display: inline-flex !important;
     gap: 4px;
+    margin-bottom: $grid-unit-15;
   }
 
   &__icon {
@@ -94,11 +94,11 @@
   }
 
   &__loading {
-    display: flex;
     align-items: center;
+    color: $gray-700;
+    display: flex;
     gap: $grid-unit-10;
     padding: $grid-unit-15 0;
-    color: $gray-700;
   }
 
   &__error {
@@ -111,17 +111,17 @@
   }
 
   &__item {
-    display: flex;
-    flex-direction: column;
     align-items: flex-start;
-    width: 100%;
-    padding: $grid-unit-10;
+    background: transparent;
     border: 1px solid $gray-300;
     border-radius: 2px;
-    margin-bottom: $grid-unit-10;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: $grid-unit-10;
+    padding: $grid-unit-10;
     text-align: left;
-    background: transparent;
+    width: 100%;
 
     &:hover {
       background-color: $gray-100;
@@ -156,5 +156,81 @@
 
   &__preheader {
     color: $gray-700;
+  }
+}
+
+.mailpoet-review-panel {
+  background: #fff;
+  box-sizing: border-box;
+  inset: 46px 0 0;
+  overflow: auto;
+  position: fixed;
+  z-index: 100001;
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: inherit;
+  }
+
+  @media (min-width: 782px) {
+    border-left: 1px solid #ddd;
+    left: auto;
+    top: 32px;
+    width: 281px;
+    z-index: 99998;
+  }
+
+  @media (min-width: 782px) and (not (prefers-reduced-motion)) {
+    animation: mailpoet-review-panel__slide-in 0.1s forwards;
+    transform: translateX(100%);
+  }
+
+  // Editor runs fullscreen (no admin bar), so pin to the very top.
+  body.is-fullscreen-mode & {
+    @media (min-width: 782px) {
+      top: 0;
+    }
+  }
+
+  // Keep the panel in place once its region receives focus (slide-in fallback).
+  [role='region']:focus & {
+    @media (min-width: 782px) {
+      transform: translateX(0%);
+    }
+  }
+
+  .mailpoet-inbox-preview-panel__card {
+    margin-top: 12px;
+  }
+}
+
+.mailpoet-review-panel__header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  gap: 8px;
+  height: 65px;
+  padding: 0 16px;
+
+  .components-button {
+    flex: 1;
+    justify-content: center;
+    max-width: 160px;
+  }
+}
+
+.mailpoet-review-panel__test-email {
+  padding: 8px 16px 16px;
+}
+
+.mailpoet-review-panel__notice {
+  margin: 0 16px 16px;
+}
+
+@keyframes mailpoet-review-panel__slide-in {
+  100% {
+    transform: translateX(0%);
   }
 }
