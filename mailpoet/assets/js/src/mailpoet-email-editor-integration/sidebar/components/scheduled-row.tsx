@@ -4,78 +4,20 @@ import {
   FlexItem,
   Button,
   Dropdown,
-  DateTimePicker,
   __experimentalVStack as VStack,
   __experimentalHStack as HStack,
   __experimentalHeading as Heading,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useRef } from '@wordpress/element';
-import { dateI18n, getSettings } from '@wordpress/date';
 import { closeSmall } from '@wordpress/icons';
-import { select, dispatch } from '@wordpress/data';
-import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
-import { store as editorStore } from '@wordpress/editor';
+import { useScheduledDate } from '../../shared/use-scheduled-date';
+import { ScheduledDatePicker } from '../../shared/scheduled-date-picker';
 
 export function ScheduledRow() {
-  const [mailpoetEmailData] = useEntityProp(
-    'postType',
-    'mailpoet_email',
-    'mailpoet_data',
-  );
-
-  const scheduledDate = (mailpoetEmailData?.scheduled_at as string) || null;
+  const { formattedDate, setScheduledDate } = useScheduledDate();
   const sendPopoverAnchor = useRef(null);
-  const settings = getSettings();
-
-  const setScheduledDate = (date: string | null) => {
-    const postId = select(editorStore).getCurrentPostId();
-    const currentPostType = 'mailpoet_email';
-
-    const editedPost = select(coreDataStore).getEditedEntityRecord(
-      'postType',
-      currentPostType,
-      postId,
-    );
-
-    // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
-    const mailpoetData = editedPost?.mailpoet_data || {};
-    void dispatch(coreDataStore).editEntityRecord(
-      'postType',
-      currentPostType,
-      postId,
-      {
-        mailpoet_data: {
-          ...mailpoetData,
-          scheduled_at: date,
-        },
-      },
-    );
-  };
-
-  const getFormattedDate = () => {
-    if (!scheduledDate) {
-      return __('Immediately', 'mailpoet');
-    }
-    return dateI18n(
-      settings.formats.datetime,
-      scheduledDate,
-      settings.timezone.string,
-    );
-  };
-
-  const is12HourTime = /a(?!\\)/i.test(
-    settings.formats.time
-      .toLowerCase() // Test only the lower case a.
-      .replace(/\\\\/g, '') // Replace "//" with empty strings.
-      .split('')
-      .reverse()
-      .join(''), // Reverse the string and test for "a" not followed by a slash.
-  );
-  // Used for comparing today with DateTimePicker dates to determine validity.
-  // We set the hours to 0:00:00 to match the time format of DateTimePicker dates.
-  const today = new Date().setHours(0, 0, 0, 0);
 
   return (
     <PanelRow>
@@ -97,7 +39,7 @@ export function ScheduledRow() {
                 onClick={onToggle}
                 aria-expanded={isOpen}
               >
-                {getFormattedDate()}
+                {formattedDate}
               </Button>
             )}
             renderContent={({ onClose }) => (
@@ -133,17 +75,7 @@ export function ScheduledRow() {
                     />
                   </HStack>
                 </VStack>
-                <DateTimePicker
-                  currentDate={scheduledDate}
-                  onChange={(newDate) => setScheduledDate(newDate)}
-                  /* @ts-expect-error dateOrder prop is available in the external @wordpress/components package */
-                  dateOrder={
-                    /* translators: Order of day, month, and year. Available formats are 'dmy', 'mdy', and 'ymd'. */
-                    _x('dmy', 'date order', 'mailpoet')
-                  }
-                  is12Hour={is12HourTime}
-                  isInvalidDate={(date) => date.getTime() < today}
-                />
+                <ScheduledDatePicker />
               </div>
             )}
           />
