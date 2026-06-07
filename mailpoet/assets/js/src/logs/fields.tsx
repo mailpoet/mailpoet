@@ -118,3 +118,12 @@ export function getLogFields(
     },
   ];
 }
+
+const EMPTY_EXPANDED_LOG_IDS = new Set<number>();
+const NOOP_TOGGLE = (): void => undefined;
+
+// Stable field definitions for callers that only need the field schema (e.g.
+// DataViews preference validation), without per-row expand/collapse state.
+export function getLogFieldDefinitions(): Field<LogListingItem>[] {
+  return getLogFields(EMPTY_EXPANDED_LOG_IDS, NOOP_TOGGLE);
+}
