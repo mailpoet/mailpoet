@@ -15,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
   getDataViewsPreference,
+  usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
@@ -155,20 +156,25 @@ export function SendingStatus() {
   const [group, setGroup] = useState<string>(hashState.group ?? 'all');
   const fields = useMemo(() => buildFields(), []);
 
+  const getPreferredView = useCallback(
+    () =>
+      getDataViewsPreference(
+        'sending-status',
+        {
+          type: 'table',
+          perPage: listingPerPage,
+          page: 1,
+          sort: DEFAULT_SORT,
+          fields: ['failed', 'error'],
+          titleField: 'subscriberId',
+          showTitle: true,
+        },
+        fields,
+      ),
+    [fields],
+  );
   const [initialView] = useState<View>(() => {
-    const preferredView = getDataViewsPreference(
-      'sending-status',
-      {
-        type: 'table',
-        perPage: listingPerPage,
-        page: 1,
-        sort: DEFAULT_SORT,
-        fields: ['failed', 'error'],
-        titleField: 'subscriberId',
-        showTitle: true,
-      },
-      fields,
-    );
+    const preferredView = getPreferredView();
     return {
       ...preferredView,
       perPage: hashState.perPage ?? preferredView.perPage,
@@ -220,23 +226,32 @@ export function SendingStatus() {
     clearError,
     refresh,
   } = useDataViewsQuery<SendingStatusItem>({ initialView, load });
+  const persistedViewChange = usePersistedDataViewsPreference(
+    'sending-status',
+    view,
+    onChangeView,
+  );
 
   useEffect(() => {
+    // Compare against the preference-merged defaults, resolved at write time
+    // (not the hardcoded ones, not a mount-time snapshot), so reloading a URL
+    // without explicit params resolves to the same view it was written from.
+    const preferredView = getPreferredView();
     const hash = buildHash(
       baseUrl,
       group,
       view,
       {},
       {
-        sort: DEFAULT_SORT.field,
-        order: DEFAULT_SORT.direction,
-        perPage: listingPerPage,
+        sort: preferredView.sort?.field ?? DEFAULT_SORT.field,
+        order: preferredView.sort?.direction ?? DEFAULT_SORT.direction,
+        perPage: preferredView.perPage ?? listingPerPage,
       },
     );
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
-  }, [baseUrl, group, view]);
+  }, [baseUrl, getPreferredView, group, view]);
 
   useEffect(() => {
     const applyHash = (): void => {
@@ -245,21 +260,28 @@ export function SendingStatus() {
       ]);
       setGroup(next.group ?? 'all');
       clearError();
+      // Fill hash segments the URL omits from the preference-merged defaults
+      // (not the in-memory view) so back/forward resolves a URL exactly like
+      // reopening it.
+      const preferredView = getPreferredView();
       setView((currentView) => ({
         ...currentView,
         page: next.page ?? 1,
-        perPage: next.perPage ?? currentView.perPage,
+        perPage: next.perPage ?? preferredView.perPage,
         search: next.search ?? '',
         sort: {
-          field: next.orderby ?? currentView.sort?.field ?? DEFAULT_SORT.field,
+          field:
+            next.orderby ?? preferredView.sort?.field ?? DEFAULT_SORT.field,
           direction:
-            next.order ?? currentView.sort?.direction ?? DEFAULT_SORT.direction,
+            next.order ??
+            preferredView.sort?.direction ??
+            DEFAULT_SORT.direction,
         },
       }));
     };
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
-  }, [baseUrl, clearError, setView]);
+  }, [baseUrl, clearError, getPreferredView, setView]);
 
   // Auto-refresh on the WP heartbeat tick.
   useEffect(() => {
@@ -412,7 +434,7 @@ export function SendingStatus() {
           data={items}
           fields={fields}
           view={view}
-          onChangeView={onChangeView}
+          onChangeView={persistedViewChange}
           actions={actions}
           paginationInfo={paginationInfo}
           defaultLayouts={{ table: {} }}
@@ -422,6 +444,9 @@ export function SendingStatus() {
         >
           <div className="mailpoet-dataviews__toolbar">
             <DataViews.Search label={__('Search', 'mailpoet')} />
+            <div className="mailpoet-dataviews__toolbar-end">
+              <DataViews.ViewConfig />
+            </div>
           </div>
           <DataViews.Layout />
           <DataViews.Footer />

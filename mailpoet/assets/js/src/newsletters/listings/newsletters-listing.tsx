@@ -22,6 +22,7 @@ import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
   getDataViewsPreference,
+  usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
@@ -226,24 +227,25 @@ export function NewslettersListing({
     log: NewsletterMailerLog;
   }>({ method: null, log: { status: '' } });
 
+  const [defaultViewBase] = useState<View>(() => ({
+    type: 'table',
+    perPage: listingPerPage,
+    page: 1,
+    sort: defaultSort,
+    fields: defaultFields,
+    // `fields` always leads with the subject/name column; that is the row
+    // title. `defaultFields` lists only the *other* visible columns, so the
+    // title renders once and is never duplicated as a regular column.
+    titleField: fields[0]?.id,
+    showTitle: true,
+  }));
+  const getPreferredView = useCallback(
+    () =>
+      getDataViewsPreference(`newsletters-${type}`, defaultViewBase, fields),
+    [defaultViewBase, fields, type],
+  );
   const [initialView] = useState<View>(() => {
-    const defaultView: View = {
-      type: 'table',
-      perPage: listingPerPage,
-      page: 1,
-      sort: defaultSort,
-      fields: defaultFields,
-      // `fields` always leads with the subject/name column; that is the row
-      // title. `defaultFields` lists only the *other* visible columns, so the
-      // title renders once and is never duplicated as a regular column.
-      titleField: fields[0]?.id,
-      showTitle: true,
-    };
-    const preferredView = getDataViewsPreference(
-      `newsletters-${type}`,
-      defaultView,
-      fields,
-    );
+    const preferredView = getPreferredView();
     return {
       ...preferredView,
       perPage: hashState.perPage ?? preferredView.perPage,
@@ -324,15 +326,27 @@ export function NewslettersListing({
   }, [refresh, selection.length]);
 
   useEffect(() => {
+    // Compare against the preference-merged defaults, resolved at write time
+    // (not the hardcoded ones, not a mount-time snapshot), so reloading a URL
+    // without explicit params resolves to the same view it was written from.
+    const preferredView = getPreferredView();
     const hash = buildHash(baseUrl, group, view, filter, {
-      sort: defaultSort.field,
-      order: defaultSort.direction,
-      perPage: listingPerPage,
+      sort: preferredView.sort?.field ?? defaultSort.field,
+      order: preferredView.sort?.direction ?? defaultSort.direction,
+      perPage: preferredView.perPage ?? listingPerPage,
     });
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
-  }, [baseUrl, defaultSort.direction, defaultSort.field, filter, group, view]);
+  }, [
+    baseUrl,
+    defaultSort.direction,
+    defaultSort.field,
+    filter,
+    getPreferredView,
+    group,
+    view,
+  ]);
 
   useEffect(() => {
     const applyHash = (): void => {
@@ -343,15 +357,21 @@ export function NewslettersListing({
       setFilter(next.filter ?? {});
       setSelection([]);
       clearLoadError();
+      // Fill hash segments the URL omits from the preference-merged defaults
+      // (not the in-memory view) so back/forward resolves a URL exactly like
+      // reopening it.
+      const preferredView = getPreferredView();
       setView((currentView) => ({
         ...currentView,
         page: next.page ?? 1,
-        perPage: next.perPage ?? currentView.perPage,
+        perPage: next.perPage ?? preferredView.perPage,
         search: next.search ?? '',
         sort: {
-          field: next.orderby ?? currentView.sort?.field ?? defaultSort.field,
+          field: next.orderby ?? preferredView.sort?.field ?? defaultSort.field,
           direction:
-            next.order ?? currentView.sort?.direction ?? defaultSort.direction,
+            next.order ??
+            preferredView.sort?.direction ??
+            defaultSort.direction,
         },
       }));
     };
@@ -362,6 +382,7 @@ export function NewslettersListing({
     clearLoadError,
     defaultSort.direction,
     defaultSort.field,
+    getPreferredView,
     setView,
     supportedGroups,
   ]);
@@ -436,6 +457,11 @@ export function NewslettersListing({
       onChangeView(nextView);
     },
     [onChangeView],
+  );
+  const persistedViewChange = usePersistedDataViewsPreference(
+    `newsletters-${type}`,
+    view,
+    handleViewChange,
   );
 
   const handleSelectionChange = useCallback(
@@ -685,7 +711,7 @@ export function NewslettersListing({
           data={items}
           fields={fields}
           view={view}
-          onChangeView={handleViewChange}
+          onChangeView={persistedViewChange}
           actions={actions}
           paginationInfo={paginationInfo}
           defaultLayouts={{ table: {} }}
@@ -742,6 +768,9 @@ export function NewslettersListing({
                 )}
               </div>
             )}
+            <div className="mailpoet-dataviews__toolbar-end">
+              <DataViews.ViewConfig />
+            </div>
           </div>
           <DataViews.Layout />
           <DataViews.Footer />
