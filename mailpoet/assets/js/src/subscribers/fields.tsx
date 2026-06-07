@@ -61,6 +61,31 @@ function dateTime(value: string | null): JSX.Element | null {
 export function getSubscriberFields(
   getBackUrl: () => string,
 ): Field<Subscriber>[] {
+  const statisticsFields: Field<Subscriber>[] = mailpoetTrackingEnabled
+    ? [
+        {
+          id: 'statistics',
+          label: __('Score', 'mailpoet'),
+          enableSorting: false,
+          enableGlobalSearch: false,
+          render: ({ item }) => (
+            <div className="mailpoet-listing-stats">
+              <Link
+                to={`/stats/${String(item.id)}`}
+                state={{ backUrl: getBackUrl() }}
+              >
+                <ListingsEngagementScore
+                  id={Number(item.id)}
+                  engagementScore={item.engagement_score}
+                  engagementScoreType={item.engagement_score_type}
+                />
+              </Link>
+            </div>
+          ),
+        },
+      ]
+    : [];
+
   return [
     {
       id: 'email',
@@ -114,30 +139,7 @@ export function getSubscriberFields(
         />
       ),
     },
-    ...(mailpoetTrackingEnabled
-      ? [
-          {
-            id: 'statistics',
-            label: __('Score', 'mailpoet'),
-            enableSorting: false,
-            enableGlobalSearch: false,
-            render: ({ item }) => (
-              <div className="mailpoet-listing-stats">
-                <Link
-                  to={`/stats/${String(item.id)}`}
-                  state={{ backUrl: getBackUrl() }}
-                >
-                  <ListingsEngagementScore
-                    id={Number(item.id)}
-                    engagementScore={item.engagement_score}
-                    engagementScoreType={item.engagement_score_type}
-                  />
-                </Link>
-              </div>
-            ),
-          },
-        ]
-      : []),
+    ...statisticsFields,
     {
       id: 'last_subscribed_at',
       label: __('Subscribed on', 'mailpoet'),

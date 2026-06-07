@@ -47,11 +47,9 @@ class ManageSegmentsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Set pagination to 1 user per page and check if pagination is present');
-    $i->click('#show-settings-link');
-    $applyListingSettingsButton = '#screen-options-apply';
-    $i->waitForElementClickable($applyListingSettingsButton);
-    $i->fillField('#mailpoet_subscribers_per_page', '1');
-    $i->click($applyListingSettingsButton);
+    // The per-page setting moved from WP Screen Options to the DataViews view
+    // config; the listing also reads it from the URL, so drive it from there.
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[segment=' . $segment->getId() . ']/limit[1]');
     $i->reloadPage(); // to avoid flakyness we reload page manually
     $i->wantTo('Reorder subscribers by email and check if correct subscribes are present');
     // DataViews wraps sortable column labels in a button that opens a sort
