@@ -3,6 +3,8 @@ import type { Field, View } from '@wordpress/dataviews';
 import {
   getDataViewsPreference,
   getDataViewsPreferenceKey,
+  getPersistedDataViewsPreference,
+  isSameDataViewsPreference,
 } from '../../../../assets/js/src/common/dataviews/preferences';
 
 type TestItem = {
@@ -125,5 +127,50 @@ describe('DataViews preferences', () => {
     expect(
       getDataViewsPreference('subscribers', defaultView, fields).fields,
     ).to.deep.equal([]);
+  });
+
+  it('persists only stable view preferences', () => {
+    expect(
+      getPersistedDataViewsPreference({
+        ...defaultView,
+        search: 'temporary search',
+        filters: [{ field: 'status', operator: 'isAny', value: ['active'] }],
+        page: 3,
+        perPage: 50,
+        showTitle: false,
+        showMedia: true,
+      }),
+    ).to.deep.equal({
+      type: 'table',
+      perPage: 50,
+      sort: { field: 'name', direction: 'asc' },
+      fields: ['status'],
+      titleField: 'name',
+      showTitle: false,
+      showMedia: true,
+    });
+  });
+
+  it('treats transient view changes as the same preference', () => {
+    expect(
+      isSameDataViewsPreference(defaultView, {
+        ...defaultView,
+        search: '',
+        page: 4,
+        filters: [{ field: 'status', operator: 'isAny', value: ['active'] }],
+      }),
+    ).to.equal(true);
+  });
+
+  it('detects changes to persisted view preferences', () => {
+    expect(
+      isSameDataViewsPreference(defaultView, {
+        ...defaultView,
+        fields: ['status', 'created_at'],
+      }),
+    ).to.equal(false);
+    expect(
+      isSameDataViewsPreference(defaultView, { ...defaultView, perPage: 50 }),
+    ).to.equal(false);
   });
 });

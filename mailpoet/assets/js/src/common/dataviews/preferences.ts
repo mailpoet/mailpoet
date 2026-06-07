@@ -1,6 +1,20 @@
 import type { Field, View } from '@wordpress/dataviews';
+import { dispatch, select } from '@wordpress/data';
+import { store as preferencesStore } from '@wordpress/preferences';
+import { useCallback, useRef } from 'react';
 
 import { getPreloadedPreference } from '../preferences';
+
+// Read the live store first so preferences persisted during the session are
+// reflected; fall back to the server-preloaded snapshot for reads that happen
+// before the store is initialized.
+function readPreference(scope: string, name: string): unknown {
+  const fromStore: unknown = select(preferencesStore).get(scope, name);
+  if (fromStore !== undefined) {
+    return fromStore;
+  }
+  return getPreloadedPreference<unknown>(scope, name);
+}
 
 const VIEW_PREFERENCES_SCOPE = 'core/views';
 const MAX_PER_PAGE = 100;
@@ -8,6 +22,7 @@ const MAX_PER_PAGE = 100;
 type DataViewsField = Pick<Field<unknown>, 'id'>;
 
 type PersistedView = Partial<View> & Record<string, unknown>;
+type OnChangeView = (view: View) => void;
 
 export function getDataViewsPreferenceKey(
   name: string,
@@ -102,7 +117,7 @@ export function getDataViewsPreference<T>(
   defaultView: View,
   fields?: readonly Field<T>[],
 ): View {
-  const preference = getPreloadedPreference<unknown>(
+  const preference = readPreference(
     VIEW_PREFERENCES_SCOPE,
     getDataViewsPreferenceKey(name),
   );
@@ -182,4 +197,86 @@ export function getDataViewsPreference<T>(
   }
 
   return view;
+}
+
+export function getPersistedDataViewsPreference(view: View): Partial<View> {
+  const preference: Partial<View> = {
+    type: view.type,
+  };
+
+  if (view.perPage) {
+    preference.perPage = view.perPage;
+  }
+  if (view.sort) {
+    preference.sort = view.sort;
+  }
+  if (Array.isArray(view.fields)) {
+    preference.fields = view.fields;
+  }
+  if (isRecord(view.layout)) {
+    preference.layout = view.layout;
+  }
+  if (view.titleField) {
+    preference.titleField = view.titleField;
+  }
+  if (view.descriptionField) {
+    preference.descriptionField = view.descriptionField;
+  }
+  if (view.mediaField) {
+    preference.mediaField = view.mediaField;
+  }
+  if (typeof view.showTitle === 'boolean') {
+    preference.showTitle = view.showTitle;
+  }
+  if (typeof view.showDescription === 'boolean') {
+    preference.showDescription = view.showDescription;
+  }
+  if (typeof view.showMedia === 'boolean') {
+    preference.showMedia = view.showMedia;
+  }
+
+  return preference;
+}
+
+export function persistDataViewsPreference(
+  name: string,
+  view: View,
+  slug = 'default',
+): void {
+  void dispatch(preferencesStore).set(
+    VIEW_PREFERENCES_SCOPE,
+    getDataViewsPreferenceKey(name, slug),
+    getPersistedDataViewsPreference(view),
+  );
+}
+
+export function isSameDataViewsPreference(view: View, nextView: View): boolean {
+  return (
+    JSON.stringify(getPersistedDataViewsPreference(view)) ===
+    JSON.stringify(getPersistedDataViewsPreference(nextView))
+  );
+}
+
+export function usePersistedDataViewsPreference(
+  name: string,
+  view: View,
+  onChangeView: OnChangeView,
+  slug = 'default',
+): OnChangeView {
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  return useCallback(
+    (nextView: View) => {
+      // DataViews fires spurious `onChangeView` calls (e.g. its search box
+      // syncs an undefined `view.search` to '' on mount). Persisting then
+      // would freeze the current defaults as a user preference, overriding
+      // later server-driven defaults (per-page, tracking-dependent columns).
+      // Persist only when a persisted-view property actually changed.
+      if (!isSameDataViewsPreference(viewRef.current, nextView)) {
+        persistDataViewsPreference(name, nextView, slug);
+      }
+      onChangeView(nextView);
+    },
+    [name, onChangeView, slug],
+  );
 }
