@@ -43,6 +43,16 @@
   padding: 8px;
 }
 
+// Right-aligned group inside a listing toolbar. Holds the DataViews filters
+// toggle and view-config (preferences) buttons so they sit at the toolbar's
+// right edge while search and legacy filters stay on the left.
+.mailpoet-dataviews__toolbar-end {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .mailpoet-segments-dataviews .mailpoet-listing-actions {
   display: flex;
   gap: 8px;
