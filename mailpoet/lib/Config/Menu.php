@@ -242,7 +242,7 @@ class Menu {
     );
 
     // Emails page
-    $newslettersPage = $this->wp->addSubmenuPage(
+    $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       esc_html__('Emails', 'mailpoet'),
@@ -253,18 +253,6 @@ class Menu {
         'newsletters',
       ]
     );
-
-    // add limit per page to screen options
-    $this->wp->addAction('load-' . $newslettersPage, function() {
-      $this->wp->addScreenOption('per_page', [
-        'label' => _x(
-          'Number of newsletters per page',
-          'newsletters per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_newsletters_per_page',
-      ]);
-    });
 
     // newsletter editor
     $this->wp->addSubmenuPage(
