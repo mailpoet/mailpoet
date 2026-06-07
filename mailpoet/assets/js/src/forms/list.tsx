@@ -8,6 +8,7 @@ import { Button } from 'common';
 import { withNpsPoll } from 'nps-poll.jsx';
 import {
   getDataViewsPreference,
+  usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -97,12 +98,18 @@ function FormListComponent(): JSX.Element {
     groups,
     isLoading,
     error: loadError,
+    onChangeView,
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<FormListingItem>({
     initialView,
     load,
   });
+  const handleViewChange = usePersistedDataViewsPreference(
+    'forms',
+    view,
+    onChangeView,
+  );
 
   // Surface broken-settings forms via the global notice system so admins
   // know to repair them. Each form is warned about at most once per page
@@ -339,7 +346,7 @@ function FormListComponent(): JSX.Element {
               data={items}
               fields={listFields}
               view={view}
-              onChangeView={setView}
+              onChangeView={handleViewChange}
               actions={actions}
               paginationInfo={paginationInfo}
               defaultLayouts={{ table: {} }}
@@ -362,6 +369,9 @@ function FormListComponent(): JSX.Element {
             >
               <div className="mailpoet-forms-dataviews__toolbar">
                 <DataViews.Search label={__('Search forms', 'mailpoet')} />
+                <div className="mailpoet-dataviews__toolbar-end">
+                  <DataViews.ViewConfig />
+                </div>
               </div>
               <DataViews.Layout />
               <DataViews.Footer />

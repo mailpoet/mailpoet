@@ -70,6 +70,17 @@ class FormListingRepositoryTest extends \MailPoetTest {
     verify($forms[1]->getName())->same('Form 1');
   }
 
+  public function testItFallsBackForUnsupportedSort() {
+    $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition([
+      'sort_by' => 'status',
+      'sort_order' => 'asc',
+    ]));
+
+    verify($forms)->arrayCount(2);
+    verify($forms[0]->getName())->same('Form 1');
+    verify($forms[1]->getName())->same('Form 2');
+  }
+
   public function testItAppliesLimitAndOffset() {
     // first page
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition([

@@ -26,6 +26,23 @@ function dateTime(value: string | null): JSX.Element {
   );
 }
 
+const engagementScoreFields: Field<SegmentListingItem>[] = MailPoet
+  .trackingConfig.emailTrackingEnabled
+  ? [
+      {
+        id: 'average_engagement_score',
+        label: MailPoet.I18n.t('listScore'),
+        enableSorting: true,
+        enableGlobalSearch: false,
+        render: ({ item }) =>
+          createElement(ListingsEngagementScore, {
+            id: Number(item.id),
+            engagementScore: item.average_engagement_score,
+          }),
+      },
+    ]
+  : [];
+
 export const segmentFields: Field<SegmentListingItem>[] = [
   {
     id: 'name',
@@ -81,21 +98,21 @@ export const segmentFields: Field<SegmentListingItem>[] = [
     enableSorting: false,
     enableGlobalSearch: false,
   },
-  ...(MailPoet.trackingConfig.emailTrackingEnabled
-    ? [
-        {
-          id: 'average_engagement_score',
-          label: MailPoet.I18n.t('listScore'),
-          enableSorting: true,
-          enableGlobalSearch: false,
-          render: ({ item }) =>
-            createElement(ListingsEngagementScore, {
-              id: Number(item.id),
-              engagementScore: item.average_engagement_score,
-            }),
-        },
-      ]
-    : []),
+  {
+    id: 'type',
+    label: __('Type', 'mailpoet'),
+    elements: [
+      { value: 'default', label: __('List', 'mailpoet') },
+      { value: 'wp_users', label: __('WordPress users', 'mailpoet') },
+      {
+        value: 'woocommerce_users',
+        label: __('WooCommerce customers', 'mailpoet'),
+      },
+    ],
+    enableSorting: false,
+    enableGlobalSearch: false,
+  },
+  ...engagementScoreFields,
   {
     id: 'subscribed',
     label: MailPoet.I18n.t('subscribed'),

@@ -8,6 +8,11 @@ use MailPoet\Listing\ListingRepository;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class FormListingRepository extends ListingRepository {
+  private const SORT_FIELDS = [
+    'name' => 'name',
+    'updatedAt' => 'updatedAt',
+  ];
+
   public function getGroups(ListingDefinition $definition): array {
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
@@ -57,7 +62,9 @@ class FormListingRepository extends ListingRepository {
   }
 
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
-    $queryBuilder->addOrderBy("f.$sortBy", $sortOrder);
+    $field = self::SORT_FIELDS[$sortBy] ?? 'updatedAt';
+    $queryBuilder->addOrderBy("f.$field", $sortOrder);
+    $queryBuilder->addOrderBy('f.id', 'asc');
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {

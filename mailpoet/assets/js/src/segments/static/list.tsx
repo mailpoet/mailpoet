@@ -11,6 +11,7 @@ import { MailPoet } from 'mailpoet';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import {
   getDataViewsPreference,
+  usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -103,25 +104,30 @@ function parseHash(): Partial<{
     }, {});
 }
 
-function updateHash(group: Group, view: View): void {
+// `defaults` is the preference-merged view the listing falls back to when the
+// URL omits a param. Comparing against it (not the hardcoded site defaults)
+// keeps the URL round-trip lossless: reloading a URL without explicit params
+// resolves to the same view the URL was written from.
+function updateHash(group: Group, view: View, defaults: View): void {
   const entries: Array<[string, string | number | undefined]> = [
     ['group', group],
     ['page', view.page && view.page !== 1 ? view.page : undefined],
     [
       'limit',
-      view.perPage && view.perPage !== listingPerPage
+      view.perPage && view.perPage !== (defaults.perPage ?? listingPerPage)
         ? view.perPage
         : undefined,
     ],
     [
       'sort_by',
-      view.sort?.field && view.sort.field !== 'name'
+      view.sort?.field && view.sort.field !== (defaults.sort?.field ?? 'name')
         ? view.sort.field
         : undefined,
     ],
     [
       'sort_order',
-      view.sort?.direction && view.sort.direction !== 'asc'
+      view.sort?.direction &&
+      view.sort.direction !== (defaults.sort?.direction ?? 'asc')
         ? view.sort.direction
         : undefined,
     ],
@@ -257,22 +263,18 @@ function SegmentListComponent(): JSX.Element {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
-  const [initialView] = useState<View>(() => {
-    const preferredView = getDataViewsPreference(
-      'static-segments',
-      DEFAULT_VIEW,
-      segmentFields,
-    );
-    return {
-      ...preferredView,
-      page: hashState.page ?? preferredView.page,
-      perPage: hashState.perPage ?? preferredView.perPage,
-      sort: {
-        field: hashState.orderby ?? preferredView.sort?.field ?? 'name',
-        direction: hashState.order ?? preferredView.sort?.direction ?? 'asc',
-      },
-    };
-  });
+  const [preferredView] = useState<View>(() =>
+    getDataViewsPreference('static-segments', DEFAULT_VIEW, segmentFields),
+  );
+  const [initialView] = useState<View>(() => ({
+    ...preferredView,
+    page: hashState.page ?? preferredView.page,
+    perPage: hashState.perPage ?? preferredView.perPage,
+    sort: {
+      field: hashState.orderby ?? preferredView.sort?.field ?? 'name',
+      direction: hashState.order ?? preferredView.sort?.direction ?? 'asc',
+    },
+  }));
 
   const load = useCallback(
     (params: ListingQueryParams) => getSegments({ ...params, group }),
@@ -287,15 +289,27 @@ function SegmentListComponent(): JSX.Element {
     groups,
     isLoading,
     error: loadError,
+    onChangeView,
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<SegmentListingItem>({
     initialView,
     load,
   });
+  const handleViewChange = usePersistedDataViewsPreference(
+    'static-segments',
+    view,
+    onChangeView,
+  );
 
   useEffect(() => {
-    updateHash(group, view);
+    // Resolve the defaults at write time (not mount time) so preferences
+    // persisted during the session are reflected.
+    updateHash(
+      group,
+      view,
+      getDataViewsPreference('static-segments', DEFAULT_VIEW, segmentFields),
+    );
   }, [group, view]);
 
   const handleBulkAction = useCallback(
@@ -612,7 +626,7 @@ function SegmentListComponent(): JSX.Element {
               data={items}
               fields={segmentFields}
               view={view}
-              onChangeView={setView}
+              onChangeView={handleViewChange}
               actions={actions}
               paginationInfo={paginationInfo}
               defaultLayouts={{ table: {} }}
@@ -624,6 +638,9 @@ function SegmentListComponent(): JSX.Element {
             >
               <div className="mailpoet-segments-dataviews__toolbar">
                 <DataViews.Search label={__('Search', 'mailpoet')} />
+                <div className="mailpoet-dataviews__toolbar-end">
+                  <DataViews.ViewConfig />
+                </div>
               </div>
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-segments-dataviews__toolbar">
