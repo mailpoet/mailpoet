@@ -23,8 +23,11 @@ function parseQuery(path: string): Partial<Query> {
     .reduce((map, [k, v]) => ({ ...map, [k]: v }), {});
 }
 
-export function getSegmentsQuery(path: string = window.location.hash): Query {
-  return { ...defaultQuery, ...parseQuery(path) };
+export function getSegmentsQuery(
+  path: string = window.location.hash,
+  defaults: Partial<Query> = {},
+): Query {
+  return { ...defaultQuery, ...defaults, ...parseQuery(path) };
 }
 
 export function useSegmentsQuery(): Query {
@@ -32,12 +35,16 @@ export function useSegmentsQuery(): Query {
   return useMemo(() => getSegmentsQuery(location.pathname), [location]);
 }
 
-export function updateSegmentsQuery(query: Partial<Query>): void {
+export function updateSegmentsQuery(
+  query: Partial<Query>,
+  defaults: Partial<Query> = {},
+): void {
+  const effectiveDefaults = { ...defaultQuery, ...defaults };
   const queryEntries = Object.entries({
     ...parseQuery(window.location.hash),
     ...query,
   })
-    .filter(([key, value]) => value !== defaultQuery[key])
+    .filter(([key, value]) => value !== effectiveDefaults[key])
     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
 
   const hash = queryEntries.reduce(
