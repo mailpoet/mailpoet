@@ -79,7 +79,7 @@ declare module '@wordpress/preferences' {
   export const store: { name: 'core/preferences' } & StoreDescriptor<{
     reducer: () => unknown;
     actions: {
-      set: (scope: string, name: string, value: any) => void;
+      set: (scope: string, name: string, value: any) => Promise<object>;
       setPersistenceLayer: (persistenceLayer: {
         get: () => Promise<Record<string, Record<string, any>>>;
         set: (value: Record<string, Record<string, any>>) => void;
