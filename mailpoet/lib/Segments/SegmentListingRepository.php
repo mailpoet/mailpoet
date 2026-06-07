@@ -11,11 +11,6 @@ use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class SegmentListingRepository extends ListingRepository {
   const DEFAULT_SORT_BY = 'name';
-  private const TYPE_VALUES = [
-    SegmentEntity::TYPE_DEFAULT,
-    SegmentEntity::TYPE_WP_USERS,
-    SegmentEntity::TYPE_WC_USERS,
-  ];
 
   /** @var WooCommerce */
   private $wooCommerce;
@@ -52,13 +47,6 @@ class SegmentListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    $types = $this->getFilterValues($filters, 'type', self::TYPE_VALUES);
-    if (!$types) {
-      return;
-    }
-    $queryBuilder
-      ->andWhere('s.type IN (:filterTypes)')
-      ->setParameter('filterTypes', $types);
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
@@ -76,23 +64,6 @@ class SegmentListingRepository extends ListingRepository {
       $sortBy = self::DEFAULT_SORT_BY;
     }
     $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
-  }
-
-  private function getFilterValues(array $filters, string $field, array $allowedValues): array {
-    $filter = $filters[$field] ?? null;
-    if (!is_array($filter)) {
-      return [];
-    }
-    $operator = isset($filter['operator']) && is_string($filter['operator']) ? $filter['operator'] : '';
-    if ($operator !== 'is' && $operator !== 'isAny') {
-      return [];
-    }
-    $value = $filter['value'] ?? null;
-    $values = is_array($value) ? $value : [$value];
-    return array_values(array_intersect(
-      array_map('strval', $values),
-      $allowedValues
-    ));
   }
 
   public function getGroups(ListingDefinition $definition): array {
