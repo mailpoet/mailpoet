@@ -17,7 +17,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type SetStateAction,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -25,6 +24,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from 'common';
 import {
   getDataViewsPreference,
+  usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -165,10 +165,15 @@ function parseHash(): Partial<{
     }, {});
 }
 
+// `defaults` is the preference-merged view the listing falls back to when the
+// URL omits a param. Comparing against it (not the hardcoded site defaults)
+// keeps the URL round-trip lossless: reloading a URL without explicit params
+// resolves to the same view the URL was written from.
 function getListingPath(
   group: Group,
   view: View,
   filter: Record<string, string>,
+  defaults: View,
 ): string {
   const filterValue = new URLSearchParams(filter).toString();
   const entries: Array<[string, string | number | undefined]> = [
@@ -178,19 +183,21 @@ function getListingPath(
     ['page', view.page && view.page !== 1 ? view.page : undefined],
     [
       'limit',
-      view.perPage && view.perPage !== listingPerPage
+      view.perPage && view.perPage !== (defaults.perPage ?? listingPerPage)
         ? view.perPage
         : undefined,
     ],
     [
       'sort_by',
-      view.sort?.field && view.sort.field !== 'created_at'
+      view.sort?.field &&
+      view.sort.field !== (defaults.sort?.field ?? 'created_at')
         ? view.sort.field
         : undefined,
     ],
     [
       'sort_order',
-      view.sort?.direction && view.sort.direction !== 'desc'
+      view.sort?.direction &&
+      view.sort.direction !== (defaults.sort?.direction ?? 'desc')
         ? view.sort.direction
         : undefined,
     ],
@@ -206,8 +213,9 @@ function updateHash(
   group: Group,
   view: View,
   filter: Record<string, string>,
+  defaults: View,
 ): void {
-  const path = getListingPath(group, view, filter);
+  const path = getListingPath(group, view, filter, defaults);
   const hash = `#${path}`;
   if (window.location.hash !== hash) {
     window.history.replaceState(null, '', hash);
@@ -691,23 +699,23 @@ function SubscriberList() {
   // double-click on Apply / Resend emails / Unsubscribe must not fan out into
   // two bulk-action requests.
   const pendingActionInFlightRef = useRef(false);
-  const [initialView] = useState<View>(() => {
-    const preferredView = getDataViewsPreference(
+  const [preferredView] = useState<View>(() =>
+    getDataViewsPreference(
       'subscribers',
       DEFAULT_VIEW,
       getSubscriberFields(() => ''),
-    );
-    return {
-      ...preferredView,
-      page: hashState.page ?? preferredView.page,
-      perPage: hashState.perPage ?? preferredView.perPage,
-      search: hashState.search,
-      sort: {
-        field: hashState.orderby ?? preferredView.sort?.field ?? 'created_at',
-        direction: hashState.order ?? preferredView.sort?.direction ?? 'desc',
-      },
-    };
-  });
+    ),
+  );
+  const [initialView] = useState<View>(() => ({
+    ...preferredView,
+    page: hashState.page ?? preferredView.page,
+    perPage: hashState.perPage ?? preferredView.perPage,
+    search: hashState.search,
+    sort: {
+      field: hashState.orderby ?? preferredView.sort?.field ?? 'created_at',
+      direction: hashState.order ?? preferredView.sort?.direction ?? 'desc',
+    },
+  }));
 
   const load = useCallback(
     (params: ListingQueryParams, signal?: AbortSignal) =>
@@ -738,9 +746,21 @@ function SubscriberList() {
     load,
   });
 
+  // Resolve the URL defaults at write time (not mount time) so preferences
+  // persisted during the session are reflected.
+  const getPreferredView = useCallback(
+    () =>
+      getDataViewsPreference(
+        'subscribers',
+        DEFAULT_VIEW,
+        getSubscriberFields(() => ''),
+      ),
+    [],
+  );
+
   useEffect(() => {
-    updateHash(group, view, filter);
-  }, [filter, group, view]);
+    updateHash(group, view, filter, getPreferredView());
+  }, [filter, group, view, getPreferredView]);
 
   // DataViews has no built-in URL state, so back/forward inside the listing
   // is wired manually. Browser navigation fires `hashchange`; programmatic
@@ -753,24 +773,28 @@ function SubscriberList() {
       setFilter(next.filter ?? {});
       setSelection([]);
       clearLoadError();
+      // Fill hash segments the URL omits from the preference-merged defaults
+      // (not the in-memory view) so back/forward resolves a URL exactly like
+      // reopening it.
+      const preferredDefaults = getPreferredView();
       setView((currentView) => ({
         ...currentView,
         page: next.page ?? 1,
-        perPage: next.perPage ?? currentView.perPage,
+        perPage: next.perPage ?? preferredDefaults.perPage,
         search: next.search ?? '',
         sort: {
-          field: next.orderby ?? currentView.sort?.field ?? 'created_at',
-          direction: next.order ?? currentView.sort?.direction ?? 'desc',
+          field: next.orderby ?? preferredDefaults.sort?.field ?? 'created_at',
+          direction: next.order ?? preferredDefaults.sort?.direction ?? 'desc',
         },
       }));
     };
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
-  }, [clearLoadError, setView]);
+  }, [clearLoadError, getPreferredView, setView]);
 
   const backUrl = useMemo(
-    () => getListingPath(group, view, filter),
-    [filter, group, view],
+    () => getListingPath(group, view, filter, getPreferredView()),
+    [filter, group, view, getPreferredView],
   );
   const backUrlRef = useRef(backUrl);
   backUrlRef.current = backUrl;
@@ -839,11 +863,16 @@ function SubscriberList() {
   );
 
   const handleViewChange = useCallback(
-    (nextView: SetStateAction<View>) => {
+    (nextView: View) => {
       setSelection([]);
       setView(nextView);
     },
     [setView],
+  );
+  const persistedViewChange = usePersistedDataViewsPreference(
+    'subscribers',
+    view,
+    handleViewChange,
   );
 
   const handleApiError = useCallback(
@@ -1292,7 +1321,7 @@ function SubscriberList() {
           data={items}
           fields={fields}
           view={view}
-          onChangeView={handleViewChange}
+          onChangeView={persistedViewChange}
           actions={actions}
           paginationInfo={paginationInfo}
           defaultLayouts={{ table: {} }}
@@ -1319,6 +1348,9 @@ function SubscriberList() {
                 void handleEmptyTrash();
               }}
             />
+            <div className="mailpoet-dataviews__toolbar-end">
+              <DataViews.ViewConfig />
+            </div>
           </div>
           <DataViews.Layout />
           <DataViews.Footer />

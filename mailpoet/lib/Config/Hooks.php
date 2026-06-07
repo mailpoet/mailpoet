@@ -178,7 +178,6 @@ class Hooks {
     $this->setupWooCommerceOrderAttribution();
     $this->setupWooCommerceSubscriberEngagement();
     $this->setupWooCommerceTracking();
-    $this->setupListing();
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupAutomateWooSubscriptionEvents();
@@ -580,23 +579,6 @@ class Hooks {
       [$this->hooksWooCommerce, 'addTrackingData'],
       10
     );
-  }
-
-  public function setupListing() {
-    $this->wp->addFilter(
-      'set-screen-option',
-      [$this, 'setScreenOption'],
-      10,
-      3
-    );
-  }
-
-  public function setScreenOption($status, $option, $value) {
-    if (preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
-      return $value;
-    } else {
-      return $status;
-    }
   }
 
   public function setupPostNotifications() {

@@ -316,7 +316,7 @@ class Menu {
     );
 
     // Subscribers page
-    $subscribersPage = $this->wp->addSubmenuPage(
+    $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       esc_html__('Subscribers', 'mailpoet'),
@@ -327,18 +327,6 @@ class Menu {
         'subscribers',
       ]
     );
-
-    // add limit per page to screen options
-    $this->wp->addAction('load-' . $subscribersPage, function() {
-      $this->wp->addScreenOption('per_page', [
-        'label' => _x(
-          'Number of subscribers per page',
-          'subscribers per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_subscribers_per_page',
-      ]);
-    });
 
     // import
     $this->wp->addSubmenuPage(
