@@ -8,7 +8,7 @@
   align-items: center;
 
   .mailpoet-page-header-content {
-    align-items: center;
+    align-items: baseline;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
@@ -36,7 +36,6 @@
 @include respond-to(small-screen) {
   .mailpoet-subscribers-page-header {
     .mailpoet-page-header-content {
-      align-items: flex-start;
       flex-direction: column;
     }
   }
