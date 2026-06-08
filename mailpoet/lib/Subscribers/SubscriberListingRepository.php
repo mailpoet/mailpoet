@@ -800,18 +800,127 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
+    // A static segment redefines the subscribed/unsubscribed buckets in terms
+    // of the per-list status (s.status OR/AND ss.status), and a dynamic segment
+    // routes counts through an id subquery — neither can be expressed as a
+    // single GROUP BY over s.status, so they fall back to one count per group.
+    // Both are scoped to a single segment, so that loop runs over a far smaller
+    // set than the full list.
+    $counts = $this->hasSegmentListFilter($definition)
+      ? $this->getGroupCountsPerStatus($definition)
+      : $this->getGroupCounts($definition);
+
+    $totalCount = 0;
+    foreach (self::$supportedStatuses as $status) {
+      $totalCount += $counts[$status];
+    }
+
+    return [
+      [
+        'name' => 'all',
+        'label' => __('All', 'mailpoet'),
+        'count' => $totalCount,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_SUBSCRIBED,
+        'label' => __('Subscribed', 'mailpoet'),
+        'count' => $counts[SubscriberEntity::STATUS_SUBSCRIBED],
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'label' => __('Unconfirmed', 'mailpoet'),
+        'count' => $counts[SubscriberEntity::STATUS_UNCONFIRMED],
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+        'label' => __('Unsubscribed', 'mailpoet'),
+        'count' => $counts[SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_INACTIVE,
+        'label' => __('Inactive', 'mailpoet'),
+        'count' => $counts[SubscriberEntity::STATUS_INACTIVE],
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_BOUNCED,
+        'label' => __('Bounced', 'mailpoet'),
+        'count' => $counts[SubscriberEntity::STATUS_BOUNCED],
+      ],
+      [
+        'name' => 'trash',
+        'label' => __('Trash', 'mailpoet'),
+        'count' => $counts['trash'],
+      ],
+    ];
+  }
+
+  /**
+   * Count every status tab in a single grouped scan plus one trash count,
+   * instead of a separate COUNT per group. Valid whenever each group's
+   * predicate is a plain `s.status` (no static/dynamic segment list filter).
+   *
+   * @return array<string, int>
+   */
+  private function getGroupCounts(ListingDefinition $definition): array {
+    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts['trash'] = 0;
+
+    $statusQuery = $this->createGroupCountQueryBuilder($definition);
+    $statusQuery
+      ->andWhere('s.deletedAt IS NULL')
+      ->select('s.status AS status, COUNT(DISTINCT s.id) AS subscribersCount')
+      ->groupBy('s.status');
+    foreach ($statusQuery->getQuery()->getResult() as $row) {
+      if (array_key_exists($row['status'], $counts)) {
+        $counts[$row['status']] = (int)$row['subscribersCount'];
+      }
+    }
+
+    $trashQuery = $this->createGroupCountQueryBuilder($definition);
+    $trashQuery
+      ->andWhere('s.deletedAt IS NOT NULL')
+      ->select('COUNT(DISTINCT s.id)');
+    $counts['trash'] = (int)$trashQuery->getQuery()->getSingleScalarResult();
+
+    return $counts;
+  }
+
+  /**
+   * Shared FROM + active filters/search for the group counts. Deliberately
+   * skips applyGroup so a single query can bucket every status at once.
+   */
+  private function createGroupCountQueryBuilder(ListingDefinition $definition): QueryBuilder {
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
 
-    $groupCounts = [
-      SubscriberEntity::STATUS_SUBSCRIBED => 0,
-      SubscriberEntity::STATUS_UNCONFIRMED => 0,
-      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
-      SubscriberEntity::STATUS_INACTIVE => 0,
-      SubscriberEntity::STATUS_BOUNCED => 0,
-      'trash' => 0,
-    ];
-    foreach (array_keys($groupCounts) as $group) {
+    $search = $definition->getSearch();
+    if ($search !== null && strlen(trim($search)) > 0) {
+      $this->applySearch($queryBuilder, $search, $definition->getParameters() ?: []);
+    }
+
+    $filters = $definition->getFilters();
+    if ($filters) {
+      $this->applyFilters($queryBuilder, $filters);
+    }
+
+    $parameters = $definition->getParameters();
+    if ($parameters) {
+      $this->applyParameters($queryBuilder, $parameters);
+    }
+
+    return $queryBuilder;
+  }
+
+  /**
+   * Fallback for static/dynamic segment filters, where a group's predicate is
+   * more than a plain `s.status`. One count per group, scoped to the segment.
+   *
+   * @return array<string, int>
+   */
+  private function getGroupCountsPerStatus(ListingDefinition $definition): array {
+    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts['trash'] = 0;
+    foreach (array_keys($counts) as $group) {
       $groupDefinition = $group === $definition->getGroup() ? $definition : new ListingDefinition(
         $group,
         $definition->getFilters(),
@@ -823,50 +932,17 @@ class SubscriberListingRepository extends ListingRepository {
         $definition->getLimit(),
         $definition->getSelection()
       );
-      $groupCounts[$group] = $this->getCount($groupDefinition);
+      $counts[$group] = $this->getCount($groupDefinition);
     }
+    return $counts;
+  }
 
-    $trashedCount = $groupCounts['trash'];
-    unset($groupCounts['trash']);
-    $totalCount = (int)array_sum($groupCounts);
-
-    return [
-      [
-        'name' => 'all',
-        'label' => __('All', 'mailpoet'),
-        'count' => $totalCount,
-      ],
-      [
-        'name' => SubscriberEntity::STATUS_SUBSCRIBED,
-        'label' => __('Subscribed', 'mailpoet'),
-        'count' => $groupCounts[SubscriberEntity::STATUS_SUBSCRIBED],
-      ],
-      [
-        'name' => SubscriberEntity::STATUS_UNCONFIRMED,
-        'label' => __('Unconfirmed', 'mailpoet'),
-        'count' => $groupCounts[SubscriberEntity::STATUS_UNCONFIRMED],
-      ],
-      [
-        'name' => SubscriberEntity::STATUS_UNSUBSCRIBED,
-        'label' => __('Unsubscribed', 'mailpoet'),
-        'count' => $groupCounts[SubscriberEntity::STATUS_UNSUBSCRIBED],
-      ],
-      [
-        'name' => SubscriberEntity::STATUS_INACTIVE,
-        'label' => __('Inactive', 'mailpoet'),
-        'count' => $groupCounts[SubscriberEntity::STATUS_INACTIVE],
-      ],
-      [
-        'name' => SubscriberEntity::STATUS_BOUNCED,
-        'label' => __('Bounced', 'mailpoet'),
-        'count' => $groupCounts[SubscriberEntity::STATUS_BOUNCED],
-      ],
-      [
-        'name' => 'trash',
-        'label' => __('Trash', 'mailpoet'),
-        'count' => $trashedCount,
-      ],
-    ];
+  private function hasSegmentListFilter(ListingDefinition $definition): bool {
+    $filters = $definition->getFilters();
+    if (empty($filters['segment']) || $filters['segment'] === self::FILTER_WITHOUT_LIST) {
+      return false;
+    }
+    return $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']) instanceof SegmentEntity;
   }
 
   public function getFilters(ListingDefinition $definition): array {
