@@ -1,5 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
+import { buildRestApiPath } from 'common/dataviews';
 import { api } from '../../config';
 import { AutomationStatus } from '../automation';
 
@@ -66,11 +67,14 @@ export async function getLegacyNewsletters(
   do {
     // eslint-disable-next-line no-await-in-loop
     const response = await apiFetch<ListingResponse>({
-      url: addQueryArgs(`${api.root}/mailpoet/v1/newsletters`, {
-        type,
-        page,
-        per_page: LEGACY_AUTOMATIONS_PER_PAGE,
-      }),
+      url: buildRestApiPath(
+        api.root,
+        addQueryArgs('/mailpoet/v1/newsletters', {
+          type,
+          page,
+          per_page: LEGACY_AUTOMATIONS_PER_PAGE,
+        }),
+      ),
       method: 'GET',
       headers: {
         'X-WP-Nonce': api.nonce,

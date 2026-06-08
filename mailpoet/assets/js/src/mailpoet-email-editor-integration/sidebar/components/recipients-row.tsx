@@ -21,6 +21,7 @@ import { store as editorStore } from '@wordpress/editor';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { MailPoet } from 'mailpoet';
+import { buildRestApiPath } from 'common/dataviews';
 
 type Segment = {
   id: string;
@@ -57,10 +58,13 @@ async function fetchSegmentPage<T>(
   page: number,
 ): Promise<ListingResponse<T>> {
   return apiFetch<ListingResponse<T>>({
-    url: addQueryArgs(`${window.mailpoet_segments_api.root}${path}`, {
-      page,
-      per_page: SEGMENTS_PER_PAGE,
-    }),
+    url: buildRestApiPath(
+      window.mailpoet_segments_api.root,
+      addQueryArgs(path, {
+        page,
+        per_page: SEGMENTS_PER_PAGE,
+      }),
+    ),
     method: 'GET',
     headers: {
       'X-WP-Nonce': window.mailpoet_segments_api.nonce,

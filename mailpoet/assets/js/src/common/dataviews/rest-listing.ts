@@ -31,18 +31,25 @@ function ensureLeadingSlash(value: string): string {
   return value.startsWith('/') ? value : `/${value}`;
 }
 
+export function buildRestApiPath(root: string, path: string): string {
+  const normalizedRoot = ensureTrailingSlash(root);
+  const normalizedPath = ensureLeadingSlash(path).slice(1);
+  const querySafePath = normalizedRoot.includes('?')
+    ? normalizedPath.replace('?', '&')
+    : normalizedPath;
+  return `${normalizedRoot}${querySafePath}`;
+}
+
 function configureMiddleware(): void {
   if (isConfigured) return;
 
   apiFetch.use((options, next) => {
     const path = typeof options.path === 'string' ? options.path : '';
     const hasUrl = typeof options.url === 'string' && options.url.length > 0;
-    const normalizedPath = path ? ensureLeadingSlash(path) : path;
-    const root = ensureTrailingSlash(configuredRoot);
 
     return next({
       ...options,
-      ...(hasUrl ? {} : { path: `${root}${normalizedPath.slice(1)}` }),
+      ...(hasUrl ? {} : { path: buildRestApiPath(configuredRoot, path) }),
     });
   });
 
