@@ -55,28 +55,11 @@ export const segmentFields: Field<SegmentListingItem>[] = [
           { 'data-automation-id': `segment_name_${item.name}` },
           title,
         );
-      const legacyViewSubscribersAction = createElement(
-        'div',
-        { className: 'mailpoet-listing-actions-holder' },
-        createElement(
-          'div',
-          { className: 'mailpoet-listing-actions' },
-          createElement(
-            'a',
-            {
-              'data-automation-id': `view_subscribers_${item.name}`,
-              href: item.subscribers_url,
-            },
-            MailPoet.I18n.t('viewSubscribers'),
-          ),
-        ),
-      );
       if (item.type === 'wp_users' || item.type === 'woocommerce_users') {
         return createElement(
           'div',
           null,
           wrapLegacyNameSelector(createElement('span', props, ...children)),
-          legacyViewSubscribersAction,
         );
       }
       return createElement(
@@ -89,7 +72,6 @@ export const segmentFields: Field<SegmentListingItem>[] = [
             ...children,
           ),
         ),
-        legacyViewSubscribersAction,
       );
     },
   },

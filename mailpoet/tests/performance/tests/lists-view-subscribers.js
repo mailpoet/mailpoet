@@ -22,7 +22,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, waitForDataViews } from '../utils/helpers.js';
+import {
+  login,
+  waitForDataViews,
+  clickMenuItemByText,
+} from '../utils/helpers.js';
 
 export async function listsViewSubscribers() {
   const page = await browser.newPage();
@@ -42,18 +46,24 @@ export async function listsViewSubscribers() {
       fullPage: fullPageSet,
     });
 
-    // Click to view subscribers of the default list "Newsletter mailing list"
+    // Open the row actions menu for the default list "Newsletter mailing list"
+    // and click the "View subscribers" DataViews action.
     await page.waitForSelector(
       '[data-automation-id="segment_name_' + defaultListName + '"]',
     );
-    await page
-      .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
-      .hover();
-    await page
-      .locator(
-        '[data-automation-id="view_subscribers_' + defaultListName + '"]',
-      )
-      .click();
+    await page.evaluate((listName) => {
+      const nameCell = document.querySelector(
+        '[data-automation-id="segment_name_' + listName + '"]',
+      );
+      const row = nameCell ? nameCell.closest('tr') : null;
+      const actionsToggle = row
+        ? row.querySelector('button[aria-haspopup="menu"]')
+        : null;
+      if (actionsToggle) {
+        actionsToggle.click();
+      }
+    }, defaultListName);
+    await clickMenuItemByText(page, 'View subscribers');
 
     // Wait for the page to load
     await waitForDataViews(page, '.mailpoet-subscribers-dataviews');

@@ -51,8 +51,7 @@ class WooCommerceSetupPageCest {
     $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WooCommerce Customers');
-    $i->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
-    $i->click('[data-automation-id="view_subscribers_WooCommerce Customers"]');
+    $i->clickItemRowActionByItemName('WooCommerce Customers', 'View subscribers');
     $i->waitForListingItemsToLoad();
 
     $i->triggerMailPoetActionScheduler();
