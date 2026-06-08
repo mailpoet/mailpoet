@@ -43,16 +43,15 @@ function buildFields(
               .newsletter_rendered_subject) ||
           item.subject;
         return (
-          <strong>
-            <a
-              href={item.preview_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-automation-id={`listing_item_${item.id}`}
-            >
-              {subject}
-            </a>
-          </strong>
+          <a
+            className="mailpoet-listing-title"
+            href={item.preview_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-automation-id={`listing_item_${item.id}`}
+          >
+            {subject}
+          </a>
         );
       },
     },
