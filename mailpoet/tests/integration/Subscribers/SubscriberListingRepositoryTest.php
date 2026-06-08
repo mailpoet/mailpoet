@@ -146,6 +146,61 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($groups['6']['count'])->equals(1);
   }
 
+  public function testItCountsGroupsRespectingSearch() {
+    $aliceSubscribed = $this->createSubscriberEntity();
+    $aliceSubscribed->setEmail('alice-group-search-1@example.com');
+    $aliceSubscribed->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $aliceUnconfirmed = $this->createSubscriberEntity();
+    $aliceUnconfirmed->setEmail('alice-group-search-2@example.com');
+    $aliceUnconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+
+    $bob = $this->createSubscriberEntity();
+    $bob->setEmail('bob-group-search@example.com');
+    $bob->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $this->entityManager->flush();
+
+    $this->listingData['search'] = 'alice-group-search';
+    $groups = $this->repository->getGroups($this->getListingDefinition());
+    $this->listingData['search'] = '';
+
+    $byName = array_column($groups, 'count', 'name');
+    // Only the two "alice" subscribers match the search; bob is excluded from
+    // every bucket, proving the grouped count applies the search.
+    verify($byName['all'])->equals(2);
+    verify($byName['subscribed'])->equals(1);
+    verify($byName['unconfirmed'])->equals(1);
+    verify($byName['unsubscribed'])->equals(0);
+  }
+
+  public function testItCountsGroupsForStaticSegmentUsingPerListStatus() {
+    $segment = $this->segmentRepository->createOrUpdate('Group Static Segment');
+
+    // Globally subscribed, but unsubscribed from THIS list.
+    $unsubscribedFromList = $this->createSubscriberEntity();
+    $unsubscribedFromList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $segmentLink = $this->createSubscriberSegmentEntity($segment, $unsubscribedFromList);
+    $segmentLink->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    // Subscribed to the list.
+    $subscribedToList = $this->createSubscriberEntity();
+    $subscribedToList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($segment, $subscribedToList);
+
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $segment->getId()];
+    $groups = $this->repository->getGroups($this->getListingDefinition());
+    $this->listingData['filter'] = [];
+
+    $byName = array_column($groups, 'count', 'name');
+    // Per-list status (fallback path): the globally-subscribed member that left
+    // this list counts as unsubscribed, not subscribed.
+    verify($byName['subscribed'])->equals(1);
+    verify($byName['unsubscribed'])->equals(1);
+  }
+
   public function testLoadAllSubscribers() {
     $this->createSubscriberEntity(); // subscriber without a list
 
