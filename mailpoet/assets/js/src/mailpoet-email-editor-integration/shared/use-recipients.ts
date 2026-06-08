@@ -62,16 +62,19 @@ async function fetchSegmentPage<T>(
 
 async function fetchAllSegments<T>(path: string): Promise<T[]> {
   let page = 1;
-  let pages = 1;
   const items: T[] = [];
 
-  do {
+  while (true) {
     // eslint-disable-next-line no-await-in-loop
     const response = await fetchSegmentPage<T>(path, page);
     items.push(...response.data.items);
-    pages = response.data.meta.pages;
+
+    if (page >= response.data.meta.pages) {
+      break;
+    }
+
     page += 1;
-  } while (page <= pages);
+  }
 
   return items;
 }
