@@ -37,6 +37,10 @@
   &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
     margin-left: $grid-gap;
   }
+
+  &.button-link {
+    border: 0 !important;
+  }
 }
 
 .mailpoet-button-with-spinner {
