@@ -26,13 +26,20 @@ class AmazonSESMapper {
    * @return MailerError
    */
   public function getErrorFromResponse($response, $subscriber) {
-    $message = ($response) ?
-      $response->Error->Message->__toString() : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      // translators: %s is the name of the method.
-      sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
+    // translators: %s is the name of the method.
+    $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
+    $code = null;
+    if ($response && isset($response->Error)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (isset($response->Error->Message) && (string)$response->Error->Message !== '') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $message = (string)$response->Error->Message; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
+      if (isset($response->Error->Code) && (string)$response->Error->Code !== '') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $code = (string)$response->Error->Code; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
+    }
 
     $level = MailerError::LEVEL_HARD;
-    if ($response && $response->Error->Code->__toString() === 'MessageRejected') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($code === 'MessageRejected') {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriberErrors = [new SubscriberError($subscriber, null)];

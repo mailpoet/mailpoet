@@ -42,6 +42,25 @@ class AmazonSESMapperTest extends \MailPoetUnitTest {
     verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
+  public function testGetUnknownErrorWhenResponseMessageIsMissing() {
+    unset($this->responseData['Error']['Message']);
+    $response = $this->buildXmlResponseFromArray($this->responseData, new SimpleXMLElement('<response/>'));
+    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com');
+    verify($error->getMessage())->equals('AmazonSES has returned an unknown error.');
+  }
+
+  public function testGetUnknownErrorWhenResponseErrorIsMissing() {
+    $error = $this->mapper->getErrorFromResponse(new SimpleXMLElement('<response/>'), 'john@rambo.com');
+    verify($error->getMessage())->equals('AmazonSES has returned an unknown error.');
+  }
+
+  public function testGetHardErrorWhenResponseCodeIsMissing() {
+    unset($this->responseData['Error']['Code']);
+    $response = $this->buildXmlResponseFromArray($this->responseData, new SimpleXMLElement('<response/>'));
+    $error = $this->mapper->getErrorFromResponse($response, 'john@rambo.com');
+    verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
+  }
+
   /**
    * @return SimpleXMLElement
    */
