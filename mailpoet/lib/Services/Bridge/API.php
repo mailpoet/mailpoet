@@ -62,17 +62,21 @@ class API {
   /** @var mixed|null It is an instance of \CurlHandle in PHP8 and above but a resource in PHP7 */
   private $curlHandle = null;
 
-  public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
-  public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
-  public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
-  // Registered directly on the WPCOM mailpoet-bridge plugin, not proxied through
-  // bridge.mailpoet.com like the other endpoints. Authenticated with the same
-  // `Basic api:<key>` header that auth() produces.
-  public $urlBouncesReport = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/bounces/report';
-  public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
-  public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
-  public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
-  public $urlAuthorizedSenderDomainVerification = 'https://bridge.mailpoet.com/api/v1/sender_domain_verify';
+  // v0 endpoints reproduce the legacy services-bridge contract on wpcom.
+  private const API_BASE_URL_V0 = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v0';
+  // Sender domains and authorized email management have no v0 wrapper; the v2
+  // namespace proxies the same upstream /api/v1 shapes the client already parses.
+  private const API_BASE_URL_V2 = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2';
+
+  public $urlMe = self::API_BASE_URL_V0 . '/me';
+  public $urlPremium = self::API_BASE_URL_V0 . '/premium';
+  public $urlMessages = self::API_BASE_URL_V0 . '/messages';
+  public $urlBounces = self::API_BASE_URL_V0 . '/bounces/search';
+  public $urlBouncesReport = self::API_BASE_URL_V2 . '/bounces/report';
+  public $urlStats = self::API_BASE_URL_V0 . '/stats';
+  public $urlAuthorizedEmailAddresses = self::API_BASE_URL_V2 . '/authorized_email_addresses';
+  public $urlAuthorizedSenderDomains = self::API_BASE_URL_V2 . '/sender_domain';
+  public $urlAuthorizedSenderDomainVerification = self::API_BASE_URL_V2 . '/sender_domain_verify';
 
   public function __construct(
     $apiKey,
