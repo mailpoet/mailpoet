@@ -801,16 +801,71 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
-    // A static segment redefines the subscribed/unsubscribed buckets in terms
-    // of the per-list status (s.status OR/AND ss.status), and a dynamic segment
-    // routes counts through an id subquery — neither can be expressed as a
-    // single GROUP BY over s.status, so they fall back to one count per group.
-    // Both are scoped to a single segment, so that loop runs over a far smaller
-    // set than the full list.
-    $counts = $this->hasSegmentListFilter($definition)
-      ? $this->getGroupCountsPerStatus($definition)
-      : $this->getGroupCounts($definition);
+    return $this->formatGroups($this->getGroupCountsForDefinition($definition)['counts']);
+  }
 
+  /**
+   * Count and status groups from a single computation, so the listing endpoint
+   * can drop the separate getCount() query: on the non-segment path both come
+   * from one grouped scan, and the current group's count is read straight from
+   * the buckets.
+   *
+   * @return array{count: int, groups: array<int, array<string, mixed>>}
+   */
+  public function getCountAndGroups(ListingDefinition $definition): array {
+    $computed = $this->getGroupCountsForDefinition($definition);
+    return [
+      'count' => $this->countForCurrentGroup($definition, $computed['counts'], $computed['consolidated']),
+      'groups' => $this->formatGroups($computed['counts']),
+    ];
+  }
+
+  /**
+   * A static segment redefines the subscribed/unsubscribed buckets in terms of
+   * the per-list status (s.status OR/AND ss.status), and a dynamic segment
+   * routes counts through an id subquery — neither can be expressed as a single
+   * GROUP BY over s.status, so they fall back to one count per group. Both are
+   * scoped to a single segment, so that loop runs over a far smaller set than
+   * the full list.
+   *
+   * @return array{counts: array<string, int>, consolidated: bool}
+   */
+  private function getGroupCountsForDefinition(ListingDefinition $definition): array {
+    $consolidated = !$this->hasSegmentListFilter($definition);
+    return [
+      'counts' => $consolidated ? $this->getGroupCounts($definition) : $this->getGroupCountsPerStatus($definition),
+      'consolidated' => $consolidated,
+    ];
+  }
+
+  /**
+   * The current group's count read from the precomputed buckets — identical to
+   * getCount($definition). The one case the buckets can't reproduce exactly is
+   * the "all" tab under a segment filter, where members pending in the list
+   * fall into no status bucket, so that defers to getCount.
+   *
+   * @param array<string, int> $counts
+   */
+  private function countForCurrentGroup(ListingDefinition $definition, array $counts, bool $consolidated): int {
+    $group = $definition->getGroup() ?: 'all';
+    if ($group === 'all') {
+      if (!$consolidated) {
+        return $this->getCount($definition);
+      }
+      $total = 0;
+      foreach (self::$supportedStatuses as $status) {
+        $total += $counts[$status];
+      }
+      return $total;
+    }
+    return array_key_exists($group, $counts) ? $counts[$group] : $this->getCount($definition);
+  }
+
+  /**
+   * @param array<string, int> $counts
+   * @return array<int, array<string, mixed>>
+   */
+  private function formatGroups(array $counts): array {
     $totalCount = 0;
     foreach (self::$supportedStatuses as $status) {
       $totalCount += $counts[$status];

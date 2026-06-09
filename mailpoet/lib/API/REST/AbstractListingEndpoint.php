@@ -48,7 +48,8 @@ abstract class AbstractListingEndpoint extends Endpoint {
     $repository = $this->getListingRepository();
 
     $rows = $repository->getData($definition);
-    $count = $repository->getCount($definition);
+    $countAndGroups = $this->getCountAndGroups($repository, $definition);
+    $count = $countAndGroups['count'];
     $perPage = $definition->getLimit() ?: self::DEFAULT_PER_PAGE;
     $pages = $count === 0 ? 0 : (int)ceil($count / max(1, $perPage));
 
@@ -59,8 +60,24 @@ abstract class AbstractListingEndpoint extends Endpoint {
         'pages' => $pages,
       ],
       'filters' => $repository->getFilters($definition),
-      'groups' => $repository->getGroups($definition),
+      'groups' => $countAndGroups['groups'],
     ]);
+  }
+
+  /**
+   * Returns `['count' => int, 'groups' => array]`. Split into a hook so an
+   * endpoint whose group counts already include the current group's count can
+   * compute both from a single query and skip the separate getCount(). The
+   * default keeps the two independent queries, unchanged for every other
+   * listing.
+   *
+   * @return array{count: int, groups: array<int, array<string, mixed>>}
+   */
+  protected function getCountAndGroups(ListingRepository $repository, ListingDefinition $definition): array {
+    return [
+      'count' => $repository->getCount($definition),
+      'groups' => $repository->getGroups($definition),
+    ];
   }
 
   public static function getRequestSchema(): array {
