@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Util\pQuery\pQuery;
 
 class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
@@ -110,6 +111,27 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
     verify($renderedContent['html'])->stringContainsString($this->partialTemplateContent);
     verify($renderedContent['text'])->stringContainsString($this->partialTemplateContent);
     verify($renderedContent['subject'])->stringContainsString($subject);
+  }
+
+  public function testItRendersDefaultTemplateWithGlobalContentAndFooterStyles() {
+    $controller = $this->generateController();
+    $newsletter = $controller->getNewsletter();
+    $body = $newsletter->getBody();
+    $body['globalStyles']['wrapper']['backgroundColor'] = '#f0e1d2';
+    $body['globalStyles']['text']['fontColor'] = '#b00020';
+    $body['globalStyles']['text']['fontFamily'] = 'Permanent Marker';
+    $newsletter->setBody($body);
+
+    $renderedContent = (array)$controller->render($newsletter);
+    $html = $renderedContent['html'];
+    $DOM = (new pQuery())->parseStr($html);
+    $contentWrapperStyle = $DOM('table.mailpoet_content-wrapper', 0)->attr('style');
+    $footerStyle = $DOM('td.mailpoet_footer', 0)->attr('style');
+
+    verify($contentWrapperStyle)->stringContainsString('background-color:#f0e1d2');
+    verify($footerStyle)->stringContainsString('color:#b00020');
+    verify($footerStyle)->stringContainsString('Permanent Marker');
+    verify($html)->stringNotContainsString('background-color:#ffffff!important');
   }
 
   private function generateController(): ConfirmationEmailCustomizer {
