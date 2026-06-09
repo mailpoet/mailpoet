@@ -199,6 +199,35 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['sort_by'] = '';
   }
 
+  public function testItSortsByCreatedAtWithIdTiebreaker() {
+    // First-inserted (lowest id) but the newest created_at.
+    $newestSameSecond = $this->createSubscriberEntity();
+    $newestSameSecond->setCreatedAt(new \DateTimeImmutable('2020-01-01 00:00:00'));
+
+    // Second-inserted (higher id) sharing the newest created_at second.
+    $newestHigherId = $this->createSubscriberEntity();
+    $newestHigherId->setCreatedAt(new \DateTimeImmutable('2020-01-01 00:00:00'));
+
+    // Third-inserted (highest id) but the oldest created_at.
+    $oldest = $this->createSubscriberEntity();
+    $oldest->setCreatedAt(new \DateTimeImmutable('2010-01-01 00:00:00'));
+
+    $this->entityManager->flush();
+
+    $this->listingData['sort_by'] = 'created_at';
+    $this->listingData['sort_order'] = 'desc';
+    $data = $this->repository->getData($this->getListingDefinition());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['sort_order'] = '';
+
+    verify(count($data))->equals(3);
+    // Real created_at order: the oldest date sorts last despite its highest id.
+    // Within the tied newest second, id desc breaks the tie deterministically.
+    verify($data[0]->getEmail())->equals($newestHigherId->getEmail());
+    verify($data[1]->getEmail())->equals($newestSameSecond->getEmail());
+    verify($data[2]->getEmail())->equals($oldest->getEmail());
+  }
+
   public function testLoadSubscribersInDynamicSegment() {
     $wpUserEmail = 'user-role-test1@example.com';
     $this->tester->deleteWordPressUser($wpUserEmail);
