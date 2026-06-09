@@ -233,6 +233,10 @@ function formatCount(count: number): string {
   return count.toLocaleString();
 }
 
+// Mirrors SEARCH_COUNT_CAP in SubscriberListingRepository: when a search matches
+// more rows than this, the backend caps the per-tab count and we show "N+".
+const SEARCH_COUNT_CAP = 1000;
+
 type PickerKind = 'segment' | 'tag';
 
 type PickerConfig = {
@@ -1267,6 +1271,8 @@ function SubscriberList() {
     [group, groupCounts, groups],
   );
 
+  const isSearchActive = Boolean(view.search && view.search.trim());
+
   const fields = useMemo(() => getSubscriberFields(getBackUrl), [getBackUrl]);
 
   const paginationInfo = useMemo(
@@ -1356,6 +1362,11 @@ function SubscriberList() {
                 'is-active': entry.name === group,
               },
             );
+            const count = Number(entry.count);
+            const countLabel =
+              isSearchActive && count > SEARCH_COUNT_CAP
+                ? `${SEARCH_COUNT_CAP.toLocaleString()}+`
+                : count.toLocaleString();
             return (
               <a
                 key={entry.name}
@@ -1368,11 +1379,7 @@ function SubscriberList() {
                 }}
               >
                 <span data-title={entry.label}>{entry.label}</span>
-                {Number(entry.count) > 0 && (
-                  <span className="count">
-                    {Number(entry.count).toLocaleString()}
-                  </span>
-                )}
+                {count > 0 && <span className="count">{countLabel}</span>}
               </a>
             );
           })}

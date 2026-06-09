@@ -910,6 +910,8 @@ class SubscriberListingRepository extends ListingRepository {
     ];
   }
 
+  private const SEARCH_COUNT_CAP = 1000;
+
   /**
    * Count every status tab in a single grouped scan plus one trash count,
    * instead of a separate COUNT per group. Valid whenever each group's
@@ -920,6 +922,11 @@ class SubscriberListingRepository extends ListingRepository {
   private function getGroupCounts(ListingDefinition $definition): array {
     $counts = array_fill_keys(self::$supportedStatuses, 0);
     $counts['trash'] = 0;
+
+    $search = $definition->getSearch();
+    if ($search !== null && strlen(trim($search)) > 0) {
+      return $this->getCappedGroupCounts($definition, $counts);
+    }
 
     $statusQuery = $this->createGroupCountQueryBuilder($definition);
     $statusQuery
@@ -937,6 +944,43 @@ class SubscriberListingRepository extends ListingRepository {
       ->andWhere('s.deletedAt IS NOT NULL')
       ->select('COUNT(DISTINCT s.id)');
     $counts['trash'] = (int)$trashQuery->getQuery()->getSingleScalarResult();
+
+    return $counts;
+  }
+
+  /**
+   * A search can match millions of rows, where an exact count is both expensive
+   * (a full scan, nothing to stop it) and pointless — nobody needs "4,138,902
+   * matches". So cap each group independently: fetch at most CAP+1 matching ids
+   * and count them. Capping per status — rather than one capped scan bucketed in
+   * PHP — keeps every tab reliable: a single total-capped sample would starve
+   * whichever statuses the scan reached last, reporting them as 0. The
+   * (status, deleted_at) index keeps each query a seek — a rare status touches
+   * only its small partition, a common one hits the LIMIT at once. Below the cap
+   * counts are exact; a tab at CAP+1 is rendered as "CAP+". Totals (no search)
+   * are never capped.
+   *
+   * @param array<string, int> $counts
+   * @return array<string, int>
+   */
+  private function getCappedGroupCounts(ListingDefinition $definition, array $counts): array {
+    foreach (self::$supportedStatuses as $status) {
+      $statusQuery = $this->createGroupCountQueryBuilder($definition);
+      $statusQuery
+        ->andWhere('s.deletedAt IS NULL')
+        ->andWhere('s.status = :cappedStatus')
+        ->setParameter('cappedStatus', $status)
+        ->select('s.id')
+        ->setMaxResults(self::SEARCH_COUNT_CAP + 1);
+      $counts[$status] = count($statusQuery->getQuery()->getScalarResult());
+    }
+
+    $trashQuery = $this->createGroupCountQueryBuilder($definition);
+    $trashQuery
+      ->andWhere('s.deletedAt IS NOT NULL')
+      ->select('s.id')
+      ->setMaxResults(self::SEARCH_COUNT_CAP + 1);
+    $counts['trash'] = count($trashQuery->getQuery()->getScalarResult());
 
     return $counts;
   }
