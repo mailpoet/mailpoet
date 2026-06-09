@@ -2,13 +2,16 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue;
 
+use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Monolog\Logger;
 
 class SendingThrottlingHandler {
   public const BATCH_SIZE = 20;
+  public const COMPRESSED_MSS_BATCH_SIZE = 50;
   public const SETTINGS_KEY = 'mta_throttling';
   public const SUCCESS_THRESHOLD_TO_INCREASE = 10;
 
@@ -21,27 +24,44 @@ class SendingThrottlingHandler {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     LoggerFactory $loggerFactory,
     SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    FeaturesController $featuresController
   ) {
     $this->logger = $loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING);
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->featuresController = $featuresController;
   }
 
   public function getBatchSize(): int {
     $throttlingSettings = $this->loadSettings();
     if (isset($throttlingSettings['batch_size'])) {
-      return $throttlingSettings['batch_size'];
+      return min($throttlingSettings['batch_size'], $this->getMaxBatchSize());
     }
     return $this->getMaxBatchSize();
   }
 
   private function getMaxBatchSize(): int {
-    $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
-    return is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
+    $defaultBatchSize = $this->getDefaultBatchSize();
+    $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', $defaultBatchSize);
+    return is_int($batchSize) ? $batchSize : $defaultBatchSize;
+  }
+
+  private function getDefaultBatchSize(): int {
+    return $this->isMssMessageCompressionSupported() ? self::COMPRESSED_MSS_BATCH_SIZE : self::BATCH_SIZE;
+  }
+
+  private function isMssMessageCompressionSupported(): bool {
+    $mailerConfig = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+    return !empty($mailerConfig['method'])
+      && $mailerConfig['method'] === Mailer::METHOD_MAILPOET
+      && $this->featuresController->isMssMessageCompressionSupported();
   }
 
   public function throttleBatchSize(): int {

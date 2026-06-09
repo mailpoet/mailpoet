@@ -139,13 +139,15 @@ class API {
     $this->curlHandle = $handle;
   }
 
-  public function sendMessages($messageBody) {
+  public function sendMessages($messageBody, bool $compress = false) {
     $this->curlHandle = null;
     add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 1);
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
       $this->urlMessages,
-      $messageBody
+      $messageBody,
+      'POST',
+      $compress
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     remove_action('requests-curl.before_request', [$this, 'setCurlHandle']);
@@ -411,16 +413,26 @@ class API {
     return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
-  private function request($url, $body, $method = 'POST') {
+  private function request($url, $body, $method = 'POST', bool $compressBody = false) {
+    $encodedBody = $body !== null ? json_encode($body) : null;
+    $headers = [
+      'Content-Type' => 'application/json',
+      'Authorization' => $this->auth(),
+    ];
+    if ($compressBody && is_string($encodedBody) && function_exists('gzencode')) {
+      $compressedBody = gzencode($encodedBody);
+      if (is_string($compressedBody)) {
+        $encodedBody = $compressedBody;
+        $headers['Content-Encoding'] = 'gzip';
+      }
+    }
+
     $params = [
       'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
-      'headers' => [
-        'Content-Type' => 'application/json',
-        'Authorization' => $this->auth(),
-      ],
-      'body' => $body !== null ? json_encode($body) : null,
+      'headers' => $headers,
+      'body' => $encodedBody,
     ];
     return $this->wp->wpRemotePost($url, $params);
   }

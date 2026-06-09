@@ -3,6 +3,9 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
+use MailPoet\Features\FeatureFlagsRepository;
+use MailPoet\Features\FeaturesController;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 
 class SendingThrottlingHandlerTest extends \MailPoetTest {
@@ -13,15 +16,55 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
+  /** @var FeatureFlagsRepository */
+  private $featureFlagsRepository;
+
   public function _before() {
     parent::_before();
     $this->throttlingHandler = $this->diContainer->get(SendingThrottlingHandler::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->featuresController = $this->diContainer->get(FeaturesController::class);
+    $this->featureFlagsRepository = $this->diContainer->get(FeatureFlagsRepository::class);
   }
 
   public function testItReturnsDefaultBatchSize(): void {
     $batchSize = $this->throttlingHandler->getBatchSize();
     verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
+  public function testItReturnsCompressedMssBatchSizeWhenCompressionIsSupported(): void {
+    if (!function_exists('gzencode')) {
+      $this->markTestSkipped('Gzip support is not available.');
+    }
+
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->setMssMessageCompressionFeature(true);
+
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::COMPRESSED_MSS_BATCH_SIZE);
+  }
+
+  public function testItKeepsDefaultBatchSizeForMssWhenCompressionFeatureIsDisabled(): void {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->setMssMessageCompressionFeature(false);
+
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
+  public function testItKeepsDefaultBatchSizeForNonMssWhenCompressionFeatureIsEnabled(): void {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_PHPMAIL]);
+    $this->setMssMessageCompressionFeature(true);
+
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
+  public function testItClampsStoredBatchSizeToCurrentMaximum(): void {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_PHPMAIL]);
+    $this->settings->set(SendingThrottlingHandler::SETTINGS_KEY, ['batch_size' => SendingThrottlingHandler::COMPRESSED_MSS_BATCH_SIZE]);
+
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
   public function testItThrottlesBatchSizeToHalf(): void {
@@ -52,5 +95,13 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
       $this->throttlingHandler->processSuccess();
     }
     verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
+  private function setMssMessageCompressionFeature(bool $value): void {
+    $this->featureFlagsRepository->createOrUpdate([
+      'name' => FeaturesController::FEATURE_MSS_MESSAGE_COMPRESSION,
+      'value' => $value,
+    ]);
+    $this->featuresController->resetCache();
   }
 }

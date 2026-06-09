@@ -262,6 +262,46 @@ class BridgeTest extends \MailPoetTest {
     $wp->removeFilter('mailpoet_bridge_api_request_timeout', $filter);
   }
 
+  public function testItCompressesMessagesRequestWhenCompressionIsEnabled() {
+    if (!function_exists('gzencode') || !function_exists('gzdecode')) {
+      $this->markTestSkipped('Gzip support is not available.');
+    }
+
+    /** @var array $wpRemotePostArgs */
+    $wpRemotePostArgs = [];
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function() use (&$wpRemotePostArgs) {
+        $wpRemotePostArgs = func_get_args();
+      },
+      'wpRemoteRetrieveResponseCode' => API::RESPONSE_CODE_CREATED,
+    ]);
+    $api = new API('test_key', $wp);
+    $messageBody = [['subject' => 'Test', 'html' => '<p>Body</p>']];
+
+    $api->sendMessages($messageBody, true);
+
+    verify($wpRemotePostArgs[1]['headers']['Content-Encoding'])->equals('gzip');
+    verify(gzdecode($wpRemotePostArgs[1]['body']))->equals(json_encode($messageBody));
+  }
+
+  public function testItKeepsMessagesRequestPlainWhenCompressionIsDisabled() {
+    /** @var array $wpRemotePostArgs */
+    $wpRemotePostArgs = [];
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function() use (&$wpRemotePostArgs) {
+        $wpRemotePostArgs = func_get_args();
+      },
+      'wpRemoteRetrieveResponseCode' => API::RESPONSE_CODE_CREATED,
+    ]);
+    $api = new API('test_key', $wp);
+    $messageBody = [['subject' => 'Test', 'html' => '<p>Body</p>']];
+
+    $api->sendMessages($messageBody, false);
+
+    $this->assertArrayNotHasKey('Content-Encoding', $wpRemotePostArgs[1]['headers']);
+    verify($wpRemotePostArgs[1]['body'])->equals(json_encode($messageBody));
+  }
+
   public function testItReturnsAllUserEmails() {
     $array = [
       'pending' => ['pending@email.com'],

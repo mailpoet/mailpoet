@@ -5,6 +5,7 @@ namespace MailPoet\Test\Mailer\Methods;
 use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
@@ -49,7 +50,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class),
       $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(Url::class)
+      $this->diContainer->get(Url::class),
+      $this->diContainer->get(FeaturesController::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
@@ -92,7 +94,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class),
       $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(Url::class)
+      $this->diContainer->get(Url::class),
+      $this->diContainer->get(FeaturesController::class)
     );
     $body = $mailer->getBody($this->newsletter, $this->subscriber);
     verify($body[0]['reply_to'])->equals([
@@ -322,7 +325,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]),
       $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(Url::class)
+      $this->diContainer->get(Url::class),
+      $this->diContainer->get(FeaturesController::class)
     );
     $mailer->api = $this->makeEmpty(
       API::class,
@@ -344,7 +348,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]),
       $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(Url::class)
+      $this->diContainer->get(Url::class),
+      $this->diContainer->get(FeaturesController::class)
     );
     $mailer->api = $this->makeEmpty(
       API::class,

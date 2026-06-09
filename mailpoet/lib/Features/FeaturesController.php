@@ -7,12 +7,14 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 class FeaturesController {
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
   const FEATURE_SEND_BY_TIMEZONE = 'send_by_timezone';
+  const FEATURE_MSS_MESSAGE_COMPRESSION = 'mss_message_compression';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
     self::FEATURE_SEND_BY_TIMEZONE => false,
+    self::FEATURE_MSS_MESSAGE_COMPRESSION => false,
   ];
 
   /** @var array|null */
@@ -57,6 +59,10 @@ class FeaturesController {
     return $this->flags ?? [];
   }
 
+  public function isMssMessageCompressionSupported(): bool {
+    return $this->isSupported(self::FEATURE_MSS_MESSAGE_COMPRESSION) && $this->isGzipCompressionAvailable();
+  }
+
   public function resetCache(): void {
     $this->flags = null;
   }
@@ -80,5 +86,9 @@ class FeaturesController {
       $featuresMap[$feature->getName()] = (bool)$feature->getValue();
     }
     return $featuresMap;
+  }
+
+  protected function isGzipCompressionAvailable(): bool {
+    return function_exists('gzencode');
   }
 }

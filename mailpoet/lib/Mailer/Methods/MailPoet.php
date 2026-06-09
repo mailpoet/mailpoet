@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
@@ -32,6 +33,9 @@ class MailPoet implements MailerMethod {
   /** @var Bridge */
   private $bridge;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     $apiKey,
     $sender,
@@ -39,7 +43,8 @@ class MailPoet implements MailerMethod {
     MailPoetMapper $errorMapper,
     AuthorizedEmailsController $authorizedEmailsController,
     Bridge $bridge,
-    Url $url
+    Url $url,
+    FeaturesController $featuresController
   ) {
     $this->api = new API($apiKey);
     $this->sender = $sender;
@@ -50,6 +55,7 @@ class MailPoet implements MailerMethod {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->blacklist = new BlacklistCheck();
     $this->url = $url;
+    $this->featuresController = $featuresController;
   }
 
   public function send($newsletter, $subscriber, $extraParams = []): array {
@@ -66,7 +72,7 @@ class MailPoet implements MailerMethod {
     }
 
     $messageBody = $this->getBody($newsletter, $subscriber, $extraParams);
-    $result = $this->api->sendMessages($messageBody);
+    $result = $this->api->sendMessages($messageBody, $this->featuresController->isMssMessageCompressionSupported());
 
     switch ($result['status']) {
       case API::SENDING_STATUS_CONNECTION_ERROR:

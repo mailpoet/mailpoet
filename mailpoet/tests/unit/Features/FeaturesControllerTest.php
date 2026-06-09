@@ -72,4 +72,52 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     }
     verify($controller->getAllFlags())->empty();
   }
+
+  public function testMssMessageCompressionIsDisabledByDefault() {
+    $repository = $this->makeEmpty(
+      FeatureFlagsRepository::class,
+      [
+        'findAll' => [],
+      ]
+    );
+
+    $controller = new FeaturesController($repository);
+
+    verify($controller->isSupported(FeaturesController::FEATURE_MSS_MESSAGE_COMPRESSION))->false();
+    verify($controller->isMssMessageCompressionSupported())->false();
+  }
+
+  public function testMssMessageCompressionRequiresGzipSupport() {
+    $repository = $this->makeEmpty(
+      FeatureFlagsRepository::class,
+      [
+        'findAll' => [new FeatureFlagEntity(FeaturesController::FEATURE_MSS_MESSAGE_COMPRESSION, true)],
+      ]
+    );
+
+    $controller = $this->getMockBuilder(FeaturesController::class)
+      ->setConstructorArgs([$repository])
+      ->onlyMethods(['isGzipCompressionAvailable'])
+      ->getMock();
+    $controller->method('isGzipCompressionAvailable')->willReturn(false);
+
+    verify($controller->isMssMessageCompressionSupported())->false();
+  }
+
+  public function testMssMessageCompressionIsSupportedWhenFlagAndGzipAreAvailable() {
+    $repository = $this->makeEmpty(
+      FeatureFlagsRepository::class,
+      [
+        'findAll' => [new FeatureFlagEntity(FeaturesController::FEATURE_MSS_MESSAGE_COMPRESSION, true)],
+      ]
+    );
+
+    $controller = $this->getMockBuilder(FeaturesController::class)
+      ->setConstructorArgs([$repository])
+      ->onlyMethods(['isGzipCompressionAvailable'])
+      ->getMock();
+    $controller->method('isGzipCompressionAvailable')->willReturn(true);
+
+    verify($controller->isMssMessageCompressionSupported())->true();
+  }
 }

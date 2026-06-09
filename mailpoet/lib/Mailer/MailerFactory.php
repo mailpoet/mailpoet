@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
@@ -72,7 +73,8 @@ class MailerFactory {
           ContainerWrapper::getInstance()->get(MailPoetMapper::class),
           ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
           ContainerWrapper::getInstance()->get(Bridge::class),
-          ContainerWrapper::getInstance()->get(Url::class)
+          ContainerWrapper::getInstance()->get(Url::class),
+          ContainerWrapper::getInstance()->get(FeaturesController::class)
         );
         break;
       case Mailer::METHOD_SENDGRID:
