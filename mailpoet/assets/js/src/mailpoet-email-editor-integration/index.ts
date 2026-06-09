@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
+import { store as noticesStore } from '@wordpress/notices';
 import { registerPlugin } from '@wordpress/plugins';
 import { MailPoet } from 'mailpoet';
 import type { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
@@ -85,8 +86,20 @@ addFilter(
       const postId = select(editorStore).getCurrentPostId();
       if (postId && select(editorStore).isEditedPostDirty()) {
         void dispatch(coreDataStore)
-          .saveEditedEntityRecord('postType', 'mailpoet_email', postId)
-          .then(() => dispatch(emailEditorIntegrationStore).openReviewPanel());
+          .saveEditedEntityRecord('postType', 'mailpoet_email', postId, {
+            throwOnError: true,
+          })
+          .then(() => dispatch(emailEditorIntegrationStore).openReviewPanel())
+          .catch((error: { message?: string }) => {
+            void dispatch(noticesStore).createErrorNotice(
+              error?.message ||
+                __(
+                  'The email could not be saved. Please try again.',
+                  'mailpoet',
+                ),
+              { type: 'snackbar' },
+            );
+          });
         return;
       }
       void dispatch(emailEditorIntegrationStore).openReviewPanel();
