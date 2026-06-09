@@ -53,6 +53,11 @@ export function ReviewPanel() {
     }
   }, [postId, setEmailPost, togglePreviewModal]);
 
+  const handleCancel = useCallback(() => {
+    clearError();
+    void closeReviewPanel();
+  }, [clearError, closeReviewPanel]);
+
   if (!isOpen) {
     return null;
   }
@@ -78,7 +83,7 @@ export function ReviewPanel() {
             variant="secondary"
             size="compact"
             disabled={isSending}
-            onClick={() => void closeReviewPanel()}
+            onClick={handleCancel}
           >
             {__('Cancel', 'mailpoet')}
           </Button>
