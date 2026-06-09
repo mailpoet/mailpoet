@@ -6,6 +6,7 @@ use Codeception\Stub;
 use MailPoet\API\JSON\API;
 use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -184,6 +185,67 @@ class FormTest extends \MailPoetTest {
     $formController = new Form($api, $urlHelper);
     $result = $formController->onSubmit(['action' => 'unrelated_action', 'data' => ['form_id' => 1]]);
     verify($result)->equals('redirected-back');
+  }
+
+  public function testItRedirectsBackWhenFormDataIsMalformed() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    $requestData['data'] = 'not-an-array';
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result)->equals('redirected-back');
+  }
+
+  public function testItRedirectsBackWhenApiRouteFieldsAreMissing() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    unset($requestData['endpoint']);
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result)->equals('redirected-back');
+  }
+
+  public function testItAcceptsMethodAliasForApiRoute() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return $params;
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::once(),
+      'processRoute' => function() {
+        return new SuccessResponse();
+      },
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    $requestData['method'] = 'subscribe';
+    unset($requestData['mailpoet_method']);
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result['mailpoet_success'])->equals($this->form->getId());
+    verify($result['mailpoet_error'])->null();
   }
 
   public function _after() {

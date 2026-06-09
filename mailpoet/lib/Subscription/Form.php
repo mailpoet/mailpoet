@@ -33,7 +33,24 @@ class Form {
     $action = (isset($requestData['action']) && is_string($requestData['action']))
       ? sanitize_text_field(wp_unslash($requestData['action']))
       : '';
-    if ($action !== 'mailpoet_subscription_form' || empty($requestData['data'])) {
+    $apiVersion = (isset($requestData['api_version']) && is_string($requestData['api_version']))
+      ? trim($requestData['api_version'])
+      : '';
+    $endpoint = (isset($requestData['endpoint']) && is_string($requestData['endpoint']))
+      ? trim($requestData['endpoint'])
+      : '';
+    $methodParamName = isset($requestData['mailpoet_method']) ? 'mailpoet_method' : 'method';
+    $method = (isset($requestData[$methodParamName]) && is_string($requestData[$methodParamName]))
+      ? trim($requestData[$methodParamName])
+      : '';
+    if (
+      $action !== 'mailpoet_subscription_form'
+      || empty($requestData['data'])
+      || !is_array($requestData['data'])
+      || $apiVersion === ''
+      || $endpoint === ''
+      || $method === ''
+    ) {
       return $this->urlHelper->redirectBack();
     }
 
