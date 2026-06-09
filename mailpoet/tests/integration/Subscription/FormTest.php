@@ -206,6 +206,25 @@ class FormTest extends \MailPoetTest {
     verify($result)->equals('redirected-back');
   }
 
+  public function testItRedirectsBackWhenFormIdIsMalformed() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    $requestData['data']['form_id'] = ['not-a-scalar'];
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result)->equals('redirected-back');
+  }
+
   public function testItRedirectsBackWhenApiRouteFieldsAreMissing() {
     $urlHelper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params = []) {
