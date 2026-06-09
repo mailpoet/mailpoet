@@ -2,6 +2,9 @@
 
 namespace MailPoet\Newsletter\Preview;
 
+/**
+ * @group woo
+ */
 class WooCommerceDummyDataTest extends \MailPoetTest {
   /** @var WooCommerceDummyData */
   private $dummyData;
