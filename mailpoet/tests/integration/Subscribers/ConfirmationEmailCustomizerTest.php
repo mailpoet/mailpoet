@@ -125,8 +125,8 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
     $renderedContent = (array)$controller->render($newsletter);
     $html = $renderedContent['html'];
     $DOM = (new pQuery())->parseStr($html);
-    $contentWrapperStyle = $DOM('table.mailpoet_content-wrapper', 0)->attr('style');
-    $footerStyle = $DOM('td.mailpoet_footer', 0)->attr('style');
+    $contentWrapperStyle = $DOM->query('table.mailpoet_content-wrapper')->attr('style');
+    $footerStyle = $DOM->query('td.mailpoet_footer')->attr('style');
 
     verify($contentWrapperStyle)->stringContainsString('background-color:#f0e1d2');
     verify($footerStyle)->stringContainsString('color:#b00020');
