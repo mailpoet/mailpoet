@@ -93,6 +93,7 @@ export function ReviewPanel() {
             isBusy={isSending}
             disabled={isSending || hasNoRecipients}
             onClick={() => void sendEmail()}
+            data-automation-id="email_review_panel_send_button"
           >
             {sendButtonLabel}
           </Button>
@@ -132,6 +133,7 @@ export function ReviewPanel() {
           </PanelBody>
 
           <PanelBody
+            className="mailpoet-review-panel__recipients"
             title={sprintf(
               /* translators: %s is the recipient segment label. */
               __('Recipients: %s', 'mailpoet'),
