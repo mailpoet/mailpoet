@@ -270,6 +270,9 @@ const adminConfig = {
   },
   plugins: [
     ...baseConfig.plugins,
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^@wordpress\/vips\/worker$/,
+    }),
 
     new WebpackCopyPlugin({
       patterns: [
