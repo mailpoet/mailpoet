@@ -9,6 +9,8 @@
 
 <script>
   <% autoescape 'js' %>
+  // Disable Gutenberg's opt-in VIPS upload path before the form editor bundle runs.
+  window.__clientSideMediaProcessing = false;
   var mailpoet_form_data = <%= form|wp_json_encode %>;
   var mailpoet_form_exports = <%= form_exports|wp_json_encode %>;
   var mailpoet_form_segments = <%= segments|wp_json_encode %>;
