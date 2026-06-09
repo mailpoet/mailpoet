@@ -69,6 +69,11 @@ export function useSendEmail(): UseSendEmail {
       // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
       const newsletterId = editedPost?.mailpoet_data?.id;
 
+      if (!newsletterId) {
+        setError(__('An error occurred while sending the email.', 'mailpoet'));
+        return;
+      }
+
       await new Promise<SendResponse>((resolve, reject) => {
         void MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
