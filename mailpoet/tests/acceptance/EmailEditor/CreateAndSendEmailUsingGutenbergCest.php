@@ -53,20 +53,22 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preheader"]', 'My New Preview Text');
 
-    $i->wantTo('Send an email and verify it was delivered');
+    $i->wantTo('Open the review panel and verify the email details');
     $i->waitForText('Save draft', 10, '.edit-post-header');
     $i->click('Save draft', '.edit-post-header');
     $i->waitForText('Saved');
     $i->click('[data-automation-id="email_editor_send_button"]');
-    $i->waitForElement('[name="subject"]');
-    $subject = $i->grabValueFrom('[name="subject"]');
-    verify($subject)->equals('My New Subject');
-    $i->waitForText('My New Preview Text');
-    $i->fillField('sender_name', 'John Doe');
-    $i->fillField('sender_address', 'john.doe@example.com');
-    $i->selectOptionInSelect2($segmentName);
+    $i->waitForElementVisible('.mailpoet-review-panel');
+    $i->waitForText('My New Subject', 10, '.mailpoet-inbox-preview-panel__subject');
+    $i->waitForText('My New Preview Text', 10, '.mailpoet-inbox-preview-panel__preheader');
 
-    $i->click('Send');
+    $i->wantTo('Select recipients and send the email');
+    $i->click('.mailpoet-review-panel__recipients .components-panel__body-toggle');
+    $i->waitForElementVisible('.mailpoet-status-panel__recipients-segments');
+    $i->fillField('.mailpoet-status-panel__recipients-segments input', $segmentName);
+    $i->pressKey('.mailpoet-status-panel__recipients-segments input', \Facebook\WebDriver\WebDriverKeys::ENTER);
+    $i->waitForElementClickable('[data-automation-id="email_review_panel_send_button"]');
+    $i->click('[data-automation-id="email_review_panel_send_button"]');
     $i->waitForEmailSendingOrSent();
 
     $i->triggerMailPoetActionScheduler();
