@@ -1,5 +1,16 @@
 == Changelog ==
 
+= 5.29.0 - 2026-06-09 =
+* Added: Email content for welcome automation templates;
+* Added: Email content for abandoned cart reminder automation;
+* Added: Delete email button in automation's "Send email" settings;
+* Improved: Automations menu highlighting when editing automation emails;
+* Fixed: Archive links for emails with Unicode subject characters;
+* Fixed: Prevent the email preview from overwriting or reading from an existing order whose id collides with the preview dummy order id;
+* Fixed: An issue where saving subscription preferences could change other subscriber details;
+* Fixed: Fix MailPoet REST endpoints on sites using plain permalinks;
+* Fixed: Post notification history titles overflowing into other columns.
+
 = 5.28.1 - 2026-06-01 =
 * Added: Per-newsletter archive visibility setting;
 * Added: Newsletter embed shortcode and block;

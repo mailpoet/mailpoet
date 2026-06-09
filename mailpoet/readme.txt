@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.28.1
+Stable tag: 5.29.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,11 +227,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.28.1 - 2026-06-01 =
-* Added: Per-newsletter archive visibility setting;
-* Added: Newsletter embed shortcode and block;
-* Added: A link to learn more about Automatic Latest Content block in its settings;
-* Changed: Subscriber engagement badges now identify dormant subscribers with no recent email activity;
-* Fixed: Remove duplicate Move to trash actions from the Subscribers page.
+= 5.29.0 - 2026-06-09 =
+* Added: Email content for welcome automation templates;
+* Added: Email content for abandoned cart reminder automation;
+* Added: Delete email button in automation's "Send email" settings;
+* Improved: Automations menu highlighting when editing automation emails;
+* Fixed: Archive links for emails with Unicode subject characters;
+* Fixed: Prevent the email preview from overwriting or reading from an existing order whose id collides with the preview dummy order id;
+* Fixed: An issue where saving subscription preferences could change other subscriber details;
+* Fixed: Fix MailPoet REST endpoints on sites using plain permalinks;
+* Fixed: Post notification history titles overflowing into other columns.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
