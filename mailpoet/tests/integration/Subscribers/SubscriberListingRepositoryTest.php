@@ -201,6 +201,49 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($byName['unsubscribed'])->equals(1);
   }
 
+  public function testGetCountAndGroupsMatchesStandaloneCountAndGroups() {
+    $segment = $this->segmentRepository->createOrUpdate('Count And Groups Segment');
+
+    $this->createSubscriberEntity(); // subscribed, no list
+    $unsubscribed = $this->createSubscriberEntity();
+    $unsubscribed->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unconfirmed = $this->createSubscriberEntity();
+    $unconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $trashed = $this->createSubscriberEntity();
+    $trashed->setDeletedAt(new \DateTimeImmutable());
+
+    $memberSubscribed = $this->createSubscriberEntity();
+    $this->createSubscriberSegmentEntity($segment, $memberSubscribed);
+    $memberLeftList = $this->createSubscriberEntity();
+    $leftLink = $this->createSubscriberSegmentEntity($segment, $memberLeftList);
+    $leftLink->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $this->entityManager->flush();
+
+    $scenarios = [
+      ['group' => 'all', 'filter' => []],
+      ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => []],
+      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => []],
+      ['group' => 'trash', 'filter' => []],
+      ['group' => 'all', 'filter' => ['segment' => $segment->getId()]], // defers to getCount
+      ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => ['segment' => $segment->getId()]],
+    ];
+
+    foreach ($scenarios as $scenario) {
+      $this->listingData['group'] = $scenario['group'];
+      $this->listingData['filter'] = $scenario['filter'];
+      $definition = $this->getListingDefinition();
+
+      $combined = $this->repository->getCountAndGroups($definition);
+      // The derived count drives pagination, so it must match getCount exactly.
+      verify($combined['count'])->equals($this->repository->getCount($definition));
+      verify($combined['groups'])->equals($this->repository->getGroups($definition));
+    }
+
+    $this->listingData['group'] = '';
+    $this->listingData['filter'] = [];
+  }
+
   public function testLoadAllSubscribers() {
     $this->createSubscriberEntity(); // subscriber without a list
 

@@ -37,6 +37,13 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     return $this->subscriberListingRepository;
   }
 
+  protected function getCountAndGroups(ListingRepository $repository, ListingDefinition $definition): array {
+    if (!$repository instanceof SubscriberListingRepository) {
+      return parent::getCountAndGroups($repository, $definition);
+    }
+    return $repository->getCountAndGroups($definition);
+  }
+
   protected function buildItems(array $rows, ListingDefinition $definition): array {
     $subscribers = $this->subscribersResponseBuilder->buildForListing($rows);
     // Mirror the legacy endpoint: when filtering by a specific segment, surface
