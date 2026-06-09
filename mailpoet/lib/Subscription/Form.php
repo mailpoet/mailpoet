@@ -43,10 +43,14 @@ class Form {
     $method = (isset($requestData[$methodParamName]) && is_string($requestData[$methodParamName]))
       ? trim($requestData[$methodParamName])
       : '';
+    $rawFormId = (isset($requestData['data']) && is_array($requestData['data']))
+      ? ($requestData['data']['form_id'] ?? false)
+      : false;
     if (
       $action !== 'mailpoet_subscription_form'
       || empty($requestData['data'])
       || !is_array($requestData['data'])
+      || (isset($requestData['data']['form_id']) && !is_scalar($rawFormId))
       || $apiVersion === ''
       || $endpoint === ''
       || $method === ''
@@ -55,7 +59,7 @@ class Form {
     }
 
     $this->api->setRequestData($requestData, Endpoint::TYPE_POST);
-    $formId = (!empty($requestData['data']['form_id'])) ? (int)$requestData['data']['form_id'] : false;
+    $formId = is_numeric($rawFormId) ? (int)$rawFormId : false;
     $response = $this->api->processRoute();
     if ($response->status !== APIResponse::STATUS_OK) {
       return (isset($response->meta['redirect_url'])) ?
