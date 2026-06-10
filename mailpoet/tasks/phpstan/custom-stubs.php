@@ -311,6 +311,18 @@ namespace Automattic\WooCommerce\Internal\Features {
   }
 }
 
+// Stub for the order attribution controller, which is internal and not included in php-stubs/woocommerce-stubs
+namespace Automattic\WooCommerce\Internal\Orders {
+
+  if (!class_exists(\Automattic\WooCommerce\Internal\Orders\OrderAttributionController::class)) {
+    class OrderAttributionController {
+      public function get_field_names(): array {
+        return [];
+      }
+    }
+  }
+}
+
 // Temporary stubs for marketing channels
 // I have no idea why PhpStorm is complaining, but the woocommerce-stubs library has the latest updates
 namespace Automattic\WooCommerce\Admin\Marketing {
