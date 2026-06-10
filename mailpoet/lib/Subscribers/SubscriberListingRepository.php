@@ -1134,6 +1134,12 @@ class SubscriberListingRepository extends ListingRepository {
     $this->definition = $definition;
     $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
     if ($dynamicSegment === null) {
+      if (
+        $definition->getGroup() === SubscriberEntity::STATUS_UNSUBSCRIBED
+        && $this->getStaticSegmentFromDefinition()
+      ) {
+        return $this->getCappedUnsubscribedInSegmentCount($definition);
+      }
       $queryBuilder = clone $this->queryBuilder;
       $this->applyFromClause($queryBuilder);
       $this->applyConstraints($queryBuilder, $definition);
@@ -1152,6 +1158,43 @@ class SubscriberListingRepository extends ListingRepository {
       ->setMaxResults(self::SEARCH_COUNT_CAP + 1);
     $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
     return count($subscribersIdsQuery->execute()->fetchAll());
+  }
+
+  /**
+   * Capped count for the unsubscribed tab under a static list. The bucket is
+   * "(s.status = unsubscribed OR ss.status = unsubscribed)", and that cross-table
+   * OR can use no index — it scans every member of the list (tens of seconds on a
+   * big list, even with a search, because an empty result never reaches the LIMIT).
+   * Split it into the two index-drivable halves instead: globally unsubscribed
+   * members (driven from the subscriber status index) and members unsubscribed
+   * from this list (driven from the segment/status index). Both are sparse, so the
+   * search rides along for free. Union the capped id sets in PHP.
+   */
+  private function getCappedUnsubscribedInSegmentCount(ListingDefinition $definition): int {
+    $globalHalf = $this->cappedUnsubscribedHalfIds($definition, 's.status = :unsubscribedStatus');
+    $listHalf = $this->cappedUnsubscribedHalfIds($definition, 'ss.status = :unsubscribedStatus');
+    $ids = array_unique(array_merge($globalHalf, $listHalf));
+    return min(count($ids), self::SEARCH_COUNT_CAP + 1);
+  }
+
+  /**
+   * One half of the unsubscribed UNION: the shared list + search + filter
+   * constraints (minus applyGroup) plus a single-table status predicate, capped.
+   *
+   * @return int[]
+   */
+  private function cappedUnsubscribedHalfIds(ListingDefinition $definition, string $statusClause): array {
+    $queryBuilder = $this->createGroupCountQueryBuilder($definition);
+    $queryBuilder
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere($statusClause)
+      ->setParameter('unsubscribedStatus', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->select('s.id')
+      ->setMaxResults(self::SEARCH_COUNT_CAP + 1);
+    $ids = array_column($queryBuilder->getQuery()->getScalarResult(), 'id');
+    return array_map(function ($id): int {
+      return is_numeric($id) ? (int)$id : 0;
+    }, $ids);
   }
 
   private function hasSegmentListFilter(ListingDefinition $definition): bool {
