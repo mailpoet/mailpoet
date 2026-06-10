@@ -8,11 +8,12 @@ import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { isNewsletterShownInArchiveFromEditorValue } from 'common/newsletter-archive-visibility';
+import { MAILPOET_EMAIL_POST_TYPE } from '../../constants';
 
 export function ArchiveVisibilityRow() {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
   const currentShowInArchive = mailpoetEmailData?.show_in_archive as
@@ -21,7 +22,7 @@ export function ArchiveVisibilityRow() {
 
   const updateShowInArchive = (showInArchive: boolean) => {
     const postId = select(editorStore).getCurrentPostId();
-    const currentPostType = 'mailpoet_email';
+    const currentPostType = MAILPOET_EMAIL_POST_TYPE;
 
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',

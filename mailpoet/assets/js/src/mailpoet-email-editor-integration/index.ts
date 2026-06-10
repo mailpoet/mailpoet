@@ -16,11 +16,9 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
-<<<<<<< HEAD
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
-=======
 import { store as emailEditorIntegrationStore } from './store';
->>>>>>> 0f71c75863 (Implement the pre-send review panel in the email editor sidebar)
+import { MAILPOET_EMAIL_POST_TYPE } from './constants';
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
@@ -57,7 +55,7 @@ addFilter(
     const postId = select(editorStore).getCurrentPostId();
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',
-      'mailpoet_email',
+      MAILPOET_EMAIL_POST_TYPE,
       postId,
     );
 
@@ -86,9 +84,14 @@ addFilter(
       const postId = select(editorStore).getCurrentPostId();
       if (postId && select(editorStore).isEditedPostDirty()) {
         void dispatch(coreDataStore)
-          .saveEditedEntityRecord('postType', 'mailpoet_email', postId, {
-            throwOnError: true,
-          })
+          .saveEditedEntityRecord(
+            'postType',
+            MAILPOET_EMAIL_POST_TYPE,
+            postId,
+            {
+              throwOnError: true,
+            },
+          )
           .then(() => dispatch(emailEditorIntegrationStore).openSendPanel())
           .catch((error: { message?: string }) => {
             void dispatch(noticesStore).createErrorNotice(

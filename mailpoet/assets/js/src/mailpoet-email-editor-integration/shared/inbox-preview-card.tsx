@@ -2,6 +2,7 @@ import { Card } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 /**
  * Renders how the email is likely to appear in a recipient's inbox: the sender,
@@ -11,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 export function InboxPreviewCard() {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 

@@ -7,6 +7,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { MailPoet } from 'mailpoet';
 import { buildRestApiPath } from 'common/dataviews';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 export type Segment = {
   id: string;
@@ -101,7 +102,7 @@ export type UseRecipients = {
 export function useRecipients(): UseRecipients {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
@@ -228,14 +229,14 @@ export function useRecipients(): UseRecipients {
     const postId = select(editorStore).getCurrentPostId();
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',
-      'mailpoet_email',
+      MAILPOET_EMAIL_POST_TYPE,
       postId,
     );
     // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
     const mailpoetData = editedPost?.mailpoet_data || {};
     void dispatch(coreDataStore).editEntityRecord(
       'postType',
-      'mailpoet_email',
+      MAILPOET_EMAIL_POST_TYPE,
       postId,
       {
         mailpoet_data: {

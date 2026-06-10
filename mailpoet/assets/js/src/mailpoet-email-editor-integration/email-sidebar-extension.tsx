@@ -5,6 +5,7 @@ import { ContentSettingsPanel } from './sidebar/content-settings-panel';
 import { InboxPreviewPanel } from './sidebar/inbox-preview-panel';
 import { TrackingPanel } from './sidebar/tracking-panel';
 import { SendPanel } from './send-panel/send-panel';
+import { MAILPOET_EMAIL_POST_TYPE } from './constants';
 
 export function EmailSidebarExtension() {
   const postType = useSelect(
@@ -15,7 +16,7 @@ export function EmailSidebarExtension() {
   // Don't render MailPoet panels when editing a template.
   // This also ensures correct panel ordering when switching back
   // to email editing, as all panels remount in the expected order.
-  if (postType !== 'mailpoet_email') {
+  if (postType !== MAILPOET_EMAIL_POST_TYPE) {
     return null;
   }
 

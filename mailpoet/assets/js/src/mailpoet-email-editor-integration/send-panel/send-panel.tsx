@@ -20,6 +20,7 @@ import { ScheduledDatePicker } from '../shared/scheduled-date-picker';
 import { RecipientsSelector } from '../shared/recipients-selector';
 import { store as emailEditorIntegrationStore } from '../store';
 import { useSendEmail } from './use-send-email';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 export function SendPanel() {
   const isOpen = useSelect(
@@ -48,7 +49,7 @@ export function SendPanel() {
 
   const handleSendTestEmail = useCallback(() => {
     if (postId) {
-      setEmailPost(postId, 'mailpoet_email');
+      setEmailPost(postId, MAILPOET_EMAIL_POST_TYPE);
       togglePreviewModal(true);
     }
   }, [postId, setEmailPost, togglePreviewModal]);
