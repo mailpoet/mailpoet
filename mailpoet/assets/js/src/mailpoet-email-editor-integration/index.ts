@@ -15,9 +15,11 @@ import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
 import { emailValidationRule } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
+import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
+registerOrderProductCollectionsWhenAvailable();
 
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
