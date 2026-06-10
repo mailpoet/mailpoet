@@ -6,6 +6,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPat
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartReminderPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AskForReviewPostPurchasePattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\CategoryPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EducationalCampaignPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EventInvitationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\FirstPurchaseThankYouPattern;
@@ -16,6 +17,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\PostPurchaseThan
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\ProductRestockNotificationPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\SaleAnnouncementPattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\TagPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WelcomeWithDiscountEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\WinBackCustomerPattern;
@@ -110,6 +112,8 @@ class PatternsController {
         new FirstPurchaseThankYouPattern($this->cdnAssetUrl),
         new PostPurchaseThankYouPattern($this->cdnAssetUrl),
         new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
+        new TagPurchaseFollowUpPattern($this->cdnAssetUrl),
+        new CategoryPurchaseFollowUpPattern($this->cdnAssetUrl),
         new AbandonedCartPattern($this->cdnAssetUrl),
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
       ]);

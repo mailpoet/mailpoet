@@ -43,6 +43,8 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/tag-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/category-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
@@ -53,7 +55,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(17, $blockPatterns);
+    $this->assertCount(19, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -130,6 +132,8 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
     $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/tag-purchase-follow-up', $patternNames);
+    $this->assertContains('mailpoet/category-purchase-follow-up', $patternNames);
     $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
@@ -140,7 +144,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count (all patterns except 3 coupon patterns)
-    $this->assertCount(14, $blockPatterns);
+    $this->assertCount(16, $blockPatterns);
   }
 
   /**
@@ -270,6 +274,8 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/first-purchase-thank-you', $patternNames);
     $this->assertNotContains('mailpoet/post-purchase-thank-you', $patternNames);
     $this->assertNotContains('mailpoet/product-purchase-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/tag-purchase-follow-up', $patternNames);
+    $this->assertNotContains('mailpoet/category-purchase-follow-up', $patternNames);
     $this->assertNotContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-content', $patternNames);
@@ -336,6 +342,8 @@ class PatternsControllerTest extends \MailPoetTest {
       'mailpoet/first-purchase-thank-you',
       'mailpoet/post-purchase-thank-you',
       'mailpoet/product-purchase-follow-up',
+      'mailpoet/tag-purchase-follow-up',
+      'mailpoet/category-purchase-follow-up',
       'mailpoet/win-back-customer',
       'mailpoet/abandoned-cart-content',
       'mailpoet/abandoned-cart-reminder-content',
