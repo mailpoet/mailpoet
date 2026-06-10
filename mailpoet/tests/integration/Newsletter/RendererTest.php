@@ -76,7 +76,8 @@ class RendererTest extends \MailPoetTest {
       $this->capabilitiesManager,
       $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
       $this->diContainer->get(EmailContextBuilder::class),
-      $this->diContainer->get(CouponBlockFailureTranslator::class)
+      $this->diContainer->get(CouponBlockFailureTranslator::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor::class)
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
@@ -651,7 +652,8 @@ class RendererTest extends \MailPoetTest {
       $capabilitiesManager,
       $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
       $this->diContainer->get(EmailContextBuilder::class),
-      $this->diContainer->get(CouponBlockFailureTranslator::class)
+      $this->diContainer->get(CouponBlockFailureTranslator::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor::class)
     );
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
@@ -674,7 +676,8 @@ class RendererTest extends \MailPoetTest {
       $capabilitiesManager,
       $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
       $this->diContainer->get(EmailContextBuilder::class),
-      $this->diContainer->get(CouponBlockFailureTranslator::class)
+      $this->diContainer->get(CouponBlockFailureTranslator::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor::class)
     );
 
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
@@ -865,7 +868,8 @@ class RendererTest extends \MailPoetTest {
       $this->capabilitiesManager,
       $this->diContainer->get(CouponBlockGenerationFailureCollector::class),
       $this->diContainer->get(EmailContextBuilder::class),
-      $this->diContainer->get(CouponBlockFailureTranslator::class)
+      $this->diContainer->get(CouponBlockFailureTranslator::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor::class)
     );
   }
 
