@@ -44,6 +44,8 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     // update cache for subscribers without segment
     $this->recalculateSegmentCache($timer, 0);
 
+    $this->recalculateGlobalCache($timer);
+
     $this->recalculateHomepageCache($timer);
 
     // remove redundancies from cache
@@ -63,6 +65,15 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
       } else {
         $this->subscribersCountsController->recalculateSubscribersWithoutSegmentStatisticsCache();
       }
+    }
+  }
+
+  private function recalculateGlobalCache($timer): void {
+    $this->cronHelper->enforceExecutionLimit($timer);
+    $now = Carbon::now();
+    $item = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY, 0);
+    if ($item === null || !isset($item['created_at']) || $now->diffInMinutes($item['created_at']) > self::EXPIRATION_IN_MINUTES) {
+      $this->subscribersCountsController->recalculateGlobalStatusStatisticsCache();
     }
   }
 

@@ -78,6 +78,50 @@ class SubscribersRepository extends Repository {
     return intval($query->getSingleScalarResult());
   }
 
+  /**
+   * Per-status counts across all subscribers (the "All Lists" listing tabs).
+   * One grouped scan plus a trash count — exact, but O(subscribers), so it is
+   * cached and cron-warmed rather than run on every page load.
+   *
+   * @return array<string, int>
+   */
+  public function getStatusStatisticsCount(): array {
+    $counts = [
+      'all' => 0,
+      'trash' => 0,
+      SubscriberEntity::STATUS_SUBSCRIBED => 0,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_UNCONFIRMED => 0,
+      SubscriberEntity::STATUS_BOUNCED => 0,
+    ];
+
+    $rows = $this->entityManager->createQueryBuilder()
+      ->select('s.status AS status, COUNT(s.id) AS subscribersCount')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.deletedAt IS NULL')
+      ->groupBy('s.status')
+      ->getQuery()->getResult();
+
+    $all = 0;
+    foreach ($rows as $row) {
+      $count = (int)$row['subscribersCount'];
+      $all += $count;
+      if (array_key_exists($row['status'], $counts)) {
+        $counts[$row['status']] = $count;
+      }
+    }
+    $counts['all'] = $all;
+
+    $counts['trash'] = (int)$this->entityManager->createQueryBuilder()
+      ->select('COUNT(s.id)')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.deletedAt IS NOT NULL')
+      ->getQuery()->getSingleScalarResult();
+
+    return $counts;
+  }
+
   public function invalidateTotalSubscribersCache(): void {
     $this->wp->deleteTransient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
