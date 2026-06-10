@@ -10,6 +10,7 @@ use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\MailPoetTask;
 use MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController;
+use MailPoet\WooCommerce\OrderAttributionWriter;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -43,6 +44,9 @@ class HooksWooCommerce {
   /** @var MPMarketingChannelController */
   private $marketingChannelController;
 
+  /** @var OrderAttributionWriter */
+  private $orderAttributionWriter;
+
   public function __construct(
     WooCommerceSubscription $woocommerceSubscription,
     WooCommerceSegment $woocommerceSegment,
@@ -52,7 +56,8 @@ class HooksWooCommerce {
     LoggerFactory $loggerFactory,
     Tracker $tracker,
     SubscriberEngagement $subscriberEngagement,
-    MPMarketingChannelController $marketingChannelController
+    MPMarketingChannelController $marketingChannelController,
+    OrderAttributionWriter $orderAttributionWriter
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
     $this->woocommerceSegment = $woocommerceSegment;
@@ -63,6 +68,7 @@ class HooksWooCommerce {
     $this->tracker = $tracker;
     $this->subscriberEngagement = $subscriberEngagement;
     $this->marketingChannelController = $marketingChannelController;
+    $this->orderAttributionWriter = $orderAttributionWriter;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -126,6 +132,22 @@ class HooksWooCommerce {
       $this->woocommercePurchases->trackPurchase($id, $useCookies);
     } catch (\Throwable $e) {
       $this->logError($e, 'WooCommerce Purchases');
+    }
+  }
+
+  public function writeOrderAttribution($order) {
+    try {
+      $this->orderAttributionWriter->writeForOrder($order);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Order Attribution');
+    }
+  }
+
+  public function writeOrderAttributionForNewOrder($order) {
+    try {
+      $this->orderAttributionWriter->writeForNewOrder($order);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Order Attribution');
     }
   }
 

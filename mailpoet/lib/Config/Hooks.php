@@ -175,6 +175,7 @@ class Hooks {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
     $this->setupWooCommercePurchases();
+    $this->setupWooCommerceOrderAttribution();
     $this->setupWooCommerceSubscriberEngagement();
     $this->setupWooCommerceTracking();
     $this->setupListing();
@@ -528,6 +529,34 @@ class Hooks {
       [$this->hooksWooCommerce, 'trackRefund'],
       10,
       1
+    );
+  }
+
+  public function setupWooCommerceOrderAttribution() {
+    // After Woo's own priority-10 handler so the resolved values overwrite
+    // the empty placeholders Woo persists from the checkout form
+    $this->wp->addAction(
+      'woocommerce_order_save_attribution_data',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      20
+    );
+    // Admin and REST orders; gated inside to stay out of storefront checkout
+    $this->wp->addAction(
+      'woocommerce_new_order',
+      [$this->hooksWooCommerce, 'writeOrderAttributionForNewOrder'],
+      20
+    );
+    $this->wp->addAction(
+      'woocommerce_order_status_changed',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      10,
+      1
+    );
+    // After WC_Meta_Box_Order_Data::save (priority 40) so the billing email is saved
+    $this->wp->addAction(
+      'woocommerce_process_shop_order_meta',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      50
     );
   }
 
