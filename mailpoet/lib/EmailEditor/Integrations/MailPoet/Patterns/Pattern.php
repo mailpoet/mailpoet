@@ -72,14 +72,18 @@ abstract class Pattern extends Abstract_Pattern {
   /**
    * Get a product collection block for recommended products.
    *
-   * @param string $collection Collection slug (e.g., 'best-sellers', 'new-arrivals').
+   * @param string $collection WooCommerce collection slug (e.g., 'best-sellers', 'new-arrivals')
+   *   or a fully namespaced collection (e.g., OrderProductCollectionProcessor::COLLECTION_ORDER_CROSS_SELLS,
+   *   resolved per order at send time). The query authored here is the fallback when an
+   *   order-aware collection cannot be resolved.
    * @param string $orderBy Order by field (e.g., 'date', 'popularity').
    * @param int $perPage Number of products to show.
    * @param int $columns Number of columns in the grid.
    */
   protected function getRecommendedProductCollectionBlock(string $collection, string $orderBy = 'date', int $perPage = 4, int $columns = 2): string {
+    $collectionSlug = strpos($collection, '/') !== false ? $collection : 'woocommerce/product-collection/' . $collection;
     return '
-      <!-- wp:woocommerce/product-collection {"query":{"perPage":' . $perPage . ',"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"' . $orderBy . '","search":"","exclude":[],"inherit":false,"taxQuery":[],"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false},"tagName":"div","displayLayout":{"type":"flex","columns":' . $columns . ',"shrinkColumns":true},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/' . $collection . '","hideControls":["inherit","attributes","keyword","order","default-order","featured","on-sale","stock-status","hand-picked","taxonomy","filterable","created","price-range"]} -->
+      <!-- wp:woocommerce/product-collection {"query":{"perPage":' . $perPage . ',"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"' . $orderBy . '","search":"","exclude":[],"inherit":false,"taxQuery":[],"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false},"tagName":"div","displayLayout":{"type":"flex","columns":' . $columns . ',"shrinkColumns":true},"dimensions":{"widthType":"fill"},"collection":"' . $collectionSlug . '","hideControls":["inherit","attributes","keyword","order","default-order","featured","on-sale","stock-status","hand-picked","taxonomy","filterable","created","price-range"]} -->
       <div class="wp-block-woocommerce-product-collection"><!-- wp:woocommerce/product-template -->
       <!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"thumbnail","isDescendentOfQueryLoop":true,"style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
       <!-- wp:woocommerce/product-sale-badge {"align":"right"} /-->

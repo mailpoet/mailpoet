@@ -4,9 +4,14 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor;
 
 /**
  * Product purchase follow-up email pattern.
+ *
+ * The product grid uses the order cross-sells collection: at send time it shows
+ * cross-sells of the purchased products (or their related products as backup),
+ * so the recommendations match what the customer actually bought.
  */
 class ProductPurchaseFollowUpPattern extends Pattern {
   protected $name = 'product-purchase-follow-up';
@@ -30,13 +35,13 @@ class ProductPurchaseFollowUpPattern extends Pattern {
   }
 
   public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return $this->buildContent($this->getRecommendedProductCollectionBlock('best-sellers', 'popularity'));
+    return $this->buildContent($this->getRecommendedProductCollectionBlock(
+      OrderProductCollectionProcessor::COLLECTION_ORDER_CROSS_SELLS,
+      'popularity'
+    ));
   }
 
   private function buildContent(string $productSection): string {
-    $mainProductImage = esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/welcome-email.jpg'));
-    $mainProductAlt = esc_attr__('Product placeholder', 'mailpoet');
-
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -48,32 +53,8 @@ class ProductPurchaseFollowUpPattern extends Pattern {
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
       <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      __('Here are a few essentials that pair perfectly.', 'mailpoet') . '</p>
+      __('Here are a few essentials that pair perfectly with your purchase.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
-
-      <!-- wp:image {"sizeSlug":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <figure class="wp-block-image size-full" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"><img src="' . $mainProductImage . '" alt="' . $mainProductAlt . '"/></figure>
-      <!-- /wp:image -->
-
-      <!-- wp:heading {"textAlign":"center","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}},"typography":{"fontSize":"24px"}}} -->
-      <h2 class="wp-block-heading has-text-align-center" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:24px">' . __('Product name', 'mailpoet') . '</h2>
-      <!-- /wp:heading -->
-
-      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <p class="has-text-align-center" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);font-size:14px">$99.90</p>
-      <!-- /wp:paragraph -->
-
-      <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-
-      <!-- wp:heading {"style":{"border":{"top":{"color":"var:preset|color|cyan-bluish-gray"}},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"24px"}}} -->
-      <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('You might also like', 'mailpoet') . '</h2>
-      <!-- /wp:heading -->
 
       ' . $productSection . '
 

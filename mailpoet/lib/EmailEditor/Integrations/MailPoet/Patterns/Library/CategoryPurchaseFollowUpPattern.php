@@ -7,13 +7,14 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor;
 
 /**
- * First purchase thank you email pattern.
+ * Follow-up email pattern for the "purchased in a category" automation.
  *
- * The product grid uses the order cross-sells collection: at send time it shows
- * cross-sells of the purchased products (or their related products as backup).
+ * The product grid uses the order same-category collection: at send time it
+ * shows other products from the categories of the purchased products, so the
+ * recommendations match what the customer already shops for.
  */
-class FirstPurchaseThankYouPattern extends Pattern {
-  protected $name = 'first-purchase-thank-you';
+class CategoryPurchaseFollowUpPattern extends Pattern {
+  protected $name = 'category-purchase-follow-up';
   protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $categories = ['purchase'];
@@ -27,15 +28,15 @@ class FirstPurchaseThankYouPattern extends Pattern {
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return $this->buildContent($this->getProductPlaceholderColumns([
       'product-small-02.jpg',
-      'product-small-04.jpg',
-      'product-small-03.jpg',
+      'product-small-06.jpg',
       'product-small-01.jpg',
+      'product-small-04.jpg',
     ]));
   }
 
   public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return $this->buildContent($this->getRecommendedProductCollectionBlock(
-      OrderProductCollectionProcessor::COLLECTION_ORDER_CROSS_SELLS,
+      OrderProductCollectionProcessor::COLLECTION_ORDER_SAME_CATEGORY,
       'popularity'
     ));
   }
@@ -45,22 +46,12 @@ class FirstPurchaseThankYouPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
-      <h1 class="wp-block-heading">' . __('Thank You for Your First Order', 'mailpoet') . '</h1>
+      <h1 class="wp-block-heading">' . __('Great choice! Here is more you might love', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
       <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      /* translators: %s is a placeholder for the shop name */
-      sprintf(__('We’re thrilled you chose %s. Your order is being processed, and we can’t wait for you to receive it.', 'mailpoet'), '<!--[woocommerce/store-name]-->') . '</p>
-      <!-- /wp:paragraph -->
-
-      <!-- wp:heading {"style":{"border":{"top":{"color":"var:preset|color|cyan-bluish-gray"}},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"24px"}}} -->
-      <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('You might also like', 'mailpoet') . '</h2>
-      <!-- /wp:heading -->
-
-      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">
-      ' . __('While you wait, check out other items that pair perfectly with your order.', 'mailpoet') . '</p>
+      __('We picked a few more favorites from the same category as your order.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       ' . $productSection . '
@@ -83,6 +74,6 @@ class FirstPurchaseThankYouPattern extends Pattern {
 
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     /* translators: Name of a content pattern used as starting content of an email */
-    return __('First Purchase Thank You', 'mailpoet');
+    return __('Category Purchase Follow-Up', 'mailpoet');
   }
 }
