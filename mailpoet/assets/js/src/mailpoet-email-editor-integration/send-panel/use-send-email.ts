@@ -60,6 +60,7 @@ export function useSendEmail(): UseSendEmail {
         'postType',
         MAILPOET_EMAIL_POST_TYPE,
         postId,
+        { throwOnError: true },
       );
 
       const editedPost = select(coreDataStore).getEditedEntityRecord(
