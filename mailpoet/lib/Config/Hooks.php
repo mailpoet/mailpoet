@@ -21,6 +21,7 @@ use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
+use MailPoet\WooCommerce\OrderAttributionFields;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\WooSystemInfoController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -111,6 +112,9 @@ class Hooks {
   /** @var AdminUserSubscription */
   private $adminUserSubscription;
 
+  /** @var OrderAttributionFields */
+  private $orderAttributionFields;
+
   private CouponBlockGenerator $couponBlockGenerator;
 
   public function __construct(
@@ -137,6 +141,7 @@ class Hooks {
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
     AdminUserSubscription $adminUserSubscription,
+    OrderAttributionFields $orderAttributionFields,
     CouponBlockGenerator $couponBlockGenerator
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -162,6 +167,7 @@ class Hooks {
     $this->cronTrigger = $cronTrigger;
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
+    $this->orderAttributionFields = $orderAttributionFields;
     $this->couponBlockGenerator = $couponBlockGenerator;
   }
 
@@ -191,6 +197,8 @@ class Hooks {
 
   public function initEarlyHooks() {
     $this->setupMailer();
+    // Must run before the WooCommerce plugin file loads, see OrderAttributionFields::setup()
+    $this->orderAttributionFields->setup();
   }
 
   public function setupSubscriptionEvents() {
