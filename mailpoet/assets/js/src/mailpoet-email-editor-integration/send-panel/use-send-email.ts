@@ -5,6 +5,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { store as emailEditorIntegrationStore } from '../store';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 type SendResponse = {
   data?: {
@@ -57,13 +58,13 @@ export function useSendEmail(): UseSendEmail {
       // before the sending queue reads them.
       await dispatch(coreDataStore).saveEditedEntityRecord(
         'postType',
-        'mailpoet_email',
+        MAILPOET_EMAIL_POST_TYPE,
         postId,
       );
 
       const editedPost = select(coreDataStore).getEditedEntityRecord(
         'postType',
-        'mailpoet_email',
+        MAILPOET_EMAIL_POST_TYPE,
         postId,
       );
       // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.

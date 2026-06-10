@@ -7,17 +7,18 @@ import {
   store as editorStore,
 } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 export function TrackingPanel() {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
   const updateEmailMailPoetProperty = (name: string, value: string) => {
     const postId = select(editorStore).getCurrentPostId();
-    const currentPostType = 'mailpoet_email'; // only for mailpoet_email post-type
+    const currentPostType = MAILPOET_EMAIL_POST_TYPE; // only for mailpoet_email post-type
 
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',

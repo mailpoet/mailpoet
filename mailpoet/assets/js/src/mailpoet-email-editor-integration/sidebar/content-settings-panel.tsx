@@ -12,6 +12,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 import { AiSubjectSuggestions } from './components/ai-subject-suggestions';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 const subjectMaxLength = 60;
 const previewTextMaxLength = 150;
@@ -20,13 +21,13 @@ const previewTextRecommendedLength = 80;
 export function ContentSettingsPanel() {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
   const updateEmailMailPoetProperty = (name: string, value: string) => {
     const postId = select(editorStore).getCurrentPostId();
-    const currentPostType = 'mailpoet_email'; // only for mailpoet_email post-type
+    const currentPostType = MAILPOET_EMAIL_POST_TYPE; // only for mailpoet_email post-type
 
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',

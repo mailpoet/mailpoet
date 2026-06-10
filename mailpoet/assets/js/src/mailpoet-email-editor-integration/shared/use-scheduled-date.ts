@@ -3,6 +3,7 @@ import { dateI18n, getSettings } from '@wordpress/date';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
+import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
 type UseScheduledDate = {
   scheduledDate: string | null;
@@ -18,7 +19,7 @@ type UseScheduledDate = {
 export function useScheduledDate(): UseScheduledDate {
   const [mailpoetEmailData] = useEntityProp(
     'postType',
-    'mailpoet_email',
+    MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
@@ -27,7 +28,7 @@ export function useScheduledDate(): UseScheduledDate {
 
   const setScheduledDate = (date: string | null) => {
     const postId = select(editorStore).getCurrentPostId();
-    const currentPostType = 'mailpoet_email';
+    const currentPostType = MAILPOET_EMAIL_POST_TYPE;
 
     const editedPost = select(coreDataStore).getEditedEntityRecord(
       'postType',
