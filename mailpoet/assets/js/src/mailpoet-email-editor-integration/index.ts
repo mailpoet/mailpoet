@@ -72,7 +72,7 @@ addFilter(
   },
 );
 
-// Open the in-editor review & send panel instead of navigating away. Automation
+// Open the in-editor send panel instead of navigating away. Automation
 // emails keep the default action (returning to the automation editor).
 addFilter(
   'woocommerce_email_editor_send_action_callback',
@@ -89,7 +89,7 @@ addFilter(
           .saveEditedEntityRecord('postType', 'mailpoet_email', postId, {
             throwOnError: true,
           })
-          .then(() => dispatch(emailEditorIntegrationStore).openReviewPanel())
+          .then(() => dispatch(emailEditorIntegrationStore).openSendPanel())
           .catch((error: { message?: string }) => {
             void dispatch(noticesStore).createErrorNotice(
               error?.message ||
@@ -102,13 +102,13 @@ addFilter(
           });
         return;
       }
-      void dispatch(emailEditorIntegrationStore).openReviewPanel();
+      void dispatch(emailEditorIntegrationStore).openSendPanel();
     };
   },
 );
 
-// Keep the review button enabled when there are unsaved changes — the
-// send button action saves before opening the review panel.
+// Keep the send button enabled when there are unsaved changes — the
+// send button action saves before opening the send panel.
 // Empty and already-sent emails stay disabled.
 addFilter(
   'woocommerce_email_editor_send_button_disabled',

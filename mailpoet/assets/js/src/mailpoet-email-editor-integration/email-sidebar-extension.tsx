@@ -4,7 +4,7 @@ import { EmailSettingsPanel } from './sidebar/email-settings-panel';
 import { ContentSettingsPanel } from './sidebar/content-settings-panel';
 import { InboxPreviewPanel } from './sidebar/inbox-preview-panel';
 import { TrackingPanel } from './sidebar/tracking-panel';
-import { ReviewPanel } from './review-panel/review-panel';
+import { SendPanel } from './send-panel/send-panel';
 
 export function EmailSidebarExtension() {
   const postType = useSelect(
@@ -25,7 +25,7 @@ export function EmailSidebarExtension() {
       <ContentSettingsPanel />
       <InboxPreviewPanel />
       <TrackingPanel />
-      <ReviewPanel />
+      <SendPanel />
     </>
   );
 }
