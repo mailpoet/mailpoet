@@ -3,21 +3,21 @@ import { createReduxStore, register } from '@wordpress/data';
 export const STORE_NAME = 'mailpoet/email-editor';
 
 type State = {
-  reviewPanel: {
+  sendPanel: {
     isOpen: boolean;
   };
 };
 
 const DEFAULT_STATE: State = {
-  reviewPanel: {
+  sendPanel: {
     isOpen: false,
   },
 };
 
 const actions = {
-  openReviewPanel: () => ({ type: 'OPEN_REVIEW_PANEL' as const }),
-  closeReviewPanel: () => ({ type: 'CLOSE_REVIEW_PANEL' as const }),
-  toggleReviewPanel: () => ({ type: 'TOGGLE_REVIEW_PANEL' as const }),
+  openSendPanel: () => ({ type: 'OPEN_SEND_PANEL' as const }),
+  closeSendPanel: () => ({ type: 'CLOSE_SEND_PANEL' as const }),
+  toggleSendPanel: () => ({ type: 'TOGGLE_SEND_PANEL' as const }),
 };
 
 type Action = ReturnType<typeof actions[keyof typeof actions]>;
@@ -25,14 +25,14 @@ type Action = ReturnType<typeof actions[keyof typeof actions]>;
 function reducer(state: State | undefined, action: Action): State {
   const currentState = state ?? DEFAULT_STATE;
   switch (action.type) {
-    case 'OPEN_REVIEW_PANEL':
-      return { ...currentState, reviewPanel: { isOpen: true } };
-    case 'CLOSE_REVIEW_PANEL':
-      return { ...currentState, reviewPanel: { isOpen: false } };
-    case 'TOGGLE_REVIEW_PANEL':
+    case 'OPEN_SEND_PANEL':
+      return { ...currentState, sendPanel: { isOpen: true } };
+    case 'CLOSE_SEND_PANEL':
+      return { ...currentState, sendPanel: { isOpen: false } };
+    case 'TOGGLE_SEND_PANEL':
       return {
         ...currentState,
-        reviewPanel: { isOpen: !currentState.reviewPanel.isOpen },
+        sendPanel: { isOpen: !currentState.sendPanel.isOpen },
       };
     default:
       return currentState;
@@ -40,7 +40,7 @@ function reducer(state: State | undefined, action: Action): State {
 }
 
 const selectors = {
-  isReviewPanelOpen: (state: State) => state.reviewPanel.isOpen,
+  isSendPanelOpen: (state: State) => state.sendPanel.isOpen,
 };
 
 export const store = createReduxStore(STORE_NAME, {

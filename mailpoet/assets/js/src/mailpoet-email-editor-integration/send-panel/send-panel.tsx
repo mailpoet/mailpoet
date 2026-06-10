@@ -21,16 +21,16 @@ import { RecipientsSelector } from '../shared/recipients-selector';
 import { store as emailEditorIntegrationStore } from '../store';
 import { useSendEmail } from './use-send-email';
 
-export function ReviewPanel() {
+export function SendPanel() {
   const isOpen = useSelect(
-    (select) => select(emailEditorIntegrationStore).isReviewPanelOpen(),
+    (select) => select(emailEditorIntegrationStore).isSendPanelOpen(),
     [],
   );
   const postId = useSelect(
     (select) => select(editorStore).getCurrentPostId(),
     [],
   );
-  const { closeReviewPanel } = useDispatch(emailEditorIntegrationStore);
+  const { closeSendPanel } = useDispatch(emailEditorIntegrationStore);
   const { setEmailPost, togglePreviewModal } = useDispatch(emailEditorStore);
 
   const { isScheduled, formattedDate, setScheduledDate } = useScheduledDate();
@@ -55,8 +55,8 @@ export function ReviewPanel() {
 
   const handleCancel = useCallback(() => {
     clearError();
-    void closeReviewPanel();
-  }, [clearError, closeReviewPanel]);
+    void closeSendPanel();
+  }, [clearError, closeSendPanel]);
 
   if (!isOpen) {
     return null;
@@ -74,11 +74,8 @@ export function ReviewPanel() {
 
   return (
     <Fill name="ComplementaryArea/core">
-      <div className="mailpoet-review-panel">
-        <HStack
-          className="mailpoet-review-panel__header"
-          justify="space-between"
-        >
+      <div className="mailpoet-send-panel">
+        <HStack className="mailpoet-send-panel__header" justify="space-between">
           <Button
             variant="secondary"
             size="compact"
@@ -93,13 +90,13 @@ export function ReviewPanel() {
             isBusy={isSending}
             disabled={isSending || hasNoRecipients}
             onClick={() => void sendEmail()}
-            data-automation-id="email_review_panel_send_button"
+            data-automation-id="email_send_panel_send_button"
           >
             {sendButtonLabel}
           </Button>
         </HStack>
 
-        <div className="mailpoet-review-panel__content">
+        <div className="mailpoet-send-panel__content">
           <PanelBody>
             <strong>{title}</strong>
             <p>{subtitle}</p>
@@ -133,7 +130,7 @@ export function ReviewPanel() {
           </PanelBody>
 
           <PanelBody
-            className="mailpoet-review-panel__recipients"
+            className="mailpoet-send-panel__recipients"
             title={sprintf(
               /* translators: %s is the recipient segment label. */
               __('Recipients: %s', 'mailpoet'),
@@ -144,7 +141,7 @@ export function ReviewPanel() {
             <RecipientsSelector recipients={recipients} />
           </PanelBody>
 
-          <div className="mailpoet-review-panel__test-email">
+          <div className="mailpoet-send-panel__test-email">
             <Button variant="link" onClick={handleSendTestEmail}>
               {__('Send a test email', 'mailpoet')}
             </Button>
@@ -153,7 +150,7 @@ export function ReviewPanel() {
           {error && (
             <Notice
               status="error"
-              className="mailpoet-review-panel__notice"
+              className="mailpoet-send-panel__notice"
               onRemove={clearError}
             >
               {error}
@@ -163,7 +160,7 @@ export function ReviewPanel() {
           {hasNoRecipients && (
             <Notice
               status="warning"
-              className="mailpoet-review-panel__notice"
+              className="mailpoet-send-panel__notice"
               isDismissible={false}
             >
               {__(

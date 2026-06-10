@@ -34,12 +34,12 @@ type UseSendEmail = {
  * Persists the email's pending edits (segments, schedule, subject…) to the
  * newsletter and then triggers the actual send/schedule through MailPoet's
  * sending queue. On success the user is redirected to the email listing; on
- * failure the API error is surfaced for display in the review panel.
+ * failure the API error is surfaced for display in the send panel.
  */
 export function useSendEmail(): UseSendEmail {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { closeReviewPanel } = useDispatch(emailEditorIntegrationStore);
+  const { closeSendPanel } = useDispatch(emailEditorIntegrationStore);
 
   const clearError = useCallback(() => setError(null), []);
 
@@ -87,14 +87,14 @@ export function useSendEmail(): UseSendEmail {
           .fail((err: AjaxError) => reject(err));
       });
 
-      void closeReviewPanel();
+      void closeSendPanel();
       window.location.href = window.WooCommerceEmailEditor.urls.listings;
     } catch (err) {
       setError(extractErrorMessage(err as AjaxError));
     } finally {
       setIsSending(false);
     }
-  }, [closeReviewPanel]);
+  }, [closeSendPanel]);
 
   return { sendEmail, isSending, error, clearError };
 }
