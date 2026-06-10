@@ -1,4 +1,4 @@
-import { useRef } from '@wordpress/element';
+import { useCallback, useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { close } from '@wordpress/icons';
 import { Button } from '@wordpress/components';
@@ -15,11 +15,15 @@ export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
     [],
   );
   const libraryRef = useRef(null);
+  const closeInserter = useCallback(
+    (): void => setIsInserterOpened(false),
+    [setIsInserterOpened],
+  );
 
   return (
     <div className="editor-inserter-sidebar">
       <div className="editor-inserter-sidebar__header">
-        <Button icon={close} onClick={(): void => setIsInserterOpened(false)} />
+        <Button icon={close} onClick={closeInserter} />
       </div>
       <div className="editor-inserter-sidebar__content">
         <Library
@@ -27,6 +31,7 @@ export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
           showInserterHelpPanel={false}
           rootClientId={insertPoint.rootClientId ?? undefined}
           __experimentalInsertionIndex={insertPoint.insertionIndex ?? undefined}
+          onClose={closeInserter}
           ref={libraryRef}
         />
       </div>
