@@ -486,3 +486,16 @@
   justify-content: center;
   margin-top: 20px;
 }
+
+// List/tag picker modal: let the dropdown span the modal width (matching the
+// modal's own horizontal padding) and add space before the caveat text.
+.mailpoet-subscribers-picker-modal {
+  .mailpoet-form-select {
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
+  .select2-container {
+    width: 100% !important;
+  }
+}
