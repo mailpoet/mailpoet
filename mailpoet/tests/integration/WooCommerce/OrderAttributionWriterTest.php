@@ -150,6 +150,26 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->equals($writesStartedAt);
   }
 
+  public function testItMarksWritesStartedOnActivationAndNeverMovesIt(): void {
+    verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->false();
+
+    $this->writer->markWritesStartedIfActive();
+
+    $writesStartedAt = get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
+    verify($writesStartedAt)->notEmpty();
+
+    $this->writer->markWritesStartedIfActive();
+    verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->equals($writesStartedAt);
+  }
+
+  public function testItDoesNotMarkWritesStartedWhenTrackingIsDisabled(): void {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+
+    $this->writer->markWritesStartedIfActive();
+
+    verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->false();
+  }
+
   public function testItWritesNothingWhenTrackingIsDisabled(): void {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $this->createClick($this->link, $this->subscriber);

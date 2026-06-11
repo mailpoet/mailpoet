@@ -533,6 +533,13 @@ class Hooks {
   }
 
   public function setupWooCommerceOrderAttribution() {
+    // The reconciliation boundary must be persisted before any post-activation
+    // order exists, and on the init hook because this setup runs on
+    // plugins_loaded, where WooCommerce may not be loaded yet
+    $this->wp->addAction(
+      'init',
+      [$this->hooksWooCommerce, 'markAttributionWritesStarted']
+    );
     // After Woo's own priority-10 handler so the resolved values overwrite
     // the empty placeholders Woo persists from the checkout form
     $this->wp->addAction(

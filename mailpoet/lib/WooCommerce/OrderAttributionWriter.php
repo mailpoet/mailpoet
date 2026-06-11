@@ -123,9 +123,21 @@ class OrderAttributionWriter {
   }
 
   /**
-   * The historical read boundary defined by the migration contract (STOMAIL-8135):
-   * persisted once when the write path first activates and never moved.
+   * Persists the historical read boundary defined by the migration contract
+   * (STOMAIL-8135): set once when the write path first activates and never
+   * moved. Runs on init so the boundary predates every post-activation order;
+   * if it were first persisted inside writeForOrder, the triggering order's
+   * date_created would fall before the boundary and the reconciler would skip
+   * the first post-activation orders.
    */
+  public function markWritesStartedIfActive(): void {
+    if (!$this->isWritePathActive()) {
+      return;
+    }
+    $this->markWritesStarted();
+  }
+
+  // Backstop for the order-save paths; normally already persisted on init.
   private function markWritesStarted(): void {
     if ($this->wp->getOption(self::WRITES_STARTED_AT_OPTION)) {
       return;

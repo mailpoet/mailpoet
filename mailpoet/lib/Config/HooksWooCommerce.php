@@ -141,6 +141,14 @@ class HooksWooCommerce {
     }
   }
 
+  public function markAttributionWritesStarted() {
+    try {
+      $this->orderAttributionWriter->markWritesStartedIfActive();
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Order Attribution');
+    }
+  }
+
   public function writeOrderAttribution($order) {
     try {
       $this->orderAttributionWriter->writeForOrder($order);
