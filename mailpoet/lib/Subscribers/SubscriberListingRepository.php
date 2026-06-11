@@ -258,10 +258,9 @@ class SubscriberListingRepository extends ListingRepository {
 
     $search = $definition->getSearch();
     if ($search && strlen(trim($search)) > 0) {
-      $search = Helpers::escapeSearch($search);
       $query
         ->andWhere('(s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search)')
-        ->setParameter('search', "$search%");
+        ->setParameter('search', Helpers::buildSearchLikePattern($search));
     }
 
     $filters = $definition->getFilters();
@@ -577,10 +576,9 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
-    $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
-      ->setParameter('search', "$search%");
+      ->setParameter('search', Helpers::buildSearchLikePattern($search));
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
@@ -1010,10 +1008,9 @@ class SubscriberListingRepository extends ListingRepository {
     // Apply group, search to fetch only necessary ids
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     if ($definition->getSearch()) {
-      $search = Helpers::escapeSearch((string)$definition->getSearch());
       $subscribersQuery
         ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', "$search%");
+        ->setParameter('search', Helpers::buildSearchLikePattern((string)$definition->getSearch()));
     }
     if ($definition->getGroup()) {
       if ($definition->getGroup() === 'trash') {
