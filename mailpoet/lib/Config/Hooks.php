@@ -558,6 +558,20 @@ class Hooks {
       [$this->hooksWooCommerce, 'writeOrderAttribution'],
       50
     );
+    // Reconciliation (STOMAIL-8136) must run after both the legacy purchase
+    // tracker and the attribution writer (priority 10 on the same hooks)
+    $this->wp->addAction(
+      'woocommerce_order_status_changed',
+      [$this->hooksWooCommerce, 'reconcileOrderAttribution'],
+      20,
+      1
+    );
+    $this->wp->addAction(
+      'woocommerce_order_refunded',
+      [$this->hooksWooCommerce, 'reconcileOrderAttributionOnRefund'],
+      20,
+      1
+    );
   }
 
   public function setupWooCommerceSubscriberEngagement() {
