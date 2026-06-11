@@ -69,4 +69,18 @@ class HelpersTest extends \MailPoetUnitTest {
     verify(Helpers::escapeSearch('He_llo'))->equals('He\_llo');
     verify(Helpers::escapeSearch('He\\llo'))->equals('He\\\llo');
   }
+
+  public function testItBuildsSearchLikePattern() {
+    // prefix-anchored by default (trailing %)
+    verify(Helpers::buildSearchLikePattern('Hello'))->equals('Hello%');
+    verify(Helpers::buildSearchLikePattern(' Hello '))->equals('Hello%');
+    // '*' is the user-facing wildcard, translated to SQL '%'
+    verify(Helpers::buildSearchLikePattern('*search'))->equals('%search%');
+    verify(Helpers::buildSearchLikePattern('*se*arch'))->equals('%se%arch%');
+    verify(Helpers::buildSearchLikePattern('se*arch'))->equals('se%arch%');
+    // literal LIKE metacharacters typed by the user stay escaped
+    verify(Helpers::buildSearchLikePattern('He%llo'))->equals('He\%llo%');
+    verify(Helpers::buildSearchLikePattern('He_llo'))->equals('He\_llo%');
+    verify(Helpers::buildSearchLikePattern('*He%llo*'))->equals('%He\%llo%%');
+  }
 }

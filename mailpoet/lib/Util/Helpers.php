@@ -115,6 +115,19 @@ class Helpers {
     return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search)); // escape for 'LIKE'
   }
 
+  /**
+   * Build a prefix-anchored LIKE pattern for subscriber search.
+   *
+   * LIKE metacharacters typed by the user are escaped first, so a literal '%'
+   * or '_' matches itself. The user-facing wildcard is '*', which is then
+   * translated to a SQL '%'. A trailing '%' keeps the match prefix-anchored.
+   * e.g. "*se*arch" => "%se%arch%"
+   */
+  public static function buildSearchLikePattern(string $search): string {
+    $escaped = self::escapeSearch($search);
+    return str_replace('*', '%', $escaped) . '%';
+  }
+
   public static function extractEmailDomain(string $email = ''): string {
     $arrayOfItems = explode('@', trim($email));
     return strtolower(array_pop($arrayOfItems));
