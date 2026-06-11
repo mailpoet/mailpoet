@@ -488,6 +488,22 @@
   margin-top: 20px;
 }
 
+// Filled red confirm button for the permanent-delete bulk action. MailPoet's
+// Button has no filled-destructive variant, so recolor the primary button
+// rather than fall back to the lighter red text-link `destructive` variant.
+.mailpoet-button.mailpoet-subscribers-confirm-destructive.button-primary {
+  background: $color-destructive;
+  border-color: $color-destructive;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: $color-destructive-hover;
+    border-color: $color-destructive-hover;
+    color: #fff;
+  }
+}
+
 // List/tag picker modal: let the dropdown span the modal width (matching the
 // modal's own horizontal padding) and add space before the caveat text.
 .mailpoet-subscribers-picker-modal {
