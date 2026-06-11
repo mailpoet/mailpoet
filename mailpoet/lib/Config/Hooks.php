@@ -578,6 +578,12 @@ class Hooks {
       20,
       1
     );
+    // Woo's order anonymization does not cover _wc_order_attribution_* meta,
+    // so the MailPoet identifiers must be removed explicitly (STOMAIL-8137)
+    $this->wp->addAction(
+      'woocommerce_privacy_remove_order_personal_data',
+      [$this->hooksWooCommerce, 'removeOrderAttributionPersonalData']
+    );
   }
 
   public function setupWooCommerceSubscriberEngagement() {
