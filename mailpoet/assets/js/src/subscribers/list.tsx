@@ -38,6 +38,8 @@ import { GlobalContext, type GlobalContextValue } from 'context';
 import { SubscribersHeading } from './heading';
 import { getSubscriberFields } from './fields';
 import { getInitialPickerValue, type PickerConfig } from './picker-value';
+import { SelectAllBanner } from './select-all-banner';
+import { selectAllBannerState, shouldWarnLargeOperation } from './select-all';
 import {
   bulkAction,
   getSubscribers,
@@ -68,9 +70,17 @@ type PendingModalAction =
   | 'removeTag';
 
 type PendingAction = {
-  action: PendingModalAction;
+  action: SubscriberBulkAction;
   targets: Subscriber[];
+  selectAll: boolean;
 } | null;
+
+const SELECT_ALL_GENERIC_CONFIRM_ACTIONS: SubscriberBulkAction[] = [
+  'trash',
+  'restore',
+  'delete',
+  'removeFromAllLists',
+];
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const bulkConfirmationResendLimit =
@@ -261,6 +271,12 @@ const PICKERS: Record<
     endpoint: 'tags',
   },
 };
+
+function isPickerAction(
+  action: SubscriberBulkAction,
+): action is keyof typeof PICKERS {
+  return action in PICKERS;
+}
 
 function modalTitle(action: PendingModalAction): string {
   const titles = {
@@ -680,6 +696,7 @@ function SubscriberList() {
     hashState.filter ?? {},
   );
   const [selection, setSelection] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState<boolean>(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const triggerElementRef = useRef<HTMLElement | null>(null);
   // Synchronous guard that blocks re-entrancy while a confirmation-modal action
@@ -760,6 +777,7 @@ function SubscriberList() {
       setGroup((current) => next.group ?? current);
       setFilter(next.filter ?? {});
       setSelection([]);
+      setSelectAll(false);
       clearLoadError();
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
@@ -817,6 +835,7 @@ function SubscriberList() {
     ) {
       setGroup('all');
       setSelection([]);
+      setSelectAll(false);
       setView((currentView) => ({ ...currentView, page: 1 }));
     }
   }, [
@@ -843,19 +862,34 @@ function SubscriberList() {
   }, [restoreTriggerFocus]);
 
   const openPendingAction = useCallback(
-    (action: PendingModalAction, targets: Subscriber[]): void => {
+    (action: SubscriberBulkAction, targets: Subscriber[]): void => {
       triggerElementRef.current = document.activeElement as HTMLElement | null;
-      setPendingAction({ action, targets });
+      setPendingAction({ action, targets, selectAll });
     },
-    [],
+    [selectAll],
   );
 
+  const handleSelectionChange = useCallback((next: string[]): void => {
+    // A manual checkbox change means the user is hand-picking rows, so the
+    // "all matching" intent no longer applies. Programmatic page changes go
+    // through handleViewChange (which clears selection itself), not this path.
+    setSelectAll(false);
+    setSelection(next);
+  }, []);
+
   const handleViewChange = useCallback(
-    (nextView: View) => {
+    (nextView: View): void => {
+      const scopeChanged =
+        nextView.search !== view.search ||
+        nextView.sort?.field !== view.sort?.field ||
+        nextView.sort?.direction !== view.sort?.direction;
+      if (scopeChanged) {
+        setSelectAll(false);
+      }
       setSelection([]);
       setView(nextView);
     },
-    [setView],
+    [setView, view],
   );
   const persistedViewChange = usePersistedDataViewsPreference(
     'subscribers',
@@ -906,6 +940,7 @@ function SubscriberList() {
         const response = await bulkAction(action, scope, extra);
         const result = response.data;
         setSelection([]);
+        setSelectAll(false);
         if (action === 'resendConfirmationEmails') {
           showBulkResendConfirmationNotice(result);
         } else {
@@ -925,6 +960,20 @@ function SubscriberList() {
       targets: Subscriber[],
       extra: Record<string, unknown> = {},
     ): Promise<void> => {
+      if (selectAll) {
+        await runBulkAction(
+          action,
+          {
+            group,
+            filter,
+            search: view.search || '',
+            selection: [],
+            selectAll: true,
+          },
+          extra,
+        );
+        return;
+      }
       if (targets.length === 0) return;
       const selectedIds = targets.map((subscriber) => Number(subscriber.id));
       await runBulkAction(
@@ -938,7 +987,7 @@ function SubscriberList() {
         extra,
       );
     },
-    [filter, group, runBulkAction, view.search],
+    [filter, group, runBulkAction, selectAll, view.search],
   );
 
   // "Empty Trash" is the only listing-scoped destructive call we make with no
@@ -955,6 +1004,7 @@ function SubscriberList() {
         filter,
         search: view.search || '',
         selection: [],
+        selectAll: true,
       },
       {},
     );
@@ -1047,6 +1097,10 @@ function SubscriberList() {
         supportsBulk: true,
         isEligible: () => group !== 'trash',
         callback: (targets) => {
+          if (selectAll) {
+            openPendingAction('trash', targets);
+            return;
+          }
           void handleBulkAction('trash', targets);
         },
       },
@@ -1056,6 +1110,10 @@ function SubscriberList() {
         supportsBulk: true,
         isEligible: () => group === 'trash',
         callback: (targets) => {
+          if (selectAll) {
+            openPendingAction('restore', targets);
+            return;
+          }
           void handleBulkAction('restore', targets);
         },
       },
@@ -1066,6 +1124,10 @@ function SubscriberList() {
         isDestructive: true,
         isEligible: (item) => group === 'trash' && isItemDeletable(item),
         callback: (targets) => {
+          if (selectAll) {
+            openPendingAction('delete', targets);
+            return;
+          }
           void handleBulkAction('delete', targets.filter(isItemDeletable));
         },
       },
@@ -1100,6 +1162,10 @@ function SubscriberList() {
         supportsBulk: true,
         isEligible: () => group !== 'trash',
         callback: (targets) => {
+          if (selectAll) {
+            openPendingAction('removeFromAllLists', targets);
+            return;
+          }
           void handleBulkAction('removeFromAllLists', targets);
         },
       },
@@ -1146,6 +1212,7 @@ function SubscriberList() {
       handleSendConfirmationEmail,
       navigate,
       openPendingAction,
+      selectAll,
     ],
   );
 
@@ -1153,6 +1220,7 @@ function SubscriberList() {
     if (nextGroup === group) return;
     setGroup(nextGroup);
     setSelection([]);
+    setSelectAll(false);
     clearLoadError();
     setView((currentView) => ({ ...currentView, page: 1 }));
   };
@@ -1168,12 +1236,14 @@ function SubscriberList() {
       return nextFilter;
     });
     setSelection([]);
+    setSelectAll(false);
     setView((currentView) => ({ ...currentView, page: 1 }));
   };
 
   const handleCheckTrash = (): void => {
     setGroup('trash');
     setSelection([]);
+    setSelectAll(false);
     clearLoadError();
     setView((currentView) => ({ ...currentView, page: 1 }));
   };
@@ -1196,9 +1266,56 @@ function SubscriberList() {
     [meta],
   );
 
+  const isPageFullySelected =
+    items.length > 0 && selection.length === items.length;
+  const bannerMode = selectAllBannerState({
+    pageItemCount: items.length,
+    totalCount: meta.count,
+    totalPages: meta.pages,
+    isPageFullySelected,
+    isSelectAll: selectAll,
+  });
+
   const renderPendingActionModal = (): JSX.Element | null => {
     if (!pendingAction) return null;
-    const { action, targets } = pendingAction;
+    const { action, targets, selectAll: pendingSelectAll } = pendingAction;
+    const count = pendingSelectAll ? meta.count : targets.length;
+    const largeOpCaveat =
+      pendingSelectAll && shouldWarnLargeOperation(count) ? (
+        <p className="mailpoet-subscribers-select-all-caveat">
+          {__(
+            'Large operations may take a while and could time out on very large lists.',
+            'mailpoet',
+          )}
+        </p>
+      ) : null;
+
+    if (SELECT_ALL_GENERIC_CONFIRM_ACTIONS.includes(action)) {
+      return (
+        <Modal
+          title={__('Confirm bulk action', 'mailpoet')}
+          onRequestClose={closePendingAction}
+          isDismissible
+        >
+          <p>
+            {__(
+              'This action will be applied to all %s subscribers matching the current view.',
+              'mailpoet',
+            ).replace('%s', formatCount(count))}
+          </p>
+          {largeOpCaveat}
+          <span className="mailpoet-gap-half" />
+          <Button
+            onClick={() => handlePendingActionSubmit()}
+            dimension="small"
+            variant="secondary"
+            automationId="bulk-select-all-confirm"
+          >
+            {__('Apply', 'mailpoet')}
+          </Button>
+        </Modal>
+      );
+    }
 
     if (action === 'unsubscribe') {
       return (
@@ -1211,8 +1328,9 @@ function SubscriberList() {
             {__(
               'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
               'mailpoet',
-            ).replace('%s', formatCount(targets.length))}
+            ).replace('%s', formatCount(count))}
           </p>
+          {largeOpCaveat}
           <span className="mailpoet-gap-half" />
           <Button
             onClick={() => handlePendingActionSubmit()}
@@ -1231,11 +1349,14 @@ function SubscriberList() {
         <BulkResendConfirmationEmailsModal
           submitModal={() => handlePendingActionSubmit()}
           closeModal={closePendingAction}
-          count={targets.length}
+          count={count}
         />
       );
     }
 
+    if (!isPickerAction(action)) {
+      return null;
+    }
     const config = PICKERS[action];
     return (
       <PickerModal
@@ -1301,6 +1422,17 @@ function SubscriberList() {
         </div>
       </div>
 
+      <SelectAllBanner
+        mode={bannerMode}
+        totalCount={meta.count}
+        pageItemCount={items.length}
+        onSelectAll={() => setSelectAll(true)}
+        onClear={() => {
+          setSelectAll(false);
+          setSelection([]);
+        }}
+      />
+
       <div
         className="mailpoet-dataviews mailpoet-subscribers-dataviews"
         data-automation-id="subscribers_listing"
@@ -1315,7 +1447,7 @@ function SubscriberList() {
           defaultLayouts={{ table: {} }}
           getItemId={(item) => String(item.id)}
           selection={selection}
-          onChangeSelection={setSelection}
+          onChangeSelection={handleSelectionChange}
           isLoading={isLoading}
           empty={
             <EmptyContent
