@@ -93,13 +93,7 @@ class WooCommerce {
   }
 
   public function shouldShowWooCommerceSegment(): bool {
-    $isWoocommerceActive = $this->woocommerceHelper->isWooCommerceActive();
-    $woocommerceUserExists = $this->subscribersRepository->woocommerceUserExists();
-
-    if (!$isWoocommerceActive && !$woocommerceUserExists) {
-      return false;
-    }
-    return true;
+    return $this->woocommerceHelper->isWooCommerceActive();
   }
 
   public function synchronizeRegisteredCustomer(int $wpUserId, ?string $currentFilter = null): bool {
