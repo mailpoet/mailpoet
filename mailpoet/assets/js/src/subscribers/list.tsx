@@ -549,6 +549,14 @@ function PickerModal({
       endpoint: config.endpoint,
       filter: config.filter,
       forceSelect2: true,
+      // A placeholder forces Select2 to render a blank leading option and
+      // preselect nothing, so the Apply button's disabled-until-chosen state
+      // reads as intentional rather than broken — and a select-all bulk action
+      // can't be applied to the first list/tag by an accidental click.
+      placeholder:
+        config.kind === 'segment'
+          ? __('Select a list...', 'mailpoet')
+          : __('Select a tag...', 'mailpoet'),
     }),
     [config],
   );
