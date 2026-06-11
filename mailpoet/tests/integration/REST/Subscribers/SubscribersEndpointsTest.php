@@ -112,6 +112,75 @@ class SubscribersEndpointsTest extends Test {
     $this->assertNotNull($subscriber->getDeletedAt());
   }
 
+  public function testBulkActionWithEmptySelectionAndNoSelectAllReturnsError(): void {
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'group' => 'all',
+      'selection' => [],
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_subscribers_no_selection', $response['code']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
+  }
+
+  public function testBulkActionWithSelectAllTrashesAllMatchingInGroup(): void {
+    $suffix = uniqid();
+    $first = (new SubscriberFactory())
+      ->withEmail("rest-select-all-1-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $second = (new SubscriberFactory())
+      ->withEmail("rest-select-all-2-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'group' => 'subscribed',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame('trash', $payload['action']);
+    $this->assertGreaterThanOrEqual(2, $payload['count']);
+
+    $this->subscribersRepository->refresh($first);
+    $this->subscribersRepository->refresh($second);
+    $this->assertNotNull($first->getDeletedAt());
+    $this->assertNotNull($second->getDeletedAt());
+  }
+
+  public function testBulkActionWithExplicitSelectionIgnoresSelectAllFlagWhenAbsent(): void {
+    $kept = (new SubscriberFactory())
+      ->withEmail('rest-explicit-keep-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $trashed = (new SubscriberFactory())
+      ->withEmail('rest-explicit-trash-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'group' => 'all',
+      'selection' => [(int)$trashed->getId()],
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame(1, $payload['count']);
+
+    $this->subscribersRepository->refresh($kept);
+    $this->assertNull($kept->getDeletedAt());
+  }
+
   public function testBulkActionWithUnknownActionReturnsError(): void {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'pretend-this-is-real',
