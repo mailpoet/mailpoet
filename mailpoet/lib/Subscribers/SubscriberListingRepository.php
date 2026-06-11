@@ -261,7 +261,7 @@ class SubscriberListingRepository extends ListingRepository {
       $search = Helpers::escapeSearch($search);
       $query
         ->andWhere('(s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search)')
-        ->setParameter('search', "%$search%");
+        ->setParameter('search', "$search%");
     }
 
     $filters = $definition->getFilters();
@@ -580,7 +580,7 @@ class SubscriberListingRepository extends ListingRepository {
     $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
-      ->setParameter('search', "%$search%");
+      ->setParameter('search', "$search%");
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
@@ -1013,7 +1013,7 @@ class SubscriberListingRepository extends ListingRepository {
       $search = Helpers::escapeSearch((string)$definition->getSearch());
       $subscribersQuery
         ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', "%$search%");
+        ->setParameter('search', "$search%");
     }
     if ($definition->getGroup()) {
       if ($definition->getGroup() === 'trash') {
