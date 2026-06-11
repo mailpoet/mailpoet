@@ -118,7 +118,6 @@ class PatternsController {
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'positive-follow-up'),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'negative-follow-up'),
-        new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'reward-positive'),
       ]);
 
       if ($this->wooCommerceHelper->wcSupportsOrderReviewUrl()) {
@@ -134,6 +133,7 @@ class PatternsController {
           new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
           new WinBackCustomerPattern($this->cdnAssetUrl),
           new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
+          new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'reward-positive'),
         ]);
       }
     }
