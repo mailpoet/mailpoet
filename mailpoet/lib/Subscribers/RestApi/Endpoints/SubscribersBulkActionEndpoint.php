@@ -130,6 +130,19 @@ class SubscribersBulkActionEndpoint extends Endpoint {
         'mailpoet_subscribers_confirmation_disabled'
       );
     }
+    $selectAll = $request->getParam('select_all') === true;
+    $selection = $request->getParam('selection');
+    $hasSelection = is_array($selection) && $selection !== [];
+    // Resend runs before the main guard, so apply the same explicit-intent
+    // rule here: without a selection and without select_all, an omitted
+    // listing selection would otherwise target every matching subscriber.
+    if (!$hasSelection && !$selectAll) {
+      throw new ApiException(
+        __('No subscribers selected.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_no_selection'
+      );
+    }
     // BulkConfirmationEmailResender::queue() inspects $requestData['listing']
     // to detect whether the caller provided an explicit selection (so that
     // empty selection at the listing scope can target every matching
@@ -139,8 +152,6 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       'search' => $request->getParam('search'),
       'filter' => $request->getParam('filter'),
     ];
-    $selectAll = $request->getParam('select_all') === true;
-    $selection = $request->getParam('selection');
     if (!$selectAll && is_array($selection)) {
       $listing['selection'] = $this->toIntList($selection);
     }

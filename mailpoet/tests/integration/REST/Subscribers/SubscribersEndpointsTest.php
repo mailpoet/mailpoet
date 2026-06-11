@@ -240,6 +240,23 @@ class SubscribersEndpointsTest extends Test {
     $this->assertGreaterThanOrEqual(2, $queue['queued_count']);
   }
 
+  public function testBulkResendConfirmationWithoutSelectionOrSelectAllReturnsError(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('signup_confirmation.enabled', true);
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'resendConfirmationEmails',
+      'group' => 'unconfirmed',
+      'selection' => [],
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_subscribers_no_selection', $response['code']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
+  }
+
   public function testResendConfirmationReturnsDisabledErrorWhenSignupConfirmationIsOff(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('rest-resend-confirmation-disabled-' . uniqid() . '@example.com')
