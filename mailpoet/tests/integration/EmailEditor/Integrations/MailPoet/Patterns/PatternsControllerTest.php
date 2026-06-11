@@ -145,7 +145,6 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
     $this->assertContains('mailpoet/positive-review-follow-up', $patternNames);
     $this->assertContains('mailpoet/negative-review-follow-up', $patternNames);
-    $this->assertContains('mailpoet/reward-positive-reviewer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
 
@@ -153,9 +152,10 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
     $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+    $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
-    // Verify total count (all patterns except 3 coupon patterns)
-    $this->assertCount(19, $blockPatterns);
+    // Verify total count (all patterns except 4 coupon patterns)
+    $this->assertCount(18, $blockPatterns);
   }
 
   /**
@@ -181,6 +181,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
     $this->assertContains('mailpoet/win-back-customer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
+    $this->assertContains('mailpoet/reward-positive-reviewer', $patternNames);
   }
 
   public function dataProviderForWooCommerceVersionsWithCouponSupport(): array {
@@ -295,7 +296,8 @@ class PatternsControllerTest extends \MailPoetTest {
 
     $this->assertIsString($content);
     $this->assertStringContainsString('Thanks for your review!', $content);
-    $this->assertStringContainsString('[coupon code]', $content);
+    $this->assertStringContainsString('wp:woocommerce/coupon-code', $content);
+    $this->assertStringContainsString('"source":"createNew"', $content);
     $this->assertStringContainsString('Shop again', $content);
   }
 

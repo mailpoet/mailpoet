@@ -157,9 +157,9 @@ class AskForReviewPostPurchasePattern extends Pattern {
       <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--20);font-size:16px">' . __('As a thank you, here’s a discount coupon for your next order:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:paragraph {"style":{"typography":{"fontSize":"20px","fontWeight":"700"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:20px;font-weight:700">[coupon code]</p>
-      <!-- /wp:paragraph -->
+      <!-- wp:woocommerce/coupon-code {"align":"left","source":"createNew","discountType":"percent","amount":10,"expiryDay":10} -->
+      <div class="wp-block-woocommerce-coupon-code alignleft"></div>
+      <!-- /wp:woocommerce/coupon-code -->
 
       <!-- wp:buttons {"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
       <div class="wp-block-buttons" style="padding-bottom:var(--wp--preset--spacing--30)">
