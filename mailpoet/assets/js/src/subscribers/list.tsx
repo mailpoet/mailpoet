@@ -585,7 +585,7 @@ function PickerModal({
       />
       {caveat}
       <div className="mailpoet-subscribers-bulk-confirm-actions">
-        <Button onClick={handleApply} variant="secondary" isDisabled={!value}>
+        <Button onClick={handleApply} isDisabled={!value}>
           {__('Apply', 'mailpoet')}
         </Button>
       </div>
@@ -1318,7 +1318,7 @@ function SubscriberList() {
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
               onClick={() => handlePendingActionSubmit()}
-              variant="secondary"
+              variant={action === 'delete' ? 'destructive' : undefined}
               automationId="bulk-select-all-confirm"
             >
               {__('Apply', 'mailpoet')}
@@ -1345,7 +1345,6 @@ function SubscriberList() {
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
               onClick={() => handlePendingActionSubmit()}
-              variant="secondary"
               automationId="bulk-unsubscribe-confirm"
             >
               {__('Apply', 'mailpoet')}

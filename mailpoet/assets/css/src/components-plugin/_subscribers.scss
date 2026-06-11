@@ -479,11 +479,12 @@
   margin: 4px 0 0;
 }
 
-// Center the confirm/apply button in the bulk-action modals and give it room
-// to breathe below the message text.
+// Right-align the confirm/apply button in the bulk-action modals (matching the
+// usual WordPress/WooCommerce modal footer placement) with room to breathe
+// below the message text.
 .mailpoet-subscribers-bulk-confirm-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   margin-top: 20px;
 }
 
