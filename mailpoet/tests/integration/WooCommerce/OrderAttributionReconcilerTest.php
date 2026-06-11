@@ -42,11 +42,12 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     unset($_COOKIE['mailpoet_revenue_tracking']);
-    // The boundary must predate the orders created in the tests; the writer only
-    // persists it during the order-save hooks, which run after order creation.
-    update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, gmdate('Y-m-d H:i:s', time() - DAY_IN_SECONDS));
     $this->settings = SettingsController::getInstance();
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    // Mirror production: the boundary is persisted on init, before any
+    // post-activation order exists, so even the first order is reconciled.
+    delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
+    $this->diContainer->get(OrderAttributionWriter::class)->markWritesStartedIfActive();
     $this->subscriber = $this->createSubscriber('reconciliation@example.com');
     $this->newsletter = $this->createNewsletter('First Campaign');
     $this->queue = $this->createQueue($this->newsletter, $this->subscriber);
