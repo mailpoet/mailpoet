@@ -7,6 +7,10 @@ import {
   type RestApiError,
 } from 'common/dataviews';
 import type { EngagementScoreType } from './engagement-score-badge-type';
+import {
+  type SubscriberBulkActionScope,
+  buildBulkActionPayload,
+} from './bulk-action-payload';
 
 declare global {
   interface Window {
@@ -72,12 +76,7 @@ export type SubscriberBulkAction =
   | 'addTag'
   | 'removeTag';
 
-export type SubscriberBulkActionScope = {
-  group: string;
-  filter: Record<string, string>;
-  search: string;
-  selection: number[];
-};
+export type { SubscriberBulkActionScope } from './bulk-action-payload';
 
 export type SubscriberBulkActionResult = {
   action: SubscriberBulkAction;
@@ -115,14 +114,10 @@ export function bulkAction(
   scope: SubscriberBulkActionScope,
   extra: Record<string, unknown> = {},
 ): Promise<{ data: SubscriberBulkActionResult }> {
-  return restPost<{ data: SubscriberBulkActionResult }>(BULK_ACTION_PATH, {
-    action,
-    selection: scope.selection,
-    group: scope.group,
-    search: scope.search,
-    filter: scope.filter,
-    ...extra,
-  });
+  return restPost<{ data: SubscriberBulkActionResult }>(
+    BULK_ACTION_PATH,
+    buildBulkActionPayload(action, scope, extra),
+  );
 }
 
 export async function sendConfirmationEmail(id: number): Promise<void> {
