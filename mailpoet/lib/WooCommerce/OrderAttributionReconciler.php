@@ -99,7 +99,13 @@ class OrderAttributionReconciler {
     }
 
     $record = $this->buildRecord($order, $purchases, $wooClickId, $trackingEnabled, $trigger);
-    $order->update_meta_data(self::RECONCILIATION_META_KEY, (string)$this->wp->wpJsonEncode($record));
+    $encoded = $this->wp->wpJsonEncode($record);
+    if (!is_string($encoded) || $encoded === '') {
+      // Leave the order without a record so the next status change retries,
+      // rather than persisting an empty blob that reads as a corrupt record.
+      return;
+    }
+    $order->update_meta_data(self::RECONCILIATION_META_KEY, $encoded);
     $order->save_meta_data();
   }
 
