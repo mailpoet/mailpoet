@@ -4,6 +4,7 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
 
 /**
@@ -22,6 +23,11 @@ class OrderAttributionPrivacy {
     OrderAttributionFields::FIELD_SUBSCRIBER_ID,
   ];
 
+  const SUBSCRIBER_ID_QUERY_VAR = 'mailpoet_attribution_subscriber_id';
+
+  /** @var WPFunctions */
+  private $wp;
+
   /** @var Helper */
   private $wooHelper;
 
@@ -29,9 +35,11 @@ class OrderAttributionPrivacy {
   private $subscribersRepository;
 
   public function __construct(
+    WPFunctions $wp,
     Helper $wooHelper,
     SubscribersRepository $subscribersRepository
   ) {
+    $this->wp = $wp;
     $this->wooHelper = $wooHelper;
     $this->subscribersRepository = $subscribersRepository;
   }
@@ -103,24 +111,61 @@ class OrderAttributionPrivacy {
     if (!$subscriber instanceof SubscriberEntity) {
       return [];
     }
-    $orders = $this->wooHelper->wcGetOrders([
+    $args = [
       'limit' => self::LIMIT,
       'paged' => $page,
       'orderby' => 'ID',
       'order' => 'ASC',
-      'meta_query' => [
+    ];
+    $subscriberId = (string)$subscriber->getId();
+    if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $args['meta_query'] = [
         [
           'key' => OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
-          'value' => (string)$subscriber->getId(),
+          'value' => $subscriberId,
         ],
-      ],
-    ]);
+      ];
+    } else {
+      // The legacy posts datastore rejects meta_query with a doing-it-wrong
+      // notice; a custom query var translated through this extension point is
+      // WooCommerce's documented way to filter by meta there.
+      $this->wp->addFilter(
+        'woocommerce_order_data_store_cpt_get_orders_query',
+        [$this, 'translateSubscriberIdQueryVar'],
+        10,
+        2
+      );
+      $args[self::SUBSCRIBER_ID_QUERY_VAR] = $subscriberId;
+    }
+    $orders = $this->wooHelper->wcGetOrders($args);
     if (!is_array($orders)) {
       return [];
     }
     return array_values(array_filter($orders, function ($order) {
       return $order instanceof WC_Order;
     }));
+  }
+
+  /**
+   * @param mixed $query
+   * @param mixed $queryVars
+   * @return mixed
+   */
+  public function translateSubscriberIdQueryVar($query, $queryVars) {
+    if (!is_array($query) || !is_array($queryVars)) {
+      return $query;
+    }
+    $subscriberId = $queryVars[self::SUBSCRIBER_ID_QUERY_VAR] ?? null;
+    if (!is_scalar($subscriberId) || (string)$subscriberId === '') {
+      return $query;
+    }
+    $metaQuery = isset($query['meta_query']) && is_array($query['meta_query']) ? $query['meta_query'] : [];
+    $metaQuery[] = [
+      'key' => OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+      'value' => (string)$subscriberId,
+    ];
+    $query['meta_query'] = $metaQuery;
+    return $query;
   }
 
   private function getOrderData(WC_Order $order): array {
