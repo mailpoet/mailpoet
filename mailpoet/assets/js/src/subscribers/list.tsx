@@ -1318,7 +1318,11 @@ function SubscriberList() {
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
               onClick={() => handlePendingActionSubmit()}
-              variant={action === 'delete' ? 'destructive' : undefined}
+              className={
+                action === 'delete'
+                  ? 'mailpoet-subscribers-confirm-destructive'
+                  : undefined
+              }
               automationId="bulk-select-all-confirm"
             >
               {__('Apply', 'mailpoet')}
