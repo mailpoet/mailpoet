@@ -9,8 +9,11 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalDataErasers {
   public function init() {
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', [$this, 'registerSubscriberEraser']);
+    // WordPress runs erasers sequentially in registration order. The attribution
+    // eraser looks the subscriber up by email, so it must run before the
+    // subscriber eraser anonymizes that email.
     WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', [$this, 'registerWooCommerceOrderAttributionEraser']);
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', [$this, 'registerSubscriberEraser']);
   }
 
   public function registerSubscriberEraser($erasers) {

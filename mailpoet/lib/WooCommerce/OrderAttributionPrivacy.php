@@ -125,19 +125,29 @@ class OrderAttributionPrivacy {
           'value' => $subscriberId,
         ],
       ];
+      $orders = $this->wooHelper->wcGetOrders($args);
     } else {
       // The legacy posts datastore rejects meta_query with a doing-it-wrong
       // notice; a custom query var translated through this extension point is
-      // WooCommerce's documented way to filter by meta there.
+      // WooCommerce's documented way to filter by meta there. The filter is
+      // scoped to this query so it cannot affect other order queries.
+      $args[self::SUBSCRIBER_ID_QUERY_VAR] = $subscriberId;
       $this->wp->addFilter(
         'woocommerce_order_data_store_cpt_get_orders_query',
         [$this, 'translateSubscriberIdQueryVar'],
         10,
         2
       );
-      $args[self::SUBSCRIBER_ID_QUERY_VAR] = $subscriberId;
+      try {
+        $orders = $this->wooHelper->wcGetOrders($args);
+      } finally {
+        $this->wp->removeFilter(
+          'woocommerce_order_data_store_cpt_get_orders_query',
+          [$this, 'translateSubscriberIdQueryVar'],
+          10
+        );
+      }
     }
-    $orders = $this->wooHelper->wcGetOrders($args);
     if (!is_array($orders)) {
       return [];
     }
