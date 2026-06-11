@@ -1,0 +1,133 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\WooCommerce;
+
+use MailPoet\Entities\SubscriberEntity;
+use WC_Order;
+
+/**
+ * @group woo
+ */
+class OrderAttributionPrivacyTest extends \MailPoetTest {
+  /** @var SubscriberEntity */
+  private $subscriber;
+
+  /** @var OrderAttributionPrivacy */
+  private $privacy;
+
+  public function _before() {
+    parent::_before();
+    $this->subscriber = $this->createSubscriber('attribution-privacy@example.com');
+    $this->entityManager->flush();
+    $this->privacy = $this->diContainer->get(OrderAttributionPrivacy::class);
+  }
+
+  public function testItExportsAttributionMetaForOrdersAttributedToTheSubscriber(): void {
+    $order = $this->createAttributedOrder($this->subscriber);
+
+    $result = $this->privacy->export($this->subscriber->getEmail());
+
+    verify($result['done'])->true();
+    verify($result['data'])->arrayCount(1);
+    $item = $result['data'][0];
+    verify($item['group_id'])->equals('mailpoet-woocommerce-order-attribution');
+    verify($item['item_id'])->equals('order-' . $order->get_id());
+    $values = array_column($item['data'], 'value', 'name');
+    verify($values['Order number'])->equals($order->get_order_number());
+    verify($values['Email click ID'])->equals('11');
+    verify($values['Email ID'])->equals('22');
+    verify($values['Sending queue ID'])->equals('33');
+    verify($values['Subscriber ID'])->equals((string)$this->subscriber->getId());
+  }
+
+  public function testItExportsNothingForAnUnknownEmail(): void {
+    $this->createAttributedOrder($this->subscriber);
+
+    $result = $this->privacy->export('unknown@example.com');
+
+    verify($result['data'])->arrayCount(0);
+    verify($result['done'])->true();
+  }
+
+  public function testItErasesPersonalIdentifiersAndKeepsCampaignFields(): void {
+    $order = $this->createAttributedOrder($this->subscriber);
+    $order->update_meta_data(OrderAttributionReconciler::RECONCILIATION_META_KEY, '{"woo_click_id":11}');
+    $order->save_meta_data();
+
+    $result = $this->privacy->erase($this->subscriber->getEmail());
+
+    verify($result['items_removed'])->true();
+    verify($result['done'])->true();
+    $order = $this->reloadOrder($order);
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionReconciler::RECONCILIATION_META_KEY))->false();
+    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals('22');
+    verify($order->get_meta('_wc_order_attribution_mailpoet_queue_id'))->equals('33');
+  }
+
+  public function testEraseLeavesOrdersOfOtherSubscribersUntouched(): void {
+    $otherSubscriber = $this->createSubscriber('other-subscriber@example.com');
+    $this->entityManager->flush();
+    $this->createAttributedOrder($this->subscriber);
+    $otherOrder = $this->createAttributedOrder($otherSubscriber);
+
+    $this->privacy->erase($this->subscriber->getEmail());
+
+    $otherOrder = $this->reloadOrder($otherOrder);
+    verify($otherOrder->get_meta('_wc_order_attribution_mailpoet_subscriber_id'))->equals((string)$otherSubscriber->getId());
+    verify($otherOrder->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals('11');
+  }
+
+  public function testEraseReportsNothingRemovedForAnUnknownEmail(): void {
+    $this->createAttributedOrder($this->subscriber);
+
+    $result = $this->privacy->erase('unknown@example.com');
+
+    verify($result['items_removed'])->false();
+    verify($result['done'])->true();
+  }
+
+  public function testItRemovesPersonalIdentifiersOnWooOrderAnonymization(): void {
+    $order = $this->createAttributedOrder($this->subscriber);
+    $order->update_meta_data(OrderAttributionReconciler::RECONCILIATION_META_KEY, '{"woo_click_id":11}');
+    $order->save_meta_data();
+
+    do_action('woocommerce_privacy_remove_order_personal_data', $order);
+
+    $order = $this->reloadOrder($order);
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionReconciler::RECONCILIATION_META_KEY))->false();
+    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals('22');
+    verify($order->get_meta('_wc_order_attribution_mailpoet_queue_id'))->equals('33');
+  }
+
+  private function createAttributedOrder(SubscriberEntity $subscriber): WC_Order {
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email($subscriber->getEmail());
+    $order->set_total('15');
+    $order->update_meta_data('_wc_order_attribution_mailpoet_click_id', '11');
+    $order->update_meta_data('_wc_order_attribution_mailpoet_newsletter_id', '22');
+    $order->update_meta_data('_wc_order_attribution_mailpoet_queue_id', '33');
+    $order->update_meta_data('_wc_order_attribution_mailpoet_subscriber_id', (string)$subscriber->getId());
+    $order->save();
+    return $order;
+  }
+
+  private function reloadOrder(WC_Order $order): WC_Order {
+    $reloaded = wc_get_order($order->get_id());
+    $this->assertInstanceOf(WC_Order::class, $reloaded);
+    return $reloaded;
+  }
+
+  private function createSubscriber(string $email): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($email);
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $this->entityManager->persist($subscriber);
+    return $subscriber;
+  }
+}
