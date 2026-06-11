@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { category, Icon, loop, tag } from '@wordpress/icons';
 
 /**
  * Order-aware product collections for automation emails.
@@ -14,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 type ProductCollectionConfig = {
   name: string;
   title: string;
+  icon: JSX.Element;
   description: string;
   keywords: string[];
   scope: string[];
@@ -68,6 +70,7 @@ const getOrderProductCollections = (): ProductCollectionConfig[] => [
   {
     name: 'mailpoet/product-collection/order-cross-sells',
     title: __('Goes well with the order', 'mailpoet'),
+    icon: <Icon icon={loop} />,
     description: __(
       'Shows cross-sells of the products from the order that triggered the automation. When the purchased products have no cross-sells, their related products are shown instead.',
       'mailpoet',
@@ -88,6 +91,7 @@ const getOrderProductCollections = (): ProductCollectionConfig[] => [
   {
     name: 'mailpoet/product-collection/order-same-tag',
     title: __('More with the same tag', 'mailpoet'),
+    icon: <Icon icon={tag} />,
     description: __(
       'Shows other products sharing tags with the products from the order that triggered the automation.',
       'mailpoet',
@@ -108,6 +112,7 @@ const getOrderProductCollections = (): ProductCollectionConfig[] => [
   {
     name: 'mailpoet/product-collection/order-same-category',
     title: __('More from the same category', 'mailpoet'),
+    icon: <Icon icon={category} />,
     description: __(
       'Shows other products from the categories of the products from the order that triggered the automation.',
       'mailpoet',
