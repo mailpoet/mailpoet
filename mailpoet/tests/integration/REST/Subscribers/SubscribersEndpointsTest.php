@@ -75,7 +75,7 @@ class SubscribersEndpointsTest extends Test {
 
     $response = $this->get(self::LISTING_PATH, ['query' => [
       'per_page' => 100,
-      'search' => "needle-{$suffix}",
+      'search' => "rest-search-needle-{$suffix}",
     ]]);
     $this->assertIsArray($response);
     $payload = $response['data'];
@@ -85,6 +85,19 @@ class SubscribersEndpointsTest extends Test {
     $emails = array_column($items, 'email');
     $this->assertContains("rest-search-needle-{$suffix}@example.com", $emails);
     $this->assertNotContains("rest-search-other-{$suffix}@example.com", $emails);
+
+    $wildcardResponse = $this->get(self::LISTING_PATH, ['query' => [
+      'per_page' => 100,
+      'search' => "*needle-{$suffix}",
+    ]]);
+    $this->assertIsArray($wildcardResponse);
+    $wildcardPayload = $wildcardResponse['data'];
+    $this->assertIsArray($wildcardPayload);
+    $wildcardItems = $wildcardPayload['items'];
+    $this->assertIsArray($wildcardItems);
+    $wildcardEmails = array_column($wildcardItems, 'email');
+    $this->assertContains("rest-search-needle-{$suffix}@example.com", $wildcardEmails);
+    $this->assertNotContains("rest-search-other-{$suffix}@example.com", $wildcardEmails);
   }
 
   public function testBulkTrashMovesSelectionToTrash(): void {
