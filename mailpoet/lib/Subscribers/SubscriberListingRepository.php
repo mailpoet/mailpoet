@@ -976,6 +976,11 @@ class SubscriberListingRepository extends ListingRepository {
       ->from($subscribersTable);
     $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
     $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy, $subscribersTable), $sortOrder);
+    if ($sortBy !== 'id') {
+      // The page boundary is cut here, so this query needs the same id
+      // tiebreaker as applySorting() for pagination to stay stable.
+      $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id', $subscribersTable), $sortOrder);
+    }
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
 
