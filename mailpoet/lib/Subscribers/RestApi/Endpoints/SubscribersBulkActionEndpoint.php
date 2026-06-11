@@ -56,6 +56,17 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       return $this->handleResendConfirmation($request, $definition);
     }
 
+    $selectAll = $request->getParam('select_all') === true;
+    $selectionParam = $request->getParam('selection');
+    $hasSelection = is_array($selectionParam) && $selectionParam !== [];
+    if (!$hasSelection && !$selectAll) {
+      throw new ApiException(
+        __('No subscribers selected.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_no_selection'
+      );
+    }
+
     $data = [];
     $segmentIdParam = $request->getParam('segment_id');
     if (is_numeric($segmentIdParam)) {
@@ -88,6 +99,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
     return [
       'action' => Builder::string()->required(),
       'selection' => Builder::array(Builder::integer()),
+      'select_all' => Builder::boolean(),
       'group' => Builder::string(),
       'search' => Builder::string(),
       'filter' => Builder::object(),
