@@ -528,11 +528,13 @@ function BulkResendConfirmationEmailsModal({
 function PickerModal({
   title,
   config,
+  caveat,
   onApply,
   onClose,
 }: {
   title: string;
   config: PickerConfig;
+  caveat?: JSX.Element | null;
   onApply: (value: number) => void;
   onClose: () => void;
 }) {
@@ -575,15 +577,17 @@ function PickerModal({
           setValue(Number.isFinite(next) ? next : 0);
         }}
       />
-      <span className="mailpoet-gap-half" />
-      <Button
-        onClick={handleApply}
-        dimension="small"
-        variant="secondary"
-        isDisabled={!value}
-      >
-        {__('Apply', 'mailpoet')}
-      </Button>
+      {caveat}
+      <div className="mailpoet-subscribers-bulk-confirm-actions">
+        <Button
+          onClick={handleApply}
+          dimension="small"
+          variant="secondary"
+          isDisabled={!value}
+        >
+          {__('Apply', 'mailpoet')}
+        </Button>
+      </div>
     </Modal>
   );
 }
@@ -1310,15 +1314,16 @@ function SubscriberList() {
             ).replace('%s', formatCount(count))}
           </p>
           {largeOpCaveat}
-          <span className="mailpoet-gap-half" />
-          <Button
-            onClick={() => handlePendingActionSubmit()}
-            dimension="small"
-            variant="secondary"
-            automationId="bulk-select-all-confirm"
-          >
-            {__('Apply', 'mailpoet')}
-          </Button>
+          <div className="mailpoet-subscribers-bulk-confirm-actions">
+            <Button
+              onClick={() => handlePendingActionSubmit()}
+              dimension="small"
+              variant="secondary"
+              automationId="bulk-select-all-confirm"
+            >
+              {__('Apply', 'mailpoet')}
+            </Button>
+          </div>
         </Modal>
       );
     }
@@ -1337,15 +1342,16 @@ function SubscriberList() {
             ).replace('%s', formatCount(count))}
           </p>
           {largeOpCaveat}
-          <span className="mailpoet-gap-half" />
-          <Button
-            onClick={() => handlePendingActionSubmit()}
-            dimension="small"
-            variant="secondary"
-            automationId="bulk-unsubscribe-confirm"
-          >
-            {__('Apply', 'mailpoet')}
-          </Button>
+          <div className="mailpoet-subscribers-bulk-confirm-actions">
+            <Button
+              onClick={() => handlePendingActionSubmit()}
+              dimension="small"
+              variant="secondary"
+              automationId="bulk-unsubscribe-confirm"
+            >
+              {__('Apply', 'mailpoet')}
+            </Button>
+          </div>
         </Modal>
       );
     }
@@ -1368,6 +1374,7 @@ function SubscriberList() {
       <PickerModal
         title={modalTitle(action)}
         config={config}
+        caveat={largeOpCaveat}
         onApply={(value) =>
           handlePendingActionSubmit(
             config.kind === 'segment'
