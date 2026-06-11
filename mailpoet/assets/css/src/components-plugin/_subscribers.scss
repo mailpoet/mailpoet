@@ -464,6 +464,15 @@
   margin-bottom: 8px;
   padding: 8px 12px;
   text-align: center;
+
+  // The WordPress `button-link` aligns differently from adjacent inline text,
+  // which left the link sitting below the sentence. Match the surrounding
+  // text metrics and baseline so they read as one line.
+  .button-link {
+    font-size: inherit;
+    line-height: inherit;
+    vertical-align: baseline;
+  }
 }
 
 .mailpoet-subscribers-select-all-caveat {
