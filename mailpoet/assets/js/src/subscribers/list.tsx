@@ -40,6 +40,7 @@ import { getSubscriberFields } from './fields';
 import { getInitialPickerValue, type PickerConfig } from './picker-value';
 import { SelectAllBanner } from './select-all-banner';
 import { selectAllBannerState, shouldWarnLargeOperation } from './select-all';
+import { pruneUnavailableFilters } from './filter-sync';
 import {
   bulkAction,
   getSubscribers,
@@ -779,6 +780,17 @@ function SubscriberList() {
   useEffect(() => {
     updateHash(group, view, filter, getPreferredView());
   }, [filter, group, view, getPreferredView]);
+
+  // When the active list/tag filter is no longer a selectable option (e.g.
+  // select-all + Move to trash emptied the filtered list, so the backend
+  // dropped it from the options), the dropdown would show "All Lists" while the
+  // query stayed filtered — "No items found" with a stale hash. Clear the
+  // orphaned filter so a valid list shows automatically.
+  useEffect(() => {
+    setFilter(
+      (current) => pruneUnavailableFilters(current, filters) ?? current,
+    );
+  }, [filters]);
 
   // DataViews has no built-in URL state, so back/forward inside the listing
   // is wired manually. Browser navigation fires `hashchange`; programmatic
