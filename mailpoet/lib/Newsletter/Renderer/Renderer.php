@@ -110,14 +110,14 @@ class Renderer {
       $filterCallback = function (array $context) use ($renderContext): array {
         return array_merge($context, $renderContext);
       };
-      $this->wp->addFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
-
-      $orderProductsFilter = $this->orderProductCollectionProcessor->createBlocksFilter($renderContext);
-      if ($orderProductsFilter) {
-        $this->wp->addFilter('woocommerce_email_blocks_renderer_parsed_blocks', $orderProductsFilter);
-      }
+      $orderProductsFilter = null;
 
       try {
+        $this->wp->addFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
+        $orderProductsFilter = $this->orderProductCollectionProcessor->createBlocksFilter($renderContext);
+        if ($orderProductsFilter) {
+          $this->wp->addFilter('woocommerce_email_blocks_renderer_parsed_blocks', $orderProductsFilter);
+        }
         $renderedNewsletter = $this->guntenbergRenderer->render($wpPost, $subject, $newsletter->getPreheader(), $language, $metaRobots);
         if ($this->couponBlockFailureCollector->hasFailures()) {
           throw NewsletterProcessingException::create()
