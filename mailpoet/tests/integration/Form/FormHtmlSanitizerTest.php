@@ -25,6 +25,25 @@ class FormHtmlSanitizerTest extends \MailPoetTest {
     verify($this->sanitizer->sanitize('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">'))->equals('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">');
   }
 
+  public function testItKeepsMathFormatting() {
+    $input = implode('', [
+      '<span contenteditable="false" data-rich-text-bogus="true" data-rich-text-format-boundary="true">',
+      '<math data-latex="x^2">',
+      '<semantics><msup><mi>x</mi><mn>2</mn></msup><annotation encoding="application/x-tex">x^2</annotation></semantics>',
+      '</math>',
+      '</span>',
+    ]);
+    $expected = implode('', [
+      '<span>',
+      '<math data-latex="x^2">',
+      '<semantics><msup><mi>x</mi><mn>2</mn></msup><annotation encoding="application/x-tex">x^2</annotation></semantics>',
+      '</math>',
+      '</span>',
+    ]);
+
+    verify($this->sanitizer->sanitize($input))->equals($expected);
+  }
+
   public function testItRemovesUnwantedHtml() {
     verify($this->sanitizer->sanitize('<script>'))->equals('');
     verify($this->sanitizer->sanitize('<span>Hello<img src="http://nonsense" onerror="alert(1)"/></span>'))->equals('<span>Hello<img src="http://nonsense" /></span>');

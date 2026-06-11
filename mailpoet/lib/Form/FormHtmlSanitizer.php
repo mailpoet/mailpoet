@@ -37,6 +37,47 @@ class FormHtmlSanitizer {
       'data-font' => true,
       'class' => true,
     ],
+    'math' => [
+      'data-latex' => true,
+      'display' => true,
+    ],
+    'semantics' => [],
+    'annotation' => [
+      'encoding' => true,
+    ],
+    'mrow' => [],
+    'mi' => [],
+    'mn' => [],
+    'mo' => [
+      'movablelimits' => true,
+    ],
+    'mtext' => [],
+    'mspace' => [
+      'height' => true,
+      'width' => true,
+    ],
+    'mfrac' => [
+      'linethickness' => true,
+    ],
+    'msqrt' => [],
+    'mroot' => [],
+    'msub' => [],
+    'msup' => [],
+    'msubsup' => [],
+    'munder' => [],
+    'mover' => [],
+    'munderover' => [],
+    'mtable' => [
+      'columnalign' => true,
+      'rowspacing' => true,
+      'columnspacing' => true,
+    ],
+    'mtr' => [],
+    'mtd' => [
+      'columnalign' => true,
+      'rowalign' => true,
+      'style' => true,
+    ],
     'mark' => [
       'style' => true,
       'class' => true,
