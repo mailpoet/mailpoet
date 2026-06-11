@@ -88,6 +88,41 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     verify($result['done'])->true();
   }
 
+  public function testWpErasureFlowErasesAttributionBeforeSubscriberAnonymization(): void {
+    $order = $this->createAttributedOrder($this->subscriber);
+    $email = $this->subscriber->getEmail();
+
+    // WordPress's Erase Personal Data tool runs each registered eraser to
+    // completion in registration order, always with the original request email
+    $erasers = apply_filters('wp_privacy_personal_data_erasers', []);
+    foreach ($erasers as $eraser) {
+      $page = 1;
+      do {
+        $response = call_user_func($eraser['callback'], $email, $page);
+        $this->assertIsArray($response);
+        $page++;
+      } while (empty($response['done']));
+    }
+
+    $order = $this->reloadOrder($order);
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
+    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    $this->entityManager->refresh($this->subscriber);
+    verify($this->subscriber->getEmail())->stringNotContainsString($email);
+  }
+
+  public function testItDoesNotLeaveTheCptQueryFilterRegisteredAfterErasure(): void {
+    $this->createAttributedOrder($this->subscriber);
+
+    $this->privacy->erase($this->subscriber->getEmail());
+
+    $registered = has_filter(
+      'woocommerce_order_data_store_cpt_get_orders_query',
+      [$this->privacy, 'translateSubscriberIdQueryVar']
+    );
+    verify($registered)->false();
+  }
+
   public function testItRemovesPersonalIdentifiersOnWooOrderAnonymization(): void {
     $order = $this->createAttributedOrder($this->subscriber);
     $order->update_meta_data(OrderAttributionReconciler::RECONCILIATION_META_KEY, '{"woo_click_id":11}');
