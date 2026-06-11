@@ -478,3 +478,11 @@
 .mailpoet-subscribers-select-all-caveat {
   margin: 4px 0 0;
 }
+
+// Center the confirm/apply button in the bulk-action modals and give it room
+// to breathe below the message text.
+.mailpoet-subscribers-bulk-confirm-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
