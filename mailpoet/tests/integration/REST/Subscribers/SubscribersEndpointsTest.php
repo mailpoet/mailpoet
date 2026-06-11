@@ -209,6 +209,37 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame(400, $errorData['status']);
   }
 
+  public function testBulkResendConfirmationWithSelectAllQueuesAllMatching(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('signup_confirmation.enabled', true);
+
+    $suffix = uniqid();
+    (new SubscriberFactory())
+      ->withEmail("rest-resend-select-all-1-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    (new SubscriberFactory())
+      ->withEmail("rest-resend-select-all-2-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'resendConfirmationEmails',
+      'group' => 'unconfirmed',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame('resendConfirmationEmails', $payload['action']);
+    $queue = $payload['queue'];
+    $this->assertIsArray($queue);
+    $this->assertArrayHasKey('queued_count', $queue);
+    $this->assertGreaterThanOrEqual(2, $queue['queued_count']);
+  }
+
   public function testResendConfirmationReturnsDisabledErrorWhenSignupConfirmationIsOff(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('rest-resend-confirmation-disabled-' . uniqid() . '@example.com')

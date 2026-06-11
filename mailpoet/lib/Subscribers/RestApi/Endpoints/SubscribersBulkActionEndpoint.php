@@ -139,8 +139,9 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       'search' => $request->getParam('search'),
       'filter' => $request->getParam('filter'),
     ];
+    $selectAll = $request->getParam('select_all') === true;
     $selection = $request->getParam('selection');
-    if (is_array($selection)) {
+    if (!$selectAll && is_array($selection)) {
       $listing['selection'] = $this->toIntList($selection);
     }
     $queueResult = $this->bulkConfirmationEmailResender->queue($definition, ['listing' => $listing]);
