@@ -201,6 +201,15 @@ class OrderAttributionPrivacy {
         'value' => (string)$value,
       ];
     }
+    // The reconciliation record (STOMAIL-8136) embeds click identifiers, so it
+    // is erased as personal data and must be part of the export as well.
+    $reconciliation = $order->get_meta(OrderAttributionReconciler::RECONCILIATION_META_KEY);
+    if (is_scalar($reconciliation) && (string)$reconciliation !== '') {
+      $data[] = [
+        'name' => __('Attribution reconciliation record', 'mailpoet'),
+        'value' => (string)$reconciliation,
+      ];
+    }
     return [
       'group_id' => 'mailpoet-woocommerce-order-attribution',
       'group_label' => __('MailPoet WooCommerce Order Attribution', 'mailpoet'),
