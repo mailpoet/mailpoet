@@ -9,6 +9,7 @@ use WC_Order;
 
 /**
  * @phpstan-type OrderRow array{created_at: string, newsletter_id: int, order_id: int, total: float, subscriber_id: int, first_name:string, last_name:string, email:string, subject:string, status:string}
+ * @phpstan-type AttributionRow array{order_id: int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null, queue_id: string|null}
  */
 class OrderAttributionRevenueReader {
   const COMPLETE_FOR_NEWSLETTER = 'newsletter';
@@ -267,7 +268,7 @@ class OrderAttributionRevenueReader {
       return [];
     }
 
-    $rows = $this->getWooAttributedOrders($from, $to, $newsletterIds, null);
+    $rows = $this->excludeReplayAttributionRows($this->getWooAttributedOrders($from, $to, $newsletterIds, null));
     $result = [];
     foreach ($rows as $row) {
       $order = $this->wooHelper->wcGetOrder((int)$row['order_id']);
@@ -458,7 +459,7 @@ class OrderAttributionRevenueReader {
       return [];
     }
 
-    $attributionRows = $this->getWooAttributedOrders($from, $to, $newsletterIds, null);
+    $attributionRows = $this->excludeReplayAttributionRows($this->getWooAttributedOrders($from, $to, $newsletterIds, null));
     if (!$attributionRows) {
       return [];
     }
@@ -505,7 +506,7 @@ class OrderAttributionRevenueReader {
 
   /**
    * @param int[] $newsletterIds
-   * @return array<int, array{order_id: numeric-string|int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null}>
+   * @return AttributionRow[]
    */
   private function getWooAttributedOrders(
     \DateTimeInterface $from,
@@ -527,6 +528,7 @@ class OrderAttributionRevenueReader {
       OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID,
       OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID,
       OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+      OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID,
     ];
 
     $having = 'click_id IS NOT NULL AND click_id <> \'\' AND newsletter_id IS NOT NULL AND newsletter_id <> \'\'';
@@ -548,10 +550,11 @@ class OrderAttributionRevenueReader {
           ' . $orderDateColumn . ' AS date_created_gmt,
           MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS click_id,
           MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS newsletter_id,
-          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS subscriber_id
+          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS subscriber_id,
+          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS queue_id
         FROM %i woo_order
         INNER JOIN %i meta ON meta.%i = ' . $orderIdColumn . '
-          AND meta.meta_key IN (%s, %s, %s)
+          AND meta.meta_key IN (%s, %s, %s, %s)
         WHERE 1 = 1
           ' . $typeSql . '
           ' . $dateSql . '
@@ -575,6 +578,49 @@ class OrderAttributionRevenueReader {
 
     $rows = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
     return $this->normalizeAttributionRows(is_array($rows) ? $rows : []);
+  }
+
+  /**
+   * @param AttributionRow[] $rows
+   * @return AttributionRow[]
+   */
+  private function excludeReplayAttributionRows(array $rows): array {
+    $queueIds = $this->normalizeIds(array_map(function(array $row): int {
+      return (int)($row['queue_id'] ?? 0);
+    }, $rows));
+    if (!$queueIds) {
+      return $rows;
+    }
+
+    global $wpdb;
+
+    $placeholders = implode(',', array_fill(0, count($queueIds), '%d'));
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted placeholders; values are prepared below.
+    $query = $wpdb->prepare(
+      '
+        SELECT id
+        FROM %i
+        WHERE id IN (' . $placeholders . ')
+          AND meta LIKE %s
+      ',
+      array_merge(
+        [$wpdb->prefix . 'mailpoet_sending_queues'],
+        $queueIds,
+        [NewsletterReplayMetadata::getMetaLikePattern()]
+      )
+    );
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+    $replayQueueIds = array_map('intval', (array)$wpdb->get_col($query)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+    if (!$replayQueueIds) {
+      return $rows;
+    }
+
+    $replayQueueIds = array_flip($replayQueueIds);
+    return array_values(array_filter($rows, function(array $row) use ($replayQueueIds): bool {
+      $queueId = (int)($row['queue_id'] ?? 0);
+      return $queueId <= 0 || !isset($replayQueueIds[$queueId]);
+    }));
   }
 
   /**
@@ -822,7 +868,7 @@ class OrderAttributionRevenueReader {
 
   /**
    * @param array<int, mixed> $rows
-   * @return array<int, array{order_id: int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null}>
+   * @return AttributionRow[]
    */
   private function normalizeAttributionRows(array $rows): array {
     $result = [];
@@ -834,6 +880,7 @@ class OrderAttributionRevenueReader {
       $dateCreated = $this->toString($row['date_created_gmt'] ?? null);
       $newsletterId = $this->toString($row['newsletter_id'] ?? null);
       $subscriberId = $this->toString($row['subscriber_id'] ?? null);
+      $queueId = $this->toString($row['queue_id'] ?? null);
       if ($orderId === null || $dateCreated === null || $newsletterId === null) {
         continue;
       }
@@ -842,6 +889,7 @@ class OrderAttributionRevenueReader {
         'date_created_gmt' => $dateCreated,
         'newsletter_id' => $newsletterId,
         'subscriber_id' => $subscriberId,
+        'queue_id' => $queueId,
       ];
     }
     return $result;
