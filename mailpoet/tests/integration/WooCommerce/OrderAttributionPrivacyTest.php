@@ -24,6 +24,8 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
 
   public function testItExportsAttributionMetaForOrdersAttributedToTheSubscriber(): void {
     $order = $this->createAttributedOrder($this->subscriber);
+    $order->update_meta_data(OrderAttributionReconciler::RECONCILIATION_META_KEY, '{"woo_click_id":11}');
+    $order->save_meta_data();
 
     $result = $this->privacy->export($this->subscriber->getEmail());
 
@@ -38,6 +40,7 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     verify($values['Email ID'])->equals('22');
     verify($values['Sending queue ID'])->equals('33');
     verify($values['Subscriber ID'])->equals((string)$this->subscriber->getId());
+    verify($values['Attribution reconciliation record'])->equals('{"woo_click_id":11}');
   }
 
   public function testItExportsNothingForAnUnknownEmail(): void {
