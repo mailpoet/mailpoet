@@ -17,6 +17,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WooCommerce\OrderAttributionRevenueReader;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -33,14 +34,19 @@ class NewsletterStatisticsRepository extends Repository {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var OrderAttributionRevenueReader */
+  private $orderAttributionRevenueReader;
+
   public function __construct(
     EntityManager $entityManager,
     WCHelper $wcHelper,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    OrderAttributionRevenueReader $orderAttributionRevenueReader
   ) {
     parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;
     $this->trackingConfig = $trackingConfig;
+    $this->orderAttributionRevenueReader = $orderAttributionRevenueReader;
   }
 
   protected function getEntityClassName() {
@@ -278,9 +284,25 @@ class NewsletterStatisticsRepository extends Repository {
       return null;
     }
 
+    $newsletterIds = array_map(function(NewsletterEntity $newsletter): int {
+      return (int)$newsletter->getId();
+    }, $newsletters);
     $revenueStatus = $this->wcHelper->getPurchaseStates();
-
     $currency = $this->wcHelper->getWoocommerceCurrency();
+    $wooBackedRevenues = $this->orderAttributionRevenueReader->getNewsletterRevenues($newsletterIds, $from, $to);
+    if (is_array($wooBackedRevenues)) {
+      $revenues = [];
+      foreach ($wooBackedRevenues as $newsletterId => $result) {
+        $revenues[(int)$newsletterId] = new WooCommerceRevenue(
+          $currency,
+          (float)$result['total'],
+          (int)$result['count'],
+          $this->wcHelper
+        );
+      }
+      return $revenues;
+    }
+
     $query = $this->entityManager
       ->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
