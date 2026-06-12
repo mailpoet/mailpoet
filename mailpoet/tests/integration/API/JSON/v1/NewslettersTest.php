@@ -25,6 +25,7 @@ use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WooCommerce\OrderAttributionRevenueReader;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -59,7 +60,8 @@ class NewslettersTest extends \MailPoetTest {
           new NewsletterStatisticsRepository(
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class),
-            $this->diContainer->get(TrackingConfig::class)
+            $this->diContainer->get(TrackingConfig::class),
+            $this->diContainer->get(OrderAttributionRevenueReader::class)
           ),
           $this->diContainer->get(Url::class),
           $this->diContainer->get(SendingQueuesRepository::class),
