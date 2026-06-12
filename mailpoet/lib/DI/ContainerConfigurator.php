@@ -696,6 +696,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\OrderAttributionFields::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\OrderAttributionPrivacy::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\OrderAttributionReconciler::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\OrderAttributionRevenueReader::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\OrderAttributionWriter::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\Settings::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\SubscriberEngagement::class)->setPublic(true);

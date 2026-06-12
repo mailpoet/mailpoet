@@ -12,6 +12,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WooCommerce\OrderAttributionRevenueReader;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -35,14 +36,19 @@ class SubscriberStatisticsRepository extends Repository {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var OrderAttributionRevenueReader */
+  private $orderAttributionRevenueReader;
+
   public function __construct(
     EntityManager $entityManager,
     WCHelper $wcHelper,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    OrderAttributionRevenueReader $orderAttributionRevenueReader
   ) {
     parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;
     $this->trackingConfig = $trackingConfig;
+    $this->orderAttributionRevenueReader = $orderAttributionRevenueReader;
   }
 
   protected function getEntityClassName() {
@@ -195,6 +201,16 @@ class SubscriberStatisticsRepository extends Repository {
 
     $revenueStatus = $this->wcHelper->getPurchaseStates();
     $currency = $this->wcHelper->getWoocommerceCurrency();
+    $wooBackedRevenue = $this->orderAttributionRevenueReader->getSubscriberRevenue((int)$subscriber->getId(), $startTime);
+    if (is_array($wooBackedRevenue)) {
+      return new WooCommerceRevenue(
+        $currency,
+        (float)$wooBackedRevenue['total'],
+        (int)$wooBackedRevenue['count'],
+        $this->wcHelper
+      );
+    }
+
     $queryBuilder = $this->entityManager->createQueryBuilder()
       ->select('stats.orderPriceTotal')
       ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
