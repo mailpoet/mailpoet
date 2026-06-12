@@ -7,6 +7,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\SettingsController;
@@ -147,6 +148,20 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(WooCommerceRevenue::class, $revenue);
     $this->assertEquals(2, $revenue->getOrdersCount());
     $this->assertEquals(25, $revenue->getValue());
+  }
+
+  public function testWooBackedRevenueExcludesReplayQueueAttribution(): void {
+    $this->enableWooBackedRevenueReadModel();
+    $queue = $this->newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setMeta([NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->entityManager->flush();
+
+    $this->createCompletedOrderWithAttribution($this->click1, 'replay-attribution@example.com', 20);
+
+    $revenue = $this->testee->getWooCommerceRevenue($this->newsletter);
+
+    $this->assertNull($revenue);
   }
 
   public function testWooBackedRevenueFallsBackToLegacyWhenPostBoundaryWooAttributionIsMissing(): void {
