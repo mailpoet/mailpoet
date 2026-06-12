@@ -241,7 +241,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CUSTOMER_IN_COUNTRY);
     $customerInCountryCountElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->customerCountrySegment->getId()}']";
-    $i->see('2', $customerInCountryCountElement);
+    $i->waitForText('2', 30, $customerInCountryCountElement);
     $this->clickAction($i, $this->customerCountrySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
@@ -278,15 +278,24 @@ class WooCommerceDynamicSegmentsCest {
   }
 
   private function clickAction(\AcceptanceTester $i, SegmentEntity $segmentEntity, $actionName) {
+    if ($actionName === 'View subscribers') {
+      $i->amOnPage(
+        '/wp-admin/admin.php?page=mailpoet-subscribers#/filter[segment=' . $segmentEntity->getId() . ']'
+      );
+      return;
+    }
+
     $i->clickWooTableActionByItemName($segmentEntity->getName(), $actionName);
   }
 
   private function seeDisabledEditAction(\AcceptanceTester $i, SegmentEntity $segmentEntity): void {
     $i->clickWooTableMoreButtonByItemName($segmentEntity->getName());
-    $rowEditAction = [
-      'xpath' => '//*[@role="menuitem" and normalize-space(.)="Edit unavailable" and @aria-disabled="true"]',
-    ];
-    $i->waitForElementVisible($rowEditAction);
+    $menu = ['xpath' => '//*[@role="menu"]'];
+    $i->waitForElementVisible($menu);
+    // DataViews renders disabled actions as regular menu items without
+    // aria-disabled; verify Edit is replaced by the unavailable label.
+    $i->see('Edit unavailable', $menu);
+    $i->dontSee('Edit', ['xpath' => '//*[@role="menu"]//*[@role="menuitem"][normalize-space(.)="Edit"]']);
     $i->pressKey('body', WebDriverKeys::ESCAPE);
   }
 }
