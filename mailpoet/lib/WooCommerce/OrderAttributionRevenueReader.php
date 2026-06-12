@@ -397,6 +397,9 @@ class OrderAttributionRevenueReader {
     $orderStatusColumn = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled()
       ? '`woo_order`.`status`'
       : '`woo_order`.`post_status`';
+    $orderIdColumn = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled()
+      ? '`woo_order`.`id`'
+      : '`woo_order`.`ID`';
 
     // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
     $query = $wpdb->prepare(
@@ -413,10 +416,12 @@ class OrderAttributionRevenueReader {
           newsletter.subject,
           ' . $orderStatusColumn . ' AS status
         FROM %i swp
-        INNER JOIN %i woo_order ON swp.order_id = woo_order.ID
+        INNER JOIN %i woo_order ON swp.order_id = ' . $orderIdColumn . '
         INNER JOIN %i subscriber ON subscriber.ID = swp.subscriber_id
         INNER JOIN %i newsletter ON newsletter.ID = swp.newsletter_id
+        LEFT JOIN %i q ON q.id = swp.queue_id
         WHERE swp.newsletter_id IN (' . $newsletterPlaceholders . ')
+          AND (q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE %s)
           ' . $dateSql . '
           ' . $excludeSql . '
       ',
@@ -426,8 +431,10 @@ class OrderAttributionRevenueReader {
           $orderTable,
           $wpdb->prefix . 'mailpoet_subscribers',
           $wpdb->prefix . 'mailpoet_newsletters',
+          $wpdb->prefix . 'mailpoet_sending_queues',
         ],
         $newsletterIds,
+        [NewsletterReplayMetadata::getMetaLikePattern()],
         $dateParams,
         $excludeParams
       )
@@ -606,7 +613,7 @@ class OrderAttributionRevenueReader {
     if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
       return [
         'table' => $wpdb->prefix . 'wc_orders',
-        'id_column' => 'ID',
+        'id_column' => 'id',
         'date_column' => 'date_created_gmt',
         'type_column' => 'type',
       ];
