@@ -2,10 +2,13 @@
 
 namespace MailPoet\Subscribers\Statistics;
 
+use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -13,7 +16,10 @@ use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\WooCommerce\OrderAttributionFields;
+use MailPoet\WooCommerce\OrderAttributionWriter;
 use MailPoetVendor\Carbon\Carbon;
+use WC_Order;
 
 /**
  * @group woo
@@ -29,6 +35,9 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     parent::_before();
     $this->repository = $this->diContainer->get(SubscriberStatisticsRepository::class);
     $this->settings = SettingsController::getInstance();
+    (new Features())->withFeatureDisabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
+    delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
   }
 
   public function testItFetchesClickCount(): void {
@@ -228,6 +237,73 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(WooCommerceRevenue::class, $daysAgoResult);
     verify($daysAgoResult->getOrdersCount())->equals(0);
     verify($daysAgoResult->getValue())->equals(0.00);
+  }
+
+  public function testItFetchesWooBackedSubscriberRevenueWhenFeatureFlagIsEnabled(): void {
+    $this->enableWooBackedRevenueReadModel();
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $link = (new NewsletterLink($newsletter))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+
+    $order = $this->createCompletedOrderWithAttribution($click, $subscriber, 30);
+
+    $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
+
+    $this->assertInstanceOf(WooCommerceRevenue::class, $result);
+    verify($result->getOrdersCount())->equals(1);
+    verify($result->getValue())->equals((float)$order->get_remaining_refund_amount());
+  }
+
+  public function testWooBackedSubscriberRevenueFallsBackToLegacyWhenSubscriberMetaIsMissing(): void {
+    $this->enableWooBackedRevenueReadModel();
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $link = (new NewsletterLink($newsletter))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+
+    (new StatisticsWooCommercePurchases($click, [
+      'id' => 2001,
+      'currency' => 'USD',
+      'total' => 18.00,
+    ]))->withCreatedAt(new \DateTimeImmutable('-30 minutes'))->create();
+
+    $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
+
+    $this->assertInstanceOf(WooCommerceRevenue::class, $result);
+    verify($result->getOrdersCount())->equals(1);
+    verify($result->getValue())->equals(18.00);
+  }
+
+  private function enableWooBackedRevenueReadModel(): void {
+    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
+    update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, gmdate('Y-m-d H:i:s', time() - HOUR_IN_SECONDS));
+  }
+
+  private function createCompletedOrderWithAttribution(
+    StatisticsClickEntity $click,
+    SubscriberEntity $subscriber,
+    float $total
+  ): WC_Order {
+    $newsletter = $click->getNewsletter();
+    $queue = $click->getQueue();
+    $this->assertNotNull($newsletter);
+    $this->assertNotNull($queue);
+
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email('manual-attribution@example.com');
+    $order->set_currency('USD');
+    $order->set_total((string)$total);
+    $order->set_status('completed');
+    $order->save();
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID, (string)$click->getId());
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID, (string)$newsletter->getId());
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID, (string)$queue->getId());
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID, (string)$subscriber->getId());
+    $order->save_meta_data();
+    return $order;
   }
 
   private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {
