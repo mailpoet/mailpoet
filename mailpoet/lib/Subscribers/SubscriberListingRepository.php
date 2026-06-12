@@ -792,7 +792,9 @@ class SubscriberListingRepository extends ListingRepository {
       // Deterministic tiebreaker so pagination stays stable when the sorted
       // column has duplicate values. created_at has per-second granularity, so
       // large or imported lists tie often; pairing it with id also matches the
-      // (created_at, id) shape of the index, keeping the sort index-backed.
+      // deleted_at_created index (deleted_at, created_at + implicit id), which
+      // serves the default listing with the WHERE pinning deleted_at, keeping
+      // the sort index-backed.
       $queryBuilder->addOrderBy('s.id', $sortOrder);
     }
   }
