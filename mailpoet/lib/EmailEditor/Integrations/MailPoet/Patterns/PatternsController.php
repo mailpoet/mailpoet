@@ -114,6 +114,8 @@ class PatternsController {
         new ProductPurchaseFollowUpPattern($this->cdnAssetUrl),
         new TagPurchaseFollowUpPattern($this->cdnAssetUrl),
         new CategoryPurchaseFollowUpPattern($this->cdnAssetUrl),
+        new WinBackCustomerPattern($this->cdnAssetUrl, true),
+        new WinBackCustomerPattern($this->cdnAssetUrl, false, true),
         new AbandonedCartPattern($this->cdnAssetUrl),
         new AbandonedCartReminderPattern($this->cdnAssetUrl),
         new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'positive-follow-up'),
