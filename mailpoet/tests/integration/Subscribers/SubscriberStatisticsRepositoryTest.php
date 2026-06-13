@@ -275,6 +275,43 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     verify($result->getValue())->equals(18.00);
   }
 
+  public function testWooBackedSubscriberRevenueFallsBackToLegacyWhenOrderAttributionIsPartial(): void {
+    $this->enableWooBackedRevenueReadModel();
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $link = (new NewsletterLink($newsletter))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+    $queue = $click->getQueue();
+    $this->assertNotNull($queue);
+
+    // Post-boundary Woo order carrying click + newsletter attribution but no
+    // subscriber meta: the Woo subscriber path must skip it and the legacy
+    // purchase row must supply the value instead of it being dropped.
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email('partial-attribution@example.com');
+    $order->set_currency('USD');
+    $order->set_total('40');
+    $order->set_status('completed');
+    $order->save();
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID, (string)$click->getId());
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID, (string)$newsletter->getId());
+    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID, (string)$queue->getId());
+    $order->save_meta_data();
+
+    (new StatisticsWooCommercePurchases($click, [
+      'id' => $order->get_id(),
+      'currency' => 'USD',
+      'total' => 18.00,
+    ]))->withCreatedAt(new \DateTimeImmutable('-30 minutes'))->create();
+
+    $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
+
+    $this->assertInstanceOf(WooCommerceRevenue::class, $result);
+    verify($result->getOrdersCount())->equals(1);
+    verify($result->getValue())->equals(18.00);
+  }
+
   private function enableWooBackedRevenueReadModel(): void {
     (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
     $this->diContainer->get(FeaturesController::class)->resetCache();
