@@ -159,7 +159,13 @@ class AutomationStorage {
     ?string $order = 'DESC',
     ?int $page = null,
     ?int $perPage = null,
-    ?string $search = null
+    ?string $search = null,
+    ?array $triggerKeys = null,
+    ?bool $hasActivity = null,
+    ?DateTimeImmutable $createdAfter = null,
+    ?DateTimeImmutable $createdBefore = null,
+    ?DateTimeImmutable $updatedAfter = null,
+    ?DateTimeImmutable $updatedBefore = null
   ): array {
     global $wpdb;
 
@@ -178,11 +184,27 @@ class AutomationStorage {
       $searchParams[] = '%' . $wpdb->esc_like($search) . '%';
     }
 
-    // Handle ordering
-    $validOrderByColumns = ['id', 'name', 'status', 'created_at', 'updated_at'];
-    $orderByColumn = $orderBy && in_array($orderBy, $validOrderByColumns, true) ? $orderBy : 'id';
+    // Trigger / activity / date filters are appended as self-contained,
+    // pre-prepared fragments so their placeholders don't have to be threaded
+    // through this query's positional argument list.
+    $extraFilter = $this->buildExtraFilterSql($triggerKeys, $hasActivity, $createdAfter, $createdBefore, $updatedAfter, $updatedBefore);
+
+    // Handle ordering. The synthetic `entered` column sorts by how many
+    // subscribers entered the automation, derived from the runs table.
+    $enteredJoin = '';
+    if ($orderBy === 'entered') {
+      $enteredJoin = $wpdb->prepare(
+        ' LEFT JOIN (SELECT automation_id, COUNT(*) AS entered_count FROM %i GROUP BY automation_id) AS rc ON rc.automation_id = a.id',
+        $this->runsTable
+      );
+      $orderColumnSql = 'COALESCE(rc.entered_count, 0)';
+    } else {
+      $validOrderByColumns = ['id', 'name', 'status', 'created_at', 'updated_at'];
+      $orderByColumn = $orderBy && in_array($orderBy, $validOrderByColumns, true) ? $orderBy : 'id';
+      $orderColumnSql = "a.{$orderByColumn}";
+    }
     $orderDirection = $order && strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
-    $orderClause = " ORDER BY a.{$orderByColumn} {$orderDirection}";
+    $orderClause = " ORDER BY {$orderColumnSql} {$orderDirection}";
 
     // Handle pagination
     $limitClause = '';
@@ -199,11 +221,13 @@ class AutomationStorage {
           SELECT a.*, v.id AS version_id, v.steps
           FROM %i AS a
           INNER JOIN %i as v ON (v.automation_id = a.id)
+          ' . $enteredJoin . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The entered join is prepared. */ '
           WHERE v.id = (
             SELECT MAX(id) FROM %i WHERE automation_id = v.automation_id
           )
           ' . $statusFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The status filter uses placeholders. */ '
           ' . $searchFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The search filter uses placeholders. */ '
+          ' . $extraFilter . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The extra filters are prepared. */ '
           ' . $orderClause . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The order clause is sanitized. */ '
           ' . $limitClause, /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The limit clause is prepared. */
         array_merge(
@@ -222,6 +246,52 @@ class AutomationStorage {
       /** @var array $automationData - for PHPStan because it conflicts with expected callable(mixed): mixed)|null */
       return Automation::fromArray($automationData);
     }, (array)$data);
+  }
+
+  /**
+   * Build the self-contained, pre-prepared SQL fragment for the trigger /
+   * activity / date-range filters shared by getAutomations() and
+   * getAutomationCount(). Returns an empty string when no extra filter is set.
+   */
+  private function buildExtraFilterSql(
+    ?array $triggerKeys,
+    ?bool $hasActivity,
+    ?DateTimeImmutable $createdAfter,
+    ?DateTimeImmutable $createdBefore,
+    ?DateTimeImmutable $updatedAfter,
+    ?DateTimeImmutable $updatedBefore
+  ): string {
+    global $wpdb;
+    $sql = '';
+
+    if ($triggerKeys) {
+      $sql .= $wpdb->prepare(
+        // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
+        ' AND a.id IN (SELECT automation_id FROM %i WHERE trigger_key IN (' . implode(',', array_fill(0, count($triggerKeys), '%s')) . '))',
+        array_merge([$this->triggersTable], $triggerKeys)
+      );
+    }
+
+    if ($hasActivity === true) {
+      $sql .= $wpdb->prepare(' AND a.id IN (SELECT DISTINCT automation_id FROM %i)', $this->runsTable);
+    } elseif ($hasActivity === false) {
+      $sql .= $wpdb->prepare(' AND a.id NOT IN (SELECT DISTINCT automation_id FROM %i)', $this->runsTable);
+    }
+
+    if ($createdAfter) {
+      $sql .= $wpdb->prepare(' AND a.created_at >= %s', $createdAfter->format('Y-m-d H:i:s'));
+    }
+    if ($createdBefore) {
+      $sql .= $wpdb->prepare(' AND a.created_at <= %s', $createdBefore->format('Y-m-d H:i:s'));
+    }
+    if ($updatedAfter) {
+      $sql .= $wpdb->prepare(' AND a.updated_at >= %s', $updatedAfter->format('Y-m-d H:i:s'));
+    }
+    if ($updatedBefore) {
+      $sql .= $wpdb->prepare(' AND a.updated_at <= %s', $updatedBefore->format('Y-m-d H:i:s'));
+    }
+
+    return $sql;
   }
 
   /** @return int[] */
@@ -259,7 +329,16 @@ class AutomationStorage {
     return array_map('intval', $result);
   }
 
-  public function getAutomationCount(?array $status = null, ?string $search = null): int {
+  public function getAutomationCount(
+    ?array $status = null,
+    ?string $search = null,
+    ?array $triggerKeys = null,
+    ?bool $hasActivity = null,
+    ?DateTimeImmutable $createdAfter = null,
+    ?DateTimeImmutable $createdBefore = null,
+    ?DateTimeImmutable $updatedAfter = null,
+    ?DateTimeImmutable $updatedBefore = null
+  ): int {
     global $wpdb;
 
     $statusFilter = '';
@@ -276,17 +355,28 @@ class AutomationStorage {
       $searchParams[] = '%' . $wpdb->esc_like($search) . '%';
     }
 
+    $extraFilter = $this->buildExtraFilterSql($triggerKeys, $hasActivity, $createdAfter, $createdBefore, $updatedAfter, $updatedBefore);
+
     return (int)$wpdb->get_var(
       $wpdb->prepare(
         'SELECT COUNT(*) FROM %i AS a WHERE 1=1'
         . $statusFilter /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The status filter uses placeholders. */
-        . $searchFilter, /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The search filter uses placeholders. */
+        . $searchFilter /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The search filter uses placeholders. */
+        . $extraFilter, /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The extra filters are prepared. */
         array_merge(
           [$this->automationsTable],
           $statusParams,
           $searchParams
         )
       )
+    );
+  }
+
+  /** @return string[] List of distinct trigger keys used across all automations. */
+  public function getAllTriggerKeys(): array {
+    global $wpdb;
+    return $wpdb->get_col(
+      $wpdb->prepare('SELECT DISTINCT trigger_key FROM %i ORDER BY trigger_key ASC', $this->triggersTable)
     );
   }
 

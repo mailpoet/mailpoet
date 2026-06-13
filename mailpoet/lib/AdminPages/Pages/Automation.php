@@ -91,6 +91,7 @@ class Automation {
         array_values($this->registry->getTemplateCategories())
       ),
       'registry' => $this->buildRegistry(),
+      'trigger_options' => $this->buildTriggerOptions(),
       'context' => $this->buildContext(),
       'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts(),
       'roles' => $wp_roles->get_names() + ['mailpoet_all' => __('In any WordPress role', 'mailpoet')],
@@ -125,6 +126,24 @@ class Automation {
       'steps' => $steps,
       'subjects' => $subjects,
     ];
+  }
+
+  /**
+   * Filter options for the listing's "Trigger" filter: every trigger key
+   * actually used by an automation, mapped to its human-readable label.
+   *
+   * @return array<array{value: string, label: string}>
+   */
+  private function buildTriggerOptions(): array {
+    $options = [];
+    foreach ($this->automationStorage->getAllTriggerKeys() as $key) {
+      $trigger = $this->registry->getTrigger($key);
+      $options[] = [
+        'value' => $key,
+        'label' => $trigger ? $trigger->getName() : $key,
+      ];
+    }
+    return $options;
   }
 
   private function buildContext(): array {
