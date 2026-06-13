@@ -114,7 +114,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- /wp:buttons -->
 
       <!-- wp:heading {"style":{"border":{"top":{"color":"var:preset|color|cyan-bluish-gray"}},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"24px"}}} -->
-      <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('New arrivals you might like', 'mailpoet') . '</h2>
+      <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('You might also like', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
       ' . $productSection . '
@@ -194,7 +194,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
       <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
       /* translators: %s is a placeholder for the first name */
-      sprintf(__('Hi %s, come see what’s new — we’ve added fresh arrivals and exclusive deals just for you.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
+      sprintf(__('Hi %s, we’ve got an exclusive deal waiting just for you.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
