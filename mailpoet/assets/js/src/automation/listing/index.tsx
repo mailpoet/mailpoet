@@ -1,14 +1,12 @@
 import {
   __experimentalConfirmDialog as ConfirmDialog,
+  Notice,
   TabPanel,
 } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 import { dispatch, useDispatch, useSelect } from '@wordpress/data';
-import {
-  DataViews,
-  filterSortAndPaginate,
-  View,
-  Action,
-} from '@wordpress/dataviews';
+import { DataViews, View, Action } from '@wordpress/dataviews';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,14 +14,17 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
+  useDataViewsQuery,
+  type ListingQueryParams,
+  type ListingResponse,
 } from 'common/dataviews';
 import { storeName } from './store/constants';
 import type { AutomationItem } from './store/types';
 import { AutomationStatus } from './automation';
-import { automationCount, legacyAutomationCount } from '../config';
 import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
 import { automationFields } from './fields';
+import { filtersToParam } from './filters';
 import { getAutomationAnalyticsUrl, getAutomationEditorUrl } from './urls';
 
 type Group =
@@ -110,9 +111,58 @@ function viewMatchesSearch(
   );
 }
 
-function formatTabTitle(label: string, count: number): string {
-  return count > 0 ? `${label} (${count})` : label;
+function formatTabTitle(label: string, count: number | null): string {
+  return count !== null && count > 0 ? `${label} (${count})` : label;
 }
+
+// Map the active listing tab to the status set sent to the endpoint. The "all"
+// tab shows every non-trashed automation, matching the previous UI.
+function statusParamForGroup(group?: string): string[] {
+  if (!group || group === 'all') {
+    return [
+      AutomationStatus.ACTIVE,
+      AutomationStatus.DRAFT,
+      AutomationStatus.DEACTIVATING,
+    ];
+  }
+  return [group];
+}
+
+// The "subscribers" column sorts by how many subscribers entered, which the
+// endpoint exposes as the synthetic `entered` order-by field.
+function mapSortField(field?: string): string | undefined {
+  return field === 'subscribers' ? 'entered' : field;
+}
+
+function legacyMatchesGroup(item: AutomationItem, group: Group): boolean {
+  if (group === 'all') return item.status !== AutomationStatus.TRASH;
+  return item.status === group;
+}
+
+// Server-side loader for the real automations. Legacy automations are not
+// served here — they are overlaid client-side in the default view only.
+const loadAutomationsListing = async (
+  params: ListingQueryParams,
+  signal?: AbortSignal,
+): Promise<ListingResponse<AutomationItem>> => {
+  const orderby = mapSortField(params.orderby);
+  const query: Record<string, unknown> = {
+    page: params.page,
+    per_page: params.per_page,
+    order: params.order,
+    status: statusParamForGroup(params.group),
+  };
+  if (params.search) query.search = params.search;
+  if (orderby) query.orderby = orderby;
+  if (params.filter) query.filter = params.filter;
+
+  const response = await apiFetch<{ data: ListingResponse<AutomationItem> }>({
+    path: addQueryArgs('/automations', query),
+    method: 'GET',
+    signal,
+  });
+  return response.data;
+};
 
 function getActionCopy(pendingAction: PendingAction): {
   title: string;
@@ -258,19 +308,14 @@ export function AutomationListing(): JSX.Element {
   const [group, setGroup] = useState<Group>(() =>
     getGroupFromSearch(new URLSearchParams(location.search)),
   );
-  const [view, setView] = useState<View>(() =>
-    getViewFromSearch(new URLSearchParams(location.search), defaultView),
-  );
   const [selection, setSelection] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
-  const latestGroupRef = useRef(group);
-  const latestViewRef = useRef(view);
 
-  const automations = useSelect((select) =>
-    select(storeName).getAllAutomations(),
+  const legacyAutomations = useSelect(
+    (select) => select(storeName).getLegacyAutomations(),
+    [],
   );
   const {
-    loadAutomations,
     loadLegacyAutomations,
     restoreAutomation,
     restoreLegacyAutomation,
@@ -281,42 +326,50 @@ export function AutomationListing(): JSX.Element {
     deleteLegacyAutomation,
   } = useDispatch(storeName);
 
-  useEffect(() => {
-    void loadAutomations();
-    void loadLegacyAutomations();
-  }, [loadAutomations, loadLegacyAutomations]);
+  const [initialView] = useState<View>(() =>
+    getViewFromSearch(new URLSearchParams(location.search), defaultView),
+  );
 
+  const groupRef = useRef(group);
+  groupRef.current = group;
+  const extraParams = useCallback(
+    (currentView: View): Partial<ListingQueryParams> => {
+      const filter = filtersToParam(currentView.filters);
+      return {
+        group: groupRef.current,
+        ...(Object.keys(filter).length > 0 ? { filter } : {}),
+      };
+    },
+    [],
+  );
+
+  const {
+    view,
+    setView,
+    onChangeView,
+    items,
+    meta,
+    groups,
+    isLoading,
+    error: loadError,
+    refresh,
+    clearError,
+  } = useDataViewsQuery<AutomationItem>({
+    initialView,
+    load: loadAutomationsListing,
+    extraParams,
+  });
+
+  const latestGroupRef = useRef(group);
+  const latestViewRef = useRef(view);
   useEffect(() => {
     latestGroupRef.current = group;
     latestViewRef.current = view;
   }, [group, view]);
 
   useEffect(() => {
-    const nextSearch = new URLSearchParams(location.search);
-    const nextGroup = getGroupFromSearch(nextSearch);
-    // Resolve omitted URL params against the current preference-merged
-    // defaults so browser navigation restores the view the URL was written
-    // against.
-    const currentDefaultView = getDataViewsPreference(
-      'automation',
-      DEFAULT_VIEW,
-      automationFields,
-    );
-    let selectionShouldBeCleared = false;
-    if (nextGroup !== latestGroupRef.current) {
-      setGroup(nextGroup);
-      selectionShouldBeCleared = true;
-    }
-    if (
-      !viewMatchesSearch(latestViewRef.current, nextSearch, currentDefaultView)
-    ) {
-      setView(getViewFromSearch(nextSearch, currentDefaultView));
-      selectionShouldBeCleared = true;
-    }
-    if (selectionShouldBeCleared) {
-      setSelection([]);
-    }
-  }, [location.search]);
+    void loadLegacyAutomations();
+  }, [loadLegacyAutomations]);
 
   const updateUrlSearchString = useCallback(
     (nextGroup: Group, nextView: View) => {
@@ -328,9 +381,6 @@ export function AutomationListing(): JSX.Element {
       } else {
         newSearch.delete('paged');
       }
-      // Compare against the preference-merged default, resolved at write time
-      // (not the hardcoded one, not a mount-time snapshot), so reloading a
-      // URL without `per_page` resolves to the same view it was written from.
       const defaultPerPage =
         getDataViewsPreference('automation', DEFAULT_VIEW, automationFields)
           .perPage ?? DEFAULT_PER_PAGE;
@@ -363,13 +413,39 @@ export function AutomationListing(): JSX.Element {
     [location.search, navigate],
   );
 
+  // Sync external URL changes (browser back/forward, ?status= deep-links) back
+  // into the listing state.
+  useEffect(() => {
+    const nextSearch = new URLSearchParams(location.search);
+    const nextGroup = getGroupFromSearch(nextSearch);
+    const currentDefaultView = getDataViewsPreference(
+      'automation',
+      DEFAULT_VIEW,
+      automationFields,
+    );
+    let selectionShouldBeCleared = false;
+    if (nextGroup !== latestGroupRef.current) {
+      setGroup(nextGroup);
+      selectionShouldBeCleared = true;
+    }
+    if (
+      !viewMatchesSearch(latestViewRef.current, nextSearch, currentDefaultView)
+    ) {
+      setView(getViewFromSearch(nextSearch, currentDefaultView));
+      selectionShouldBeCleared = true;
+    }
+    if (selectionShouldBeCleared) {
+      setSelection([]);
+    }
+  }, [location.search, setView]);
+
   const handleViewChange = useCallback(
     (nextView: View) => {
       setSelection([]);
-      setView(nextView);
+      onChangeView(nextView);
       updateUrlSearchString(group, nextView);
     },
-    [group, updateUrlSearchString],
+    [group, onChangeView, updateUrlSearchString],
   );
   const persistedViewChange = usePersistedDataViewsPreference(
     'automation',
@@ -389,64 +465,64 @@ export function AutomationListing(): JSX.Element {
     updateUrlSearchString(nextGroup, nextView);
   };
 
-  const groupedAutomations = useMemo<Record<Group, AutomationItem[]>>(() => {
-    const grouped: Record<Group, AutomationItem[]> = {
-      all: [],
-      [AutomationStatus.ACTIVE]: [],
-      [AutomationStatus.DRAFT]: [],
-      [AutomationStatus.TRASH]: [],
+  // Legacy automations are only shown while browsing the default view (no
+  // filter / search / sort). Any active filter, search, or sort switches to the
+  // server-filtered real automations only.
+  const isDefaultView = useMemo(
+    () => !view.search && !view.sort && (view.filters?.length ?? 0) === 0,
+    [view.search, view.sort, view.filters],
+  );
+
+  const legacyForDisplay = useMemo(() => {
+    if (!isDefaultView || (view.page ?? 1) !== 1) return [];
+    return (legacyAutomations ?? []).filter((item) =>
+      legacyMatchesGroup(item, group),
+    );
+  }, [isDefaultView, view.page, legacyAutomations, group]);
+
+  const data = useMemo(
+    () => [...items, ...legacyForDisplay],
+    [items, legacyForDisplay],
+  );
+
+  const paginationInfo = useMemo(
+    () => ({ totalItems: meta.count, totalPages: meta.pages }),
+    [meta],
+  );
+
+  const tabs = useMemo(() => {
+    const realCounts: Record<Group, number | null> = {
+      all: null,
+      [AutomationStatus.ACTIVE]: null,
+      [AutomationStatus.DRAFT]: null,
+      [AutomationStatus.TRASH]: null,
     };
-    (automations ?? []).forEach((automation) => {
-      if (automation.status in grouped) {
-        grouped[automation.status as Group].push(automation);
-      }
-      if (automation.status !== AutomationStatus.TRASH) {
-        grouped.all.push(automation);
+    (groups ?? []).forEach((entry) => {
+      if (entry.name in realCounts) {
+        realCounts[entry.name as Group] = entry.count;
       }
     });
-    return grouped;
-  }, [automations]);
-
-  const totalCount = automationCount + legacyAutomationCount;
-  const { data, paginationInfo } = useMemo(() => {
-    if (!automations) {
-      return {
-        data: [],
-        paginationInfo: {
-          totalItems: totalCount,
-          totalPages: Math.ceil(
-            totalCount / (view.perPage ?? DEFAULT_PER_PAGE),
-          ),
-        },
-      };
-    }
-    const filteredAutomations = groupedAutomations[group] ?? [];
-    return filterSortAndPaginate(filteredAutomations, view, automationFields);
-  }, [automations, group, groupedAutomations, totalCount, view]);
-
-  useEffect(() => {
-    const currentPage = view.page ?? 1;
-    const lastPage = paginationInfo.totalPages;
-    if (automations && lastPage > 0 && currentPage > lastPage) {
-      handleViewChange({ ...view, page: lastPage });
-    }
-  }, [automations, handleViewChange, paginationInfo.totalPages, view]);
-
-  const tabs = useMemo(
-    () => [
+    const total = (name: Group): number | null => {
+      const realCount = realCounts[name];
+      if (realCount === null) return null;
+      const legacy = isDefaultView
+        ? (legacyAutomations ?? []).filter((item) =>
+            legacyMatchesGroup(item, name),
+          ).length
+        : 0;
+      return realCount + legacy;
+    };
+    return [
       {
         name: 'all',
-        title: formatTabTitle(
-          __('All', 'mailpoet'),
-          groupedAutomations.all.length,
-        ),
+        title: formatTabTitle(__('All', 'mailpoet'), total('all')),
         className: 'mailpoet-dataviews-group-all mailpoet-tab-all',
       },
       {
         name: AutomationStatus.ACTIVE,
         title: formatTabTitle(
           __('Active', 'mailpoet'),
-          groupedAutomations[AutomationStatus.ACTIVE].length,
+          total(AutomationStatus.ACTIVE),
         ),
         className: 'mailpoet-tab-active',
       },
@@ -454,7 +530,7 @@ export function AutomationListing(): JSX.Element {
         name: AutomationStatus.DRAFT,
         title: formatTabTitle(
           _x('Inactive', 'noun', 'mailpoet'),
-          groupedAutomations[AutomationStatus.DRAFT].length,
+          total(AutomationStatus.DRAFT),
         ),
         className: 'mailpoet-tab-draft',
       },
@@ -462,13 +538,12 @@ export function AutomationListing(): JSX.Element {
         name: AutomationStatus.TRASH,
         title: formatTabTitle(
           _x('Trash', 'noun', 'mailpoet'),
-          groupedAutomations[AutomationStatus.TRASH].length,
+          total(AutomationStatus.TRASH),
         ),
         className: 'mailpoet-dataviews-group-trash mailpoet-tab-trash',
       },
-    ],
-    [groupedAutomations],
-  );
+    ];
+  }, [groups, isDefaultView, legacyAutomations]);
 
   const runAutomationAction = useCallback(
     async (
@@ -522,11 +597,15 @@ export function AutomationListing(): JSX.Element {
       }
 
       setSelection([]);
+      refresh();
+      void loadLegacyAutomations();
     },
     [
       deleteAutomation,
       deleteLegacyAutomation,
       duplicateAutomation,
+      loadLegacyAutomations,
+      refresh,
       restoreAutomation,
       restoreLegacyAutomation,
       trashAutomation,
@@ -618,9 +697,16 @@ export function AutomationListing(): JSX.Element {
       ? __('Trash is empty.', 'mailpoet')
       : __('No automations found.', 'mailpoet');
   const actionCopy = getActionCopy(pendingAction);
+  const listingIsLoading =
+    isLoading || (isDefaultView && legacyAutomations === undefined);
 
   return (
     <>
+      {loadError && (
+        <Notice status="error" onRemove={clearError}>
+          {loadError}
+        </Notice>
+      )}
       <TabPanel
         key={group}
         className="mailpoet-dataviews__tabs"
@@ -648,17 +734,19 @@ export function AutomationListing(): JSX.Element {
               }
               selection={selection}
               onChangeSelection={setSelection}
-              isLoading={!automations}
+              isLoading={listingIsLoading}
               empty={<div>{emptyLabel}</div>}
             >
               <div className="mailpoet-dataviews__toolbar">
                 <DataViews.Search
                   label={__('Search automations', 'mailpoet')}
                 />
+                <DataViews.FiltersToggle />
                 <div className="mailpoet-dataviews__toolbar-end">
                   <DataViews.ViewConfig />
                 </div>
               </div>
+              <DataViews.Filters />
               <DataViews.Layout />
               <DataViews.Footer />
             </DataViews>

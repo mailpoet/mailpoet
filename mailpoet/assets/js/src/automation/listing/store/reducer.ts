@@ -10,21 +10,22 @@ export function reducer(state: State, action): State {
     case 'ADD_AUTOMATION':
       return {
         ...state,
-        automations: [action.automation, ...state.automations],
+        automations: [action.automation, ...(state.automations ?? [])],
       };
     case 'UPDATE_AUTOMATION':
       return {
         ...state,
-        automations: state.automations.map((automation: AutomationItem) =>
-          automation.id === action.automation.id
-            ? action.automation
-            : automation,
+        automations: (state.automations ?? []).map(
+          (automation: AutomationItem) =>
+            automation.id === action.automation.id
+              ? action.automation
+              : automation,
         ),
       };
     case 'DELETE_AUTOMATION':
       return {
         ...state,
-        automations: state.automations.filter(
+        automations: (state.automations ?? []).filter(
           (automation: AutomationItem) =>
             automation.id !== action.automation.id,
         ),
