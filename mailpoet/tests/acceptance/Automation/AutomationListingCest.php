@@ -220,6 +220,63 @@ class AutomationListingCest {
     $i->seeNoJSErrors();
   }
 
+  public function automationListingFiltersAndSorting(AcceptanceTester $i): void {
+    $i->wantTo('Filter and sort the automations listing');
+
+    $active = (new DataFactories\Automation())
+      ->withName('Aaa Active Automation')
+      ->withStatus(Automation::STATUS_ACTIVE)
+      ->create();
+    (new DataFactories\AutomationRun())
+      ->withAutomation($active)
+      ->withStatus(AutomationRun::STATUS_COMPLETE)
+      ->create();
+
+    (new DataFactories\Automation())
+      ->withName('Bbb Draft Automation')
+      ->create();
+
+    (new DataFactories\Automation())
+      ->withName('Ccc Active Automation')
+      ->withStatus(Automation::STATUS_ACTIVE)
+      ->create();
+
+    $i->login();
+
+    $i->wantTo('Land on the Active tab via the backwards-compatible ?status= deep link');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=active');
+    $i->waitForText('Aaa Active Automation', 20, '[data-automation-id="automation_listing"]');
+    $i->see('Ccc Active Automation', '[data-automation-id="automation_listing"]');
+    $i->dontSee('Bbb Draft Automation', '[data-automation-id="automation_listing"]');
+
+    $i->wantTo('Sort the listing by name ascending and descending');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=active&orderby=name&order=asc');
+    $i->waitForText('Aaa Active Automation', 20, '[data-automation-id="automation_listing"]');
+    $i->see('Aaa Active Automation', $this->getFirstRow());
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=active&orderby=name&order=desc');
+    $i->waitForText('Ccc Active Automation', 20, '[data-automation-id="automation_listing"]');
+    $i->see('Ccc Active Automation', $this->getFirstRow());
+
+    $i->wantTo('Apply the native Activity filter to show only automations with entered subscribers');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=active');
+    $i->waitForText('Aaa Active Automation', 20, '[data-automation-id="automation_listing"]');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElement('[aria-label="Add filter"]');
+    $i->click('[aria-label="Add filter"]');
+    $i->waitForText('Activity');
+    $i->click('//*[@role="menuitem"][contains(normalize-space(), "Activity")]');
+    $i->waitForText('Has subscribers entered');
+    $i->click('//*[@role="option"][contains(normalize-space(), "Has subscribers entered")]');
+    // The filter triggers a server refetch; wait for the non-matching row to drop.
+    $i->waitForElementNotVisible($this->getAutomationRow('Ccc Active Automation'), 20);
+    $i->see('Aaa Active Automation', '[data-automation-id="automation_listing"]');
+    $i->seeNoJSErrors();
+  }
+
+  private function getFirstRow(): string {
+    return '(//*[@data-automation-id="automation_listing"]//tbody//tr[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table__row ")])[1]';
+  }
+
   private function getAutomationRow(string $automationName): string {
     return sprintf(
       '//*[@data-automation-id="automation_listing"]//tr[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table__row ")][.//div[contains(concat(" ", normalize-space(@class), " "), " dataviews-title-field ")]//a[normalize-space()=%s]]',

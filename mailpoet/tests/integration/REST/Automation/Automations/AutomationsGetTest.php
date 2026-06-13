@@ -5,7 +5,9 @@ namespace MailPoet\REST\Automation\Automations;
 require_once __DIR__ . '/../AutomationTest.php';
 
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 
@@ -61,6 +63,12 @@ class AutomationsGetTest extends AutomationTest {
         'meta' => [
           'pages' => 0,
           'count' => 0,
+        ],
+        'groups' => [
+          ['name' => 'all', 'label' => 'all', 'count' => 0],
+          ['name' => Automation::STATUS_ACTIVE, 'label' => Automation::STATUS_ACTIVE, 'count' => 0],
+          ['name' => Automation::STATUS_DRAFT, 'label' => Automation::STATUS_DRAFT, 'count' => 0],
+          ['name' => Automation::STATUS_TRASH, 'label' => Automation::STATUS_TRASH, 'count' => 0],
         ],
       ],
     ], $data);
@@ -219,6 +227,135 @@ class AutomationsGetTest extends AutomationTest {
     $this->assertEquals(1, $result['meta']['count']);
     $this->assertEquals('Active Welcome', $result['items'][0]['name']);
     $this->assertEquals(Automation::STATUS_ACTIVE, $result['items'][0]['status']);
+  }
+
+  public function testTriggerFilterWorks(): void {
+    $subscribesId = $this->createNewAutomation([
+      'name' => 'Subscribes',
+      'steps' => [['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'mailpoet:someone-subscribes']],
+    ]);
+    $this->createNewAutomation([
+      'name' => 'Registers',
+      'steps' => [['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'wordpress:user-registered']],
+    ]);
+
+    $result = $this->get(self::ENDPOINT_PATH, [
+      'query' => ['filter' => ['trigger' => ['mailpoet:someone-subscribes']]],
+    ])['data'];
+
+    $this->assertCount(1, $result['items']);
+    $this->assertEquals(1, $result['meta']['count']);
+    $this->assertEquals($subscribesId, $result['items'][0]['id']);
+  }
+
+  public function testActivityFilterWorks(): void {
+    $withActivity = $this->createNewAutomation(['name' => 'With activity']);
+    $this->createRunFor($withActivity);
+    $withoutActivity = $this->createNewAutomation(['name' => 'Without activity']);
+
+    $hasResult = $this->get(self::ENDPOINT_PATH, [
+      'query' => ['filter' => ['activity' => 'has']],
+    ])['data'];
+    $this->assertCount(1, $hasResult['items']);
+    $this->assertEquals($withActivity, $hasResult['items'][0]['id']);
+
+    $noneResult = $this->get(self::ENDPOINT_PATH, [
+      'query' => ['filter' => ['activity' => 'none']],
+    ])['data'];
+    $this->assertCount(1, $noneResult['items']);
+    $this->assertEquals($withoutActivity, $noneResult['items'][0]['id']);
+  }
+
+  public function testDateFilterWorks(): void {
+    $this->createNewAutomation(['name' => 'First']);
+    $this->createNewAutomation(['name' => 'Second']);
+
+    $yesterday = (new \DateTimeImmutable('-1 day'))->format(\DateTimeImmutable::W3C);
+    $tomorrow = (new \DateTimeImmutable('+1 day'))->format(\DateTimeImmutable::W3C);
+
+    // Created after yesterday matches all, after tomorrow matches none.
+    $afterYesterday = $this->get(self::ENDPOINT_PATH, ['query' => ['filter' => ['created_after' => $yesterday]]])['data'];
+    $this->assertEquals(2, $afterYesterday['meta']['count']);
+    $afterTomorrow = $this->get(self::ENDPOINT_PATH, ['query' => ['filter' => ['created_after' => $tomorrow]]])['data'];
+    $this->assertEquals(0, $afterTomorrow['meta']['count']);
+
+    // Created before tomorrow matches all, before yesterday matches none.
+    $beforeTomorrow = $this->get(self::ENDPOINT_PATH, ['query' => ['filter' => ['created_before' => $tomorrow]]])['data'];
+    $this->assertEquals(2, $beforeTomorrow['meta']['count']);
+    $beforeYesterday = $this->get(self::ENDPOINT_PATH, ['query' => ['filter' => ['created_before' => $yesterday]]])['data'];
+    $this->assertEquals(0, $beforeYesterday['meta']['count']);
+  }
+
+  public function testEnteredSortWorks(): void {
+    $none = $this->createNewAutomation(['name' => 'None']);
+    $two = $this->createNewAutomation(['name' => 'Two']);
+    $this->createRunFor($two);
+    $this->createRunFor($two);
+    $one = $this->createNewAutomation(['name' => 'One']);
+    $this->createRunFor($one);
+
+    $desc = $this->get(self::ENDPOINT_PATH, ['query' => ['orderby' => 'entered', 'order' => 'DESC']])['data'];
+    $this->assertEquals($two, $desc['items'][0]['id']);
+    $this->assertEquals($one, $desc['items'][1]['id']);
+    $this->assertEquals($none, $desc['items'][2]['id']);
+
+    $asc = $this->get(self::ENDPOINT_PATH, ['query' => ['orderby' => 'entered', 'order' => 'ASC']])['data'];
+    $this->assertEquals($none, $asc['items'][0]['id']);
+    $this->assertEquals($two, $asc['items'][2]['id']);
+  }
+
+  public function testCombinedFilterAndStatusWork(): void {
+    $matchingId = $this->createNewAutomation([
+      'name' => 'Active subscribes',
+      'status' => Automation::STATUS_ACTIVE,
+      'steps' => [['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'mailpoet:someone-subscribes']],
+    ]);
+    $this->createRunFor($matchingId);
+    $this->createNewAutomation([
+      'name' => 'Draft subscribes',
+      'status' => Automation::STATUS_DRAFT,
+      'steps' => [['id' => 't', 'type' => Step::TYPE_TRIGGER, 'key' => 'mailpoet:someone-subscribes']],
+    ]);
+
+    $result = $this->get(self::ENDPOINT_PATH, [
+      'query' => [
+        'status' => Automation::STATUS_ACTIVE,
+        'filter' => [
+          'trigger' => ['mailpoet:someone-subscribes'],
+          'activity' => 'has',
+        ],
+      ],
+    ])['data'];
+
+    $this->assertCount(1, $result['items']);
+    $this->assertEquals($matchingId, $result['items'][0]['id']);
+  }
+
+  public function testGroupsAreReturned(): void {
+    $this->createNewAutomation(['name' => 'Active', 'status' => Automation::STATUS_ACTIVE]);
+    $this->createNewAutomation(['name' => 'Draft', 'status' => Automation::STATUS_DRAFT]);
+    $this->createNewAutomation(['name' => 'Trashed', 'status' => Automation::STATUS_TRASH]);
+
+    $data = $this->get(self::ENDPOINT_PATH)['data'];
+    $this->assertArrayHasKey('groups', $data);
+
+    $counts = [];
+    foreach ($data['groups'] as $group) {
+      $counts[$group['name']] = $group['count'];
+    }
+    $this->assertEquals(2, $counts['all']); // active + draft, trash excluded
+    $this->assertEquals(1, $counts[Automation::STATUS_ACTIVE]);
+    $this->assertEquals(1, $counts[Automation::STATUS_DRAFT]);
+    $this->assertEquals(1, $counts[Automation::STATUS_TRASH]);
+  }
+
+  private function createRunFor(int $automationId): void {
+    $automation = $this->automationStorage->getAutomation($automationId);
+    $this->assertInstanceOf(Automation::class, $automation);
+    $runStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $runStorage->createAutomationRun(
+      new AutomationRun($automationId, $automation->getVersionId(), 'trigger', [])
+    );
   }
 
   /**

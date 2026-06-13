@@ -363,6 +363,154 @@ class AutomationStorageTest extends \MailPoetTest {
     verify($noResultsCount)->equals(0);
   }
 
+  public function testItCanFilterAutomationsByTriggerKey(): void {
+    $subscribesAutomation = $this->createAutomationWithTrigger('subscribes', SomeoneSubscribesTrigger::KEY);
+    $registersAutomation = $this->createAutomationWithTrigger('registers', UserRegistrationTrigger::KEY);
+    $this->createEmptyAutomation('no-trigger');
+
+    $bySubscribes = $this->testee->getAutomations(null, null, null, null, null, null, [SomeoneSubscribesTrigger::KEY]);
+    verify($bySubscribes)->arrayCount(1);
+    verify($bySubscribes[0]->getId())->equals($subscribesAutomation->getId());
+
+    $byEither = $this->testee->getAutomations(null, null, null, null, null, null, [SomeoneSubscribesTrigger::KEY, UserRegistrationTrigger::KEY]);
+    verify($byEither)->arrayCount(2);
+
+    verify($this->testee->getAutomationCount(null, null, [SomeoneSubscribesTrigger::KEY]))->equals(1);
+    verify($this->testee->getAutomationCount(null, null, ['nonexistent-key']))->equals(0);
+  }
+
+  public function testItCanFilterAutomationsByActivity(): void {
+    $withActivity = $this->createEmptyAutomation('with-activity');
+    $this->createRunFor($withActivity);
+    $withoutActivity = $this->createEmptyAutomation('without-activity');
+
+    $active = $this->testee->getAutomations(null, null, null, null, null, null, null, true);
+    verify($active)->arrayCount(1);
+    verify($active[0]->getId())->equals($withActivity->getId());
+
+    $inactive = $this->testee->getAutomations(null, null, null, null, null, null, null, false);
+    verify($inactive)->arrayCount(1);
+    verify($inactive[0]->getId())->equals($withoutActivity->getId());
+
+    verify($this->testee->getAutomationCount(null, null, null, true))->equals(1);
+    verify($this->testee->getAutomationCount(null, null, null, false))->equals(1);
+  }
+
+  public function testItCanFilterAutomationsByCreatedDate(): void {
+    $this->createEmptyAutomation('first');
+    $this->createEmptyAutomation('second');
+
+    $yesterday = new \DateTimeImmutable('-1 day');
+    $tomorrow = new \DateTimeImmutable('+1 day');
+
+    // Everything was created now, so a lower bound in the past matches all.
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, $yesterday))->arrayCount(2);
+    // A lower bound in the future excludes everything.
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, $tomorrow))->arrayCount(0);
+    // An upper bound in the future matches all.
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, $tomorrow))->arrayCount(2);
+    // An upper bound in the past excludes everything.
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, $yesterday))->arrayCount(0);
+
+    verify($this->testee->getAutomationCount(null, null, null, null, $yesterday))->equals(2);
+    verify($this->testee->getAutomationCount(null, null, null, null, $tomorrow))->equals(0);
+  }
+
+  public function testItCanFilterAutomationsByUpdatedDate(): void {
+    $this->createEmptyAutomation('first');
+    $this->createEmptyAutomation('second');
+
+    $yesterday = new \DateTimeImmutable('-1 day');
+    $tomorrow = new \DateTimeImmutable('+1 day');
+
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, null, $yesterday))->arrayCount(2);
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, null, $tomorrow))->arrayCount(0);
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, null, null, $tomorrow))->arrayCount(2);
+    verify($this->testee->getAutomations(null, null, null, null, null, null, null, null, null, null, null, $yesterday))->arrayCount(0);
+  }
+
+  public function testItCanOrderAutomationsByEnteredCount(): void {
+    $none = $this->createEmptyAutomation('none');
+    $one = $this->createEmptyAutomation('one');
+    $two = $this->createEmptyAutomation('two');
+    $this->createRunFor($one);
+    $this->createRunFor($two);
+    $this->createRunFor($two);
+
+    $desc = $this->testee->getAutomations(null, 'entered', 'DESC');
+    verify($desc[0]->getId())->equals($two->getId());
+    verify($desc[1]->getId())->equals($one->getId());
+    verify($desc[2]->getId())->equals($none->getId());
+
+    $asc = $this->testee->getAutomations(null, 'entered', 'ASC');
+    verify($asc[0]->getId())->equals($none->getId());
+    verify($asc[2]->getId())->equals($two->getId());
+  }
+
+  public function testItCombinesFiltersWhenCounting(): void {
+    $matching = $this->createAutomationWithTrigger('matching', SomeoneSubscribesTrigger::KEY);
+    $matching->setStatus(Automation::STATUS_ACTIVE);
+    $this->testee->updateAutomation($matching);
+    $this->createRunFor($matching);
+
+    $otherTrigger = $this->createAutomationWithTrigger('other', UserRegistrationTrigger::KEY);
+    $otherTrigger->setStatus(Automation::STATUS_ACTIVE);
+    $this->testee->updateAutomation($otherTrigger);
+
+    // Active + subscribes trigger + has activity => only the matching one.
+    $combined = $this->testee->getAutomationCount(
+      [Automation::STATUS_ACTIVE],
+      null,
+      [SomeoneSubscribesTrigger::KEY],
+      true
+    );
+    verify($combined)->equals(1);
+
+    // Same filters but requiring no activity yields nothing.
+    $empty = $this->testee->getAutomationCount(
+      [Automation::STATUS_ACTIVE],
+      null,
+      [SomeoneSubscribesTrigger::KEY],
+      false
+    );
+    verify($empty)->equals(0);
+  }
+
+  public function testItReturnsDistinctTriggerKeys(): void {
+    $this->createAutomationWithTrigger('a', SomeoneSubscribesTrigger::KEY);
+    $this->createAutomationWithTrigger('b', SomeoneSubscribesTrigger::KEY);
+    $this->createAutomationWithTrigger('c', UserRegistrationTrigger::KEY);
+
+    $keys = $this->testee->getAllTriggerKeys();
+    sort($keys);
+    $expected = [SomeoneSubscribesTrigger::KEY, UserRegistrationTrigger::KEY];
+    sort($expected);
+    verify($keys)->equals($expected);
+  }
+
+  private function createAutomationWithTrigger(string $name, string $triggerKey): Automation {
+    $automation = $this->createEmptyAutomation($name);
+    $trigger = new Step('trigger-id', Step::TYPE_TRIGGER, $triggerKey, [], []);
+    $automation->setSteps(['trigger-id' => $trigger]);
+    $this->testee->updateAutomation($automation);
+    $stored = $this->testee->getAutomation($automation->getId());
+    if (!$stored) {
+      throw new \RuntimeException("Automation not stored.");
+    }
+    return $stored;
+  }
+
+  private function createRunFor(Automation $automation): void {
+    $runStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $run = new AutomationRun(
+      $automation->getId(),
+      $automation->getVersionId(),
+      'trigger-id',
+      []
+    );
+    $runStorage->createAutomationRun($run);
+  }
+
   private function createEmptyAutomation(string $name = "test"): Automation {
     $automation = new Automation($name, [], new \WP_User());
     $automationId = $this->testee->createAutomation($automation);
