@@ -392,6 +392,11 @@ class OrderAttributionRevenueReader {
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
     $excludeParams = [];
+    // COMPLETE_FOR_SUBSCRIBER (not _NEWSLETTER as the revenue path uses) is intentional:
+    // the Woo order-row path (getWooNewsletterOrderRows) requires a subscriber and skips
+    // rows without subscriber meta, so the legacy fallback must only exclude orders that
+    // are complete down to the subscriber. Excluding on _NEWSLETTER would drop
+    // click+newsletter-but-no-subscriber orders from both paths and undercount the list.
     $excludeSql = $excludeCompleteWooAttribution ? $this->getCompleteWooAttributionExclusionSql(self::COMPLETE_FOR_SUBSCRIBER, 'swp.order_id', $excludeParams) : '';
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
     $orderTable = $this->getOrderTable();
