@@ -168,6 +168,7 @@ export function CampaignStatsPage() {
               'mailpoet_newsletters_clicked_links_table',
               <PremiumBanner />,
               newsletter.clicked_links,
+              newsletter,
             )}
           </Tab>
 
@@ -225,6 +226,7 @@ export function CampaignStatsPage() {
               'mailpoet_newsletters_unsubscribe_reasons',
               <PremiumBanner />,
               newsletter.statistics.unsubscribeReasons,
+              newsletter,
             )}
           </Tab>
         </Tabs>
