@@ -92,7 +92,7 @@ class OrderAttributionPrivacy {
       return;
     }
     foreach (self::PERSONAL_FIELD_NAMES as $fieldName) {
-      $order->delete_meta_data(OrderAttributionWriter::META_PREFIX . $fieldName);
+      $order->delete_meta_data(OrderAttributionFields::getMetaKey($fieldName));
     }
     // The reconciliation record (STOMAIL-8136) embeds the same click identifiers.
     $order->delete_meta_data(OrderAttributionReconciler::RECONCILIATION_META_KEY);
@@ -121,7 +121,7 @@ class OrderAttributionPrivacy {
     if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
       $args['meta_query'] = [
         [
-          'key' => OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+          'key' => OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID),
           'value' => $subscriberId,
         ],
       ];
@@ -171,7 +171,7 @@ class OrderAttributionPrivacy {
     }
     $metaQuery = isset($query['meta_query']) && is_array($query['meta_query']) ? $query['meta_query'] : [];
     $metaQuery[] = [
-      'key' => OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+      'key' => OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID),
       'value' => (string)$subscriberId,
     ];
     $query['meta_query'] = $metaQuery;
@@ -192,7 +192,7 @@ class OrderAttributionPrivacy {
       ],
     ];
     foreach ($fieldLabels as $fieldName => $label) {
-      $value = $order->get_meta(OrderAttributionWriter::META_PREFIX . $fieldName);
+      $value = $order->get_meta(OrderAttributionFields::getMetaKey($fieldName));
       if (!is_scalar($value) || (string)$value === '') {
         continue;
       }

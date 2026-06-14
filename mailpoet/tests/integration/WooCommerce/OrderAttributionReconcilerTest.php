@@ -107,8 +107,8 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $order = $this->createOrder($this->subscriber->getEmail());
-    $order->update_meta_data('_wc_order_attribution_source_type', 'referral');
-    $order->update_meta_data('_wc_order_attribution_utm_source', 'google');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'referral');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'google');
     $order->save_meta_data();
 
     $this->completeOrder($order);
@@ -130,7 +130,7 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
     $this->completeOrder($order);
 
     $order = $this->reloadOrder($order);
-    $order->delete_meta_data('_wc_order_attribution_mailpoet_click_id');
+    $order->delete_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID));
     $order->save_meta_data();
 
     $this->reconciler->reconcileForOrder($order->get_id());
@@ -174,7 +174,7 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
     $this->completeOrder($order);
 
     $order = $this->reloadOrder($order);
-    $order->update_meta_data('_wc_order_attribution_mailpoet_click_id', (string)((int)$click->getId() + 999));
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)((int)$click->getId() + 999));
     $order->save_meta_data();
 
     $this->reconciler->reconcileForOrder($order->get_id());
