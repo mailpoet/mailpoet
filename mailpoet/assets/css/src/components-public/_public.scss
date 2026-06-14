@@ -580,7 +580,7 @@ h2.mailpoet-heading {
 
 .mailpoet-manage-subscription--modern {
   box-sizing: border-box;
-  color: #1f2933;
+  color: inherit;
   font-size: 16px;
   line-height: 1.5;
   margin: 0 auto;
@@ -605,7 +605,7 @@ h2.mailpoet-heading {
   }
 
   h2 {
-    color: #111827;
+    color: inherit;
     font-size: 24px;
     font-weight: 700;
     line-height: 1.25;
@@ -616,9 +616,8 @@ h2.mailpoet-heading {
   .mailpoet_field_description,
   .mailpoet-manage-subscription-lists-description,
   .mailpoet-manage-subscription-list-description,
-  .mailpoet-manage-subscription-no-lists,
   .mailpoet-change-email-info {
-    color: #52616f;
+    color: inherit;
     font-size: 15px;
     line-height: 1.5;
   }
@@ -643,7 +642,7 @@ h2.mailpoet-heading {
   .mailpoet_checkbox_label,
   .mailpoet_list_label,
   .mailpoet_date_label {
-    color: #111827;
+    color: inherit;
     font-size: 15px;
     font-weight: 700;
     line-height: 1.35;
@@ -680,6 +679,7 @@ h2.mailpoet-heading {
       background: #f6f8fa;
       border: 1px solid #d8dee4;
       border-radius: 6px;
+      color: #111827;
       display: block;
       font-weight: 600;
       margin-top: 6px;
@@ -700,7 +700,7 @@ h2.mailpoet-heading {
     padding: 0;
 
     > .mailpoet_segment_label {
-      color: #111827;
+      color: inherit;
       display: block;
       font-size: 24px;
       font-weight: 700;
@@ -728,7 +728,7 @@ h2.mailpoet-heading {
   }
 
   .mailpoet-manage-subscription-list-name {
-    color: #111827;
+    color: inherit;
     font-weight: 700;
     line-height: 1.4;
   }
@@ -796,6 +796,7 @@ h2.mailpoet-heading {
   .mailpoet-manage-subscription-no-lists {
     background: #f6f8fa;
     border-left: 4px solid #8c9aa8;
+    color: #52616f;
     margin: 8px 0 0;
     padding: 12px 14px;
   }
