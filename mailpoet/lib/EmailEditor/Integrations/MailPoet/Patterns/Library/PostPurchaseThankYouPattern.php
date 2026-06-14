@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor;
 
 /**
  * Post purchase thank you email pattern.
@@ -30,7 +31,10 @@ class PostPurchaseThankYouPattern extends Pattern {
   }
 
   public function get_email_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return $this->buildContent($this->getRecommendedProductCollectionBlock('new-arrivals'));
+    return $this->buildContent($this->getRecommendedProductCollectionBlock(
+      OrderProductCollectionProcessor::COLLECTION_ORDER_CROSS_SELLS,
+      'popularity'
+    ));
   }
 
   private function buildContent(string $productSection): string {
