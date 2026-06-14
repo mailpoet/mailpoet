@@ -61,6 +61,16 @@ class Helper {
     return WC();
   }
 
+  public function isWooCommerceRestApiRequest(): bool {
+    $wc = $this->WC();
+    return $wc instanceof \WooCommerce && $wc->is_rest_api_request();
+  }
+
+  public function isWooCommerceStoreApiRequest(): bool {
+    $wc = $this->WC();
+    return $wc instanceof \WooCommerce && $wc->is_store_api_request();
+  }
+
   public function wcGetCustomerOrderCount($userId) {
     return wc_get_customer_order_count($userId);
   }

@@ -17,9 +17,7 @@ use WC_Order;
 class OrderAttributionWriter {
   const WRITES_STARTED_AT_OPTION = 'mailpoet_woo_attribution_writes_started_at';
 
-  // The meta key names are pinned by the migration contract (STOMAIL-8135), so Woo's
-  // filterable wc_order_attribution_tracking_field_prefix is intentionally not applied.
-  const META_PREFIX = '_wc_order_attribution_';
+  const META_PREFIX = OrderAttributionFields::META_PREFIX;
 
   // 'typein' is Woo's source type for direct traffic. A clear non-MailPoet source
   // (organic, referral, non-MailPoet utm, admin, mobile_app) is never overwritten.
@@ -115,11 +113,7 @@ class OrderAttributionWriter {
     if ($this->wp->isAdmin()) {
       return true;
     }
-    $wc = $this->wooHelper->WC();
-    if (!$wc instanceof \WooCommerce) {
-      return false;
-    }
-    return $wc->is_rest_api_request() && !$wc->is_store_api_request();
+    return $this->wooHelper->isWooCommerceRestApiRequest() && !$this->wooHelper->isWooCommerceStoreApiRequest();
   }
 
   /**
@@ -234,13 +228,13 @@ class OrderAttributionWriter {
         $this->removeEmptyPlaceholder($order, $fieldName);
         continue;
       }
-      $order->update_meta_data(self::META_PREFIX . $fieldName, $value);
+      $order->update_meta_data(OrderAttributionFields::getMetaKey($fieldName), $value);
     }
   }
 
   private function writeStandardSourceFields(WC_Order $order, StatisticsClickEntity $click): void {
-    $sourceType = $this->getMetaString($order, self::META_PREFIX . 'source_type');
-    $utmSource = $this->getMetaString($order, self::META_PREFIX . 'utm_source');
+    $sourceType = $this->getMetaString($order, OrderAttributionFields::getMetaKey('source_type'));
+    $utmSource = $this->getMetaString($order, OrderAttributionFields::getMetaKey('utm_source'));
     $isOverwritable = in_array($sourceType, self::OVERWRITABLE_SOURCE_TYPES, true) || $utmSource === 'mailpoet';
     if (!$isOverwritable) {
       return;
@@ -257,7 +251,7 @@ class OrderAttributionWriter {
       $values['utm_campaign'] = $subject !== '' ? $subject : 'newsletter-' . $newsletter->getId();
     }
     foreach ($values as $fieldName => $value) {
-      $order->update_meta_data(self::META_PREFIX . $fieldName, $this->wp->sanitizeTextField($value));
+      $order->update_meta_data(OrderAttributionFields::getMetaKey($fieldName), $this->wp->sanitizeTextField($value));
     }
   }
 
@@ -274,7 +268,7 @@ class OrderAttributionWriter {
   }
 
   private function removeEmptyPlaceholder(WC_Order $order, string $fieldName): void {
-    $metaKey = self::META_PREFIX . $fieldName;
+    $metaKey = OrderAttributionFields::getMetaKey($fieldName);
     if ($order->meta_exists($metaKey) && $this->getMetaString($order, $metaKey) === '') {
       $order->delete_meta_data($metaKey);
     }
