@@ -5,6 +5,9 @@ namespace MailPoet\WooCommerce;
 use MailPoet\WP\Functions as WPFunctions;
 
 class OrderAttributionFields {
+  // Pinned by STOMAIL-8135; Woo's filterable field prefix is intentionally not applied.
+  const META_PREFIX = '_wc_order_attribution_';
+
   const FIELD_CLICK_ID = 'mailpoet_click_id';
   const FIELD_NEWSLETTER_ID = 'mailpoet_newsletter_id';
   const FIELD_QUEUE_ID = 'mailpoet_queue_id';
@@ -16,6 +19,20 @@ class OrderAttributionFields {
     self::FIELD_QUEUE_ID,
     self::FIELD_SUBSCRIBER_ID,
   ];
+
+  public static function getMetaKey(string $fieldName): string {
+    return self::META_PREFIX . $fieldName;
+  }
+
+  /**
+   * @param string[] $fieldNames
+   * @return string[]
+   */
+  public static function getMetaKeys(array $fieldNames): array {
+    return array_map(function(string $fieldName): string {
+      return self::getMetaKey($fieldName);
+    }, $fieldNames);
+  }
 
   /** @var WPFunctions */
   private $wp;

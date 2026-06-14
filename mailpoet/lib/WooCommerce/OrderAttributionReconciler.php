@@ -138,7 +138,7 @@ class OrderAttributionReconciler {
   }
 
   private function getWooClickId(WC_Order $order): ?int {
-    $value = $order->get_meta(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID);
+    $value = $order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID));
     if (!is_scalar($value) || (string)$value === '') {
       return null;
     }
@@ -348,8 +348,8 @@ class OrderAttributionReconciler {
     if ($wooClickId === null) {
       return false;
     }
-    $sourceType = $order->get_meta(OrderAttributionWriter::META_PREFIX . 'source_type');
-    $utmSource = $order->get_meta(OrderAttributionWriter::META_PREFIX . 'utm_source');
+    $sourceType = $order->get_meta(OrderAttributionFields::getMetaKey('source_type'));
+    $utmSource = $order->get_meta(OrderAttributionFields::getMetaKey('utm_source'));
     $sourceType = is_scalar($sourceType) ? (string)$sourceType : '';
     $utmSource = is_scalar($utmSource) ? (string)$utmSource : '';
     $isOverwritable = in_array($sourceType, OrderAttributionWriter::OVERWRITABLE_SOURCE_TYPES, true)

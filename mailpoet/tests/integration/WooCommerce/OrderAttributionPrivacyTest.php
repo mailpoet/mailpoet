@@ -62,11 +62,11 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     verify($result['items_removed'])->true();
     verify($result['done'])->true();
     $order = $this->reloadOrder($order);
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
     verify($order->meta_exists(OrderAttributionReconciler::RECONCILIATION_META_KEY))->false();
-    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals('22');
-    verify($order->get_meta('_wc_order_attribution_mailpoet_queue_id'))->equals('33');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))->equals('22');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID)))->equals('33');
   }
 
   public function testEraseLeavesOrdersOfOtherSubscribersUntouched(): void {
@@ -78,8 +78,8 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     $this->privacy->erase($this->subscriber->getEmail());
 
     $otherOrder = $this->reloadOrder($otherOrder);
-    verify($otherOrder->get_meta('_wc_order_attribution_mailpoet_subscriber_id'))->equals((string)$otherSubscriber->getId());
-    verify($otherOrder->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals('11');
+    verify($otherOrder->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))->equals((string)$otherSubscriber->getId());
+    verify($otherOrder->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals('11');
   }
 
   public function testEraseReportsNothingRemovedForAnUnknownEmail(): void {
@@ -108,8 +108,8 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     }
 
     $order = $this->reloadOrder($order);
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
     $this->entityManager->refresh($this->subscriber);
     verify($this->subscriber->getEmail())->stringNotContainsString($email);
   }
@@ -134,11 +134,11 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     do_action('woocommerce_privacy_remove_order_personal_data', $order);
 
     $order = $this->reloadOrder($order);
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_subscriber_id'))->false();
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
     verify($order->meta_exists(OrderAttributionReconciler::RECONCILIATION_META_KEY))->false();
-    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals('22');
-    verify($order->get_meta('_wc_order_attribution_mailpoet_queue_id'))->equals('33');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))->equals('22');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID)))->equals('33');
   }
 
   private function createAttributedOrder(SubscriberEntity $subscriber): WC_Order {
@@ -146,10 +146,10 @@ class OrderAttributionPrivacyTest extends \MailPoetTest {
     $this->assertInstanceOf(WC_Order::class, $order);
     $order->set_billing_email($subscriber->getEmail());
     $order->set_total('15');
-    $order->update_meta_data('_wc_order_attribution_mailpoet_click_id', '11');
-    $order->update_meta_data('_wc_order_attribution_mailpoet_newsletter_id', '22');
-    $order->update_meta_data('_wc_order_attribution_mailpoet_queue_id', '33');
-    $order->update_meta_data('_wc_order_attribution_mailpoet_subscriber_id', (string)$subscriber->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), '11');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), '22');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), '33');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID), (string)$subscriber->getId());
     $order->save();
     return $order;
   }

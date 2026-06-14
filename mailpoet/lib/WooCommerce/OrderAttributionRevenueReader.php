@@ -529,12 +529,12 @@ class OrderAttributionRevenueReader {
     $typeSql = $orderLookup['type_column'] !== null ? ' AND woo_order.' . $orderLookup['type_column'] . ' = %s' : '';
     $typeParams = $orderLookup['type_column'] !== null ? ['shop_order'] : [];
     $meta = $this->getOrderMetaTable();
-    $metaKeys = [
-      OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID,
-      OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID,
-      OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID,
-      OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID,
-    ];
+    $metaKeys = OrderAttributionFields::getMetaKeys([
+      OrderAttributionFields::FIELD_CLICK_ID,
+      OrderAttributionFields::FIELD_NEWSLETTER_ID,
+      OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+      OrderAttributionFields::FIELD_QUEUE_ID,
+    ]);
 
     $having = 'click_id IS NOT NULL AND click_id <> \'\' AND newsletter_id IS NOT NULL AND newsletter_id <> \'\'';
     $havingParams = [];
@@ -728,7 +728,7 @@ class OrderAttributionRevenueReader {
       $exists[] = 'EXISTS (SELECT 1 FROM %i woo_meta WHERE woo_meta.%i = ' . $orderIdExpression . ' AND woo_meta.meta_key = %s AND woo_meta.meta_value <> \'\')';
       $params[] = $meta['table'];
       $params[] = $meta['order_id_column'];
-      $params[] = OrderAttributionWriter::META_PREFIX . $fieldName;
+      $params[] = OrderAttributionFields::getMetaKey($fieldName);
     }
 
     return ' AND NOT (' . implode(' AND ', $exists) . ')';

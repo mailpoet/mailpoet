@@ -294,9 +294,9 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $order->set_total('40');
     $order->set_status('completed');
     $order->save();
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID, (string)$click->getId());
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID, (string)$newsletter->getId());
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID, (string)$queue->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)$click->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$newsletter->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
     $order->save_meta_data();
 
     (new StatisticsWooCommercePurchases($click, [
@@ -335,10 +335,10 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $order->set_total((string)$total);
     $order->set_status('completed');
     $order->save();
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_CLICK_ID, (string)$click->getId());
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_NEWSLETTER_ID, (string)$newsletter->getId());
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_QUEUE_ID, (string)$queue->getId());
-    $order->update_meta_data(OrderAttributionWriter::META_PREFIX . OrderAttributionFields::FIELD_SUBSCRIBER_ID, (string)$subscriber->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)$click->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$newsletter->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID), (string)$subscriber->getId());
     $order->save_meta_data();
     return $order;
   }

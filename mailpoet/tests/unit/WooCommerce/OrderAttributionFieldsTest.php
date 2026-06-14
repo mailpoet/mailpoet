@@ -42,6 +42,22 @@ class OrderAttributionFieldsTest extends \MailPoetUnitTest {
     verify($fields)->arrayCount(count(self::WOO_DEFAULT_FIELDS) + count(OrderAttributionFields::FIELD_NAMES));
   }
 
+  public function testItBuildsWooAttributionMetaKeys(): void {
+    verify(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID))
+      ->equals('_wc_order_attribution_mailpoet_click_id');
+    verify(OrderAttributionFields::getMetaKey('utm_source'))->equals('_wc_order_attribution_utm_source');
+  }
+
+  public function testItBuildsMultipleWooAttributionMetaKeys(): void {
+    verify(OrderAttributionFields::getMetaKeys([
+      OrderAttributionFields::FIELD_NEWSLETTER_ID,
+      OrderAttributionFields::FIELD_SUBSCRIBER_ID,
+    ]))->equals([
+      '_wc_order_attribution_mailpoet_newsletter_id',
+      '_wc_order_attribution_mailpoet_subscriber_id',
+    ]);
+  }
+
   public function testItDoesNotAddFieldsWhenWooCommerceIsNotActive(): void {
     $orderAttributionFields = $this->createOrderAttributionFields(false);
 
