@@ -256,6 +256,25 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('wp:woocommerce/coupon-code', $content);
   }
 
+  public function testPostPurchaseThankYouPatternUsesOrderAwareProducts(): void {
+    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
+    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
+    $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
+
+    $patterns = new PatternsController(
+      $this->diContainer->get(CdnAssetUrl::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooCommerceHelper
+    );
+
+    $content = $patterns->getPatternContent('post-purchase-thank-you');
+
+    $this->assertIsString($content);
+    $this->assertStringContainsString('mailpoet/product-collection/order-cross-sells', $content);
+    $this->assertStringContainsString('While you wait, check out other items that pair perfectly with your order.', $content);
+  }
+
   public function testWinBackFinalNudgePatternDoesNotUseGeneratedCouponBlock(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);

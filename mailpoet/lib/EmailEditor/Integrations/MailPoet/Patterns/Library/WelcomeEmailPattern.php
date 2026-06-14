@@ -107,21 +107,18 @@ class WelcomeEmailPattern extends Pattern {
       <p class="has-text-align-center" style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:18px">' . __('Here’s to a day filled with good things.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:image {"sizeSlug":"full"} -->
-      <figure class="wp-block-image size-full"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/birthday-email.jpg')) . '" alt="' . esc_attr__('Birthday email image', 'mailpoet') . '"/></figure>
-      <!-- /wp:image -->
-
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);font-size:16px">[subscriber:firstname | default:there], ' . __('we hope your birthday is as special as you are. Thank you for being part of our community.', 'mailpoet') . '</p>
+      <p style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
+      sprintf(
+        /* translators: %s: Subscriber first name personalization tag */
+        __('%s, we hope your birthday is as special as you are. Thank you for being part of our community.', 'mailpoet'),
+        sprintf(
+          '<!--[mailpoet/subscriber-firstname default="%s"]-->',
+          /* translators: Default placeholder used when no subscriber name is available in birthday emails */
+          esc_attr(_x('there', 'subscriber name placeholder', 'mailpoet'))
+        )
+      ) . '</p>
       <!-- /wp:paragraph -->
-
-      <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-      <div class="wp-block-buttons">
-      <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button has-custom-font-size" style="font-size:16px;padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Visit us today', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
     </div>
     <!-- /wp:group -->
     ';
