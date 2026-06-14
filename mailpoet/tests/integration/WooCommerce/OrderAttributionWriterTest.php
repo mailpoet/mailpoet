@@ -64,15 +64,15 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$click->getId());
-    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals((string)$this->newsletter->getId());
-    verify($order->get_meta('_wc_order_attribution_mailpoet_queue_id'))->equals((string)$this->queue->getId());
-    verify($order->get_meta('_wc_order_attribution_mailpoet_subscriber_id'))->equals((string)$this->subscriber->getId());
-    verify($order->get_meta('_wc_order_attribution_source_type'))->equals('utm');
-    verify($order->get_meta('_wc_order_attribution_utm_source'))->equals('mailpoet');
-    verify($order->get_meta('_wc_order_attribution_utm_medium'))->equals('email');
-    verify($order->get_meta('_wc_order_attribution_utm_source_platform'))->equals('mailpoet');
-    verify($order->get_meta('_wc_order_attribution_utm_campaign'))->equals('First Campaign');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))->equals((string)$this->newsletter->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID)))->equals((string)$this->queue->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))->equals((string)$this->subscriber->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_medium')))->equals('email');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source_platform')))->equals('mailpoet');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_campaign')))->equals('First Campaign');
     verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->notEmpty();
   }
 
@@ -95,9 +95,9 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$cookieClick->getId());
-    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals((string)$cookieNewsletter->getId());
-    verify($order->get_meta('_wc_order_attribution_utm_campaign'))->equals('Cookie Campaign');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$cookieClick->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))->equals((string)$cookieNewsletter->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_campaign')))->equals('Cookie Campaign');
   }
 
   public function testLastClickWinsAcrossNewslettersForTheSameSubscriber(): void {
@@ -113,8 +113,8 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$newerClick->getId());
-    verify($order->get_meta('_wc_order_attribution_mailpoet_newsletter_id'))->equals((string)$newerNewsletter->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$newerClick->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))->equals((string)$newerNewsletter->getId());
   }
 
   public function testItPreservesExistingNonMailPoetSource(): void {
@@ -122,17 +122,17 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $order = $this->createOrder($this->subscriber->getEmail());
-    $order->update_meta_data('_wc_order_attribution_source_type', 'referral');
-    $order->update_meta_data('_wc_order_attribution_utm_source', 'google');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'referral');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'google');
     $order->save_meta_data();
 
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_source_type'))->equals('referral');
-    verify($order->get_meta('_wc_order_attribution_utm_source'))->equals('google');
-    verify($order->meta_exists('_wc_order_attribution_utm_medium'))->false();
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$click->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('referral');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey('utm_medium')))->false();
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
   }
 
   public function testItIsIdempotent(): void {
@@ -145,8 +145,8 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($this->getMetaValues($order, '_wc_order_attribution_mailpoet_click_id'))->equals([(string)$click->getId()]);
-    verify($this->getMetaValues($order, '_wc_order_attribution_utm_source'))->equals(['mailpoet']);
+    verify($this->getMetaValues($order, OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals([(string)$click->getId()]);
+    verify($this->getMetaValues($order, OrderAttributionFields::getMetaKey('utm_source')))->equals(['mailpoet']);
     verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->equals($writesStartedAt);
   }
 
@@ -179,8 +179,8 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->writer->writeForOrder($order->get_id());
 
     $order = $this->reloadOrder($order);
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
-    verify($order->meta_exists('_wc_order_attribution_utm_source'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey('utm_source')))->false();
     verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->false();
   }
 
@@ -197,14 +197,14 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     }
 
     $order = $this->reloadOrder($order);
-    verify($order->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
     verify(get_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION))->false();
   }
 
   public function testItRemovesEmptyPlaceholdersWhenNoClickResolves(): void {
     $order = $this->createOrder('no-clicks@example.com');
     foreach (OrderAttributionFields::FIELD_NAMES as $fieldName) {
-      $order->update_meta_data('_wc_order_attribution_' . $fieldName, '');
+      $order->update_meta_data(OrderAttributionFields::getMetaKey($fieldName), '');
     }
     $order->save_meta_data();
 
@@ -212,9 +212,9 @@ class OrderAttributionWriterTest extends \MailPoetTest {
 
     $order = $this->reloadOrder($order);
     foreach (OrderAttributionFields::FIELD_NAMES as $fieldName) {
-      verify($order->meta_exists('_wc_order_attribution_' . $fieldName))->false();
+      verify($order->meta_exists(OrderAttributionFields::getMetaKey($fieldName)))->false();
     }
-    verify($order->meta_exists('_wc_order_attribution_utm_source'))->false();
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey('utm_source')))->false();
   }
 
   public function testItWritesViaWooAttributionDataAction(): void {
@@ -250,8 +250,8 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     do_action('woocommerce_order_save_attribution_data', $order, $params);
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$click->getId());
-    verify($this->getMetaValues($order, '_wc_order_attribution_mailpoet_click_id'))->equals([(string)$click->getId()]);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+    verify($this->getMetaValues($order, OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals([(string)$click->getId()]);
   }
 
   public function testItWritesWhenOrderStatusChanges(): void {
@@ -263,7 +263,7 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $order->save();
 
     $order = $this->reloadOrder($order);
-    verify($order->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$click->getId());
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
   }
 
   public function testNewOrderPathRunsOnlyInAdminOrRestContext(): void {
@@ -274,19 +274,24 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     // neither admin nor REST here, so the new-order path must not write
     $this->writer->writeForNewOrder($order->get_id());
     $reloaded = $this->reloadOrder($order);
-    verify($reloaded->meta_exists('_wc_order_attribution_mailpoet_click_id'))->false();
+    verify($reloaded->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
 
-    $adminWriter = new OrderAttributionWriter(
-      Stub::make(WPFunctions::class, ['isAdmin' => true]),
-      $this->diContainer->get(Helper::class),
-      $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(SubscribersRepository::class),
-      new Cookies()
-    );
+    $storeApiOrder = $this->createOrder($this->subscriber->getEmail());
+    $storeApiWriter = $this->createWriterForRequestContext(false, true, true);
+    $storeApiWriter->writeForNewOrder($storeApiOrder->get_id());
+    $reloadedStoreApiOrder = $this->reloadOrder($storeApiOrder);
+    verify($reloadedStoreApiOrder->meta_exists(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->false();
+
+    $restApiOrder = $this->createOrder($this->subscriber->getEmail());
+    $restApiWriter = $this->createWriterForRequestContext(false, true, false);
+    $restApiWriter->writeForNewOrder($restApiOrder->get_id());
+    $reloadedRestApiOrder = $this->reloadOrder($restApiOrder);
+    verify($reloadedRestApiOrder->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+
+    $adminWriter = $this->createWriterForRequestContext(true, false, false);
     $adminWriter->writeForNewOrder($order->get_id());
     $reloaded = $this->reloadOrder($order);
-    verify($reloaded->get_meta('_wc_order_attribution_mailpoet_click_id'))->equals((string)$click->getId());
+    verify($reloaded->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
   }
 
   private function createOrder(string $billingEmail): WC_Order {
@@ -302,6 +307,30 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $reloaded = wc_get_order($order->get_id());
     $this->assertInstanceOf(WC_Order::class, $reloaded);
     return $reloaded;
+  }
+
+  private function createWriterForRequestContext(
+    bool $isAdmin,
+    bool $isRestApiRequest,
+    bool $isStoreApiRequest
+  ): OrderAttributionWriter {
+    $wooHelper = Stub::make(Helper::class, [
+      'isWooCommerceActive' => true,
+      'wcGetOrder' => function($order) {
+        return wc_get_order($order);
+      },
+      'isWooCommerceRestApiRequest' => $isRestApiRequest,
+      'isWooCommerceStoreApiRequest' => $isStoreApiRequest,
+    ], $this);
+
+    return new OrderAttributionWriter(
+      Stub::make(WPFunctions::class, ['isAdmin' => $isAdmin]),
+      $wooHelper,
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      new Cookies()
+    );
   }
 
   /**
