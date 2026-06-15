@@ -328,6 +328,7 @@ class TemplatesFactoryTest extends MailPoetTest {
     $automation = $template->createAutomation();
 
     $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), 'mailpoet:annual-date'));
+    $this->assertNull($automation->getMeta('mailpoet:run-once-per-subscriber'));
     $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
     $this->assertInstanceOf(Step::class, $sendEmailStep);
     $args = $sendEmailStep->getArgs();
@@ -349,6 +350,7 @@ class TemplatesFactoryTest extends MailPoetTest {
 
     $automation = $template->createAutomation(true);
     $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), 'mailpoet:annual-date'));
+    $this->assertNull($automation->getMeta('mailpoet:run-once-per-subscriber'));
     $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
     $this->assertInstanceOf(Step::class, $sendEmailStep);
     $args = $sendEmailStep->getArgs();

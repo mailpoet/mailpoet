@@ -111,9 +111,6 @@ class TemplatesFactory {
           [
             ['key' => 'mailpoet:annual-date'],
             ['key' => 'mailpoet:send-email', 'args' => $emailArgs],
-          ],
-          [
-            'mailpoet:run-once-per-subscriber' => true,
           ]
         );
       },
