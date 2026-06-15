@@ -107,7 +107,6 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
       // Purchase - customer relationship
       'first-purchase' => 'people',
       'thank-loyal-customers' => 'people',
-      'win-back-customers' => 'people',
       // Purchase - product focused
       'purchased-product' => 'store',
       'purchased-product-with-tag' => 'store',

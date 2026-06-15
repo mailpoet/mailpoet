@@ -4,7 +4,6 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
-use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\Config\Env;
@@ -58,7 +57,6 @@ class TemplatesFactory {
     if ($this->woocommerce->isWooCommerceActive()) {
       $templates[] = $this->createFirstPurchaseTemplate();
       $templates[] = $this->createThankLoyalCustomersTemplate();
-      $templates[] = $this->createWinBackCustomersTemplate();
       $templates[] = $this->createAbandonedCartTemplate();
       $templates[] = $this->createAbandonedCartCampaignTemplate();
       $templates[] = $this->createPurchasedProductTemplate();
@@ -360,103 +358,6 @@ class TemplatesFactory {
       },
       [
         'automationSteps' => 1, // trigger and all delay steps are excluded
-      ],
-      AutomationTemplate::TYPE_PREMIUM,
-      'people'
-    );
-  }
-
-  private function createWinBackCustomersTemplate(): AutomationTemplate {
-    return new AutomationTemplate(
-      'win-back-customers',
-      'purchase',
-      __('Win back customers', 'mailpoet'),
-      __(
-        'Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand.',
-        'mailpoet'
-      ),
-      function (bool $preview = false): Automation {
-        $reminderEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
-          'win-back-customer-reminder',
-          __('It’s been a while…', 'mailpoet'),
-          __('It’s been a while…', 'mailpoet'),
-          __('Products picked from their last order', 'mailpoet'),
-          'win-back-customers'
-        );
-        $finalNudgeEmailArgs = $this->createBlockEditorEmailArgs(
-          $preview,
-          'win-back-customer-final-nudge',
-          __('We’ve missed you', 'mailpoet'),
-          __('We’ve missed you', 'mailpoet'),
-          __('Recommended picks are waiting', 'mailpoet'),
-          'win-back-customers'
-        );
-
-        $automation = $this->builder->createFromSequence(
-          __('Win back customers', 'mailpoet'),
-          [
-            ['key' => 'woocommerce:order-completed'],
-            ['key' => 'core:delay', 'args' => ['delay' => 60, 'delay_type' => 'DAYS']],
-            [
-              'key' => 'core:if-else',
-              'filters' => [
-                'operator' => 'and',
-                'groups' => [
-                  [
-                    'operator' => 'and',
-                    'filters' => [
-                      [
-                        'field' => 'woocommerce:customer:order-count',
-                        'condition' => 'equals',
-                        'value' => 1,
-                        'params' => ['in_the_last' => ['number' => 60, 'unit' => 'days']],
-                      ],
-                    ],
-                  ],
-                ],
-              ],
-            ],
-            [
-              'key' => 'mailpoet:send-email',
-              'args' => $reminderEmailArgs,
-            ],
-            ['key' => 'core:delay', 'args' => ['delay' => 15, 'delay_type' => 'DAYS']],
-            [
-              'key' => 'core:if-else',
-              'filters' => [
-                'operator' => 'and',
-                'groups' => [
-                  [
-                    'operator' => 'and',
-                    'filters' => [
-                      [
-                        'field' => 'woocommerce:customer:order-count',
-                        'condition' => 'equals',
-                        'value' => 0,
-                        'params' => ['in_the_last' => ['number' => 15, 'unit' => 'days']],
-                      ],
-                    ],
-                  ],
-                ],
-              ],
-            ],
-            [
-              'key' => 'mailpoet:send-email',
-              'args' => $finalNudgeEmailArgs,
-            ],
-          ]
-        );
-
-        foreach ($automation->getSteps() as $step) {
-          if ($step->getKey() === 'core:if-else') {
-            $step->setNextSteps(array_merge($step->getNextSteps(), [new NextStep(null)]));
-          }
-        }
-        return $automation;
-      },
-      [
-        'automationSteps' => 4, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_PREMIUM,
       'people'
