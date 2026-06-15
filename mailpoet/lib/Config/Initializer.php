@@ -31,6 +31,7 @@ use MailPoet\Router;
 use MailPoet\Segments\RestApi\Api as SegmentsRestApi;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
+use MailPoet\Subscribers\ImportExport\Import\Cli as ImportCli;
 use MailPoet\Subscribers\RestApi\Api as SubscribersRestApi;
 use MailPoet\Tags\RestApi\Api as TagsRestApi;
 use MailPoet\Util\ConflictResolver;
@@ -66,6 +67,9 @@ class Initializer {
 
   /** @var MigratorCli */
   private $migratorCli;
+
+  /** @var ImportCli */
+  private $importCli;
 
   /** @var Router\Router */
   private $router;
@@ -179,6 +183,7 @@ class Initializer {
     Activator $activator,
     SettingsController $settings,
     MigratorCli $migratorCli,
+    ImportCli $importCli,
     Router\Router $router,
     Hooks $hooks,
     Changelog $changelog,
@@ -219,6 +224,7 @@ class Initializer {
     $this->activator = $activator;
     $this->settings = $settings;
     $this->migratorCli = $migratorCli;
+    $this->importCli = $importCli;
     $this->router = $router;
     $this->hooks = $hooks;
     $this->changelog = $changelog;
@@ -401,6 +407,7 @@ class Initializer {
   public function initialize() {
     try {
       $this->migratorCli->initialize();
+      $this->importCli->initialize();
       $this->setupInstaller();
       $this->setupUpdater();
 
