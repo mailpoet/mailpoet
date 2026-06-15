@@ -553,6 +553,48 @@ class SubscribersListingCest {
     $i->seeInCurrentURL(urlencode('group[trash]'));
   }
 
+  public function sortingIsRestrictedToCreatedAt(\AcceptanceTester $i) {
+    $i->wantTo('Restrict subscribers listing sorting to the Created on column');
+
+    (new Subscriber())
+      ->withEmail('sortable@example.com')
+      ->withStatus('subscribed')
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForListingItemsToLoad();
+
+    $headerButton = function (string $contains): array {
+      return ['xpath' =>
+        '//thead//button[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table-header-button ")]' .
+        '[contains(., ' . \AcceptanceTester::xpathString($contains) . ')]',
+      ];
+    };
+
+    $i->wantTo('Confirm Created on is sorted descending by default');
+    $i->seeElement(['xpath' => '//thead//th[@aria-sort="descending"][contains(., "Created on")]']);
+
+    $i->wantTo('Confirm the Subscriber column header offers no sort control');
+    $i->click($headerButton('Subscriber'));
+    $i->waitForText('Hide column'); // the column menu is open
+    $i->dontSee('Sort ascending');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+
+    $i->wantTo('Confirm the Created on column header offers a sort control');
+    $i->click($headerButton('Created on'));
+    $i->waitForText('Sort ascending');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+
+    $i->wantTo('Restore an old hash that sorts by a now-unsortable column');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/sort_by[email]/sort_order[asc]');
+    $i->waitForListingItemsToLoad();
+
+    $i->wantTo('Confirm the stale sort field is dropped and Created on is sorted instead');
+    $i->dontSeeInCurrentUrl('sort_by');
+    $i->seeElement(['xpath' => '//thead//th[@aria-sort="ascending"][contains(., "Created on")]']);
+  }
+
   private function selectSubscriberForBulkAction(\AcceptanceTester $i, $subscriber): void {
     $i->waitForText($subscriber->getEmail());
     $i->checkWooTableCheckboxForItemName($subscriber->getEmail());
