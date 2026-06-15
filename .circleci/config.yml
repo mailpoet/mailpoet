@@ -1074,6 +1074,18 @@ workflows:
           blockbased_theme: 1
           requires:
             - build
+      # TEMPORARY: verify the WooCommerce email-log fix against the latest WC beta on this PR.
+      # The real beta job lives only in the `nightly` workflow, which is schedule-driven and
+      # trunk-only, so a PR cannot trigger it. This duplicate runs the full acceptance suite
+      # against the WC beta on the branch instead. REMOVE this job before merging once the run
+      # is green.
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_woocommerce_beta_TEMP
+          enable_hpos: 1
+          use_woocommerce_beta: true
+          requires:
+            - build
       - js_tests:
           <<: *slack-fail-post-step
           requires:
