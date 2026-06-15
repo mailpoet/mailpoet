@@ -355,7 +355,20 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame(789, $secondEmailArgs['email_id']);
     $this->assertSame(101, $secondEmailArgs['email_wp_post_id']);
 
-    foreach ($this->getStepsByKey($automation->getSteps(), 'core:if-else') as $ifElseStep) {
+    $ifElseSteps = $this->getStepsByKey($automation->getSteps(), 'core:if-else');
+    $this->assertCount(2, $ifElseSteps);
+
+    $firstFilters = $ifElseSteps[0]->getFilters();
+    $this->assertNotNull($firstFilters);
+    $firstOrderCountFilter = $firstFilters->getGroups()[0]->getFilters()[0];
+    $this->assertSame(1, $firstOrderCountFilter->getArgs()['value']);
+
+    $secondFilters = $ifElseSteps[1]->getFilters();
+    $this->assertNotNull($secondFilters);
+    $secondOrderCountFilter = $secondFilters->getGroups()[0]->getFilters()[0];
+    $this->assertSame(0, $secondOrderCountFilter->getArgs()['value']);
+
+    foreach ($ifElseSteps as $ifElseStep) {
       $this->assertCount(2, $ifElseStep->getNextSteps());
     }
   }

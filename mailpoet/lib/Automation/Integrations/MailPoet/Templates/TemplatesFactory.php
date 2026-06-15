@@ -409,7 +409,7 @@ class TemplatesFactory {
                       [
                         'field' => 'woocommerce:customer:order-count',
                         'condition' => 'equals',
-                        'value' => 0,
+                        'value' => 1,
                         'params' => ['in_the_last' => ['number' => 60, 'unit' => 'days']],
                       ],
                     ],
