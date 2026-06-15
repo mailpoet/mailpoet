@@ -76,12 +76,17 @@ class OrderAttributionFieldsTest extends \MailPoetUnitTest {
    */
   public function testWooMetaPrefixLiteralIsSingleSourced(): void {
     $libDir = __DIR__ . '/../../../lib/WooCommerce';
-    $quotedLiteral = "'" . OrderAttributionFields::META_PREFIX;
+    $singleQuotedLiteral = "'" . OrderAttributionFields::META_PREFIX;
+    $doubleQuotedLiteral = '"' . OrderAttributionFields::META_PREFIX;
     $filesWithLiteral = [];
-    foreach ((array)glob($libDir . '/*.php') as $file) {
-      $contents = (string)file_get_contents((string)$file);
-      if (strpos($contents, $quotedLiteral) !== false) {
-        $filesWithLiteral[] = basename((string)$file);
+    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($libDir, \FilesystemIterator::SKIP_DOTS));
+    foreach ($iterator as $fileInfo) {
+      if (!$fileInfo instanceof \SplFileInfo || !$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
+        continue;
+      }
+      $contents = (string)file_get_contents($fileInfo->getPathname());
+      if (strpos($contents, $singleQuotedLiteral) !== false || strpos($contents, $doubleQuotedLiteral) !== false) {
+        $filesWithLiteral[] = $fileInfo->getFilename();
       }
     }
     verify($filesWithLiteral)->equals(['OrderAttributionFields.php']);
