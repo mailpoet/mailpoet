@@ -78,11 +78,17 @@ const bulkConfirmationResendLimit =
 const bulkConfirmationCheckboxId = 'bulk-resend-confirmation-checkbox-input';
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
+// `created_at` is the only sortable column (STOMAIL-8162): the backend can't
+// efficiently serve sorts on other columns at scale, so we pin the sort field
+// here and never let a stale URL hash or persisted preference ask the listing
+// to sort on anything else. Only the direction (asc/desc) varies.
+const SORT_FIELD = 'created_at';
+
 const DEFAULT_VIEW: View = {
   type: 'table',
   perPage: listingPerPage,
   page: 1,
-  sort: { field: 'created_at', direction: 'desc' },
+  sort: { field: SORT_FIELD, direction: 'desc' },
   fields: [
     'status',
     'segments',
@@ -116,7 +122,6 @@ function parseHash(): Partial<{
   group: Group;
   page: number;
   perPage: number;
-  orderby: string;
   order: 'asc' | 'desc';
   search: string;
   filter: Record<string, string>;
@@ -145,9 +150,6 @@ function parseHash(): Partial<{
       }
       if ((key === 'per_page' || key === 'limit') && Number(value) > 0) {
         return { ...params, perPage: Number(value) };
-      }
-      if (key === 'sort_by' || key === 'orderby') {
-        return { ...params, orderby: value };
       }
       if (
         (key === 'sort_order' || key === 'order') &&
@@ -185,13 +187,6 @@ function getListingPath(
       'limit',
       view.perPage && view.perPage !== (defaults.perPage ?? listingPerPage)
         ? view.perPage
-        : undefined,
-    ],
-    [
-      'sort_by',
-      view.sort?.field &&
-      view.sort.field !== (defaults.sort?.field ?? 'created_at')
-        ? view.sort.field
         : undefined,
     ],
     [
@@ -765,7 +760,7 @@ function SubscriberList() {
     perPage: hashState.perPage ?? preferredView.perPage,
     search: hashState.search,
     sort: {
-      field: hashState.orderby ?? preferredView.sort?.field ?? 'created_at',
+      field: SORT_FIELD,
       direction: hashState.order ?? preferredView.sort?.direction ?? 'desc',
     },
   }));
@@ -836,7 +831,7 @@ function SubscriberList() {
         perPage: next.perPage ?? preferredDefaults.perPage,
         search: next.search ?? '',
         sort: {
-          field: next.orderby ?? preferredDefaults.sort?.field ?? 'created_at',
+          field: SORT_FIELD,
           direction: next.order ?? preferredDefaults.sort?.direction ?? 'desc',
         },
       }));

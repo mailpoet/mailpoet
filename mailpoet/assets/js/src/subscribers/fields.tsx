@@ -91,7 +91,7 @@ export function getSubscriberFields(
       id: 'email',
       label: __('Subscriber', 'mailpoet'),
       type: 'text',
-      enableSorting: true,
+      enableSorting: false,
       enableGlobalSearch: true,
       render: ({ item }) => (
         <div>
@@ -113,7 +113,7 @@ export function getSubscriberFields(
       id: 'status',
       label: __('Status', 'mailpoet'),
       type: 'text',
-      enableSorting: true,
+      enableSorting: false,
       enableGlobalSearch: false,
       render: ({ item }) => <span>{statusLabel(item.status)}</span>,
     },
@@ -144,7 +144,7 @@ export function getSubscriberFields(
       id: 'last_subscribed_at',
       label: __('Subscribed on', 'mailpoet'),
       type: 'datetime',
-      enableSorting: true,
+      enableSorting: false,
       enableGlobalSearch: false,
       render: ({ item }) => <span>{dateTime(item.last_subscribed_at)}</span>,
     },
