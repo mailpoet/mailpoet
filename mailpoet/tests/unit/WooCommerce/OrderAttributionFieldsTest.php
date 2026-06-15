@@ -58,6 +58,35 @@ class OrderAttributionFieldsTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testAllMetaKeysDeriveFromTheSinglePrefixConstant(): void {
+    $prefix = OrderAttributionFields::META_PREFIX;
+    $fieldNames = array_merge(OrderAttributionFields::FIELD_NAMES, ['source_type', 'utm_source', 'utm_campaign']);
+    foreach ($fieldNames as $fieldName) {
+      verify(OrderAttributionFields::getMetaKey($fieldName))->equals($prefix . $fieldName);
+    }
+  }
+
+  /**
+   * STOMAIL-8144 acceptance: a Woo meta-key change must break one place, not many. The
+   * prefix literal may live only in OrderAttributionFields::META_PREFIX; every other
+   * consumer must derive its keys through getMetaKey(). This guard fails if a raw
+   * '_wc_order_attribution_' string literal is reintroduced anywhere else in the
+   * WooCommerce library. Doc comments referencing the prefix are not quoted literals and
+   * are intentionally not matched.
+   */
+  public function testWooMetaPrefixLiteralIsSingleSourced(): void {
+    $libDir = __DIR__ . '/../../../lib/WooCommerce';
+    $quotedLiteral = "'" . OrderAttributionFields::META_PREFIX;
+    $filesWithLiteral = [];
+    foreach ((array)glob($libDir . '/*.php') as $file) {
+      $contents = (string)file_get_contents((string)$file);
+      if (strpos($contents, $quotedLiteral) !== false) {
+        $filesWithLiteral[] = basename((string)$file);
+      }
+    }
+    verify($filesWithLiteral)->equals(['OrderAttributionFields.php']);
+  }
+
   public function testItDoesNotAddFieldsWhenWooCommerceIsNotActive(): void {
     $orderAttributionFields = $this->createOrderAttributionFields(false);
 
