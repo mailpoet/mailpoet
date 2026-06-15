@@ -38,7 +38,11 @@ class WooSystemInfo {
   }
 
   public function cronPingUrl(): string {
-    return $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
+    try {
+      return $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
+    } catch (\Exception $e) {
+      return __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
+    }
   }
 
   public function toArray(): array {
