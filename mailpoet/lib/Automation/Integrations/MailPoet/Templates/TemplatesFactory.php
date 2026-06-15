@@ -12,6 +12,8 @@ use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper
 use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WooCommerceSubscriptions;
 
 class TemplatesFactory {
+  private const MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK = '10.8.0';
+
   /** @var AutomationBuilder */
   private $builder;
 
@@ -91,18 +93,20 @@ class TemplatesFactory {
   }
 
   private function createBirthdayEmailTemplate(): AutomationTemplate {
+    $usesDiscountPattern = $this->woocommerce->isWooCommerceActive() && $this->supportsGeneratedCouponBlock();
+
     return new AutomationTemplate(
       'birthday-email',
       'celebrations',
       __('Birthday email', 'mailpoet'),
       __('Send a birthday email to your subscribers on their special day.', 'mailpoet'),
-      function (bool $preview = false): Automation {
+      function (bool $preview = false) use ($usesDiscountPattern): Automation {
         $emailArgs = $this->createBlockEditorEmailArgs(
           $preview,
-          'birthday-email-content',
-          __('Happy birthday!', 'mailpoet'),
-          __('Happy birthday!', 'mailpoet'),
-          __('A birthday note just for you', 'mailpoet'),
+          $usesDiscountPattern ? 'birthday-email-with-discount' : 'birthday-email-content',
+          $usesDiscountPattern ? __('A birthday treat from us', 'mailpoet') : __('Happy birthday!', 'mailpoet'),
+          $usesDiscountPattern ? __('A birthday treat from us', 'mailpoet') : __('Happy birthday!', 'mailpoet'),
+          $usesDiscountPattern ? __('Enjoy 10% off your next order', 'mailpoet') : __('Wishing you a wonderful day', 'mailpoet'),
           'birthday-email'
         );
 
@@ -888,6 +892,21 @@ class TemplatesFactory {
       AutomationTemplate::TYPE_PREMIUM,
       'calendar'
     );
+  }
+
+  private function supportsGeneratedCouponBlock(): bool {
+    $wooCommerceVersion = $this->woocommerceHelper->getWooCommerceVersion();
+    if (!$wooCommerceVersion) {
+      return false;
+    }
+
+    $numericVersionLength = strspn($wooCommerceVersion, '0123456789.');
+    $numericVersion = substr($wooCommerceVersion, 0, $numericVersionLength);
+    if ($numericVersion === '') {
+      return false;
+    }
+
+    return version_compare($numericVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK, '>=');
   }
 
   /**

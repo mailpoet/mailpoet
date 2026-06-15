@@ -312,9 +312,9 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->emailFactory->expects($this->once())
       ->method('createBlockEditorEmail')
       ->with([
-        'pattern' => 'birthday-email-content',
-        'subject' => 'Happy birthday!',
-        'preheader' => 'A birthday note just for you',
+        'pattern' => 'birthday-email-with-discount',
+        'subject' => 'A birthday treat from us',
+        'preheader' => 'Enjoy 10% off your next order',
       ])
       ->willReturn([
         'email_id' => 123,
@@ -333,9 +333,39 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertInstanceOf(Step::class, $sendEmailStep);
     $args = $sendEmailStep->getArgs();
 
+    $this->assertSame('A birthday treat from us', $args['name']);
+    $this->assertSame('A birthday treat from us', $args['subject']);
+    $this->assertSame('Enjoy 10% off your next order', $args['preheader']);
+    $this->assertSame(123, $args['email_id']);
+    $this->assertSame(456, $args['email_wp_post_id']);
+  }
+
+  public function testBirthdayEmailTemplateUsesPlainPatternWithoutGeneratedCouponSupport(): void {
+    $this->ensureAnnualDateTriggerRegistered();
+    $this->emailFactory->expects($this->once())
+      ->method('createBlockEditorEmail')
+      ->with([
+        'pattern' => 'birthday-email-content',
+        'subject' => 'Happy birthday!',
+        'preheader' => 'Wishing you a wonderful day',
+      ])
+      ->willReturn([
+        'email_id' => 123,
+        'email_wp_post_id' => 456,
+      ]);
+
+    $factory = $this->createFactory(true, '10.7.0');
+    $template = $this->findTemplateBySlug($factory->createTemplates(), 'birthday-email');
+    $this->assertInstanceOf(AutomationTemplate::class, $template);
+
+    $automation = $template->createAutomation();
+    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
+    $this->assertInstanceOf(Step::class, $sendEmailStep);
+    $args = $sendEmailStep->getArgs();
+
     $this->assertSame('Happy birthday!', $args['name']);
     $this->assertSame('Happy birthday!', $args['subject']);
-    $this->assertSame('A birthday note just for you', $args['preheader']);
+    $this->assertSame('Wishing you a wonderful day', $args['preheader']);
     $this->assertSame(123, $args['email_id']);
     $this->assertSame(456, $args['email_wp_post_id']);
   }
@@ -355,9 +385,9 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertInstanceOf(Step::class, $sendEmailStep);
     $args = $sendEmailStep->getArgs();
 
-    $this->assertSame('Happy birthday!', $args['name']);
-    $this->assertSame('Happy birthday!', $args['subject']);
-    $this->assertSame('A birthday note just for you', $args['preheader']);
+    $this->assertSame('A birthday treat from us', $args['name']);
+    $this->assertSame('A birthday treat from us', $args['subject']);
+    $this->assertSame('Enjoy 10% off your next order', $args['preheader']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
@@ -470,15 +500,16 @@ class TemplatesFactoryTest extends MailPoetTest {
     }
   }
 
-  private function createFactory(): TemplatesFactory {
+  private function createFactory(bool $woocommerceActive = true, string $wooCommerceVersion = '10.8.0'): TemplatesFactory {
     $woocommerce = $this->createMock(WooCommerce::class);
-    $woocommerce->method('isWooCommerceActive')->willReturn(true);
+    $woocommerce->method('isWooCommerceActive')->willReturn($woocommerceActive);
     $woocommerceSubscriptions = $this->createMock(WooCommerceSubscriptions::class);
     $woocommerceSubscriptions->method('isWooCommerceSubscriptionsActive')->willReturn(false);
     $bookingsHelper = $this->createMock(WooCommerceBookingsHelper::class);
     $bookingsHelper->method('isWooCommerceBookingsActive')->willReturn(false);
     $woocommerceHelper = $this->createMock(WooCommerceHelper::class);
     $woocommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(false);
+    $woocommerceHelper->method('getWooCommerceVersion')->willReturn($wooCommerceVersion);
 
     return new TemplatesFactory(
       $this->builder,

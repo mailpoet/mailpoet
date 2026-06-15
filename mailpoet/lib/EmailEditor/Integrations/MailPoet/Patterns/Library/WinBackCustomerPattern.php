@@ -96,26 +96,12 @@ class WinBackCustomerPattern extends Pattern {
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      /* translators: %s is a placeholder for the first name */
-      sprintf(__('Hi %s, it’s been a little while since your last visit, and we’d love to welcome you back.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('It’s been a little while since your last visit, and we’d love to welcome you back.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
       <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('New favorites may be waiting for you in the shop. We picked a few products that go well with your last order.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
-
-      <!-- wp:buttons {"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
-      <div class="wp-block-buttons" style="padding-bottom:var(--wp--preset--spacing--30)">
-      <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button"><a class="wp-block-button__link has-custom-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);font-size:16px" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
-      <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
-
-      <!-- wp:heading {"style":{"border":{"top":{"color":"var:preset|color|cyan-bluish-gray"}},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"24px"}}} -->
-      <h2 class="wp-block-heading" style="border-top-color:var(--wp--preset--color--cyan-bluish-gray);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);font-size:24px">' . __('You might also like', 'mailpoet') . '</h2>
-      <!-- /wp:heading -->
 
       ' . $productSection . '
 
@@ -144,9 +130,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      /* translators: %s is a placeholder for the first name */
-      sprintf(__('Hi %s, there’s still time to find something you’ll love. These picks are based on what you bought last time.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('There’s still time to find something you’ll love. These picks are based on what you bought last time.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
@@ -192,9 +176,7 @@ class WinBackCustomerPattern extends Pattern {
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      /* translators: %s is a placeholder for the first name */
-      sprintf(__('Hi %s, we’ve got an exclusive deal waiting just for you.', 'mailpoet'), '<!--[woocommerce/customer-first-name]-->') . '</p>
+      <p style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' . __('We’ve got an exclusive deal waiting just for you.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->

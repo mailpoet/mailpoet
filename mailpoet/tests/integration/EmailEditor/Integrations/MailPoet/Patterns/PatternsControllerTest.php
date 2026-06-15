@@ -57,11 +57,12 @@ class PatternsControllerTest extends \MailPoetTest {
 
     // WooCommerce 10.8.0+ patterns (uses generated coupon block)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertContains('mailpoet/birthday-email-with-discount', $patternNames);
     $this->assertContains('mailpoet/win-back-customer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
 
     // Verify total count
-    $this->assertCount(25, $blockPatterns);
+    $this->assertCount(26, $blockPatterns);
   }
 
   public function testItRegistersAllCategoriesWhenWooCommerceIsActive(): void {
@@ -161,11 +162,12 @@ class PatternsControllerTest extends \MailPoetTest {
 
     // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertNotContains('mailpoet/birthday-email-with-discount', $patternNames);
     $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
     $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
     $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
 
-    // Verify total count (all patterns except 4 coupon patterns)
+    // Verify total count (all patterns except 5 coupon patterns)
     $this->assertCount(21, $blockPatterns);
   }
 
@@ -190,6 +192,7 @@ class PatternsControllerTest extends \MailPoetTest {
 
     // Generated coupon block patterns should be registered for WooCommerce 10.8.0+ (including RC/beta)
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertContains('mailpoet/birthday-email-with-discount', $patternNames);
     $this->assertContains('mailpoet/win-back-customer', $patternNames);
     $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
     $this->assertContains('mailpoet/reward-positive-reviewer', $patternNames);
@@ -226,6 +229,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertStringContainsString('"source":"createNew"', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
     $this->assertStringContainsString('"amount":10', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
     $this->assertStringContainsString('"expiryDay":10', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
+    $this->assertStringContainsString('"source":"createNew"', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
+    $this->assertStringContainsString('"amount":10', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
+    $this->assertStringContainsString('"expiryDay":10', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
     $this->assertStringContainsString('"amount":15', $patternsByName['mailpoet/win-back-customer']['content']);
     $this->assertStringContainsString('"expiryDay":1', $patternsByName['mailpoet/abandoned-cart-with-discount-content']['content']);
 
@@ -251,8 +257,10 @@ class PatternsControllerTest extends \MailPoetTest {
 
     $this->assertIsString($content);
     $this->assertStringContainsString('We miss you', $content);
-    $this->assertStringContainsString('wp:button', $content);
+    $this->assertStringContainsString('New favorites may be waiting for you in the shop.', $content);
     $this->assertStringContainsString('mailpoet/product-collection/order-cross-sells', $content);
+    $this->assertStringNotContainsString('wp:button', $content);
+    $this->assertStringNotContainsString('You might also like', $content);
     $this->assertStringNotContainsString('wp:woocommerce/coupon-code', $content);
   }
 
@@ -272,7 +280,8 @@ class PatternsControllerTest extends \MailPoetTest {
 
     $this->assertIsString($content);
     $this->assertStringContainsString('mailpoet/product-collection/order-cross-sells', $content);
-    $this->assertStringContainsString('While you wait, check out other items that pair perfectly with your order.', $content);
+    $this->assertStringContainsString('Here are a few picks that pair well with your recent order.', $content);
+    $this->assertStringNotContainsString('You might also like', $content);
   }
 
   public function testWinBackFinalNudgePatternDoesNotUseGeneratedCouponBlock(): void {
@@ -420,6 +429,7 @@ class PatternsControllerTest extends \MailPoetTest {
 
     // Should NOT include WooCommerce-dependent patterns
     $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
+    $this->assertNotContains('mailpoet/birthday-email-with-discount', $patternNames);
     $this->assertNotContains('mailpoet/first-purchase-thank-you', $patternNames);
     $this->assertNotContains('mailpoet/post-purchase-thank-you', $patternNames);
     $this->assertNotContains('mailpoet/product-purchase-follow-up', $patternNames);

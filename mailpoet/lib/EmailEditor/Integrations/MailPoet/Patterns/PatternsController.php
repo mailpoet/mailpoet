@@ -6,6 +6,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPat
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartReminderPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AskForReviewPostPurchasePattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\BirthdayEmailPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\CategoryPurchaseFollowUpPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EducationalCampaignPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\EventInvitationPattern;
@@ -104,7 +105,7 @@ class PatternsController {
       new ProductRestockNotificationPattern($this->cdnAssetUrl),
       new NewArrivalsAnnouncementPattern($this->cdnAssetUrl),
       new WelcomeEmailPattern($this->cdnAssetUrl),
-      new WelcomeEmailPattern($this->cdnAssetUrl, true),
+      new BirthdayEmailPattern($this->cdnAssetUrl),
     ];
 
     // WooCommerce-dependent patterns (uses product blocks or purchase/abandoned-cart categories)
@@ -134,6 +135,7 @@ class PatternsController {
       if ($wooCommerceVersion && version_compare($wooCommerceVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK, '>=')) {
         $this->patterns = array_merge($this->patterns, [
           new WelcomeWithDiscountEmailPattern($this->cdnAssetUrl),
+          new BirthdayEmailPattern($this->cdnAssetUrl, true),
           new WinBackCustomerPattern($this->cdnAssetUrl),
           new AbandonedCartWithDiscountPattern($this->cdnAssetUrl),
           new AskForReviewPostPurchasePattern($this->cdnAssetUrl, 'reward-positive'),

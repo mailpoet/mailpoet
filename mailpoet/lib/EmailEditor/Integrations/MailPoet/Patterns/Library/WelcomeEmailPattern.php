@@ -4,7 +4,6 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
-use MailPoet\Util\CdnAssetUrl;
 
 /**
  * Welcome email pattern for new subscribers.
@@ -16,32 +15,12 @@ class WelcomeEmailPattern extends Pattern {
   protected $categories = ['welcome'];
   protected $post_types = [EmailEditor::MAILPOET_EMAIL_POST_TYPE]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-  /** @var bool */
-  private $isBirthday;
-
-  public function __construct(
-    CdnAssetUrl $cdnAssetUrl,
-    bool $isBirthday = false
-  ) {
-    parent::__construct($cdnAssetUrl);
-    $this->isBirthday = $isBirthday;
-
-    if ($isBirthday) {
-      $this->name = 'birthday-email-content';
-      $this->categories = ['celebrations'];
-    }
-  }
-
   /**
    * Get pattern content.
    *
    * @return string Pattern HTML content.
    */
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    if ($this->isBirthday) {
-      return $this->getBirthdayContent();
-    }
-
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -95,41 +74,7 @@ class WelcomeEmailPattern extends Pattern {
     ';
   }
 
-  private function getBirthdayContent(): string {
-    return '
-    <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
-      <!-- wp:heading {"textAlign":"center","level":1} -->
-      <h1 class="wp-block-heading has-text-align-center">' . __('Happy Birthday!', 'mailpoet') . '</h1>
-      <!-- /wp:heading -->
-
-      <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"18px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30"}}}} -->
-      <p class="has-text-align-center" style="padding-top:0;padding-bottom:var(--wp--preset--spacing--30);font-size:18px">' . __('Here’s to a day filled with good things.', 'mailpoet') . '</p>
-      <!-- /wp:paragraph -->
-
-      <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
-      <p style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);font-size:16px">' .
-      sprintf(
-        /* translators: %s: Subscriber first name personalization tag */
-        __('%s, we hope your birthday is as special as you are. Thank you for being part of our community.', 'mailpoet'),
-        sprintf(
-          '<!--[mailpoet/subscriber-firstname default="%s"]-->',
-          /* translators: Default placeholder used when no subscriber name is available in birthday emails */
-          esc_attr(_x('there', 'subscriber name placeholder', 'mailpoet'))
-        )
-      ) . '</p>
-      <!-- /wp:paragraph -->
-    </div>
-    <!-- /wp:group -->
-    ';
-  }
-
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    if ($this->isBirthday) {
-      /* translators: Name of a content pattern used as starting content of an email */
-      return __('Birthday Email', 'mailpoet');
-    }
-
     /* translators: Name of a content pattern used as starting content of an email */
     return __('Welcome Email', 'mailpoet');
   }
