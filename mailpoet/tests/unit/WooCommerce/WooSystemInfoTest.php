@@ -9,11 +9,33 @@ use MailPoet\Settings\SettingsController;
 
 class WooSystemInfoTest extends \MailPoetUnitTest {
   public function testItDoesNotThrowWhenCronUrlCannotBeGenerated(): void {
-    $systemInfo = new WooSystemInfo(
+    $systemInfo = $this->createWooSystemInfoThrowing(new \Exception('Site URL is unreachable.'));
+
+    verify($systemInfo->toArray())->equals([
+      'sending_method' => 'MailPoet',
+      'transactional_emails' => 'Current sending method',
+      'task_scheduler_method' => 'WordPress',
+      'cron_ping_url' => 'Can‘t generate cron URL. (Site URL is unreachable.)',
+    ]);
+  }
+
+  public function testItDoesNotThrowWhenCronUrlGenerationCausesAnError(): void {
+    $systemInfo = $this->createWooSystemInfoThrowing(new \TypeError('Cron URL type error.'));
+
+    verify($systemInfo->toArray())->equals([
+      'sending_method' => 'MailPoet',
+      'transactional_emails' => 'Current sending method',
+      'task_scheduler_method' => 'WordPress',
+      'cron_ping_url' => 'Can‘t generate cron URL. (Cron URL type error.)',
+    ]);
+  }
+
+  private function createWooSystemInfoThrowing(\Throwable $throwable): WooSystemInfo {
+    return new WooSystemInfo(
       Stub::make(CronHelper::class, [
-        'getCronUrl' => function($action) {
+        'getCronUrl' => function($action) use ($throwable) {
           verify($action)->equals(CronDaemon::ACTION_PING);
-          throw new \Exception('Site URL is unreachable.');
+          throw $throwable;
         },
       ]),
       Stub::make(SettingsController::class, [
@@ -27,12 +49,5 @@ class WooSystemInfoTest extends \MailPoetUnitTest {
         },
       ])
     );
-
-    verify($systemInfo->toArray())->equals([
-      'sending_method' => 'MailPoet',
-      'transactional_emails' => 'Current sending method',
-      'task_scheduler_method' => 'WordPress',
-      'cron_ping_url' => 'Can‘t generate cron URL. (Site URL is unreachable.)',
-    ]);
   }
 }

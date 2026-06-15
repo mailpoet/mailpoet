@@ -40,7 +40,7 @@ class WooSystemInfo {
   public function cronPingUrl(): string {
     try {
       return $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
       return __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
     }
   }
