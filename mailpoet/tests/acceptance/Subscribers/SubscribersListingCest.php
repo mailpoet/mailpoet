@@ -575,15 +575,17 @@ class SubscribersListingCest {
     $i->wantTo('Confirm Created on is sorted descending by default');
     $i->seeElement(['xpath' => '//thead//th[@aria-sort="descending"][contains(., "Created on")]']);
 
-    $i->wantTo('Confirm the Subscriber column header offers no sort control');
+    $i->wantTo('Confirm the Subscriber column header offers no sort or filter control');
     $i->click($headerButton('Subscriber'));
     $i->waitForText('Hide column'); // the column menu is open
     $i->dontSee('Sort ascending');
+    $i->dontSee('Add filter');
     $i->pressKey('body', WebDriverKeys::ESCAPE);
 
-    $i->wantTo('Confirm the Created on column header offers a sort control');
+    $i->wantTo('Confirm the Created on column header offers sorting but no filter');
     $i->click($headerButton('Created on'));
     $i->waitForText('Sort ascending');
+    $i->dontSee('Add filter');
     $i->pressKey('body', WebDriverKeys::ESCAPE);
 
     $i->wantTo('Restore an old hash that sorts by a now-unsortable column');

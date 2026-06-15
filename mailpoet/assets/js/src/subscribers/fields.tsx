@@ -86,7 +86,7 @@ export function getSubscriberFields(
       ]
     : [];
 
-  return [
+  const fields: Field<Subscriber>[] = [
     {
       id: 'email',
       label: __('Subscriber', 'mailpoet'),
@@ -157,4 +157,10 @@ export function getSubscriberFields(
       render: ({ item }) => <span>{dateTime(item.created_at)}</span>,
     },
   ];
+
+  // This listing filters through its own toolbar (segments, tags, status, …),
+  // so DataViews' built-in per-column filters are unused. Every field type
+  // defaults to a non-empty operator set, which would otherwise surface a dead
+  // "Add filter" entry in each column header menu; disable it explicitly.
+  return fields.map((field) => ({ ...field, filterBy: false }));
 }
