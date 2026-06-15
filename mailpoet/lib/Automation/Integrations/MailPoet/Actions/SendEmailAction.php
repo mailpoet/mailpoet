@@ -90,6 +90,7 @@ class SendEmailAction implements Action {
     'woocommerce:buys-a-product',
     'woocommerce-bookings:booking-created',
     'woocommerce-bookings:booking-status-changed',
+    'woocommerce-bookings:booking-starts',
   ];
 
   private AutomationController $automationController;
