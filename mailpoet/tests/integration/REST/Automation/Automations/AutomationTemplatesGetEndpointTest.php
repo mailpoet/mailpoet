@@ -59,7 +59,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
         'category' => 'purchase',
       ],
     ]);
-    $this->assertCount(6, $result['data']);
+    $this->assertCount(5, $result['data']);
 
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
@@ -177,7 +177,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
   }
 
   private function getExpectedTemplateCount(): int {
-    return $this->isOrderReviewUrlSupported() ? 22 : 21;
+    return $this->isOrderReviewUrlSupported() ? 21 : 20;
   }
 
   private function isOrderReviewUrlSupported(): bool {
