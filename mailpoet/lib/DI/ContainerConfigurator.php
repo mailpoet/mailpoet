@@ -299,6 +299,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\PostEditorBlocks\SubscriptionFormBlock::class);
     $container->autowire(\MailPoet\PostEditorBlocks\NewsletterBlock::class)->setPublic(true);
     $container->autowire(\MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration::class);
+    // Subscribers import CLI
+    $container->autowire(\MailPoet\Subscribers\ImportExport\Import\Cli::class)->setPublic(true);
     // Migrations
     $container->autowire(\MailPoet\Migrator\Cli::class)->setPublic(true);
     $container->autowire(\MailPoet\Migrator\Migrator::class)->setPublic(true);
