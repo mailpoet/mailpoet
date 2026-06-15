@@ -76,9 +76,7 @@ class BirthdayEmailPattern extends Pattern {
       <p style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);font-size:16px">' . __('We’re wishing you a wonderful day. Use this code for 10% off your next order:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:woocommerce/coupon-code {"align":"center","source":"createNew","discountType":"percent","amount":10,"expiryDay":10} -->
-      <div class="wp-block-woocommerce-coupon-code aligncenter"></div>
-      <!-- /wp:woocommerce/coupon-code -->
+      ' . $this->getGeneratedCouponBlock('center', 10, 10) . '
 
       <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px"},"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|30"}}}} -->
       <p class="has-text-align-center" style="padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--30);font-size:14px">' . __('Valid for the next 10 days.', 'mailpoet') . '</p>

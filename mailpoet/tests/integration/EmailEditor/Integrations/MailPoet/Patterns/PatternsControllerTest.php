@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlock;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -226,14 +227,31 @@ class PatternsControllerTest extends \MailPoetTest {
     $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
     $patternsByName = array_column($blockPatterns, null, 'name');
 
-    $this->assertStringContainsString('"source":"createNew"', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
-    $this->assertStringContainsString('"amount":10', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
-    $this->assertStringContainsString('"expiryDay":10', $patternsByName['mailpoet/welcome-with-discount-email-content']['content']);
-    $this->assertStringContainsString('"source":"createNew"', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
-    $this->assertStringContainsString('"amount":10', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
-    $this->assertStringContainsString('"expiryDay":10', $patternsByName['mailpoet/birthday-email-with-discount']['content']);
-    $this->assertStringContainsString('"amount":15', $patternsByName['mailpoet/win-back-customer']['content']);
-    $this->assertStringContainsString('"expiryDay":1', $patternsByName['mailpoet/abandoned-cart-with-discount-content']['content']);
+    $this->assertGeneratedCouponPattern($patternsByName['mailpoet/welcome-with-discount-email-content']['content'], [
+      'align' => 'left',
+      'amount' => 10,
+      'expiryDay' => 10,
+    ]);
+    $this->assertGeneratedCouponPattern($patternsByName['mailpoet/birthday-email-with-discount']['content'], [
+      'align' => 'center',
+      'amount' => 10,
+      'expiryDay' => 10,
+    ]);
+    $this->assertGeneratedCouponPattern($patternsByName['mailpoet/win-back-customer']['content'], [
+      'align' => 'left',
+      'amount' => 15,
+      'expiryDay' => 10,
+    ]);
+    $this->assertGeneratedCouponPattern($patternsByName['mailpoet/abandoned-cart-with-discount-content']['content'], [
+      'align' => 'left',
+      'amount' => 10,
+      'expiryDay' => 1,
+    ]);
+    $this->assertGeneratedCouponPattern($patternsByName['mailpoet/reward-positive-reviewer']['content'], [
+      'align' => 'left',
+      'amount' => 10,
+      'expiryDay' => 10,
+    ]);
 
     $winBackEmailContent = $patterns->getPatternContent('win-back-customer');
     $this->assertIsString($winBackEmailContent);
@@ -592,6 +610,34 @@ class PatternsControllerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $wooCommerceHelper
     );
+  }
+
+  private function assertGeneratedCouponPattern(string $content, array $expectedAttributes): void {
+    $couponBlock = $this->findBlockByName(parse_blocks($content), CouponBlock::NAME);
+    $this->assertIsArray($couponBlock);
+
+    $this->assertSame(CouponBlock::withCreateNewDefaults($expectedAttributes), $couponBlock['attrs']);
+    $this->assertStringContainsString(CouponBlock::SAFE_PLACEHOLDER, (string)$couponBlock['innerHTML']);
+  }
+
+  private function findBlockByName(array $blocks, string $blockName): ?array {
+    foreach ($blocks as $block) {
+      if (!is_array($block)) {
+        continue;
+      }
+
+      if (($block['blockName'] ?? null) === $blockName) {
+        return $block;
+      }
+
+      $innerBlocks = isset($block['innerBlocks']) && is_array($block['innerBlocks']) ? $block['innerBlocks'] : [];
+      $foundBlock = $this->findBlockByName($innerBlocks, $blockName);
+      if ($foundBlock !== null) {
+        return $foundBlock;
+      }
+    }
+
+    return null;
   }
 
   private function cleanupPatterns(): void {

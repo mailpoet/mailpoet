@@ -185,9 +185,7 @@ class WinBackCustomerPattern extends Pattern {
       __('Use this code at checkout to redeem your discount:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:woocommerce/coupon-code {"align":"left","source":"createNew","discountType":"percent","amount":15,"expiryDay":10} -->
-      <div class="wp-block-woocommerce-coupon-code alignleft"></div>
-      <!-- /wp:woocommerce/coupon-code -->
+      ' . $this->getGeneratedCouponBlock('left', 15, 10) . '
 
       <!-- wp:buttons {"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
       <div class="wp-block-buttons" style="padding-bottom:var(--wp--preset--spacing--30)">
