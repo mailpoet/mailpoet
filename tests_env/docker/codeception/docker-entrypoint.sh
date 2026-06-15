@@ -148,6 +148,16 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     echo "<?php add_filter('site_transient_woocommerce_blocks_patterns', '__return_false');" > "/wp-core/wp-content/mu-plugins/woo-cache-disable.php"
   fi
 
+  # Install MU plugin that disables WooCommerce's transactional email log (WC 10.9.0+, log source: transactional-emails)
+  # It writes a wc-logs file on every order email sent during checkout. Here wp-cli runs as root and Apache as www-data
+  # on a shared volume, so that log file can be owned by a different user than the web request; PHP touch() then fails
+  # with "Utime failed: Operation not permitted" and the warning fails acceptance tests. The log is irrelevant to the
+  # assertions. See WooCommerce PR #64491.
+  if [[ ! -f "/wp-core/wp-content/mu-plugins/woo-email-log-disable.php" ]]; then
+    mkdir -p /wp-core/wp-content/mu-plugins
+    echo "<?php add_filter('woocommerce_email_log_enabled', '__return_false');" > "/wp-core/wp-content/mu-plugins/woo-email-log-disable.php"
+  fi
+
   ACTIVATION_CONTEXT=$HTTP_HOST
   # For integration tests in multisite environment we need to activate the plugin for correct site that is loaded in tests
   # The acceptance tests activate/deactivate plugins using a helper.
