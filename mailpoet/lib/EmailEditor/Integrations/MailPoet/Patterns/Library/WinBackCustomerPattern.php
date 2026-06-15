@@ -181,7 +181,6 @@ class WinBackCustomerPattern extends Pattern {
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: %s: Site description personalization tag */
       __('Use this code at checkout to redeem your discount:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 

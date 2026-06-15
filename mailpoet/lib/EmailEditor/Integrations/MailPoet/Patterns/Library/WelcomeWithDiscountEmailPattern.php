@@ -36,7 +36,6 @@ class WelcomeWithDiscountEmailPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: %s: Site description personalization tag */
       __('Use this code at checkout to redeem your discount:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
