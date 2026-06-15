@@ -35,6 +35,7 @@ class WorkersFactory {
     AbandonedCartWorker::TASK_TYPE,
     LogCleanup::TASK_TYPE,
     SendingTaskSubscribersCleanup::TASK_TYPE,
+    BounceTaskSubscribersCleanup::TASK_TYPE,
     SendingQueueBodyCleanup::TASK_TYPE,
     Tracks::TASK_TYPE,
     StatisticsExport::TASK_TYPE,
@@ -104,6 +105,11 @@ class WorkersFactory {
   /** @return SendingTaskSubscribersCleanup */
   public function createSendingTaskSubscribersCleanupWorker() {
     return $this->container->get(SendingTaskSubscribersCleanup::class);
+  }
+
+  /** @return BounceTaskSubscribersCleanup */
+  public function createBounceTaskSubscribersCleanupWorker() {
+    return $this->container->get(BounceTaskSubscribersCleanup::class);
   }
 
   /** @return SendingQueueBodyCleanup */

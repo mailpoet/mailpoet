@@ -289,6 +289,52 @@ class ScheduledTaskSubscribersRepository extends Repository {
     return (int)$deleted;
   }
 
+  public function purgeCompletedBounceTaskSubscribers(int $taskBatchSize, int $rowLimit): int {
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+
+    $taskIds = $this->entityManager->getConnection()->executeQuery(
+      "SELECT DISTINCT st.`id`
+       FROM `{$stTable}` st
+       INNER JOIN `{$stsTable}` sts ON sts.`task_id` = st.`id`
+       WHERE st.`type` = :type
+         AND st.`status` = :status
+         AND st.`deleted_at` IS NULL
+       LIMIT :taskBatchSize",
+      [
+        'type' => 'bounce',
+        'status' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'taskBatchSize' => $taskBatchSize,
+      ],
+      [
+        'type' => ParameterType::STRING,
+        'status' => ParameterType::STRING,
+        'taskBatchSize' => ParameterType::INTEGER,
+      ]
+    )->fetchFirstColumn();
+
+    if (!$taskIds) {
+      return 0;
+    }
+
+    /** @var int[] $taskIds */
+    $taskIdsList = implode(',', array_map('intval', $taskIds));
+
+    $deleted = $this->entityManager->getConnection()->executeStatement(
+      "DELETE FROM `{$stsTable}`
+       WHERE `task_id` IN ({$taskIdsList})
+       LIMIT :rowLimit",
+      [
+        'rowLimit' => $rowLimit,
+      ],
+      [
+        'rowLimit' => ParameterType::INTEGER,
+      ]
+    );
+
+    return (int)$deleted;
+  }
+
   private function checkCompleted(ScheduledTaskEntity $task): void {
     $count = $this->countUnprocessed($task);
     if ($count === 0) {
