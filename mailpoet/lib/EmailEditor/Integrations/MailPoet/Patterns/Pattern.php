@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
 use Automattic\WooCommerce\EmailEditor\Engine\Patterns\Abstract_Pattern;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlock;
 use MailPoet\Util\CdnAssetUrl;
 
 abstract class Pattern extends Abstract_Pattern {
@@ -97,6 +98,20 @@ abstract class Pattern extends Abstract_Pattern {
       <!-- /wp:woocommerce/product-template -->
       </div>
       <!-- /wp:woocommerce/product-collection -->
+    ';
+  }
+
+  protected function getGeneratedCouponBlock(string $align, int $amount, int $expiryDay): string {
+    $attributes = CouponBlock::withCreateNewDefaults([
+      'align' => $align,
+      'amount' => $amount,
+      'expiryDay' => $expiryDay,
+    ]);
+
+    return '
+      <!-- wp:woocommerce/coupon-code ' . wp_json_encode($attributes, JSON_UNESCAPED_SLASHES) . ' -->
+      <div class="wp-block-woocommerce-coupon-code align' . esc_attr($align) . '"><strong>' . CouponBlock::SAFE_PLACEHOLDER . '</strong></div>
+      <!-- /wp:woocommerce/coupon-code -->
     ';
   }
 
