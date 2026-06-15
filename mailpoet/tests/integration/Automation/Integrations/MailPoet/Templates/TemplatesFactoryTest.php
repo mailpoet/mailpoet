@@ -126,6 +126,12 @@ class TemplatesFactoryTest extends MailPoetTest {
     ];
   }
 
+  public function testWinBackCustomersTemplateIsNotReturned(): void {
+    $factory = $this->createFactory();
+
+    $this->assertNull($this->findTemplateBySlug($factory->createTemplates(), 'win-back-customers'));
+  }
+
   /**
    * The first purchase template filters on WooCommerce order fields, which can
    * only be built with an active WooCommerce, so these tests run in the woo jobs.
@@ -299,100 +305,6 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('We appreciate your continued support', $args['preheader']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
-  }
-
-  /**
-   * @group woo
-   */
-  public function testWinBackCustomersTemplateCreatesBlockEditorEmails(): void {
-    $this->ensureWooCommerceTriggerRegistered('woocommerce:order-completed');
-    $this->emailFactory->expects($this->exactly(2))
-      ->method('createBlockEditorEmail')
-      ->withConsecutive(
-        [[
-          'pattern' => 'win-back-customer-reminder',
-          'subject' => 'It’s been a while…',
-          'preheader' => 'Products picked from their last order',
-        ]],
-        [[
-          'pattern' => 'win-back-customer-final-nudge',
-          'subject' => 'We’ve missed you',
-          'preheader' => 'Recommended picks are waiting',
-        ]]
-      )
-      ->willReturnOnConsecutiveCalls(
-        [
-          'email_id' => 123,
-          'email_wp_post_id' => 456,
-        ],
-        [
-          'email_id' => 789,
-          'email_wp_post_id' => 101,
-        ]
-      );
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), 'win-back-customers');
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation();
-
-    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), 'woocommerce:order-completed'));
-    $sendEmailSteps = $this->getStepsByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertCount(2, $sendEmailSteps);
-
-    $firstEmailArgs = $sendEmailSteps[0]->getArgs();
-    $this->assertSame('It’s been a while…', $firstEmailArgs['name']);
-    $this->assertSame('It’s been a while…', $firstEmailArgs['subject']);
-    $this->assertSame('Products picked from their last order', $firstEmailArgs['preheader']);
-    $this->assertSame(123, $firstEmailArgs['email_id']);
-    $this->assertSame(456, $firstEmailArgs['email_wp_post_id']);
-
-    $secondEmailArgs = $sendEmailSteps[1]->getArgs();
-    $this->assertSame('We’ve missed you', $secondEmailArgs['name']);
-    $this->assertSame('We’ve missed you', $secondEmailArgs['subject']);
-    $this->assertSame('Recommended picks are waiting', $secondEmailArgs['preheader']);
-    $this->assertSame(789, $secondEmailArgs['email_id']);
-    $this->assertSame(101, $secondEmailArgs['email_wp_post_id']);
-
-    $ifElseSteps = $this->getStepsByKey($automation->getSteps(), 'core:if-else');
-    $this->assertCount(2, $ifElseSteps);
-
-    $firstFilters = $ifElseSteps[0]->getFilters();
-    $this->assertNotNull($firstFilters);
-    $firstOrderCountFilter = $firstFilters->getGroups()[0]->getFilters()[0];
-    $this->assertSame(1, $firstOrderCountFilter->getArgs()['value']);
-
-    $secondFilters = $ifElseSteps[1]->getFilters();
-    $this->assertNotNull($secondFilters);
-    $secondOrderCountFilter = $secondFilters->getGroups()[0]->getFilters()[0];
-    $this->assertSame(0, $secondOrderCountFilter->getArgs()['value']);
-
-    foreach ($ifElseSteps as $ifElseStep) {
-      $this->assertCount(2, $ifElseStep->getNextSteps());
-    }
-  }
-
-  /**
-   * @group woo
-   */
-  public function testWinBackCustomersTemplatePreviewDoesNotCreatePersistentEmails(): void {
-    $this->ensureWooCommerceTriggerRegistered('woocommerce:order-completed');
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), 'win-back-customers');
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-    $sendEmailSteps = $this->getStepsByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertCount(2, $sendEmailSteps);
-
-    foreach ($sendEmailSteps as $sendEmailStep) {
-      $args = $sendEmailStep->getArgs();
-      $this->assertArrayNotHasKey('email_id', $args);
-      $this->assertArrayNotHasKey('email_wp_post_id', $args);
-    }
   }
 
   public function testBirthdayEmailTemplateCreatesBlockEditorEmail(): void {
@@ -594,13 +506,5 @@ class TemplatesFactoryTest extends MailPoetTest {
   private function getFirstStepByKey(array $steps, string $key): ?Step {
     $matches = array_values(array_filter($steps, fn(Step $step) => $step->getKey() === $key));
     return $matches[0] ?? null;
-  }
-
-  /**
-   * @param Step[] $steps
-   * @return Step[]
-   */
-  private function getStepsByKey(array $steps, string $key): array {
-    return array_values(array_filter($steps, fn(Step $step) => $step->getKey() === $key));
   }
 }
