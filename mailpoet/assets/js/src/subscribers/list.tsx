@@ -785,12 +785,19 @@ function SubscriberList() {
   // select-all + Move to trash emptied the filtered list, so the backend
   // dropped it from the options), the dropdown would show "All Lists" while the
   // query stayed filtered — "No items found" with a stale hash. Clear the
-  // orphaned filter so a valid list shows automatically.
+  // orphaned filter so a valid list shows automatically. Treat it like any
+  // other filter change: drop the selection/select-all intent and reset to the
+  // first page so no hidden selection survives the scope change.
   useEffect(() => {
-    setFilter(
-      (current) => pruneUnavailableFilters(current, filters) ?? current,
-    );
-  }, [filters]);
+    const pruned = pruneUnavailableFilters(filter, filters);
+    if (!pruned) {
+      return;
+    }
+    setFilter(pruned);
+    setSelection([]);
+    setSelectAll(false);
+    setView((currentView) => ({ ...currentView, page: 1 }));
+  }, [filter, filters, setView]);
 
   // DataViews has no built-in URL state, so back/forward inside the listing
   // is wired manually. Browser navigation fires `hashchange`; programmatic
@@ -1312,6 +1319,18 @@ function SubscriberList() {
           )}
         </p>
       ) : null;
+    // Select-all permanent delete keeps WordPress users and WooCommerce
+    // customers (SubscribersRepository::bulkDelete only deletes rows with no
+    // linked WP/Woo account), so the count above can overstate what is removed.
+    const deleteSkipCaveat =
+      pendingSelectAll && action === 'delete' ? (
+        <p className="mailpoet-subscribers-select-all-caveat">
+          {__(
+            'WordPress users and WooCommerce customers are kept and will not be permanently deleted.',
+            'mailpoet',
+          )}
+        </p>
+      ) : null;
 
     if (SELECT_ALL_GENERIC_CONFIRM_ACTIONS.includes(action)) {
       return (
@@ -1327,6 +1346,7 @@ function SubscriberList() {
             ).replace('%s', formatCount(count))}
           </p>
           {largeOpCaveat}
+          {deleteSkipCaveat}
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
               onClick={() => handlePendingActionSubmit()}
