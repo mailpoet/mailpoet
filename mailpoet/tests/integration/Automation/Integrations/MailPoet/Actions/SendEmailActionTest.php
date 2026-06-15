@@ -881,6 +881,13 @@ class SendEmailActionTest extends \MailPoetTest {
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
     ];
 
+    $bookingStartsTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce-bookings:booking-starts', [], [new NextStep('emailstep')]);
+
+    $isTransactionalWithBookingStarts = [
+      'steps' => [$root, $bookingStartsTrigger, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ];
+
     $orderPaidTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-paid', [], [new NextStep('emailstep')]);
 
     $isTransactionalWithOrderPaid = [
@@ -899,6 +906,7 @@ class SendEmailActionTest extends \MailPoetTest {
       'is_marketing_with_delay_in_branch' => $isMarketingWithDelayInBranch,
       'is_transactional_with_booking_created' => $isTransactionalWithBookingCreated,
       'is_transactional_with_booking_status_changed' => $isTransactionalWithBookingStatusChanged,
+      'is_transactional_with_booking_starts' => $isTransactionalWithBookingStarts,
       'is_transactional_with_order_paid' => $isTransactionalWithOrderPaid,
     ];
   }
