@@ -43,13 +43,17 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function cleanupCachedFiles() {
+  public function cleanupCachedFiles($opts = ['include-plugins' => false]) {
     $this->say('Cleaning up generated folder.');
     $this->_exec('rm -rf ' . __DIR__ . '/generated/*');
     $this->say('Cleaning up PHPStan cache.');
     $this->_exec('rm -rf ' . __DIR__ . '/temp/*');
-    $this->say('Cleaning up old testing plugins.');
-    $this->_exec('rm -rf ' . __DIR__ . '/tests/plugins/*');
+    if (!empty($opts['include-plugins'])) {
+      $this->say('Cleaning up old testing plugins.');
+      $this->_exec('rm -rf ' . __DIR__ . '/tests/plugins/*');
+    } else {
+      $this->say('Skipping testing plugins cleanup. Use --include-plugins to remove them.');
+    }
   }
 
   public function update() {
