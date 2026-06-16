@@ -200,6 +200,8 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$this->newsletter->getId());
     $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
     $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID), (string)$this->subscriber->getId());
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
     $order->save_meta_data();
     return $order;
   }

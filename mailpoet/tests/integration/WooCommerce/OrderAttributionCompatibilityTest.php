@@ -128,6 +128,61 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
     ];
   }
 
+  public function testWooBackedRevenueMatchesWooMailPoetSourceForArbitratedOrders(): void {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
+    update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, '2000-01-01 00:00:00');
+
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $newerEmailClickOrder = $this->createOrder($this->subscriber->getEmail(), false, 30);
+    $this->completeOrderWithWooSource(
+      $newerEmailClickOrder,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), -DAY_IN_SECONDS)
+    );
+
+    $olderEmailClickOrder = $this->createOrder($this->subscriber->getEmail(), false, 40);
+    $this->completeOrderWithWooSource(
+      $olderEmailClickOrder,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), DAY_IN_SECONDS)
+    );
+
+    $unknownSourceOrder = $this->createOrder($this->subscriber->getEmail(), false, 20);
+    $this->completeOrderWithWooSource($unknownSourceOrder, 'unknown', '', null);
+
+    $unparseableSessionOrder = $this->createOrder($this->subscriber->getEmail(), false, 50);
+    $this->completeOrderWithWooSource($unparseableSessionOrder, 'utm', 'google', 'not-a-date');
+
+    $reader = $this->diContainer->get(OrderAttributionRevenueReader::class);
+    $revenues = $reader->getNewsletterRevenues(
+      [(int)$this->newsletter->getId()],
+      new DateTimeImmutable('@0'),
+      new DateTimeImmutable('+1 day')
+    );
+    $mailPoetRevenue = $revenues[(int)$this->newsletter->getId()] ?? ['total' => 0.0, 'count' => 0];
+    $wooMailPoetRevenue = $this->getWooMailPoetSourceRevenue([
+      $newerEmailClickOrder,
+      $olderEmailClickOrder,
+      $unknownSourceOrder,
+      $unparseableSessionOrder,
+    ]);
+
+    verify($mailPoetRevenue)->equals($wooMailPoetRevenue);
+    verify($mailPoetRevenue['total'])->equals(50.0);
+    verify($mailPoetRevenue['count'])->equals(2);
+
+    $olderEmailClickOrder = $this->reloadOrder($olderEmailClickOrder);
+    verify($olderEmailClickOrder->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))
+      ->equals((string)$click->getId());
+    verify($olderEmailClickOrder->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
+  }
+
   private function writeThroughContext(string $context, WC_Order $order): void {
     switch ($context) {
       case self::CONTEXT_CLASSIC_BLOCK_CHECKOUT:
@@ -207,16 +262,55 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
     return $rows ?? [];
   }
 
-  private function createOrder(string $billingEmail, bool $loggedIn): WC_Order {
+  private function createOrder(string $billingEmail, bool $loggedIn, float $total = 15.0): WC_Order {
     $order = wc_create_order();
     $this->assertInstanceOf(WC_Order::class, $order);
     $order->set_billing_email($billingEmail);
-    $order->set_total('15');
+    $order->set_total((string)$total);
     if ($loggedIn) {
       $order->set_customer_id($this->ensureWpUser($billingEmail));
     }
     $order->save();
     return $order;
+  }
+
+  private function completeOrderWithWooSource(
+    WC_Order $order,
+    string $sourceType,
+    string $utmSource,
+    ?string $sessionStartTime
+  ): void {
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), $sourceType);
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), $utmSource);
+    if ($sessionStartTime !== null) {
+      $order->update_meta_data(OrderAttributionFields::getMetaKey('session_start_time'), $sessionStartTime);
+    }
+    $order->save_meta_data();
+    $order->set_status('completed');
+    $order->save();
+  }
+
+  /**
+   * @param WC_Order[] $orders
+   * @return array{total: float, count: int}
+   */
+  private function getWooMailPoetSourceRevenue(array $orders): array {
+    $revenue = ['total' => 0.0, 'count' => 0];
+    foreach ($orders as $order) {
+      $order = $this->reloadOrder($order);
+      if ($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')) !== 'mailpoet') {
+        continue;
+      }
+      $revenue['total'] += (float)$order->get_remaining_refund_amount();
+      $revenue['count']++;
+    }
+    return $revenue;
+  }
+
+  private function formatWooSessionStartTime(\DateTimeInterface $date, int $offsetSeconds = 0): string {
+    return (new \DateTimeImmutable('@' . ($date->getTimestamp() + $offsetSeconds)))
+      ->setTimezone(wp_timezone())
+      ->format('Y-m-d H:i:s');
   }
 
   private function ensureWpUser(string $email): int {
