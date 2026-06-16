@@ -167,6 +167,34 @@ class CliTest extends \MailPoetTest {
     $this->cli->run($file, self::DEFAULT_OPTIONS);
   }
 
+  public function testItThrowsOnCaseInsensitiveDuplicateColumn(): void {
+    $file = $this->writeCsv([
+      ['Email', 'email'],
+      ['first@example.com', 'second@example.com'],
+    ]);
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Duplicate CSV column(s) mapping to the same field: Email, email');
+    $this->cli->run($file, self::DEFAULT_OPTIONS);
+  }
+
+  public function testItThrowsOnDuplicateCustomFieldColumn(): void {
+    $customField = $this->customFieldsRepository->createOrUpdate([
+      'name' => 'Country',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+    ]);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+
+    $file = $this->writeCsv([
+      ['email', 'Country', 'Country'],
+      ['traveler@example.com', 'France', 'Spain'],
+    ]);
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Duplicate CSV column(s) mapping to the same field');
+    $this->cli->run($file, self::DEFAULT_OPTIONS);
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
