@@ -14,6 +14,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
+use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -40,6 +41,9 @@ class EmailApiController {
   /** @var ShareVisibility */
   private $shareVisibility;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     NewslettersRepository $newsletterRepository,
     NewsletterUrl $newsletterUrl,
@@ -47,7 +51,8 @@ class EmailApiController {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
     EntityManager $entityManager,
-    ShareVisibility $shareVisibility
+    ShareVisibility $shareVisibility,
+    SettingsController $settings
   ) {
     $this->newsletterRepository = $newsletterRepository;
     $this->newsletterUrl = $newsletterUrl;
@@ -56,6 +61,7 @@ class EmailApiController {
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->entityManager = $entityManager;
     $this->shareVisibility = $shareVisibility;
+    $this->settings = $settings;
   }
 
   /**
@@ -68,10 +74,13 @@ class EmailApiController {
     $showInArchive = $newsletter
       ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE) !== '1'
       : true;
+    $sender = $this->resolveSender($newsletter);
     return [
       'id' => $newsletter ? $newsletter->getId() : null,
       'subject' => $newsletter ? $newsletter->getSubject() : '',
       'preheader' => $newsletter ? $newsletter->getPreheader() : '',
+      'sender_name' => $sender['name'],
+      'sender_address' => $sender['address'],
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
       'deleted_at' => $newsletter && $newsletter->getDeletedAt() !== null ? $newsletter->getDeletedAt()->format('c') : null,
       'scheduled_at' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT) : null,
@@ -89,6 +98,27 @@ class EmailApiController {
         : $this->shareVisibility->getDefaultVisibility(),
       'can_share' => $newsletter ? $this->shareVisibility->canShare($newsletter) : false,
       'show_in_archive' => $showInArchive,
+    ];
+  }
+
+  /**
+   * Resolves the sender address and name using the same logic as the mailer.
+   * The newsletter's own sender is used only when it has an address, otherwise
+   * the whole sender falls back to the default configured in settings.
+   *
+   * @return array{name: string, address: string}
+   */
+  private function resolveSender(?NewsletterEntity $newsletter): array {
+    if ($newsletter && $newsletter->getSenderAddress()) {
+      return [
+        'name' => (string)$newsletter->getSenderName(),
+        'address' => (string)$newsletter->getSenderAddress(),
+      ];
+    }
+    $defaultSender = $this->settings->get('sender', []);
+    return [
+      'name' => (string)($defaultSender['name'] ?? ''),
+      'address' => (string)($defaultSender['address'] ?? ''),
     ];
   }
 
@@ -258,6 +288,8 @@ class EmailApiController {
       'id' => Builder::integer()->nullable(),
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
+      'sender_name' => Builder::string(),
+      'sender_address' => Builder::string(),
       'preview_url' => Builder::string(),
       'deleted_at' => Builder::string()->nullable(),
       'scheduled_at' => Builder::string()->nullable(),

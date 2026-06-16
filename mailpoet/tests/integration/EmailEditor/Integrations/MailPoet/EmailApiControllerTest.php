@@ -9,6 +9,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
@@ -22,9 +23,13 @@ class EmailApiControllerTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     $this->emailApiController = $this->diContainer->get(EmailApiController::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->settings = $this->diContainer->get(SettingsController::class);
   }
 
   public function testItGetsEmailDataFromNewsletterEntity(): void {
@@ -39,6 +44,58 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($emailData['subject'])->equals('New subject');
     verify($emailData['preheader'])->equals('New preheader');
     verify($emailData['id'])->equals($newsletter->getId());
+  }
+
+  public function testItUsesNewsletterSenderWhenAddressIsSet(): void {
+    $wpPostId = 20;
+    (new NewsletterFactory())
+      ->withSenderName('Jane Doe')
+      ->withSenderAddress('jane@example.com')
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+    verify($emailData['sender_name'])->equals('Jane Doe');
+    verify($emailData['sender_address'])->equals('jane@example.com');
+  }
+
+  public function testItFallsBackToDefaultSenderWhenNewsletterAddressIsMissing(): void {
+    $wpPostId = 21;
+    (new NewsletterFactory())
+      ->withSenderName('')
+      ->withSenderAddress('')
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+    verify($emailData['sender_name'])->equals('Default Name');
+    verify($emailData['sender_address'])->equals('default@example.com');
+  }
+
+  public function testItKeepsNewsletterSenderNameEmptyWhenOnlyAddressIsSet(): void {
+    $wpPostId = 22;
+    (new NewsletterFactory())
+      ->withSenderName('')
+      ->withSenderAddress('jane@example.com')
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+
+    $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+    verify($emailData['sender_name'])->equals('');
+    verify($emailData['sender_address'])->equals('jane@example.com');
+  }
+
+  public function testEmailDataSchemaIncludesSenderStrings(): void {
+    $schema = $this->emailApiController->getEmailDataSchema();
+
+    verify($schema['properties']['sender_name']['type'])->equals('string');
+    verify($schema['properties']['sender_address']['type'])->equals('string');
   }
 
   public function testItGetsSharingEmailData(): void {
