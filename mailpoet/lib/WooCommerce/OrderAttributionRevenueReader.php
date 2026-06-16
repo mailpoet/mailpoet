@@ -535,6 +535,7 @@ class OrderAttributionRevenueReader {
       OrderAttributionFields::FIELD_SUBSCRIBER_ID,
       OrderAttributionFields::FIELD_QUEUE_ID,
     ]);
+    $utmSourceMetaKey = OrderAttributionFields::getMetaKey('utm_source');
 
     $having = 'click_id IS NOT NULL AND click_id <> \'\' AND newsletter_id IS NOT NULL AND newsletter_id <> \'\'';
     $havingParams = [];
@@ -558,6 +559,9 @@ class OrderAttributionRevenueReader {
           MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS subscriber_id,
           MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS queue_id
         FROM %i woo_order
+        INNER JOIN %i source_meta ON source_meta.%i = ' . $orderIdColumn . '
+          AND source_meta.meta_key = %s
+          AND source_meta.meta_value = %s
         INNER JOIN %i meta ON meta.%i = ' . $orderIdColumn . '
           AND meta.meta_key IN (%s, %s, %s, %s)
         WHERE 1 = 1
@@ -570,6 +574,10 @@ class OrderAttributionRevenueReader {
         $metaKeys,
         [
           $orderLookup['table'],
+          $meta['table'],
+          $meta['order_id_column'],
+          $utmSourceMetaKey,
+          'mailpoet',
           $meta['table'],
           $meta['order_id_column'],
         ],
@@ -724,6 +732,9 @@ class OrderAttributionRevenueReader {
 
     $params = [];
     $exists = [];
+    // Namespace completeness is intentional here: post-boundary legacy fallback
+    // must not re-add orders where email touched the order but did not win
+    // standard-source arbitration.
     foreach ($requiredFields as $fieldName) {
       $exists[] = 'EXISTS (SELECT 1 FROM %i woo_meta WHERE woo_meta.%i = ' . $orderIdExpression . ' AND woo_meta.meta_key = %s AND woo_meta.meta_value <> \'\')';
       $params[] = $meta['table'];
