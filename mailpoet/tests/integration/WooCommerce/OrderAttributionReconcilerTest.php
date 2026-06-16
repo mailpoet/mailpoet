@@ -123,6 +123,54 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
     verify($record['woo_revenue'])->equals(15.0);
   }
 
+  public function testItDoesNotRecordPreservedForeignSourceWhenMailPoetClickIsNewer(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta(
+      $order,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), -DAY_IN_SECONDS)
+    );
+
+    $this->completeOrder($order);
+
+    $order = $this->reloadOrder($order);
+    $record = $this->getRecord($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
+    verify($record['outcome'])->equals(OrderAttributionReconciler::OUTCOME_MATCH);
+    verify($record['reason'])->equals(OrderAttributionReconciler::REASON_MATCHED);
+    verify($record['classification'])->null();
+    verify($record['foreign_source_preserved'])->false();
+    verify($record['woo_click_id'])->equals($click->getId());
+  }
+
+  public function testItRecordsPreservedForeignSourceWhenMailPoetClickIsOlder(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta(
+      $order,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), DAY_IN_SECONDS)
+    );
+
+    $this->completeOrder($order);
+
+    $order = $this->reloadOrder($order);
+    $record = $this->getRecord($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
+    verify($record['outcome'])->equals(OrderAttributionReconciler::OUTCOME_DIVERGED);
+    verify($record['reason'])->equals(OrderAttributionReconciler::REASON_FOREIGN_SOURCE_PRESERVED);
+    verify($record['classification'])->equals(OrderAttributionReconciler::CLASSIFICATION_INTENTIONAL);
+    verify($record['foreign_source_preserved'])->true();
+    verify($record['woo_click_id'])->equals($click->getId());
+  }
+
   public function testItRecordsMissingWooAttribution(): void {
     $this->createClick($this->link, $this->subscriber);
     $this->entityManager->flush();
@@ -313,6 +361,24 @@ class OrderAttributionReconcilerTest extends \MailPoetTest {
     $reloaded = wc_get_order($order->get_id());
     $this->assertInstanceOf(WC_Order::class, $reloaded);
     return $reloaded;
+  }
+
+  private function setWooSourceMeta(
+    WC_Order $order,
+    string $sourceType,
+    string $utmSource,
+    string $sessionStartTime
+  ): void {
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), $sourceType);
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), $utmSource);
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('session_start_time'), $sessionStartTime);
+    $order->save_meta_data();
+  }
+
+  private function formatWooSessionStartTime(\DateTimeInterface $date, int $offsetSeconds = 0): string {
+    return (new \DateTimeImmutable('@' . ($date->getTimestamp() + $offsetSeconds)))
+      ->setTimezone(wp_timezone())
+      ->format('Y-m-d H:i:s');
   }
 
   /**
