@@ -25,9 +25,13 @@ trait NonPersistablePreviewData {
   abstract public function get_id();
 
   /**
+   * Accepts an optional argument so the signature stays compatible with
+   * WooCommerce types whose save() takes a parameter (e.g. WC_Booking::save($status_transition)).
+   *
+   * @param bool $statusTransition Ignored; nothing is written to the database.
    * @return int|string The placeholder ID; nothing is written to the database.
    */
-  public function save() {
+  public function save($statusTransition = true) {
     $this->logPreviewPersistAttempt('save');
     return $this->get_id();
   }
