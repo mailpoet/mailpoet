@@ -550,18 +550,23 @@ class PatternsControllerTest extends \MailPoetTest {
       'booking-pre-visit-what-to-expect' => [
         'heading' => 'What to expect at your booking',
         'cta' => 'View our site',
+        'hasEndDate' => true,
       ],
       'booking-pre-visit-tips' => [
         'heading' => 'Make the most of your booking',
         'cta' => 'Review details',
+        'hasEndDate' => true,
       ],
       'booking-post-visit-review' => [
         'heading' => 'How was your booking?',
         'cta' => 'Leave feedback',
+        'hasEndDate' => true,
       ],
+      // The rebooking nudge fires after the visit, so it recaps the past start date only.
       'booking-next-booking-nudge' => [
         'heading' => 'Ready for your next booking?',
         'cta' => 'Book again',
+        'hasEndDate' => false,
       ],
     ];
 
@@ -574,7 +579,11 @@ class PatternsControllerTest extends \MailPoetTest {
       $this->assertStringContainsString('<!--[mailpoet/subscriber-firstname default="there"]-->', $content);
       $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-product-name]-->', $content);
       $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-start-date]-->', $content);
-      $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
+      if ($expected['hasEndDate']) {
+        $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
+      } else {
+        $this->assertStringNotContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
+      }
     }
   }
 

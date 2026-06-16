@@ -149,12 +149,16 @@ class BookingAutomationEmailPattern extends Pattern {
         [
           sprintf(
             /* translators: 1: Subscriber first name personalization tag, 2: WooCommerce booking product name personalization tag */
-            __('Hi %1$s, it has been a little while since your %2$s booking. We would love to see you again.', 'mailpoet'),
+            __('Hi %1$s, it’s been a little while since your %2$s booking, and we’d love to welcome you back.', 'mailpoet'),
             $this->getSubscriberFirstNameTag(),
             '<!--[mailpoet/woocommerce-booking-product-name]-->'
           ),
-          $this->getBookingDetailsCopy(),
-          __('Book your next visit whenever you are ready. If you need help choosing a time, reply to this email and we’ll point you in the right direction.', 'mailpoet'),
+          sprintf(
+            /* translators: %s: WooCommerce booking start date personalization tag */
+            __('Last time, you joined us on %s. We hope it was time well spent.', 'mailpoet'),
+            '<!--[mailpoet/woocommerce-booking-start-date]-->'
+          ),
+          __('Whenever you’re ready for your next visit, we’ll be glad to have you. Just reply to this email if you’d like a hand picking a time.', 'mailpoet'),
         ],
         __('Book again', 'mailpoet'),
         __('Hope to see you soon,', 'mailpoet')

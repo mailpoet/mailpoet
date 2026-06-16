@@ -71,4 +71,34 @@ class Helper {
 
     return get_wc_booking($id);
   }
+
+  /**
+   * Counts a customer's bookings created within the last $seconds, excluding one booking id
+   * (typically the booking that triggered the automation) and cancelled/in-cart bookings.
+   *
+   * Used to detect whether a customer has booked again, e.g. before sending a rebooking nudge.
+   */
+  public function countRecentCustomerBookings(int $customerId, int $seconds, int $excludeBookingId = 0): int {
+    if ($customerId <= 0 || $seconds <= 0 || !class_exists(\WC_Booking_Data_Store::class)) {
+      return 0;
+    }
+
+    $threshold = time() - $seconds;
+    $ignoredStatuses = ['cancelled', 'was-in-cart', 'in-cart'];
+    $count = 0;
+    foreach (\WC_Booking_Data_Store::get_bookings_for_user($customerId) as $booking) {
+      if (!$booking instanceof \WC_Booking || $booking->get_id() === $excludeBookingId) {
+        continue;
+      }
+      if (in_array($booking->get_status(), $ignoredStatuses, true)) {
+        continue;
+      }
+      $created = $booking->get_date_created();
+      if ($created && $created->getTimestamp() >= $threshold) {
+        $count++;
+      }
+    }
+
+    return $count;
+  }
 }
