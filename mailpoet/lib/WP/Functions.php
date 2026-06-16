@@ -337,6 +337,14 @@ class Functions {
     return get_post_type($post);
   }
 
+  /**
+   * @param string $status
+   * @return object|null
+   */
+  public function getPostStatusObject($status) {
+    return get_post_status_object($status);
+  }
+
   public function getPosts(?array $args = null) {
     return get_posts($args);
   }
