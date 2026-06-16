@@ -29,7 +29,7 @@ class BounceTaskSubscribersCleanup extends SimpleWorker {
   const TASK_TYPE = 'bounce_task_subscribers_cleanup';
   const TASK_BATCH_SIZE = 200;
   const ROW_BATCH_SIZE = 10000;
-  const MAX_EXECUTION_TIME = 30;
+  const MAX_EXECUTION_TIME = 10;
   const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var ScheduledTaskSubscribersRepository */
