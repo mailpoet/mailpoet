@@ -51,16 +51,16 @@ class ManageSegmentsCest {
     // config; the listing also reads it from the URL, so drive it from there.
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[segment=' . $segment->getId() . ']/limit[1]');
     $i->reloadPage(); // to avoid flakyness we reload page manually
-    $i->wantTo('Reorder subscribers by email and check if correct subscribes are present');
-    // DataViews wraps sortable column labels in a button that opens a sort
-    // popover (Sort ascending / descending), and exposes pagination via
-    // aria-labelled icon buttons in `.dataviews-pagination`. Pick "Sort
-    // ascending" explicitly, then page forward.
+    $i->wantTo('Reorder subscribers by the Created on column and check if correct subscribers are present');
+    // Created on is the only sortable column; its header button opens the sort
+    // popover (Sort ascending / descending). Pagination is exposed via
+    // aria-labelled icon buttons in `.dataviews-pagination`. Sort ascending so
+    // the earliest-created editor lands on the first page, then page forward.
     $nextPageButton = ['xpath' => '//*[contains(@class, "dataviews-pagination")]//button[@aria-label="Next page"]'];
-    $subscriberHeaderButton = ['xpath' => '//th//button[normalize-space(.)="Subscriber"]'];
+    $createdOnHeaderButton = ['xpath' => '//th//button[contains(@class, "dataviews-view-table-header-button")][contains(normalize-space(.), "Created on")]'];
     $sortAscendingItem = ['xpath' => '//*[@role="menuitem" or @role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]'];
     $i->waitForElementClickable($nextPageButton);
-    $i->click($subscriberHeaderButton);
+    $i->click($createdOnHeaderButton);
     $i->waitForElementClickable($sortAscendingItem);
     $i->click($sortAscendingItem);
     $i->waitForText($wpEditorEmail, 20);
