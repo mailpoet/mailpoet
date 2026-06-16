@@ -14,6 +14,10 @@ class API {
 
   const REQUEST_TIMEOUT = 10; // seconds
 
+  // ISO 8601 in UTC, e.g. 2026-06-15T23:59:59Z. The bounces report endpoint
+  // parses the `from`/`to` parameters with `new DateTime($value, UTC)`.
+  const BOUNCES_REPORT_DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
+
   const RESPONSE_CODE_KEY_INVALID = 401;
   const RESPONSE_CODE_STATS_SAVED = 204;
   const RESPONSE_CODE_CREATED = 201;
@@ -61,7 +65,7 @@ class API {
   public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
   public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
   public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
-  public $urlBounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
+  public $urlBouncesReport = 'https://bridge.mailpoet.com/api/v0/bounces/report';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
@@ -161,15 +165,34 @@ class API {
     return ['status' => self::RESPONSE_STATUS_OK];
   }
 
-  public function checkBounces(array $emails) {
-    $result = $this->request(
-      $this->urlBounces,
-      $emails
+  /**
+   * Fetch a single page of bounced recipients reported between $from and $to.
+   *
+   * Mirrors the WordPress-registered `GET bounces/report` endpoint:
+   * required `from`/`to` datetime range, 1-based `p` pagination, and a
+   * response of the shape `{ recipients: string[], page: int, has_more: bool }`.
+   * Returns null on a failed request.
+   */
+  public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): ?array {
+    $utc = new \DateTimeZone('UTC');
+    $fromUtc = (new \DateTimeImmutable('@' . $from->getTimestamp()))->setTimezone($utc);
+    $toUtc = (new \DateTimeImmutable('@' . $to->getTimestamp()))->setTimezone($utc);
+
+    $url = $this->wp->addQueryArg(
+      [
+        'from' => $fromUtc->format(self::BOUNCES_REPORT_DATE_FORMAT),
+        'to' => $toUtc->format(self::BOUNCES_REPORT_DATE_FORMAT),
+        'p' => $page,
+      ],
+      $this->urlBouncesReport
     );
-    if ($this->wp->wpRemoteRetrieveResponseCode($result) === 200) {
-      return json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+
+    $result = $this->request($url, null, 'GET');
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+      return null;
     }
-    return false;
+    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    return is_array($data) ? $data : null;
   }
 
   public function updateSubscriberCount($count): bool {

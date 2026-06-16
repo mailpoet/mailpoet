@@ -891,22 +891,6 @@ class SubscribersRepository extends Repository {
     $this->flush();
   }
 
-  /**
-   * @param array $ids
-   * @return string[]
-   */
-  public function getUndeletedSubscribersEmailsByIds(array $ids): array {
-    $rows = $this->entityManager->createQueryBuilder()
-      ->select('s.email')
-      ->from(SubscriberEntity::class, 's')
-      ->where('s.deletedAt IS NULL')
-      ->andWhere('s.id IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()
-      ->getArrayResult();
-    return array_values(array_filter(array_column(is_array($rows) ? $rows : [], 'email'), 'is_string'));
-  }
-
   public function getMaxSubscriberId(): int {
     $maxSubscriberId = $this->entityManager->createQueryBuilder()
       ->select('MAX(s.id)')

@@ -10,7 +10,6 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -27,6 +26,9 @@ class BounceTest extends \MailPoetTest {
   /** @var Bounce */
   private $worker;
 
+  /** @var MockAPI */
+  private $api;
+
   /** @var string[] */
   private $emails;
 
@@ -35,9 +37,6 @@ class BounceTest extends \MailPoetTest {
 
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
-
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -48,7 +47,6 @@ class BounceTest extends \MailPoetTest {
       'unconfirmed@example.com',
     ];
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
 
     foreach ($this->emails as $email) {
@@ -58,34 +56,21 @@ class BounceTest extends \MailPoetTest {
       $this->subscribersRepository->persist($subscriber);
     }
 
-    $this->worker = new Bounce(
-      $this->diContainer->get(SettingsController::class),
-      $this->subscribersRepository,
-      $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(StatisticsBouncesRepository::class),
-      $this->diContainer->get(ScheduledTaskSubscribersRepository::class),
-      $this->diContainer->get(Bridge::class)
-    );
+    $this->worker = $this->createWorker();
 
-    $this->worker->api = new MockAPI();
+    $this->api = new MockAPI();
+    $this->worker->api = $this->api;
     $this->subscribersRepository->flush();
     $this->entityManager->clear();
   }
 
   public function testItDefinesConstants() {
-    verify(Bounce::BATCH_SIZE)->equals(100);
+    verify(Bounce::MAX_LOOKBACK_DAYS)->equals(14);
   }
 
   public function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
-    $worker = new Bounce(
-      $this->diContainer->get(SettingsController::class),
-      $this->subscribersRepository,
-      $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(StatisticsBouncesRepository::class),
-      $this->diContainer->get(ScheduledTaskSubscribersRepository::class),
-      $this->diContainer->get(Bridge::class)
-    );
+    $worker = $this->createWorker();
     $worker->init();
     verify($worker->api instanceof API)->true();
   }
@@ -96,102 +81,103 @@ class BounceTest extends \MailPoetTest {
     verify($this->worker->checkProcessingRequirements())->true();
   }
 
-  public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
-    // 1st run - subscribers will be processed
-    $task = $this->createScheduledTask();
-    $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->notEmpty();
-
-    // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
-    $this->truncateEntity(SubscriberEntity::class);
-    $task = $this->createScheduledTask();
-    $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->empty();
-  }
-
-  public function testItPreparesTask() {
-    $task = $this->createScheduledTask();
-    verify($this->scheduledTaskSubscribersRepository->countBy([
-      'task' => $task,
-      'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-    ]))->equals(0);
-    $result = $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->emails)->arrayCount($this->scheduledTaskSubscribersRepository->countBy([]));
-    verify($result)->true();
-    verify($this->scheduledTaskSubscribersRepository->countBy([
-      'task' => $task,
-      'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-    ]))->equals(count($this->emails));
-  }
-
-  public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
-    // prepare subscribers
-    $task = $this->createScheduledTask();
-    $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->notEmpty();
-
-    // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
-    $task = $this->createScheduledTask();
-    $this->worker->processTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->empty();
-  }
-
-  public function testItProcessesTask() {
+  public function testItMarksReturnedRecipientsAsBounced() {
     $task = $this->createRunningTask();
-    $this->worker->prepareTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersCount($task, ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->notEmpty();
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+    verify($completed)->true();
 
-    $this->worker->processTaskStrategy($task, microtime(true));
-    verify($this->scheduledTaskSubscribersCount($task, ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->notEmpty();
+    verify($this->getSubscriberStatus('soft_bounce@example.com'))->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($this->getSubscriberStatus('hard_bounce@example.com'))->equals(SubscriberEntity::STATUS_BOUNCED);
+    verify($this->getSubscriberStatus('good_address@example.com'))->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($this->getSubscriberStatus('unconfirmed@example.com'))->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
-  /**
-   * Regression for STOMAIL-8000 wave 6: Bounce::processTaskStrategy must
-   * forward the resolved subscriber emails to the API. Earlier versions paired
-   * SubscribersRepository::getUndeletedSubscribersEmailsByIds (returned
-   * associative rows despite the docblock claiming string[]) with
-   * array_column(..., 'email') in the worker. Wave 6 cleaned the repository
-   * up to actually return string[] and dropped the array_column call. If the
-   * two sides of that contract ever drift again, processEmails() ends up
-   * called with [] and bounces silently stop being processed.
-   */
-  public function testItForwardsResolvedEmailsToBridgeApi() {
+  public function testItMarksUnconfirmedRecipientsAsBounced() {
+    $this->api->reportPages = [1 => ['unconfirmed@example.com']];
     $task = $this->createRunningTask();
-    $this->worker->prepareTaskStrategy($task, microtime(true));
-
-    $api = $this->worker->api;
-    $this->assertInstanceOf(MockAPI::class, $api);
-    $api->checkBouncesCalls = [];
-
     $this->worker->processTaskStrategy($task, microtime(true));
 
-    $this->assertNotEmpty($api->checkBouncesCalls);
-    $forwarded = array_merge(...$api->checkBouncesCalls);
-    foreach ($this->emails as $email) {
-      $this->assertContains($email, $forwarded);
-    }
+    verify($this->getSubscriberStatus('unconfirmed@example.com'))->equals(SubscriberEntity::STATUS_BOUNCED);
   }
 
-  /**
-   * @param ScheduledTaskSubscriberEntity::STATUS_* $processedStatus
-   */
-  private function scheduledTaskSubscribersCount(ScheduledTaskEntity $task, int $processedStatus): int {
-    return $this->scheduledTaskSubscribersRepository->countBy([
-      'task' => $task,
-      'processed' => $processedStatus,
-    ]);
-  }
+  public function testItIgnoresRecipientsThatAreNotSubscribedOrUnconfirmed() {
+    $unsubscribed = new SubscriberEntity();
+    $unsubscribed->setEmail('unsubscribed@example.com');
+    $unsubscribed->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->subscribersRepository->persist($unsubscribed);
+    $this->subscribersRepository->flush();
 
-  public function testItSetsSubscriberStatusAsBounced() {
+    $this->api->reportPages = [1 => ['unsubscribed@example.com', 'unknown@example.com']];
     $task = $this->createRunningTask();
-    $this->worker->processEmails($task, $this->emails);
+    $this->worker->processTaskStrategy($task, microtime(true));
 
-    $subscribers = $this->subscribersRepository->findAll();
+    verify($this->getSubscriberStatus('unsubscribed@example.com'))->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
 
-    verify($subscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    verify($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_BOUNCED);
-    verify($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    verify($subscribers[3]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+  public function testItHandlesPagination() {
+    $this->api->reportPages = [
+      1 => ['hard_bounce@example.com'],
+      2 => ['unconfirmed@example.com'],
+    ];
+    $task = $this->createRunningTask();
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+
+    verify($completed)->true();
+    verify(count($this->api->getBouncesReportCalls))->equals(2);
+    verify($this->api->getBouncesReportCalls[0]['page'])->equals(1);
+    verify($this->api->getBouncesReportCalls[1]['page'])->equals(2);
+    verify($this->getSubscriberStatus('hard_bounce@example.com'))->equals(SubscriberEntity::STATUS_BOUNCED);
+    verify($this->getSubscriberStatus('unconfirmed@example.com'))->equals(SubscriberEntity::STATUS_BOUNCED);
+  }
+
+  public function testItReturnsFalseWhenReportRequestFails() {
+    $this->api->failResponse = true;
+    $task = $this->createRunningTask();
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+
+    verify($completed)->false();
+    verify($this->getSubscriberStatus('hard_bounce@example.com'))->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testItUsesYesterdayAsFromDateOnFirstRun() {
+    $task = $this->createRunningTask();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $from = $this->api->getBouncesReportCalls[0]['from'];
+    $expected = Carbon::now()->subDay();
+    verify(abs($from->getTimestamp() - $expected->getTimestamp()))->lessThan(60);
+  }
+
+  public function testItUsesPreviousCompletedTaskProcessedAtAsFromDate() {
+    $processedAt = Carbon::now()->subDays(2);
+    $previousTask = $this->createRunningTask();
+    $previousTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $previousTask->setCreatedAt(Carbon::now()->subDays(3));
+    $previousTask->setProcessedAt($processedAt);
+    $this->entityManager->flush();
+
+    $task = $this->createRunningTask();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $from = $this->api->getBouncesReportCalls[0]['from'];
+    verify(abs($from->getTimestamp() - $processedAt->getTimestamp()))->lessThan(60);
+  }
+
+  public function testItClampsFromDateToMaxLookback() {
+    $previousTask = $this->createRunningTask();
+    $previousTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $previousTask->setCreatedAt(Carbon::now()->subDays(40));
+    $previousTask->setProcessedAt(Carbon::now()->subDays(30));
+    $this->entityManager->flush();
+
+    $task = $this->createRunningTask();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $from = $this->api->getBouncesReportCalls[0]['from'];
+    $earliestAllowed = Carbon::now()->subDays(Bounce::MAX_LOOKBACK_DAYS);
+    verify($from->getTimestamp() >= $earliestAllowed->getTimestamp())->true();
+    // Clamped close to the 14-day boundary, not 30 days back.
+    verify($from->getTimestamp() - $earliestAllowed->getTimestamp())->lessThan(2 * 3600);
   }
 
   public function testItCreatesStatistics() {
@@ -209,6 +195,7 @@ class BounceTest extends \MailPoetTest {
     $previousBounceTask->setCreatedAt(Carbon::now()->subDays(6));
     $previousBounceTask->setScheduledAt(Carbon::now()->subDays(4));
     $previousBounceTask->setUpdatedAt(Carbon::now()->subDays(4));
+    $previousBounceTask->setProcessedAt(Carbon::now()->subDays(4));
     $this->entityManager->persist($previousBounceTask);
     $this->entityManager->flush();
     // create data that should be used for the current bounce task run
@@ -222,11 +209,27 @@ class BounceTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->entityManager->clear();
     // run the code
-    $this->worker->processEmails($this->createRunningTask(), $this->emails);
+    $this->worker->processRecipients($this->createRunningTask(), ['hard_bounce@example.com']);
     // test it
     $statisticsRepository = $this->diContainer->get(StatisticsBouncesRepository::class);
     $statistics = $statisticsRepository->findAll();
     verify($statistics)->arrayCount(1);
+  }
+
+  private function createWorker(): Bounce {
+    return new Bounce(
+      $this->diContainer->get(SettingsController::class),
+      $this->subscribersRepository,
+      $this->diContainer->get(SendingQueuesRepository::class),
+      $this->diContainer->get(StatisticsBouncesRepository::class),
+      $this->diContainer->get(Bridge::class)
+    );
+  }
+
+  private function getSubscriberStatus(string $email): string {
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    return (string)$subscriber->getStatus();
   }
 
   private function setMailPoetSendingMethod() {
@@ -237,14 +240,6 @@ class BounceTest extends \MailPoetTest {
         'method' => 'MailPoet',
         'mailpoet_api_key' => 'some_key',
       ]
-    );
-  }
-
-  private function createScheduledTask(): ScheduledTaskEntity {
-    return $this->scheduledTaskFactory->create(
-      'bounce',
-      ScheduledTaskEntity::STATUS_SCHEDULED,
-      Carbon::now()
     );
   }
 
