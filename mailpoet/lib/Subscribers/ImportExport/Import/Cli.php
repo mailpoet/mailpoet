@@ -325,6 +325,8 @@ class Cli {
   private function buildColumns(array $header): array {
     $columns = [];
     $unknown = [];
+    $duplicates = [];
+    $namesByField = [];
     foreach ($header as $index => $name) {
       $name = trim((string)$name);
       if ($name === '') {
@@ -335,6 +337,11 @@ class Cli {
         $unknown[] = $name;
         continue;
       }
+      if (isset($columns[$field])) {
+        $duplicates[$field] = array_merge($namesByField[$field], [$name]);
+        continue;
+      }
+      $namesByField[$field] = [$name];
       $columns[$field] = ['index' => $index];
     }
 
@@ -343,6 +350,16 @@ class Cli {
         'Unrecognized CSV column(s): %s. Use MailPoet field names (%s) or an existing custom field name.',
         implode(', ', $unknown),
         implode(', ', self::BASE_FIELDS)
+      ));
+    }
+
+    if ($duplicates) {
+      $details = array_map(function (array $names): string {
+        return implode(', ', $names);
+      }, $duplicates);
+      throw new \RuntimeException(sprintf(
+        'Duplicate CSV column(s) mapping to the same field: %s. Each field may only appear once in the header.',
+        implode('; ', $details)
       ));
     }
 
