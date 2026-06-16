@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
@@ -160,7 +161,7 @@ class OrderAttributionReconciler {
     $lastClickPurchase = $this->getLastClickPurchase($purchases);
     $lastClick = $lastClickPurchase ? $lastClickPurchase->getClick() : null;
     $legacyLastClickId = $lastClick ? (int)$lastClick->getId() : null;
-    $foreignSourcePreserved = $this->isForeignSourcePreserved($order, $wooClickId);
+    $foreignSourcePreserved = $this->isForeignSourcePreserved($order, $wooClickId, $lastClick);
 
     [$outcome, $reason, $classification] = $this->resolveOutcome(
       $legacyClickIds,
@@ -344,17 +345,29 @@ class OrderAttributionReconciler {
     return (float)$order->get_remaining_refund_amount();
   }
 
-  private function isForeignSourcePreserved(WC_Order $order, ?int $wooClickId): bool {
-    if ($wooClickId === null) {
+  private function isForeignSourcePreserved(
+    WC_Order $order,
+    ?int $wooClickId,
+    ?StatisticsClickEntity $click
+  ): bool {
+    if ($wooClickId === null || is_null($click)) {
       return false;
     }
-    $sourceType = $order->get_meta(OrderAttributionFields::getMetaKey('source_type'));
-    $utmSource = $order->get_meta(OrderAttributionFields::getMetaKey('utm_source'));
-    $sourceType = is_scalar($sourceType) ? (string)$sourceType : '';
-    $utmSource = is_scalar($utmSource) ? (string)$utmSource : '';
-    $isOverwritable = in_array($sourceType, OrderAttributionWriter::OVERWRITABLE_SOURCE_TYPES, true)
-      || $utmSource === 'mailpoet';
-    return !$isOverwritable;
+    $sourceType = $this->getMetaString($order, OrderAttributionFields::getMetaKey('source_type'));
+    $utmSource = $this->getMetaString($order, OrderAttributionFields::getMetaKey('utm_source'));
+    $sessionStartTime = $this->getMetaString($order, OrderAttributionFields::getMetaKey('session_start_time'));
+    return !OrderAttributionWriter::shouldWriteStandardSourceFields(
+      $sourceType,
+      $utmSource,
+      $sessionStartTime,
+      $click->getUpdatedAt(),
+      $this->wp->wpTimezone()
+    );
+  }
+
+  private function getMetaString(WC_Order $order, string $metaKey): string {
+    $value = $order->get_meta($metaKey);
+    return is_scalar($value) ? (string)$value : '';
   }
 
   private function isWooAttributionAvailable(): bool {

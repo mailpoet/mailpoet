@@ -235,8 +235,8 @@ class OrderAttributionWriter {
   private function writeStandardSourceFields(WC_Order $order, StatisticsClickEntity $click): void {
     $sourceType = $this->getMetaString($order, OrderAttributionFields::getMetaKey('source_type'));
     $utmSource = $this->getMetaString($order, OrderAttributionFields::getMetaKey('utm_source'));
-    $isOverwritable = in_array($sourceType, self::OVERWRITABLE_SOURCE_TYPES, true) || $utmSource === 'mailpoet';
-    if (!$isOverwritable) {
+    $sessionStartTime = $this->getMetaString($order, OrderAttributionFields::getMetaKey('session_start_time'));
+    if (!self::shouldWriteStandardSourceFields($sourceType, $utmSource, $sessionStartTime, $click->getUpdatedAt(), $this->wp->wpTimezone())) {
       return;
     }
     $values = [
@@ -253,6 +253,44 @@ class OrderAttributionWriter {
     foreach ($values as $fieldName => $value) {
       $order->update_meta_data(OrderAttributionFields::getMetaKey($fieldName), $this->wp->sanitizeTextField($value));
     }
+  }
+
+  public static function shouldWriteStandardSourceFields(
+    string $sourceType,
+    string $utmSource,
+    string $sessionStartTime,
+    \DateTimeInterface $clickUpdatedAt,
+    \DateTimeZone $wooSessionTimeZone
+  ): bool {
+    if (in_array($sourceType, self::OVERWRITABLE_SOURCE_TYPES, true) || $utmSource === 'mailpoet') {
+      return true;
+    }
+    $wooSessionStart = self::parseWooSessionStartTime($sessionStartTime, $wooSessionTimeZone);
+    return $wooSessionStart && $clickUpdatedAt->getTimestamp() >= $wooSessionStart->getTimestamp();
+  }
+
+  /**
+   * Woo stores session_start_time as sourcebuster's `current_add.fd`, a wall-clock
+   * string with no timezone. It is the visitor's browser-local time, which the server
+   * cannot recover exactly, so we interpret it in the site timezone as the best
+   * single-region approximation. Multi-region skew is accepted within the documented
+   * last-click tolerance (STOMAIL-8186).
+   */
+  private static function parseWooSessionStartTime(string $sessionStartTime, \DateTimeZone $timeZone): ?\DateTimeImmutable {
+    $sessionStartTime = trim($sessionStartTime);
+    if ($sessionStartTime === '') {
+      return null;
+    }
+    $date = \DateTimeImmutable::createFromFormat(
+      '!Y-m-d H:i:s',
+      $sessionStartTime,
+      $timeZone
+    );
+    $errors = \DateTimeImmutable::getLastErrors();
+    if (!$date || ($errors !== false && ((int)$errors['warning_count'] > 0 || (int)$errors['error_count'] > 0))) {
+      return null;
+    }
+    return $date;
   }
 
   /**

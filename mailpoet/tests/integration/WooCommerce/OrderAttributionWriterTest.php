@@ -135,6 +135,102 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
   }
 
+  public function testItOverwritesExistingSourceWhenMailPoetClickIsNewer(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta(
+      $order,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), -DAY_IN_SECONDS)
+    );
+
+    $this->writer->writeForOrder($order->get_id());
+
+    $order = $this->reloadOrder($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_medium')))->equals('email');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+  }
+
+  public function testItPreservesExistingSourceWhenMailPoetClickIsOlder(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta(
+      $order,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt(), DAY_IN_SECONDS)
+    );
+
+    $this->writer->writeForOrder($order->get_id());
+
+    $order = $this->reloadOrder($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey('utm_medium')))->false();
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+  }
+
+  public function testItOverwritesExistingSourceWhenMailPoetClickMatchesWooSessionTime(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta(
+      $order,
+      'utm',
+      'google',
+      $this->formatWooSessionStartTime($click->getUpdatedAt())
+    );
+
+    $this->writer->writeForOrder($order->get_id());
+
+    $order = $this->reloadOrder($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_medium')))->equals('email');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+  }
+
+  public function testItOverwritesEmptyDirectAndUnknownSourcesWithoutSessionStartTime(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    foreach (OrderAttributionWriter::OVERWRITABLE_SOURCE_TYPES as $sourceType) {
+      $order = $this->createOrder($this->subscriber->getEmail());
+      $this->setWooSourceMeta($order, $sourceType, '(direct)');
+
+      $this->writer->writeForOrder($order->get_id());
+
+      $order = $this->reloadOrder($order);
+      verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+      verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
+      verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+    }
+  }
+
+  public function testItPreservesExistingSourceWhenSessionStartTimeIsUnparseable(): void {
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+
+    $order = $this->createOrder($this->subscriber->getEmail());
+    $this->setWooSourceMeta($order, 'utm', 'google', 'not-a-date');
+
+    $this->writer->writeForOrder($order->get_id());
+
+    $order = $this->reloadOrder($order);
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('source_type')))->equals('utm');
+    verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
+    verify($order->meta_exists(OrderAttributionFields::getMetaKey('utm_medium')))->false();
+    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))->equals((string)$click->getId());
+  }
+
   public function testItIsIdempotent(): void {
     $click = $this->createClick($this->link, $this->subscriber);
     $this->entityManager->flush();
@@ -307,6 +403,26 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $reloaded = wc_get_order($order->get_id());
     $this->assertInstanceOf(WC_Order::class, $reloaded);
     return $reloaded;
+  }
+
+  private function setWooSourceMeta(
+    WC_Order $order,
+    string $sourceType,
+    string $utmSource,
+    ?string $sessionStartTime = null
+  ): void {
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), $sourceType);
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), $utmSource);
+    if (!is_null($sessionStartTime)) {
+      $order->update_meta_data(OrderAttributionFields::getMetaKey('session_start_time'), $sessionStartTime);
+    }
+    $order->save_meta_data();
+  }
+
+  private function formatWooSessionStartTime(\DateTimeInterface $date, int $offsetSeconds = 0): string {
+    return (new \DateTimeImmutable('@' . ($date->getTimestamp() + $offsetSeconds)))
+      ->setTimezone(wp_timezone())
+      ->format('Y-m-d H:i:s');
   }
 
   private function createWriterForRequestContext(
