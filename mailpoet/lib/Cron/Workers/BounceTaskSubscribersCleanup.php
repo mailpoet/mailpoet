@@ -14,12 +14,12 @@ use MailPoetVendor\Carbon\Carbon;
  * period — every completed, non-deleted bounce task that still has rows is
  * eligible.
  *
- * Runs 4 times per day in random 6-hour slots (0–5h, 6–11h, 12–17h, 18–23h).
- * Each run loops in batches: first selects up to TASK_BATCH_SIZE completed
- * bounce tasks that still have subscriber rows, then deletes up to
- * ROW_BATCH_SIZE rows per iteration. The loop continues until fewer rows are
- * deleted than the limit or MAX_EXECUTION_TIME is exceeded. A 100ms pause
- * between iterations throttles I/O on shared hosting.
+ * Runs once an hour at a random minute past the hour (to spread DB load
+ * across sites). Each run loops in batches: first selects up to
+ * TASK_BATCH_SIZE completed bounce tasks that still have subscriber rows, then
+ * deletes up to ROW_BATCH_SIZE rows per iteration. The loop continues until
+ * fewer rows are deleted than the limit or MAX_EXECUTION_TIME is exceeded. A
+ * 100ms pause between iterations throttles I/O on shared hosting.
  *
  * This is kept separate from the bounce task itself, which is expected to be
  * replaced by a more efficient one. Once that lands, the cleanup can stop as
@@ -66,37 +66,11 @@ class BounceTaskSubscribersCleanup extends SimpleWorker {
     return true;
   }
 
-  public function schedule() {
-    $baseDate = Carbon::now()->millisecond(0)->startOfDay();
-
-    for ($slot = 0; $slot < 4; $slot++) {
-      $hour = $slot * 6 + mt_rand(0, 5);
-      $minute = mt_rand(0, 59);
-      $second = mt_rand(0, 59);
-
-      $scheduleDate = clone $baseDate;
-      $scheduleDate->setTime($hour, $minute, $second);
-
-      if ($scheduleDate->isPast()) {
-        $scheduleDate->addDay();
-      }
-
-      $this->cronWorkerScheduler->scheduleMultiple(static::TASK_TYPE, $scheduleDate);
-    }
-  }
-
   public function getNextRunDate() {
-    $date = Carbon::now()->millisecond(0);
-    $timeSlot = mt_rand(0, 3);
-    $hour = $timeSlot * 6 + mt_rand(0, 5);
-    $minute = mt_rand(0, 59);
-
-    $date->setTime($hour, $minute, mt_rand(0, 59));
-
-    if ($date->isPast()) {
-      $date->addDay();
-    }
-
-    return $date;
+    return Carbon::now()->millisecond(0)
+      ->startOfHour()
+      ->addHour()
+      ->addMinutes(mt_rand(0, 59))
+      ->addSeconds(mt_rand(0, 59));
   }
 }

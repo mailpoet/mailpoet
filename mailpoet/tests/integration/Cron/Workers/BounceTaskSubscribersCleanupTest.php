@@ -175,12 +175,16 @@ class BounceTaskSubscribersCleanupTest extends \MailPoetTest {
     verify((int)$afterResult)->equals(0);
   }
 
-  public function testItSchedulesInTheFuture() {
+  public function testItSchedulesWithinTheNextHour() {
+    $now = Carbon::now();
+    Carbon::setTestNow($now);
+
     $nextRunDate = $this->worker->getNextRunDate();
     verify($nextRunDate)->notNull();
-    verify($nextRunDate->getTimestamp())->greaterThan(Carbon::now()->getTimestamp());
+    verify($nextRunDate->getTimestamp())->greaterThan($now->getTimestamp());
 
-    $tomorrow = Carbon::now()->addDay();
-    verify($nextRunDate->getTimestamp())->lessThan($tomorrow->getTimestamp());
+    $nextHour = $now->copy()->startOfHour()->addHour();
+    verify($nextRunDate->getTimestamp())->greaterThanOrEqual($nextHour->getTimestamp());
+    verify($nextRunDate->getTimestamp())->lessThan($nextHour->copy()->addHour()->getTimestamp());
   }
 }
