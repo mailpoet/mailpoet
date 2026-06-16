@@ -529,7 +529,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $content = $patterns->getPatternContent('booking-pre-visit-reminder');
 
     $this->assertIsString($content);
-    $this->assertStringContainsString('A reminder about your upcoming booking', $content);
+    $this->assertStringContainsString('Your booking is coming up', $content);
     $this->assertStringContainsString('Please arrive a few minutes early', $content);
     $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-start-date]-->', $content);
     $this->assertStringContainsString('<!--[mailpoet/woocommerce-booking-end-date]-->', $content);
