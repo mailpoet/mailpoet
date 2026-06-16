@@ -6,6 +6,8 @@ use MailPoet\Config\Populator;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
+use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoetTest;
 use MailPoetVendor\Doctrine\ORM\Query;
 
@@ -122,6 +124,18 @@ class PopulatorTest extends MailPoetTest {
     $populator->up();
     $templates = $this->getAllTemplates();
     $this->assertSame(self::TEMPLATE_COUNT, count($templates));
+  }
+
+  public function testItPreservesExistingCaptchaPageSetting(): void {
+    $populator = $this->diContainer->get(Populator::class);
+    $settings = $this->diContainer->get(SettingsController::class);
+    $customCaptchaPageId = Pages::createMailPoetPage('custom-captcha-page');
+
+    $settings->set('subscription.pages.captcha', $customCaptchaPageId);
+
+    $populator->up();
+
+    $this->assertSame($customCaptchaPageId, (int)$settings->get('subscription.pages.captcha'));
   }
 
   private function getAllOptionFields(): array {
