@@ -190,6 +190,7 @@ type StripPostStatusMiddlewareModule =
 type EmailSidebarExtensionModule = typeof import('./email-sidebar-extension');
 type AutomationSaveButtonModule =
   typeof import('./components/automation-save-button');
+type SentEmailNoticeModule = typeof import('./components/sent-email-notice');
 
 /* eslint-disable global-require, @typescript-eslint/no-var-requires -- These imports must run after the MailPoet coupon block extension registers its block-type filter, but must stay in this bundle instead of creating async chunks. */
 const initializeMailPoetEmailEditor = (): void => {
@@ -205,6 +206,15 @@ const initializeMailPoetEmailEditor = (): void => {
 
     registerPlugin('mailpoet-settings-sidebar', {
       render: EmailSidebarExtension,
+      scope: 'woocommerce-email-editor',
+    });
+
+    // Render a notice for email that has already been sent.
+    const { SentEmailNotice } =
+      require('./components/sent-email-notice') as SentEmailNoticeModule;
+
+    registerPlugin('mailpoet-sent-email-notice', {
+      render: SentEmailNotice,
       scope: 'woocommerce-email-editor',
     });
   }
