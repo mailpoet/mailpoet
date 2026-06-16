@@ -1,6 +1,5 @@
 import { Card } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
-import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
@@ -16,20 +15,20 @@ export function InboxPreviewCard() {
     'mailpoet_data',
   );
 
-  const siteData = useSelect((select) => {
-    const site = select('core').getSite();
-    return {
-      title: (site?.title as string) || '',
-      email: (site?.email as string) || '',
-    };
-  }, []);
+  const senderName = (mailpoetEmailData?.sender_name as string) || '';
+  const senderAddress = (mailpoetEmailData?.sender_address as string) || '';
+
+  let fromAddress = __('(No sender)', 'mailpoet') as string;
+  if (senderAddress) {
+    fromAddress = senderName
+      ? `${senderName} <${senderAddress}>`
+      : senderAddress;
+  }
 
   return (
     <Card className="mailpoet-inbox-preview-panel__card">
       <div className="mailpoet-inbox-preview-panel__from-address">
-        {siteData.title && siteData.email
-          ? `${siteData.title} <${siteData.email}>`
-          : __('(No sender)', 'mailpoet')}
+        {fromAddress}
       </div>
       <div className="mailpoet-inbox-preview-panel__subject">
         {mailpoetEmailData?.subject || __('(No subject)', 'mailpoet')}
