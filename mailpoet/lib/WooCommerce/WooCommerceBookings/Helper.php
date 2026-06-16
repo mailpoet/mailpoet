@@ -48,7 +48,12 @@ class Helper {
       if (!$object) {
         continue;
       }
-      $label = is_string($object->label ?? null) && $object->label !== '' ? $object->label : ucwords(str_replace('-', ' ', $cartStatus));
+      // WordPress falls back the label to the status key when a post status registers
+      // label => false (as Bookings does for was-in-cart), so humanize it in that case.
+      $label = $object->label ?? '';
+      if (!is_string($label) || $label === '' || $label === $cartStatus) {
+        $label = ucwords(str_replace('-', ' ', $cartStatus));
+      }
       $statuses[$cartStatus] = $label;
     }
 
