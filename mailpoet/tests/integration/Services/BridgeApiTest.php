@@ -200,6 +200,70 @@ class BridgeApiTest extends \MailPoetTest {
     verify($result['error'])->equals('This domain was already added to the list.');
   }
 
+  public function testItFetchesBouncesReportWithIsoUtcRange() {
+    $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
+    $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
+    $report = ['recipients' => ['bob@example.com'], 'page' => 2, 'has_more' => false];
+    $this->wpMock
+      ->expects($this->once())
+      ->method('addQueryArg')
+      ->with(
+        [
+          'from' => '2026-06-15T23:59:59Z',
+          'to' => '2026-06-16T23:59:59Z',
+          'p' => 2,
+        ],
+        $this->api->urlBouncesReport
+      )
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode($report));
+    verify($this->api->getBouncesReport($from, $to, 2))->equals($report);
+  }
+
+  public function testItConvertsBouncesReportRangeToUtc() {
+    $from = new \DateTimeImmutable('2026-06-16 01:59:59', new \DateTimeZone('+02:00'));
+    $to = new \DateTimeImmutable('2026-06-17 01:59:59', new \DateTimeZone('+02:00'));
+    $this->wpMock
+      ->expects($this->once())
+      ->method('addQueryArg')
+      ->with(
+        [
+          'from' => '2026-06-15T23:59:59Z',
+          'to' => '2026-06-16T23:59:59Z',
+          'p' => 1,
+        ],
+        $this->api->urlBouncesReport
+      )
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['recipients' => [], 'page' => 1, 'has_more' => false]));
+    $this->api->getBouncesReport($from, $to);
+  }
+
+  public function testItReturnsNullWhenBouncesReportRequestFails() {
+    $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
+    $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
+    $this->wpMock
+      ->method('addQueryArg')
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(500);
+    verify($this->api->getBouncesReport($from, $to))->null();
+  }
+
   public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
     $this->wpMock
       ->expects($this->once())

@@ -4,27 +4,23 @@ namespace MailPoet\Cron\Workers;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoetVendor\Carbon\Carbon;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
-  const BATCH_SIZE = 100;
 
-  const BOUNCED_HARD = 'hard';
-  const BOUNCED_SOFT = 'soft';
-  const NOT_BOUNCED = null;
+  // The sending service never reports bounces older than this. Requests with a
+  // `from` further back are rejected, so the range is clamped to stay within it.
+  const MAX_LOOKBACK_DAYS = 14;
 
   public $api;
 
@@ -43,15 +39,11 @@ class Bounce extends SimpleWorker {
   /** @var StatisticsBouncesRepository */
   private $statisticsBouncesRepository;
 
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
-
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsBouncesRepository $statisticsBouncesRepository,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     Bridge $bridge
   ) {
     $this->settings = $settings;
@@ -60,7 +52,6 @@ class Bounce extends SimpleWorker {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsBouncesRepository = $statisticsBouncesRepository;
-    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
   }
 
   public function init() {
@@ -73,56 +64,47 @@ class Bounce extends SimpleWorker {
     return $this->bridge->isMailpoetSendingServiceEnabled();
   }
 
-  public function prepareTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $this->scheduledTaskSubscribersRepository->createSubscribersForBounceWorker($task);
-
-    if (!$this->scheduledTaskSubscribersRepository->countBy(['task' => $task, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED])) {
-      $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
-      return false;
-    }
-    return true;
-  }
-
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $subscriberBatches = new BatchIterator($task->getId(), self::BATCH_SIZE);
+    $from = $this->getReportFromDate($task);
+    $to = Carbon::now()->millisecond(0);
+    $page = 1;
 
-    if (count($subscriberBatches) === 0) {
-      $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
-      return true; // mark completed
-    }
-
-    /** @var int[] $subscribersToProcessIds - it's required for PHPStan */
-    foreach ($subscriberBatches as $subscribersToProcessIds) {
+    do {
       // abort if execution limit is reached
       $this->cronHelper->enforceExecutionLimit($timer);
 
-      $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
+      $report = $this->api->getBouncesReport($from, $to, $page);
+      if (!is_array($report)) {
+        // Transient failure: leave the task running so it retries with the
+        // same range on the next cron tick.
+        return false;
+      }
 
-      $this->processEmails($task, $subscriberEmails);
+      $recipients = isset($report['recipients']) && is_array($report['recipients']) ? $report['recipients'] : [];
+      $this->processRecipients($task, $recipients);
 
-      $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, $subscribersToProcessIds);
-    }
+      $hasMore = !empty($report['has_more']);
+      $page++;
+    } while ($hasMore);
 
     return true;
   }
 
-  public function processEmails(ScheduledTaskEntity $task, array $subscriberEmails) {
-    $checkedEmails = $this->api->checkBounces($subscriberEmails);
-    $this->processApiResponse($task, (array)$checkedEmails);
-  }
-
-  public function processApiResponse(ScheduledTaskEntity $task, array $checkedEmails) {
-    $previousTask = $this->findPreviousTask($task);
-    foreach ($checkedEmails as $email) {
-      if (!isset($email['address'], $email['bounce'])) {
+  public function processRecipients(ScheduledTaskEntity $task, array $recipients): void {
+    $previousTask = $this->scheduledTasksRepository->findPreviousTask($task);
+    foreach ($recipients as $email) {
+      if (!is_string($email) || $email === '') {
         continue;
       }
-      if ($email['bounce'] === self::BOUNCED_HARD) {
-        $subscriber = $this->subscribersRepository->findOneBy(['email' => $email['address']]);
-        if (!$subscriber instanceof SubscriberEntity) continue;
-        $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
-        $this->saveBouncedStatistics($subscriber, $task, $previousTask);
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+      if (!$subscriber instanceof SubscriberEntity) {
+        continue;
       }
+      if (!in_array($subscriber->getStatus(), [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED], true)) {
+        continue;
+      }
+      $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
+      $this->saveBouncedStatistics($subscriber, $task, $previousTask);
     }
     $this->subscribersRepository->flush();
   }
@@ -136,8 +118,18 @@ class Bounce extends SimpleWorker {
       ->addSeconds(rand(0, 59));
   }
 
-  private function findPreviousTask(ScheduledTaskEntity $task): ?ScheduledTaskEntity {
-    return $this->scheduledTasksRepository->findPreviousTask($task);
+  private function getReportFromDate(ScheduledTaskEntity $task): Carbon {
+    $now = Carbon::now()->millisecond(0);
+    $previousTask = $this->scheduledTasksRepository->findPreviousCompletedTask($task);
+    $processedAt = $previousTask instanceof ScheduledTaskEntity ? $previousTask->getProcessedAt() : null;
+    $from = $processedAt instanceof \DateTimeInterface
+      ? Carbon::instance($processedAt)
+      : $now->copy()->subDay();
+
+    // Keep an hour of margin inside MAX_LOOKBACK_DAYS so clock skew and request
+    // latency can't push the `from` past the limit the service enforces.
+    $earliestAllowed = $now->copy()->subDays(self::MAX_LOOKBACK_DAYS)->addHour();
+    return $from->lessThan($earliestAllowed) ? $earliestAllowed : $from;
   }
 
   private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTaskEntity $task, ?ScheduledTaskEntity $previousTask): void {
