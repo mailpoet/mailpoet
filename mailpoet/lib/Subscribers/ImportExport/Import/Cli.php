@@ -371,6 +371,7 @@ class Cli {
    * Resolves segment IDs/names to IDs. Unknown names are created unless this is a dry run.
    *
    * @param string[] $segments
+   * @param bool $dryRun
    * @param callable(string): void $log
    * @return int[]
    * @throws \RuntimeException
