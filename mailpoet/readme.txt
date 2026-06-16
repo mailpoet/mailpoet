@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.29.0
+Stable tag: 5.29.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,15 +227,24 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.29.0 - 2026-06-09 =
-* Added: Email content for welcome automation templates;
-* Added: Email content for abandoned cart reminder automation;
-* Added: Delete email button in automation's "Send email" settings;
-* Improved: Automations menu highlighting when editing automation emails;
-* Fixed: Archive links for emails with Unicode subject characters;
-* Fixed: Prevent the email preview from overwriting or reading from an existing order whose id collides with the preview dummy order id;
-* Fixed: An issue where saving subscription preferences could change other subscriber details;
-* Fixed: Fix MailPoet REST endpoints on sites using plain permalinks;
-* Fixed: Post notification history titles overflowing into other columns.
+= 5.29.1 - 2026-06-16 =
+* Added: Email content for post-purchase automation templates;
+* Added: Email content patterns for birthday and win-back automations;
+* Added: Email content patterns for win-back inactive customer automations;
+* Added: Pre-built email content for review follow-up and reviewer reward automation templates;
+* Added: Order-aware product recommendations in post-purchase automation emails: cross-sells of the purchased products, products with the same tag, or products from the same category;
+* Added: Email campaign attribution on WooCommerce orders;
+* Added: Per-user listing preferences and sorting across MailPoet list pages;
+* Added: Personal data export and erasure for email attribution data stored on WooCommerce orders;
+* Improved: Speed up sorting the subscribers list by subscription date on large lists;
+* Improved: Reduce JavaScript size in the admin area;
+* Improved: Performance when WooCommerce is inactive by hiding the WooCommerce Customers list instead of running a slow database check;
+* Improved: Improve WooCommerce revenue reporting with order attribution data;
+* Changed: Subscriber search to match from the start of each field for faster results on large lists, with the asterisk wildcard to match anywhere;
+* Changed: Replaced the per-page Screen Options on the Emails, Subscribers, and Lists pages with the DataViews view settings;
+* Fixed: Sign-up Confirmation email template now respects Styles sidebar settings for content background, text color, and font;
+* Fixed: An issue where crawlers requesting the sign-up form URL caused an exception in the WordPress debug log;
+* Fixed: Form editor block inserter close button not closing the panel;
+* Fixed: Modern Manage Subscription page text contrast on dark themes.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

@@ -1,5 +1,25 @@
 == Changelog ==
 
+= 5.29.1 - 2026-06-16 =
+* Added: Email content for post-purchase automation templates;
+* Added: Email content patterns for birthday and win-back automations;
+* Added: Email content patterns for win-back inactive customer automations;
+* Added: Pre-built email content for review follow-up and reviewer reward automation templates;
+* Added: Order-aware product recommendations in post-purchase automation emails: cross-sells of the purchased products, products with the same tag, or products from the same category;
+* Added: Email campaign attribution on WooCommerce orders;
+* Added: Per-user listing preferences and sorting across MailPoet list pages;
+* Added: Personal data export and erasure for email attribution data stored on WooCommerce orders;
+* Improved: Speed up sorting the subscribers list by subscription date on large lists;
+* Improved: Reduce JavaScript size in the admin area;
+* Improved: Performance when WooCommerce is inactive by hiding the WooCommerce Customers list instead of running a slow database check;
+* Improved: Improve WooCommerce revenue reporting with order attribution data;
+* Changed: Subscriber search to match from the start of each field for faster results on large lists, with the asterisk wildcard to match anywhere;
+* Changed: Replaced the per-page Screen Options on the Emails, Subscribers, and Lists pages with the DataViews view settings;
+* Fixed: Sign-up Confirmation email template now respects Styles sidebar settings for content background, text color, and font;
+* Fixed: An issue where crawlers requesting the sign-up form URL caused an exception in the WordPress debug log;
+* Fixed: Form editor block inserter close button not closing the panel;
+* Fixed: Modern Manage Subscription page text contrast on dark themes.
+
 = 5.29.0 - 2026-06-09 =
 * Added: Email content for welcome automation templates;
 * Added: Email content for abandoned cart reminder automation;
