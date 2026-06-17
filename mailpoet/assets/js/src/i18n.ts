@@ -1,4 +1,18 @@
-const translations: Record<string, string> = {};
+const mailpoetWindow = window as typeof window & {
+  MailPoet?: {
+    I18n?: {
+      all?: () => Record<string, string>;
+    };
+  };
+  mailpoet_i18n?: Record<string, string>;
+};
+
+const translations: Record<string, string> = {
+  ...(mailpoetWindow.MailPoet?.I18n?.all?.() ??
+    mailpoetWindow.mailpoet_i18n ??
+    {}),
+};
+mailpoetWindow.mailpoet_i18n = translations;
 
 export const MailPoetI18n = {
   add: function add(key: string, value: string): void {
