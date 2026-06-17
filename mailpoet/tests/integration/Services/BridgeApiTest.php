@@ -264,6 +264,31 @@ class BridgeApiTest extends \MailPoetTest {
     verify($this->api->getBouncesReport($from, $to))->null();
   }
 
+  public function testItReturnsNullAndLogsWhenBouncesReportPayloadIsMalformed() {
+    $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
+    $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
+    $this->wpMock
+      ->method('addQueryArg')
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    // Valid JSON, but missing has_more: a 200 must not be treated as a complete
+    // empty page that advances the report window.
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['recipients' => ['bob@example.com'], 'page' => 1]));
+
+    verify($this->api->getBouncesReport($from, $to))->null();
+
+    $logs = $this->logRepository->findAll();
+    verify($logs)->arrayCount(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API response was not in expected format.');
+  }
+
   public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
     $this->wpMock
       ->expects($this->once())
