@@ -131,14 +131,15 @@ declare module '@wordpress/notices' {
   }>;
 }
 
-declare module '@wordpress/block-library/build-module/image' {
-  export const metadata: Record<string, any>;
-  export const settings: Record<string, any>;
-}
+declare module '@wordpress/block-library' {
+  type CoreBlock = {
+    name: string;
+    metadata: Record<string, unknown>;
+    settings: Record<string, unknown>;
+  };
 
-declare module '@wordpress/block-library/build-module/paragraph' {
-  export const metadata: Record<string, any>;
-  export const settings: Record<string, any>;
+  const getCoreBlocks: () => CoreBlock[];
+  export { getCoreBlocks as __experimentalGetCoreBlocks };
 }
 
 declare module '@wordpress/core-data' {
