@@ -15,20 +15,28 @@ class CronCommand {
 
   private TaskRunner $taskRunner;
 
+  private TaskCanceller $taskCanceller;
+
   private DaemonRunner $daemonRunner;
+
+  private TaskAdder $taskAdder;
 
   public function __construct(
     ScheduledTasksLister $scheduledTasksLister,
     WorkerTypesCatalog $workerTypesCatalog,
     TaskTrigger $taskTrigger,
     TaskRunner $taskRunner,
-    DaemonRunner $daemonRunner
+    TaskCanceller $taskCanceller,
+    DaemonRunner $daemonRunner,
+    TaskAdder $taskAdder
   ) {
     $this->scheduledTasksLister = $scheduledTasksLister;
     $this->workerTypesCatalog = $workerTypesCatalog;
     $this->taskTrigger = $taskTrigger;
     $this->taskRunner = $taskRunner;
+    $this->taskCanceller = $taskCanceller;
     $this->daemonRunner = $daemonRunner;
+    $this->taskAdder = $taskAdder;
   }
 
   /**
@@ -294,5 +302,124 @@ class CronCommand {
       WP_CLI::warning(sprintf('%s: %s', $error['worker'], $error['message']));
     }
     WP_CLI::error(sprintf('Daemon pass finished with %d worker error(s).', count($errors)));
+  }
+
+  /**
+   * Adds a new MailPoet cron task to the schedule, optionally running it immediately in this process.
+   *
+   * Only standard worker types are addable; see `wp mailpoet cron types` (the mailing 'sending' and
+   * 'stats_notification' rows are created by app flows and are rejected). By default the task is due
+   * now at low priority. If a task of the type is already scheduled the command reports it and does
+   * nothing unless --force is given. With --run the task is created already claimed (status 'cli',
+   * hidden from the web daemon) and processed in-CLI, bypassing the web daemon and the duplicate check.
+   *
+   * ## OPTIONS
+   *
+   * <type>
+   * : The task type to add. See `wp mailpoet cron types` for addable values.
+   *
+   * [--at=<datetime>]
+   * : Schedule for this date/time (e.g. '2026-01-01 09:00', 'tomorrow 8am'). Defaults to now.
+   *
+   * [--in=<seconds>]
+   * : Schedule this many seconds from now. Cannot be combined with --at.
+   *
+   * [--priority=<priority>]
+   * : Task priority. Lower runs sooner.
+   * ---
+   * default: low
+   * options:
+   *   - high
+   *   - medium
+   *   - low
+   * ---
+   *
+   * [--force]
+   * : Add the task even if one of the type is already scheduled.
+   *
+   * [--run]
+   * : Claim the task (status 'cli', hidden from the web daemon) and run it in this process now. Cannot
+   * be combined with --at/--in.
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron add log_cleanup
+   *     wp mailpoet cron add bounce --in=3600 --priority=high
+   *     wp mailpoet cron add bounce --at='tomorrow 8am'
+   *     wp mailpoet cron add log_cleanup --force
+   *     wp mailpoet cron add subscribers_count_cache_recalculation --run
+   *
+   * @subcommand add
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  public function add(array $args, array $assocArgs): void {
+    $type = (string)$args[0];
+    $at = array_key_exists('at', $assocArgs) ? (string)$assocArgs['at'] : null;
+    $in = array_key_exists('in', $assocArgs) ? (int)$assocArgs['in'] : null;
+    $priority = array_key_exists('priority', $assocArgs) ? (string)$assocArgs['priority'] : 'low';
+    $force = (bool)($assocArgs['force'] ?? false);
+    $run = (bool)($assocArgs['run'] ?? false);
+
+    try {
+      $result = $this->taskAdder->add($type, $at, $in, $priority, $force, $run);
+    } catch (Throwable $e) {
+      WP_CLI::error($e->getMessage());
+      return;
+    }
+
+    if ($result['action'] === 'duplicate') {
+      WP_CLI::warning($result['message']);
+      return;
+    }
+
+    WP_CLI::success($result['message']);
+
+    if ($result['run'] !== null) {
+      if ($result['run']['completed']) {
+        WP_CLI::success($result['run']['message']);
+      } else {
+        WP_CLI::warning($result['run']['message']);
+      }
+    }
+  }
+
+  /**
+   * Cancels a MailPoet cron task by setting its status to cancelled.
+   *
+   * Scheduled, paused, and cli tasks can be cancelled; cancelling a cli task recovers a stuck CLI
+   * claim. Running tasks are owned by their executor and completed ones are history, so both are
+   * rejected.
+   *
+   * ## OPTIONS
+   *
+   * <task-id>
+   * : The ID of the task to cancel. See `wp mailpoet cron list` for task IDs.
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron cancel 42
+   *
+   * @subcommand cancel
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  public function cancel(array $args, array $assocArgs): void {
+    $taskId = (int)$args[0];
+
+    try {
+      $cancelled = $this->taskCanceller->cancel($taskId);
+    } catch (Throwable $e) {
+      WP_CLI::error($e->getMessage());
+      return;
+    }
+
+    WP_CLI::success(sprintf(
+      "Task %d (%s) cancelled.",
+      $cancelled['id'],
+      $cancelled['type']
+    ));
   }
 }
