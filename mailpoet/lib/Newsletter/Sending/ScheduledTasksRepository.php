@@ -161,6 +161,20 @@ class ScheduledTasksRepository extends Repository {
     return $queryBuilder->getQuery()->getOneOrNullResult();
   }
 
+  public function findSoonestScheduledTaskByType(string $type): ?ScheduledTaskEntity {
+    return $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->where('st.status = :scheduledStatus')
+      ->andWhere('st.type = :type')
+      ->andWhere('st.deletedAt IS NULL')
+      ->setParameter('scheduledStatus', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setParameter('type', $type)
+      ->setMaxResults(1)
+      ->orderBy('st.scheduledAt', 'ASC')
+      ->getQuery()
+      ->getOneOrNullResult();
+  }
+
   public function findPreviousTask(ScheduledTaskEntity $task): ?ScheduledTaskEntity {
     return $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')

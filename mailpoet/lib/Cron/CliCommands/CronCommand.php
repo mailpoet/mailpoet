@@ -11,12 +11,16 @@ class CronCommand {
 
   private WorkerTypesCatalog $workerTypesCatalog;
 
+  private TaskTrigger $taskTrigger;
+
   public function __construct(
     ScheduledTasksLister $scheduledTasksLister,
-    WorkerTypesCatalog $workerTypesCatalog
+    WorkerTypesCatalog $workerTypesCatalog,
+    TaskTrigger $taskTrigger
   ) {
     $this->scheduledTasksLister = $scheduledTasksLister;
     $this->workerTypesCatalog = $workerTypesCatalog;
+    $this->taskTrigger = $taskTrigger;
   }
 
   /**
@@ -136,5 +140,48 @@ class CronCommand {
 
     $formatter = new Formatter($assocArgs, WorkerTypesCatalog::FIELDS);
     $formatter->display_items($rows);
+  }
+
+  /**
+   * Marks a MailPoet cron task as due now so the site's own cron processor picks it up.
+   *
+   * This does not kick the cron pipeline; the MailPoet cron runner runs the task on its next tick.
+   * By type it targets the next scheduled task of that type; with --task-id it targets an exact row
+   * and also re-schedules a paused one.
+   *
+   * ## OPTIONS
+   *
+   * <type>
+   * : The task type to trigger. See `wp mailpoet cron types` for valid values.
+   *
+   * [--task-id=<id>]
+   * : Trigger an exact task by ID instead of the next scheduled task of the type.
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron trigger sending
+   *     wp mailpoet cron trigger bounce --task-id=42
+   *
+   * @subcommand trigger
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  public function trigger(array $args, array $assocArgs): void {
+    $type = (string)$args[0];
+    $taskId = array_key_exists('task-id', $assocArgs) ? (int)$assocArgs['task-id'] : null;
+
+    try {
+      $triggered = $this->taskTrigger->trigger($type, $taskId);
+    } catch (Throwable $e) {
+      WP_CLI::error($e->getMessage());
+      return;
+    }
+
+    WP_CLI::success(sprintf(
+      "Task %d (%s) is now due. The MailPoet cron runner will pick it up on its next tick.",
+      $triggered['id'],
+      $triggered['type']
+    ));
   }
 }
