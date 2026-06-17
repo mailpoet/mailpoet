@@ -774,6 +774,7 @@ class SubscribersRepository extends Repository {
       ->update(SubscriberEntity::class, 's')
       ->set('s.status', ':bounced')
       ->where('s.id IN (:ids)')
+      ->andWhere('s.deletedAt IS NULL')
       ->andWhere('s.status IN (:transitionable)')
       ->setParameter('bounced', SubscriberEntity::STATUS_BOUNCED)
       ->setParameter('transitionable', [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED])
