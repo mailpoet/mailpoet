@@ -183,6 +183,7 @@ class MailPoet implements MailerMethod {
           'address' => $processedSubscriber['email'],
           'name' => $processedSubscriber['name'],
         ]),
+        // Bridge must replace these once, without recursively expanding values.
         'substitutions' => $substitutions[$record] ?? [],
       ];
       $unsubscribeUrl = (!empty($extraParams['unsubscribe_url'][$record])) ? $extraParams['unsubscribe_url'][$record] : false;
