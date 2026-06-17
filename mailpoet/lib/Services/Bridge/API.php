@@ -65,7 +65,10 @@ class API {
   public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
   public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
   public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
-  public $urlBouncesReport = 'https://bridge.mailpoet.com/api/v0/bounces/report';
+  // Registered directly on the WPCOM mailpoet-bridge plugin, not proxied through
+  // bridge.mailpoet.com like the other endpoints. Authenticated with the same
+  // `Basic api:<key>` header that auth() produces.
+  public $urlBouncesReport = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/bounces/report';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
