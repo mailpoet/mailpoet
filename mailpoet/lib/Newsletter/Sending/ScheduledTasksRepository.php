@@ -175,6 +175,33 @@ class ScheduledTasksRepository extends Repository {
       ->getOneOrNullResult();
   }
 
+  /**
+   * Atomically claims a scheduled/paused row for a CLI run by flipping it to STATUS_CLI in a single
+   * guarded UPDATE. Returns false when no row was changed (another process already claimed or ran it),
+   * so concurrent CLI runs never both process the same task.
+   */
+  public function claimAsCli(ScheduledTaskEntity $task): bool {
+    $updated = (int)$this->entityManager->createQuery(
+      'UPDATE ' . ScheduledTaskEntity::class . ' st ' .
+      'SET st.status = :cli ' .
+      'WHERE st.id = :id AND st.status IN (:claimable) AND st.deletedAt IS NULL'
+    )
+      ->setParameter('cli', ScheduledTaskEntity::STATUS_CLI)
+      ->setParameter('id', $task->getId())
+      ->setParameter('claimable', [ScheduledTaskEntity::STATUS_SCHEDULED, ScheduledTaskEntity::STATUS_PAUSED])
+      ->execute();
+
+    if ($updated === 0) {
+      return false;
+    }
+
+    // The DQL UPDATE bypasses the entity manager, so refresh the in-memory entity to the claimed state.
+    // Otherwise its status snapshot stays 'scheduled' and a later hand-back to 'scheduled' is seen as a
+    // no-op change, leaving the row stuck as 'cli'.
+    $this->entityManager->refresh($task);
+    return true;
+  }
+
   public function findPreviousTask(ScheduledTaskEntity $task): ?ScheduledTaskEntity {
     return $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')

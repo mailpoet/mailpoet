@@ -13,14 +13,22 @@ class CronCommand {
 
   private TaskTrigger $taskTrigger;
 
+  private TaskRunner $taskRunner;
+
+  private DaemonRunner $daemonRunner;
+
   public function __construct(
     ScheduledTasksLister $scheduledTasksLister,
     WorkerTypesCatalog $workerTypesCatalog,
-    TaskTrigger $taskTrigger
+    TaskTrigger $taskTrigger,
+    TaskRunner $taskRunner,
+    DaemonRunner $daemonRunner
   ) {
     $this->scheduledTasksLister = $scheduledTasksLister;
     $this->workerTypesCatalog = $workerTypesCatalog;
     $this->taskTrigger = $taskTrigger;
+    $this->taskRunner = $taskRunner;
+    $this->daemonRunner = $daemonRunner;
   }
 
   /**
@@ -183,5 +191,108 @@ class CronCommand {
       $triggered['id'],
       $triggered['type']
     ));
+  }
+
+  /**
+   * Runs a MailPoet cron worker inside this WP-CLI process.
+   *
+   * Without --task-id, it snapshots the currently-due tasks of the given type and runs each once,
+   * claiming it as 'cli' (invisible to the site daemon) so the daemon never double-processes it.
+   * Self-rescheduling batched workers (e.g. subscribers_engagement_score) process one batch per due
+   * task and leave a continuation for the site cron, so run again (or `trigger`) to process the rest.
+   * The 20-second execution limit is lifted by default; pass --timeout to cap it.
+   *
+   * ## OPTIONS
+   *
+   * <type>
+   * : The task type to run. See `wp mailpoet cron types` for valid values.
+   *
+   * [--task-id=<id>]
+   * : Run this exact task in-process: it is claimed (status 'cli', hidden from the web daemon) and run
+   * here, so the daemon never double-processes it. Only scheduled or paused tasks can be run by ID.
+   *
+   * [--timeout=<seconds>]
+   * : Cap the run at this many seconds (restores an execution limit). Omit to run to completion.
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron run log_cleanup
+   *     wp mailpoet cron run sending
+   *     wp mailpoet cron run bounce --task-id=42
+   *     wp mailpoet cron run sending --timeout=30
+   *
+   * @subcommand run
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  public function run(array $args, array $assocArgs): void {
+    $type = (string)$args[0];
+    $taskId = array_key_exists('task-id', $assocArgs) ? (int)$assocArgs['task-id'] : null;
+    $timeout = array_key_exists('timeout', $assocArgs) ? (int)$assocArgs['timeout'] : null;
+
+    try {
+      $result = $this->taskRunner->run($type, $taskId, $timeout);
+    } catch (Throwable $e) {
+      WP_CLI::error($e->getMessage());
+      return;
+    }
+
+    // limit_reached and an un-drained backlog are both non-fatal partial outcomes (still exit 0):
+    // warn so the operator sees that not everything ran. A fully drained backlog is a success.
+    if ($result['limit_reached'] || !$result['backlog_drained']) {
+      WP_CLI::warning($result['message']);
+      return;
+    }
+
+    WP_CLI::success($result['message']);
+  }
+
+  /**
+   * Runs one full MailPoet daemon pass over all cron workers inside this WP-CLI process.
+   *
+   * Each worker runs once, processing the tasks that are due. This is a single daemon pass, not a
+   * backlog drain: a worker with many due tasks may need several passes, or use
+   * `wp mailpoet cron run <type>` to drain one type. The 20-second execution limit is lifted by
+   * default; pass --timeout to cap it. Per-worker errors collected during the pass are printed and
+   * make the command exit non-zero.
+   *
+   * ## OPTIONS
+   *
+   * [--timeout=<seconds>]
+   * : Cap the pass at this many seconds (restores an execution limit). Omit to run to completion.
+   * Unlike `run`, hitting --timeout mid-pass surfaces as a worker error and exits non-zero.
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron run-daemon
+   *     wp mailpoet cron run-daemon --timeout=30
+   *
+   * @subcommand run-daemon
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WP-CLI maps the run_daemon method to the run-daemon subcommand; the underscore is required.
+  public function run_daemon(array $args, array $assocArgs): void {
+    $timeout = array_key_exists('timeout', $assocArgs) ? (int)$assocArgs['timeout'] : null;
+
+    try {
+      $result = $this->daemonRunner->run($timeout);
+    } catch (Throwable $e) {
+      WP_CLI::error($e->getMessage());
+      return;
+    }
+
+    $errors = $result['errors'];
+    if (empty($errors)) {
+      WP_CLI::success('Daemon pass finished. Note: large backlogs may need multiple passes or `wp mailpoet cron run <type>`.');
+      return;
+    }
+
+    foreach ($errors as $error) {
+      WP_CLI::warning(sprintf('%s: %s', $error['worker'], $error['message']));
+    }
+    WP_CLI::error(sprintf('Daemon pass finished with %d worker error(s).', count($errors)));
   }
 }

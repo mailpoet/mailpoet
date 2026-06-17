@@ -310,10 +310,14 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Migrator\Runner::class)->setPublic(true);
     $container->autowire(\MailPoet\Migrator\Store::class)->setPublic(true);
     // Cron
+    $container->autowire(\MailPoet\Cron\CliCommands\ClaimedTaskRunner::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\Cli::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\CronCommand::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\CliCommands\DaemonRunner::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\CliCommands\ExecutionLimitOverride::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\ScheduledTaskResolver::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\ScheduledTasksLister::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\CliCommands\TaskRunner::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\TaskTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\WorkerTypesCatalog::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CronHelper::class)->setPublic(true);
