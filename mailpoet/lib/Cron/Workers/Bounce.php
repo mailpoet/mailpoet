@@ -18,6 +18,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
+  const SUPPORT_MULTIPLE_INSTANCES = false;
 
   // The sending service never reports bounces older than this. Requests with a
   // `from` further back are rejected, so the range is clamped to stay within it.
