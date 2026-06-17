@@ -1,4 +1,4 @@
-import * as columns from '@wordpress/block-library/build-module/columns';
+import { getCoreBlockSettings } from '../core-block-settings';
 
 export const name = 'core/columns';
 
@@ -8,15 +8,8 @@ const settingsReset = {
   deprecated: null,
   save: () => null,
 };
-const settings = {
-  ...columns.metadata,
-  ...columns.settings,
-  ...settingsReset,
-  category: 'design',
-  supports: {
-    ...columns.metadata.supports,
-    anchor: false,
-  },
-};
+const settings = getCoreBlockSettings(name, settingsReset, {
+  anchor: false,
+});
 
 export { settings };
