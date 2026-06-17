@@ -42,12 +42,20 @@ const formBlocksToBody = getMapper([]);
 describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects blocks to be an array.';
-    expect(() => formBlocksToBody(null)).to.throw(error);
+    expect(() => {
+      formBlocksToBody(null);
+    }).to.throw(error);
     // @ts-expect-error - testing wrong input
-    expect(() => formBlocksToBody('hello')).to.throw(error);
-    expect(() => formBlocksToBody(undefined)).to.throw(error);
+    expect(() => {
+      formBlocksToBody('hello');
+    }).to.throw(error);
+    expect(() => {
+      formBlocksToBody(undefined);
+    }).to.throw(error);
     // @ts-expect-error - testing wrong input
-    expect(() => formBlocksToBody(1)).to.throw(error);
+    expect(() => {
+      formBlocksToBody(1);
+    }).to.throw(error);
   });
 
   it('Should map email block to input data', () => {
@@ -351,6 +359,23 @@ describe('Blocks to Form Body', () => {
     expect(input.params.align).to.be.equal('center');
   });
 
+  it('Should map typography style alignment in paragraph block', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...paragraphBlock,
+        attributes: {
+          content: 'Paragraph content',
+          style: {
+            typography: {
+              textAlign: 'right',
+            },
+          },
+        },
+      },
+    ]);
+    expect(input.params.align).to.be.equal('right');
+  });
+
   it('Should map font size in paragraph block', () => {
     const [input] = formBlocksToBody([
       {
@@ -453,6 +478,29 @@ describe('Blocks to Form Body', () => {
     expect(input.params.background_color).to.be.equal('#321');
     expect(input.params.anchor).to.be.equal('anchor');
     expect(input.params.class_name).to.be.equal('class');
+  });
+
+  it('Should map typography style alignment in heading block', () => {
+    const [input] = formBlocksToBody([
+      {
+        clientId: 'd9dd2b88-d01f-4a5e-80a4-afaa74de1b00',
+        name: 'core/heading',
+        isValid: true,
+        attributes: {
+          content: 'Heading content',
+          level: 3,
+          anchor: 'anchor',
+          className: 'class',
+          style: {
+            typography: {
+              textAlign: 'center',
+            },
+          },
+        },
+        innerBlocks: [],
+      },
+    ]);
+    expect(input.params.align).to.be.equal('center');
   });
 
   it('Should map font size in heading block', () => {
