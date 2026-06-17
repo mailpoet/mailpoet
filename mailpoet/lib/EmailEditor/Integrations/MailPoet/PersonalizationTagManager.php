@@ -322,18 +322,6 @@ class PersonalizationTagManager {
       'mailpoet_sending_newsletter_render_after_pre_process',
       [$this, 'convertLinksToShortcodes']
     );
-    $this->wp->addFilter(
-      'mailpoet_automation_email_personalize_html_after',
-      [$this, 'restorePersonalizedLinkHrefs'],
-      10,
-      2
-    );
-    $this->wp->addFilter(
-      'mailpoet_automation_email_personalize_text_after',
-      [$this, 'restorePersonalizedLinkUrls'],
-      10,
-      2
-    );
   }
 
   private function registerSubscriberCustomFieldTags(Personalization_Tags_Registry $registry): void {

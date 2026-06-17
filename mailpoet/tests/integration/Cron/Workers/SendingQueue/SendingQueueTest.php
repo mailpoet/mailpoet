@@ -36,6 +36,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -574,6 +575,39 @@ class SendingQueueTest extends \MailPoetTest {
       'queue' => $this->sendingQueue,
     ]);
     verify($statistics)->notEquals(false);
+  }
+
+  public function testItCanProcessSubscribersInTemplatedBulkWhenEnabled(): void {
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            verify($newsletter->getTemplate()['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            verify($newsletter->getSubstitutions())->notEmpty();
+            verify($subscriber)->notEmpty();
+            verify($extraParams['unsubscribe_url'])->notEmpty();
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+
+    $filter = function() {
+      return true;
+    };
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_mss_use_templated_batch', $filter);
+    try {
+      $sendingQueueWorker->process();
+    } finally {
+      $wp->removeFilter('mailpoet_mss_use_templated_batch', $filter);
+    }
   }
 
   public function testItProcessesStandardNewsletters() {

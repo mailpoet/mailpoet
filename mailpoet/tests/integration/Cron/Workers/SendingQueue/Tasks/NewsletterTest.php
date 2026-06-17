@@ -378,6 +378,41 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
+  public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+
+    $fullNewsletter = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+    $reconstructed = [
+      'id' => $template['id'],
+      'subject' => strtr($template['subject'], $substitutions),
+      'body' => [
+        'html' => html_entity_decode(strtr($template['body']['html'], $substitutions), ENT_QUOTES, 'UTF-8'),
+        'text' => strtr($template['body']['text'], $substitutions),
+      ],
+    ];
+
+    verify($template['subject'])->stringContainsString('{{mailpoet_mss_');
+    verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+    verify($template['body']['text'])->stringContainsString('{{mailpoet_mss_');
+    $substitutionValues = implode("\n", $substitutions);
+    verify($substitutionValues)->stringContainsString('&endpoint=track');
+    verify($substitutionValues)->stringContainsString('&#038;endpoint=track');
+    verify($reconstructed)->equals($fullNewsletter);
+  }
+
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
     $newsletterTask = $this->newsletterTask;
     $newsletterTask->trackingEnabled = false;

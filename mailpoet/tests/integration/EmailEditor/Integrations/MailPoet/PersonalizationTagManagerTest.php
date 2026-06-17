@@ -10,6 +10,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\BlockEmailPersonalizationProcessor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\CustomFieldEntity;
@@ -17,6 +18,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -372,5 +374,67 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
       }
     }
     return null;
+  }
+
+  public function testBlockEmailPersonalizationProcessorRestoresOrderReviewUrlWithoutPostPersonalizationFilters(): void {
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->method('getUrl')->willReturn('https://example.com/review-order/abc');
+    $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $content = $processor->personalize([
+      'Subject',
+      '<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>',
+      '[Leave a review](http://[woocommerce/order-review-url%5D)',
+    ], []);
+
+    $this->assertSame('Subject', $content[0]);
+    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $content[1]);
+    $this->assertStringNotContainsString('data-link-href=', $content[1]);
+    $this->assertSame('[Leave a review](https://example.com/review-order/abc)', $content[2]);
+  }
+
+  public function testBlockEmailPersonalizationProcessorCanReturnPlaceholdersAndValues(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Name',
+      'mailpoet/test-name',
+      'Test',
+      function(): string {
+        return 'Rosta & Co';
+      }
+    ));
+    $registry->register(new Personalization_Tag(
+      'Test URL',
+      'mailpoet/test-url',
+      'Test',
+      function(): string {
+        return 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss';
+      }
+    ));
+
+    $collector = new PlaceholderCollector();
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->method('getUrl')->willReturn('https://example.com/review-order/abc?email=rosta%40example.com&source=mss');
+    $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+    $content = $processor->personalizeWithPlaceholders([
+      'Subject',
+      '<p><!--[mailpoet/test-name]--></p><a data-link-href="[mailpoet/test-url]">Review</a>',
+      '<!--[mailpoet/test-name]--> [Review](http://[woocommerce/order-review-url%5D)',
+    ], [], $collector);
+
+    $this->assertSame('Subject', $content[0]);
+    $this->assertStringContainsString('<p>{{mailpoet_mss_1}}</p>', $content[1]);
+    $this->assertStringContainsString('href="{{mailpoet_mss_2}}"', $content[1]);
+    $this->assertSame('{{mailpoet_mss_3}} [Review]({{mailpoet_mss_4}})', $content[2]);
+    $this->assertSame([
+      '{{mailpoet_mss_1}}' => 'Rosta &amp; Co',
+      '{{mailpoet_mss_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
+      '{{mailpoet_mss_3}}' => 'Rosta & Co',
+      '{{mailpoet_mss_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
+    ], $collector->getValues());
   }
 }

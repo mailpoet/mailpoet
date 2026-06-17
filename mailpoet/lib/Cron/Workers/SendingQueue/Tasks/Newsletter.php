@@ -2,14 +2,13 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
-use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
-use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\BlockEmailPersonalizationProcessor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -24,6 +23,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
@@ -81,8 +81,8 @@ class Newsletter {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
-  /** @var Personalizer */
-  private $personalizer;
+  /** @var BlockEmailPersonalizationProcessor */
+  private $blockEmailPersonalizationProcessor;
 
   /** @var AutomationRunStorage */
   private $automationRunStorage;
@@ -125,7 +125,7 @@ class Newsletter {
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
-    $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
+    $this->blockEmailPersonalizationProcessor = ContainerWrapper::getInstance()->get(BlockEmailPersonalizationProcessor::class);
     $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
     $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
     $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
@@ -358,6 +358,36 @@ class Newsletter {
    * to speed the processing, join content into a continuous string.
    */
   public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
+    $preparedNewsletter = $this->prepareNewsletterPartsForSending($newsletter, $subscriber, $queue);
+    if ($newsletter->getWpPostId() !== null) {
+      $context = $this->getBlockEmailPersonalizationContext($newsletter, $subscriber, $queue);
+      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
+      $preparedNewsletter = $this->blockEmailPersonalizationProcessor->personalize($preparedNewsletter, $context);
+    }
+    return $this->formatPreparedNewsletter($newsletter, $preparedNewsletter);
+  }
+
+  /**
+   * @return array{newsletter: array{id: int|null, subject: string, body: array{html: string, text: string}}, substitutions: array<string, string>}
+   */
+  public function prepareNewsletterForTemplatedSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
+    $collector = new PlaceholderCollector();
+    $preparedNewsletter = $this->prepareNewsletterPartsWithPlaceholders($newsletter, $subscriber, $queue, $collector);
+    if ($newsletter->getWpPostId() !== null) {
+      $context = $this->getBlockEmailPersonalizationContext($newsletter, $subscriber, $queue);
+      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
+      $preparedNewsletter = $this->blockEmailPersonalizationProcessor->personalizeWithPlaceholders($preparedNewsletter, $context, $collector);
+    }
+    return [
+      'newsletter' => $this->formatPreparedNewsletter($newsletter, $preparedNewsletter),
+      'substitutions' => $collector->getValues(),
+    ];
+  }
+
+  /**
+   * @return array{0: string, 1: string, 2: string}
+   */
+  private function prepareNewsletterPartsForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
     $preparedNewsletter = Helpers::joinObject(
@@ -389,82 +419,79 @@ class Newsletter {
         $preparedNewsletter
       );
     }
-    $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
-    if ($newsletter->getWpPostId() !== null) {
-      $context = [
-        'recipient_email' => $subscriber->getEmail(),
-        'newsletter_id' => $newsletter->getId(),
-        'queue_id' => $queue->getId(),
-      ];
+    return $this->splitPreparedNewsletter($preparedNewsletter);
+  }
 
-      $queueMeta = $queue->getMeta();
-      if (isset($queueMeta['automation']['run_id'])) {
-        $runId = (int)$queueMeta['automation']['run_id'];
-        $automationRun = $this->automationRunStorage->getAutomationRun($runId);
+  /**
+   * @return array{0: string, 1: string, 2: string}
+   */
+  private function prepareNewsletterPartsWithPlaceholders(
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue,
+    PlaceholderCollector $collector
+  ): array {
+    $renderedNewsletter = $queue->getNewsletterRenderedBody();
+    $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
+    $preparedNewsletter = Helpers::joinObject(
+      [
+        $queue->getNewsletterRenderedSubject(),
+        $renderedNewsletter['html'],
+        $renderedNewsletter['text'],
+      ]
+    );
 
-        if ($automationRun) {
-          // Convert automation run subjects to array format for filter
-          $subjectsArray = [];
-          foreach ($automationRun->getSubjects() as $subject) {
-            $subjectsArray[$subject->getKey()] = [
-              'key' => $subject->getKey(),
-              'args' => $subject->getArgs(),
-            ];
-          }
-
-          // Load WooCommerce order if present
-          if (
-            isset($subjectsArray['woocommerce:order'])
-            && isset($subjectsArray['woocommerce:order']['args']['order_id'])
-            && function_exists('wc_get_order')
-          ) {
-            $orderId = (int)$subjectsArray['woocommerce:order']['args']['order_id'];
-            $order = wc_get_order($orderId);
-            if ($order instanceof \WC_Order) {
-              $context['order'] = $order;
-            }
-          }
-
-          // Load WooCommerce customer if present
-          if (
-            isset($subjectsArray['woocommerce:customer'])
-            && isset($subjectsArray['woocommerce:customer']['args']['customer_id'])
-            && class_exists(\WC_Customer::class)
-          ) {
-            $customerId = (int)$subjectsArray['woocommerce:customer']['args']['customer_id'];
-            $customer = new \WC_Customer($customerId);
-            if ($customer->get_id()) {
-              $context['customer'] = $customer;
-            }
-          }
-
-          // Allow extensions to add their own subject context
-          /** @var array<string, mixed> $context */
-          $context = $this->wp->applyFilters('mailpoet_automation_email_personalization_context', $context, $subjectsArray);
-
-          // Get available subject keys for extending personalization tags
-          $availableSubjects = array_keys($subjectsArray);
-
-          // Allow extensions to register additional personalization tags based on available subjects
-          $this->wp->doAction('mailpoet_automation_email_extend_personalization_tags_for_sending', $availableSubjects);
-        }
-      }
-
-      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
-
-      $this->personalizer->set_context($context);
-      foreach ($preparedNewsletter as $key => $content) {
-        $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
-      }
-      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
-      if (is_string($personalizedHtml)) {
-        $preparedNewsletter[1] = $personalizedHtml;
-      }
-      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $preparedNewsletter[2], $context);
-      if (is_string($personalizedText)) {
-        $preparedNewsletter[2] = $personalizedText;
-      }
+    $preparedNewsletter = ShortcodesTask::processWithPlaceholders(
+      $preparedNewsletter,
+      null,
+      $newsletter,
+      $subscriber,
+      $queue,
+      $collector
+    );
+    $preparedNewsletter = $this->splitPreparedNewsletter($preparedNewsletter);
+    if ($this->trackingEnabled) {
+      $preparedNewsletter[0] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
+        $subscriber->getId(),
+        $queue->getId(),
+        $preparedNewsletter[0],
+        $collector
+      );
+      $preparedNewsletter[1] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
+        $subscriber->getId(),
+        $queue->getId(),
+        $preparedNewsletter[1],
+        $collector,
+        false,
+        true
+      );
+      $preparedNewsletter[2] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
+        $subscriber->getId(),
+        $queue->getId(),
+        $preparedNewsletter[2],
+        $collector
+      );
     }
+    return $preparedNewsletter;
+  }
+
+  /**
+   * @return array{0: string, 1: string, 2: string}
+   */
+  private function splitPreparedNewsletter(string $preparedNewsletter): array {
+    $parts = Helpers::splitObject($preparedNewsletter);
+    return [
+      is_string($parts[0] ?? null) ? $parts[0] : '',
+      is_string($parts[1] ?? null) ? $parts[1] : '',
+      is_string($parts[2] ?? null) ? $parts[2] : '',
+    ];
+  }
+
+  /**
+   * @param array{0: string, 1: string, 2: string} $preparedNewsletter
+   * @return array{id: int|null, subject: string, body: array{html: string, text: string}}
+   */
+  private function formatPreparedNewsletter(NewsletterEntity $newsletter, array $preparedNewsletter): array {
     return [
       'id' => $newsletter->getId(),
       'subject' => $preparedNewsletter[0],
@@ -473,6 +500,69 @@ class Newsletter {
         'text' => $preparedNewsletter[2],
       ],
     ];
+  }
+
+  /**
+   * @return array<string, mixed>
+   */
+  private function getBlockEmailPersonalizationContext(
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue
+  ): array {
+    $context = [
+      'recipient_email' => $subscriber->getEmail(),
+      'newsletter_id' => $newsletter->getId(),
+      'queue_id' => $queue->getId(),
+    ];
+
+    $queueMeta = $queue->getMeta();
+    if (isset($queueMeta['automation']['run_id'])) {
+      $runId = (int)$queueMeta['automation']['run_id'];
+      $automationRun = $this->automationRunStorage->getAutomationRun($runId);
+
+      if ($automationRun) {
+        $subjectsArray = [];
+        foreach ($automationRun->getSubjects() as $subject) {
+          $subjectsArray[$subject->getKey()] = [
+            'key' => $subject->getKey(),
+            'args' => $subject->getArgs(),
+          ];
+        }
+
+        if (
+          isset($subjectsArray['woocommerce:order'])
+          && isset($subjectsArray['woocommerce:order']['args']['order_id'])
+          && function_exists('wc_get_order')
+        ) {
+          $orderId = (int)$subjectsArray['woocommerce:order']['args']['order_id'];
+          $order = wc_get_order($orderId);
+          if ($order instanceof \WC_Order) {
+            $context['order'] = $order;
+          }
+        }
+
+        if (
+          isset($subjectsArray['woocommerce:customer'])
+          && isset($subjectsArray['woocommerce:customer']['args']['customer_id'])
+          && class_exists(\WC_Customer::class)
+        ) {
+          $customerId = (int)$subjectsArray['woocommerce:customer']['args']['customer_id'];
+          $customer = new \WC_Customer($customerId);
+          if ($customer->get_id()) {
+            $context['customer'] = $customer;
+          }
+        }
+
+        /** @var array<string, mixed> $context */
+        $context = $this->wp->applyFilters('mailpoet_automation_email_personalization_context', $context, $subjectsArray);
+
+        $availableSubjects = array_keys($subjectsArray);
+        $this->wp->doAction('mailpoet_automation_email_extend_personalization_tags_for_sending', $availableSubjects);
+      }
+    }
+
+    return $context;
   }
 
   /**

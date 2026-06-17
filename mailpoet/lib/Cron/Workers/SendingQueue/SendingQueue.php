@@ -19,6 +19,7 @@ use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
@@ -434,17 +435,32 @@ class SendingQueue {
       return;
     }
 
+    $useTemplatedBatch = $processingMethod === 'bulk'
+      && (bool)$this->wp->applyFilters('mailpoet_mss_use_templated_batch', false);
+    $templateBatch = null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
 
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
-      $preparedNewsletters[] =
-        $this->newsletterTask->prepareNewsletterForSending(
+      if ($useTemplatedBatch) {
+        $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
           $newsletter,
           $subscriber,
           $sendingQueueEntity
         );
+        if (!$templateBatch instanceof TemplateBatch) {
+          $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
+        }
+        $templateBatch->addSubstitutions($templatedNewsletter['substitutions']);
+      } else {
+        $preparedNewsletters[] =
+          $this->newsletterTask->prepareNewsletterForSending(
+            $newsletter,
+            $subscriber,
+            $sendingQueueEntity
+          );
+      }
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
         $subscriber
@@ -493,7 +509,7 @@ class SendingQueue {
       $this->sendNewsletters(
         $task,
         $preparedSubscribersIds,
-        $preparedNewsletters,
+        ($useTemplatedBatch && $templateBatch instanceof TemplateBatch) ? $templateBatch : $preparedNewsletters,
         $preparedSubscribers,
         $statistics,
         $timer,
