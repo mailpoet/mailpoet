@@ -578,6 +578,18 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSubscribersInTemplatedBulkWhenEnabled(): void {
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $this->sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $this->entityManager->flush();
+
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
         MailerTask::class,
@@ -585,9 +597,18 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
             verify($newsletter)->instanceOf(TemplateBatch::class);
-            verify($newsletter->getTemplate()['body']['html'])->stringContainsString('{{mailpoet_mss_');
-            verify($newsletter->getSubstitutions())->notEmpty();
-            verify($subscriber)->notEmpty();
+            $template = $newsletter->getTemplate();
+            $substitutions = $newsletter->getSubstitutions();
+            verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            $this->assertCount(2, $substitutions);
+            $this->assertNotSame($substitutions[0], $substitutions[1]);
+            $this->assertSame('Newsletter for John', strtr($template['subject'], $substitutions[0]));
+            $this->assertSame('Newsletter for Jane', strtr($template['subject'], $substitutions[1]));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['html'], $substitutions[0]));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['html'], $substitutions[1]));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['text'], $substitutions[0]));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['text'], $substitutions[1]));
+            verify($subscriber)->arrayCount(2);
             verify($extraParams['unsubscribe_url'])->notEmpty();
             return $this->mailerTaskDummyResponse;
           }),

@@ -13,7 +13,7 @@ class PlaceholderCollector {
   }
 
   public function addHtmlText(string $value): string {
-    return $this->add(esc_html($value));
+    return $this->add($value);
   }
 
   public function addHtmlUrl(string $value): string {

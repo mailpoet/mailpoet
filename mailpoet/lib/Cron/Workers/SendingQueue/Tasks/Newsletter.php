@@ -450,9 +450,7 @@ class Newsletter {
         $subscriber->getId(),
         $queue->getId(),
         $preparedNewsletter[1],
-        $collector,
-        false,
-        true
+        $collector
       );
       $preparedNewsletter[2] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
         $subscriber->getId(),
