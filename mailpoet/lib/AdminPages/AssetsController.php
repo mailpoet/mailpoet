@@ -152,13 +152,44 @@ class AssetsController {
    * @return array{dependencies: string[], version: string}
    */
   private function getScriptAssetData(string $asset): array {
-    $assetPath = Env::$assetsPath . '/dist/js/' . $asset . '.asset.php';
-    $assetData = file_exists($assetPath) ? require $assetPath : [];
+    $assetPaths = [
+      'form_editor' => Env::$assetsPath . '/dist/js/form_editor.asset.json',
+    ];
+    $fallback = [
+      'dependencies' => [],
+      'version' => Env::$version,
+    ];
+    $assetPath = $assetPaths[$asset] ?? null;
+    if ($assetPath === null) {
+      return $fallback;
+    }
+
+    if (!file_exists($assetPath)) {
+      $this->logScriptAssetDataIssue(sprintf('Missing script asset metadata for "%s" at "%s".', $asset, $assetPath));
+      return $fallback;
+    }
+
+    $assetData = json_decode((string)file_get_contents($assetPath), true);
+    if (!is_array($assetData)) {
+      $this->logScriptAssetDataIssue(sprintf('Invalid script asset metadata for "%s" at "%s".', $asset, $assetPath));
+      return $fallback;
+    }
+
+    $dependencies = is_array($assetData['dependencies'] ?? null) ? $assetData['dependencies'] : [];
+    $version = is_string($assetData['version'] ?? null) ? $assetData['version'] : $fallback['version'];
 
     return [
-      'dependencies' => $assetData['dependencies'] ?? [],
-      'version' => $assetData['version'] ?? Env::$version,
+      'dependencies' => array_values(array_filter($dependencies, 'is_string')),
+      'version' => $version,
     ];
+  }
+
+  private function logScriptAssetDataIssue(string $message): void {
+    if (defined('WP_DEBUG') && WP_DEBUG && function_exists('error_log')) {
+      // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
+      error_log('[MailPoet] ' . $message); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+      // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
+    }
   }
 
   private function registerAdminDeps(): void {
