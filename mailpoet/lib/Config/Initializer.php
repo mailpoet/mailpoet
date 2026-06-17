@@ -13,6 +13,7 @@ use MailPoet\Automation\Engine\Engine;
 use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
+use MailPoet\Cron\CliCommands\Cli as CronCli;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\CustomFields\RestApi\Api as CustomFieldsRestApi;
@@ -70,6 +71,9 @@ class Initializer {
 
   /** @var ImportCli */
   private $importCli;
+
+  /** @var CronCli */
+  private $cronCli;
 
   /** @var Router\Router */
   private $router;
@@ -184,6 +188,7 @@ class Initializer {
     SettingsController $settings,
     MigratorCli $migratorCli,
     ImportCli $importCli,
+    CronCli $cronCli,
     Router\Router $router,
     Hooks $hooks,
     Changelog $changelog,
@@ -225,6 +230,7 @@ class Initializer {
     $this->settings = $settings;
     $this->migratorCli = $migratorCli;
     $this->importCli = $importCli;
+    $this->cronCli = $cronCli;
     $this->router = $router;
     $this->hooks = $hooks;
     $this->changelog = $changelog;
@@ -408,6 +414,7 @@ class Initializer {
     try {
       $this->migratorCli->initialize();
       $this->importCli->initialize();
+      $this->cronCli->initialize();
       $this->setupInstaller();
       $this->setupUpdater();
 
