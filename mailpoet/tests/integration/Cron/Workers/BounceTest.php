@@ -283,7 +283,8 @@ class BounceTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(StatisticsBouncesRepository::class),
-      $this->diContainer->get(Bridge::class)
+      $this->diContainer->get(Bridge::class),
+      $this->entityManager
     );
   }
 

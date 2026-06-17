@@ -194,8 +194,37 @@ class API {
     if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       return null;
     }
-    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
-    return is_array($data) ? $data : null;
+    $body = $this->wp->wpRemoteRetrieveBody($result);
+    $data = json_decode($body, true);
+    if (!$this->isValidBouncesReport($data)) {
+      // A 200 with a malformed payload must not be treated as a successful empty
+      // page: that would advance the report window and silently skip bounces.
+      $this->logInvalidDataFormat('getBouncesReport', is_string($body) ? $body : null);
+      return null;
+    }
+    return $data;
+  }
+
+  /**
+   * @param mixed $data
+   * @phpstan-assert-if-true array{recipients: string[], page: int, has_more: bool} $data
+   */
+  private function isValidBouncesReport($data): bool {
+    if (
+      !is_array($data)
+      || !isset($data['recipients'], $data['page'], $data['has_more'])
+      || !is_array($data['recipients'])
+      || !is_int($data['page'])
+      || !is_bool($data['has_more'])
+    ) {
+      return false;
+    }
+    foreach ($data['recipients'] as $recipient) {
+      if (!is_string($recipient)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public function updateSubscriberCount($count): bool {

@@ -14,6 +14,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
@@ -51,12 +52,16 @@ class Bounce extends SimpleWorker {
   /** @var StatisticsBouncesRepository */
   private $statisticsBouncesRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsBouncesRepository $statisticsBouncesRepository,
-    Bridge $bridge
+    Bridge $bridge,
+    EntityManager $entityManager
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -64,6 +69,7 @@ class Bounce extends SimpleWorker {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsBouncesRepository = $statisticsBouncesRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function init() {
@@ -168,16 +174,25 @@ class Bounce extends SimpleWorker {
     }
 
     $previousTask = $this->scheduledTasksRepository->findPreviousTask($task);
-    $ids = [];
-    foreach ($subscribers as $subscriber) {
-      $this->saveBouncedStatistics($subscriber, $task, $previousTask);
-      $ids[] = (int)$subscriber->getId();
-    }
-    // Persist the statistics while the subscribers are still managed, then flip
-    // their status in a single query. bulkUpdateStatusToBounced detaches the
-    // affected entities so the shared identity map keeps no stale status.
-    $this->statisticsBouncesRepository->flush();
-    $this->subscribersRepository->bulkUpdateStatusToBounced($ids);
+    $ids = array_map(function (SubscriberEntity $subscriber): int {
+      return (int)$subscriber->getId();
+    }, $subscribers);
+
+    // Record the statistics and flip the status atomically. If the status update
+    // failed after the statistics were already committed, a retry of the same
+    // page would record the statistics a second time. Committing both together
+    // also makes a replayed page a no-op: the subscribers are already bounced, so
+    // the status filter above excludes them and no duplicate statistics are made.
+    $this->entityManager->wrapInTransaction(function () use ($subscribers, $task, $previousTask, $ids): void {
+      foreach ($subscribers as $subscriber) {
+        $this->saveBouncedStatistics($subscriber, $task, $previousTask);
+      }
+      // Persist the statistics while the subscribers are still managed, then flip
+      // their status in a single query. bulkUpdateStatusToBounced detaches the
+      // affected entities so the shared identity map keeps no stale status.
+      $this->statisticsBouncesRepository->flush();
+      $this->subscribersRepository->bulkUpdateStatusToBounced($ids);
+    });
   }
 
   public function getNextRunDate() {
