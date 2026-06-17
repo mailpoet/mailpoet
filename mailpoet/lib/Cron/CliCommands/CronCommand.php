@@ -9,10 +9,14 @@ use WP_CLI\Formatter;
 class CronCommand {
   private ScheduledTasksLister $scheduledTasksLister;
 
+  private WorkerTypesCatalog $workerTypesCatalog;
+
   public function __construct(
-    ScheduledTasksLister $scheduledTasksLister
+    ScheduledTasksLister $scheduledTasksLister,
+    WorkerTypesCatalog $workerTypesCatalog
   ) {
     $this->scheduledTasksLister = $scheduledTasksLister;
+    $this->workerTypesCatalog = $workerTypesCatalog;
   }
 
   /**
@@ -90,6 +94,47 @@ class CronCommand {
       $formatter->display_items(array_column($rows, 'id'));
       return;
     }
+    $formatter->display_items($rows);
+  }
+
+  /**
+   * Lists all known MailPoet cron worker task types and their attributes.
+   *
+   * ## OPTIONS
+   *
+   * [--fields=<fields>]
+   * : Limit the output to specific fields. Comma-separated.
+   *
+   * [--field=<field>]
+   * : Print the value of a single field for each type.
+   *
+   * [--format=<format>]
+   * : Render output in a particular format.
+   * ---
+   * default: table
+   * options:
+   *   - table
+   *   - csv
+   *   - json
+   *   - yaml
+   *   - count
+   * ---
+   *
+   * ## EXAMPLES
+   *
+   *     wp mailpoet cron types
+   *     wp mailpoet cron types --format=json
+   *     wp mailpoet cron types --fields=type,addable
+   *
+   * @subcommand types
+   *
+   * @param array $args
+   * @param array $assocArgs
+   */
+  public function types(array $args, array $assocArgs): void {
+    $rows = $this->workerTypesCatalog->getRows();
+
+    $formatter = new Formatter($assocArgs, WorkerTypesCatalog::FIELDS);
     $formatter->display_items($rows);
   }
 }
