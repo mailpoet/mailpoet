@@ -1,4 +1,4 @@
-import * as paragraph from '@wordpress/block-library/build-module/paragraph';
+import { getCoreBlockSettings } from '../core-block-settings';
 
 export const name = 'core/paragraph';
 
@@ -9,16 +9,9 @@ const settingsReset = {
   save: (): null => null,
 };
 
-const settings = {
-  ...paragraph.metadata,
-  ...paragraph.settings,
-  ...settingsReset,
-  category: 'design',
-  supports: {
-    ...paragraph.metadata.supports,
-    html: false,
-    anchor: false,
-  },
-};
+const settings = getCoreBlockSettings(name, settingsReset, {
+  html: false,
+  anchor: false,
+});
 
 export { settings };

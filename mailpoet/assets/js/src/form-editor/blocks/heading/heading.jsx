@@ -1,4 +1,4 @@
-import * as heading from '@wordpress/block-library/build-module/heading';
+import { getCoreBlockSettings } from '../core-block-settings';
 
 export const name = 'core/heading';
 
@@ -9,15 +9,8 @@ const settingsReset = {
   save: () => null,
 };
 
-const settings = {
-  ...heading.metadata,
-  ...heading.settings,
-  ...settingsReset,
-  category: 'design',
-  supports: {
-    ...heading.metadata.supports,
-    html: false,
-  },
-};
+const settings = getCoreBlockSettings(name, settingsReset, {
+  html: false,
+});
 
 export { settings };
