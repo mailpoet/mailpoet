@@ -44,7 +44,11 @@ class AssetsController {
   public function setupFormEditorDependencies(): void {
     $this->skipAdminPagesDependencies = true;
     $this->setupFormEditorLocalizationDependency();
-    $this->enqueueJsEntrypoint('form_editor', ['mailpoet_mailpoet', 'underscore'], false);
+    $dependencies = ['mailpoet_mailpoet', 'underscore'];
+    if ($this->wp->wpEnqueueCodeEditor(['type' => 'text/css']) !== false) {
+      $dependencies[] = 'code-editor';
+    }
+    $this->enqueueJsEntrypoint('form_editor', $dependencies, false);
     $this->wp->wpEnqueueStyle('mailpoet_form_editor', $this->getCssUrl('mailpoet-form-editor.css'));
   }
 
