@@ -91,22 +91,38 @@ class Bounce extends SimpleWorker {
   }
 
   public function processRecipients(ScheduledTaskEntity $task, array $recipients): void {
-    $previousTask = $this->scheduledTasksRepository->findPreviousTask($task);
-    foreach ($recipients as $email) {
-      if (!is_string($email) || $email === '') {
-        continue;
+    $emails = array_values(array_unique(array_filter(
+      $recipients,
+      function ($email): bool {
+        return is_string($email) && $email !== '';
       }
-      $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
-      if (!$subscriber instanceof SubscriberEntity) {
-        continue;
-      }
-      if (!in_array($subscriber->getStatus(), [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED], true)) {
-        continue;
-      }
-      $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
-      $this->saveBouncedStatistics($subscriber, $task, $previousTask);
+    )));
+    if (empty($emails)) {
+      return;
     }
-    $this->subscribersRepository->flush();
+
+    // Only subscribers currently subscribed/unconfirmed transition to bounced,
+    // preserving prior behavior. Loading them in one query also gives us exactly
+    // the set we record bounce statistics for.
+    $subscribers = $this->subscribersRepository->findBy([
+      'email' => $emails,
+      'status' => [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED],
+    ]);
+    if (empty($subscribers)) {
+      return;
+    }
+
+    $previousTask = $this->scheduledTasksRepository->findPreviousTask($task);
+    $ids = [];
+    foreach ($subscribers as $subscriber) {
+      $this->saveBouncedStatistics($subscriber, $task, $previousTask);
+      $ids[] = (int)$subscriber->getId();
+    }
+    // Persist the statistics while the subscribers are still managed, then flip
+    // their status in a single query. bulkUpdateStatusToBounced detaches the
+    // affected entities so the shared identity map keeps no stale status.
+    $this->statisticsBouncesRepository->flush();
+    $this->subscribersRepository->bulkUpdateStatusToBounced($ids);
   }
 
   public function getNextRunDate() {
