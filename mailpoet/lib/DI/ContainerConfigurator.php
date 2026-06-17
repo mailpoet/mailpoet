@@ -317,6 +317,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\CliCommands\ExecutionLimitOverride::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\ScheduledTaskResolver::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\ScheduledTasksLister::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\CliCommands\TaskAdder::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\CliCommands\TaskCanceller::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\TaskRunner::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\TaskTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CliCommands\WorkerTypesCatalog::class)->setPublic(true);
