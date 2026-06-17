@@ -263,7 +263,6 @@ const adminConfig = {
     automation_preview_embed: 'automation/preview-embed.tsx',
     automation_flow_embed: 'automation/flow-embed.tsx',
     newsletter_editor: 'newsletter-editor/webpack-index.jsx',
-    form_editor: 'form-editor/form-editor.jsx',
     settings: 'settings/index.tsx',
     tags: 'subscribers/tags/index.tsx',
     custom_fields: 'subscribers/custom-fields/index.tsx',
@@ -306,6 +305,45 @@ const adminConfig = {
   externals: {
     jquery: 'jQuery',
   },
+};
+
+function requestToFormEditorExternal(request) {
+  if (request === 'react-dom/client') {
+    return 'ReactDOM';
+  }
+  if (request.startsWith('@wordpress/') && request.split('/').length > 2) {
+    return false;
+  }
+  // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
+  // packages, for that handling to kick in, we must not return anything from
+  // function.
+  /* eslint-disable-next-line consistent-return, no-useless-return */
+  return;
+}
+
+function requestToFormEditorHandle(request) {
+  if (request === 'react-dom/client') {
+    return 'react-dom';
+  }
+  // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
+  // packages, for that handling to kick in, we must not return anything from
+  // function.
+  /* eslint-disable-next-line consistent-return, no-useless-return */
+  return;
+}
+
+const formEditorConfig = {
+  name: 'form_editor',
+  entry: {
+    form_editor: 'form-editor/form-editor.jsx',
+  },
+  plugins: [
+    ...baseConfig.plugins,
+    new DependencyExtractionWebpackPlugin({
+      requestToExternal: requestToFormEditorExternal,
+      requestToHandle: requestToFormEditorHandle,
+    }),
+  ],
 };
 
 // Public config
@@ -630,6 +668,7 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
 const configs = [
   publicConfig,
   adminConfig,
+  formEditorConfig,
   formPreviewConfig,
   postEditorBlock,
   marketingOptinBlock,
