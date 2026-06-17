@@ -14,7 +14,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
@@ -53,16 +52,12 @@ class Bounce extends SimpleWorker {
   /** @var StatisticsBouncesRepository */
   private $statisticsBouncesRepository;
 
-  /** @var EntityManager */
-  private $entityManager;
-
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsBouncesRepository $statisticsBouncesRepository,
-    Bridge $bridge,
-    EntityManager $entityManager
+    Bridge $bridge
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -70,7 +65,6 @@ class Bounce extends SimpleWorker {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsBouncesRepository = $statisticsBouncesRepository;
-    $this->entityManager = $entityManager;
   }
 
   public function init() {
@@ -164,8 +158,10 @@ class Bounce extends SimpleWorker {
     }
 
     // Only subscribers currently subscribed/unconfirmed transition to bounced,
-    // preserving prior behavior. Loading them in one query also gives us exactly
-    // the set we record bounce statistics for.
+    // preserving prior behavior. Loading them in one query (instead of one
+    // lookup per recipient) is the batching this task needed; the status change
+    // itself stays on the managed entities so the Doctrine lifecycle listeners
+    // (status-change notifications, subscriber counts) still fire.
     $subscribers = $this->subscribersRepository->findBy([
       'email' => $emails,
       'status' => [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED],
@@ -176,25 +172,15 @@ class Bounce extends SimpleWorker {
     }
 
     $previousTask = $this->scheduledTasksRepository->findPreviousTask($task);
-    $ids = array_map(function (SubscriberEntity $subscriber): int {
-      return (int)$subscriber->getId();
-    }, $subscribers);
-
-    // Record the statistics and flip the status atomically. If the status update
-    // failed after the statistics were already committed, a retry of the same
-    // page would record the statistics a second time. Committing both together
-    // also makes a replayed page a no-op: the subscribers are already bounced, so
-    // the status filter above excludes them and no duplicate statistics are made.
-    $this->entityManager->wrapInTransaction(function () use ($subscribers, $task, $previousTask, $ids): void {
-      foreach ($subscribers as $subscriber) {
-        $this->saveBouncedStatistics($subscriber, $task, $previousTask);
-      }
-      // Persist the statistics while the subscribers are still managed, then flip
-      // their status in a single query. bulkUpdateStatusToBounced detaches the
-      // affected entities so the shared identity map keeps no stale status.
-      $this->statisticsBouncesRepository->flush();
-      $this->subscribersRepository->bulkUpdateStatusToBounced($ids);
-    });
+    foreach ($subscribers as $subscriber) {
+      $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
+      $this->saveBouncedStatistics($subscriber, $task, $previousTask);
+    }
+    // A single flush commits the status changes and the new statistics together
+    // in one transaction, so a failure cannot record statistics without the
+    // matching status change. A replayed page is then a no-op: the subscribers
+    // are already bounced and fall outside the status filter above.
+    $this->subscribersRepository->flush();
   }
 
   public function getNextRunDate() {

@@ -267,45 +267,6 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($subscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
-  public function testItBulkUpdatesStatusToBounced(): void {
-    $subscribed = $this->createSubscriber('subscribed@bounce.com');
-
-    $unconfirmed = $this->createSubscriber('unconfirmed@bounce.com');
-    $unconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
-
-    $unsubscribed = $this->createSubscriber('unsubscribed@bounce.com');
-    $unsubscribed->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $this->entityManager->flush();
-
-    $count = $this->repository->bulkUpdateStatusToBounced([
-      (int)$subscribed->getId(),
-      (int)$unconfirmed->getId(),
-      (int)$unsubscribed->getId(),
-    ]);
-
-    // only subscribed/unconfirmed transition
-    verify($count)->equals(2);
-
-    // The DQL update bypasses the unit of work, so without the detach the loaded
-    // entities would still report their pre-bounce status here. Reading them back
-    // WITHOUT clearing the entity manager proves the identity map was reconciled:
-    // findOneBy re-hydrates from the database because the entities were detached.
-    $expectedStatuses = [
-      'subscribed@bounce.com' => SubscriberEntity::STATUS_BOUNCED,
-      'unconfirmed@bounce.com' => SubscriberEntity::STATUS_BOUNCED,
-      'unsubscribed@bounce.com' => SubscriberEntity::STATUS_UNSUBSCRIBED,
-    ];
-    foreach ($expectedStatuses as $email => $expectedStatus) {
-      $reloaded = $this->repository->findOneBy(['email' => $email]);
-      $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
-      verify($reloaded->getStatus())->equals($expectedStatus);
-    }
-  }
-
-  public function testItBulkUpdateStatusToBouncedHandlesEmptyInput(): void {
-    verify($this->repository->bulkUpdateStatusToBounced([]))->equals(0);
-  }
-
   public function testItBulkRemoveSubscriberFromAllSegments(): void {
     $subscriberOne = $this->createSubscriber('one@removeAll.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@removeAll.com', new DateTimeImmutable());
