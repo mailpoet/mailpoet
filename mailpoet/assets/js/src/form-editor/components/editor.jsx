@@ -32,6 +32,7 @@ import { FormStylingBackground } from './form-styling-background.jsx';
 import { CustomFontsStyleSheetLink } from './font-family-settings';
 import { Fullscreen } from './fullscreen';
 import { FONT_SIZES, storeName } from '../store';
+import { getEditorExperimentalFeatures } from './editor-settings';
 
 /**
  * This component renders the form editor app.
@@ -85,35 +86,11 @@ export function Editor() {
       __experimentalBlockPatterns: [], // we don't want patterns in our inserter
       __experimentalBlockPatternCategories: [],
       __experimentalSetIsInserterOpened: toggleInserter,
-      __experimentalFeatures: {
-        spacing: {
-          units: ['px', 'em', 'rem', 'vh', 'vw', '%'],
-        },
-        useRootPaddingAwareAlignments: true,
-        color: {
-          custom: true,
-          text: true,
-          background: true,
-          customGradient: true,
-          defaultPalette: true,
-          palette: {
-            default: SETTINGS_DEFAULTS.colors,
-          },
-          gradients: {
-            default: SETTINGS_DEFAULTS.gradients,
-          },
-        },
-        typography: {
-          defaultFontSizes: true,
-          fontSizes: {
-            default: FONT_SIZES,
-          },
-          // Disable built-in font family toolbar control — MailPoet uses its own
-          fontFamilies: {
-            default: [],
-          },
-        },
-      },
+      __experimentalFeatures: getEditorExperimentalFeatures(
+        SETTINGS_DEFAULTS.colors,
+        SETTINGS_DEFAULTS.gradients,
+        FONT_SIZES,
+      ),
     }),
     [canUserUpload, toggleInserter],
   );
