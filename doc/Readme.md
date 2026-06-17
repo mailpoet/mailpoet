@@ -70,3 +70,10 @@ Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by Wo
 ### Usage examples
 
 You can check some basic examples [here](UsageExamples.md).
+
+## WP-CLI commands
+
+MailPoet ships [WP-CLI](https://wp-cli.org/) commands for inspecting and running its background (cron)
+tasks from the command line — useful for debugging a site or running the queue from system cron.
+
+- [`wp mailpoet cron` cron task commands](wp-cli-cron-commands.md)
