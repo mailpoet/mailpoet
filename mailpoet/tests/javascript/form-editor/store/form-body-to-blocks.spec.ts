@@ -49,15 +49,15 @@ describe('Form Body To Blocks', () => {
     expect(() => {
       formBodyToBlocks(null);
     }).to.throw(error);
-    // @ts-expect-error Passing wrong type on purpose
     expect(() => {
+      // @ts-expect-error Passing wrong type on purpose
       formBodyToBlocks('hello');
     }).to.throw(error);
     expect(() => {
       formBodyToBlocks(undefined);
     }).to.throw(error);
-    // @ts-expect-error Passing wrong type on purpose
     expect(() => {
+      // @ts-expect-error Passing wrong type on purpose
       formBodyToBlocks(1);
     }).to.throw(error);
   });
@@ -67,16 +67,16 @@ describe('Form Body To Blocks', () => {
     expect(() => {
       getMapper(null);
     }).to.throw(error);
-    // @ts-expect-error Passing wrong type on purpose
     expect(() => {
+      // @ts-expect-error Passing wrong type on purpose
       getMapper('hello');
     }).to.throw(error);
-    // @ts-expect-error Passing wrong type on purpose
     expect(() => {
+      // @ts-expect-error Passing wrong type on purpose
       getMapper(() => {});
     }).to.throw(error);
-    // @ts-expect-error Passing wrong type on purpose
     expect(() => {
+      // @ts-expect-error Passing wrong type on purpose
       getMapper(1);
     }).to.throw(error);
   });
