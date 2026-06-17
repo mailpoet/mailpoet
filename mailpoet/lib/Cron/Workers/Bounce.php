@@ -104,7 +104,18 @@ class Bounce extends SimpleWorker {
 
     // The whole range is consumed; record its `to` as the basis for the next
     // daily run's `from` so coverage stays continuous.
-    $this->settings->set(self::LAST_REPORT_TO_SETTING_KEY, $to->format(\DateTimeInterface::ATOM));
+    $existing = $this->settings->get(self::LAST_REPORT_TO_SETTING_KEY);
+    $existingTo = null;
+    if (is_string($existing) && $existing !== '') {
+      try {
+        $existingTo = Carbon::parse($existing);
+      } catch (\Exception $e) {
+        $existingTo = null;
+      }
+    }
+    if (!$existingTo || $to->greaterThan($existingTo)) {
+      $this->settings->set(self::LAST_REPORT_TO_SETTING_KEY, $to->format(\DateTimeInterface::ATOM));
+    }
     return true;
   }
 
