@@ -168,6 +168,7 @@ class Bounce extends SimpleWorker {
     $subscribers = $this->subscribersRepository->findBy([
       'email' => $emails,
       'status' => [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED],
+      'deletedAt' => null,
     ]);
     if (empty($subscribers)) {
       return;
