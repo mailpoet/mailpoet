@@ -165,8 +165,7 @@ class Links {
     $queueId,
     $content,
     PlaceholderCollector $collector,
-    $preview = false,
-    bool $htmlContext = false
+    $preview = false
   ) {
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber) {
@@ -193,7 +192,7 @@ class Links {
         $routerAction,
         $data
       );
-      $placeholder = $htmlContext ? $collector->addHtmlUrl($link) : $collector->add($link);
+      $placeholder = $collector->add($link);
       $content = str_replace($match, $placeholder, $content);
     }
     return $content;

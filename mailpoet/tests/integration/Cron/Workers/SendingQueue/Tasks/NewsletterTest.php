@@ -399,7 +399,7 @@ class NewsletterTest extends \MailPoetTest {
       'id' => $template['id'],
       'subject' => strtr($template['subject'], $substitutions),
       'body' => [
-        'html' => html_entity_decode(strtr($template['body']['html'], $substitutions), ENT_QUOTES, 'UTF-8'),
+        'html' => strtr($template['body']['html'], $substitutions),
         'text' => strtr($template['body']['text'], $substitutions),
       ],
     ];
@@ -409,7 +409,6 @@ class NewsletterTest extends \MailPoetTest {
     verify($template['body']['text'])->stringContainsString('{{mailpoet_mss_');
     $substitutionValues = implode("\n", $substitutions);
     verify($substitutionValues)->stringContainsString('&endpoint=track');
-    verify($substitutionValues)->stringContainsString('&#038;endpoint=track');
     verify($reconstructed)->equals($fullNewsletter);
   }
 

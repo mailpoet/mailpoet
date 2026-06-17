@@ -451,6 +451,8 @@ class SendingQueue {
         );
         if (!$templateBatch instanceof TemplateBatch) {
           $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
+        } elseif ($templateBatch->getTemplate() !== $templatedNewsletter['newsletter']) {
+          throw new InvalidStateException('Templated batch generated different templates for subscribers.');
         }
         $templateBatch->addSubstitutions($templatedNewsletter['substitutions']);
       } else {

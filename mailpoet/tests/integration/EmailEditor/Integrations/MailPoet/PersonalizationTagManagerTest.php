@@ -420,18 +420,23 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
       'orderReviewUrl' => $orderReviewUrl,
     ]);
-    $content = $processor->personalizeWithPlaceholders([
+    $source = [
       'Subject',
       '<p><!--[mailpoet/test-name]--></p><a data-link-href="[mailpoet/test-url]">Review</a>',
       '<!--[mailpoet/test-name]--> [Review](http://[woocommerce/order-review-url%5D)',
-    ], [], $collector);
+    ];
+    $personalizedContent = $processor->personalize($source, []);
+    $content = $processor->personalizeWithPlaceholders($source, [], $collector);
 
     $this->assertSame('Subject', $content[0]);
     $this->assertStringContainsString('<p>{{mailpoet_mss_1}}</p>', $content[1]);
     $this->assertStringContainsString('href="{{mailpoet_mss_2}}"', $content[1]);
     $this->assertSame('{{mailpoet_mss_3}} [Review]({{mailpoet_mss_4}})', $content[2]);
+    $this->assertSame($personalizedContent[0], strtr($content[0], $collector->getValues()));
+    $this->assertSame($personalizedContent[1], strtr($content[1], $collector->getValues()));
+    $this->assertSame($personalizedContent[2], strtr($content[2], $collector->getValues()));
     $this->assertSame([
-      '{{mailpoet_mss_1}}' => 'Rosta &amp; Co',
+      '{{mailpoet_mss_1}}' => 'Rosta & Co',
       '{{mailpoet_mss_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
       '{{mailpoet_mss_3}}' => 'Rosta & Co',
       '{{mailpoet_mss_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
