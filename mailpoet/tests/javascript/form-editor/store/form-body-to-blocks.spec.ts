@@ -46,23 +46,39 @@ const checkBlockBasics = (block) => {
 describe('Form Body To Blocks', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects form body to be an array.';
-    expect(() => formBodyToBlocks(null)).to.throw(error);
+    expect(() => {
+      formBodyToBlocks(null);
+    }).to.throw(error);
     // @ts-expect-error Passing wrong type on purpose
-    expect(() => formBodyToBlocks('hello')).to.throw(error);
-    expect(() => formBodyToBlocks(undefined)).to.throw(error);
+    expect(() => {
+      formBodyToBlocks('hello');
+    }).to.throw(error);
+    expect(() => {
+      formBodyToBlocks(undefined);
+    }).to.throw(error);
     // @ts-expect-error Passing wrong type on purpose
-    expect(() => formBodyToBlocks(1)).to.throw(error);
+    expect(() => {
+      formBodyToBlocks(1);
+    }).to.throw(error);
   });
 
   it('Should throw an error for wrong custom fields input', () => {
     const error = 'Mapper expects customFields to be an array.';
-    expect(() => getMapper(null)).to.throw(error);
+    expect(() => {
+      getMapper(null);
+    }).to.throw(error);
     // @ts-expect-error Passing wrong type on purpose
-    expect(() => getMapper('hello')).to.throw(error);
+    expect(() => {
+      getMapper('hello');
+    }).to.throw(error);
     // @ts-expect-error Passing wrong type on purpose
-    expect(() => getMapper(() => {})).to.throw(error);
+    expect(() => {
+      getMapper(() => {});
+    }).to.throw(error);
     // @ts-expect-error Passing wrong type on purpose
-    expect(() => getMapper(1)).to.throw(error);
+    expect(() => {
+      getMapper(1);
+    }).to.throw(error);
   });
 
   it('Should map email input to block', () => {
@@ -693,6 +709,50 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.className).to.equal('class name');
   });
 
+  it('It should map paragraph alignment to typography style when supported', () => {
+    const paragraph = {
+      ...paragraphInput,
+      params: {
+        ...paragraphInput.params,
+        align: 'right',
+      },
+    };
+    const map = formBodyToBlocksFactory(
+      fontSizeDefinitions,
+      colorDefinitions,
+      gradientDefinitions,
+      [],
+      { isParagraphTypographyTextAlignSupported: true },
+    );
+
+    const [block] = map([paragraph]);
+
+    expect(block.attributes.align).to.be.equal(undefined);
+    expect(block.attributes.style.typography.textAlign).to.be.equal('right');
+  });
+
+  it('It should map paragraph alignment to align when typography style is unsupported', () => {
+    const paragraph = {
+      ...paragraphInput,
+      params: {
+        ...paragraphInput.params,
+        align: 'right',
+      },
+    };
+    const map = formBodyToBlocksFactory(
+      fontSizeDefinitions,
+      colorDefinitions,
+      gradientDefinitions,
+      [],
+      { isParagraphTypographyTextAlignSupported: false },
+    );
+
+    const [block] = map([paragraph]);
+
+    expect(block.attributes.align).to.be.equal('right');
+    expect(block.attributes.style.typography.textAlign).to.be.equal(undefined);
+  });
+
   it('It should map paragraph gradient', () => {
     const paragraph = {
       ...paragraphInput,
@@ -765,6 +825,50 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.className).to.be.equal('class');
     expect(block.attributes.anchor).to.be.equal('anchor');
     expect(block.attributes.style.color.text).to.be.equal('#f78da7');
+  });
+
+  it('It should map heading alignment to typography style when supported', () => {
+    const heading = {
+      ...headingInput,
+      position: '1',
+      params: {
+        align: 'right',
+      },
+    };
+    const map = formBodyToBlocksFactory(
+      fontSizeDefinitions,
+      colorDefinitions,
+      gradientDefinitions,
+      [],
+      { isHeadingTypographyTextAlignSupported: true },
+    );
+
+    const [block] = map([heading]);
+
+    expect(block.attributes.textAlign).to.be.equal(undefined);
+    expect(block.attributes.style.typography.textAlign).to.be.equal('right');
+  });
+
+  it('It should map heading alignment to textAlign when typography style is unsupported', () => {
+    const heading = {
+      ...headingInput,
+      position: '1',
+      params: {
+        align: 'right',
+      },
+    };
+    const map = formBodyToBlocksFactory(
+      fontSizeDefinitions,
+      colorDefinitions,
+      gradientDefinitions,
+      [],
+      { isHeadingTypographyTextAlignSupported: false },
+    );
+
+    const [block] = map([heading]);
+
+    expect(block.attributes.textAlign).to.be.equal('right');
+    expect(block.attributes.style.typography.textAlign).to.be.equal(undefined);
   });
 
   it('It should map image', () => {

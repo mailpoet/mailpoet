@@ -88,6 +88,7 @@ const mapColumnBlocks = (
   colorDefinitions,
   gradientDefinitions,
   customFields = [],
+  mapperOptions = {},
 ) => {
   // eslint-disable-next-line no-use-before-define
   const mapFormBodyToBlocks = formBodyToBlocksFactory(
@@ -95,6 +96,7 @@ const mapColumnBlocks = (
     colorDefinitions,
     gradientDefinitions,
     customFields,
+    mapperOptions,
   );
   const mapped = {
     clientId: generateId(),
@@ -160,6 +162,35 @@ const mapColumnBlocks = (
   return mapped;
 };
 
+const mapTextAlign = (
+  attributes,
+  align,
+  isTypographyTextAlignSupported,
+  fallbackAttributeName,
+) => {
+  if (!align) {
+    return attributes;
+  }
+
+  if (isTypographyTextAlignSupported) {
+    return {
+      ...attributes,
+      style: {
+        ...attributes.style,
+        typography: {
+          ...attributes.style?.typography,
+          textAlign: align,
+        },
+      },
+    };
+  }
+
+  return {
+    ...attributes,
+    [fallbackAttributeName]: align,
+  };
+};
+
 /**
  * Factory for form data to blocks mapper
  * @param {Array.<{name: string, slug: string, size: string}>} fontSizeDefinitions
@@ -172,10 +203,17 @@ export const formBodyToBlocksFactory = (
   colorDefinitions,
   gradientsDefinitions,
   customFields = [],
+  mapperOptions = {},
 ) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
+
+  const options = {
+    isHeadingTypographyTextAlignSupported: false,
+    isParagraphTypographyTextAlignSupported: false,
+    ...mapperOptions,
+  };
 
   /**
    * Transforms form body items to array of blocks which can be passed to block editor.
@@ -195,6 +233,7 @@ export const formBodyToBlocksFactory = (
             colorDefinitions,
             gradientsDefinitions,
             customFields,
+            options,
           );
         }
 
@@ -305,26 +344,34 @@ export const formBodyToBlocksFactory = (
             }
             return {
               ...mapped,
-              attributes: {
-                ...mapped.attributes,
-                content: item.params?.content || '',
-                level,
-                textAlign: item.params?.align,
-                anchor: item.params?.anchor,
-                className: item.params?.class_name,
-              },
+              attributes: mapTextAlign(
+                {
+                  ...mapped.attributes,
+                  content: item.params?.content || '',
+                  level,
+                  anchor: item.params?.anchor,
+                  className: item.params?.class_name,
+                },
+                item.params?.align,
+                options.isHeadingTypographyTextAlignSupported,
+                'textAlign',
+              ),
               name: 'core/heading',
             };
           case 'paragraph':
             return {
               ...mapped,
-              attributes: {
-                ...mapped.attributes,
-                content: item.params?.content || '',
-                align: item.params?.align,
-                className: item.params?.class_name,
-                dropCap: item.params?.drop_cap === '1',
-              },
+              attributes: mapTextAlign(
+                {
+                  ...mapped.attributes,
+                  content: item.params?.content || '',
+                  className: item.params?.class_name,
+                  dropCap: item.params?.drop_cap === '1',
+                },
+                item.params?.align,
+                options.isParagraphTypographyTextAlignSupported,
+                'align',
+              ),
               name: 'core/paragraph',
             };
           case 'image':

@@ -1,10 +1,10 @@
 import { __experimentalGetCoreBlocks } from '@wordpress/block-library';
 
-type CoreBlock = {
-  name: string;
-  metadata: Record<string, unknown>;
-  settings: Record<string, unknown>;
-};
+import type { CoreBlock } from './core-block-settings-helpers';
+import {
+  getCoreBlockFromList,
+  isTypographyTextAlignSupported,
+} from './core-block-settings-helpers';
 
 type SettingsReset = {
   name: string;
@@ -13,15 +13,12 @@ type SettingsReset = {
   save: () => null;
 };
 
-const getCoreBlock = (name: string): CoreBlock => {
-  const block = __experimentalGetCoreBlocks().find(
-    (candidate) => candidate.name === name,
-  );
-  if (!block) {
-    throw new Error(`Missing WordPress core block: ${name}`);
-  }
-  return block;
-};
+const getCoreBlock = (name: string): CoreBlock =>
+  getCoreBlockFromList(__experimentalGetCoreBlocks(), name);
+
+export const isCoreBlockTypographyTextAlignSupported = (
+  name: string,
+): boolean => isTypographyTextAlignSupported(getCoreBlock(name).metadata);
 
 export const getCoreBlockSettings = (
   name: string,

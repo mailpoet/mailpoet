@@ -11,6 +11,7 @@ import { formBodyToBlocksFactory } from './form-body-to-blocks.jsx';
 import { mapFormDataAfterLoading } from './map-form-data-after-loading.jsx';
 import { FormEditorWindow } from './state-types';
 import { FONT_SIZES, storeName } from './constants';
+import { isCoreBlockTypographyTextAlignSupported } from '../blocks/core-block-settings';
 
 declare let window: FormEditorWindow;
 
@@ -25,6 +26,12 @@ export const initStore = () => {
     SETTINGS_DEFAULTS.colors,
     SETTINGS_DEFAULTS.gradients,
     customFields,
+    {
+      isHeadingTypographyTextAlignSupported:
+        isCoreBlockTypographyTextAlignSupported('core/heading'),
+      isParagraphTypographyTextAlignSupported:
+        isCoreBlockTypographyTextAlignSupported('core/paragraph'),
+    },
   );
 
   const formData = { ...window.mailpoet_form_data };

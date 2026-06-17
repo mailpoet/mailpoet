@@ -17,6 +17,12 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- block attributes are dynamically typed
 type FormBlock = Block<Record<string, any>>;
 
+const getBlockTextAlign = (block: FormBlock): string =>
+  (block.attributes.style?.typography?.textAlign as string | undefined) ||
+  (block.attributes.textAlign as string | undefined) ||
+  (block.attributes.align as string | undefined) ||
+  'left';
+
 const mapCustomField = (
   block: FormBlock,
   customFields: CustomField[],
@@ -136,7 +142,7 @@ export const blocksToFormBodyFactory = (
               params: {
                 content: block.attributes.content?.toString(),
                 level: block.attributes.level,
-                align: block.attributes.textAlign || 'left',
+                align: getBlockTextAlign(block),
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
                   block.attributes.fontSize as unknown as string,
@@ -174,7 +180,7 @@ export const blocksToFormBodyFactory = (
               params: {
                 content: block.attributes.content?.toString(),
                 drop_cap: block.attributes.dropCap ? '1' : '0',
-                align: block.attributes.align || 'left',
+                align: getBlockTextAlign(block),
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
                   block.attributes.fontSize as unknown as string,
