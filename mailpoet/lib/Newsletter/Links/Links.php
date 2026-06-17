@@ -9,6 +9,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -155,6 +156,45 @@ class Links {
         $data
       );
       $content = str_replace($match, $link, $content);
+    }
+    return $content;
+  }
+
+  public function replaceSubscriberDataWithPlaceholders(
+    $subscriberId,
+    $queueId,
+    $content,
+    PlaceholderCollector $collector,
+    $preview = false,
+    bool $htmlContext = false
+  ) {
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!$subscriber) {
+      throw new InvalidStateException('Subscriber not found for link replacement');
+    }
+    preg_match_all($this->getLinkRegex(), $content, $matches);
+    foreach ($matches[1] as $index => $match) {
+      $hash = null;
+      if (preg_match('/-/', $match)) {
+        [, $hash] = explode('-', $match);
+      }
+      $data = $this->createUrlDataObject(
+        $subscriber->getId(),
+        $this->linkTokens->getToken($subscriber),
+        $queueId,
+        $hash,
+        $preview
+      );
+      $routerAction = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+        TrackEndpoint::ACTION_CLICK :
+        TrackEndpoint::ACTION_OPEN;
+      $link = Router::buildRequest(
+        TrackEndpoint::ENDPOINT,
+        $routerAction,
+        $data
+      );
+      $placeholder = $htmlContext ? $collector->addHtmlUrl($link) : $collector->add($link);
+      $content = str_replace($match, $placeholder, $content);
     }
     return $content;
   }
