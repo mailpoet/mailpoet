@@ -38,8 +38,12 @@ class BounceTest extends \MailPoetTest {
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
+    $this->settings = $this->diContainer->get(SettingsController::class);
     $this->emails = [
       'soft_bounce@example.com',
       'hard_bounce@example.com',
@@ -148,27 +152,19 @@ class BounceTest extends \MailPoetTest {
     verify(abs($from->getTimestamp() - $expected->getTimestamp()))->lessThan(60);
   }
 
-  public function testItUsesPreviousCompletedTaskProcessedAtAsFromDate() {
-    $processedAt = Carbon::now()->subDays(2);
-    $previousTask = $this->createRunningTask();
-    $previousTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-    $previousTask->setCreatedAt(Carbon::now()->subDays(3));
-    $previousTask->setProcessedAt($processedAt);
-    $this->entityManager->flush();
+  public function testItUsesLastReportToSettingAsFromDate() {
+    $lastReportTo = Carbon::now()->subDays(2);
+    $this->settings->set(Bounce::LAST_REPORT_TO_SETTING_KEY, $lastReportTo->format(\DateTimeInterface::ATOM));
 
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
 
     $from = $this->api->getBouncesReportCalls[0]['from'];
-    verify(abs($from->getTimestamp() - $processedAt->getTimestamp()))->lessThan(60);
+    verify(abs($from->getTimestamp() - $lastReportTo->getTimestamp()))->lessThan(60);
   }
 
   public function testItClampsFromDateToMaxLookback() {
-    $previousTask = $this->createRunningTask();
-    $previousTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-    $previousTask->setCreatedAt(Carbon::now()->subDays(40));
-    $previousTask->setProcessedAt(Carbon::now()->subDays(30));
-    $this->entityManager->flush();
+    $this->settings->set(Bounce::LAST_REPORT_TO_SETTING_KEY, Carbon::now()->subDays(30)->format(\DateTimeInterface::ATOM));
 
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
@@ -178,6 +174,71 @@ class BounceTest extends \MailPoetTest {
     verify($from->getTimestamp() >= $earliestAllowed->getTimestamp())->true();
     // Clamped close to the 14-day boundary, not 30 days back.
     verify($from->getTimestamp() - $earliestAllowed->getTimestamp())->lessThan(2 * 3600);
+  }
+
+  public function testItStoresTheReportRangeOnTheTaskMeta() {
+    $task = $this->createRunningTask();
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $meta = $task->getMeta();
+    $this->assertIsArray($meta);
+    verify($meta[Bounce::META_FROM])->notEmpty();
+    verify($meta[Bounce::META_TO])->notEmpty();
+    // Single page consumed, cursor advanced past it.
+    verify($meta[Bounce::META_PAGE])->equals(2);
+  }
+
+  public function testItRecordsLastReportToOnCompletion() {
+    $task = $this->createRunningTask();
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+    verify($completed)->true();
+
+    $to = $this->api->getBouncesReportCalls[0]['to'];
+    $stored = $this->settings->get(Bounce::LAST_REPORT_TO_SETTING_KEY);
+    verify($stored)->equals($to->format(\DateTimeInterface::ATOM));
+  }
+
+  public function testItResumesFromStoredRangeAndPageAfterTimeout() {
+    $from = Carbon::now()->subDay()->millisecond(0);
+    $to = Carbon::now()->millisecond(0);
+    $task = $this->createRunningTask();
+    $task->setMeta([
+      Bounce::META_FROM => $from->format(\DateTimeInterface::ATOM),
+      Bounce::META_TO => $to->format(\DateTimeInterface::ATOM),
+      Bounce::META_PAGE => 2,
+    ]);
+    $this->entityManager->flush();
+
+    $this->api->reportPages = [
+      1 => ['hard_bounce@example.com'],
+      2 => ['unconfirmed@example.com'],
+    ];
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    // Resumes at the stored page; page 1 is never re-requested.
+    verify(count($this->api->getBouncesReportCalls))->equals(1);
+    verify($this->api->getBouncesReportCalls[0]['page'])->equals(2);
+    verify($this->api->getBouncesReportCalls[0]['from']->getTimestamp())->equals($from->getTimestamp());
+    verify($this->api->getBouncesReportCalls[0]['to']->getTimestamp())->equals($to->getTimestamp());
+    // Page 1's recipient is skipped, page 2's is processed.
+    verify($this->getSubscriberStatus('hard_bounce@example.com'))->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($this->getSubscriberStatus('unconfirmed@example.com'))->equals(SubscriberEntity::STATUS_BOUNCED);
+  }
+
+  public function testItKeepsTheSameFrozenRangeOnTransientFailureRetry() {
+    $this->api->failResponse = true;
+    $task = $this->createRunningTask();
+    verify($this->worker->processTaskStrategy($task, microtime(true)))->false();
+    $firstTo = $this->api->getBouncesReportCalls[0]['to'];
+
+    // Next tick: the range is read back from meta, not recomputed, so `to` does
+    // not drift forward.
+    $this->api->failResponse = false;
+    $this->worker->processTaskStrategy($task, microtime(true));
+    $secondTo = $this->api->getBouncesReportCalls[1]['to'];
+
+    verify($secondTo->getTimestamp())->equals($firstTo->getTimestamp());
+    verify($this->api->getBouncesReportCalls[1]['page'])->equals(1);
   }
 
   public function testItCreatesStatistics() {

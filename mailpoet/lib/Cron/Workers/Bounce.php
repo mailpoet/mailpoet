@@ -22,6 +22,18 @@ class Bounce extends SimpleWorker {
   // `from` further back are rejected, so the range is clamped to stay within it.
   const MAX_LOOKBACK_DAYS = 14;
 
+  // Stores the `to` of the last fully-processed report so the next daily run
+  // starts its range exactly there, giving gap-free coverage without querying
+  // previous tasks.
+  const LAST_REPORT_TO_SETTING_KEY = 'bounce.last_report_to';
+
+  // Keys under which the in-progress report range and pagination cursor are
+  // persisted on the task meta, so a run that hits the execution limit resumes
+  // the same range from the next page instead of restarting at page 1.
+  const META_FROM = 'report_from';
+  const META_TO = 'report_to';
+  const META_PAGE = 'report_page';
+
   public $api;
 
   /** @var SettingsController */
@@ -65,9 +77,8 @@ class Bounce extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $from = $this->getReportFromDate($task);
-    $to = Carbon::now()->millisecond(0);
-    $page = 1;
+    [$from, $to] = $this->getReportRange($task);
+    $page = $this->getReportPage($task);
 
     do {
       // abort if execution limit is reached
@@ -76,7 +87,7 @@ class Bounce extends SimpleWorker {
       $report = $this->api->getBouncesReport($from, $to, $page);
       if (!is_array($report)) {
         // Transient failure: leave the task running so it retries with the
-        // same range on the next cron tick.
+        // same range and page on the next cron tick.
         return false;
       }
 
@@ -85,9 +96,53 @@ class Bounce extends SimpleWorker {
 
       $hasMore = !empty($report['has_more']);
       $page++;
+      // Persist the cursor so a subsequent execution-limit timeout resumes from
+      // the next unprocessed page instead of replaying the whole range.
+      $this->saveReportPage($task, $page);
     } while ($hasMore);
 
+    // The whole range is consumed; record its `to` as the basis for the next
+    // daily run's `from` so coverage stays continuous.
+    $this->settings->set(self::LAST_REPORT_TO_SETTING_KEY, $to->format(\DateTimeInterface::ATOM));
     return true;
+  }
+
+  /**
+   * @return array{0: Carbon, 1: Carbon}
+   */
+  private function getReportRange(ScheduledTaskEntity $task): array {
+    $meta = $task->getMeta();
+    if (is_array($meta) && isset($meta[self::META_FROM], $meta[self::META_TO])) {
+      return [Carbon::parse($meta[self::META_FROM]), Carbon::parse($meta[self::META_TO])];
+    }
+
+    $to = Carbon::now()->millisecond(0);
+    $from = $this->getReportFromDate($to);
+
+    $meta = is_array($meta) ? $meta : [];
+    $meta[self::META_FROM] = $from->format(\DateTimeInterface::ATOM);
+    $meta[self::META_TO] = $to->format(\DateTimeInterface::ATOM);
+    $meta[self::META_PAGE] = $meta[self::META_PAGE] ?? 1;
+    $task->setMeta($meta);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
+
+    return [$from, $to];
+  }
+
+  private function getReportPage(ScheduledTaskEntity $task): int {
+    $meta = $task->getMeta();
+    $page = is_array($meta) && isset($meta[self::META_PAGE]) ? (int)$meta[self::META_PAGE] : 1;
+    return $page > 0 ? $page : 1;
+  }
+
+  private function saveReportPage(ScheduledTaskEntity $task, int $page): void {
+    $meta = $task->getMeta();
+    $meta = is_array($meta) ? $meta : [];
+    $meta[self::META_PAGE] = $page;
+    $task->setMeta($meta);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
   }
 
   public function processRecipients(ScheduledTaskEntity $task, array $recipients): void {
@@ -134,12 +189,10 @@ class Bounce extends SimpleWorker {
       ->addSeconds(rand(0, 59));
   }
 
-  private function getReportFromDate(ScheduledTaskEntity $task): Carbon {
-    $now = Carbon::now()->millisecond(0);
-    $previousTask = $this->scheduledTasksRepository->findPreviousCompletedTask($task);
-    $processedAt = $previousTask instanceof ScheduledTaskEntity ? $previousTask->getProcessedAt() : null;
-    $from = $processedAt instanceof \DateTimeInterface
-      ? Carbon::instance($processedAt)
+  private function getReportFromDate(Carbon $now): Carbon {
+    $lastReportTo = $this->settings->get(self::LAST_REPORT_TO_SETTING_KEY);
+    $from = is_string($lastReportTo) && $lastReportTo !== ''
+      ? Carbon::parse($lastReportTo)
       : $now->copy()->subDay();
 
     // Keep an hour of margin inside MAX_LOOKBACK_DAYS so clock skew and request
