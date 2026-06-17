@@ -602,6 +602,13 @@ class Functions {
     wp_enqueue_media($args);
   }
 
+  /**
+   * @return array|false
+   */
+  public function wpEnqueueCodeEditor(array $args) {
+    return wp_enqueue_code_editor($args);
+  }
+
   public function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $inFooter = false) {
     return wp_enqueue_script($handle, $src, $deps, $ver, $inFooter);
   }
