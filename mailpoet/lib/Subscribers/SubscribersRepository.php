@@ -754,46 +754,6 @@ class SubscribersRepository extends Repository {
     return count($ids);
   }
 
-  /**
-   * Marks the given subscribers as bounced in a single query. Only subscribers
-   * currently subscribed or unconfirmed transition, preserving prior behavior.
-   *
-   * The DQL UPDATE bypasses the unit of work, so any matching entities are
-   * detached afterwards to keep the shared identity map from holding a stale
-   * pre-bounce status (the cron daemon runs workers in one PHP process).
-   *
-   * @param int[] $ids
-   * @return int - number of subscribers transitioned to bounced
-   */
-  public function bulkUpdateStatusToBounced(array $ids): int {
-    if (empty($ids)) {
-      return 0;
-    }
-
-    $count = (int)$this->entityManager->createQueryBuilder()
-      ->update(SubscriberEntity::class, 's')
-      ->set('s.status', ':bounced')
-      ->where('s.id IN (:ids)')
-      ->andWhere('s.deletedAt IS NULL')
-      ->andWhere('s.status IN (:transitionable)')
-      ->setParameter('bounced', SubscriberEntity::STATUS_BOUNCED)
-      ->setParameter('transitionable', [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED])
-      ->setParameter('ids', $ids)
-      ->getQuery()->execute();
-
-    foreach ($ids as $id) {
-      $subscriber = $this->entityManager->getUnitOfWork()->tryGetById($id, SubscriberEntity::class);
-      if ($subscriber instanceof SubscriberEntity) {
-        $this->entityManager->detach($subscriber);
-      }
-    }
-
-    $this->changesNotifier->subscribersUpdated($ids);
-    $this->changesNotifier->subscribersCountChanged($ids);
-    $this->invalidateTotalSubscribersCache();
-    return $count;
-  }
-
   public function bulkUpdateLastSendingAt(array $ids, DateTimeInterface $dateTime): int {
     if (empty($ids)) {
       return 0;
