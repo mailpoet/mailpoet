@@ -171,10 +171,14 @@ class API {
   /**
    * Fetch a single page of bounced recipients reported between $from and $to.
    *
-   * Mirrors the WordPress-registered `GET bounces/report` endpoint:
-   * required `from`/`to` datetime range, 1-based `p` pagination, and a
-   * response of the shape `{ recipients: string[], page: int, has_more: bool }`.
-   * Returns null on a failed request.
+   * Mirrors the WordPress-registered `GET bounces/report` endpoint: required
+   * `from`/`to` datetime range, 1-based `p` pagination, and a response of the
+   * shape `{ recipients: array<{email: string, type: string}>, page: int,
+   * has_more: bool }`. The returned `recipients` are flattened to their email
+   * addresses so callers receive a plain list of strings. Returns null on a
+   * failed request.
+   *
+   * @return array{recipients: string[], page: int, has_more: bool}|null
    */
   public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): ?array {
     $utc = new \DateTimeZone('UTC');
@@ -202,12 +206,18 @@ class API {
       $this->logInvalidDataFormat('getBouncesReport', is_string($body) ? $body : null);
       return null;
     }
+    $data['recipients'] = array_map(
+      function (array $recipient): string {
+        return $recipient['email'];
+      },
+      $data['recipients']
+    );
     return $data;
   }
 
   /**
    * @param mixed $data
-   * @phpstan-assert-if-true array{recipients: string[], page: int, has_more: bool} $data
+   * @phpstan-assert-if-true array{recipients: array<array{email: string}>, page: int, has_more: bool} $data
    */
   private function isValidBouncesReport($data): bool {
     if (
@@ -220,7 +230,7 @@ class API {
       return false;
     }
     foreach ($data['recipients'] as $recipient) {
-      if (!is_string($recipient)) {
+      if (!is_array($recipient) || !isset($recipient['email']) || !is_string($recipient['email'])) {
         return false;
       }
     }
