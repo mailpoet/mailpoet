@@ -174,22 +174,6 @@ class ScheduledTasksRepository extends Repository {
       ->getOneOrNullResult();
   }
 
-  public function findPreviousCompletedTask(ScheduledTaskEntity $task): ?ScheduledTaskEntity {
-    return $this->doctrineRepository->createQueryBuilder('st')
-      ->select('st')
-      ->where('st.type = :type')
-      ->setParameter('type', $task->getType())
-      ->andWhere('st.createdAt < :created')
-      ->setParameter('created', $task->getCreatedAt())
-      ->andWhere('st.status = :status')
-      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
-      ->andWhere('st.processedAt IS NOT NULL')
-      ->orderBy('st.processedAt', 'DESC')
-      ->setMaxResults(1)
-      ->getQuery()
-      ->getOneOrNullResult();
-  }
-
   public function findDueByType($type, $limit = null) {
     return $this->findByTypeAndStatus($type, ScheduledTaskEntity::STATUS_SCHEDULED, $limit);
   }
