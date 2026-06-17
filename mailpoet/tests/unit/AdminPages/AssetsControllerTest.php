@@ -34,8 +34,8 @@ class AssetsControllerTest extends \MailPoetUnitTest {
 
   public function testItUsesGeneratedDependenciesWhenEnqueuingFormEditor(): void {
     file_put_contents(
-      $this->testAssetsPath . '/dist/js/form_editor.asset.php',
-      "<?php return ['dependencies' => ['react', 'wp-api-fetch', 'wp-data'], 'version' => 'asset-version'];"
+      $this->testAssetsPath . '/dist/js/form_editor.asset.json',
+      json_encode(['dependencies' => ['react', 'wp-api-fetch', 'wp-data'], 'version' => 'asset-version'], JSON_THROW_ON_ERROR)
     );
 
     $renderer = $this->createRenderer();

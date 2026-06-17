@@ -340,6 +340,7 @@ const formEditorConfig = {
   plugins: [
     ...baseConfig.plugins,
     new DependencyExtractionWebpackPlugin({
+      outputFormat: 'json',
       requestToExternal: requestToFormEditorExternal,
       requestToHandle: requestToFormEditorHandle,
     }),
