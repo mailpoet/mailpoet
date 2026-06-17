@@ -45,15 +45,15 @@ describe('Blocks to Form Body', () => {
     expect(() => {
       formBlocksToBody(null);
     }).to.throw(error);
-    // @ts-expect-error - testing wrong input
     expect(() => {
+      // @ts-expect-error - testing wrong input
       formBlocksToBody('hello');
     }).to.throw(error);
     expect(() => {
       formBlocksToBody(undefined);
     }).to.throw(error);
-    // @ts-expect-error - testing wrong input
     expect(() => {
+      // @ts-expect-error - testing wrong input
       formBlocksToBody(1);
     }).to.throw(error);
   });
