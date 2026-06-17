@@ -203,7 +203,10 @@ class BridgeApiTest extends \MailPoetTest {
   public function testItFetchesBouncesReportWithIsoUtcRange() {
     $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
     $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
-    $report = ['recipients' => ['bob@example.com'], 'page' => 2, 'has_more' => false];
+    // The endpoint returns recipients as {email, type} objects; getBouncesReport
+    // flattens them to plain email addresses.
+    $wireReport = ['recipients' => [['email' => 'bob@example.com', 'type' => 'hard']], 'page' => 2, 'has_more' => false];
+    $flattenedReport = ['recipients' => ['bob@example.com'], 'page' => 2, 'has_more' => false];
     $this->wpMock
       ->expects($this->once())
       ->method('addQueryArg')
@@ -223,8 +226,8 @@ class BridgeApiTest extends \MailPoetTest {
     $this->wpMock
       ->expects($this->once())
       ->method('wpRemoteRetrieveBody')
-      ->willReturn((string)json_encode($report));
-    verify($this->api->getBouncesReport($from, $to, 2))->equals($report);
+      ->willReturn((string)json_encode($wireReport));
+    verify($this->api->getBouncesReport($from, $to, 2))->equals($flattenedReport);
   }
 
   public function testItConvertsBouncesReportRangeToUtc() {
@@ -277,7 +280,7 @@ class BridgeApiTest extends \MailPoetTest {
     // empty page that advances the report window.
     $this->wpMock
       ->method('wpRemoteRetrieveBody')
-      ->willReturn((string)json_encode(['recipients' => ['bob@example.com'], 'page' => 1]));
+      ->willReturn((string)json_encode(['recipients' => [['email' => 'bob@example.com', 'type' => 'hard']], 'page' => 1]));
 
     verify($this->api->getBouncesReport($from, $to))->null();
 
@@ -287,6 +290,24 @@ class BridgeApiTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
     verify($errorLog->getMessage())->stringContainsString('getBouncesReport API response was not in expected format.');
+  }
+
+  public function testItRejectsBouncesReportRecipientsWithoutAnEmail() {
+    $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
+    $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
+    $this->wpMock
+      ->method('addQueryArg')
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    // A recipient missing the email key (e.g. the pre-{email,type} string shape)
+    // must be rejected rather than silently dropped.
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['recipients' => ['bob@example.com'], 'page' => 1, 'has_more' => false]));
+
+    verify($this->api->getBouncesReport($from, $to))->null();
   }
 
   public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
