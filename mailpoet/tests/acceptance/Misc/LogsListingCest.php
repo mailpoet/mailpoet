@@ -40,6 +40,26 @@ class LogsListingCest {
     $i->waitForText("warning-message-{$suffix}");
     $i->waitForText("debug-message-{$suffix}");
 
+    $i->wantTo('Toggle a message open and closed with the native row action');
+    // The primary action button sits behind the cell wrapper for Selenium's
+    // hit-test, so drive it with a JS click by its (state-dependent) label.
+    $clickRowAction = function (string $label) use ($i): void {
+      $i->executeJS(
+        "Array.from(document.querySelectorAll('.mailpoet-logs-dataviews button'))" .
+        ".find((b) => b.textContent.trim() === " . json_encode($label) . ")?.click();"
+      );
+    };
+    $clickRowAction('Show more');
+    $i->waitForJS(
+      "return document.querySelector('.mailpoet-logs-message-full') !== null;",
+      10
+    );
+    $clickRowAction('Show less');
+    $i->waitForJS(
+      "return document.querySelector('.mailpoet-logs-message-full') === null;",
+      10
+    );
+
     $i->wantTo('Apply a native Severity filter and keep only Error logs');
     $i->click('Add filter');
     $i->waitForText('Severity');

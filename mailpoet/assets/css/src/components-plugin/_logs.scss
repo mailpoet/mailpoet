@@ -41,13 +41,12 @@
   }
 
   .dataviews-view-table
-    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-action {
-    width: 120px !important;
-  }
-
-  .dataviews-view-table
     col[class^='dataviews-view-table__col-'].dataviews-view-table__col-created_at {
     width: 180px !important;
+  }
+
+  .dataviews-view-table col.dataviews-view-table__col-actions {
+    width: 120px !important;
   }
 
   .dataviews-view-table td,
