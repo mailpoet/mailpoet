@@ -127,6 +127,22 @@ class Form {
   }
 
   /**
+   * @return $this
+   */
+  public function withStatus(string $status) {
+    $this->data['status'] = $status;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withCreatedAt(\DateTimeInterface $createdAt) {
+    $this->data['created_at'] = $createdAt;
+    return $this;
+  }
+
+  /**
    * @param SegmentEntity[] $segments
    * @return $this
    */
@@ -177,6 +193,14 @@ class Form {
 
   public function create(): FormEntity {
     $form = new FormEntity($this->data['name']);
+
+    if (is_string($this->data['status'])) {
+      $form->setStatus($this->data['status']);
+    }
+
+    if (isset($this->data['created_at']) && $this->data['created_at'] instanceof \DateTimeInterface) {
+      $form->setCreatedAt($this->data['created_at']);
+    }
 
     if (is_array($this->data['settings']) || is_null($this->data['settings'])) {
       $form->setSettings($this->data['settings']);

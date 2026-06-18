@@ -32,6 +32,21 @@ function getFormPlacement(settings: FormListingItem['settings']): string {
   return __('Others (widget)', 'mailpoet');
 }
 
+function renderDateTime(value: string | null): JSX.Element {
+  if (!value) {
+    return createElement('span', null, '—');
+  }
+  const date = MailPoet.Date.short(value);
+  const time = MailPoet.Date.time(value);
+  return createElement(
+    'span',
+    null,
+    createElement('span', null, date),
+    createElement('br', null),
+    createElement('span', null, time),
+  );
+}
+
 export const listFields: Field<FormListingItem>[] = [
   {
     id: 'name',
@@ -39,6 +54,8 @@ export const listFields: Field<FormListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: false,
+    // Name is covered by the search box, so don't expose a redundant filter.
+    filterBy: false,
     render: ({ item }) =>
       createElement(
         'a',
@@ -85,27 +102,29 @@ export const listFields: Field<FormListingItem>[] = [
     label: __('Status', 'mailpoet'),
     enableSorting: false,
     enableGlobalSearch: false,
+    elements: [
+      { value: 'enabled', label: __('Enabled', 'mailpoet') },
+      { value: 'disabled', label: __('Disabled', 'mailpoet') },
+    ],
+    filterBy: { operators: ['isAny'] },
     render: ({ item }) => createElement(FormStatusToggle, { form: item }),
+  },
+  {
+    id: 'created_at',
+    label: __('Created on', 'mailpoet'),
+    type: 'date',
+    enableSorting: true,
+    enableGlobalSearch: false,
+    filterBy: { operators: ['on', 'before', 'after', 'between'] },
+    render: ({ item }) => renderDateTime(item.created_at),
   },
   {
     id: 'updated_at',
     label: __('Modified date', 'mailpoet'),
-    type: 'datetime',
+    type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
-    render: ({ item }) => {
-      if (!item.updated_at) {
-        return createElement('span', null, '—');
-      }
-      const date = MailPoet.Date.short(item.updated_at);
-      const time = MailPoet.Date.time(item.updated_at);
-      return createElement(
-        'span',
-        null,
-        createElement('span', null, date),
-        createElement('br', null),
-        createElement('span', null, time),
-      );
-    },
+    filterBy: { operators: ['on', 'before', 'after', 'between'] },
+    render: ({ item }) => renderDateTime(item.updated_at),
   },
 ];
