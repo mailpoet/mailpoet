@@ -48,7 +48,11 @@ class FormsListingCest {
     $i->waitForText($disabledName, 10, '[data-automation-id="forms_listing"]');
 
     $i->wantTo('Apply a native Status filter and keep only Enabled forms');
-    $i->click('Add filter');
+    // The DataViews "Add filter" control is an icon-only button, so target its
+    // accessible name rather than visible text.
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
     $i->waitForText('Status');
     $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
