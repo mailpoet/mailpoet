@@ -109,6 +109,31 @@ class SubscribersFinderTest extends \MailPoetTest {
     verify($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
+  public function testItAddsSubscriberInMultipleStaticSegmentsOnlyOnce() {
+    // Subscriber is a member of both static segments passed together. The INNER JOIN
+    // against subscriber_segment yields one row per (subscriber, segment), so this
+    // produces a duplicate subscriber_id that INSERT IGNORE must deduplicate.
+    $subscriberInBothSegments = (new SubscriberFactory())
+      ->withEmail('both@mailpoet.com')
+      ->withSegments([$this->segment1, $this->segment2])
+      ->create();
+
+    $this->subscribersFinder->addSubscribersToTaskFromSegments(
+      $this->scheduledTask,
+      [
+        (int)$this->segment1->getId(),
+        (int)$this->segment2->getId(),
+      ]
+    );
+
+    $subscribersIds = $this->getScheduledTasksSubscribers((int)$this->scheduledTask->getId());
+    // subscriber2 (segment1 only) + subscriberInBothSegments (segment1 & segment2), each once
+    verify($subscribersIds)->equalsCanonicalizing([
+      $this->subscriber2->getId(),
+      $subscriberInBothSegments->getId(),
+    ]);
+  }
+
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
     $this->segment3->setType('Invalid type');
     $this->subscribersFinder->addSubscribersToTaskFromSegments(
