@@ -16,16 +16,16 @@ describe('logs filters translation', () => {
     expect(filter).to.deep.equal({ from: '2026-05-01', to: '2026-05-18' });
   });
 
-  it('maps single-bound date operators', () => {
+  it('maps inclusive single-bound date operators', () => {
     expect(
       viewFiltersToRequestFilter([
-        { field: 'created_at', operator: 'after', value: '2026-05-01' },
+        { field: 'created_at', operator: 'afterInc', value: '2026-05-01' },
       ]),
     ).to.deep.equal({ from: '2026-05-01' });
 
     expect(
       viewFiltersToRequestFilter([
-        { field: 'created_at', operator: 'before', value: '2026-05-18' },
+        { field: 'created_at', operator: 'beforeInc', value: '2026-05-18' },
       ]),
     ).to.deep.equal({ to: '2026-05-18' });
 
@@ -34,6 +34,20 @@ describe('logs filters translation', () => {
         { field: 'created_at', operator: 'on', value: '2026-05-10' },
       ]),
     ).to.deep.equal({ from: '2026-05-10', to: '2026-05-10' });
+  });
+
+  it('shifts exclusive single-bound date operators by a day', () => {
+    expect(
+      viewFiltersToRequestFilter([
+        { field: 'created_at', operator: 'after', value: '2026-05-01' },
+      ]),
+    ).to.deep.equal({ from: '2026-05-02' });
+
+    expect(
+      viewFiltersToRequestFilter([
+        { field: 'created_at', operator: 'before', value: '2026-05-18' },
+      ]),
+    ).to.deep.equal({ to: '2026-05-17' });
   });
 
   it('maps name and level multi-select filters', () => {
@@ -86,7 +100,7 @@ describe('logs filters translation', () => {
         level: [400],
       }),
     ).to.deep.equal([
-      { field: 'created_at', operator: 'after', value: '2026-05-01' },
+      { field: 'created_at', operator: 'afterInc', value: '2026-05-01' },
       { field: 'name', operator: 'isAny', value: ['cron'] },
       { field: 'level', operator: 'isAny', value: [400] },
     ]);

@@ -115,7 +115,7 @@ export const listFields: Field<FormListingItem>[] = [
     type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
-    filterBy: { operators: ['on', 'before', 'after', 'between'] },
+    filterBy: { operators: ['on', 'beforeInc', 'afterInc', 'between'] },
     render: ({ item }) => renderDateTime(item.created_at),
   },
   {
@@ -124,7 +124,7 @@ export const listFields: Field<FormListingItem>[] = [
     type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
-    filterBy: { operators: ['on', 'before', 'after', 'between'] },
+    filterBy: { operators: ['on', 'beforeInc', 'afterInc', 'between'] },
     render: ({ item }) => renderDateTime(item.updated_at),
   },
 ];

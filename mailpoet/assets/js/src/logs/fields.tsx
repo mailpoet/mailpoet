@@ -78,7 +78,7 @@ export function getLogFields(
       type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
-      filterBy: { operators: ['on', 'before', 'after', 'between'] },
+      filterBy: { operators: ['on', 'beforeInc', 'afterInc', 'between'] },
       render: ({ item }) =>
         createElement(
           'span',

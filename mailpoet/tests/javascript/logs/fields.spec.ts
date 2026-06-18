@@ -38,7 +38,7 @@ describe('logs fields', () => {
     ]);
 
     expect(byId.created_at.filterBy).to.deep.equal({
-      operators: ['on', 'before', 'after', 'between'],
+      operators: ['on', 'beforeInc', 'afterInc', 'between'],
     });
     expect(byId.created_at.enableSorting).to.equal(true);
 

@@ -105,11 +105,13 @@ function datesToFilter(from?: string, to?: string): Filter | null {
       ? { field: CREATED_AT_FIELD, operator: 'on', value: from }
       : { field: CREATED_AT_FIELD, operator: 'between', value: [from, to] };
   }
+  // Stored `from`/`to` are inclusive whole-day boundaries, so seed the inclusive
+  // operators; the exclusive `after`/`before` would shift the day on re-serialize.
   if (from) {
-    return { field: CREATED_AT_FIELD, operator: 'after', value: from };
+    return { field: CREATED_AT_FIELD, operator: 'afterInc', value: from };
   }
   if (to) {
-    return { field: CREATED_AT_FIELD, operator: 'before', value: to };
+    return { field: CREATED_AT_FIELD, operator: 'beforeInc', value: to };
   }
   return null;
 }
