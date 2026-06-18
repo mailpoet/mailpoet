@@ -37,11 +37,11 @@ import { MssAccessNotices } from 'notices/mss-access-notices';
 import { GlobalContext, type GlobalContextValue } from 'context';
 import { SubscribersHeading } from './heading';
 import { getSubscriberFields } from './fields';
+import { getInitialPickerValue, type PickerConfig } from './picker-value';
 import {
   bulkAction,
   getSubscribers,
   sendConfirmationEmail,
-  type Segment,
   type Subscriber,
   type SubscriberApiError,
   type SubscriberBulkAction,
@@ -232,15 +232,6 @@ function isItemDeletable(subscriber: Subscriber): boolean {
 function formatCount(count: number): string {
   return count.toLocaleString();
 }
-
-type PickerKind = 'segment' | 'tag';
-
-type PickerConfig = {
-  kind: PickerKind;
-  fieldId: string;
-  endpoint: 'segments' | 'tags';
-  filter?: (segment: Segment) => boolean;
-};
 
 const PICKERS: Record<
   Exclude<PendingModalAction, 'unsubscribe' | 'resendConfirmationEmails'>,
@@ -537,7 +528,9 @@ function PickerModal({
   // The legacy `Selection` form widget wraps Select2 + jQuery. We treat it as
   // a controlled component by reading values out of its `onValueChange` callback
   // — no jQuery DOM lookups leak into this file.
-  const [value, setValue] = useState<number>(0);
+  const [value, setValue] = useState<number>(() =>
+    getInitialPickerValue(config),
+  );
   const fieldConfig = useMemo(
     () => ({
       id: config.fieldId,
