@@ -176,6 +176,27 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify(count($data))->equals(7);
   }
 
+  public function testItSearchesSubscribersByEmailSubstring() {
+    $matchingSubscriber = (new Subscriber())
+      ->withEmail('john.doe@frankenstein.com')
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->create();
+    (new Subscriber())
+      ->withEmail('jane.doe@example.com')
+      ->withFirstName('Jane')
+      ->withLastName('Doe')
+      ->create();
+
+    $this->listingData['search'] = 'frank';
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($matchingSubscriber->getEmail());
+    $count = $this->repository->getCount($this->getListingDefinition());
+    verify($count)->equals(1);
+    $this->listingData['search'] = '';
+  }
+
   public function testLoadSubscribersInDefaultSegment() {
     $list = $this->segmentRepository->createOrUpdate('Segment 5');
     $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
@@ -308,7 +329,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->listingData['filter'] = ['segment' => $list->getId()];
-    $this->listingData['search'] = 'user-role-test2';
+    $this->listingData['search'] = 'test2';
     $data = $this->repository->getData($this->getListingDefinition());
     verify(count($data))->equals(1);
     verify($data[0]->getEmail())->equals($wpUserEmail2);
