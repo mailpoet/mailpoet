@@ -21,6 +21,8 @@ import { RecipientsSelector } from '../shared/recipients-selector';
 import { store as emailEditorIntegrationStore } from '../store';
 import { useSendEmail } from './use-send-email';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import { useSenderFields } from '../shared/use-sender-fields';
+import { SenderControls } from './sender-controls';
 
 export function SendPanel() {
   const isOpen = useSelect(
@@ -43,6 +45,8 @@ export function SendPanel() {
     isLoadingRecipientCount,
   } = recipients;
   const { sendEmail, isSending, error, clearError } = useSendEmail();
+  const senderFields = useSenderFields();
+  const { hasValidationErrors, validateSenderFields } = senderFields;
 
   const hasNoRecipients =
     !isLoadingSegments && !isLoadingRecipientCount && totalRecipientCount === 0;
@@ -58,6 +62,14 @@ export function SendPanel() {
     clearError();
     void closeSendPanel();
   }, [clearError, closeSendPanel]);
+
+  const handleSend = useCallback(async () => {
+    const isValid = await validateSenderFields();
+    if (!isValid) {
+      return;
+    }
+    await sendEmail();
+  }, [sendEmail, validateSenderFields]);
 
   if (!isOpen) {
     return null;
@@ -89,8 +101,8 @@ export function SendPanel() {
             variant="primary"
             size="compact"
             isBusy={isSending}
-            disabled={isSending || hasNoRecipients}
-            onClick={() => void sendEmail()}
+            disabled={isSending || hasNoRecipients || hasValidationErrors}
+            onClick={() => void handleSend()}
             data-automation-id="email_send_panel_send_button"
           >
             {sendButtonLabel}
@@ -103,6 +115,8 @@ export function SendPanel() {
             <p>{subtitle}</p>
             <InboxPreviewCard />
           </PanelBody>
+
+          <SenderControls senderFields={senderFields} />
 
           <PanelBody
             title={sprintf(
