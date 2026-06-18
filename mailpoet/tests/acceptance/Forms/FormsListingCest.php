@@ -66,7 +66,7 @@ class FormsListingCest {
     $i->amOnMailpoetPage('Forms');
     $i->searchFor($suffix);
     $i->waitForText($enabledName, 10, '[data-automation-id="forms_listing"]');
-    $i->click(['xpath' => '//th//button[contains(., "Created on")]']);
+    $i->click(['xpath' => '//th//button[contains(., "Created date")]']);
     $i->waitForText('Sort ascending');
     $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
     // Wait for the ascending re-fetch: oldest form (enabled) before newest (disabled).
