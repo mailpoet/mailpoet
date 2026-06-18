@@ -45,6 +45,13 @@ class Log {
     return $this->update('message', $message);
   }
 
+  /**
+   * @return static
+   */
+  public function withLevel(?int $level): Log {
+    return $this->update('level', $level);
+  }
+
   public function create(): LogEntity {
     $entity = new LogEntity();
     $entity->setName($this->data['name']);
