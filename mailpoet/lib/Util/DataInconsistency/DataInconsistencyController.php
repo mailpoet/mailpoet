@@ -7,18 +7,22 @@ use MailPoet\UnexpectedValueException;
 class DataInconsistencyController {
   const ORPHANED_SENDING_TASKS = 'orphaned_sending_tasks';
   const ORPHANED_SENDING_TASK_SUBSCRIBERS = 'orphaned_sending_task_subscribers';
+  const ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS = 'orphaned_sending_task_queued_subscribers';
   const SENDING_QUEUE_WITHOUT_NEWSLETTER = 'sending_queue_without_newsletter';
   const ORPHANED_SUBSCRIPTIONS = 'orphaned_subscriptions';
   const ORPHANED_LINKS = 'orphaned_links';
   const ORPHANED_NEWSLETTER_POSTS = 'orphaned_newsletter_posts';
+  const COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS = 'completed_sending_task_with_queued_subscribers';
 
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
     self::ORPHANED_SENDING_TASK_SUBSCRIBERS,
+    self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS,
     self::SENDING_QUEUE_WITHOUT_NEWSLETTER,
     self::ORPHANED_SUBSCRIPTIONS,
     self::ORPHANED_LINKS,
     self::ORPHANED_NEWSLETTER_POSTS,
+    self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS,
   ];
 
   private DataInconsistencyRepository $repository;
@@ -33,10 +37,12 @@ class DataInconsistencyController {
     $result = [
       self::ORPHANED_SENDING_TASKS => $this->repository->getOrphanedSendingTasksCount(),
       self::ORPHANED_SENDING_TASK_SUBSCRIBERS => $this->repository->getOrphanedScheduledTasksSubscribersCount(),
+      self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS => $this->repository->getOrphanedScheduledTaskQueuedSubscribersCount(),
       self::SENDING_QUEUE_WITHOUT_NEWSLETTER => $this->repository->getSendingQueuesWithoutNewsletterCount(),
       self::ORPHANED_SUBSCRIPTIONS => $this->repository->getOrphanedSubscriptionsCount(),
       self::ORPHANED_LINKS => $this->repository->getOrphanedNewsletterLinksCount(),
       self::ORPHANED_NEWSLETTER_POSTS => $this->repository->getOrphanedNewsletterPostsCount(),
+      self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS => $this->repository->getCompletedSendingTasksWithQueuedSubscribersCount(),
     ];
     $result['total'] = array_sum($result);
     return $result;
@@ -50,6 +56,8 @@ class DataInconsistencyController {
       $this->repository->cleanupOrphanedSendingTasks();
     } elseif ($inconsistency === self::ORPHANED_SENDING_TASK_SUBSCRIBERS) {
       $this->repository->cleanupOrphanedScheduledTaskSubscribers();
+    } elseif ($inconsistency === self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS) {
+      $this->repository->cleanupOrphanedScheduledTaskQueuedSubscribers();
     } elseif ($inconsistency === self::SENDING_QUEUE_WITHOUT_NEWSLETTER) {
       $this->repository->cleanupSendingQueuesWithoutNewsletter();
     } elseif ($inconsistency === self::ORPHANED_SUBSCRIPTIONS) {
@@ -58,6 +66,8 @@ class DataInconsistencyController {
       $this->repository->cleanupOrphanedNewsletterLinks();
     } elseif ($inconsistency === self::ORPHANED_NEWSLETTER_POSTS) {
       $this->repository->cleanupOrphanedNewsletterPosts();
+    } elseif ($inconsistency === self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS) {
+      $this->repository->reopenCompletedSendingTasksWithQueuedSubscribers();
     }
   }
 }

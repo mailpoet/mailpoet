@@ -8,6 +8,8 @@ use MailPoet\API\JSON\v1\Help;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber as ScheduledTaskQueuedSubscriberFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -140,7 +142,24 @@ class HelpTest extends \MailPoetTest {
     verify($response->data[DataInconsistencyController::ORPHANED_NEWSLETTER_POSTS] ?? null)->equals(0);
     verify($response->data[DataInconsistencyController::ORPHANED_SUBSCRIPTIONS] ?? null)->equals(0);
     verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASK_SUBSCRIBERS] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS] ?? null)->equals(0);
     verify($response->data[DataInconsistencyController::SENDING_QUEUE_WITHOUT_NEWSLETTER] ?? null)->equals(0);
     verify($response->data[DataInconsistencyController::ORPHANED_LINKS] ?? null)->equals(0);
+  }
+
+  public function testItFixesOrphanedScheduledTaskQueuedSubscribers(): void {
+    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    $subscriber = (new SubscriberFactory())->create();
+    (new ScheduledTaskQueuedSubscriberFactory())->create($task, $subscriber);
+
+    // Orphan the queued row by hard-deleting its task.
+    $this->entityManager->remove($task);
+    $this->entityManager->flush();
+
+    $status = $this->endpoint->getInconsistentDataStatus();
+    verify($status->data[DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS] ?? null)->equals(1);
+
+    $response = $this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS]);
+    verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS] ?? null)->equals(0);
   }
 }
