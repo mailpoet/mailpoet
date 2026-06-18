@@ -370,8 +370,13 @@ class Newsletter {
   /**
    * @return array{newsletter: array{id: int|null, subject: string, body: array{html: string, text: string}}, substitutions: array<string, string>}
    */
-  public function prepareNewsletterForTemplatedSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
-    $collector = new PlaceholderCollector();
+  public function prepareNewsletterForTemplatedSending(
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue,
+    ?string $placeholderNamespace = null
+  ): array {
+    $collector = new PlaceholderCollector($placeholderNamespace);
     $preparedNewsletter = $this->prepareNewsletterPartsWithPlaceholders($newsletter, $subscriber, $queue, $collector);
     if ($newsletter->getWpPostId() !== null) {
       $context = $this->getBlockEmailPersonalizationContext($newsletter, $subscriber, $queue);

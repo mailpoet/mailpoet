@@ -414,7 +414,7 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
       }
     ));
 
-    $collector = new PlaceholderCollector();
+    $collector = new PlaceholderCollector('test');
     $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
     $orderReviewUrl->method('getUrl')->willReturn('https://example.com/review-order/abc?email=rosta%40example.com&source=mss');
     $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
@@ -429,17 +429,17 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $content = $processor->personalizeWithPlaceholders($source, [], $collector);
 
     $this->assertSame('Subject', $content[0]);
-    $this->assertStringContainsString('<p>{{mailpoet_mss_1}}</p>', $content[1]);
-    $this->assertStringContainsString('href="{{mailpoet_mss_2}}"', $content[1]);
-    $this->assertSame('{{mailpoet_mss_3}} [Review]({{mailpoet_mss_4}})', $content[2]);
+    $this->assertStringContainsString('<p>{{mailpoet_mss_test_1}}</p>', $content[1]);
+    $this->assertStringContainsString('href="{{mailpoet_mss_test_2}}"', $content[1]);
+    $this->assertSame('{{mailpoet_mss_test_3}} [Review]({{mailpoet_mss_test_4}})', $content[2]);
     $this->assertSame($personalizedContent[0], strtr($content[0], $collector->getValues()));
     $this->assertSame($personalizedContent[1], strtr($content[1], $collector->getValues()));
     $this->assertSame($personalizedContent[2], strtr($content[2], $collector->getValues()));
     $this->assertSame([
-      '{{mailpoet_mss_1}}' => 'Rosta & Co',
-      '{{mailpoet_mss_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
-      '{{mailpoet_mss_3}}' => 'Rosta & Co',
-      '{{mailpoet_mss_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
+      '{{mailpoet_mss_test_1}}' => 'Rosta & Co',
+      '{{mailpoet_mss_test_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
+      '{{mailpoet_mss_test_3}}' => 'Rosta & Co',
+      '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
     ], $collector->getValues());
   }
 }
