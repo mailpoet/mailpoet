@@ -1,5 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import type { View } from '@wordpress/dataviews';
+import { isStrictDateString } from 'common/dataviews';
+
+// Re-exported for the logs URL-state consumers/tests that historically imported
+// it from here; the implementation now lives in the shared dataviews helpers.
+export { isStrictDateString };
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_PER_PAGE = 20;
@@ -48,40 +53,6 @@ function parseOffset(value: string | null): number | undefined {
   }
 
   return parsed;
-}
-
-function hasOnlyDigits(value: string): boolean {
-  return value
-    .split('')
-    .every((character) => character >= '0' && character <= '9');
-}
-
-export function isStrictDateString(value: string | undefined | null): boolean {
-  if (!value || value.length !== 10) {
-    return false;
-  }
-
-  const parts = value.split('-');
-  if (
-    parts.length !== 3 ||
-    parts[0].length !== 4 ||
-    parts[1].length !== 2 ||
-    parts[2].length !== 2 ||
-    !parts.every(hasOnlyDigits)
-  ) {
-    return false;
-  }
-
-  const year = Number(parts[0]);
-  const month = Number(parts[1]);
-  const day = Number(parts[2]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
 }
 
 export function dateFromString(value: string | undefined): Date | undefined {

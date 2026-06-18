@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import type { Filter } from '@wordpress/dataviews';
-import { isStrictDateString, type LogsFilter } from './url-state';
+import { dateRangeFromFilter } from 'common/dataviews';
+import type { LogsFilter } from './url-state';
 
 export const CREATED_AT_FIELD = 'created_at';
 export const NAME_FIELD = 'name';
@@ -51,40 +52,6 @@ export function getLogFilterOptions(): LogFilterOptions {
   };
 }
 
-function normalizeYmd(value: unknown): string | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-  // The DataViews date control emits `yyyy-MM-dd`; defensively trim any time
-  // portion a bookmarked value might carry.
-  const candidate = value.slice(0, 10);
-  return isStrictDateString(candidate) ? candidate : undefined;
-}
-
-function dateFilterToRange(operator: string, value: unknown): LogsFilter {
-  if (operator === 'between') {
-    const range = Array.isArray(value) ? value : [];
-    const from = normalizeYmd(range[0]);
-    const to = normalizeYmd(range[1]);
-    return { ...(from ? { from } : {}), ...(to ? { to } : {}) };
-  }
-
-  const ymd = normalizeYmd(value);
-  if (!ymd) {
-    return {};
-  }
-  if (operator === 'before' || operator === 'beforeInc') {
-    return { to: ymd };
-  }
-  if (operator === 'after' || operator === 'afterInc') {
-    return { from: ymd };
-  }
-  if (operator === 'on') {
-    return { from: ymd, to: ymd };
-  }
-  return {};
-}
-
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];
@@ -115,7 +82,7 @@ export function viewFiltersToRequestFilter(
 
   (filters ?? []).forEach((filter) => {
     if (filter.field === CREATED_AT_FIELD) {
-      Object.assign(result, dateFilterToRange(filter.operator, filter.value));
+      Object.assign(result, dateRangeFromFilter(filter.operator, filter.value));
     } else if (filter.field === NAME_FIELD) {
       const names = toStringArray(filter.value);
       if (names.length > 0) {

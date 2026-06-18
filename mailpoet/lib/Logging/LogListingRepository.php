@@ -3,10 +3,13 @@
 namespace MailPoet\Logging;
 
 use MailPoet\Entities\LogEntity;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoet\Listing\ListingRepository;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class LogListingRepository extends ListingRepository {
+  use ListingDateRangeFilterTrait;
+
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select('PARTIAL l.{id,name,level,message,createdAt}');
   }
@@ -47,16 +50,7 @@ class LogListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    if (!empty($filters['from'])) {
-      $queryBuilder
-        ->andWhere('l.createdAt >= :dateFrom')
-        ->setParameter('dateFrom', $filters['from'] . ' 00:00:00');
-    }
-    if (!empty($filters['to'])) {
-      $queryBuilder
-        ->andWhere('l.createdAt <= :dateTo')
-        ->setParameter('dateTo', $filters['to'] . ' 23:59:59');
-    }
+    $this->applyDateRangeFilter($queryBuilder, 'l.createdAt', $filters);
     if (!empty($filters['name']) && is_array($filters['name'])) {
       $queryBuilder
         ->andWhere('l.name IN (:names)')
