@@ -37,6 +37,10 @@ export function DataInconsistencies() {
         'Orphaned Sending Task Subscribers',
         'mailpoet',
       ),
+      orphaned_sending_task_queued_subscribers: __(
+        'Orphaned Sending Task Queued Subscribers',
+        'mailpoet',
+      ),
       sending_queue_without_newsletter: __(
         'Sending Queues without Newsletter',
         'mailpoet',
@@ -44,6 +48,10 @@ export function DataInconsistencies() {
       orphaned_subscriptions: __('Orphaned Subscriptions', 'mailpoet'),
       orphaned_links: __('Orphaned Links', 'mailpoet'),
       orphaned_newsletter_posts: __('Orphaned Newsletter Posts', 'mailpoet'),
+      completed_sending_task_with_queued_subscribers: __(
+        'Completed Sending Tasks with Pending Recipients',
+        'mailpoet',
+      ),
     }),
     [],
   );

@@ -4,6 +4,7 @@ namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -11,6 +12,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterPost;
 use MailPoet\Test\DataFactories\ScheduledTask;
+use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
@@ -90,6 +92,84 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     // We keep the task and subscriber that was associated with the task we kept
     $taskSubscriberCount = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([]);
     verify($taskSubscriberCount)->equals(2);
+  }
+
+  public function testItHandlesOrphanedScheduledTaskQueuedSubscribers(): void {
+    $taskToKeep = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $taskToDelete = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $subscriberToKeep = (new Subscriber())->create();
+    $subscriberToDelete = (new Subscriber())->create();
+
+    $queuedSubscriberFactory = new ScheduledTaskQueuedSubscriber();
+    $queuedSubscriberFactory->create($taskToKeep, $subscriberToKeep); // valid
+    $queuedSubscriberFactory->create($taskToDelete, $subscriberToKeep); // orphan: task missing
+    $queuedSubscriberFactory->create($taskToKeep, $subscriberToDelete); // orphan: subscriber missing
+
+    $this->entityManager->remove($taskToDelete);
+    $this->entityManager->remove($subscriberToDelete);
+    $this->entityManager->flush();
+
+    $queuedCount = $this->entityManager->getRepository(ScheduledTaskQueuedSubscriberEntity::class)->count([]);
+    verify($queuedCount)->equals(3);
+
+    verify($this->repository->getOrphanedScheduledTaskQueuedSubscribersCount())->equals(2);
+    $this->repository->cleanupOrphanedScheduledTaskQueuedSubscribers();
+    verify($this->repository->getOrphanedScheduledTaskQueuedSubscribersCount())->equals(0);
+
+    // Only the valid queued recipient survives.
+    $queuedCount = $this->entityManager->getRepository(ScheduledTaskQueuedSubscriberEntity::class)->count([]);
+    verify($queuedCount)->equals(1);
+
+    // The kept task and subscriber are left intact.
+    $keptTask = $this->entityManager->find(ScheduledTaskEntity::class, (int)$taskToKeep->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $keptTask);
+    $keptSubscriber = $this->entityManager->find(SubscriberEntity::class, (int)$subscriberToKeep->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $keptSubscriber);
+  }
+
+  public function testItReopensCompletedSendingTasksWithPendingQueuedSubscribers(): void {
+    verify($this->repository->getCompletedSendingTasksWithQueuedSubscribersCount())->equals(0);
+
+    $queued = new ScheduledTaskQueuedSubscriber();
+
+    // Prematurely finished: terminal status but still has queued recipients.
+    $completedStuck = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    $queued->create($completedStuck, (new Subscriber())->create());
+    $invalidStuck = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_INVALID);
+    $queued->create($invalidStuck, (new Subscriber())->create());
+
+    // Controls that must be left alone.
+    $completedClean = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED); // queue empty
+    $paused = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED); // intentional
+    $queued->create($paused, (new Subscriber())->create());
+    $running = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, null); // normal in-flight
+    $queued->create($running, (new Subscriber())->create());
+
+    verify($this->repository->getCompletedSendingTasksWithQueuedSubscribersCount())->equals(2);
+
+    verify($this->repository->reopenCompletedSendingTasksWithQueuedSubscribers())->equals(2);
+    verify($this->repository->getCompletedSendingTasksWithQueuedSubscribersCount())->equals(0);
+
+    // The raw UPDATE bypasses the ORM, so re-read from the DB.
+    $this->entityManager->clear();
+
+    // The two stuck tasks are reopened so the worker resends their pending recipients.
+    verify($this->findScheduledTask((int)$completedStuck->getId())->getStatus())->null();
+    verify($this->findScheduledTask((int)$invalidStuck->getId())->getStatus())->null();
+
+    // Controls are untouched.
+    verify($this->findScheduledTask((int)$completedClean->getId())->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($this->findScheduledTask((int)$paused->getId())->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->findScheduledTask((int)$running->getId())->getStatus())->null();
+
+    // Reopening only flips the status; the queued rows stay put for the worker to send.
+    verify($this->entityManager->getRepository(ScheduledTaskQueuedSubscriberEntity::class)->count([]))->equals(4);
+  }
+
+  private function findScheduledTask(int $id): ScheduledTaskEntity {
+    $task = $this->entityManager->find(ScheduledTaskEntity::class, $id);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    return $task;
   }
 
   public function testItHandlesSendingQueuesWithoutNewsletter(): void {
