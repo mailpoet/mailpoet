@@ -120,7 +120,7 @@ export const listFields: Field<FormListingItem>[] = [
   },
   {
     id: 'updated_at',
-    label: __('Modified date', 'mailpoet'),
+    label: __('Modified on', 'mailpoet'),
     type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
