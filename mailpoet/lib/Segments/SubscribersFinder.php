@@ -151,7 +151,10 @@ class SubscribersFinder {
     $connection = $this->entityManager->getConnection();
     $selectQueryBuilder = $connection->createQueryBuilder();
     $selectQueryBuilder
-      ->select('DISTINCT :task_id as task_id', 'subscribers.id as subscriber_id', ':processed as processed')
+      // No DISTINCT needed: the INSERT IGNORE relies on the (task_id, subscriber_id)
+      // primary key of scheduled_task_subscribers to drop duplicates, and DISTINCT
+      // forces an expensive temporary table on large segments.
+      ->select(':task_id as task_id', 'subscribers.id as subscriber_id', ':processed as processed')
       ->from($subscriberSegmentTable, 'relation')
       ->join('relation', $subscriberTable, 'subscribers', 'subscribers.id = relation.subscriber_id')
       ->where('subscribers.deleted_at IS NULL')
