@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group gutenberg-latest
+ */
 class CreateAutomationEmailWithBlockEditorCest {
   public function _before(\AcceptanceTester $i) {
     $settings = new Settings();

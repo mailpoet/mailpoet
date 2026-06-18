@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
+/**
+ * @group gutenberg-latest
+ */
 class EmailTemplatesCest {
   public function selectEditSwapAndResetEmailTemplate(\AcceptanceTester $i, $scenario) {
     if (!$i->checkEmailEditorRequiredWordpressVersion()) {
