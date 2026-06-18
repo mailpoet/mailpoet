@@ -10,10 +10,12 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
 import { FormsHeading, onAddNewForm } from './heading';
 import { listFields } from './fields';
+import { viewFiltersToRequestFilter } from './filters';
 import {
   bulkAction,
   getForms,
@@ -28,7 +30,7 @@ const DEFAULT_VIEW: View = {
   perPage: 20,
   page: 1,
   sort: { field: 'updated_at', direction: 'desc' },
-  fields: ['segments', 'type', 'status', 'updated_at'],
+  fields: ['segments', 'type', 'status', 'created_at', 'updated_at'],
   titleField: 'name',
   showTitle: true,
 };
@@ -104,6 +106,8 @@ function FormListComponent(): JSX.Element {
   } = useDataViewsQuery<FormListingItem>({
     initialView,
     load,
+    extraParams: (currentView) =>
+      filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
   const handleViewChange = usePersistedDataViewsPreference(
     'forms',
@@ -369,10 +373,12 @@ function FormListComponent(): JSX.Element {
             >
               <div className="mailpoet-forms-dataviews__toolbar">
                 <DataViews.Search label={__('Search forms', 'mailpoet')} />
+                <DataViews.FiltersToggle />
                 <div className="mailpoet-dataviews__toolbar-end">
                   <DataViews.ViewConfig />
                 </div>
               </div>
+              <DataViews.Filters />
               <DataViews.Layout />
               <DataViews.Footer />
             </DataViews>

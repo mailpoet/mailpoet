@@ -95,6 +95,49 @@ class FormsEndpointsTest extends Test {
     );
   }
 
+  public function testGetValidatesRequestParams(): void {
+    $this->assertSame('mailpoet_forms_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'segments']])['code']);
+    $this->assertSame('mailpoet_forms_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['sort_by' => 'segments']])['code']);
+    $this->assertSame('mailpoet_forms_invalid_order', $this->get(self::BASE_PATH, ['query' => ['order' => 'sideways']])['code']);
+    $this->assertSame('mailpoet_forms_invalid_order', $this->get(self::BASE_PATH, ['query' => ['sort_order' => 'sideways']])['code']);
+    $this->assertSame('mailpoet_forms_invalid_page', $this->get(self::BASE_PATH, ['query' => ['page' => 0]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_per_page', $this->get(self::BASE_PATH, ['query' => ['per_page' => 101]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_limit', $this->get(self::BASE_PATH, ['query' => ['limit' => 0]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_offset', $this->get(self::BASE_PATH, ['query' => ['offset' => 100001]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_filter', $this->get(self::BASE_PATH, ['query' => ['filter' => ['unknown' => 'x']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_filter', $this->get(self::BASE_PATH, ['query' => ['filter' => ['from' => '2025-01-01']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_status', $this->get(self::BASE_PATH, ['query' => ['filter' => ['status' => ['bogus']]]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_created_from', $this->get(self::BASE_PATH, ['query' => ['filter' => ['created_from' => '2025-02-30']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_created_to', $this->get(self::BASE_PATH, ['query' => ['filter' => ['created_to' => '2025-2-01']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_updated_from', $this->get(self::BASE_PATH, ['query' => ['filter' => ['updated_from' => '2025-13-01']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_date_range', $this->get(self::BASE_PATH, ['query' => ['filter' => ['created_from' => '2025-02-02', 'created_to' => '2025-02-01']]])['code']);
+    $this->assertSame('mailpoet_forms_invalid_date_range', $this->get(self::BASE_PATH, ['query' => ['filter' => ['updated_from' => '2025-02-02', 'updated_to' => '2025-02-01']]])['code']);
+  }
+
+  public function testGetFiltersByStatusAndCreatedDate(): void {
+    $suffix = uniqid();
+    (new FormFactory())
+      ->withName("enabled_{$suffix}")
+      ->withStatus(FormEntity::STATUS_ENABLED)
+      ->withCreatedAt(new \DateTimeImmutable('2020-01-01 10:00:00'))
+      ->create();
+    (new FormFactory())
+      ->withName("disabled_{$suffix}")
+      ->withStatus(FormEntity::STATUS_DISABLED)
+      ->withCreatedAt(new \DateTimeImmutable('2020-06-01 10:00:00'))
+      ->create();
+
+    $response = $this->get(self::BASE_PATH, ['query' => ['per_page' => 100, 'filter' => ['status' => ['disabled']]]]);
+    $names = array_column($response['data']['items'], 'name');
+    $this->assertContains("disabled_{$suffix}", $names);
+    $this->assertNotContains("enabled_{$suffix}", $names);
+
+    $response = $this->get(self::BASE_PATH, ['query' => ['per_page' => 100, 'filter' => ['created_from' => '2020-03-01']]]);
+    $names = array_column($response['data']['items'], 'name');
+    $this->assertContains("disabled_{$suffix}", $names);
+    $this->assertNotContains("enabled_{$suffix}", $names);
+  }
+
   public function testGetReturnsMetaConsistentWithItems(): void {
     $perPage = 7;
     $data = $this->get(self::BASE_PATH, ['query' => ['per_page' => $perPage]]);
