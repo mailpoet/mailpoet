@@ -7,6 +7,7 @@ use MailPoet\UnexpectedValueException;
 class DataInconsistencyController {
   const ORPHANED_SENDING_TASKS = 'orphaned_sending_tasks';
   const ORPHANED_SENDING_TASK_SUBSCRIBERS = 'orphaned_sending_task_subscribers';
+  const ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS = 'orphaned_sending_task_queued_subscribers';
   const SENDING_QUEUE_WITHOUT_NEWSLETTER = 'sending_queue_without_newsletter';
   const ORPHANED_SUBSCRIPTIONS = 'orphaned_subscriptions';
   const ORPHANED_LINKS = 'orphaned_links';
@@ -15,6 +16,7 @@ class DataInconsistencyController {
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
     self::ORPHANED_SENDING_TASK_SUBSCRIBERS,
+    self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS,
     self::SENDING_QUEUE_WITHOUT_NEWSLETTER,
     self::ORPHANED_SUBSCRIPTIONS,
     self::ORPHANED_LINKS,
@@ -33,6 +35,7 @@ class DataInconsistencyController {
     $result = [
       self::ORPHANED_SENDING_TASKS => $this->repository->getOrphanedSendingTasksCount(),
       self::ORPHANED_SENDING_TASK_SUBSCRIBERS => $this->repository->getOrphanedScheduledTasksSubscribersCount(),
+      self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS => $this->repository->getOrphanedScheduledTaskQueuedSubscribersCount(),
       self::SENDING_QUEUE_WITHOUT_NEWSLETTER => $this->repository->getSendingQueuesWithoutNewsletterCount(),
       self::ORPHANED_SUBSCRIPTIONS => $this->repository->getOrphanedSubscriptionsCount(),
       self::ORPHANED_LINKS => $this->repository->getOrphanedNewsletterLinksCount(),
@@ -50,6 +53,8 @@ class DataInconsistencyController {
       $this->repository->cleanupOrphanedSendingTasks();
     } elseif ($inconsistency === self::ORPHANED_SENDING_TASK_SUBSCRIBERS) {
       $this->repository->cleanupOrphanedScheduledTaskSubscribers();
+    } elseif ($inconsistency === self::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS) {
+      $this->repository->cleanupOrphanedScheduledTaskQueuedSubscribers();
     } elseif ($inconsistency === self::SENDING_QUEUE_WITHOUT_NEWSLETTER) {
       $this->repository->cleanupSendingQueuesWithoutNewsletter();
     } elseif ($inconsistency === self::ORPHANED_SUBSCRIPTIONS) {

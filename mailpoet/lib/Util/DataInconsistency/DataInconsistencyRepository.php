@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -49,6 +50,14 @@ class DataInconsistencyRepository {
     $count = $connection->executeQuery("
       SELECT COUNT(*) FROM $stsTable sts WHERE sts.task_id IN (SELECT task_id FROM orphaned_task_ids)
     ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedScheduledTaskQueuedSubscribersCount(): int {
+    /** @var string $count */
+    $count = $this->entityManager->getConnection()->executeQuery(
+      $this->buildOrphanedQueuedSubscribersSql('SELECT COUNT(*)')
+    )->fetchOne();
     return intval($count);
   }
 
@@ -171,6 +180,12 @@ class DataInconsistencyRepository {
     return $deletedCount;
   }
 
+  public function cleanupOrphanedScheduledTaskQueuedSubscribers(): int {
+    return (int)$this->entityManager->getConnection()->executeStatement(
+      $this->buildOrphanedQueuedSubscribersSql('DELETE stqs')
+    );
+  }
+
   public function cleanupSendingQueuesWithoutNewsletter(): int {
     $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
@@ -226,6 +241,28 @@ class DataInconsistencyRepository {
       ->andWhere('st.type = :type')
       ->setParameter('type', SendingQueue::TASK_TYPE)
       ->getQuery();
+  }
+
+  /**
+   * Builds the shared FROM/JOIN/WHERE for orphaned queue rows (task or
+   * subscriber no longer exists) behind a caller-supplied `SELECT …` / `DELETE
+   * stqs` prefix, so the count and the cleanup always target the exact same
+   * rows. The queue is working-set sized (it empties when a send completes), so
+   * a plain join is enough — no temporary tables or batched deletes like the
+   * large log table needs.
+   *
+   * $select is a fixed string from our own code, never user input.
+   */
+  private function buildOrphanedQueuedSubscribersSql(string $select): string {
+    $queueTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return "
+      $select FROM $queueTable stqs
+      LEFT JOIN $stTable st ON st.`id` = stqs.`task_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = stqs.`subscriber_id`
+      WHERE st.`id` IS NULL OR sub.`id` IS NULL
+    ";
   }
 
   private function createOrphanedScheduledTaskSubscribersTemporaryTables(): void {
