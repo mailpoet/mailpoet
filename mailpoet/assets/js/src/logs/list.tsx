@@ -11,7 +11,7 @@ import {
   type ListingQueryParams,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
-import { getLogFieldDefinitions, getLogFields } from './fields';
+import { getLogActions, getLogFieldDefinitions, getLogFields } from './fields';
 import {
   getLogFilterOptions,
   requestFilterToViewFilters,
@@ -29,7 +29,7 @@ const DEFAULT_VIEW: View = {
   perPage: 20,
   page: 1,
   sort: { field: 'created_at', direction: 'desc' },
-  fields: ['message', 'action', 'created_at'],
+  fields: ['message', 'created_at'],
   titleField: 'name',
   showTitle: true,
 };
@@ -165,7 +165,11 @@ export function List({ defaultFrom }: Props): JSX.Element {
   }, []);
 
   const fields = useMemo(
-    () => getLogFields(expandedLogIds, toggleExpanded, getLogFilterOptions()),
+    () => getLogFields(expandedLogIds, getLogFilterOptions()),
+    [expandedLogIds],
+  );
+  const actions = useMemo(
+    () => getLogActions(expandedLogIds, toggleExpanded),
     [expandedLogIds, toggleExpanded],
   );
 
@@ -208,6 +212,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
       <DataViews<LogListingItem>
         data={items}
         fields={fields}
+        actions={actions}
         view={view}
         onChangeView={persistedViewChange}
         paginationInfo={paginationInfo}
