@@ -258,9 +258,11 @@ class SubscriberListingRepository extends ListingRepository {
 
     $search = $definition->getSearch();
     if ($search && strlen(trim($search)) > 0 && trim($search) !== '*') {
+      $searchPatterns = $this->getSearchLikePatterns($search);
       $query
-        ->andWhere('(s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search)')
-        ->setParameter('search', Helpers::buildSearchLikePattern($search));
+        ->andWhere('(s.email LIKE :emailSearch OR s.first_name LIKE :nameSearch OR s.last_name LIKE :nameSearch)')
+        ->setParameter('emailSearch', $searchPatterns['email'])
+        ->setParameter('nameSearch', $searchPatterns['name']);
     }
 
     $filters = $definition->getFilters();
@@ -579,9 +581,22 @@ class SubscriberListingRepository extends ListingRepository {
     if (trim($search) === '*') {
       return;
     }
+    $searchPatterns = $this->getSearchLikePatterns($search);
     $queryBuilder
-      ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
-      ->setParameter('search', Helpers::buildSearchLikePattern($search));
+      ->andWhere('s.email LIKE :emailSearch or s.firstName LIKE :nameSearch or s.lastName LIKE :nameSearch')
+      ->setParameter('emailSearch', $searchPatterns['email'])
+      ->setParameter('nameSearch', $searchPatterns['name']);
+  }
+
+  /**
+   * @return array{email: string, name: string}
+   */
+  private function getSearchLikePatterns(string $search): array {
+    $emailSearch = '%' . str_replace('*', '%', Helpers::escapeSearch($search)) . '%';
+    return [
+      'email' => $emailSearch,
+      'name' => Helpers::buildSearchLikePattern($search),
+    ];
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
@@ -1026,9 +1041,11 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $search = (string)$definition->getSearch();
     if (strlen(trim($search)) > 0 && trim($search) !== '*') {
+      $searchPatterns = $this->getSearchLikePatterns($search);
       $subscribersQuery
-        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', Helpers::buildSearchLikePattern($search));
+        ->andWhere("$subscribersTable.email LIKE :emailSearch or $subscribersTable.first_name LIKE :nameSearch or $subscribersTable.last_name LIKE :nameSearch")
+        ->setParameter('emailSearch', $searchPatterns['email'])
+        ->setParameter('nameSearch', $searchPatterns['name']);
     }
     if ($definition->getGroup()) {
       if ($definition->getGroup() === 'trash') {
