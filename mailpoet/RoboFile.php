@@ -385,7 +385,10 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testJavascript($xmlOutputFile = null) {
-    $command = './node_modules/.bin/mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts';
+    // NODE_PATH lets specs resolve bare `common/...` module specifiers the same
+    // way Webpack's resolve.modules does (kept in sync with the `test` script in
+    // package.json).
+    $command = 'env NODE_PATH=$NODE_PATH:./assets/js/src ./node_modules/.bin/mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts';
 
     if (!empty($xmlOutputFile)) {
       $command .= sprintf(
