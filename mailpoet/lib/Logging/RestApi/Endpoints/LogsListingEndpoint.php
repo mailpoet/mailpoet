@@ -17,8 +17,11 @@ use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
 
 class LogsListingEndpoint extends AbstractListingEndpoint {
-  private const ALLOWED_SORT_FIELD = 'created_at';
-  private const ALLOWED_SORT_ORDER = 'desc';
+  private const ALLOWED_SORT_FIELDS = ['created_at', 'name'];
+  private const ALLOWED_SORT_ORDERS = ['asc', 'desc'];
+  private const DEFAULT_SORT_FIELD = 'created_at';
+  private const DEFAULT_SORT_ORDER = 'desc';
+  private const ALLOWED_FILTERS = ['from', 'to', 'name', 'level'];
 
   /** @var LogListingRepository */
   private $logListingRepository;
@@ -68,17 +71,18 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     return [
       'id' => (int)$log->getId(),
       'name' => $log->getName() ?? '',
+      'level' => $log->getLevel(),
       'message' => $log->getMessage() ?? '',
       'created_at' => $createdAt ? $createdAt->format('Y-m-d H:i:s') : null,
     ];
   }
 
   protected function getDefaultSortBy(): string {
-    return self::ALLOWED_SORT_FIELD;
+    return self::DEFAULT_SORT_FIELD;
   }
 
   protected function getDefaultSortOrder(): string {
-    return self::ALLOWED_SORT_ORDER;
+    return self::DEFAULT_SORT_ORDER;
   }
 
   private function validateRequest(Request $request): void {
@@ -98,9 +102,13 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     if ($sortField === null || $sortField === '') {
       return;
     }
-    if (!is_string($sortField) || $sortField !== self::ALLOWED_SORT_FIELD) {
+    if (!is_string($sortField) || !in_array($sortField, self::ALLOWED_SORT_FIELDS, true)) {
       throw new ApiException(
-        __('Unsupported sort field. Allowed values are: created_at.', 'mailpoet'),
+        sprintf(
+          // translators: %s is a comma-separated list of allowed sort fields.
+          __('Unsupported sort field. Allowed values are: %s.', 'mailpoet'),
+          implode(', ', self::ALLOWED_SORT_FIELDS)
+        ),
         400,
         'mailpoet_logs_invalid_orderby'
       );
@@ -112,9 +120,13 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     if ($sortOrder === null || $sortOrder === '') {
       return;
     }
-    if (!is_string($sortOrder) || strtolower($sortOrder) !== self::ALLOWED_SORT_ORDER) {
+    if (!is_string($sortOrder) || !in_array(strtolower($sortOrder), self::ALLOWED_SORT_ORDERS, true)) {
       throw new ApiException(
-        __('Unsupported sort order. Allowed values are: desc.', 'mailpoet'),
+        sprintf(
+          // translators: %s is a comma-separated list of allowed sort orders.
+          __('Unsupported sort order. Allowed values are: %s.', 'mailpoet'),
+          implode(', ', self::ALLOWED_SORT_ORDERS)
+        ),
         400,
         'mailpoet_logs_invalid_order'
       );
@@ -169,7 +181,7 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
 
     $normalizedFilters = [];
     foreach ($filters as $filter => $value) {
-      if (!is_string($filter) || !in_array($filter, ['from', 'to'], true)) {
+      if (!is_string($filter) || !in_array($filter, self::ALLOWED_FILTERS, true)) {
         throw new ApiException(
           __('Unsupported logs filter.', 'mailpoet'),
           400,
@@ -178,6 +190,9 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
       }
       $normalizedFilters[$filter] = $value;
     }
+
+    $this->validateStringListFilter($normalizedFilters, 'name');
+    $this->validateLevelFilter($normalizedFilters);
 
     $from = $this->validateDateFilter($normalizedFilters, 'from');
     $to = $this->validateDateFilter($normalizedFilters, 'to');
@@ -216,5 +231,55 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
       );
     }
     return $date;
+  }
+
+  /**
+   * @param array<string, mixed> $filters
+   */
+  private function validateStringListFilter(array $filters, string $field): void {
+    if (!array_key_exists($field, $filters) || $filters[$field] === '' || $filters[$field] === []) {
+      return;
+    }
+    if (!is_array($filters[$field])) {
+      throw new ApiException(
+        __('The name filter must be an array of strings.', 'mailpoet'),
+        400,
+        'mailpoet_logs_invalid_' . $field
+      );
+    }
+    foreach ($filters[$field] as $value) {
+      if (!is_string($value)) {
+        throw new ApiException(
+          __('The name filter must be an array of strings.', 'mailpoet'),
+          400,
+          'mailpoet_logs_invalid_' . $field
+        );
+      }
+    }
+  }
+
+  /**
+   * @param array<string, mixed> $filters
+   */
+  private function validateLevelFilter(array $filters): void {
+    if (!array_key_exists('level', $filters) || $filters['level'] === '' || $filters['level'] === []) {
+      return;
+    }
+    if (!is_array($filters['level'])) {
+      throw new ApiException(
+        __('The level filter must be an array of integers.', 'mailpoet'),
+        400,
+        'mailpoet_logs_invalid_level'
+      );
+    }
+    foreach ($filters['level'] as $value) {
+      if ($this->getIntegerValue($value) === null) {
+        throw new ApiException(
+          __('The level filter must be an array of integers.', 'mailpoet'),
+          400,
+          'mailpoet_logs_invalid_level'
+        );
+      }
+    }
   }
 }

@@ -275,10 +275,10 @@ class LogsEndpointsTest extends Test {
   }
 
   public function testGetRejectsInvalidListingParams(): void {
-    $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'name']])['code']);
-    $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['sort_by' => 'name']])['code']);
-    $this->assertSame('mailpoet_logs_invalid_order', $this->get(self::BASE_PATH, ['query' => ['order' => 'asc']])['code']);
-    $this->assertSame('mailpoet_logs_invalid_order', $this->get(self::BASE_PATH, ['query' => ['sort_order' => 'asc']])['code']);
+    $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['orderby' => 'message']])['code']);
+    $this->assertSame('mailpoet_logs_invalid_orderby', $this->get(self::BASE_PATH, ['query' => ['sort_by' => 'message']])['code']);
+    $this->assertSame('mailpoet_logs_invalid_order', $this->get(self::BASE_PATH, ['query' => ['order' => 'sideways']])['code']);
+    $this->assertSame('mailpoet_logs_invalid_order', $this->get(self::BASE_PATH, ['query' => ['sort_order' => 'sideways']])['code']);
     $this->assertSame('mailpoet_logs_invalid_page', $this->get(self::BASE_PATH, ['query' => ['page' => 0]])['code']);
     $this->assertSame('mailpoet_logs_invalid_per_page', $this->get(self::BASE_PATH, ['query' => ['per_page' => 101]])['code']);
     $this->assertSame('mailpoet_logs_invalid_limit', $this->get(self::BASE_PATH, ['query' => ['limit' => 0]])['code']);
@@ -289,7 +289,146 @@ class LogsEndpointsTest extends Test {
     $this->assertSame('mailpoet_logs_invalid_from', $this->get(self::BASE_PATH, ['query' => ['filter' => ['from' => '2025-02-30']]])['code']);
     $this->assertSame('mailpoet_logs_invalid_to', $this->get(self::BASE_PATH, ['query' => ['filter' => ['to' => '2025-2-01']]])['code']);
     $this->assertSame('mailpoet_logs_invalid_date_range', $this->get(self::BASE_PATH, ['query' => ['filter' => ['from' => '2025-02-02', 'to' => '2025-02-01']]])['code']);
-    $this->assertSame('mailpoet_logs_invalid_filter', $this->get(self::BASE_PATH, ['query' => ['filter' => ['level' => 'error']]])['code']);
+  }
+
+  public function testGetRejectsUnsupportedAndMalformedFilters(): void {
+    $this->assertSame('mailpoet_logs_invalid_filter', $this->get(self::BASE_PATH, ['query' => ['filter' => ['unknown' => 'x']]])['code']);
+    $this->assertSame('mailpoet_logs_invalid_level', $this->get(self::BASE_PATH, ['query' => ['filter' => ['level' => 'error']]])['code']);
+    $this->assertSame('mailpoet_logs_invalid_level', $this->get(self::BASE_PATH, ['query' => ['filter' => ['level' => ['oops']]]])['code']);
+    $this->assertSame('mailpoet_logs_invalid_name', $this->get(self::BASE_PATH, ['query' => ['filter' => ['name' => [['nested']]]]])['code']);
+  }
+
+  public function testGetExposesLogLevel(): void {
+    $suffix = uniqid();
+    $log = (new LogFactory())->withName("level-field-{$suffix}")->withLevel(400)->create();
+    // Drop the identity map so the listing hydrates a fresh (partial) entity,
+    // catching a PARTIAL select that omits the level column.
+    $this->entityManager->clear();
+
+    $data = $this->get(self::BASE_PATH, ['query' => ['search' => $suffix, 'per_page' => 100]]);
+    $items = array_values(array_filter(
+      $data['data']['items'],
+      fn($item) => (int)$item['id'] === (int)$log->getId()
+    ));
+
+    $this->assertCount(1, $items);
+    $this->assertSame(400, $items[0]['level']);
+  }
+
+  public function testGetFiltersByName(): void {
+    $suffix = uniqid();
+    $cron = (new LogFactory())->withName("cron-{$suffix}")->withMessage($suffix)->create();
+    $mailer = (new LogFactory())->withName("mailer-{$suffix}")->withMessage($suffix)->create();
+    (new LogFactory())->withName("other-{$suffix}")->withMessage($suffix)->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'filter' => ['name' => ["cron-{$suffix}", "mailer-{$suffix}"]],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    sort($ids);
+    $expected = [(int)$cron->getId(), (int)$mailer->getId()];
+    sort($expected);
+    $this->assertSame($expected, $ids);
+  }
+
+  public function testGetFiltersByLevel(): void {
+    $suffix = uniqid();
+    $warning = (new LogFactory())->withName("warn-{$suffix}")->withMessage($suffix)->withLevel(300)->create();
+    $error = (new LogFactory())->withName("error-{$suffix}")->withMessage($suffix)->withLevel(400)->create();
+    (new LogFactory())->withName("debug-{$suffix}")->withMessage($suffix)->withLevel(100)->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'filter' => ['level' => [300, 400]],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    sort($ids);
+    $expected = [(int)$warning->getId(), (int)$error->getId()];
+    sort($expected);
+    $this->assertSame($expected, $ids);
+  }
+
+  public function testGetCombinesNameLevelAndDateFilters(): void {
+    $suffix = uniqid();
+    $match = (new LogFactory())
+      ->withName("combo-{$suffix}")
+      ->withMessage($suffix)
+      ->withLevel(400)
+      ->withCreatedAt(new Carbon('2025-04-10 12:00:00'))
+      ->create();
+    $wrongLevel = (new LogFactory())
+      ->withName("combo-{$suffix}")
+      ->withMessage($suffix)
+      ->withLevel(100)
+      ->withCreatedAt(new Carbon('2025-04-10 12:00:00'))
+      ->create();
+    $wrongDate = (new LogFactory())
+      ->withName("combo-{$suffix}")
+      ->withMessage($suffix)
+      ->withLevel(400)
+      ->withCreatedAt(new Carbon('2025-04-20 12:00:00'))
+      ->create();
+
+    $data = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'filter' => [
+        'name' => ["combo-{$suffix}"],
+        'level' => [400],
+        'from' => '2025-04-10',
+        'to' => '2025-04-10',
+      ],
+      'per_page' => 100,
+    ]]);
+
+    $ids = array_map('intval', array_column($data['data']['items'], 'id'));
+    $this->assertSame([(int)$match->getId()], $ids);
+    $this->assertNotContains((int)$wrongLevel->getId(), $ids);
+    $this->assertNotContains((int)$wrongDate->getId(), $ids);
+  }
+
+  public function testGetSortsByNameAndCreatedAtInBothDirections(): void {
+    $suffix = uniqid();
+    $alpha = (new LogFactory())->withName("aaa-{$suffix}")->withMessage($suffix)->withCreatedAt(new Carbon('2025-05-01 00:00:00'))->create();
+    $beta = (new LogFactory())->withName("bbb-{$suffix}")->withMessage($suffix)->withCreatedAt(new Carbon('2025-05-02 00:00:00'))->create();
+    $gamma = (new LogFactory())->withName("ccc-{$suffix}")->withMessage($suffix)->withCreatedAt(new Carbon('2025-05-03 00:00:00'))->create();
+
+    $nameAsc = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'sort_by' => 'name',
+      'sort_order' => 'asc',
+      'per_page' => 100,
+    ]]);
+    $this->assertSame(
+      [(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()],
+      array_map('intval', array_column($nameAsc['data']['items'], 'id'))
+    );
+
+    $createdAtAsc = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'orderby' => 'created_at',
+      'order' => 'asc',
+      'per_page' => 100,
+    ]]);
+    $this->assertSame(
+      [(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()],
+      array_map('intval', array_column($createdAtAsc['data']['items'], 'id'))
+    );
+
+    $createdAtDesc = $this->get(self::BASE_PATH, ['query' => [
+      'search' => $suffix,
+      'orderby' => 'created_at',
+      'order' => 'desc',
+      'per_page' => 100,
+    ]]);
+    $this->assertSame(
+      [(int)$gamma->getId(), (int)$beta->getId(), (int)$alpha->getId()],
+      array_map('intval', array_column($createdAtDesc['data']['items'], 'id'))
+    );
   }
 
   public function testGetRejectsUsersWithoutPermission(): void {

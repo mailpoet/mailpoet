@@ -90,6 +90,30 @@ class LogRepository extends Repository {
     return $query->getQuery()->getResult();
   }
 
+  /**
+   * Distinct log names (sources), used to populate the listing's name filter.
+   *
+   * @return string[]
+   */
+  public function getDistinctNames(): array {
+    $rows = $this->entityManager->createQueryBuilder()
+      ->select('DISTINCT l.name')
+      ->from(LogEntity::class, 'l')
+      ->where('l.name IS NOT NULL')
+      ->andWhere("l.name != ''")
+      ->orderBy('l.name', 'asc')
+      ->getQuery()
+      ->getSingleColumnResult();
+
+    $names = [];
+    foreach ($rows as $row) {
+      if (is_string($row)) {
+        $names[] = $row;
+      }
+    }
+    return $names;
+  }
+
   public function purgeOldLogs(int $daysToKeepLogs, int $limit = 1000): int {
     $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
     $result = $this->entityManager->getConnection()->executeStatement(

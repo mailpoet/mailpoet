@@ -8,7 +8,7 @@ use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class LogListingRepository extends ListingRepository {
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select('PARTIAL l.{id,name,message,createdAt}');
+    $queryBuilder->select('PARTIAL l.{id,name,level,message,createdAt}');
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
@@ -19,9 +19,17 @@ class LogListingRepository extends ListingRepository {
     // Logs listing does not support groups.
   }
 
+  private const SORTABLE_FIELDS = [
+    'created_at' => 'createdAt',
+    'name' => 'name',
+    'id' => 'id',
+  ];
+
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
-    $queryBuilder->addOrderBy("l.$sortBy", $sortOrder);
-    if ($sortBy !== 'id') {
+    // Whitelist the column to keep arbitrary input out of the DQL ORDER BY.
+    $field = self::SORTABLE_FIELDS[$sortBy] ?? 'createdAt';
+    $queryBuilder->addOrderBy("l.$field", $sortOrder);
+    if ($field !== 'id') {
       $queryBuilder->addOrderBy('l.id', $sortOrder);
     }
   }
@@ -48,6 +56,22 @@ class LogListingRepository extends ListingRepository {
       $queryBuilder
         ->andWhere('l.createdAt <= :dateTo')
         ->setParameter('dateTo', $filters['to'] . ' 23:59:59');
+    }
+    if (!empty($filters['name']) && is_array($filters['name'])) {
+      $queryBuilder
+        ->andWhere('l.name IN (:names)')
+        ->setParameter('names', array_values($filters['name']));
+    }
+    if (!empty($filters['level']) && is_array($filters['level'])) {
+      $levels = [];
+      foreach ($filters['level'] as $level) {
+        if (is_numeric($level)) {
+          $levels[] = (int)$level;
+        }
+      }
+      $queryBuilder
+        ->andWhere('l.level IN (:levels)')
+        ->setParameter('levels', $levels);
     }
   }
 
