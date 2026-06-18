@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Segment;
 
+/**
+ * @group gutenberg-latest
+ */
 class EditorCreateBlankFormCest {
   public function createBlankForm(\AcceptanceTester $i) {
     $i->wantTo('Create a blank form');

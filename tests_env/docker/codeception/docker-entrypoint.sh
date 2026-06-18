@@ -59,6 +59,16 @@ wp core version
 echo "TEST RUNNER PHP VERSION:"
 php --version
 
+if [[ -n "$GUTENBERG_VERSION" ]]; then
+  echo "Installing Gutenberg plugin version: $GUTENBERG_VERSION"
+  if [[ "$GUTENBERG_VERSION" == "latest" ]]; then
+    wp plugin install gutenberg --activate --force
+  else
+    wp plugin install gutenberg --version="$GUTENBERG_VERSION" --activate --force
+  fi
+  wp plugin get gutenberg --fields=name,status,version
+fi
+
 # Force Action Scheduler to use the DB store. Tests deactivate WC often, which
 # wipes the migration_status option and reverts AS to the HybridStore — whose
 # claim path races on the legacy wpPostStore when async queue-runner requests
