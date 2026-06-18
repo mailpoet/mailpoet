@@ -100,10 +100,14 @@ export function useDataViewsQuery<T>({
       const searchChanged =
         (nextView.search ?? '') !== (currentView.search ?? '');
       const perPageChanged = nextView.perPage !== currentView.perPage;
+      const filtersChanged =
+        JSON.stringify(currentView.filters ?? []) !==
+        JSON.stringify(nextView.filters ?? []);
 
       return {
         ...nextView,
-        page: searchChanged || perPageChanged ? 1 : nextView.page,
+        page:
+          searchChanged || perPageChanged || filtersChanged ? 1 : nextView.page,
       };
     });
   }, []);
