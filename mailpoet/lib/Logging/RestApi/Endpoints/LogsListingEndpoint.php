@@ -2,9 +2,9 @@
 
 namespace MailPoet\Logging\RestApi\Endpoints;
 
-use DateTimeImmutable;
 use MailPoet\API\REST\AbstractListingEndpoint;
 use MailPoet\API\REST\ApiException;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
@@ -17,8 +17,9 @@ use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
 
 class LogsListingEndpoint extends AbstractListingEndpoint {
+  use ListingRequestValidationTrait;
+
   private const ALLOWED_SORT_FIELDS = ['created_at', 'name'];
-  private const ALLOWED_SORT_ORDERS = ['asc', 'desc'];
   private const DEFAULT_SORT_FIELD = 'created_at';
   private const DEFAULT_SORT_ORDER = 'desc';
   private const ALLOWED_FILTERS = ['from', 'to', 'name', 'level'];
@@ -85,85 +86,17 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     return self::DEFAULT_SORT_ORDER;
   }
 
+  protected function getListingValidationErrorPrefix(): string {
+    return 'logs';
+  }
+
   private function validateRequest(Request $request): void {
-    $this->validateSortField($request->getParam('orderby'));
-    $this->validateSortField($request->getParam('sort_by'));
+    $this->validateSortField($request->getParam('orderby'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortField($request->getParam('sort_by'), self::ALLOWED_SORT_FIELDS);
     $this->validateSortOrder($request->getParam('order'));
     $this->validateSortOrder($request->getParam('sort_order'));
-    $this->validatePositiveInteger($request->getParam('page'), 'page', 1, self::MAX_PAGE);
-    $this->validatePositiveInteger($request->getParam('per_page'), 'per_page', 1, self::MAX_PER_PAGE);
-    $this->validatePositiveInteger($request->getParam('limit'), 'limit', 1, self::MAX_PER_PAGE);
-    $this->validatePositiveInteger($request->getParam('offset'), 'offset', 0, self::MAX_PAGE);
+    $this->validatePagination($request);
     $this->validateFilters($request->getParam('filter'));
-  }
-
-  /** @param mixed $sortField */
-  private function validateSortField($sortField): void {
-    if ($sortField === null || $sortField === '') {
-      return;
-    }
-    if (!is_string($sortField) || !in_array($sortField, self::ALLOWED_SORT_FIELDS, true)) {
-      throw new ApiException(
-        sprintf(
-          // translators: %s is a comma-separated list of allowed sort fields.
-          __('Unsupported sort field. Allowed values are: %s.', 'mailpoet'),
-          implode(', ', self::ALLOWED_SORT_FIELDS)
-        ),
-        400,
-        'mailpoet_logs_invalid_orderby'
-      );
-    }
-  }
-
-  /** @param mixed $sortOrder */
-  private function validateSortOrder($sortOrder): void {
-    if ($sortOrder === null || $sortOrder === '') {
-      return;
-    }
-    if (!is_string($sortOrder) || !in_array(strtolower($sortOrder), self::ALLOWED_SORT_ORDERS, true)) {
-      throw new ApiException(
-        sprintf(
-          // translators: %s is a comma-separated list of allowed sort orders.
-          __('Unsupported sort order. Allowed values are: %s.', 'mailpoet'),
-          implode(', ', self::ALLOWED_SORT_ORDERS)
-        ),
-        400,
-        'mailpoet_logs_invalid_order'
-      );
-    }
-  }
-
-  /**
-   * @param mixed $value
-   */
-  private function validatePositiveInteger($value, string $name, int $min, int $max): void {
-    if ($value === null || $value === '') {
-      return;
-    }
-    $integer = $this->getIntegerValue($value);
-    if ($integer === null || $integer < $min || $integer > $max) {
-      throw new ApiException(
-        sprintf(
-          // translators: %1$s is a request parameter name, %2$d is the maximum accepted value.
-          __('%1$s must be an integer no greater than %2$d.', 'mailpoet'),
-          $name,
-          $max
-        ),
-        400,
-        'mailpoet_logs_invalid_' . $name
-      );
-    }
-  }
-
-  /** @param mixed $value */
-  private function getIntegerValue($value): ?int {
-    if (is_int($value)) {
-      return $value;
-    }
-    if (is_string($value) && ctype_digit($value)) {
-      return (int)$value;
-    }
-    return null;
   }
 
   /** @param mixed $filters */
@@ -194,43 +127,10 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
     $this->validateStringListFilter($normalizedFilters, 'name');
     $this->validateLevelFilter($normalizedFilters);
 
+    // Keep the range check in sync with getDateRangeError() in logs/url-state.ts.
     $from = $this->validateDateFilter($normalizedFilters, 'from');
     $to = $this->validateDateFilter($normalizedFilters, 'to');
-    // Keep in sync with getDateRangeError() in logs/url-state.ts.
-    if ($from && $to && $from > $to) {
-      throw new ApiException(
-        __('The from date must be before or equal to the to date.', 'mailpoet'),
-        400,
-        'mailpoet_logs_invalid_date_range'
-      );
-    }
-  }
-
-  /**
-   * @param array<string, mixed> $filters
-   */
-  private function validateDateFilter(array $filters, string $field): ?DateTimeImmutable {
-    if (!array_key_exists($field, $filters) || $filters[$field] === '') {
-      return null;
-    }
-    if (!is_string($filters[$field])) {
-      throw new ApiException(
-        __('Log date filters must use the YYYY-MM-DD format.', 'mailpoet'),
-        400,
-        'mailpoet_logs_invalid_' . $field
-      );
-    }
-
-    $date = DateTimeImmutable::createFromFormat('!Y-m-d', $filters[$field]);
-    $errors = DateTimeImmutable::getLastErrors();
-    if (!$date || (is_array($errors) && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) || $date->format('Y-m-d') !== $filters[$field]) {
-      throw new ApiException(
-        __('Log date filters must use the YYYY-MM-DD format.', 'mailpoet'),
-        400,
-        'mailpoet_logs_invalid_' . $field
-      );
-    }
-    return $date;
+    $this->validateDateRange($from, $to);
   }
 
   /**

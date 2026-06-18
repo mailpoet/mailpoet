@@ -8,6 +8,7 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
@@ -90,19 +91,18 @@ export function List({ defaultFrom }: Props): JSX.Element {
 
   const {
     view,
-    setView,
     items,
     meta,
     isLoading,
     error: loadError,
+    onChangeView,
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<LogListingItem>({
     initialView,
     load,
-    extraParams: (currentView) => ({
-      filter: viewFiltersToRequestFilter(currentView.filters),
-    }),
+    extraParams: (currentView) =>
+      filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
 
   const dateRangeError = getDateRangeError(
@@ -113,24 +113,10 @@ export function List({ defaultFrom }: Props): JSX.Element {
       <div>{__('No logs found.', 'mailpoet')}</div>
     );
 
-  const updateView = useCallback(
-    (nextView: View) => {
-      const searchChanged = (nextView.search ?? '') !== (view.search ?? '');
-      const perPageChanged = nextView.perPage !== view.perPage;
-      const filtersChanged = filtersKey(nextView) !== filtersKey(view);
-
-      setView({
-        ...nextView,
-        page:
-          searchChanged || perPageChanged || filtersChanged ? 1 : nextView.page,
-      });
-    },
-    [setView, view],
-  );
   const persistedViewChange = usePersistedDataViewsPreference(
     'logs',
     view,
-    updateView,
+    onChangeView,
   );
 
   useEffect(() => {
