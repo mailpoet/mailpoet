@@ -9,6 +9,7 @@ use MailPoet\Test\DataFactories\Settings;
 
 /**
  * @group frontend
+ * @group gutenberg-latest
  */
 class GutenbergFormBlockCest {
 

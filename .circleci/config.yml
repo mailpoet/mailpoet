@@ -351,12 +351,15 @@ jobs:
           path: test-results/mocha
           destination: mocha
   acceptance_tests:
-    parallelism: 20
+    parallelism: << parameters.parallelism >>
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
       docker_layer_caching: false
     parameters:
+      parallelism:
+        type: integer
+        default: 20
       multisite:
         type: integer
         default: 0
@@ -405,12 +408,16 @@ jobs:
       wordpress_version:
         type: string
         default: ''
+      gutenberg_version:
+        type: string
+        default: ''
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE: << parameters.mysql_image >>
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
       WORDPRESS_VERSION: << parameters.wordpress_version >>
+      GUTENBERG_VERSION: << parameters.gutenberg_version >>
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -536,6 +543,7 @@ jobs:
             -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
             -e DISABLE_HPOS=<< parameters.disable_hpos >> \
             -e WORDPRESS_VERSION=${WORDPRESS_VERSION} \
+            -e GUTENBERG_VERSION=${GUTENBERG_VERSION} \
             codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
@@ -1186,6 +1194,16 @@ workflows:
           name: acceptance_latest_blockbased_theme
           group: frontend
           blockbased_theme: 1
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
+          requires:
+            - build
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_gutenberg_latest
+          group: gutenberg-latest
+          gutenberg_version: latest
+          parallelism: 5
           mysql_image: mysql:8.3
           mysql_command: --default-authentication-plugin=mysql_native_password
           requires:

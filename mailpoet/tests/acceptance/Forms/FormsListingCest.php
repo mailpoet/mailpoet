@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Form;
 
+/**
+ * @group gutenberg-latest
+ */
 class FormsListingCest {
   public function formsListing(\AcceptanceTester $i) {
     $i->wantTo('Open forms listings page');
