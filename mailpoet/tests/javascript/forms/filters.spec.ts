@@ -24,16 +24,16 @@ describe('forms filters translation', () => {
     });
   });
 
-  it('maps single-bound created-date operators', () => {
+  it('maps inclusive single-bound created-date operators', () => {
     expect(
       viewFiltersToRequestFilter([
-        { field: 'created_at', operator: 'after', value: '2026-05-01' },
+        { field: 'created_at', operator: 'afterInc', value: '2026-05-01' },
       ]),
     ).to.deep.equal({ created_from: '2026-05-01' });
 
     expect(
       viewFiltersToRequestFilter([
-        { field: 'created_at', operator: 'before', value: '2026-05-18' },
+        { field: 'created_at', operator: 'beforeInc', value: '2026-05-18' },
       ]),
     ).to.deep.equal({ created_to: '2026-05-18' });
 
@@ -42,6 +42,20 @@ describe('forms filters translation', () => {
         { field: 'created_at', operator: 'on', value: '2026-05-10' },
       ]),
     ).to.deep.equal({ created_from: '2026-05-10', created_to: '2026-05-10' });
+  });
+
+  it('shifts exclusive single-bound created-date operators by a day', () => {
+    expect(
+      viewFiltersToRequestFilter([
+        { field: 'created_at', operator: 'after', value: '2026-05-01' },
+      ]),
+    ).to.deep.equal({ created_from: '2026-05-02' });
+
+    expect(
+      viewFiltersToRequestFilter([
+        { field: 'created_at', operator: 'before', value: '2026-05-18' },
+      ]),
+    ).to.deep.equal({ created_to: '2026-05-17' });
   });
 
   it('maps the modified-date filter to its own updated_from/updated_to keys', () => {
@@ -61,8 +75,8 @@ describe('forms filters translation', () => {
 
   it('keeps created and modified date ranges independent', () => {
     const filter = viewFiltersToRequestFilter([
-      { field: 'created_at', operator: 'after', value: '2026-05-01' },
-      { field: 'updated_at', operator: 'before', value: '2026-06-01' },
+      { field: 'created_at', operator: 'afterInc', value: '2026-05-01' },
+      { field: 'updated_at', operator: 'beforeInc', value: '2026-06-01' },
     ]);
 
     expect(filter).to.deep.equal({

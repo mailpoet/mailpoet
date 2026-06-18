@@ -57,9 +57,26 @@ export function normalizeYmd(value: unknown): string | undefined {
 }
 
 /**
- * Translate a single DataViews date filter into a `{ from, to }` range. Supports
- * the standard date operators (`on`, `before`/`beforeInc`, `after`/`afterInc`,
- * `between`). Unrecognized or invalid input yields an empty range.
+ * Shift a `yyyy-MM-dd` string by whole days, preserving the `yyyy-MM-dd` shape.
+ */
+function shiftYmd(ymd: string, deltaDays: number): string {
+  const [year, month, day] = ymd.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + deltaDays));
+  const shiftedMonth = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const shiftedDay = String(date.getUTCDate()).padStart(2, '0');
+  return `${date.getUTCFullYear()}-${shiftedMonth}-${shiftedDay}`;
+}
+
+/**
+ * Translate a single DataViews date filter into a `{ from, to }` range the
+ * listing endpoints apply as inclusive whole days (`>= from 00:00:00`,
+ * `<= to 23:59:59`). Supports the standard date operators (`on`,
+ * `beforeInc`/`afterInc` inclusive, `before`/`after` exclusive, `between`).
+ *
+ * Because the backend boundaries are inclusive, the exclusive `before`/`after`
+ * operators are shifted one day so they exclude the picked day, while the
+ * inclusive `beforeInc`/`afterInc` map straight onto the boundary. Unrecognized
+ * or invalid input yields an empty range.
  */
 export function dateRangeFromFilter(
   operator: string,
@@ -76,11 +93,17 @@ export function dateRangeFromFilter(
   if (!ymd) {
     return {};
   }
-  if (operator === 'before' || operator === 'beforeInc') {
+  if (operator === 'beforeInc') {
     return { to: ymd };
   }
-  if (operator === 'after' || operator === 'afterInc') {
+  if (operator === 'before') {
+    return { to: shiftYmd(ymd, -1) };
+  }
+  if (operator === 'afterInc') {
     return { from: ymd };
+  }
+  if (operator === 'after') {
+    return { from: shiftYmd(ymd, 1) };
   }
   if (operator === 'on') {
     return { from: ymd, to: ymd };
