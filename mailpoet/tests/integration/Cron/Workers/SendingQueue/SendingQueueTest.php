@@ -532,8 +532,10 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            verify(!empty($newsletter[0]['body']['html']))->true();
-            verify(!empty($newsletter[0]['body']['text']))->true();
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            $template = $newsletter->getTemplate();
+            verify(!empty($template['body']['html']))->true();
+            verify(!empty($template['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
@@ -577,7 +579,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($statistics)->notEquals(false);
   }
 
-  public function testItCanProcessSubscribersInTemplatedBulkWhenEnabled(): void {
+  public function testItCanProcessSubscribersInTemplatedBulk(): void {
     $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
     $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
       $this->subscriber->getId(),
@@ -619,16 +621,7 @@ class SendingQueueTest extends \MailPoetTest {
       )
     );
 
-    $filter = function() {
-      return true;
-    };
-    $wp = new WPFunctions;
-    $wp->addFilter('mailpoet_mss_use_templated_batch', $filter);
-    try {
-      $sendingQueueWorker->process();
-    } finally {
-      $wp->removeFilter('mailpoet_mss_use_templated_batch', $filter);
-    }
+    $sendingQueueWorker->process();
   }
 
   public function testItProcessesStandardNewsletters() {
