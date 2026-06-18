@@ -121,6 +121,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Neues Formular hinzufügen');
     $i->waitForText('Unter Seiten');
     $i->waitForText('Registrierungen');
+    $i->waitForText(strtoupper('Erstelldatum'));
     $i->waitForText(strtoupper('Änderungsdatum'));
 
     $i->wantTo('Check Subscribers filter strings and button');
