@@ -16,6 +16,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -397,6 +398,7 @@ class SendingQueue {
     $useTemplatedBatch = $processingMethod === 'bulk'
       && (bool)$this->wp->applyFilters('mailpoet_mss_use_templated_batch', false);
     $templateBatch = null;
+    $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
 
@@ -406,7 +408,8 @@ class SendingQueue {
         $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
           $newsletter,
           $subscriber,
-          $sendingQueueEntity
+          $sendingQueueEntity,
+          $placeholderNamespace
         );
         if (!$templateBatch instanceof TemplateBatch) {
           $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
