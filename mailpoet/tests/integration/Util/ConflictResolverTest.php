@@ -102,6 +102,23 @@ class ConflictResolverTest extends \MailPoetTest {
     verify(in_array('permitted_script_2', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
+  public function testItKeepsWordPressCommandScriptsServedByGutenberg() {
+    wp_deregister_script('wp-commands');
+    wp_deregister_script('wp-core-commands');
+    wp_enqueue_script('wp-commands', '/wp-content/plugins/gutenberg/build/scripts/commands/index.js');
+    wp_enqueue_script('wp-core-commands', '/wp-content/plugins/gutenberg/build/scripts/core-commands/index.js');
+    wp_enqueue_script('gutenberg_plugin_script', '/wp-content/plugins/gutenberg/build/scripts/plugin/index.js');
+
+    $this->conflictResolver->resolveScriptsConflict();
+    do_action('wp_print_scripts');
+    do_action('admin_print_footer_scripts');
+
+    global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('wp-commands', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('wp-core-commands', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('gutenberg_plugin_script', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
   public function testItWhitelistsScripts() {
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     $wp = new WPFunctions;
