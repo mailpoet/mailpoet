@@ -6,6 +6,9 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Test\DataFactories\Form;
 use MailPoetVendor\Carbon\Carbon;
 
+/**
+ * @group gutenberg-latest
+ */
 class FormsListingCest {
   public function formsListing(\AcceptanceTester $i) {
     $i->wantTo('Open forms listings page');
