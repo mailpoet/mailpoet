@@ -14,11 +14,6 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     $this->applyFromClause($queryBuilder);
     $this->applyParameters($queryBuilder, $definition->getParameters());
 
-    // total count
-    $countQueryBuilder = clone $queryBuilder;
-    $countQueryBuilder->select('COUNT(sts.subscriber) AS subscriberCount');
-    $totalCount = intval($countQueryBuilder->getQuery()->getSingleScalarResult());
-
     // Sent count
     $sentCountQuery = clone $queryBuilder;
     $sentCountQuery->select('COUNT(sts.subscriber) AS subscriberCount');
@@ -35,19 +30,7 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     $failedCountQuery->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
     $failedCount = intval($failedCountQuery->getQuery()->getSingleScalarResult());
 
-    // Unprocessed count
-    $unprocessedCountQuery = clone $queryBuilder;
-    $unprocessedCountQuery->select('COUNT(sts.subscriber) AS subscriberCount');
-    $unprocessedCountQuery->andWhere('sts.processed = :processedStatus');
-    $unprocessedCountQuery->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
-    $unprocessedCount = intval($unprocessedCountQuery->getQuery()->getSingleScalarResult());
-
     return [
-      [
-        'name' => 'all',
-        'label' => __('All', 'mailpoet'),
-        'count' => $totalCount,
-      ],
       [
         'name' => ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
         'label' => __('Sent', 'mailpoet'),
@@ -57,11 +40,6 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
         'name' => ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
         'label' => __('Failed', 'mailpoet'),
         'count' => $failedCount,
-      ],
-      [
-        'name' => ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
-        'label' => __('Unprocessed', 'mailpoet'),
-        'count' => $unprocessedCount,
       ],
     ];
   }
@@ -84,9 +62,6 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     } elseif ($group === ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED) {
       $queryBuilder->andWhere('sts.failed = :failedStatus');
       $queryBuilder->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
-    } elseif ($group === ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED) {
-      $queryBuilder->andWhere('sts.processed = :processedStatus');
-      $queryBuilder->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
     }
   }
 

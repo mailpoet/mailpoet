@@ -7,8 +7,8 @@ use MailPoet\Test\DataFactories\Subscriber;
 
 class SendingStatusCest {
   public function newsletterSendingStatus(\AcceptanceTester $i) {
-    $i->wantTo('Check the sending status page for a standard newsletter');
-    // Having a standard newsletter sent to 2 subscribers
+    $i->wantTo('Switch between the sending status tabs for a standard newsletter');
+    // Having a standard newsletter sent to 2 subscribers (one sent, one failed)
     $luckySubscriber = (new Subscriber)
       ->withFirstName('Lucky')
       ->withLastName('Luke')
@@ -37,10 +37,20 @@ class SendingStatusCest {
     // I click on the "Sent to 2 of 2" link
     $i->click('[data-automation-id="sending_status_' . $newsletter->getId() . '"]');
     $i->waitForText('Sending status');
-    // I see the subscribers with related statuses
     $taskId = $newsletter->getLatestQueue()->getTask()->getId();
+
+    // The Sent tab (default) lists only the successfully sent recipient
     $this->checkSubscriber($i, $taskId, $luckySubscriber, 'Sent');
+    $i->dontSee($unluckySubscriber->getEmail());
+
+    // The Failed tab lists only the failed recipient with its error
+    $i->click('[data-automation-id="filters_failed"]');
     $this->checkSubscriber($i, $taskId, $unluckySubscriber, 'Failed', 'Oh no!');
+    $i->dontSee($luckySubscriber->getEmail());
+
+    // The Unprocessed tab is empty for a completed send
+    $i->click('[data-automation-id="filters_unprocessed"]');
+    $i->waitForText('No recipients are waiting to be sent.');
   }
 
   private function checkSubscriber(\AcceptanceTester $i, $taskId, $subscriber, $status, $error = false) {
