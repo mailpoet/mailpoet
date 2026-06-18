@@ -436,8 +436,7 @@ class SendingQueue {
       return;
     }
 
-    $useTemplatedBatch = $processingMethod === 'bulk'
-      && (bool)$this->wp->applyFilters('mailpoet_mss_use_templated_batch', false);
+    $useTemplatedBatch = $processingMethod === 'bulk';
     $templateBatch = null;
     $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
