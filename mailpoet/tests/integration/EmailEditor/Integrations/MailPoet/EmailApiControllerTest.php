@@ -43,59 +43,68 @@ class EmailApiControllerTest extends \MailPoetTest {
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
     verify($emailData['subject'])->equals('New subject');
     verify($emailData['preheader'])->equals('New preheader');
+    verify($emailData['type'])->equals(NewsletterEntity::TYPE_STANDARD);
     verify($emailData['id'])->equals($newsletter->getId());
   }
 
-  public function testItUsesNewsletterSenderWhenAddressIsSet(): void {
+  public function testItUsesNewsletterSenderAndReplyToWhenAddressesAreSet(): void {
     $wpPostId = 20;
     (new NewsletterFactory())
       ->withSenderName('Jane Doe')
       ->withSenderAddress('jane@example.com')
+      ->withReplyToName('Reply Jane')
+      ->withReplyToAddress('reply-jane@example.com')
       ->withWpPostId($wpPostId)
       ->create();
 
     $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+    $this->settings->set('reply_to', ['name' => 'Default Reply', 'address' => 'default-reply@example.com']);
 
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
     verify($emailData['sender_name'])->equals('Jane Doe');
     verify($emailData['sender_address'])->equals('jane@example.com');
+    verify($emailData['reply_to_name'])->equals('Reply Jane');
+    verify($emailData['reply_to_address'])->equals('reply-jane@example.com');
   }
 
-  public function testItFallsBackToDefaultSenderWhenNewsletterAddressIsMissing(): void {
+  public function testItFallsBackToDefaultSenderAndReplyToWhenNewsletterAddressesAreMissing(): void {
     $wpPostId = 21;
     (new NewsletterFactory())
       ->withSenderName('')
       ->withSenderAddress('')
+      ->withReplyToName('')
+      ->withReplyToAddress('')
       ->withWpPostId($wpPostId)
       ->create();
 
     $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+    $this->settings->set('reply_to', ['name' => 'Default Reply', 'address' => 'default-reply@example.com']);
 
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
     verify($emailData['sender_name'])->equals('Default Name');
     verify($emailData['sender_address'])->equals('default@example.com');
+    verify($emailData['reply_to_name'])->equals('Default Reply');
+    verify($emailData['reply_to_address'])->equals('default-reply@example.com');
   }
 
-  public function testItKeepsNewsletterSenderNameEmptyWhenOnlyAddressIsSet(): void {
+  public function testItKeepsNewsletterSenderAndReplyToNamesEmptyWhenOnlyAddressesAreSet(): void {
     $wpPostId = 22;
     (new NewsletterFactory())
       ->withSenderName('')
       ->withSenderAddress('jane@example.com')
+      ->withReplyToName('')
+      ->withReplyToAddress('reply-jane@example.com')
       ->withWpPostId($wpPostId)
       ->create();
 
     $this->settings->set('sender', ['name' => 'Default Name', 'address' => 'default@example.com']);
+    $this->settings->set('reply_to', ['name' => 'Default Reply', 'address' => 'default-reply@example.com']);
 
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
     verify($emailData['sender_name'])->equals('');
     verify($emailData['sender_address'])->equals('jane@example.com');
-  }
-
-  public function testEmailDataSchemaIncludesSenderStrings(): void {
-    $schema = $this->emailApiController->getEmailDataSchema();
-
-    verify($schema['properties']['sender_name']['type'])->equals('string');
-    verify($schema['properties']['sender_address']['type'])->equals('string');
+    verify($emailData['reply_to_name'])->equals('');
+    verify($emailData['reply_to_address'])->equals('reply-jane@example.com');
   }
 
   public function testItGetsSharingEmailData(): void {
@@ -147,6 +156,10 @@ class EmailApiControllerTest extends \MailPoetTest {
       'id' => $newsletter->getId(),
       'subject' => 'New subject',
       'preheader' => 'New preheader',
+      'sender_name' => 'New sender',
+      'sender_address' => 'sender@example.com',
+      'reply_to_name' => 'New reply',
+      'reply_to_address' => 'reply@example.com',
       'theme' => ['styles' => ['spacing' => ['padding' => ['bottom' => '10px', 'left' => '10px', 'right' => '10px', 'top' => '10px']]]],
     ], new \WP_Post((object)['ID' => $wpPostId]));
 
@@ -155,6 +168,64 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($newsletter->getSubject())->equals('New subject');
     verify($newsletter->getPreheader())->equals('New preheader');
+    verify($newsletter->getSenderName())->equals('New sender');
+    verify($newsletter->getSenderAddress())->equals('sender@example.com');
+    verify($newsletter->getReplyToName())->equals('New reply');
+    verify($newsletter->getReplyToAddress())->equals('reply@example.com');
+  }
+
+  public function testItAllowsSavingEmptySenderName(): void {
+    $wpPostId = 23;
+    $newsletter = (new NewsletterFactory())
+      ->withSenderName('Existing sender')
+      ->withSenderAddress('existing@example.com')
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test subject',
+      'preheader' => 'Test preheader',
+      'sender_name' => '',
+      'sender_address' => 'sender@example.com',
+      'reply_to_name' => '',
+      'reply_to_address' => '',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getSenderName())->equals('');
+    verify($newsletter->getSenderAddress())->equals('sender@example.com');
+    verify($newsletter->getReplyToName())->equals('');
+    verify($newsletter->getReplyToAddress())->equals('');
+  }
+
+  public function testItAllowsSavingInvalidSenderAndReplyToAddresses(): void {
+    $wpPostId = 24;
+    $newsletter = (new NewsletterFactory())
+      ->withSenderName('Existing sender')
+      ->withSenderAddress('existing@example.com')
+      ->withReplyToName('Existing reply')
+      ->withReplyToAddress('reply@example.com')
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test subject',
+      'preheader' => 'Test preheader',
+      'sender_name' => 'Sender',
+      'sender_address' => 'not an email address',
+      'reply_to_name' => 'Reply',
+      'reply_to_address' => 'also not an email address',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getSenderAddress())->equals('not an email address');
+    verify($newsletter->getReplyToAddress())->equals('also not an email address');
   }
 
   public function testItThrowsErrorWhenNewsletterDoesNotExist(): void {
@@ -419,6 +490,15 @@ class EmailApiControllerTest extends \MailPoetTest {
     $schema = $this->emailApiController->getEmailDataSchema();
 
     verify($schema['properties']['show_in_archive']['type'])->equals('boolean');
+  }
+
+  public function testEmailDataSchemaIncludesSenderAndReplyToFields(): void {
+    $schema = $this->emailApiController->getEmailDataSchema();
+
+    verify($schema['properties']['sender_name']['type'])->equals('string');
+    verify($schema['properties']['sender_address']['type'])->equals('string');
+    verify($schema['properties']['reply_to_name']['type'])->equals('string');
+    verify($schema['properties']['reply_to_address']['type'])->equals('string');
   }
 
   public function testItUpdatesSegmentIds(): void {

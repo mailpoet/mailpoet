@@ -205,6 +205,12 @@
   }
 }
 
+.mailpoet-send-panel__content {
+  > .components-panel__body:first-child {
+    border-top: 0;
+  }
+}
+
 .mailpoet-send-panel__header {
   align-items: center;
   background: #fff;
@@ -227,6 +233,41 @@
 
 .mailpoet-send-panel__notice {
   margin: 0 16px 16px;
+}
+
+.mailpoet-send-panel__field-error {
+  input {
+    border-color: $alert-red;
+  }
+
+  .components-base-control__help {
+    color: $alert-red;
+  }
+}
+
+.mailpoet-send-panel__sender-address-field {
+  .components-base-control {
+    margin-bottom: 0;
+  }
+}
+
+.mailpoet-send-panel__sender-warning {
+  margin-top: $grid-unit-10;
+
+  p {
+    color: $alert-red;
+    font-size: $font-size-small;
+    line-height: 1.4;
+    text-align: left;
+
+    a {
+      color: $alert-red;
+    }
+  }
+
+  .mailpoet-inline-notice {
+    margin: 0;
+  }
 }
 
 @keyframes mailpoet-send-panel__slide-in {

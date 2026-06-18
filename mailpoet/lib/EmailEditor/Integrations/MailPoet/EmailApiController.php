@@ -75,12 +75,16 @@ class EmailApiController {
       ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE) !== '1'
       : true;
     $sender = $this->resolveSender($newsletter);
+    $replyTo = $this->resolveReplyTo($newsletter);
     return [
       'id' => $newsletter ? $newsletter->getId() : null,
+      'type' => $newsletter ? $newsletter->getType() : '',
       'subject' => $newsletter ? $newsletter->getSubject() : '',
       'preheader' => $newsletter ? $newsletter->getPreheader() : '',
       'sender_name' => $sender['name'],
       'sender_address' => $sender['address'],
+      'reply_to_name' => $replyTo['name'],
+      'reply_to_address' => $replyTo['address'],
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
       'deleted_at' => $newsletter && $newsletter->getDeletedAt() !== null ? $newsletter->getDeletedAt()->format('c') : null,
       'scheduled_at' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT) : null,
@@ -123,6 +127,23 @@ class EmailApiController {
   }
 
   /**
+   * @return array{name: string, address: string}
+   */
+  private function resolveReplyTo(?NewsletterEntity $newsletter): array {
+    if ($newsletter && $newsletter->getReplyToAddress()) {
+      return [
+        'name' => (string)$newsletter->getReplyToName(),
+        'address' => (string)$newsletter->getReplyToAddress(),
+      ];
+    }
+    $defaultReplyTo = $this->settings->get('reply_to', []);
+    return [
+      'name' => (string)($defaultReplyTo['name'] ?? ''),
+      'address' => (string)($defaultReplyTo['address'] ?? ''),
+    ];
+  }
+
+  /**
    * Update MailPoet specific data we store with Emails.
    */
   public function saveEmailData(array $data, \WP_Post $emailPost): void {
@@ -136,6 +157,22 @@ class EmailApiController {
 
     $newsletter->setSubject($data['subject']);
     $newsletter->setPreheader($data['preheader']);
+
+    if (array_key_exists('sender_name', $data)) {
+      $newsletter->setSenderName($data['sender_name']);
+    }
+
+    if (array_key_exists('sender_address', $data)) {
+      $newsletter->setSenderAddress($data['sender_address']);
+    }
+
+    if (array_key_exists('reply_to_name', $data)) {
+      $newsletter->setReplyToName($data['reply_to_name']);
+    }
+
+    if (array_key_exists('reply_to_address', $data)) {
+      $newsletter->setReplyToAddress($data['reply_to_address']);
+    }
 
     if (isset($data['utm_campaign'])) {
       $newsletter->setGaCampaign($data['utm_campaign']);
@@ -286,10 +323,13 @@ class EmailApiController {
   public function getEmailDataSchema(): array {
     return Builder::object([
       'id' => Builder::integer()->nullable(),
+      'type' => Builder::string(),
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
       'sender_name' => Builder::string(),
       'sender_address' => Builder::string(),
+      'reply_to_name' => Builder::string(),
+      'reply_to_address' => Builder::string(),
       'preview_url' => Builder::string(),
       'deleted_at' => Builder::string()->nullable(),
       'scheduled_at' => Builder::string()->nullable(),
