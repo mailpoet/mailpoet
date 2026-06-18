@@ -115,6 +115,7 @@ class AddSendingKeyCest {
 
   public function resumeSendingWhenKeyApproved(\AcceptanceTester $i, Scenario $scenario) {
     $i->wantTo('Resume sending when key approved on MSS activation');
+    $scenario->skip('Temporarily skipped until the MSS batch endpoint is available for templated batch sending. STOMAIL-8195');
 
     $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
     if (!$mailPoetSendingKey) {
