@@ -3,6 +3,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { Field } from '@wordpress/dataviews';
 import { MailPoetDate } from '../date';
 import type { LogListingItem } from './api';
+import {
+  getLogFilterOptions,
+  getLogSeverityElements,
+  getLogSeverityLabel,
+  type LogFilterOptions,
+} from './filters';
 
 export function formatCreatedAt(createdAt: string | null): string {
   return createdAt ? MailPoetDate.full(createdAt) : '—';
@@ -52,20 +58,39 @@ function LogExpansionButton({
 export function getLogFields(
   expandedLogIds: Set<number>,
   onToggleExpanded: (logId: number) => void,
+  options: LogFilterOptions = getLogFilterOptions(),
 ): Field<LogListingItem>[] {
   return [
     {
       id: 'name',
       label: __('Name', 'mailpoet'),
       type: 'text',
-      enableSorting: false,
+      enableSorting: true,
       enableGlobalSearch: false,
-      filterBy: false,
+      elements: options.names.map((name) => ({ value: name, label: name })),
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) =>
         createElement(
           'span',
           { className: 'mailpoet-logs-min-width' },
           item.name,
+        ),
+    },
+    {
+      // Rendered as a textual severity label, so use the text type to keep the
+      // column left-aligned; the integer type would right-align header + cells.
+      id: 'level',
+      label: __('Severity', 'mailpoet'),
+      type: 'text',
+      enableSorting: false,
+      enableGlobalSearch: false,
+      elements: getLogSeverityElements(),
+      filterBy: { operators: ['isAny'] },
+      render: ({ item }) =>
+        createElement(
+          'span',
+          null,
+          item.level === null ? '—' : getLogSeverityLabel(item.level),
         ),
     },
     {
@@ -105,10 +130,10 @@ export function getLogFields(
     {
       id: 'created_at',
       label: __('Created On', 'mailpoet'),
-      type: 'datetime',
-      enableSorting: false,
+      type: 'date',
+      enableSorting: true,
       enableGlobalSearch: false,
-      filterBy: false,
+      filterBy: { operators: ['on', 'before', 'after', 'between'] },
       render: ({ item }) =>
         createElement(
           'span',
@@ -124,6 +149,8 @@ const NOOP_TOGGLE = (): void => undefined;
 
 // Stable field definitions for callers that only need the field schema (e.g.
 // DataViews preference validation), without per-row expand/collapse state.
-export function getLogFieldDefinitions(): Field<LogListingItem>[] {
-  return getLogFields(EMPTY_EXPANDED_LOG_IDS, NOOP_TOGGLE);
+export function getLogFieldDefinitions(
+  options: LogFilterOptions = getLogFilterOptions(),
+): Field<LogListingItem>[] {
+  return getLogFields(EMPTY_EXPANDED_LOG_IDS, NOOP_TOGGLE, options);
 }

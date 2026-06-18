@@ -20,7 +20,7 @@ describe('logs URL state', () => {
       page: 1,
       perPage: 20,
       search: undefined,
-      dateFilters: { from: defaultFrom },
+      filters: { from: defaultFrom },
     });
   });
 
@@ -61,9 +61,22 @@ describe('logs URL state', () => {
     );
 
     expect(state.search).to.equal('error');
-    expect(state.dateFilters).to.deep.equal({
+    expect(state.filters).to.deep.equal({
       from: defaultFrom,
       to: '2026-05-18',
+    });
+  });
+
+  it('parses name and level filters from the URL', () => {
+    const state = parseLogsUrlState(
+      'http://example.test/wp-admin/admin.php?page=mailpoet-logs&log_name=cron&log_name=mailer&log_level=300&log_level=400&from=',
+      defaultFrom,
+    );
+
+    expect(state.filters).to.deep.equal({
+      from: defaultFrom,
+      name: ['cron', 'mailer'],
+      level: [300, 400],
     });
   });
 
@@ -89,6 +102,22 @@ describe('logs URL state', () => {
     expect(searchParams.get('per_page')).to.equal('40');
     expect(searchParams.has('offset')).to.equal(false);
     expect(searchParams.has('limit')).to.equal(false);
+  });
+
+  it('serializes name and level filters as repeated query params', () => {
+    const url = buildLogsUrl(
+      'http://example.test/wp-admin/admin.php?page=mailpoet-logs&log_name=stale&log_level=100',
+      {
+        type: 'table',
+        page: 1,
+        perPage: 20,
+      },
+      { name: ['cron', 'mailer'], level: [300, 400] },
+    );
+    const searchParams = new URL(url).searchParams;
+
+    expect(searchParams.getAll('log_name')).to.deep.equal(['cron', 'mailer']);
+    expect(searchParams.getAll('log_level')).to.deep.equal(['300', '400']);
   });
 
   it('validates strict dates and date ranges', () => {
