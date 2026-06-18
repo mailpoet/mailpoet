@@ -61,7 +61,7 @@ export function getLogFields(
       render: ({ item }) => {
         const isExpanded = expandedLogIds.has(item.id);
         return createElement(
-          'div',
+          'pre',
           {
             id: `mailpoet-log-message-${item.id}`,
             className: `mailpoet-logs-message ${
