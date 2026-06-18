@@ -34,9 +34,19 @@ import {
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
-const SUPPORTED_GROUPS = ['all', 'sent', 'failed', 'unprocessed'] as const;
+// One chip per single-table query: Unprocessed reads the queue, Sent/Failed
+// read the processed log. There is no combined "All" tab (it would need a
+// cross-table union, which the queue/log split exists to avoid).
+const SUPPORTED_GROUPS = ['unprocessed', 'sent', 'failed'] as const;
 
-const DEFAULT_SORT = { field: 'failed', direction: 'desc' as const };
+const DEFAULT_GROUP = 'sent';
+
+const DEFAULT_SORT = { field: 'subscriberId', direction: 'asc' as const };
+
+// The queue table is lean (subscriber identity only), so the Unprocessed tab
+// drops the status / failure-reason columns the log-backed tabs show.
+const PROCESSED_FIELDS = ['failed', 'error'];
+const UNPROCESSED_FIELDS: string[] = [];
 
 type Newsletter = {
   id: string;
@@ -153,8 +163,18 @@ export function SendingStatus() {
     () => parseHash(window.location.hash, baseUrl, [...SUPPORTED_GROUPS]),
     [baseUrl],
   );
-  const [group, setGroup] = useState<string>(hashState.group ?? 'all');
+  const [group, setGroup] = useState<string>(hashState.group ?? DEFAULT_GROUP);
   const fields = useMemo(() => buildFields(), []);
+  const isUnprocessed = group === 'unprocessed';
+  // The queue tab has no status/error columns to render or to toggle in the
+  // view config, so hide those field definitions entirely on that tab.
+  const visibleFields = useMemo(
+    () =>
+      isUnprocessed
+        ? fields.filter((field) => field.id === 'subscriberId')
+        : fields,
+    [fields, isUnprocessed],
+  );
 
   const getPreferredView = useCallback(
     () =>
@@ -165,7 +185,7 @@ export function SendingStatus() {
           perPage: listingPerPage,
           page: 1,
           sort: DEFAULT_SORT,
-          fields: ['failed', 'error'],
+          fields: PROCESSED_FIELDS,
           titleField: 'subscriberId',
           showTitle: true,
         },
@@ -258,7 +278,7 @@ export function SendingStatus() {
       const next = parseHash(window.location.hash, baseUrl, [
         ...SUPPORTED_GROUPS,
       ]);
-      setGroup(next.group ?? 'all');
+      setGroup(next.group ?? DEFAULT_GROUP);
       clearError();
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
@@ -282,6 +302,19 @@ export function SendingStatus() {
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
   }, [baseUrl, clearError, getPreferredView, setView]);
+
+  // Keep the visible columns in sync with the active tab: the queue tab shows
+  // only the subscriber, the log tabs add status + failure reason.
+  useEffect(() => {
+    const nextFields = isUnprocessed ? UNPROCESSED_FIELDS : PROCESSED_FIELDS;
+    setView((currentView) => {
+      const currentFields = currentView.fields ?? [];
+      const unchanged =
+        currentFields.length === nextFields.length &&
+        currentFields.every((field, index) => field === nextFields[index]);
+      return unchanged ? currentView : { ...currentView, fields: nextFields };
+    });
+  }, [isUnprocessed, setView]);
 
   // Auto-refresh on the WP heartbeat tick.
   useEffect(() => {
@@ -350,13 +383,14 @@ export function SendingStatus() {
     [meta],
   );
 
-  // The legacy page showed this notice once the per-subscriber records had
-  // been cleaned up: the email is sent, yet the unfiltered listing is empty.
+  // Show this notice once the per-subscriber log records have been cleaned up
+  // by retention: the email is sent, yet the Sent tab is empty. (Failed/
+  // Unprocessed being empty is normal, so the notice keys off Sent only.)
   const showRetentionNotice =
     newsletter.sent &&
     !isLoading &&
     !loadError &&
-    group === 'all' &&
+    group === 'sent' &&
     !view.search &&
     meta.count === 0;
 
@@ -432,7 +466,7 @@ export function SendingStatus() {
       >
         <DataViews<SendingStatusItem>
           data={items}
-          fields={fields}
+          fields={visibleFields}
           view={view}
           onChangeView={persistedViewChange}
           actions={actions}
@@ -440,7 +474,13 @@ export function SendingStatus() {
           defaultLayouts={{ table: {} }}
           getItemId={(item) => `${item.taskId}-${item.subscriberId}`}
           isLoading={isLoading}
-          empty={<p>{__('No sending task found.', 'mailpoet')}</p>}
+          empty={
+            <p>
+              {isUnprocessed
+                ? __('No recipients are waiting to be sent.', 'mailpoet')
+                : __('No sending task found.', 'mailpoet')}
+            </p>
+          }
         >
           <div className="mailpoet-dataviews__toolbar">
             <DataViews.Search label={__('Search', 'mailpoet')} />
