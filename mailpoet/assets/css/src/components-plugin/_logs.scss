@@ -15,17 +15,6 @@
   width: 1px;
 }
 
-.mailpoet-logs {
-  .mailpoet-datepicker {
-    margin-left: $grid-gap;
-    margin-right: $grid-gap;
-  }
-
-  .mailpoet-form-input-small {
-    margin-right: $grid-gap;
-  }
-}
-
 .mailpoet-logs-dataviews {
   .dataviews-view-table {
     max-width: 100%;
@@ -34,7 +23,9 @@
   }
 
   // DataViews table column sizing is exposed through generated column classes;
-  // keep these selectors aligned with getLogFields() when columns change.
+  // keep these selectors aligned with getLogFields() when columns change. Every
+  // optional column needs an explicit width — under table-layout: fixed an
+  // unlisted column collapses to zero width when toggled on.
   .dataviews-view-table col.dataviews-view-table__col-first-data {
     width: 240px !important;
   }
@@ -45,6 +36,11 @@
   }
 
   .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-level {
+    width: 140px !important;
+  }
+
+  .dataviews-view-table
     col[class^='dataviews-view-table__col-'].dataviews-view-table__col-action {
     width: 120px !important;
   }
@@ -52,18 +48,6 @@
   .dataviews-view-table
     col[class^='dataviews-view-table__col-'].dataviews-view-table__col-created_at {
     width: 180px !important;
-  }
-
-  .dataviews-view-table tr > :nth-child(1) {
-    width: 240px;
-  }
-
-  .dataviews-view-table tr > :nth-child(3) {
-    width: 120px;
-  }
-
-  .dataviews-view-table tr > :nth-child(4) {
-    width: 180px;
   }
 
   .dataviews-view-table td,
@@ -93,27 +77,11 @@
     margin-bottom: $grid-gap;
   }
 
-  .mailpoet-logs-date-filters,
   .mailpoet-logs-error {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     gap: $grid-gap-half;
-  }
-
-  .mailpoet-logs-date-filter {
-    align-items: center;
-    display: flex;
-    gap: $grid-gap-half;
-  }
-
-  .mailpoet-datepicker {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .react-datepicker-popper {
-    z-index: 20;
   }
 
   .mailpoet-logs-date-error {

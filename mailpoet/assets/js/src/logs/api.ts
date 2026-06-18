@@ -5,7 +5,7 @@ import type {
   ListingQueryParams,
   ListingResponse,
 } from 'common/dataviews';
-import type { DateFilters } from './url-state';
+import type { LogsFilter } from './url-state';
 
 declare global {
   interface Window {
@@ -28,19 +28,20 @@ function ensureInitialized(): void {
 export type LogListingItem = {
   id: number;
   name: string;
+  level: number | null;
   message: string;
   created_at: string | null;
 };
 
 export function buildLogsRequestParams(
   params: ListingQueryParams,
-  dateFilters: DateFilters,
+  filters: LogsFilter,
 ): ListingQueryParams {
   const search = params.search?.trim();
   return {
     ...params,
     search: search || undefined,
-    filter: dateFilters,
+    filter: filters,
   };
 }
 

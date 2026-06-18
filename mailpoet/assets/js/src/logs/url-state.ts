@@ -5,16 +5,18 @@ export const DEFAULT_PAGE = 1;
 export const DEFAULT_PER_PAGE = 20;
 export const MAX_PER_PAGE = 100;
 
-export type DateFilters = {
+export type LogsFilter = {
   from?: string;
   to?: string;
+  name?: string[];
+  level?: number[];
 };
 
 export type LogsUrlState = {
   page: number;
   perPage: number;
   search?: string;
-  dateFilters: DateFilters;
+  filters: LogsFilter;
 };
 
 function parsePositiveInt(value: string | null): number | undefined {
@@ -112,22 +114,50 @@ function getSearch(searchParams: URLSearchParams): string | undefined {
   return search || undefined;
 }
 
-function getDateFilters(
+function getNameFilter(searchParams: URLSearchParams): string[] | undefined {
+  const names = searchParams
+    .getAll('log_name')
+    .map((value) => value.trim())
+    .filter((value) => value !== '');
+
+  return names.length > 0 ? names : undefined;
+}
+
+function getLevelFilter(searchParams: URLSearchParams): number[] | undefined {
+  const levels = searchParams
+    .getAll('log_level')
+    .map((value) => Number(value))
+    .filter((value) => Number.isInteger(value));
+
+  return levels.length > 0 ? levels : undefined;
+}
+
+function getFilters(
   searchParams: URLSearchParams,
   defaultFrom: string,
-): DateFilters {
+): LogsFilter {
   const from = searchParams.get('from');
   const to = searchParams.get('to');
-  const filters: DateFilters = {};
+  const filters: LogsFilter = {};
 
   if (isStrictDateString(from)) {
-    filters.from = from;
+    filters.from = from ?? undefined;
   } else if (isStrictDateString(defaultFrom)) {
     filters.from = defaultFrom;
   }
 
   if (isStrictDateString(to)) {
-    filters.to = to;
+    filters.to = to ?? undefined;
+  }
+
+  const names = getNameFilter(searchParams);
+  if (names) {
+    filters.name = names;
+  }
+
+  const levels = getLevelFilter(searchParams);
+  if (levels) {
+    filters.level = levels;
   }
 
   return filters;
@@ -167,14 +197,14 @@ export function parseLogsUrlState(
     page: getPage(searchParams, perPage),
     perPage,
     search: getSearch(searchParams),
-    dateFilters: getDateFilters(searchParams, defaultFrom),
+    filters: getFilters(searchParams, defaultFrom),
   };
 }
 
 export function buildLogsUrl(
   currentUrl: string,
   view: View,
-  dateFilters: DateFilters,
+  filters: LogsFilter,
 ): string {
   const url = new URL(currentUrl);
   const search = view.search?.trim();
@@ -185,16 +215,24 @@ export function buildLogsUrl(
   url.searchParams.delete('search');
   url.searchParams.delete('from');
   url.searchParams.delete('to');
+  url.searchParams.delete('log_name');
+  url.searchParams.delete('log_level');
 
   if (search) {
     url.searchParams.set('search', search);
   }
-  if (dateFilters.from) {
-    url.searchParams.set('from', dateFilters.from);
+  if (filters.from) {
+    url.searchParams.set('from', filters.from);
   }
-  if (dateFilters.to) {
-    url.searchParams.set('to', dateFilters.to);
+  if (filters.to) {
+    url.searchParams.set('to', filters.to);
   }
+  (filters.name ?? []).forEach((name) => {
+    url.searchParams.append('log_name', name);
+  });
+  (filters.level ?? []).forEach((level) => {
+    url.searchParams.append('log_level', String(level));
+  });
 
   url.searchParams.set('logs_page', String(view.page ?? DEFAULT_PAGE));
   url.searchParams.set(
@@ -205,7 +243,7 @@ export function buildLogsUrl(
   return url.href;
 }
 
-export function getDateRangeError(dateFilters: DateFilters): string | null {
+export function getDateRangeError(dateFilters: LogsFilter): string | null {
   // Keep in sync with LogsListingEndpoint::validateFilters; the browser blocks
   // invalid ranges, while REST validates direct requests.
   if (dateFilters.from && dateFilters.to && dateFilters.from > dateFilters.to) {

@@ -10,16 +10,18 @@ import {
   useDataViewsQuery,
   type ListingQueryParams,
 } from 'common/dataviews';
-import { Datepicker } from '../common/datepicker/datepicker';
-import { buildLogsRequestParams, getLogs, type LogListingItem } from './api';
+import { getLogs, type LogListingItem } from './api';
 import { getLogFieldDefinitions, getLogFields } from './fields';
 import {
+  getLogFilterOptions,
+  requestFilterToViewFilters,
+  viewFiltersToRequestFilter,
+} from './filters';
+import {
   buildLogsUrl,
-  dateFromString,
-  formatDateAsYmd,
   getDateRangeError,
   parseLogsUrlState,
-  type DateFilters,
+  type LogsFilter,
 } from './url-state';
 
 const DEFAULT_VIEW: View = {
@@ -36,10 +38,7 @@ type Props = {
   defaultFrom: string;
 };
 
-function buildInitialView(defaultFrom: string): {
-  view: View;
-  dateFilters: DateFilters;
-} {
+function buildInitialView(defaultFrom: string): View {
   const currentUrl = window.location.href;
   const state = parseLogsUrlState(currentUrl, defaultFrom);
   const searchParams = new URL(currentUrl).searchParams;
@@ -52,27 +51,22 @@ function buildInitialView(defaultFrom: string): {
   );
 
   return {
-    view: {
-      ...preferredView,
-      page: state.page,
-      perPage: hasPerPageUrlState ? state.perPage : preferredView.perPage,
-      search: state.search,
-    },
-    dateFilters: state.dateFilters,
+    ...preferredView,
+    page: state.page,
+    perPage: hasPerPageUrlState ? state.perPage : preferredView.perPage,
+    search: state.search,
+    filters: requestFilterToViewFilters(state.filters),
   };
 }
 
+function filtersKey(view: View): string {
+  return JSON.stringify(view.filters ?? []);
+}
+
 export function List({ defaultFrom }: Props): JSX.Element {
-  const dateRangeErrorId = 'mailpoet-logs-date-error';
-  const initialState = useMemo(
+  const initialView = useMemo(
     () => buildInitialView(defaultFrom),
     [defaultFrom],
-  );
-  const [dateFilters, setDateFilters] = useState<DateFilters>(
-    initialState.dateFilters,
-  );
-  const [pendingDateFilters, setPendingDateFilters] = useState<DateFilters>(
-    initialState.dateFilters,
   );
   const [expandedLogIds, setExpandedLogIds] = useState<Set<number>>(
     () => new Set(),
@@ -81,17 +75,17 @@ export function List({ defaultFrom }: Props): JSX.Element {
 
   const load = useCallback(
     (params: ListingQueryParams, signal?: AbortSignal) => {
-      if (getDateRangeError(dateFilters)) {
-        // Invalid bookmarked ranges are rendered as validation errors instead
-        // of being sent to REST.
-        return Promise.resolve({
-          items: [],
-          meta: { count: 0, pages: 0 },
-        });
+      if (getDateRangeError((params.filter as LogsFilter) ?? {})) {
+        // Invalid bookmarked ranges are surfaced as a validation message
+        // instead of being sent to REST (which would 400).
+        return Promise.resolve({ items: [], meta: { count: 0, pages: 0 } });
       }
-      return getLogs(buildLogsRequestParams(params, dateFilters), signal);
+      return getLogs(
+        { ...params, search: params.search?.trim() || undefined },
+        signal,
+      );
     },
-    [dateFilters],
+    [],
   );
 
   const {
@@ -104,11 +98,16 @@ export function List({ defaultFrom }: Props): JSX.Element {
     clearError: clearLoadError,
     refresh,
   } = useDataViewsQuery<LogListingItem>({
-    initialView: initialState.view,
+    initialView,
     load,
+    extraParams: (currentView) => ({
+      filter: viewFiltersToRequestFilter(currentView.filters),
+    }),
   });
 
-  const dateRangeError = getDateRangeError(pendingDateFilters);
+  const dateRangeError = getDateRangeError(
+    viewFiltersToRequestFilter(view.filters),
+  );
   const emptyState =
     loadError || dateRangeError ? null : (
       <div>{__('No logs found.', 'mailpoet')}</div>
@@ -118,10 +117,12 @@ export function List({ defaultFrom }: Props): JSX.Element {
     (nextView: View) => {
       const searchChanged = (nextView.search ?? '') !== (view.search ?? '');
       const perPageChanged = nextView.perPage !== view.perPage;
+      const filtersChanged = filtersKey(nextView) !== filtersKey(view);
 
       setView({
         ...nextView,
-        page: searchChanged || perPageChanged ? 1 : nextView.page,
+        page:
+          searchChanged || perPageChanged || filtersChanged ? 1 : nextView.page,
       });
     },
     [setView, view],
@@ -138,13 +139,18 @@ export function List({ defaultFrom }: Props): JSX.Element {
       return;
     }
 
-    const nextUrl = buildLogsUrl(window.location.href, view, dateFilters);
+    const nextUrl = buildLogsUrl(
+      window.location.href,
+      view,
+      viewFiltersToRequestFilter(view.filters),
+    );
     window.history.replaceState({}, '', nextUrl);
-  }, [dateFilters, view]);
+  }, [view]);
 
+  const viewFiltersKey = filtersKey(view);
   useEffect(() => {
     setExpandedLogIds((current) => (current.size > 0 ? new Set() : current));
-  }, [dateFilters, view.page, view.perPage, view.search]);
+  }, [viewFiltersKey, view.page, view.perPage, view.search]);
 
   const toggleExpanded = useCallback((logId: number): void => {
     setExpandedLogIds((current) => {
@@ -159,7 +165,7 @@ export function List({ defaultFrom }: Props): JSX.Element {
   }, []);
 
   const fields = useMemo(
-    () => getLogFields(expandedLogIds, toggleExpanded),
+    () => getLogFields(expandedLogIds, toggleExpanded, getLogFilterOptions()),
     [expandedLogIds, toggleExpanded],
   );
 
@@ -168,28 +174,13 @@ export function List({ defaultFrom }: Props): JSX.Element {
     [meta],
   );
 
-  const applyDateFilters = useCallback((): void => {
-    if (dateRangeError) {
-      return;
-    }
-    setDateFilters(pendingDateFilters);
-    setView((currentView) => ({ ...currentView, page: 1 }));
-  }, [dateRangeError, pendingDateFilters, setView]);
-
-  const clearDateFilters = useCallback((): void => {
-    const emptyFilters: DateFilters = {};
-    setPendingDateFilters(emptyFilters);
-    setDateFilters(emptyFilters);
-    setView((currentView) => ({ ...currentView, page: 1 }));
-  }, [setView]);
-
   const retryLoading = useCallback((): void => {
     clearLoadError();
     refresh();
   }, [clearLoadError, refresh]);
 
   return (
-    <div className="mailpoet-listing mailpoet-logs mailpoet-logs-dataviews">
+    <div className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews">
       {loadError && (
         <Notice status="error" isDismissible={false}>
           <div className="mailpoet-logs-error">
@@ -202,6 +193,14 @@ export function List({ defaultFrom }: Props): JSX.Element {
             >
               {__('Retry', 'mailpoet')}
             </Button>
+          </div>
+        </Notice>
+      )}
+
+      {dateRangeError && (
+        <Notice status="error" isDismissible={false}>
+          <div className="mailpoet-logs-date-error" role="alert">
+            {dateRangeError}
           </div>
         </Notice>
       )}
@@ -219,84 +218,12 @@ export function List({ defaultFrom }: Props): JSX.Element {
       >
         <div className="mailpoet-logs-dataviews__toolbar">
           <DataViews.Search label={__('Search logs', 'mailpoet')} />
-          <div className="mailpoet-logs-date-filters">
-            <label
-              className="mailpoet-logs-date-filter"
-              htmlFor="mailpoet-logs-from"
-            >
-              <span>{__('From', 'mailpoet')}</span>
-              <Datepicker
-                id="mailpoet-logs-from"
-                dateFormat="MMMM d, yyyy"
-                onChange={(date: Date | null): void =>
-                  setPendingDateFilters((current) => ({
-                    ...current,
-                    from: formatDateAsYmd(date),
-                  }))
-                }
-                maxDate={new Date()}
-                selected={dateFromString(pendingDateFilters.from)}
-                dimension="small"
-                disabled={isLoading}
-                isClearable
-                aria-label={__('Filter logs from date', 'mailpoet')}
-                aria-invalid={Boolean(dateRangeError) || undefined}
-                aria-describedby={dateRangeError ? dateRangeErrorId : undefined}
-              />
-            </label>
-            <label
-              className="mailpoet-logs-date-filter"
-              htmlFor="mailpoet-logs-to"
-            >
-              <span>{__('To', 'mailpoet')}</span>
-              <Datepicker
-                id="mailpoet-logs-to"
-                dateFormat="MMMM d, yyyy"
-                onChange={(date: Date | null): void =>
-                  setPendingDateFilters((current) => ({
-                    ...current,
-                    to: formatDateAsYmd(date),
-                  }))
-                }
-                maxDate={new Date()}
-                selected={dateFromString(pendingDateFilters.to)}
-                dimension="small"
-                disabled={isLoading}
-                isClearable
-                aria-label={__('Filter logs to date', 'mailpoet')}
-                aria-invalid={Boolean(dateRangeError) || undefined}
-                aria-describedby={dateRangeError ? dateRangeErrorId : undefined}
-              />
-            </label>
-            <Button
-              dimension="small"
-              onClick={applyDateFilters}
-              isDisabled={isLoading || Boolean(dateRangeError)}
-            >
-              {__('Apply', 'mailpoet')}
-            </Button>
-            <Button
-              dimension="small"
-              variant="secondary"
-              onClick={clearDateFilters}
-              isDisabled={isLoading}
-            >
-              {__('Clear', 'mailpoet')}
-            </Button>
-          </div>
+          <DataViews.FiltersToggle />
           <div className="mailpoet-dataviews__toolbar-end">
             <DataViews.ViewConfig />
           </div>
-          {dateRangeError && (
-            <div
-              className="mailpoet-logs-date-error"
-              id={dateRangeErrorId}
-              role="alert"
-            >
-              {dateRangeError}
-            </div>
-          )}
         </div>
+        <DataViews.Filters />
         <DataViews.Layout />
         <DataViews.Footer />
       </DataViews>
