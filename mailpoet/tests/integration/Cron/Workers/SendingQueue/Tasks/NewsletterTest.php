@@ -411,6 +411,37 @@ class NewsletterTest extends \MailPoetTest {
     verify($reconstructed)->equals($fullNewsletter);
   }
 
+  public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Literal {{mailpoet_mss_1}} for [subscriber:firstname]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Literal {{mailpoet_mss_1}} for [subscriber:firstname]</p>',
+      'text' => 'Literal {{mailpoet_mss_1}} for [subscriber:firstname]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    $this->assertSame(
+      'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
+      strtr($template['subject'], $substitutions)
+    );
+    $this->assertSame(
+      '<p>Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName() . '</p>',
+      strtr($template['body']['html'], $substitutions)
+    );
+    $this->assertSame(
+      'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
+      strtr($template['body']['text'], $substitutions)
+    );
+  }
+
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
     $newsletterTask = $this->newsletterTask;
     $newsletterTask->trackingEnabled = false;
