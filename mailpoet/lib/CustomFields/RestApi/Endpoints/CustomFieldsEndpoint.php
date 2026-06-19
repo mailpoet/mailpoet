@@ -23,6 +23,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
       'label' => $label,
       'type' => $customField->getType(),
       'params' => $params,
+      'required' => (bool)($params['required'] ?? false),
       'subscribers_count' => 0,
       'forms_count' => 0,
       'dynamic_segments_count' => 0,
@@ -33,7 +34,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
   }
 
   /**
-   * @param array{id: int, name: string, label: string, type: string, params: array, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface, deleted_at: ?\DateTimeInterface} $row
+   * @param array{id: int, name: string, label: string, type: string, params: array, required: bool, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface, deleted_at: ?\DateTimeInterface} $row
    */
   protected function buildItemFromRow(array $row): array {
     return [
@@ -42,6 +43,7 @@ abstract class CustomFieldsEndpoint extends Endpoint {
       'label' => (string)$row['label'],
       'type' => (string)$row['type'],
       'params' => $row['params'],
+      'required' => (bool)$row['required'],
       'subscribers_count' => (int)$row['subscribers_count'],
       'forms_count' => (int)$row['forms_count'],
       'dynamic_segments_count' => (int)$row['dynamic_segments_count'],

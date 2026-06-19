@@ -194,8 +194,14 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
-   * @param array{search?: string, orderby?: string, order?: string, page?: int, per_page?: int, group?: string} $args
-   * @return array{items: array<int, array{id: int, name: string, label: string, type: string, params: array, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface, deleted_at: ?\DateTimeInterface}>, total: int, groups: array<int, array{name: string, label: string, count: int}>}
+   * Listing with subscriber counts + search + type filter + group + sort +
+   * pagination, all done in SQL. `forms_count` and `dynamic_segments_count` are
+   * derived from JSON (form body blocks, segment filter data) and cannot be
+   * expressed in SQL, so they are computed in PHP for the current page only and
+   * are display-only — they are intentionally not filterable or sortable.
+   *
+   * @param array{search?: string, orderby?: string, order?: string, page?: int, per_page?: int, group?: string, filter?: array{type?: string[]}} $args
+   * @return array{items: array<int, array{id: int, name: string, label: string, type: string, params: array, required: bool, subscribers_count: int, forms_count: int, dynamic_segments_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface, deleted_at: ?\DateTimeInterface}>, total: int, groups: array<int, array{name: string, label: string, count: int}>}
    */
   public function listWithCounts(array $args = []): array {
     $search = isset($args['search']) ? trim((string)$args['search']) : '';
@@ -204,6 +210,8 @@ class CustomFieldsRepository extends Repository {
     $page = isset($args['page']) ? max(1, (int)$args['page']) : 1;
     $perPage = isset($args['per_page']) ? max(1, min(100, (int)$args['per_page'])) : 25;
     $group = isset($args['group']) && $args['group'] === 'trash' ? 'trash' : 'all';
+    $filter = isset($args['filter']) && is_array($args['filter']) ? $args['filter'] : [];
+    $types = isset($filter['type']) && is_array($filter['type']) ? array_values(array_filter(array_map('strval', $filter['type']))) : [];
 
     $sortable = [
       'name' => 'cf.name',
@@ -221,6 +229,7 @@ class CustomFieldsRepository extends Repository {
       ->groupBy('cf.id')
       ->orderBy($orderByExpr, $order);
 
+    // Deterministic secondary ordering so paginated results are stable on ties.
     if ($orderby !== 'name') {
       $qb->addOrderBy('cf.name', 'ASC');
     }
@@ -228,25 +237,13 @@ class CustomFieldsRepository extends Repository {
       ->setFirstResult(($page - 1) * $perPage)
       ->setMaxResults($perPage);
 
-    if ($search !== '') {
-      $qb->andWhere('cf.name LIKE :search')
-        ->setParameter('search', '%' . $search . '%');
-    }
-    $this->applyGroup($qb, $group);
+    $this->applyListFilters($qb, $search, $types, $group);
 
     /** @var array<array{id: int, name: string, type: string, params: mixed, created_at: mixed, updated_at: mixed, deleted_at: mixed, subscribersCount: int|string}> $rows */
     $rows = $qb->getQuery()->getArrayResult();
 
-    $countQb = $this->entityManager->createQueryBuilder()
-      ->select('COUNT(cf.id)')
-      ->from(CustomFieldEntity::class, 'cf');
-    if ($search !== '') {
-      $countQb->andWhere('cf.name LIKE :search')
-        ->setParameter('search', '%' . $search . '%');
-    }
-    $this->applyGroup($countQb, $group);
-    $total = (int)$countQb->getQuery()->getSingleScalarResult();
     $groups = $this->getGroups();
+    $total = $this->countWithFilters($search, $types, $group);
 
     $customFieldIds = array_map('intval', array_column($rows, 'id'));
     $formsCounts = $this->getFormCountsByCustomFieldIds($customFieldIds);
@@ -260,12 +257,14 @@ class CustomFieldsRepository extends Repository {
       $createdAt = $row['created_at'] ?? null;
       $updatedAt = $row['updated_at'] ?? null;
       $deletedAt = $row['deleted_at'] ?? null;
+
       $items[] = [
         'id' => $id,
         'name' => (string)$row['name'],
         'label' => $label,
         'type' => (string)$row['type'],
         'params' => $params,
+        'required' => (bool)($params['required'] ?? false),
         'subscribers_count' => (int)$row['subscribersCount'],
         'forms_count' => $formsCounts[$id] ?? 0,
         'dynamic_segments_count' => $dynamicSegmentsCounts[$id] ?? 0,
@@ -276,6 +275,32 @@ class CustomFieldsRepository extends Repository {
     }
 
     return ['items' => $items, 'total' => $total, 'groups' => $groups];
+  }
+
+  /**
+   * @param string[] $types
+   */
+  private function applyListFilters(\MailPoetVendor\Doctrine\ORM\QueryBuilder $qb, string $search, array $types, string $group): void {
+    if ($search !== '') {
+      $qb->andWhere('cf.name LIKE :search')
+        ->setParameter('search', '%' . $search . '%');
+    }
+    if ($types) {
+      $qb->andWhere('cf.type IN (:types)')
+        ->setParameter('types', $types);
+    }
+    $this->applyGroup($qb, $group);
+  }
+
+  /**
+   * @param string[] $types
+   */
+  private function countWithFilters(string $search, array $types, string $group): int {
+    $qb = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(cf.id)')
+      ->from(CustomFieldEntity::class, 'cf');
+    $this->applyListFilters($qb, $search, $types, $group);
+    return (int)$qb->getQuery()->getSingleScalarResult();
   }
 
   /**

@@ -5,6 +5,7 @@ namespace MailPoet\Tags;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -12,6 +13,8 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  * @extends Repository<TagEntity>
  */
 class TagRepository extends Repository {
+  use ListingDateRangeFilterTrait;
+
   protected function getEntityClassName() {
     return TagEntity::class;
   }
@@ -83,9 +86,9 @@ class TagRepository extends Repository {
   }
 
   /**
-   * Listing with subscriber counts + search + sort + pagination.
+   * Listing with subscriber counts + search + filters + sort + pagination.
    *
-   * @param array{search?: string, orderby?: string, order?: string, page?: int, per_page?: int} $args
+   * @param array{search?: string, orderby?: string, order?: string, page?: int, per_page?: int, filter?: array{from?: string, to?: string, subscriber_ranges?: array<int, array{min: int, max: ?int}>}} $args
    * @return array{items: array<int, array{id: int, name: string, description: string, subscribers_count: int, created_at: ?\DateTimeInterface, updated_at: ?\DateTimeInterface}>, total: int}
    */
   public function listWithCounts(array $args = []): array {
@@ -94,6 +97,10 @@ class TagRepository extends Repository {
     $order = isset($args['order']) && strtolower((string)$args['order']) === 'desc' ? 'DESC' : 'ASC';
     $page = isset($args['page']) ? max(1, (int)$args['page']) : 1;
     $perPage = isset($args['per_page']) ? max(1, min(100, (int)$args['per_page'])) : 25;
+    $filter = isset($args['filter']) && is_array($args['filter']) ? $args['filter'] : [];
+    $from = isset($filter['from']) && is_string($filter['from']) && $filter['from'] !== '' ? $filter['from'] : null;
+    $to = isset($filter['to']) && is_string($filter['to']) && $filter['to'] !== '' ? $filter['to'] : null;
+    $ranges = isset($filter['subscriber_ranges']) && is_array($filter['subscriber_ranges']) ? $filter['subscriber_ranges'] : [];
 
     $sortable = [
       'name' => 't.name',
@@ -122,18 +129,13 @@ class TagRepository extends Repository {
       $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
         ->setParameter('search', '%' . $search . '%');
     }
+    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to]);
+    $this->applySubscriberRanges($qb, $ranges);
 
     /** @var array<array{id: int, name: string, description: string, created_at: mixed, updated_at: mixed, subscribersCount: int|string}> $rows */
     $rows = $qb->getQuery()->getArrayResult();
 
-    $countQb = $this->entityManager->createQueryBuilder()
-      ->select('COUNT(t.id)')
-      ->from(TagEntity::class, 't');
-    if ($search !== '') {
-      $countQb->andWhere('t.name LIKE :search OR t.description LIKE :search')
-        ->setParameter('search', '%' . $search . '%');
-    }
-    $total = (int)$countQb->getQuery()->getSingleScalarResult();
+    $total = $this->countWithFilters($search, $from, $to, $ranges);
 
     $items = [];
     foreach ($rows as $row) {
@@ -150,6 +152,115 @@ class TagRepository extends Repository {
     }
 
     return ['items' => $items, 'total' => $total];
+  }
+
+  /**
+   * @param array<int, array{min: int, max: ?int}> $ranges
+   */
+  private function countWithFilters(string $search, ?string $from, ?string $to, array $ranges): int {
+    if ($ranges) {
+      // The subscriber-count filter needs HAVING on a grouped query, so count
+      // the matching tag ids. Bounded by the number of tags.
+      $qb = $this->entityManager->createQueryBuilder()
+        ->select('t.id')
+        ->from(TagEntity::class, 't')
+        ->leftJoin('t.subscriberTags', 'st')
+        ->leftJoin('st.subscriber', 's', 'WITH', 's.deletedAt IS NULL')
+        ->groupBy('t.id');
+      if ($search !== '') {
+        $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
+          ->setParameter('search', '%' . $search . '%');
+      }
+      $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to]);
+      $this->applySubscriberRanges($qb, $ranges);
+      return count($qb->getQuery()->getArrayResult());
+    }
+
+    $qb = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(t.id)')
+      ->from(TagEntity::class, 't');
+    if ($search !== '') {
+      $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
+        ->setParameter('search', '%' . $search . '%');
+    }
+    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to]);
+    return (int)$qb->getQuery()->getSingleScalarResult();
+  }
+
+  /**
+   * Apply the subscriber-count filter as an OR of HAVING conditions on the
+   * grouped subscriber count. Each range is a decade bucket; `max === null`
+   * means an open-ended top bucket, and `min === 0 && max === 0` is the
+   * "no subscribers" bucket.
+   *
+   * @param array<int, array{min: int, max: ?int}> $ranges
+   */
+  private function applySubscriberRanges(\MailPoetVendor\Doctrine\ORM\QueryBuilder $qb, array $ranges): void {
+    if (!$ranges) {
+      return;
+    }
+    $countExpr = 'COUNT(DISTINCT s.id)';
+    $conditions = [];
+    foreach ($ranges as $index => $range) {
+      $min = (int)$range['min'];
+      $max = $range['max'] ?? null;
+      if ($max === null) {
+        $conditions[] = "$countExpr >= :subMin$index";
+        $qb->setParameter("subMin$index", $min);
+      } elseif ($min === 0 && (int)$max === 0) {
+        $conditions[] = "$countExpr = 0";
+      } else {
+        $conditions[] = "$countExpr BETWEEN :subMin$index AND :subMax$index";
+        $qb->setParameter("subMin$index", $min);
+        $qb->setParameter("subMax$index", (int)$max);
+      }
+    }
+    $qb->andHaving('(' . implode(' OR ', $conditions) . ')');
+  }
+
+  /**
+   * Build decade (power-of-ten) subscriber-count buckets sized to the site's
+   * data: a "none" bucket (0), closed decade buckets, and an open-ended top
+   * bucket for the largest decade present. Returns an empty list when no tag
+   * has any subscriber, so the filter can be hidden.
+   *
+   * @return array<int, array{value: string, min: int, max: ?int}>
+   */
+  public function getSubscriberCountBuckets(): array {
+    $max = $this->getMaxSubscribersCount();
+    if ($max <= 0) {
+      return [];
+    }
+
+    // Largest power of ten not exceeding $max (integer-safe, avoids log10 drift).
+    $topDecade = 1;
+    while ($topDecade * 10 <= $max) {
+      $topDecade *= 10;
+    }
+
+    $buckets = [['value' => '0', 'min' => 0, 'max' => 0]];
+    for ($decade = 1; $decade < $topDecade; $decade *= 10) {
+      $buckets[] = ['value' => (string)$decade, 'min' => $decade, 'max' => $decade * 10 - 1];
+    }
+    $buckets[] = ['value' => (string)$topDecade, 'min' => $topDecade, 'max' => null];
+    return $buckets;
+  }
+
+  private function getMaxSubscribersCount(): int {
+    /** @var array<array{cnt: int|string}> $rows */
+    $rows = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(DISTINCT s.id) AS cnt')
+      ->from(TagEntity::class, 't')
+      ->leftJoin('t.subscriberTags', 'st')
+      ->leftJoin('st.subscriber', 's', 'WITH', 's.deletedAt IS NULL')
+      ->groupBy('t.id')
+      ->getQuery()->getArrayResult();
+
+    $max = 0;
+    foreach ($rows as $row) {
+      $max = max($max, (int)$row['cnt']);
+    }
+    return $max;
   }
 
   /**
