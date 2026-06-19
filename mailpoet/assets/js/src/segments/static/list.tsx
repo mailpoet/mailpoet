@@ -13,6 +13,7 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
 import { ListHeading } from 'segments/static/heading';
@@ -24,6 +25,7 @@ import {
   type SegmentListingItem,
 } from './api';
 import { segmentFields } from './fields';
+import { viewFiltersToRequestFilter } from './filters';
 
 type Group = 'all' | 'trash';
 type SelectAllParams = Partial<ListingQueryParams> & { select_all?: boolean };
@@ -295,6 +297,8 @@ function SegmentListComponent(): JSX.Element {
   } = useDataViewsQuery<SegmentListingItem>({
     initialView,
     load,
+    extraParams: (currentView) =>
+      filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
   const handleViewChange = usePersistedDataViewsPreference(
     'static-segments',
@@ -638,10 +642,12 @@ function SegmentListComponent(): JSX.Element {
             >
               <div className="mailpoet-segments-dataviews__toolbar">
                 <DataViews.Search label={__('Search', 'mailpoet')} />
+                <DataViews.FiltersToggle />
                 <div className="mailpoet-dataviews__toolbar-end">
                   <DataViews.ViewConfig />
                 </div>
               </div>
+              <DataViews.Filters />
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-segments-dataviews__toolbar">
                   <button
