@@ -46,7 +46,10 @@ type UseDataViewsQueryResult<T> = {
 const EMPTY_META: ListingMeta = { count: 0, pages: 0 };
 const EMPTY_FILTERS: ListingFilters = {};
 
-function wasInitialUrlStateReset(currentView: View, nextView: View): boolean {
+export function wasInitialUrlStateReset(
+  currentView: View,
+  nextView: View,
+): boolean {
   const pageReset = (currentView.page ?? 1) > 1 && (nextView.page ?? 1) === 1;
   const searchReset = Boolean(currentView.search) && !nextView.search;
 
@@ -143,8 +146,12 @@ export function useDataViewsQuery<T>({
         if (requestId !== latestRequestIdRef.current) {
           return;
         }
+        // Clamp the page when the dataset shrinks below the requested page —
+        // including when a filter/search yields zero rows (pages === 0), where
+        // lastValidPage falls back to 1. Skipping that case would strand a
+        // deep-linked page > 1 on an empty result.
         const lastValidPage = Math.max(1, result.meta.pages);
-        if (result.meta.pages > 0 && requestedPage > lastValidPage) {
+        if (requestedPage > lastValidPage) {
           // Avoid leaving a stale error visible while we re-fetch the
           // clamped page below.
           setError(null);

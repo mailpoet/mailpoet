@@ -5,6 +5,7 @@ import type {
   CustomFieldPayload,
   CustomFieldListGroup,
   CustomFieldListMeta,
+  CustomFieldsRequestFilter,
 } from './types';
 
 type WindowApi = {
@@ -33,6 +34,7 @@ type ListParams = {
   page?: number;
   per_page?: number;
   group?: 'all' | 'trash';
+  filter?: CustomFieldsRequestFilter;
 };
 
 type ApiEnvelope<T> = {

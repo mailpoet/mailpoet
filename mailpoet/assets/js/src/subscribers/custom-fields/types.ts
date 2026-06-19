@@ -4,6 +4,7 @@ export type CustomField = {
   label: string;
   type: string;
   params: Record<string, unknown>;
+  required: boolean;
   subscribers_count: number;
   forms_count: number;
   dynamic_segments_count: number;
@@ -29,6 +30,10 @@ export type CustomFieldPayload = {
 export type CustomFieldDateSettings = {
   dateTypes: Array<{ label: string; value: string }>;
   dateFormats: Record<string, string[]>;
+};
+
+export type CustomFieldsRequestFilter = {
+  type?: string[];
 };
 
 export type CustomFieldListMeta = {

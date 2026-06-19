@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Notice, TabPanel } from '@wordpress/components';
 import { DataViews, View, Action } from '@wordpress/dataviews';
@@ -20,6 +20,11 @@ import {
   getCustomFields,
   getSubscribersListingUrl,
 } from './api';
+import {
+  requestFilterToViewFilters,
+  viewFiltersToRequestFilter,
+} from './filters';
+import { buildCustomFieldsUrl, parseCustomFieldsUrlState } from './url-state';
 import type {
   ApiErrorResponse,
   CustomField,
@@ -43,6 +48,7 @@ const DEFAULT_VIEW: View = {
   fields: [
     'label',
     'type',
+    'required',
     'subscribers_count',
     'forms_count',
     'dynamic_segments_count',
@@ -99,16 +105,32 @@ function bulkActionSuccessMessage(
 }
 
 export function CustomFieldsPage() {
-  const [group, setGroup] = useState<Group>('all');
+  const initialUrlState = useMemo(
+    () => parseCustomFieldsUrlState(window.location.href),
+    [],
+  );
+  const [group, setGroup] = useState<Group>(initialUrlState.group);
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingCustomField, setEditingCustomField] =
     useState<CustomField | null>(null);
   const [selection, setSelection] = useState<string[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
-  const [initialView] = useState<View>(() =>
-    getDataViewsPreference('custom-fields', DEFAULT_VIEW, listFields),
-  );
+  const [initialView] = useState<View>(() => {
+    const preferredView = getDataViewsPreference(
+      'custom-fields',
+      DEFAULT_VIEW,
+      listFields,
+    );
+    return {
+      ...preferredView,
+      page: initialUrlState.page,
+      perPage: initialUrlState.perPage ?? preferredView.perPage,
+      search: initialUrlState.search,
+      filters: requestFilterToViewFilters(initialUrlState.filter),
+    };
+  });
+  const didMountRef = useRef(false);
 
   const load = useCallback<LoadListing<CustomField>>(
     async (params) => {
@@ -119,6 +141,7 @@ export function CustomFieldsPage() {
         page: params.page,
         per_page: params.per_page,
         group,
+        filter: params.filter,
       });
       return {
         items: result.items,
@@ -127,6 +150,13 @@ export function CustomFieldsPage() {
       };
     },
     [group],
+  );
+
+  const extraParams = useCallback(
+    (currentView: View) => ({
+      filter: viewFiltersToRequestFilter(currentView.filters),
+    }),
+    [],
   );
 
   const {
@@ -143,12 +173,38 @@ export function CustomFieldsPage() {
   } = useDataViewsQuery<CustomField>({
     initialView,
     load,
+    extraParams,
   });
+
+  const onChangeViewWithFilterReset = useCallback(
+    (nextView: View): void => {
+      const filtersChanged =
+        JSON.stringify(nextView.filters ?? []) !==
+        JSON.stringify(view.filters ?? []);
+      onChangeView(filtersChanged ? { ...nextView, page: 1 } : nextView);
+    },
+    [onChangeView, view.filters],
+  );
+
   const handleViewChange = usePersistedDataViewsPreference(
     'custom-fields',
     view,
-    onChangeView,
+    onChangeViewWithFilterReset,
   );
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    const nextUrl = buildCustomFieldsUrl(
+      window.location.href,
+      view,
+      group,
+      viewFiltersToRequestFilter(view.filters),
+    );
+    window.history.replaceState({}, '', nextUrl);
+  }, [view, group]);
 
   const handleBulkAction = useCallback(
     async (
@@ -418,7 +474,7 @@ export function CustomFieldsPage() {
         onSelect={handleTabSelect}
       >
         {() => (
-          <div className="mailpoet-custom-fields-dataviews">
+          <div className="mailpoet-dataviews mailpoet-custom-fields-dataviews">
             <DataViews<CustomField>
               data={items}
               fields={listFields}
@@ -437,9 +493,13 @@ export function CustomFieldsPage() {
                 <DataViews.Search
                   label={__('Search custom fields', 'mailpoet')}
                 />
+                <DataViews.FiltersToggle />
                 <div className="mailpoet-dataviews__toolbar-end">
                   <DataViews.ViewConfig />
                 </div>
+              </div>
+              <div className="mailpoet-dataviews__filters">
+                <DataViews.Filters />
               </div>
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-custom-fields-dataviews__toolbar">
