@@ -14,6 +14,7 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Filter;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
@@ -148,6 +149,70 @@ class FilterHandlerTest extends MailPoetUnitTest {
       'test-param' => 'test-param-value',
       'test-param-data' => $filter,
     ], $fieldParams);
+  }
+
+  public function testItReturnsFalseWhenRegisteredFieldIsUnavailableForCurrentRun(): void {
+    $filter = new FilterData('f', Field::TYPE_STRING, 'test:unavailable-field', '', ['value' => 'abc']);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', [$filter])]);
+    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
+    $subject = $this->createSubject('subject', [
+      new Field('test:available-field', Field::TYPE_STRING, 'Test field string', function () {
+        return 'abc';
+      }),
+    ]);
+
+    $stepRunArgs = new StepRunArgs(
+      $this->createMock(Automation::class),
+      $this->createMock(AutomationRun::class),
+      $step,
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
+    );
+
+    $registry = Stub::make(Registry::class, [
+      'filters' => [
+        Field::TYPE_STRING => $this->createFilter(Field::TYPE_STRING),
+      ],
+      'fields' => [
+        'test:unavailable-field' => new Field('test:unavailable-field', Field::TYPE_STRING, 'Unavailable field', function () {
+          return 'abc';
+        }),
+      ],
+    ]);
+
+    $handler = new FilterHandler($registry);
+    $this->assertFalse($handler->matchesFilters($stepRunArgs));
+  }
+
+  public function testItThrowsWhenFieldIsNotRegistered(): void {
+    $filter = new FilterData('f', Field::TYPE_STRING, 'test:unknown-field', '', ['value' => 'abc']);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', [$filter])]);
+    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
+    $subject = $this->createSubject('subject', [
+      new Field('test:available-field', Field::TYPE_STRING, 'Test field string', function () {
+        return 'abc';
+      }),
+    ]);
+
+    $stepRunArgs = new StepRunArgs(
+      $this->createMock(Automation::class),
+      $this->createMock(AutomationRun::class),
+      $step,
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
+    );
+
+    $registry = Stub::make(Registry::class, [
+      'filters' => [
+        Field::TYPE_STRING => $this->createFilter(Field::TYPE_STRING),
+      ],
+      'fields' => [],
+    ]);
+
+    $handler = new FilterHandler($registry);
+    $this->expectException(NotFoundException::class);
+    $this->expectExceptionMessage("Field with key 'test:unknown-field' not found.");
+    $handler->matchesFilters($stepRunArgs);
   }
 
   public function dataForTestItFilters(): array {
