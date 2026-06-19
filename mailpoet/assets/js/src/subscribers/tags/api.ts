@@ -1,6 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import type { Tag, TagListMeta } from './types';
+import type { Tag, TagListMeta, TagsRequestFilter } from './types';
 
 type WindowApi = {
   mailpoet_tags_api: {
@@ -27,6 +27,7 @@ type ListParams = {
   order?: 'asc' | 'desc';
   page?: number;
   per_page?: number;
+  filter?: TagsRequestFilter;
 };
 
 type ApiEnvelope<T> = {

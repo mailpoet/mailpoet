@@ -1,4 +1,8 @@
-export { useDataViewsQuery, type LoadListing } from './use-dataviews-query';
+export {
+  useDataViewsQuery,
+  wasInitialUrlStateReset,
+  type LoadListing,
+} from './use-dataviews-query';
 export {
   getDataViewsPreference,
   getDataViewsPreferenceKey,

@@ -5,10 +5,11 @@ import { DataViews, View, Action } from '@wordpress/dataviews';
 import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
+  wasInitialUrlStateReset,
 } from 'common/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
-import { listFields } from './fields';
+import { buildListFields } from './fields';
 import { TagsForm } from './tags-form';
 import {
   bulkDeleteTags,
@@ -16,6 +17,11 @@ import {
   getSubscribersListingUrl,
   getTags,
 } from './api';
+import {
+  requestFilterToViewFilters,
+  viewFiltersToRequestFilter,
+} from './filters';
+import { buildTagsUrl, parseTagsUrlState } from './url-state';
 import type { ApiErrorResponse, Tag, TagListMeta } from './types';
 
 type FormState =
@@ -33,30 +39,69 @@ const DEFAULT_VIEW: View = {
   showTitle: true,
 };
 
+// Column set is fixed; the subscriber-count filter is appended dynamically once
+// the listing returns the site's buckets.
+const baseFields = buildListFields([]);
+
+function buildInitialView(): View {
+  const preferredView = getDataViewsPreference(
+    'tags',
+    DEFAULT_VIEW,
+    baseFields,
+  );
+  const state = parseTagsUrlState(window.location.href);
+
+  return {
+    ...preferredView,
+    page: state.page,
+    perPage: state.perPage ?? preferredView.perPage,
+    search: state.search,
+    filters: requestFilterToViewFilters(state.filter),
+  };
+}
+
 function resetPageWhenQueryChanges(currentView: View, nextView: View): View {
   const searchChanged = (nextView.search ?? '') !== (currentView.search ?? '');
   const perPageChanged = nextView.perPage !== currentView.perPage;
+  const filtersChanged =
+    JSON.stringify(nextView.filters ?? []) !==
+    JSON.stringify(currentView.filters ?? []);
 
   return {
     ...nextView,
-    page: searchChanged || perPageChanged ? 1 : nextView.page,
+    page: searchChanged || perPageChanged || filtersChanged ? 1 : nextView.page,
   };
 }
 
 export function TagsPage() {
-  const [view, setView] = useState<View>(() =>
-    getDataViewsPreference('tags', DEFAULT_VIEW, listFields),
-  );
+  const [view, setView] = useState<View>(buildInitialView);
+  const didMountRef = useRef(false);
   const [items, setItems] = useState<Tag[]>([]);
-  const [meta, setMeta] = useState<TagListMeta>({ count: 0, pages: 0 });
+  const [meta, setMeta] = useState<TagListMeta>({
+    count: 0,
+    pages: 0,
+    subscriber_count_buckets: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [selection, setSelection] = useState<string[]>([]);
   const [formState, setFormState] = useState<FormState>({ kind: 'closed' });
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const latestRequestIdRef = useRef(0);
+  const completedInitialRequestRef = useRef(false);
   const updateView = useCallback((nextView: View): void => {
-    setView((currentView) => resetPageWhenQueryChanges(currentView, nextView));
+    setView((currentView) => {
+      // DataViews can emit an early onChangeView that drops the URL-hydrated
+      // page/search before the first fetch settles; ignore that reset so a
+      // deep-linked listing keeps its state.
+      if (
+        !completedInitialRequestRef.current &&
+        wasInitialUrlStateReset(currentView, nextView)
+      ) {
+        return currentView;
+      }
+      return resetPageWhenQueryChanges(currentView, nextView);
+    });
   }, []);
   const handleViewChange = usePersistedDataViewsPreference(
     'tags',
@@ -76,6 +121,7 @@ export function TagsPage() {
         order: view.sort?.direction ?? 'asc',
         page: requestedPage,
         per_page: view.perPage ?? 20,
+        filter: viewFiltersToRequestFilter(view.filters),
       });
 
       if (requestId !== latestRequestIdRef.current) {
@@ -103,14 +149,28 @@ export function TagsPage() {
       );
     } finally {
       if (requestId === latestRequestIdRef.current) {
+        completedInitialRequestRef.current = true;
         setIsLoading(false);
       }
     }
-  }, [view.search, view.sort, view.page, view.perPage]);
+  }, [view.search, view.sort, view.page, view.perPage, view.filters]);
 
   useEffect(() => {
     void loadTags();
   }, [loadTags]);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    const nextUrl = buildTagsUrl(
+      window.location.href,
+      view,
+      viewFiltersToRequestFilter(view.filters),
+    );
+    window.history.replaceState({}, '', nextUrl);
+  }, [view]);
 
   const handleFormSuccess = (tag: Tag) => {
     setFormState({ kind: 'closed' });
@@ -208,6 +268,11 @@ export function TagsPage() {
     [meta],
   );
 
+  const fields = useMemo(
+    () => buildListFields(meta.subscriber_count_buckets),
+    [meta.subscriber_count_buckets],
+  );
+
   return (
     <>
       <TopBarWithBoundary />
@@ -242,10 +307,10 @@ export function TagsPage() {
         </Notice>
       )}
 
-      <div className="mailpoet-tags-dataviews">
+      <div className="mailpoet-dataviews mailpoet-tags-dataviews">
         <DataViews<Tag>
           data={items}
-          fields={listFields}
+          fields={fields}
           view={view}
           onChangeView={handleViewChange}
           actions={actions}
@@ -259,9 +324,13 @@ export function TagsPage() {
         >
           <div className="mailpoet-dataviews__toolbar">
             <DataViews.Search label={__('Search tags', 'mailpoet')} />
+            <DataViews.FiltersToggle />
             <div className="mailpoet-dataviews__toolbar-end">
               <DataViews.ViewConfig />
             </div>
+          </div>
+          <div className="mailpoet-dataviews__filters">
+            <DataViews.Filters />
           </div>
           <DataViews.Layout />
           <DataViews.Footer />
