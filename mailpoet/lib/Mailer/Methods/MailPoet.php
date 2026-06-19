@@ -152,7 +152,7 @@ class MailPoet implements MailerMethod {
   private function composeTemplateBatchBody(TemplateBatch $batch, array $subscribers, array $extraParams): array {
     $template = $batch->getTemplate();
     $body = [
-      'format' => 'template_batch_v1',
+      'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
       'from' => ([
         'address' => $this->sender['from_email'],
         'name' => $this->sender['from_name'],
