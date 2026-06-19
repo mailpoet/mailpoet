@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\FilterGroup;
 use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Filter;
 use MailPoet\Automation\Engine\Registry;
 
@@ -43,8 +44,15 @@ class FilterHandler {
     $operator = $group->getOperator();
     foreach ($group->getFilters() as $filterData) {
       $filter = $this->getFilter($filterData);
-      $value = $args->getFieldValue($filterData->getFieldKey(), $filter->getFieldParams($filterData));
-      $matches = $filter->matches($filterData, $value);
+      try {
+        $value = $args->getFieldValue($filterData->getFieldKey(), $filter->getFieldParams($filterData));
+        $matches = $filter->matches($filterData, $value);
+      } catch (NotFoundException $e) {
+        if (!$this->registry->getField($filterData->getFieldKey())) {
+          throw $e;
+        }
+        $matches = false;
+      }
       if ($operator === FilterGroup::OPERATOR_AND && !$matches) {
         return false;
       }
