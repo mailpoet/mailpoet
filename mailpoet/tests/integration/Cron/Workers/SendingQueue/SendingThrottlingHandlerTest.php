@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 
 class SendingThrottlingHandlerTest extends \MailPoetTest {
@@ -22,6 +23,16 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
   public function testItReturnsDefaultBatchSize(): void {
     $batchSize = $this->throttlingHandler->getBatchSize();
     verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
+  public function testItCapsBatchSizeToServerAdvertisedMax(): void {
+    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, 5);
+    verify($this->throttlingHandler->getBatchSize())->equals(5);
+  }
+
+  public function testItIgnoresServerMaxWhenHigherThanLocalBatchSize(): void {
+    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, SendingThrottlingHandler::BATCH_SIZE + 100);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
   public function testItThrottlesBatchSizeToHalf(): void {

@@ -3,6 +3,7 @@
 namespace MailPoet\Services\Bridge;
 
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
@@ -59,8 +60,14 @@ class API {
   public const KEY_CHECK_TYPE_PREMIUM = 'premium';
   public const KEY_CHECK_TYPE_MSS = 'mss';
 
+  // Server-advertised ceiling on messages per request, returned by the
+  // template-messages endpoint. Persisted so the sending worker can cap batches.
+  public const SETTING_KEY_MAX_MESSAGES_PER_REQUEST = 'sending_service_max_messages_per_request';
+
   private $apiKey;
   private $wp;
+  /** @var SettingsController */
+  private $settings;
   /** @var LoggerFactory */
   private $loggerFactory;
   /** @var mixed|null It is an instance of \CurlHandle in PHP8 and above but a resource in PHP7 */
@@ -88,7 +95,8 @@ class API {
 
   public function __construct(
     $apiKey,
-    $wp = null
+    $wp = null,
+    ?SettingsController $settings = null
   ) {
     $this->setKey($apiKey);
     if (is_null($wp)) {
@@ -96,6 +104,7 @@ class API {
     } else {
       $this->wp = $wp;
     }
+    $this->settings = $settings ?? SettingsController::getInstance();
     $this->loggerFactory = LoggerFactory::getInstance();
   }
 
@@ -171,10 +180,10 @@ class API {
     }
 
     $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $responseBody = $this->wp->wpRemoteRetrieveBody($result);
+    $this->storeMaxMessagesPerRequest($responseBody);
     if ($responseCode !== 201) {
-      $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
-        $this->wp->wpRemoteRetrieveBody($result) :
-        $this->wp->wpRemoteRetrieveResponseMessage($result);
+      $response = $responseBody ?: $this->wp->wpRemoteRetrieveResponseMessage($result);
       return $this->createErrorResponse((int)$responseCode, $response, self::SENDING_STATUS_SEND_ERROR);
     }
     return ['status' => self::RESPONSE_STATUS_OK];
@@ -188,6 +197,33 @@ class API {
       return $this->urlTemplateMessages;
     }
     return $this->urlMessages;
+  }
+
+  /**
+   * The template-messages endpoint advertises its current per-request ceiling on
+   * (almost) every response. Persist it whenever it changes so the sending worker
+   * can stay within the server-imposed limit.
+   *
+   * @param mixed $responseBody
+   */
+  private function storeMaxMessagesPerRequest($responseBody): void {
+    if (!is_string($responseBody) || $responseBody === '') {
+      return;
+    }
+    $decoded = json_decode($responseBody, true);
+    if (!is_array($decoded) || !isset($decoded['max_messages_per_request'])) {
+      return;
+    }
+    $advertised = $decoded['max_messages_per_request'];
+    if (!is_numeric($advertised) || (int)$advertised <= 0) {
+      return;
+    }
+    $max = (int)$advertised;
+    $current = $this->settings->get(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
+    if (is_numeric($current) && (int)$current === $max) {
+      return;
+    }
+    $this->settings->set(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, $max);
   }
 
   /**
