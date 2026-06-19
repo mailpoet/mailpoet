@@ -14,13 +14,14 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
-  const QA_GITHUB_LOGIN = 'Aschepikov';
-
   private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
   private const API_SEARCH_URI = 'https://api.github.com/search/issues';
 
   /** @var string */
   private $zipFilename;
+
+  /** @var string */
+  private $username;
 
   /** @var Client */
   private $httpClient;
@@ -30,6 +31,7 @@ class GitHubController {
     $token,
     $project
   ) {
+    $this->username = $username;
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = new Client([
       'auth' => [$username, $token],
@@ -57,11 +59,11 @@ class GitHubController {
   }
 
   private function assignPullRequest($pullRequestNumber) {
-    $this->httpClient->post("pulls/$pullRequestNumber/requested_reviewers", [
-      'json' => ['reviewers' => [self::QA_GITHUB_LOGIN]],
-    ]);
+    // Assign the release PR to the person running the release (the authenticated user).
+    // MailPoet no longer has a dedicated QA reviewer: the Porter runs the release and
+    // smoke-tests the build, so no separate reviewer is requested here.
     $this->httpClient->post("issues/$pullRequestNumber/assignees", [
-      'json' => ['assignees' => [self::QA_GITHUB_LOGIN]],
+      'json' => ['assignees' => [$this->username]],
     ]);
   }
 
@@ -85,9 +87,9 @@ class GitHubController {
       throw new \Exception('Release pull request not found');
     }
     $releasePullRequest = reset($response);
+    // Verify the CI builds passed. The release-PR approval requirement was removed when
+    // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
     $this->checkPullRequestChecks($releasePullRequest['statuses_url']);
-    $pullRequestNumber = $releasePullRequest['number'];
-    $this->checkPullRequestReviews($pullRequestNumber);
   }
 
   private function checkPullRequestChecks($statusesUrl) {
@@ -110,20 +112,6 @@ class GitHubController {
     }
     if (!empty($failed)) {
       throw new \Exception('Release pull request build failed. Failed jobs: ' . join(', ', $failed));
-    }
-  }
-
-  private function checkPullRequestReviews($pullRequestNumber) {
-    $response = $this->httpClient->get("pulls/$pullRequestNumber/reviews");
-    $response = json_decode($response->getBody()->getContents(), true);
-    $approved = 0;
-    foreach ($response as $review) {
-      if (strtolower($review['state']) === 'approved') {
-        $approved++;
-      }
-    }
-    if ($approved === 0) {
-      throw new \Exception('Pull Request has not been approved');
     }
   }
 
