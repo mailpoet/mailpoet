@@ -17,7 +17,11 @@ import {
   type NewsletterApiError,
   type NewsletterListingItem,
 } from '../api';
-import { NewsletterShareModal, SHARE_VISIBILITY_PUBLIC } from './share-modal';
+import {
+  NewsletterShareModal,
+  SHARE_VISIBILITY_PRIVATE,
+  SHARE_VISIBILITY_PUBLIC,
+} from './share-modal';
 import {
   STANDARD_NEWSLETTER_GROUPS,
   NewslettersListing,
@@ -187,6 +191,36 @@ function NewsletterListStandardComponent() {
     [],
   );
 
+  const makeNewsletterPrivate = useCallback(
+    async (item: NewsletterListingItem, refresh: () => void) => {
+      try {
+        await MailPoet.Ajax.post<{ data: NewsletterListingItem }>({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletters',
+          action: 'updateShareVisibility',
+          data: {
+            id: item.id,
+            share_visibility: SHARE_VISIBILITY_PRIVATE,
+          },
+        });
+        refresh();
+        MailPoet.Notice.success(
+          __('Email "%1$s" is now private.', 'mailpoet').replace(
+            '%1$s',
+            escapeHTML(item.campaign_name || item.subject),
+          ),
+        );
+        MailPoet.trackEvent('Emails > Share email made private');
+      } catch (response) {
+        const apiResponse = response as { errors?: { message?: string }[] };
+        if (apiResponse.errors && apiResponse.errors.length > 0) {
+          MailPoet.Notice.showApiErrorNotice(apiResponse, { scroll: true });
+        }
+      }
+    },
+    [],
+  );
+
   // `current_time` rides along with the listing response; the Statistics
   // column uses it to flag emails sent in the last few hours.
   const [currentTime, setCurrentTime] = useState<string | undefined>(undefined);
@@ -257,6 +291,20 @@ function NewsletterListStandardComponent() {
             },
           },
           {
+            id: 'make-private',
+            label: __('Make private', 'mailpoet'),
+            context: 'single',
+            supportsBulk: false,
+            isEligible: (item: NewsletterListingItem) =>
+              Boolean(item.can_share) &&
+              item.effective_share_visibility === SHARE_VISIBILITY_PUBLIC,
+            callback: (targets: NewsletterListingItem[]) => {
+              if (targets[0]) {
+                void makeNewsletterPrivate(targets[0], helpers.refresh);
+              }
+            },
+          },
+          {
             id: 'duplicate',
             label: __('Duplicate', 'mailpoet'),
             context: 'single',
@@ -288,7 +336,7 @@ function NewsletterListStandardComponent() {
         ],
         helpers.navigate,
       ) as Action<NewsletterListingItem>[],
-    [openShareModal],
+    [makeNewsletterPrivate, openShareModal],
   );
 
   const trackingHooksOk =
