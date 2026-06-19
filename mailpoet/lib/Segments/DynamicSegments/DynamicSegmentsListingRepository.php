@@ -7,6 +7,11 @@ use MailPoet\Segments\SegmentListingRepository;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class DynamicSegmentsListingRepository extends SegmentListingRepository {
+  protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
+    $this->applyDateRangeFilter($queryBuilder, 's.createdAt', $filters, 'created_from', 'created_to');
+    $this->applyDateRangeFilter($queryBuilder, 's.updatedAt', $filters, 'updated_from', 'updated_to');
+  }
+
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters): void {
     $queryBuilder
       ->andWhere('s.type = :type')
