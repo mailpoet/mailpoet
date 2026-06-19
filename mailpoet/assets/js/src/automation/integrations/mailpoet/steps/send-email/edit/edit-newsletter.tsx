@@ -1,12 +1,13 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
+import { Modal, Spinner } from '@wordpress/components';
 import classnames from 'classnames';
-import { useCallback, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
 import { useSelectContext } from '../../../context';
-import { storeName } from '../../../../../editor/store';
+import { storeName } from '../../../../../editor/store/constants';
 import { MailPoet } from '../../../../../../mailpoet';
 import type {
   CreatedAutomationEmail,
@@ -24,8 +25,27 @@ type HandleDuplicatedStepType = {
   newEmailWpPostId?: number;
 };
 
-const emailPreviewLinkCache = {};
-const retrievePreviewLink = async (emailId) => {
+type EmailPreviewResponse = {
+  meta?: {
+    preview_url?: unknown;
+  };
+};
+
+const emailPreviewLinkCache: Record<number, string> = {};
+export const getPreviewUrlFromResponse = (
+  response: EmailPreviewResponse,
+): string =>
+  typeof response?.meta?.preview_url === 'string'
+    ? response.meta.preview_url
+    : '';
+
+export const retrievePreviewLink = async (
+  emailId?: number,
+): Promise<string> => {
+  if (!emailId) {
+    throw new Error('Missing email ID');
+  }
+
   if (
     emailPreviewLinkCache[emailId] &&
     emailPreviewLinkCache[emailId].length > 0
@@ -40,7 +60,11 @@ const retrievePreviewLink = async (emailId) => {
       id: emailId,
     },
   });
-  emailPreviewLinkCache[emailId] = response?.meta?.preview_url ?? '';
+  const previewUrl = getPreviewUrlFromResponse(response);
+  if (!previewUrl) {
+    throw new Error('Missing preview URL');
+  }
+  emailPreviewLinkCache[emailId] = previewUrl;
   return emailPreviewLinkCache[emailId];
 };
 
@@ -67,6 +91,39 @@ function EmailIdValidationMessage({
     <span className="mailpoet-automation-field-message" role="alert">
       {message}
     </span>
+  );
+}
+
+function EmailPreviewModal({
+  previewUrl,
+  onClose,
+}: {
+  previewUrl: string;
+  onClose: () => void;
+}): JSX.Element {
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
+  return (
+    <Modal
+      className="mailpoet-automation-email-preview-modal"
+      title={__('Email preview', 'mailpoet')}
+      onRequestClose={onClose}
+    >
+      <div className="mailpoet-automation-email-preview-modal-content">
+        {!iframeLoaded && (
+          <div className="mailpoet-automation-email-preview-modal-spinner">
+            <Spinner />
+          </div>
+        )}
+        <iframe
+          className="mailpoet-automation-email-preview-modal-iframe"
+          data-automation-id="automation_send_email_preview_iframe"
+          onLoad={() => setIframeLoaded(true)}
+          src={previewUrl}
+          title={__('Email preview', 'mailpoet')}
+        />
+      </div>
+    </Modal>
   );
 }
 
@@ -133,6 +190,7 @@ export function EditNewsletter(): JSX.Element {
   const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
   const [isHandlingDuplicatedStep, setIsHandlingDuplicatedStep] =
     useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const blockEmailEditorHelpId = useId();
   const { block_email_editor_enabled: blockEmailEditorEnabled = false } =
     useSelectContext();
@@ -185,6 +243,16 @@ export function EditNewsletter(): JSX.Element {
     },
     [showEditorChoiceError],
   );
+
+  const showPreviewError = useCallback(() => {
+    void dispatch(noticesStore).createErrorNotice(
+      __(
+        'MailPoet could not open the email preview. Please make sure the email still exists and try again.',
+        'mailpoet',
+      ),
+      { explicitDismiss: true },
+    );
+  }, []);
 
   const redirectToEmailEditor = useCallback(
     (createdEmail: CreatedAutomationEmail, editorChoice: EditorChoice) => {
@@ -341,9 +409,18 @@ export function EditNewsletter(): JSX.Element {
 
   const retrievePreviewLinkForEmail = useCallback(async () => {
     setFetchingPreviewLink(true);
-    const link = await retrievePreviewLink(emailId);
-    window.open(link as string, '_blank');
-    setFetchingPreviewLink(false);
+    try {
+      const link = await retrievePreviewLink(emailId);
+      setPreviewUrl(link);
+    } catch {
+      showPreviewError();
+    } finally {
+      setFetchingPreviewLink(false);
+    }
+  }, [emailId, showPreviewError]);
+
+  useEffect(() => {
+    setPreviewUrl(null);
   }, [emailId]);
 
   const handleDuplicatedStep =
@@ -494,36 +571,44 @@ export function EditNewsletter(): JSX.Element {
   }
 
   return (
-    <div
-      className={classnames({
-        'mailpoet-automation-field__error': hasEmailIdError,
-      })}
-    >
-      <div className="mailpoet-automation-email-buttons">
-        <Button
-          variant="sidebar-primary"
-          centered
-          onClick={() => {
-            void handleEditContent();
-          }}
-          isBusy={isHandlingDuplicatedStep}
-          disabled={isHandlingDuplicatedStep}
-        >
-          {__('Edit content', 'mailpoet')}
-        </Button>
-        <Button
-          variant="secondary"
-          centered
-          isBusy={fetchingPreviewLink}
-          disabled={fetchingPreviewLink}
-          onClick={() => void retrievePreviewLinkForEmail()}
-        >
-          {__('Preview', 'mailpoet')}
-        </Button>
+    <>
+      <div
+        className={classnames({
+          'mailpoet-automation-field__error': hasEmailIdError,
+        })}
+      >
+        <div className="mailpoet-automation-email-buttons">
+          <Button
+            variant="sidebar-primary"
+            centered
+            onClick={() => {
+              void handleEditContent();
+            }}
+            isBusy={isHandlingDuplicatedStep}
+            disabled={isHandlingDuplicatedStep}
+          >
+            {__('Edit content', 'mailpoet')}
+          </Button>
+          <Button
+            variant="secondary"
+            centered
+            isBusy={fetchingPreviewLink}
+            disabled={fetchingPreviewLink}
+            onClick={() => void retrievePreviewLinkForEmail()}
+          >
+            {__('Preview', 'mailpoet')}
+          </Button>
+        </div>
+        {hasEmailIdError && (
+          <EmailIdValidationMessage message={emailIdErrorMessage} />
+        )}
       </div>
-      {hasEmailIdError && (
-        <EmailIdValidationMessage message={emailIdErrorMessage} />
+      {previewUrl && (
+        <EmailPreviewModal
+          previewUrl={previewUrl}
+          onClose={() => setPreviewUrl(null)}
+        />
       )}
-    </div>
+    </>
   );
 }

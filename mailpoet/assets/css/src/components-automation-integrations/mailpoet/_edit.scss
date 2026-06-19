@@ -44,3 +44,42 @@
   display: block;
   margin-top: 8px;
 }
+
+.mailpoet-automation-email-preview-modal.components-modal__frame {
+  height: min(860px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
+  max-width: calc(100vw - 64px);
+  width: min(960px, calc(100vw - 64px));
+
+  .components-modal__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-top: 0;
+    padding: 0;
+  }
+}
+
+.mailpoet-automation-email-preview-modal-content {
+  background: #f0f0f1;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.mailpoet-automation-email-preview-modal-spinner {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+.mailpoet-automation-email-preview-modal-iframe {
+  background: #fff;
+  border: 0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
