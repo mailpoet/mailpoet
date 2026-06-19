@@ -170,6 +170,29 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->data['options'][NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE])->equals('0');
   }
 
+  public function testItCanUpdateShareVisibilityToPrivate(): void {
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PUBLIC,
+      ])
+      ->create();
+
+    $response = $this->endpoint->updateShareVisibility([
+      'id' => $newsletter->getId(),
+      'share_visibility' => ShareVisibility::VISIBILITY_PRIVATE,
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['share_visibility'])->equals(ShareVisibility::VISIBILITY_PRIVATE);
+    verify($response->data['effective_share_visibility'])->equals(ShareVisibility::VISIBILITY_PRIVATE);
+    verify($response->data['can_share'])->false();
+
+    $this->newsletterRepository->refresh($newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY))
+      ->equals(ShareVisibility::VISIBILITY_PRIVATE);
+  }
+
   public function testItCanRestoreANewsletter() {
     $this->newsletterRepository->bulkTrash([$this->newsletter->getId()]);
     $this->entityManager->clear();

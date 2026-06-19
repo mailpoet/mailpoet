@@ -7,6 +7,7 @@ import { copyToClipboard } from 'utils';
 import { getShareLinks, ShareLink } from './share-links';
 
 export const SHARE_VISIBILITY_PUBLIC = 'public';
+export const SHARE_VISIBILITY_PRIVATE = 'private';
 
 type Props = {
   newsletter: NewsLetter;
