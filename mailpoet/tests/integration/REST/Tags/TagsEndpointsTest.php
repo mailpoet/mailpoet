@@ -80,6 +80,73 @@ class TagsEndpointsTest extends Test {
     $this->assertSame(2, $page1['data']['meta']['pages']);
   }
 
+  public function testGetFiltersBySubscriberBucket(): void {
+    $withSubs = (new TagFactory())->withName('WithSubs')->create();
+    (new TagFactory())->withName('Empty')->create();
+    (new SubscriberFactory())->withEmail('hs@example.com')->withTags([$withSubs])->create();
+
+    // The endpoint advertises the data-driven buckets in the listing meta.
+    $all = $this->get(self::BASE_PATH);
+    $this->assertNotEmpty($all['data']['meta']['subscriber_count_buckets']);
+
+    // The "none" bucket (value "0") keeps only tags without subscribers.
+    $none = $this->get(self::BASE_PATH, ['query' => ['filter' => ['subscribers' => ['0']]]]);
+    $this->assertSame(1, $none['data']['meta']['count']);
+    $this->assertSame('Empty', $none['data']['items'][0]['name']);
+
+    // The non-zero bucket (value "1") keeps only tags that have subscribers.
+    $withSub = $this->get(self::BASE_PATH, ['query' => ['filter' => ['subscribers' => ['1']]]]);
+    $this->assertSame(1, $withSub['data']['meta']['count']);
+    $this->assertSame('WithSubs', $withSub['data']['items'][0]['name']);
+  }
+
+  public function testGetIgnoresUnknownSubscribersBucket(): void {
+    $tag = (new TagFactory())->withName('WithSubs')->create();
+    (new TagFactory())->withName('Empty')->create();
+    (new SubscriberFactory())->withEmail('hs@example.com')->withTags([$tag])->create();
+
+    // A stale/unknown bucket value is ignored, so the listing still loads.
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['subscribers' => ['999999']]]]);
+    $this->assertSame(2, $data['data']['meta']['count']);
+  }
+
+  public function testGetIgnoresSubscribersFilterWhenNoBuckets(): void {
+    (new TagFactory())->withName('A')->create();
+    (new TagFactory())->withName('B')->create();
+
+    // No tag has subscribers, so there are no buckets at all.
+    $all = $this->get(self::BASE_PATH);
+    $this->assertSame([], $all['data']['meta']['subscriber_count_buckets']);
+
+    // A deep-linked subscribers=0 must not 400; it is ignored and all tags load.
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['subscribers' => ['0']]]]);
+    $this->assertSame(2, $data['data']['meta']['count']);
+  }
+
+  public function testGetFiltersByCreatedAtRange(): void {
+    $old = (new TagFactory())->withName('Old')->create();
+    $recent = (new TagFactory())->withName('Recent')->create();
+    $old->setCreatedAt(new \DateTimeImmutable('2024-01-01 10:00:00'));
+    $recent->setCreatedAt(new \DateTimeImmutable('2024-12-31 10:00:00'));
+    $this->repository->flush();
+
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['from' => '2024-06-01']]]);
+    $this->assertSame(1, $data['data']['meta']['count']);
+    $this->assertSame('Recent', $data['data']['items'][0]['name']);
+  }
+
+  public function testGetRejectsInvalidDateFilter(): void {
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['from' => 'not-a-date']]]);
+    $this->assertSame('mailpoet_tags_invalid_from', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
+  }
+
+  public function testGetRejectsUnsupportedFilter(): void {
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['bogus' => '1']]]);
+    $this->assertSame('mailpoet_tags_invalid_filter', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
+  }
+
   public function testGetRejectsGuest(): void {
     wp_set_current_user(0);
     $data = $this->get(self::BASE_PATH);

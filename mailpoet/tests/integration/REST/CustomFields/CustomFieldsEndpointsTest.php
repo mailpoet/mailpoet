@@ -53,6 +53,16 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertSame(0, $this->getGroupCount($payload['groups'], 'trash'));
   }
 
+  public function testGetExposesRequiredFlag(): void {
+    (new CustomFieldFactory())->withName('Req')->withParams(['label' => 'Req', 'required' => '1'])->create();
+    (new CustomFieldFactory())->withName('Opt')->withParams(['label' => 'Opt'])->create();
+
+    $payload = $this->getListingPayload($this->get(self::BASE_PATH));
+    $byName = array_column($payload['items'], null, 'name');
+    $this->assertTrue($byName['Req']['required']);
+    $this->assertFalse($byName['Opt']['required']);
+  }
+
   public function testGetSupportsSearchAndPagination(): void {
     (new CustomFieldFactory())->withName('Customers')->create();
     (new CustomFieldFactory())->withName('Prospective')->create();
@@ -65,6 +75,27 @@ class CustomFieldsEndpointsTest extends Test {
     $page1 = $this->getListingPayload($this->get(self::BASE_PATH, ['query' => ['per_page' => 2, 'page' => 1, 'orderby' => 'name', 'order' => 'asc']]));
     $this->assertCount(2, $page1['items']);
     $this->assertSame(2, $page1['meta']['pages']);
+  }
+
+  public function testGetFiltersByType(): void {
+    (new CustomFieldFactory())->withName('TextField')->withType('text')->create();
+    (new CustomFieldFactory())->withName('DateField')->withType('date')->create();
+
+    $data = $this->getListingPayload($this->get(self::BASE_PATH, ['query' => ['filter' => ['type' => ['date']]]]));
+    $this->assertSame(1, $data['meta']['count']);
+    $this->assertSame('DateField', $data['items'][0]['name']);
+  }
+
+  public function testGetRejectsUnsupportedTypeFilter(): void {
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['type' => ['bogus']]]]);
+    $this->assertSame('mailpoet_custom_fields_invalid_type', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
+  }
+
+  public function testGetRejectsUnsupportedFilter(): void {
+    $data = $this->get(self::BASE_PATH, ['query' => ['filter' => ['bogus' => '1']]]);
+    $this->assertSame('mailpoet_custom_fields_invalid_filter', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
   }
 
   public function testGetRejectsGuest(): void {
