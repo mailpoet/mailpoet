@@ -55,6 +55,10 @@ class DynamicSegmentsListingEndpoint extends AbstractSegmentsListingEndpoint {
     return true;
   }
 
+  protected function getAllowedFilters(): array {
+    return ['created_from', 'created_to', 'updated_from', 'updated_to'];
+  }
+
   protected function getDefaultParameters(): array {
     return ['segments'];
   }
