@@ -121,7 +121,10 @@ class SwitchingLanguagesCest {
     $i->waitForText('Neues Formular hinzufügen');
     $i->waitForText('Unter Seiten');
     $i->waitForText('Registrierungen');
-    $i->waitForText(strtoupper('Erstelldatum'));
+    // NOTE: only the "Modified date" header is asserted here. "Created date"
+    // has no German translation on translate.wordpress.org yet, so the column
+    // renders untranslated (same as trunk). Re-add an "Erstelldatum" assertion
+    // once that string is translated upstream.
     $i->waitForText(strtoupper('Änderungsdatum'));
 
     $i->wantTo('Check Subscribers filter strings and button');
