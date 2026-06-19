@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Monolog\Logger;
@@ -34,14 +35,20 @@ class SendingThrottlingHandler {
   public function getBatchSize(): int {
     $throttlingSettings = $this->loadSettings();
     if (isset($throttlingSettings['batch_size'])) {
-      return $throttlingSettings['batch_size'];
+      return min($throttlingSettings['batch_size'], $this->getMaxBatchSize());
     }
     return $this->getMaxBatchSize();
   }
 
   private function getMaxBatchSize(): int {
     $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
-    return is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
+    $batchSize = is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
+    // Never exceed the server-advertised ceiling reported by the sending service.
+    $serverMax = $this->settings->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
+    if (is_numeric($serverMax) && (int)$serverMax > 0) {
+      $batchSize = min($batchSize, (int)$serverMax);
+    }
+    return $batchSize;
   }
 
   public function throttleBatchSize(): int {
