@@ -25,7 +25,7 @@ overrides:
   fast-uri@<=3.1.1: 3.1.2
   fast-xml-builder@<=1.1.6: 1.1.7
   ip-address@<=10.1.0: 10.1.1
-  launch-editor@<=2.8.2: 2.9.0
+  launch-editor@<=2.14.0: 2.14.1
   locutus: ^3.0.0
   minimatch@<3.1.5: 3.1.5
   minimatch@>=5.0.0 <5.1.8: 5.1.8
@@ -36,11 +36,11 @@ overrides:
   react-router-dom@>=6.0.0 <6.30.4: 6.30.4
   serialize-javascript@<7.0.5: 7.0.5
   shell-quote@>=1.1.0 <=1.8.3: 1.8.4
-  tmp@<0.2.6: 0.2.6
+  tmp@<0.2.7: 0.2.7
   underscore@<=1.13.7: 1.13.8
   uuid@<11.1.1: 11.1.1
-  webpack-dev-server@<=5.2.3: 5.2.4
-  ws@>=8.0.0 <8.20.1: 8.20.1
+  webpack-dev-server@<5.2.5: 5.2.5
+  ws@>=8.0.0 <8.21.0: 8.21.0
 
 pnpmfileChecksum: sha256-b2fyo48/TKYPF6LJtK6nZ3ILK4XxFVSEMTtYyjFAnkk=
 
@@ -3176,7 +3176,7 @@ packages:
       sockjs-client: ^1.4.0
       type-fest: '>=0.17.0 <5.0.0'
       webpack: '>=4.43.0 <6.0.0'
-      webpack-dev-server: 5.2.4
+      webpack-dev-server: 5.2.5
       webpack-hot-middleware: 2.x
       webpack-plugin-serve: 0.x || 1.x
     peerDependenciesMeta:
@@ -8586,8 +8586,8 @@ packages:
   language-tags@1.0.5:
     resolution: {integrity: sha512-qJhlO9cGXi6hBGKoxEG/sKZDAHD5Hnu9Hs4WbOY3pCWXDhw0N8x1NenNzm2EnNLkLkk7J2SdxAkDSbb6ftT+UQ==}
 
-  launch-editor@2.9.0:
-    resolution: {integrity: sha512-2fC2VVHR6j4vPp+WAjGmZzuThaKxBe5kq1/zV1E6Cd993hwUj73TmHSHTbEZGDeUILG3s1xkjpHTTZoNnJQA3g==}
+  launch-editor@2.14.1:
+    resolution: {integrity: sha512-QWBrQsMpH7gPr965dsKD/3cKWiNoTjpATQf++Xq63N6sKRGMwlVXz41O1IZTMfZQgBctD/K5Zt06+/I6pP6+HA==}
 
   lazy-cache@0.2.7:
     resolution: {integrity: sha512-gkX52wvU/R8DVMMt78ATVPFMJqfW8FPz1GZ1sVHBVQHmu/WvhIWE4cE1GBzhJNFicDeYhnwp6Rl35BcAIM3YOQ==}
@@ -11272,8 +11272,8 @@ packages:
   tmp-promise@3.0.3:
     resolution: {integrity: sha512-RwM7MoPojPxsOBYnyd2hy0bxtIlVrihNs9pj5SUvY8Zz1sQcQG2tG1hSr8PDxfgEB8RNKDhqbIlroIarSNDNsQ==}
 
-  tmp@0.2.6:
-    resolution: {integrity: sha512-5sJPdPjfI5Kx+qbrDesxkglRBxW//g7hCsqspEjwkewGvBMGIKMOTKzLt1hFVJzyadba3lDUN20O9qhvbQUSTA==}
+  tmp@0.2.7:
+    resolution: {integrity: sha512-e0votIpp4Uo2AJYSzVHV6xCcawuiez3DzqDAbrTc3YxBkplN6e+dM13ZeIcZnDg/QpSuU2zfZ3rzwY8ukEnaXw==}
     engines: {node: '>=14.14'}
 
   tmpl@1.0.5:
@@ -11725,8 +11725,8 @@ packages:
       webpack:
         optional: true
 
-  webpack-dev-server@5.2.4:
-    resolution: {integrity: sha512-GqDPGZN9bRqKBTkp4aWkobDDHMsrXKoGSdOH56smIri8qR0JG8gfL8/v/f/OZR3/OKXjG8uwJbFVhKm/FNU/UA==}
+  webpack-dev-server@5.2.5:
+    resolution: {integrity: sha512-4wZtCquSuv9CKX8oybo+mqxtxZqWz47uM1Ch94lxowBztOhWCbhqvRbfC/mODOwxgV2brY+JGZpHq58/SuVFYg==}
     engines: {node: '>= 18.12.0'}
     hasBin: true
     peerDependencies:
@@ -11892,8 +11892,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.20.1:
-    resolution: {integrity: sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==}
+  ws@8.21.0:
+    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -16051,7 +16051,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16061,7 +16061,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16071,7 +16071,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16081,7 +16081,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16091,7 +16091,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16101,7 +16101,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16111,7 +16111,7 @@ snapshots:
       '@php-wasm/universal': 3.1.20
       ini: 4.1.2
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16136,7 +16136,7 @@ snapshots:
       ini: 4.1.2
       jsonc-parser: 3.3.1
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -16181,7 +16181,7 @@ snapshots:
       ini: 4.1.2
       jsonc-parser: 3.3.1
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       xml2js: 0.6.2
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -16194,7 +16194,7 @@ snapshots:
 
   '@pkgr/core@0.1.1': {}
 
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@5.2.4)(webpack@5.105.4)':
+  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@5.2.5)(webpack@5.105.4)':
     dependencies:
       ansi-html: 0.0.9
       core-js-pure: 3.41.0
@@ -16207,7 +16207,7 @@ snapshots:
       webpack: 5.105.4(webpack-cli@5.1.4)
     optionalDependencies:
       type-fest: 4.41.0
-      webpack-dev-server: 5.2.4(webpack-cli@5.1.4)(webpack@5.105.4)
+      webpack-dev-server: 5.2.5(webpack-cli@5.1.4)(webpack@5.105.4)
 
   '@polka/url@1.0.0-next.25': {}
 
@@ -17564,12 +17564,12 @@ snapshots:
       webpack: 5.105.4(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.105.4)
 
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.4)(webpack@5.105.4)':
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.5)(webpack@5.105.4)':
     dependencies:
       webpack: 5.105.4(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.4)(webpack@5.105.4)
+      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.5)(webpack@5.105.4)
     optionalDependencies:
-      webpack-dev-server: 5.2.4(webpack-cli@5.1.4)(webpack@5.105.4)
+      webpack-dev-server: 5.2.5(webpack-cli@5.1.4)(webpack@5.105.4)
 
   '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack@5.105.4)':
     dependencies:
@@ -19542,7 +19542,7 @@ snapshots:
   '@wordpress/scripts@30.27.0(@types/eslint@9.6.1)(@types/node@24.12.2)(@wordpress/env@11.4.0(@types/node@24.12.2))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.25.7
-      '@pmmmwh/react-refresh-webpack-plugin': 0.5.15(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@5.2.4)(webpack@5.105.4)
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.15(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@5.2.5)(webpack@5.105.4)
       '@svgr/webpack': 8.1.0(typescript@5.9.3)
       '@wordpress/babel-preset-default': 8.44.0
       '@wordpress/browserslist-config': 6.44.0
@@ -19600,8 +19600,8 @@ snapshots:
       url-loader: 4.1.1(webpack@5.105.4)
       webpack: 5.105.4(webpack-cli@5.1.4)
       webpack-bundle-analyzer: 4.10.2
-      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.4)(webpack@5.105.4)
-      webpack-dev-server: 5.2.4(webpack-cli@5.1.4)(webpack@5.105.4)
+      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.5)(webpack@5.105.4)
+      webpack-dev-server: 5.2.5(webpack-cli@5.1.4)(webpack@5.105.4)
     optionalDependencies:
       '@wordpress/env': 11.4.0(@types/node@24.12.2)
     transitivePeerDependencies:
@@ -19927,7 +19927,7 @@ snapshots:
       sha.js: 2.4.12
       simple-get: 4.0.1
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -19970,7 +19970,7 @@ snapshots:
       simple-get: 4.0.1
       tmp-promise: 3.0.3
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       xml2js: 0.6.2
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -20027,7 +20027,7 @@ snapshots:
       sha.js: 2.4.12
       simple-get: 4.0.1
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -20047,7 +20047,7 @@ snapshots:
       ini: 4.1.2
       jsonc-parser: 3.3.1
       wasm-feature-detect: 1.8.0
-      ws: 8.20.1
+      ws: 8.21.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -23910,7 +23910,7 @@ snapshots:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.20.1
+      ws: 8.21.0
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -23938,7 +23938,7 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.0.0
-      ws: 8.20.1
+      ws: 8.21.0
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -24046,7 +24046,7 @@ snapshots:
     dependencies:
       language-subtag-registry: 0.3.22
 
-  launch-editor@2.9.0:
+  launch-editor@2.14.1:
     dependencies:
       picocolors: 1.1.1
       shell-quote: 1.8.4
@@ -25464,7 +25464,7 @@ snapshots:
       debug: 4.4.3
       devtools-protocol: 0.0.1367902
       typed-query-selector: 2.12.1
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -25480,7 +25480,7 @@ snapshots:
       devtools-protocol: 0.0.1595872
       typed-query-selector: 2.12.1
       webdriver-bidi-protocol: 0.4.1
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -27012,9 +27012,9 @@ snapshots:
 
   tmp-promise@3.0.3:
     dependencies:
-      tmp: 0.2.6
+      tmp: 0.2.7
 
-  tmp@0.2.6: {}
+  tmp@0.2.7: {}
 
   tmpl@1.0.5: {}
 
@@ -27434,12 +27434,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.4)(webpack@5.105.4):
+  webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.5)(webpack@5.105.4):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
       '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4)(webpack@5.105.4)
       '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4)(webpack@5.105.4)
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.4)(webpack@5.105.4)
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.5)(webpack@5.105.4)
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.6
@@ -27452,7 +27452,7 @@ snapshots:
       webpack-merge: 5.9.0
     optionalDependencies:
       webpack-bundle-analyzer: 4.10.2
-      webpack-dev-server: 5.2.4(webpack-cli@5.1.4)(webpack@5.105.4)
+      webpack-dev-server: 5.2.5(webpack-cli@5.1.4)(webpack@5.105.4)
 
   webpack-cli@5.1.4(webpack@5.105.4):
     dependencies:
@@ -27482,7 +27482,7 @@ snapshots:
     optionalDependencies:
       webpack: 5.105.4(webpack-cli@5.1.4)
 
-  webpack-dev-server@5.2.4(webpack-cli@5.1.4)(webpack@5.105.4):
+  webpack-dev-server@5.2.5(webpack-cli@5.1.4)(webpack@5.105.4):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -27502,7 +27502,7 @@ snapshots:
       graceful-fs: 4.2.11
       http-proxy-middleware: 2.0.9(@types/express@4.17.25)
       ipaddr.js: 2.2.0
-      launch-editor: 2.9.0
+      launch-editor: 2.14.1
       open: 10.2.0
       p-retry: 6.2.1
       schema-utils: 4.3.3
@@ -27511,10 +27511,10 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 7.4.5(webpack@5.105.4)
-      ws: 8.20.1
+      ws: 8.21.0
     optionalDependencies:
       webpack: 5.105.4(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.4)(webpack@5.105.4)
+      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.5)(webpack@5.105.4)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -27705,7 +27705,7 @@ snapshots:
 
   ws@7.5.10: {}
 
-  ws@8.20.1: {}
+  ws@8.21.0: {}
 
   wsl-utils@0.1.0:
     dependencies:
@@ -27750,7 +27750,7 @@ snapshots:
       y-protocols: 1.0.6(yjs@13.6.12)
       yjs: 13.6.12
     optionalDependencies:
-      ws: 8.20.1
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
