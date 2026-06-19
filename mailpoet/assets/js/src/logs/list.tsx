@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Notice } from '@wordpress/components';
 import { DataViews, View } from '@wordpress/dataviews';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { Button } from 'common';
 import {
@@ -12,6 +12,7 @@ import {
   type ListingQueryParams,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
+import { DeleteLogsModal } from './delete-modal';
 import { getLogActions, getLogFieldDefinitions, getLogFields } from './fields';
 import {
   getLogFilterOptions,
@@ -72,6 +73,8 @@ export function List({ defaultFrom }: Props): JSX.Element {
   const [expandedLogIds, setExpandedLogIds] = useState<Set<number>>(
     () => new Set(),
   );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const didMountRef = useRef(false);
 
   const load = useCallback(
@@ -105,13 +108,17 @@ export function List({ defaultFrom }: Props): JSX.Element {
       filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
 
-  const dateRangeError = getDateRangeError(
-    viewFiltersToRequestFilter(view.filters),
-  );
+  const requestFilter = viewFiltersToRequestFilter(view.filters);
+  const dateRangeError = getDateRangeError(requestFilter);
   const emptyState =
     loadError || dateRangeError ? null : (
       <div>{__('No logs found.', 'mailpoet')}</div>
     );
+
+  const searchTerm = view.search?.trim() || undefined;
+  const isUnrestrictedDelete =
+    Object.keys(requestFilter).length === 0 && !searchTerm;
+  const canDelete = !isLoading && !dateRangeError && meta.count > 0;
 
   const persistedViewChange = usePersistedDataViewsPreference(
     'logs',
@@ -169,8 +176,27 @@ export function List({ defaultFrom }: Props): JSX.Element {
     refresh();
   }, [clearLoadError, refresh]);
 
+  const handleDeleted = useCallback(
+    (deleted: number): void => {
+      setSuccessMessage(
+        sprintf(
+          _n('%s log deleted.', '%s logs deleted.', deleted, 'mailpoet'),
+          deleted.toLocaleString(),
+        ),
+      );
+      refresh();
+    },
+    [refresh],
+  );
+
   return (
     <div className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews">
+      {successMessage && (
+        <Notice status="success" onRemove={() => setSuccessMessage(null)}>
+          {successMessage}
+        </Notice>
+      )}
+
       {loadError && (
         <Notice status="error" isDismissible={false}>
           <div className="mailpoet-logs-error">
@@ -211,6 +237,14 @@ export function List({ defaultFrom }: Props): JSX.Element {
           <DataViews.Search label={__('Search logs', 'mailpoet')} />
           <DataViews.FiltersToggle />
           <div className="mailpoet-dataviews__toolbar-end">
+            <Button
+              dimension="small"
+              variant="destructive"
+              onClick={() => setIsDeleteModalOpen(true)}
+              isDisabled={!canDelete}
+            >
+              {__('Delete logs...', 'mailpoet')}
+            </Button>
             <DataViews.ViewConfig />
           </div>
         </div>
@@ -218,6 +252,16 @@ export function List({ defaultFrom }: Props): JSX.Element {
         <DataViews.Layout />
         <DataViews.Footer />
       </DataViews>
+      {isDeleteModalOpen && (
+        <DeleteLogsModal
+          count={meta.count}
+          filter={requestFilter}
+          search={searchTerm}
+          isUnrestricted={isUnrestrictedDelete}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDeleted={handleDeleted}
+        />
+      )}
     </div>
   );
 }

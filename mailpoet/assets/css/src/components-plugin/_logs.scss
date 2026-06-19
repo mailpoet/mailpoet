@@ -88,3 +88,20 @@
     flex-basis: 100%;
   }
 }
+
+.mailpoet-logs-delete-modal {
+  .components-modal__content {
+    min-width: 420px;
+  }
+
+  .components-notice {
+    margin: 0 0 $grid-gap;
+  }
+}
+
+.mailpoet-logs-delete-modal__actions {
+  display: flex;
+  gap: $grid-gap-half;
+  justify-content: flex-end;
+  margin-top: $grid-gap;
+}

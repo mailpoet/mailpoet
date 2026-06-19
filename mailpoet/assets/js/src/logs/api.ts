@@ -33,6 +33,10 @@ export type LogListingItem = {
   created_at: string | null;
 };
 
+type ApiEnvelope<T> = {
+  data: T;
+};
+
 export function buildLogsRequestParams(
   params: ListingQueryParams,
   filters: LogsFilter,
@@ -56,4 +60,25 @@ export async function getLogs(
     signal,
   });
   return response.data;
+}
+
+// Deletes the logs matching the listing's current filters and search, so a
+// deletion removes exactly the rows the filtered listing shows. `all` confirms
+// the unrestricted case (no filters, no search) where every log is removed.
+export async function deleteLogs(
+  filter: LogsFilter,
+  search: string | undefined,
+  all: boolean,
+): Promise<number> {
+  ensureInitialized();
+  const response = await apiFetch<ApiEnvelope<{ deleted: number }>>({
+    path: '/mailpoet/v1/logs/delete',
+    method: 'POST',
+    data: {
+      filter,
+      search: search?.trim() || undefined,
+      all,
+    },
+  });
+  return response.data.deleted;
 }
