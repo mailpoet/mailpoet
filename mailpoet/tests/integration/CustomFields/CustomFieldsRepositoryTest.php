@@ -173,6 +173,44 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertNotNull($this->repository->findOneById($active->getId()));
   }
 
+  public function testListWithCountsFiltersByType(): void {
+    (new CustomFieldFactory())->withName('TextField')->withType('text')->create();
+    (new CustomFieldFactory())->withName('DateField')->withType('date')->create();
+    (new CustomFieldFactory())->withName('SelectField')->withType('select')->withParams(['values' => [['value' => 'a']]])->create();
+
+    $result = $this->repository->listWithCounts(['filter' => ['type' => ['date', 'select']]]);
+    $this->assertSame(2, $result['total']);
+    $names = array_column($result['items'], 'name');
+    sort($names);
+    $this->assertSame(['DateField', 'SelectField'], $names);
+  }
+
+  public function testListWithCountsExposesRequiredFlag(): void {
+    (new CustomFieldFactory())->withName('Req')->withParams(['label' => 'Req', 'required' => '1'])->create();
+    (new CustomFieldFactory())->withName('Opt')->withParams(['label' => 'Opt'])->create();
+
+    $items = array_column($this->repository->listWithCounts()['items'], null, 'name');
+    $this->assertTrue($items['Req']['required']);
+    $this->assertFalse($items['Opt']['required']);
+  }
+
+  public function testListWithCountsSortsBySubscribersCount(): void {
+    $subscriberA = (new SubscriberFactory())->withEmail('sa@example.com')->create();
+    $subscriberB = (new SubscriberFactory())->withEmail('sb@example.com')->create();
+
+    (new CustomFieldFactory())->withName('NoSubs')->create();
+    (new CustomFieldFactory())->withName('OneSub')
+      ->withSubscriber($subscriberA->getId(), 'value')
+      ->create();
+    (new CustomFieldFactory())->withName('TwoSubs')
+      ->withSubscriber($subscriberA->getId(), 'value')
+      ->withSubscriber($subscriberB->getId(), 'value')
+      ->create();
+
+    $result = $this->repository->listWithCounts(['orderby' => 'subscribers_count', 'order' => 'desc']);
+    $this->assertSame(['TwoSubs', 'OneSub', 'NoSubs'], array_column($result['items'], 'name'));
+  }
+
   /**
    * @param array<int, array{name: string}> $items
    * @return array<string, array>
