@@ -32,8 +32,12 @@ const engagementScoreFields: Field<SegmentListingItem>[] = MailPoet
       {
         id: 'average_engagement_score',
         label: MailPoet.I18n.t('listScore'),
+        type: 'integer',
         enableSorting: true,
         enableGlobalSearch: false,
+        filterBy: {
+          operators: ['lessThan', 'greaterThan', 'between'],
+        },
         render: ({ item }) =>
           createElement(ListingsEngagementScore, {
             id: Number(item.id),
@@ -50,6 +54,7 @@ export const segmentFields: Field<SegmentListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: false,
+    filterBy: false,
     render: ({ item }) => {
       const privateLabel =
         Number(item.show_in_manage_subscription_page) === 0
@@ -98,20 +103,6 @@ export const segmentFields: Field<SegmentListingItem>[] = [
     enableSorting: false,
     enableGlobalSearch: false,
   },
-  {
-    id: 'type',
-    label: __('Type', 'mailpoet'),
-    elements: [
-      { value: 'default', label: __('List', 'mailpoet') },
-      { value: 'wp_users', label: __('WordPress users', 'mailpoet') },
-      {
-        value: 'woocommerce_users',
-        label: __('WooCommerce customers', 'mailpoet'),
-      },
-    ],
-    enableSorting: false,
-    enableGlobalSearch: false,
-  },
   ...engagementScoreFields,
   {
     id: 'subscribed',
@@ -151,9 +142,12 @@ export const segmentFields: Field<SegmentListingItem>[] = [
   {
     id: 'created_at',
     label: MailPoet.I18n.t('createdOn'),
-    type: 'datetime',
+    type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
+    filterBy: {
+      operators: ['on', 'beforeInc', 'afterInc', 'between'],
+    },
     render: ({ item }) => dateTime(item.created_at),
   },
 ];

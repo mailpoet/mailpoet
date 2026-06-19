@@ -38,6 +38,7 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: true,
+    filterBy: false,
     render: ({ item }) =>
       createElement(
         'div',
@@ -103,11 +104,25 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
     },
   },
   {
-    id: 'updated_at',
-    label: __('Modified', 'mailpoet'),
-    type: 'datetime',
+    id: 'created_at',
+    label: __('Created', 'mailpoet'),
+    type: 'date',
     enableSorting: true,
     enableGlobalSearch: false,
+    filterBy: {
+      operators: ['on', 'beforeInc', 'afterInc', 'between'],
+    },
+    render: ({ item }) => dateTime(item.created_at),
+  },
+  {
+    id: 'updated_at',
+    label: __('Modified', 'mailpoet'),
+    type: 'date',
+    enableSorting: true,
+    enableGlobalSearch: false,
+    filterBy: {
+      operators: ['on', 'beforeInc', 'afterInc', 'between'],
+    },
     render: ({ item }) => dateTime(item.updated_at, item.id),
   },
 ];
