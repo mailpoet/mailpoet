@@ -3,6 +3,7 @@
 namespace MailPoet\Logging\RestApi;
 
 use MailPoet\API\REST\API as RestApi;
+use MailPoet\Logging\RestApi\Endpoints\LogsDeleteEndpoint;
 use MailPoet\Logging\RestApi\Endpoints\LogsListingEndpoint;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -24,6 +25,7 @@ class Api {
   public function initialize(): void {
     $this->wp->addAction(RestApi::REST_API_INIT_ACTION, function (): void {
       $this->api->registerGetRoute('logs', LogsListingEndpoint::class);
+      $this->api->registerPostRoute('logs/delete', LogsDeleteEndpoint::class);
     });
   }
 }
