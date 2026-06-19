@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Config\ServicesChecker;
+use MailPoet\InvalidStateException;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
@@ -152,7 +153,7 @@ class MailPoet implements MailerMethod {
   private function composeTemplateBatchBody(TemplateBatch $batch, array $subscribers, array $extraParams): array {
     $template = $batch->getTemplate();
     $body = [
-      'format' => 'template_batch_v1',
+      'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
       'from' => ([
         'address' => $this->sender['from_email'],
         'name' => $this->sender['from_name'],
@@ -176,6 +177,11 @@ class MailPoet implements MailerMethod {
     }
 
     $substitutions = $batch->getSubstitutions();
+    // The template is shared, so every recipient must have its own substitution
+    // map. A mismatch would ship raw {{mailpoet_mss_*}} placeholders, so fail loudly.
+    if (count($substitutions) !== count($subscribers)) {
+      throw new InvalidStateException('Templated batch substitution count does not match the number of recipients.');
+    }
     for ($record = 0; $record < count($subscribers); $record++) {
       $processedSubscriber = $this->processSubscriber($subscribers[$record]);
       $message = [
@@ -184,7 +190,7 @@ class MailPoet implements MailerMethod {
           'name' => $processedSubscriber['name'],
         ]),
         // Bridge must replace these once, without recursively expanding values.
-        'substitutions' => $substitutions[$record] ?? [],
+        'substitutions' => $substitutions[$record],
       ];
       $unsubscribeUrl = (!empty($extraParams['unsubscribe_url'][$record])) ? $extraParams['unsubscribe_url'][$record] : false;
       $oneClickUnsubscribeUrl = (!empty($extraParams['one_click_unsubscribe'][$record])) ? $extraParams['one_click_unsubscribe'][$record] : false;

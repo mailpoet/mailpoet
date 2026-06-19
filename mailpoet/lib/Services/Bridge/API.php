@@ -14,6 +14,10 @@ class API {
 
   const REQUEST_TIMEOUT = 10; // seconds
 
+  // Wire-format identifier for the templated batch payload. When present in the
+  // message body, the request is routed to the dedicated template-messages endpoint.
+  public const SENDING_FORMAT_TEMPLATE_BATCH = 'template_batch_v1';
+
   // ISO 8601 in UTC, e.g. 2026-06-15T23:59:59Z. The bounces report endpoint
   // parses the `from`/`to` parameters with `new DateTime($value, UTC)`.
   const BOUNCES_REPORT_DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
@@ -71,6 +75,10 @@ class API {
   public $urlMe = self::API_BASE_URL_V0 . '/me';
   public $urlPremium = self::API_BASE_URL_V0 . '/premium';
   public $urlMessages = self::API_BASE_URL_V0 . '/messages';
+  // Templated batch sending: one shared template plus per-recipient substitution
+  // maps. The legacy urlMessages endpoint is unchanged and still serves the
+  // transactional/test/non-bulk sends that post fully rendered messages.
+  public $urlTemplateMessages = self::API_BASE_URL_V2 . '/template-messages';
   public $urlBounces = self::API_BASE_URL_V0 . '/bounces/search';
   public $urlBouncesReport = self::API_BASE_URL_V2 . '/bounces/report';
   public $urlStats = self::API_BASE_URL_V0 . '/stats';
@@ -149,7 +157,7 @@ class API {
     add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 1);
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
-      $this->urlMessages,
+      $this->getMessagesUrl($messageBody),
       $messageBody
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
@@ -170,6 +178,16 @@ class API {
       return $this->createErrorResponse((int)$responseCode, $response, self::SENDING_STATUS_SEND_ERROR);
     }
     return ['status' => self::RESPONSE_STATUS_OK];
+  }
+
+  /**
+   * @param mixed $messageBody
+   */
+  private function getMessagesUrl($messageBody): string {
+    if (is_array($messageBody) && ($messageBody['format'] ?? null) === self::SENDING_FORMAT_TEMPLATE_BATCH) {
+      return $this->urlTemplateMessages;
+    }
+    return $this->urlMessages;
   }
 
   /**

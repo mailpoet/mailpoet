@@ -370,4 +370,40 @@ class BridgeApiTest extends \MailPoetTest {
     verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
+
+  public function testItSendsRenderedMessagesToTheMessagesEndpoint() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with($this->equalTo($this->api->urlMessages))
+      ->willReturn([]);
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+
+    $result = $this->api->sendMessages([
+      ['to' => ['address' => 'john@example.com', 'name' => 'John'], 'subject' => 'Hello'],
+    ]);
+    verify($result['status'])->equals(API::RESPONSE_STATUS_OK);
+  }
+
+  public function testItSendsTemplateBatchesToTheTemplateMessagesEndpoint() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with($this->equalTo($this->api->urlTemplateMessages))
+      ->willReturn([]);
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+
+    $result = $this->api->sendMessages([
+      'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
+      'template' => ['subject' => 'Hello {{mailpoet_mss_1}}'],
+      'messages' => [
+        ['to' => ['address' => 'john@example.com', 'name' => 'John'], 'substitutions' => ['{{mailpoet_mss_1}}' => 'John']],
+      ],
+    ]);
+    verify($result['status'])->equals(API::RESPONSE_STATUS_OK);
+  }
 }
