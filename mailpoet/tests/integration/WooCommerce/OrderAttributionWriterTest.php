@@ -301,7 +301,15 @@ class OrderAttributionWriterTest extends \MailPoetTest {
     $this->entityManager->flush();
     $order = $this->createOrder($this->subscriber->getEmail());
 
-    do_action('woocommerce_order_save_attribution_data', $order, []);
+    // WooCommerce's own priority-10 handler reads every registered attribution field
+    // off this payload, so pass the full default field set (empty = direct/overwritable)
+    // to avoid undefined-key warnings before the MailPoet writer runs at priority 20.
+    $attributionData = array_fill_keys([
+      'source_type', 'referrer', 'utm_campaign', 'utm_source', 'utm_medium', 'utm_content',
+      'utm_id', 'utm_term', 'utm_source_platform', 'utm_creative_format', 'utm_marketing_tactic',
+      'session_entry', 'session_start_time', 'session_pages', 'session_count', 'user_agent',
+    ], '');
+    do_action('woocommerce_order_save_attribution_data', $order, $attributionData);
 
     $order = $this->reloadOrder($order);
     verify($order->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('mailpoet');
