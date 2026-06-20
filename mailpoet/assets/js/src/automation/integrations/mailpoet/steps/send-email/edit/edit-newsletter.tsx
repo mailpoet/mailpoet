@@ -435,6 +435,7 @@ export function EditNewsletter(): JSX.Element {
 
   useEffect(() => {
     setPreviewUrl(null);
+    setFetchingPreviewLink(false);
   }, [emailId]);
 
   const handleDuplicatedStep =
