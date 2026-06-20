@@ -16,6 +16,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
+use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Features;
 use MailPoet\Util\Cookies;
@@ -91,19 +92,21 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
     $this->writeThroughContext($context, $order);
 
     $order = $this->reloadOrder($order);
-    $clickIdKey = OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID);
+    $utmSourceKey = OrderAttributionFields::getMetaKey('utm_source');
 
     if (!$expectWrite) {
-      verify($order->meta_exists($clickIdKey))->false();
+      verify($order->get_meta($utmSourceKey))->notEquals('mailpoet');
       $this->assertArrayNotHasKey($order->get_id(), $this->readNewsletterOrderIds());
       return;
     }
 
-    verify($order->get_meta($clickIdKey))->equals((string)$click->getId());
-    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID)))
-      ->equals((string)$this->newsletter->getId());
-    verify($order->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID)))
-      ->equals((string)$this->subscriber->getId());
+    verify($order->get_meta($utmSourceKey))->equals('mailpoet');
+
+    // The Woo-backed reader joins the legacy purchase row for per-order detail. Seed it
+    // idempotently: the order-status-change context already created one via the legacy
+    // tracker, the other write contexts did not.
+    $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class)
+      ->createOrUpdateByClickDataAndOrder($click, $order);
 
     $row = $this->readNewsletterOrderRow($order->get_id());
     $this->assertNotNull($row);
@@ -178,8 +181,6 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
     verify($mailPoetRevenue['count'])->equals(2);
 
     $olderEmailClickOrder = $this->reloadOrder($olderEmailClickOrder);
-    verify($olderEmailClickOrder->get_meta(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID)))
-      ->equals((string)$click->getId());
     verify($olderEmailClickOrder->get_meta(OrderAttributionFields::getMetaKey('utm_source')))->equals('google');
   }
 
@@ -216,9 +217,6 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
       'utm_id', 'utm_term', 'utm_source_platform', 'utm_creative_format', 'utm_marketing_tactic',
       'session_entry', 'session_start_time', 'session_pages', 'session_count', 'user_agent',
     ], '(none)');
-    foreach (OrderAttributionFields::FIELD_NAMES as $fieldName) {
-      $params[$fieldName] = '';
-    }
     return $params;
   }
 

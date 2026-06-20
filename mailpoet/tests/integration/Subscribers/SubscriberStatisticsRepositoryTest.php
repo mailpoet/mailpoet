@@ -246,7 +246,7 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $link = (new NewsletterLink($newsletter))->create();
     $click = (new StatisticsClicks($link, $subscriber))->create();
 
-    $order = $this->createCompletedOrderWithAttribution($click, $subscriber, 30);
+    $order = $this->createCompletedOrderWithAttribution($click, 30);
 
     $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
 
@@ -262,80 +262,15 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $link = (new NewsletterLink($newsletter))->create();
     $click = (new StatisticsClicks($link, $subscriber))->create();
 
-    $order = $this->createCompletedOrderWithAttribution($click, $subscriber, 40);
+    $order = $this->createCompletedOrderWithAttribution($click, 40);
     $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'google');
     $order->save_meta_data();
-
-    (new StatisticsWooCommercePurchases($click, [
-      'id' => $order->get_id(),
-      'currency' => 'USD',
-      'total' => 18.00,
-    ]))->withCreatedAt(new \DateTimeImmutable('-30 minutes'))->create();
 
     $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
 
     $this->assertInstanceOf(WooCommerceRevenue::class, $result);
     verify($result->getOrdersCount())->equals(0);
     verify($result->getValue())->equals(0.00);
-  }
-
-  public function testWooBackedSubscriberRevenueFallsBackToLegacyWhenSubscriberMetaIsMissing(): void {
-    $this->enableWooBackedRevenueReadModel();
-    $subscriber = (new Subscriber())->create();
-    $newsletter = (new Newsletter())->withSendingQueue()->create();
-    $link = (new NewsletterLink($newsletter))->create();
-    $click = (new StatisticsClicks($link, $subscriber))->create();
-
-    (new StatisticsWooCommercePurchases($click, [
-      'id' => 2001,
-      'currency' => 'USD',
-      'total' => 18.00,
-    ]))->withCreatedAt(new \DateTimeImmutable('-30 minutes'))->create();
-
-    $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
-
-    $this->assertInstanceOf(WooCommerceRevenue::class, $result);
-    verify($result->getOrdersCount())->equals(1);
-    verify($result->getValue())->equals(18.00);
-  }
-
-  public function testWooBackedSubscriberRevenueFallsBackToLegacyWhenOrderAttributionIsPartial(): void {
-    $this->enableWooBackedRevenueReadModel();
-    $subscriber = (new Subscriber())->create();
-    $newsletter = (new Newsletter())->withSendingQueue()->create();
-    $link = (new NewsletterLink($newsletter))->create();
-    $click = (new StatisticsClicks($link, $subscriber))->create();
-    $queue = $click->getQueue();
-    $this->assertNotNull($queue);
-
-    // Post-boundary Woo order carrying click + newsletter attribution but no
-    // subscriber meta: the Woo subscriber path must skip it and the legacy
-    // purchase row must supply the value instead of it being dropped.
-    $order = wc_create_order();
-    $this->assertInstanceOf(WC_Order::class, $order);
-    $order->set_billing_email('partial-attribution@example.com');
-    $order->set_currency('USD');
-    $order->set_total('40');
-    $order->set_status('completed');
-    $order->save();
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)$click->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$newsletter->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
-    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
-    $order->save_meta_data();
-
-    (new StatisticsWooCommercePurchases($click, [
-      'id' => $order->get_id(),
-      'currency' => 'USD',
-      'total' => 18.00,
-    ]))->withCreatedAt(new \DateTimeImmutable('-30 minutes'))->create();
-
-    $result = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subHour());
-
-    $this->assertInstanceOf(WooCommerceRevenue::class, $result);
-    verify($result->getOrdersCount())->equals(1);
-    verify($result->getValue())->equals(18.00);
   }
 
   private function enableWooBackedRevenueReadModel(): void {
@@ -346,14 +281,8 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
 
   private function createCompletedOrderWithAttribution(
     StatisticsClickEntity $click,
-    SubscriberEntity $subscriber,
     float $total
   ): WC_Order {
-    $newsletter = $click->getNewsletter();
-    $queue = $click->getQueue();
-    $this->assertNotNull($newsletter);
-    $this->assertNotNull($queue);
-
     $order = wc_create_order();
     $this->assertInstanceOf(WC_Order::class, $order);
     $order->set_billing_email('manual-attribution@example.com');
@@ -361,10 +290,14 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $order->set_total((string)$total);
     $order->set_status('completed');
     $order->save();
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)$click->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$newsletter->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID), (string)$subscriber->getId());
+    // The Woo-backed reader recovers per-order subscriber/newsletter/queue detail from
+    // the legacy purchase row (joined on order_id) and counts the order only when the
+    // standard source resolved to mailpoet, so seed both.
+    (new StatisticsWooCommercePurchases($click, [
+      'id' => $order->get_id(),
+      'currency' => 'USD',
+      'total' => $total,
+    ]))->create();
     $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
     $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
     $order->save_meta_data();
