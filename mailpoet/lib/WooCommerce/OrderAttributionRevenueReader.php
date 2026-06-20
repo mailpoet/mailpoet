@@ -58,11 +58,15 @@ class OrderAttributionRevenueReader {
 
     $this->mergeNewsletterRows(
       $revenues,
-      $this->getLegacyNewsletterRevenues($newsletterIds, $currency, $purchaseStates, $from, $beforeBoundaryTo, $this->isBoundaryUpperLimit($to, $boundary))
+      $this->getLegacyNewsletterRevenues($newsletterIds, $currency, $purchaseStates, $from, $beforeBoundaryTo, false, $this->isBoundaryUpperLimit($to, $boundary))
     );
     $this->mergeNewsletterRows(
       $revenues,
       $this->getWooNewsletterRevenues($newsletterIds, $currency, $purchaseStates, $afterBoundaryFrom, $to)
+    );
+    $this->mergeNewsletterRows(
+      $revenues,
+      $this->getLegacyNewsletterRevenues($newsletterIds, $currency, $purchaseStates, $afterBoundaryFrom, $to, true, false)
     );
 
     return $revenues;
@@ -85,11 +89,15 @@ class OrderAttributionRevenueReader {
 
     $this->mergeRevenue(
       $revenue,
-      $this->getLegacySubscriberRevenue($subscriberId, $currency, $purchaseStates, $startTime, $beforeBoundaryTo, true)
+      $this->getLegacySubscriberRevenue($subscriberId, $currency, $purchaseStates, $startTime, $beforeBoundaryTo, false, true)
     );
     $this->mergeRevenue(
       $revenue,
       $this->getWooSubscriberRevenue($subscriberId, $currency, $purchaseStates, $afterBoundaryFrom, null)
+    );
+    $this->mergeRevenue(
+      $revenue,
+      $this->getLegacySubscriberRevenue($subscriberId, $currency, $purchaseStates, $afterBoundaryFrom, null, true, false)
     );
 
     return $revenue;
@@ -118,8 +126,9 @@ class OrderAttributionRevenueReader {
     $afterBoundaryFrom = $this->getAfterBoundaryFrom($from, $boundary);
 
     return array_merge(
-      $this->getLegacyNewsletterOrderRows($newsletterIds, $from, $beforeBoundaryTo, $this->isBoundaryUpperLimit($to, $boundary)),
-      $this->getWooNewsletterOrderRows($newsletterIds, $afterBoundaryFrom, $to)
+      $this->getLegacyNewsletterOrderRows($newsletterIds, $from, $beforeBoundaryTo, false, $this->isBoundaryUpperLimit($to, $boundary)),
+      $this->getWooNewsletterOrderRows($newsletterIds, $afterBoundaryFrom, $to),
+      $this->getLegacyNewsletterOrderRows($newsletterIds, $afterBoundaryFrom, $to, true, false)
     );
   }
 
@@ -184,6 +193,7 @@ class OrderAttributionRevenueReader {
     array $purchaseStates,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if (!$purchaseStates || $this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -194,6 +204,8 @@ class OrderAttributionRevenueReader {
 
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
+    $excludeParams = [];
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
     $statePlaceholders = implode(',', array_fill(0, count($purchaseStates), '%s'));
 
@@ -208,6 +220,7 @@ class OrderAttributionRevenueReader {
           AND swp.status IN (' . $statePlaceholders . ')
           AND (q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE %s)
           ' . $dateSql . '
+          ' . $excludeSql . '
         GROUP BY swp.newsletter_id
       ',
       array_merge(
@@ -219,7 +232,8 @@ class OrderAttributionRevenueReader {
         [$currency],
         $purchaseStates,
         [NewsletterReplayMetadata::getMetaLikePattern()],
-        $dateParams
+        $dateParams,
+        $excludeParams
       )
     );
     // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
@@ -274,6 +288,7 @@ class OrderAttributionRevenueReader {
     array $purchaseStates,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if (!$purchaseStates || $this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -284,6 +299,8 @@ class OrderAttributionRevenueReader {
 
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
+    $excludeParams = [];
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $statePlaceholders = implode(',', array_fill(0, count($purchaseStates), '%s'));
 
     // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
@@ -295,6 +312,7 @@ class OrderAttributionRevenueReader {
           AND swp.order_currency = %s
           AND swp.status IN (' . $statePlaceholders . ')
           ' . $dateSql . '
+          ' . $excludeSql . '
         GROUP BY swp.order_id, swp.order_price_total
       ',
       array_merge(
@@ -304,7 +322,8 @@ class OrderAttributionRevenueReader {
           $currency,
         ],
         $purchaseStates,
-        $dateParams
+        $dateParams,
+        $excludeParams
       )
     );
     // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
@@ -358,6 +377,7 @@ class OrderAttributionRevenueReader {
     array $newsletterIds,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if ($this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -368,6 +388,8 @@ class OrderAttributionRevenueReader {
 
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
+    $excludeParams = [];
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
     $orderTable = $this->getOrderTable();
     $orderStatusColumn = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled()
@@ -399,6 +421,7 @@ class OrderAttributionRevenueReader {
         WHERE swp.newsletter_id IN (' . $newsletterPlaceholders . ')
           AND (q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE %s)
           ' . $dateSql . '
+          ' . $excludeSql . '
       ',
       array_merge(
         [
@@ -410,7 +433,8 @@ class OrderAttributionRevenueReader {
         ],
         $newsletterIds,
         [NewsletterReplayMetadata::getMetaLikePattern()],
-        $dateParams
+        $dateParams,
+        $excludeParams
       )
     );
     // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
@@ -685,6 +709,26 @@ class OrderAttributionRevenueReader {
       return $from->getTimestamp() >= $to->getTimestamp();
     }
     return $from->getTimestamp() > $to->getTimestamp();
+  }
+
+  /**
+   * Post-boundary legacy fallback exclusion. Skips orders whose Woo standard
+   * attribution source is already resolved (any non-empty utm_source): those are
+   * either counted by the Woo path (source = mailpoet) or intentionally left out
+   * for parity (a non-MailPoet source won last-click). Orders with no resolved
+   * source — e.g. Woo attribution unavailable when the order was tracked — fall
+   * back to the legacy table so their revenue is not dropped.
+   *
+   * @param array<int, string> $params
+   */
+  private function getResolvedSourceExclusionSql(string $orderIdExpression, array &$params): string {
+    $meta = $this->getOrderMetaTable();
+    $params = [
+      $meta['table'],
+      $meta['order_id_column'],
+      OrderAttributionFields::getMetaKey('utm_source'),
+    ];
+    return ' AND NOT EXISTS (SELECT 1 FROM %i woo_meta WHERE woo_meta.%i = ' . $orderIdExpression . ' AND woo_meta.meta_key = %s AND woo_meta.meta_value <> \'\')';
   }
 
   /**
