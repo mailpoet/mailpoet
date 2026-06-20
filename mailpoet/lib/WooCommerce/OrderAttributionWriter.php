@@ -17,8 +17,6 @@ use WC_Order;
 class OrderAttributionWriter {
   const WRITES_STARTED_AT_OPTION = 'mailpoet_woo_attribution_writes_started_at';
 
-  const META_PREFIX = OrderAttributionFields::META_PREFIX;
-
   // 'typein' is Woo's source type for direct traffic. A clear non-MailPoet source
   // (organic, referral, non-MailPoet utm, admin, mobile_app) is never overwritten.
   const OVERWRITABLE_SOURCE_TYPES = ['', 'typein', 'unknown'];
@@ -74,11 +72,8 @@ class OrderAttributionWriter {
 
     $click = $this->resolveCanonicalClick($order);
     if (!$click) {
-      $this->removeEmptyPlaceholders($order);
-      $order->save_meta_data();
       return;
     }
-    $this->writeMailPoetFields($order, $click);
     $this->writeStandardSourceFields($order, $click);
     $order->save_meta_data();
   }
@@ -213,25 +208,6 @@ class OrderAttributionWriter {
     return $subscriber instanceof SubscriberEntity ? $subscriber->getEmail() : null;
   }
 
-  private function writeMailPoetFields(WC_Order $order, StatisticsClickEntity $click): void {
-    $newsletter = $click->getNewsletter();
-    $queue = $click->getQueue();
-    $subscriber = $click->getSubscriber();
-    $values = [
-      OrderAttributionFields::FIELD_CLICK_ID => (string)$click->getId(),
-      OrderAttributionFields::FIELD_NEWSLETTER_ID => $newsletter ? (string)$newsletter->getId() : '',
-      OrderAttributionFields::FIELD_QUEUE_ID => $queue ? (string)$queue->getId() : '',
-      OrderAttributionFields::FIELD_SUBSCRIBER_ID => $subscriber ? (string)$subscriber->getId() : '',
-    ];
-    foreach ($values as $fieldName => $value) {
-      if ($value === '') {
-        $this->removeEmptyPlaceholder($order, $fieldName);
-        continue;
-      }
-      $order->update_meta_data(OrderAttributionFields::getMetaKey($fieldName), $value);
-    }
-  }
-
   private function writeStandardSourceFields(WC_Order $order, StatisticsClickEntity $click): void {
     $sourceType = $this->getMetaString($order, OrderAttributionFields::getMetaKey('source_type'));
     $utmSource = $this->getMetaString($order, OrderAttributionFields::getMetaKey('utm_source'));
@@ -291,25 +267,6 @@ class OrderAttributionWriter {
       return null;
     }
     return $date;
-  }
-
-  /**
-   * WooCommerce persists the registered MailPoet fields as empty strings on checkout
-   * orders (the placeholders from STOMAIL-7487). When no attribution is resolved,
-   * the empty placeholders are removed so "no eligible click" leaves no MailPoet
-   * meta behind. Non-empty values are never removed.
-   */
-  private function removeEmptyPlaceholders(WC_Order $order): void {
-    foreach (OrderAttributionFields::FIELD_NAMES as $fieldName) {
-      $this->removeEmptyPlaceholder($order, $fieldName);
-    }
-  }
-
-  private function removeEmptyPlaceholder(WC_Order $order, string $fieldName): void {
-    $metaKey = OrderAttributionFields::getMetaKey($fieldName);
-    if ($order->meta_exists($metaKey) && $this->getMetaString($order, $metaKey) === '') {
-      $order->delete_meta_data($metaKey);
-    }
   }
 
   private function getMetaString(WC_Order $order, string $metaKey): string {
