@@ -21,7 +21,6 @@ use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
-use MailPoet\WooCommerce\OrderAttributionFields;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\WooSystemInfoController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -112,9 +111,6 @@ class Hooks {
   /** @var AdminUserSubscription */
   private $adminUserSubscription;
 
-  /** @var OrderAttributionFields */
-  private $orderAttributionFields;
-
   private CouponBlockGenerator $couponBlockGenerator;
 
   public function __construct(
@@ -141,7 +137,6 @@ class Hooks {
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
     AdminUserSubscription $adminUserSubscription,
-    OrderAttributionFields $orderAttributionFields,
     CouponBlockGenerator $couponBlockGenerator
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -167,7 +162,6 @@ class Hooks {
     $this->cronTrigger = $cronTrigger;
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
-    $this->orderAttributionFields = $orderAttributionFields;
     $this->couponBlockGenerator = $couponBlockGenerator;
   }
 
@@ -197,8 +191,6 @@ class Hooks {
 
   public function initEarlyHooks() {
     $this->setupMailer();
-    // Must run before the WooCommerce plugin file loads, see OrderAttributionFields::setup()
-    $this->orderAttributionFields->setup();
   }
 
   public function setupSubscriptionEvents() {
@@ -563,26 +555,6 @@ class Hooks {
       'woocommerce_process_shop_order_meta',
       [$this->hooksWooCommerce, 'writeOrderAttribution'],
       50
-    );
-    // Reconciliation (STOMAIL-8136) must run after both the legacy purchase
-    // tracker and the attribution writer (priority 10 on the same hooks)
-    $this->wp->addAction(
-      'woocommerce_order_status_changed',
-      [$this->hooksWooCommerce, 'reconcileOrderAttribution'],
-      20,
-      1
-    );
-    $this->wp->addAction(
-      'woocommerce_order_refunded',
-      [$this->hooksWooCommerce, 'reconcileOrderAttributionOnRefund'],
-      20,
-      1
-    );
-    // Woo's order anonymization does not cover _wc_order_attribution_* meta,
-    // so the MailPoet identifiers must be removed explicitly (STOMAIL-8137)
-    $this->wp->addAction(
-      'woocommerce_privacy_remove_order_personal_data',
-      [$this->hooksWooCommerce, 'removeOrderAttributionPersonalData']
     );
   }
 
