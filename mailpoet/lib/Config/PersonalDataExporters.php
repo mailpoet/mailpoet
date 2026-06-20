@@ -9,7 +9,6 @@ use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewslettersExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SegmentsExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SubscriberExporter;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WooCommerce\OrderAttributionPrivacy;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalDataExporters {
@@ -29,7 +28,6 @@ class PersonalDataExporters {
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewslettersExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewsletterClicksExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewsletterOpensExporter']);
-    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerWooCommerceOrderAttributionExporter']);
   }
 
   public function registerSegmentsExporter($exporters) {
@@ -69,14 +67,6 @@ class PersonalDataExporters {
     $exporters[] = [
       'exporter_friendly_name' => __('MailPoet Email Opens', 'mailpoet'),
       'callback' => [ContainerWrapper::getInstance()->get(NewsletterOpensExporter::class), 'export'],
-    ];
-    return $exporters;
-  }
-
-  public function registerWooCommerceOrderAttributionExporter($exporters) {
-    $exporters[] = [
-      'exporter_friendly_name' => __('MailPoet WooCommerce Order Attribution', 'mailpoet'),
-      'callback' => [ContainerWrapper::getInstance()->get(OrderAttributionPrivacy::class), 'export'],
     ];
     return $exporters;
   }
