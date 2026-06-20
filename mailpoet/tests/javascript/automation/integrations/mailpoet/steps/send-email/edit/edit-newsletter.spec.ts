@@ -285,6 +285,43 @@ describe('automation send email editor preview', function automationSendEmailEdi
     expect(windowOpenStub.notCalled).to.equal(true);
   });
 
+  it('re-enables the preview button when the email changes mid-request', async () => {
+    setSelectedStep(555);
+    let resolvePreview: (value: unknown) => void = () => undefined;
+    ajaxPostStub.returns(
+      new Promise((resolve) => {
+        resolvePreview = resolve;
+      }),
+    );
+    await renderEditNewsletter();
+
+    await clickPreview();
+
+    const findPreviewButton = () =>
+      Array.from(document.querySelectorAll('button')).find(
+        (button) => button.textContent === 'Preview',
+      );
+    expect(findPreviewButton().disabled).to.equal(true);
+
+    setSelectedStep(999);
+    await React.act(async () => {
+      root.render(React.createElement(editNewsletter.EditNewsletter));
+    });
+
+    await React.act(async () => {
+      resolvePreview({ meta: { preview_url: '/mailpoet-preview' } });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(findPreviewButton().disabled).to.equal(false);
+    expect(
+      document.querySelector(
+        '[data-automation-id="automation_send_email_preview_iframe"]',
+      ),
+    ).to.equal(null);
+  });
+
   it('shows an error notice when the preview URL is missing', async () => {
     setSelectedStep(789);
     ajaxPostStub.resolves({ meta: {} });
