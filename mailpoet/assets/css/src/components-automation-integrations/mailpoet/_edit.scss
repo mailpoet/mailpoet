@@ -51,12 +51,21 @@
   max-width: calc(100vw - 64px);
   width: min(960px, calc(100vw - 64px));
 
+  .components-modal__header {
+    position: relative;
+  }
+
   .components-modal__content {
     display: flex;
     flex-direction: column;
     height: 100%;
     margin-top: 0;
     padding: 0;
+  }
+
+  .components-modal__children-container {
+    display: flex;
+    flex: 1;
   }
 }
 
