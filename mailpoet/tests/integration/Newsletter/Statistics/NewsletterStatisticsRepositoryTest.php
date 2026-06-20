@@ -121,7 +121,19 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
   }
 
   public function testWooBackedRevenueIsIgnoredWhenFeatureFlagIsDisabled(): void {
-    $this->createCompletedOrderWithAttribution($this->click1, 'manual-attribution@example.com', 15);
+    // Order attributed to mailpoet in Woo's standard source but with no legacy
+    // purchase row. With the read flag off the Woo-backed read is skipped and the
+    // legacy read finds nothing, so the order is not reported.
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email('manual-attribution@example.com');
+    $order->set_currency('USD');
+    $order->set_total('15');
+    $order->set_status('completed');
+    $order->save();
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
+    $order->save_meta_data();
 
     $revenue = $this->testee->getWooCommerceRevenue($this->newsletter);
 
