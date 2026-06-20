@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import { Modal, Spinner } from '@wordpress/components';
 import classnames from 'classnames';
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
 import { useSelectContext } from '../../../context';
@@ -407,15 +407,29 @@ export function EditNewsletter(): JSX.Element {
     ],
   );
 
+  const emailIdRef = useRef(emailId);
+  useEffect(() => {
+    emailIdRef.current = emailId;
+  }, [emailId]);
+
   const retrievePreviewLinkForEmail = useCallback(async () => {
+    const requestedEmailId = emailId;
     setFetchingPreviewLink(true);
     try {
-      const link = await retrievePreviewLink(emailId);
+      const link = await retrievePreviewLink(requestedEmailId);
+      if (emailIdRef.current !== requestedEmailId) {
+        return;
+      }
       setPreviewUrl(link);
     } catch {
+      if (emailIdRef.current !== requestedEmailId) {
+        return;
+      }
       showPreviewError();
     } finally {
-      setFetchingPreviewLink(false);
+      if (emailIdRef.current === requestedEmailId) {
+        setFetchingPreviewLink(false);
+      }
     }
   }, [emailId, showPreviewError]);
 
