@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplateEmailPreviewEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplateGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationVersionsGetEndpoint;
@@ -86,6 +87,7 @@ class Engine {
       $api->registerPostRoute('automations/(?P<id>\d+)/duplicate', AutomationsDuplicateEndpoint::class);
       $api->registerPostRoute('automations/create-from-template', AutomationsCreateFromTemplateEndpoint::class);
       $api->registerGetRoute('automation-templates', AutomationTemplatesGetEndpoint::class);
+      $api->registerGetRoute('automation-template-email-preview', AutomationTemplateEmailPreviewEndpoint::class);
       $api->registerGetRoute('automation-templates/(?P<slug>.+)', AutomationTemplateGetEndpoint::class);
     });
   }

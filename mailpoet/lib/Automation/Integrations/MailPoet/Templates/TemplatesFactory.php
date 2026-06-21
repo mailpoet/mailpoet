@@ -927,6 +927,7 @@ class TemplatesFactory {
     ];
 
     if ($preview) {
+      $args['pattern'] = $pattern;
       return $args;
     }
 
