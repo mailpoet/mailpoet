@@ -92,3 +92,15 @@
   min-height: 0;
   width: 100%;
 }
+
+.mailpoet-automation-email-preview-modal-error {
+  align-items: center;
+  background: #f0f0f1;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  margin: 0;
+  padding: 24px;
+  position: absolute;
+  text-align: center;
+}
