@@ -105,6 +105,48 @@
   }
 }
 
+.mailpoet-automation-template-email-previews {
+  margin-top: 32px;
+}
+
+.mailpoet-automation-template-email-previews-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.mailpoet-automation-template-email-previews-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.mailpoet-automation-template-email-previews-item {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0;
+
+  .components-button {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
+.mailpoet-automation-template-email-previews-name {
+  flex: 1;
+  font-weight: 500;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mailpoet-automation-template-email-previews-error {
+  color: #d63638;
+  flex-basis: 100%;
+  font-size: 12px;
+}
+
 .mailpoet-automation-template-detail-preview-spinner {
   margin: auto;
 

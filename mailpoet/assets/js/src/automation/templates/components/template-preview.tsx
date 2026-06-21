@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { Spinner } from '@wordpress/components';
-import { dispatch, useSelect } from '@wordpress/data';
+import { dispatch, select as wpSelect, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Icon, caution } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
@@ -76,6 +76,14 @@ export function TemplatePreview({ template }: Props): JSX.Element {
       initializeHooks();
       createStore();
       initializeIntegrations();
+
+      // Clear the previously loaded template's steps so the email preview list
+      // does not show stale emails while the new template is being fetched.
+      const currentAutomation = wpSelect(storeName).getAutomationData();
+      void dispatch(storeName).updateAutomation({
+        ...currentAutomation,
+        steps: {},
+      });
 
       try {
         const path = addQueryArgs(`/automation-templates/${template.slug}`, {
