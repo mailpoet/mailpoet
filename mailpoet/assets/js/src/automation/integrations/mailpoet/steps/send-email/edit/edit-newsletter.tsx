@@ -1,11 +1,11 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
-import { Modal, Spinner } from '@wordpress/components';
 import classnames from 'classnames';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { store as noticesStore } from '@wordpress/notices';
 import { Button } from '../../../components/button';
+import { EmailPreviewModal } from '../../../../../components/email-preview-modal';
 import { useSelectContext } from '../../../context';
 import { storeName } from '../../../../../editor/store/constants';
 import { MailPoet } from '../../../../../../mailpoet';
@@ -91,39 +91,6 @@ function EmailIdValidationMessage({
     <span className="mailpoet-automation-field-message" role="alert">
       {message}
     </span>
-  );
-}
-
-function EmailPreviewModal({
-  previewUrl,
-  onClose,
-}: {
-  previewUrl: string;
-  onClose: () => void;
-}): JSX.Element {
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-
-  return (
-    <Modal
-      className="mailpoet-automation-email-preview-modal"
-      title={__('Email preview', 'mailpoet')}
-      onRequestClose={onClose}
-    >
-      <div className="mailpoet-automation-email-preview-modal-content">
-        {!iframeLoaded && (
-          <div className="mailpoet-automation-email-preview-modal-spinner">
-            <Spinner />
-          </div>
-        )}
-        <iframe
-          className="mailpoet-automation-email-preview-modal-iframe"
-          data-automation-id="automation_send_email_preview_iframe"
-          onLoad={() => setIframeLoaded(true)}
-          src={previewUrl}
-          title={__('Email preview', 'mailpoet')}
-        />
-      </div>
-    </Modal>
   );
 }
 
@@ -620,7 +587,7 @@ export function EditNewsletter(): JSX.Element {
       </div>
       {previewUrl && (
         <EmailPreviewModal
-          previewUrl={previewUrl}
+          src={previewUrl}
           onClose={() => setPreviewUrl(null)}
         />
       )}
