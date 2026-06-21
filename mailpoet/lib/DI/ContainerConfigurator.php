@@ -168,6 +168,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationVersionsGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplateGetEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplateEmailPreviewEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint::class)->setPublic(true);

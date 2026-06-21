@@ -37,6 +37,7 @@ class Exceptions {
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
   private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_not_trashed';
   private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_template_not_found';
+  private const AUTOMATION_TEMPLATE_EMAIL_PATTERN_NOT_FOUND = 'mailpoet_automation_template_email_pattern_not_found';
   private const AUTOMATION_STEP_NOT_STARTED = 'mailpoet_automation_step_not_started';
   private const AUTOMATION_STEP_NOT_RUNNING = 'mailpoet_automation_step_not_running';
   private const AUTOMATION_STEP_ACTION_PROCESSED = 'mailpoet_automation_step_action_processed';
@@ -279,6 +280,13 @@ class Exceptions {
       ->withErrorCode(self::AUTOMATION_TEMPLATE_NOT_FOUND)
       // translators: %d is the ID of the automation template.
       ->withMessage(sprintf(__("Automation template with ID '%d' not found.", 'mailpoet'), $id));
+  }
+
+  public static function automationTemplateEmailPatternNotFound(string $pattern): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::AUTOMATION_TEMPLATE_EMAIL_PATTERN_NOT_FOUND)
+      // translators: %s is the name of the automation template email pattern.
+      ->withMessage(sprintf(__("Automation template email pattern '%s' not found.", 'mailpoet'), $pattern));
   }
 
   public static function stepNotStarted(string $id, int $runId): InvalidStateException {
