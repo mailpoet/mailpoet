@@ -2,7 +2,6 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
@@ -12,9 +11,6 @@ use WC_Order;
  * @phpstan-type AttributionRow array{order_id: int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null, queue_id: string|null}
  */
 class OrderAttributionRevenueReader {
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var Helper */
   private $wooHelper;
 
@@ -22,11 +18,9 @@ class OrderAttributionRevenueReader {
   private $wp;
 
   public function __construct(
-    FeaturesController $featuresController,
     Helper $wooHelper,
     WPFunctions $wp
   ) {
-    $this->featuresController = $featuresController;
     $this->wooHelper = $wooHelper;
     $this->wp = $wp;
   }
@@ -136,7 +130,7 @@ class OrderAttributionRevenueReader {
     if (!$this->wooHelper->isWooCommerceActive()) {
       return null;
     }
-    if (!$this->featuresController->isSupported(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING)) {
+    if (!$this->wp->applyFilters('mailpoet_woo_backed_revenue_reporting', true)) {
       return null;
     }
 
