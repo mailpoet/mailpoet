@@ -102,9 +102,11 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
 
   public function testReadPathUsesColumnWhenBackfilled(): void {
     $segment = (new Segment())->create();
-    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
+    $withList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
     $withoutList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
-    $this->recalculator->recalculateForSubscribers([(int)$withoutList->getId()]);
+    // The factory writes memberships directly, so populate the column for both
+    // subscribers the way the backfill worker would before reads trust it.
+    $this->recalculator->recalculateForSubscribers([(int)$withList->getId(), (int)$withoutList->getId()]);
 
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, true);

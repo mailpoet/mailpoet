@@ -16,9 +16,9 @@ class Migration_20260622_120000_Db extends DbMigration {
     // and its per-status counts: those used to run an anti-join over the whole
     // subscribers table (tens of minutes on large installs). With this column
     // the count becomes `WHERE segments_count = 0`. Defaults to 0; the real
-    // values are populated by the SubscribersSegmentsCountBackfill worker and
-    // kept in sync by SegmentsCountRecalculator. Reads only trust the column
-    // once the backfill has completed (see SubscribersCountsController).
+    // values are populated by the SubscribersSegmentsCountSync worker and kept
+    // in sync by SegmentsCountRecalculator. Reads only trust the column once the
+    // backfill has completed (see SegmentSubscribersRepository::isSegmentsCountColumnReady()).
     if (!$this->columnExists($subscribersTable, 'segments_count')) {
       $alterations[] = 'ADD COLUMN `segments_count` INT UNSIGNED NOT NULL DEFAULT 0';
     }

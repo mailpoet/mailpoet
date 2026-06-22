@@ -41,6 +41,7 @@ class WorkersFactory {
     StatsNotificationsWorkerForAutomatedEmails::TASK_TYPE,
     StatsNotificationsWorker::TASK_TYPE,
     BackfillEngagementData::TASK_TYPE,
+    SubscribersSegmentsCountSync::TASK_TYPE,
     Mixpanel::TASK_TYPE,
     AbandonedCartWorker::TASK_TYPE,
     LogCleanup::TASK_TYPE,
