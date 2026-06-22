@@ -4,11 +4,9 @@ namespace MailPoet\Subscribers\Statistics;
 
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -35,8 +33,7 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     parent::_before();
     $this->repository = $this->diContainer->get(SubscriberStatisticsRepository::class);
     $this->settings = SettingsController::getInstance();
-    (new Features())->withFeatureDisabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
+    add_filter('mailpoet_woo_backed_revenue_reporting', '__return_false');
     delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
   }
 
@@ -274,8 +271,7 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
   }
 
   private function enableWooBackedRevenueReadModel(): void {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
+    remove_filter('mailpoet_woo_backed_revenue_reporting', '__return_false');
     update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, gmdate('Y-m-d H:i:s', time() - HOUR_IN_SECONDS));
   }
 
