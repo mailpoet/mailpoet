@@ -621,62 +621,14 @@ function SubscriberFilters({
   );
 }
 
-function NoItemsFound({
-  group,
-  search,
-  onWildcardSearch,
-}: {
-  group: Group;
-  search?: string;
-  onWildcardSearch: (search: string) => void;
-}) {
-  const term = search?.trim();
-  if (!term || term.includes('*')) {
-    return <>{__('No items found.', 'mailpoet')}</>;
-  }
-  const wildcardTerm = `*${term}`;
-  return (
-    <>
-      {createInterpolateElement(
-        sprintf(
-          // translators: %1$s is the search term the user typed, %2$s is the same term prefixed with the * wildcard.
-          __(
-            'No items found that begin with „%1$s“. Tip: use * to match anywhere, e.g. <link>%2$s</link>.',
-            'mailpoet',
-          ),
-          term,
-          wildcardTerm,
-        ),
-        {
-          link: (
-            <a
-              href={`#/group[${group}]/search[${encodeURIComponent(
-                wildcardTerm,
-              )}]`}
-              onClick={(event) => {
-                event.preventDefault();
-                onWildcardSearch(wildcardTerm);
-              }}
-            >
-              {wildcardTerm}
-            </a>
-          ),
-        },
-      )}
-    </>
-  );
-}
-
 function EmptyContent({
   group,
   search,
   onCheckTrash,
-  onWildcardSearch,
 }: {
   group: Group;
   search?: string;
   onCheckTrash: () => void;
-  onWildcardSearch: (search: string) => void;
 }) {
   if (
     group === 'bounced' &&
@@ -702,14 +654,10 @@ function EmptyContent({
   if (group !== 'trash' && search) {
     return (
       <p>
-        <NoItemsFound
-          group={group}
-          search={search}
-          onWildcardSearch={onWildcardSearch}
-        />
-        <br />
+        {__('No items found.', 'mailpoet')}{' '}
         <a
           href={`#/group[trash]/search[${encodeURIComponent(search)}]`}
+          className="button button-link"
           onClick={(event) => {
             event.preventDefault();
             onCheckTrash();
@@ -720,15 +668,7 @@ function EmptyContent({
       </p>
     );
   }
-  return (
-    <div>
-      <NoItemsFound
-        group={group}
-        search={search}
-        onWildcardSearch={onWildcardSearch}
-      />
-    </div>
-  );
+  return <div>{__('No items found.', 'mailpoet')}</div>;
 }
 
 function SubscriberList() {
@@ -1238,12 +1178,6 @@ function SubscriberList() {
     setView((currentView) => ({ ...currentView, page: 1 }));
   };
 
-  const handleWildcardSearch = (search: string): void => {
-    setSelection([]);
-    clearLoadError();
-    setView((currentView) => ({ ...currentView, search, page: 1 }));
-  };
-
   const groupsToRender = useMemo(
     () =>
       (groups ?? [])
@@ -1388,7 +1322,6 @@ function SubscriberList() {
               group={group}
               search={view.search}
               onCheckTrash={handleCheckTrash}
-              onWildcardSearch={handleWildcardSearch}
             />
           }
         >
