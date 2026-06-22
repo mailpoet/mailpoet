@@ -257,12 +257,11 @@ class SubscriberListingRepository extends ListingRepository {
     }
 
     $search = $definition->getSearch();
-    if ($search && strlen(trim($search)) > 0 && trim($search) !== '*') {
-      $searchPatterns = $this->getSearchLikePatterns($search);
+    if ($search && strlen(trim($search)) > 0) {
+      $search = Helpers::escapeSearch($search);
       $query
-        ->andWhere('(s.email LIKE :emailSearch OR s.first_name LIKE :nameSearch OR s.last_name LIKE :nameSearch)')
-        ->setParameter('emailSearch', $searchPatterns['email'])
-        ->setParameter('nameSearch', $searchPatterns['name']);
+        ->andWhere('(s.email LIKE :search OR s.first_name LIKE :search OR s.last_name LIKE :search)')
+        ->setParameter('search', "%$search%");
     }
 
     $filters = $definition->getFilters();
@@ -578,25 +577,10 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
-    if (trim($search) === '*') {
-      return;
-    }
-    $searchPatterns = $this->getSearchLikePatterns($search);
+    $search = Helpers::escapeSearch($search);
     $queryBuilder
-      ->andWhere('s.email LIKE :emailSearch or s.firstName LIKE :nameSearch or s.lastName LIKE :nameSearch')
-      ->setParameter('emailSearch', $searchPatterns['email'])
-      ->setParameter('nameSearch', $searchPatterns['name']);
-  }
-
-  /**
-   * @return array{email: string, name: string}
-   */
-  private function getSearchLikePatterns(string $search): array {
-    $emailSearch = '%' . str_replace('*', '%', Helpers::escapeSearch($search)) . '%';
-    return [
-      'email' => $emailSearch,
-      'name' => Helpers::buildSearchLikePattern($search),
-    ];
+      ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
+      ->setParameter('search', "%$search%");
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
@@ -1039,13 +1023,11 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $segment);
     // Apply group, search to fetch only necessary ids
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $search = (string)$definition->getSearch();
-    if (strlen(trim($search)) > 0 && trim($search) !== '*') {
-      $searchPatterns = $this->getSearchLikePatterns($search);
+    if ($definition->getSearch()) {
+      $search = Helpers::escapeSearch((string)$definition->getSearch());
       $subscribersQuery
-        ->andWhere("$subscribersTable.email LIKE :emailSearch or $subscribersTable.first_name LIKE :nameSearch or $subscribersTable.last_name LIKE :nameSearch")
-        ->setParameter('emailSearch', $searchPatterns['email'])
-        ->setParameter('nameSearch', $searchPatterns['name']);
+        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
+        ->setParameter('search', "%$search%");
     }
     if ($definition->getGroup()) {
       if ($definition->getGroup() === 'trash') {

@@ -329,7 +329,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->listingData['filter'] = ['segment' => $list->getId()];
-    $this->listingData['search'] = 'test2';
+    $this->listingData['search'] = 'user-role-test2';
     $data = $this->repository->getData($this->getListingDefinition());
     verify(count($data))->equals(1);
     verify($data[0]->getEmail())->equals($wpUserEmail2);

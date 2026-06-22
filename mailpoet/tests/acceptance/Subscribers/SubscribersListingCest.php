@@ -549,7 +549,7 @@ class SubscribersListingCest {
     $i->searchFor('noresultsexpected_xyz');
 
     // Should stay in trash — not redirect to All
-    $i->waitForText('No items found that begin with');
+    $i->waitForText('No items found.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
   }
 
