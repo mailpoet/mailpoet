@@ -12,13 +12,11 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
@@ -133,8 +131,6 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
 
   public function testWooBackedRevenueMatchesWooMailPoetSourceForArbitratedOrders(): void {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
     update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, '2000-01-01 00:00:00');
 
     $click = $this->createClick($this->link, $this->subscriber);
@@ -247,8 +243,6 @@ class OrderAttributionCompatibilityTest extends \MailPoetTest {
    * @return OrderRow[]
    */
   private function readNewsletterOrderRows(): array {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
     update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, '2000-01-01 00:00:00');
 
     $reader = $this->diContainer->get(OrderAttributionRevenueReader::class);
