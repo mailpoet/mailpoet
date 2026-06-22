@@ -661,6 +661,7 @@ class Import {
         );
       }
     }
+    $this->subscriberRepository->recalculateSegmentsCount($subscribersIds);
   }
 
   /**

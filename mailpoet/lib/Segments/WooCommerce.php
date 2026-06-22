@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Services\Validator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -64,6 +65,9 @@ class WooCommerce {
   /** @var Validator */
   private $validator;
 
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
@@ -76,7 +80,8 @@ class WooCommerce {
     EntityManager $entityManager,
     Connection $connection,
     SubscriberChangesNotifier $subscriberChangesNotifier,
-    Validator $validator
+    Validator $validator,
+    SegmentsCountRecalculator $segmentsCountRecalculator
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -90,6 +95,7 @@ class WooCommerce {
     $this->connection = $connection;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->validator = $validator;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
   }
 
   public function shouldShowWooCommerceSegment(): bool {
@@ -104,6 +110,7 @@ class WooCommerce {
       case 'woocommerce_delete_customer':
         // subscriber should be already deleted in WP users sync
         $this->unsubscribeUsersFromSegment(); // remove leftover association
+        $this->segmentsCountRecalculator->recalculateForSegment((int)$wcSegment->getId());
         break;
       case 'woocommerce_new_customer':
       case 'woocommerce_created_customer':
@@ -206,6 +213,9 @@ class WooCommerce {
       $this->removeOrphanedSubscribers();
       $this->updateStatus();
       $this->updateGlobalStatus();
+      // The bulk operations above add/remove/restatus the WooCommerce segment's
+      // memberships en masse via raw SQL, so refresh segments_count for them.
+      $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWooCommerceSegment()->getId());
     }
 
     $this->subscribersRepository->invalidateTotalSubscribersCache();

@@ -1,0 +1,80 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Cron\Workers;
+
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SegmentsCountRecalculator;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+
+/**
+ * Populates and reconciles SubscriberEntity::$segmentsCount.
+ *
+ * The first run is the backfill: it sweeps the whole subscribers table by id
+ * range, recomputes segments_count for every row, and then flips the
+ * SEGMENTS_COUNT_BACKFILLED setting so reads start trusting the column.
+ *
+ * Every subsequent (weekly) run is the reconcile backstop: it re-sweeps the
+ * table to repair any drift left by a write path that forgot to update the
+ * column. Both phases use the same idempotent recompute, so the value always
+ * converges. Work is chunked and bounded by enforceExecutionLimit() so the
+ * sweep never runs as one long query and never blocks a request.
+ */
+class SubscribersSegmentsCountSync extends SimpleWorker {
+  const TASK_TYPE = 'subscribers_segments_count_sync';
+  const BATCH_SIZE = 5000;
+  const SUPPORT_MULTIPLE_INSTANCES = false;
+  const BACKFILLED_SETTING_KEY = 'subscribers_segments_count_backfilled';
+
+  /** @var EntityManager */
+  private $entityManager;
+
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(
+    EntityManager $entityManager,
+    SegmentsCountRecalculator $segmentsCountRecalculator,
+    SettingsController $settings
+  ) {
+    parent::__construct();
+    $this->entityManager = $entityManager;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
+    $this->settings = $settings;
+  }
+
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer): bool {
+    $meta = $task->getMeta();
+    $lastId = isset($meta['last_subscriber_id']) ? (int)$meta['last_subscriber_id'] : 0;
+    $highestId = $this->getHighestSubscriberId();
+
+    while ($lastId < $highestId) {
+      $this->segmentsCountRecalculator->recalculateForIdRange($lastId + 1, $lastId + self::BATCH_SIZE);
+      $lastId += self::BATCH_SIZE;
+      $task->setMeta(['last_subscriber_id' => $lastId]);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
+      $this->cronHelper->enforceExecutionLimit($timer); // throws and reschedules when over the limit
+    }
+
+    // The whole table has been recomputed: reads can trust segments_count now.
+    $this->settings->set(self::BACKFILLED_SETTING_KEY, true);
+
+    // Reset progress so the next (reconcile) run starts a fresh sweep.
+    $task->setMeta(['last_subscriber_id' => 0]);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
+
+    return true;
+  }
+
+  private function getHighestSubscriberId(): int {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $result = $this->entityManager->getConnection()->executeQuery("SELECT MAX(id) FROM $subscribersTable LIMIT 1;")->fetchNumeric();
+    return is_array($result) && isset($result[0]) && is_numeric($result[0]) ? (int)$result[0] : 0;
+  }
+}

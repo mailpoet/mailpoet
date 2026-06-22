@@ -17,12 +17,17 @@ class SubscriberSegmentRepository extends Repository {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
   public function __construct(
     EntityManager $entityManager,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SegmentsCountRecalculator $segmentsCountRecalculator
   ) {
     parent::__construct($entityManager);
     $this->wp = $wp;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
   }
 
   protected function getEntityClassName() {
@@ -50,6 +55,7 @@ class SubscriberSegmentRepository extends Repository {
       ->setParameter('subscriber', $subscriber)
       ->getQuery()
       ->execute();
+    $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
   }
 
   /**
@@ -87,6 +93,7 @@ class SubscriberSegmentRepository extends Repository {
         $this->entityManager->refresh($subscriberSegment);
       }
     }
+    $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
   }
 
   public function resetSubscriptions(SubscriberEntity $subscriber, array $segments): void {
@@ -180,6 +187,10 @@ class SubscriberSegmentRepository extends Repository {
       && $oldStatus !== SubscriberEntity::STATUS_SUBSCRIBED
     ) {
       $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+    }
+
+    if ($oldStatus !== $status) {
+      $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
     }
 
     return $subscriberSegment;

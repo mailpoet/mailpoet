@@ -202,6 +202,11 @@ class WorkersFactory {
     return $this->container->get(BackfillEngagementData::class);
   }
 
+  /** @return SubscribersSegmentsCountSync */
+  public function createSubscribersSegmentsCountSyncWorker() {
+    return $this->container->get(SubscribersSegmentsCountSync::class);
+  }
+
   public function createMixpanelWorker() {
     return $this->container->get(Mixpanel::class);
   }
