@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Services\Validator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -60,6 +61,9 @@ class WP {
   /** @var \MailPoetVendor\Doctrine\DBAL\Connection */
   private $databaseConnection;
 
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
@@ -70,7 +74,8 @@ class WP {
     Validator $validator,
     SegmentsRepository $segmentsRepository,
     EntityManager $entityManager,
-    DBCollationChecker $collationChecker
+    DBCollationChecker $collationChecker,
+    SegmentsCountRecalculator $segmentsCountRecalculator
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -82,6 +87,7 @@ class WP {
     $this->segmentsRepository = $segmentsRepository;
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
     $this->databaseConnection = $this->entityManager->getConnection();
     $this->subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
   }
@@ -161,6 +167,7 @@ class WP {
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
     });
+    $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
   }
 
   private function hasOtherActiveSegments(SubscriberEntity $subscriber): bool {
@@ -416,6 +423,9 @@ class WP {
     $this->updateFirstNameIfMissing();
     $this->insertUsersToSegment();
     $this->removeOrphanedSubscribers();
+    // insertUsersToSegment adds WP users to the WP-Users segment via raw SQL,
+    // so refresh segments_count for that segment's members.
+    $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWPUsersSegment()->getId());
     $this->subscribersRepository->invalidateTotalSubscribersCache();
     $this->subscribersRepository->refreshAll();
 

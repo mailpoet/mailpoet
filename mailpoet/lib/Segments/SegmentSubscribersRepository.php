@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -12,6 +13,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\DBAL\Result;
@@ -30,14 +32,19 @@ class SegmentSubscribersRepository {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     EntityManager $entityManager,
     FilterHandler $filterHandler,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    SettingsController $settings
   ) {
     $this->entityManager = $entityManager;
     $this->filterHandler = $filterHandler;
     $this->segmentsRepository = $segmentsRepository;
+    $this->settings = $settings;
   }
 
   public function findSubscribersIdsInSegment(int $segmentId, ?array $candidateIds = null): array {
@@ -285,6 +292,14 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersWithoutSegmentCount(): int {
+    if ($this->isSegmentsCountColumnReady()) {
+      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $count = $this->entityManager->getConnection()->executeQuery(
+        "SELECT COUNT(*) FROM {$subscribersTable} WHERE segments_count = 0"
+      )->fetchOne();
+      return is_numeric($count) ? (int)$count : 0;
+    }
+
     $queryBuilder = $this->entityManager->createQueryBuilder();
     $queryBuilder
       ->select('COUNT(DISTINCT s) AS subscribersCount')
@@ -293,49 +308,25 @@ class SegmentSubscribersRepository {
     return (int)$queryBuilder->getQuery()->getSingleScalarResult();
   }
 
+  /**
+   * segments_count is only trustworthy once the backfill sweep has finished
+   * (see SubscribersSegmentsCountSync). Until then the read paths fall back to
+   * the anti-join so they never report 0 for everyone.
+   */
+  private function isSegmentsCountColumnReady(): bool {
+    return (bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, false);
+  }
+
   public function getSubscribersWithoutSegmentStatisticsCount(): array {
     try {
-      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $queryBuilder = $this->entityManager
-        ->getConnection()
-        ->createQueryBuilder();
-      $queryBuilder
-        ->addSelect('IFNULL(SUM(
-            CASE WHEN s.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ), 0) as `all`')
-        ->addSelect('IFNULL(SUM(
-            CASE WHEN s.deleted_at IS NOT NULL
-              THEN 1 ELSE 0 END
-        ), 0) as trash')
-        ->addSelect('IFNULL(SUM(
-            CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ), 0) as :status_subscribed')
-        ->addSelect('IFNULL(SUM(
-          CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_unsubscribed')
-        ->addSelect('IFNULL(SUM(
-          CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_inactive')
-        ->addSelect('IFNULL(SUM(
-          CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_unconfirmed')
-        ->addSelect('IFNULL(SUM(
-          CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_bounced')
-        ->from($subscribersTable, 's')
-        ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-        ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
-        ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
-        ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
-        ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+      $queryBuilder = $this->createWithoutSegmentStatisticsQueryBuilder();
 
-      $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
+      if ($this->isSegmentsCountColumnReady()) {
+        $queryBuilder->where('s.segments_count = 0');
+      } else {
+        $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
+      }
+
       $statement = $this->executeQuery($queryBuilder);
       $result = $statement->fetch();
 
@@ -348,6 +339,50 @@ class SegmentSubscribersRepository {
       $this->logQueryException(null, $e);
       return $this->emptyStatisticsResult();
     }
+  }
+
+  private function createWithoutSegmentStatisticsQueryBuilder(): QueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder();
+    $queryBuilder
+      ->addSelect('IFNULL(SUM(
+          CASE WHEN s.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+      ), 0) as `all`')
+      ->addSelect('IFNULL(SUM(
+          CASE WHEN s.deleted_at IS NOT NULL
+            THEN 1 ELSE 0 END
+      ), 0) as trash')
+      ->addSelect('IFNULL(SUM(
+          CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+      ), 0) as :status_subscribed')
+      ->addSelect('IFNULL(SUM(
+        CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ), 0) as :status_unsubscribed')
+      ->addSelect('IFNULL(SUM(
+        CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ), 0) as :status_inactive')
+      ->addSelect('IFNULL(SUM(
+        CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ), 0) as :status_unconfirmed')
+      ->addSelect('IFNULL(SUM(
+        CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ), 0) as :status_bounced')
+      ->from($subscribersTable, 's')
+      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
+      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
+      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+
+    return $queryBuilder;
   }
 
   public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {

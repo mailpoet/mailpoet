@@ -165,6 +165,15 @@ class SubscriberEntity {
   private $countConfirmations = 0;
 
   /**
+   * Denormalized number of subscribed memberships in non-deleted segments.
+   * Maintained by SegmentsCountRecalculator; used to quickly find subscribers
+   * without a list (segments_count = 0).
+   * @ORM\Column(type="integer", options={"unsigned":true})
+   * @var int
+   */
+  private $segmentsCount = 0;
+
+  /**
    * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
@@ -550,6 +559,14 @@ class SubscriberEntity {
    */
   public function setConfirmationsCount($countConfirmations) {
     $this->countConfirmations = $countConfirmations;
+  }
+
+  public function getSegmentsCount(): int {
+    return $this->segmentsCount;
+  }
+
+  public function setSegmentsCount(int $segmentsCount): void {
+    $this->segmentsCount = $segmentsCount;
   }
 
   /**

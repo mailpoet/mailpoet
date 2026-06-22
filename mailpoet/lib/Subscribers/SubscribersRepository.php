@@ -43,16 +43,21 @@ class SubscribersRepository extends Repository {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
   public function __construct(
     EntityManager $entityManager,
     SubscriberChangesNotifier $changesNotifier,
     WPFunctions $wp,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    SegmentsCountRecalculator $segmentsCountRecalculator
   ) {
     $this->wp = $wp;
     parent::__construct($entityManager);
     $this->changesNotifier = $changesNotifier;
     $this->segmentsRepository = $segmentsRepository;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
   }
 
   protected function getEntityClassName() {
@@ -688,6 +693,17 @@ class SubscribersRepository extends Repository {
   }
 
   /**
+   * Recalculate the denormalized segments_count for the given subscribers.
+   * Exposed for raw-SQL write paths (e.g. import) that bypass the repository's
+   * own segment mutators.
+   *
+   * @param int[] $subscriberIds
+   */
+  public function recalculateSegmentsCount(array $subscriberIds): void {
+    $this->segmentsCountRecalculator->recalculateForSubscribers($subscriberIds);
+  }
+
+  /**
    * @return int - number of processed ids
    */
   public function bulkRemoveFromSegment(SegmentEntity $segment, array $ids): int {
@@ -702,6 +718,7 @@ class SubscribersRepository extends Repository {
        AND ss.`segment_id` = :segment_id
     ", ['ids' => $ids, 'segment_id' => $segment->getId()], ['ids' => ArrayParameterType::INTEGER]);
 
+    $this->segmentsCountRecalculator->recalculateForSubscribers($ids);
     $this->changesNotifier->subscribersUpdated($ids);
     return $count;
   }
@@ -1149,6 +1166,8 @@ class SubscribersRepository extends Repository {
       'typeDefault' => SegmentEntity::TYPE_DEFAULT,
     ], ['ids' => ArrayParameterType::INTEGER]);
 
+    $this->segmentsCountRecalculator->recalculateForSubscribers($ids);
+
     return is_numeric($uniqueSubscribersCount) ? (int)$uniqueSubscribersCount : 0;
   }
 
@@ -1182,6 +1201,12 @@ class SubscribersRepository extends Repository {
       }
       $this->entityManager->flush();
     });
+
+    if ($subscribers !== []) {
+      $this->segmentsCountRecalculator->recalculateForSubscribers(array_map(function (SubscriberEntity $subscriber): int {
+        return (int)$subscriber->getId();
+      }, $subscribers));
+    }
 
     return count($subscribers);
   }

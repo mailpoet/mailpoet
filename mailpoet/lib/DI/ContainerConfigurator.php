@@ -368,6 +368,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SubscriberLinkTokens::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\BackfillEngagementData::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SubscribersSegmentsCountSync::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\WooCommercePastOrders::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\ReEngagementEmailsScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SubscribersEngagementScore::class)->setPublic(true);
@@ -520,6 +521,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscriberIPsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberSegmentRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SegmentsCountRecalculator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberTagRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberCustomFieldRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberPersonalDataEraser::class)->setPublic(true);

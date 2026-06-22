@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
+use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
 use MailPoet\Cron\Workers\Tracks;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Doctrine\WPDB\Connection;
@@ -181,6 +182,7 @@ class Populator {
     $this->scheduleSubscriberLastEngagementDetection();
     $this->scheduleNewsletterTemplateThumbnails();
     $this->scheduleBackfillEngagementData();
+    $this->scheduleSubscribersSegmentsCountSync();
     $this->scheduleMixpanel();
     $this->scheduleTracks();
   }
@@ -769,6 +771,21 @@ class Populator {
     }
     $this->scheduleTask(
       BackfillEngagementData::TASK_TYPE,
+      Carbon::now()->millisecond(0)
+    );
+  }
+
+  private function scheduleSubscribersSegmentsCountSync(): void {
+    $existingTask = $this->scheduledTasksRepository->findOneBy(
+      [
+        'type' => SubscribersSegmentsCountSync::TASK_TYPE,
+      ]
+    );
+    if ($existingTask) {
+      return;
+    }
+    $this->scheduleTask(
+      SubscribersSegmentsCountSync::TASK_TYPE,
       Carbon::now()->millisecond(0)
     );
   }
