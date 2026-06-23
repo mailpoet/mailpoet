@@ -6,14 +6,12 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -54,8 +52,7 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
   public function _before() {
     $this->testee = $this->diContainer->get(NewsletterStatisticsRepository::class);
     $this->revenueRepository = $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class);
-    (new Features())->withFeatureDisabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
+    add_filter('mailpoet_woo_backed_revenue_reporting', '__return_false');
     delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
     $this->newsletter = (new Newsletter())->withSendingQueue()->create();
     $this->assertInstanceOf(NewsletterEntity::class, $this->newsletter);
@@ -121,7 +118,19 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
   }
 
   public function testWooBackedRevenueIsIgnoredWhenFeatureFlagIsDisabled(): void {
-    $this->createCompletedOrderWithAttribution($this->click1, 'manual-attribution@example.com', 15);
+    // Order attributed to mailpoet in Woo's standard source but with no legacy
+    // purchase row. With the read flag off the Woo-backed read is skipped and the
+    // legacy read finds nothing, so the order is not reported.
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email('manual-attribution@example.com');
+    $order->set_currency('USD');
+    $order->set_total('15');
+    $order->set_status('completed');
+    $order->save();
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
+    $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
+    $order->save_meta_data();
 
     $revenue = $this->testee->getWooCommerceRevenue($this->newsletter);
 
@@ -180,15 +189,11 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
   }
 
   private function enableWooBackedRevenueReadModel(): void {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
+    remove_filter('mailpoet_woo_backed_revenue_reporting', '__return_false');
     update_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION, gmdate('Y-m-d H:i:s', time() - HOUR_IN_SECONDS));
   }
 
   private function createCompletedOrderWithAttribution(StatisticsClickEntity $click, string $billingEmail, float $total): WC_Order {
-    $queue = $click->getQueue();
-    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-
     $order = wc_create_order();
     $this->assertInstanceOf(WC_Order::class, $order);
     $order->set_billing_email($billingEmail);
@@ -196,10 +201,14 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $order->set_total((string)$total);
     $order->set_status('completed');
     $order->save();
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_CLICK_ID), (string)$click->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_NEWSLETTER_ID), (string)$this->newsletter->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_QUEUE_ID), (string)$queue->getId());
-    $order->update_meta_data(OrderAttributionFields::getMetaKey(OrderAttributionFields::FIELD_SUBSCRIBER_ID), (string)$this->subscriber->getId());
+    // The Woo-backed reader recovers per-order newsletter/subscriber/queue detail from
+    // the legacy purchase row (joined on order_id) and counts the order only when the
+    // standard source resolved to mailpoet, so seed both.
+    (new StatisticsWooCommercePurchases($click, [
+      'id' => $order->get_id(),
+      'currency' => 'USD',
+      'total' => $total,
+    ]))->create();
     $order->update_meta_data(OrderAttributionFields::getMetaKey('source_type'), 'utm');
     $order->update_meta_data(OrderAttributionFields::getMetaKey('utm_source'), 'mailpoet');
     $order->save_meta_data();

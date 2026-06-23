@@ -93,6 +93,43 @@ class PatternsController {
     return null;
   }
 
+  /**
+   * Get the static preview content of a pattern by name.
+   *
+   * Returns the placeholder content (get_content()) shown in the editor's
+   * pattern preview rather than the dynamic email content. This is suitable for
+   * previewing automation template emails before an automation exists, when no
+   * cart/order context is available to populate dynamic blocks.
+   *
+   * @param string $patternName The pattern name (e.g., 'welcome-email-content')
+   * @return string|null The static pattern content or null if not found
+   */
+  public function getPatternPreviewContent(string $patternName): ?string {
+    $this->ensurePatternsInitialized();
+
+    foreach ($this->patterns as $pattern) {
+      if ($pattern->get_name() === $patternName) {
+        // Apply the same filter used in registerPatterns so integrations that
+        // modify pattern properties stay consistent with registered patterns.
+        $patternData = $this->wp->applyFilters('mailpoet_email_editor_integration_register_pattern', [
+          'name' => $pattern->get_namespace() . '/' . $pattern->get_name(),
+          'properties' => $pattern->get_properties(),
+          'email_content' => $pattern->get_email_content(),
+        ], $pattern);
+
+        if (!is_array($patternData)) {
+          return null;
+        }
+
+        $properties = $patternData['properties'] ?? null;
+        $content = is_array($properties) ? ($properties['content'] ?? null) : null;
+        return is_string($content) ? $content : null;
+      }
+    }
+
+    return null;
+  }
+
   private function ensurePatternsInitialized(): void {
     if (!empty($this->patterns)) {
       return;

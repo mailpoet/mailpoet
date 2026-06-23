@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group gutenberg-latest
+ */
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i, $scenario) {
     if (!$i->checkEmailEditorRequiredWordpressVersion()) {

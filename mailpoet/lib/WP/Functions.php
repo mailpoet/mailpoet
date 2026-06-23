@@ -727,6 +727,15 @@ class Functions {
     return wp_trim_words($text, $numWords, $more);
   }
 
+  public function wpCacheSet($key, $data, $group = '', $expire = 0) {
+    // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.CacheTimeUndetermined -- generic wrapper, expiry is controlled by callers.
+    return wp_cache_set($key, $data, $group, $expire);
+  }
+
+  public function wpCacheDelete($key, $group = '') {
+    return wp_cache_delete($key, $group);
+  }
+
   public function wpUploadDir($time = null, $createDir = true, $refreshCache = false) {
     return wp_upload_dir($time, $createDir, $refreshCache);
   }

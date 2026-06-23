@@ -47,6 +47,12 @@ class ConflictResolver {
     ],
   ];
 
+  /** @var string[] */
+  public $permittedScriptHandles = [
+    'wp-commands',
+    'wp-core-commands',
+  ];
+
   public function init() {
     WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_router_url_query_parameters',
@@ -142,6 +148,9 @@ class ConflictResolver {
     $dequeueScripts = function() use($_this) {
       global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       foreach ($wp_scripts->queue as $wpScript) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if (in_array($wpScript, $_this->permittedScriptHandles, true)) {
+          continue;
+        }
         if (empty($wp_scripts->registered[$wpScript])) continue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $registeredScript = $wp_scripts->registered[$wpScript]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if (!is_string($registeredScript->src)) {

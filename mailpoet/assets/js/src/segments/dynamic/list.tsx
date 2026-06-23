@@ -11,8 +11,10 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
+import { viewFiltersToRequestFilter } from './filters';
 import { Notices } from './list/notices';
 import { getSegmentsQuery, updateSegmentsQuery } from './list/query';
 import * as ROUTES from '../routes';
@@ -272,6 +274,9 @@ export function DynamicSegmentList(): JSX.Element {
     initialView: viewFromQuery(initialQuery, defaultView),
     load,
     extraParams: (currentView) => {
+      const filterParams = filterToExtraParams(
+        viewFiltersToRequestFilter(currentView.filters),
+      );
       if (
         legacyOffsetRef.current !== null &&
         viewMatchesQuery(currentView, {
@@ -286,9 +291,10 @@ export function DynamicSegmentList(): JSX.Element {
           limit: currentView.perPage ?? initialQuery.limit,
           sort_by: currentView.sort?.field ?? 'updated_at',
           sort_order: currentView.sort?.direction ?? 'desc',
+          ...filterParams,
         };
       }
-      return {};
+      return filterParams;
     },
   });
 
@@ -608,10 +614,12 @@ export function DynamicSegmentList(): JSX.Element {
             >
               <div className="mailpoet-segments-dataviews__toolbar">
                 <DataViews.Search label={__('Search', 'mailpoet')} />
+                <DataViews.FiltersToggle />
                 <div className="mailpoet-dataviews__toolbar-end">
                   <DataViews.ViewConfig />
                 </div>
               </div>
+              <DataViews.Filters />
               <DataViews.Layout />
               <DataViews.Footer />
             </DataViews>

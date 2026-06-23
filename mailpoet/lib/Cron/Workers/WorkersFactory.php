@@ -13,6 +13,16 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\DI\ContainerWrapper;
 
+/**
+ * Builds cron worker instances for the daemon.
+ *
+ * The CLI cron commands auto-discover workers by reflecting over this factory (see
+ * MailPoet\Cron\CliCommands\WorkerTypesCatalog): every argument-less create*() method that returns a
+ * CronWorkerInterface becomes listable and runnable via `wp mailpoet cron`. Keep the `create` prefix
+ * and the no-required-arguments shape when adding a worker; mailing workers that are not
+ * CronWorkerInterface (Scheduler, SendingQueue, StatsNotifications) must be excluded there via
+ * WorkerTypesCatalog::MAILING_FACTORY_METHODS.
+ */
 class WorkersFactory {
   public const SIMPLE_WORKER_TYPES = [
     SubscribersCountCacheRecalculation::TASK_TYPE,

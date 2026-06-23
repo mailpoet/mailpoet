@@ -13,6 +13,7 @@ import { chevronLeft, chevronRight, caution } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
 import { addQueryArgs } from '@wordpress/url';
 import { TemplatePreview } from './template-preview';
+import { TemplateEmailPreviews } from './template-email-previews';
 import { AutomationTemplate, automationTemplateCategories } from '../config';
 import { MailPoet } from '../../../mailpoet';
 
@@ -85,6 +86,7 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
             <Tag label={getCategory(template)} />
             <h1>{template.name}</h1>
             {template.description}
+            <TemplateEmailPreviews templateSlug={template.slug} />
           </div>
           <div className="mailpoet-automation-template-detail-preview">
             <TemplatePreview template={template} />

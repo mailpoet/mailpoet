@@ -8,7 +8,6 @@
 * Added: Order-aware product recommendations in post-purchase automation emails: cross-sells of the purchased products, products with the same tag, or products from the same category;
 * Added: Email campaign attribution on WooCommerce orders;
 * Added: Per-user listing preferences and sorting across MailPoet list pages;
-* Added: Personal data export and erasure for email attribution data stored on WooCommerce orders;
 * Improved: Speed up sorting the subscribers list by subscription date on large lists;
 * Improved: Reduce JavaScript size in the admin area;
 * Improved: Performance when WooCommerce is inactive by hiding the WooCommerce Customers list instead of running a slow database check;

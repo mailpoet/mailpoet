@@ -38,17 +38,11 @@ abstract class Test extends MailPoetTest {
     $_SERVER['REQUEST_METHOD'] = $method;
     $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
 
-    if (isset($options['query'])) {
-      $_GET = $options['query'];
-    }
-
-    if (isset($options['post'])) {
-      $_POST = $options['post'];
-    }
-
-    if (isset($options['json'])) {
-      $GLOBALS['HTTP_RAW_POST_DATA'] = json_encode($options['json']);
-    }
+    // Reset request state so params from a previous request in the same test
+    // (e.g. a POST body) don't leak into the next one.
+    $_GET = $options['query'] ?? [];
+    $_POST = $options['post'] ?? [];
+    $GLOBALS['HTTP_RAW_POST_DATA'] = isset($options['json']) ? json_encode($options['json']) : '';
 
     $server = rest_get_server();
     ob_start();

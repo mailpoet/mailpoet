@@ -2,7 +2,6 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
@@ -12,12 +11,6 @@ use WC_Order;
  * @phpstan-type AttributionRow array{order_id: int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null, queue_id: string|null}
  */
 class OrderAttributionRevenueReader {
-  const COMPLETE_FOR_NEWSLETTER = 'newsletter';
-  const COMPLETE_FOR_SUBSCRIBER = 'subscriber';
-
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var Helper */
   private $wooHelper;
 
@@ -25,11 +18,9 @@ class OrderAttributionRevenueReader {
   private $wp;
 
   public function __construct(
-    FeaturesController $featuresController,
     Helper $wooHelper,
     WPFunctions $wp
   ) {
-    $this->featuresController = $featuresController;
     $this->wooHelper = $wooHelper;
     $this->wp = $wp;
   }
@@ -139,7 +130,7 @@ class OrderAttributionRevenueReader {
     if (!$this->wooHelper->isWooCommerceActive()) {
       return null;
     }
-    if (!$this->featuresController->isSupported(FeaturesController::FEATURE_WOO_BACKED_REVENUE_REPORTING)) {
+    if (!$this->wp->applyFilters('mailpoet_woo_backed_revenue_reporting', true)) {
       return null;
     }
 
@@ -196,7 +187,7 @@ class OrderAttributionRevenueReader {
     array $purchaseStates,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
-    bool $excludeCompleteWooAttribution,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if (!$purchaseStates || $this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -208,7 +199,7 @@ class OrderAttributionRevenueReader {
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
     $excludeParams = [];
-    $excludeSql = $excludeCompleteWooAttribution ? $this->getCompleteWooAttributionExclusionSql(self::COMPLETE_FOR_NEWSLETTER, 'swp.order_id', $excludeParams) : '';
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
     $statePlaceholders = implode(',', array_fill(0, count($purchaseStates), '%s'));
 
@@ -291,7 +282,7 @@ class OrderAttributionRevenueReader {
     array $purchaseStates,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
-    bool $excludeCompleteWooAttribution,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if (!$purchaseStates || $this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -303,7 +294,7 @@ class OrderAttributionRevenueReader {
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
     $excludeParams = [];
-    $excludeSql = $excludeCompleteWooAttribution ? $this->getCompleteWooAttributionExclusionSql(self::COMPLETE_FOR_SUBSCRIBER, 'swp.order_id', $excludeParams) : '';
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $statePlaceholders = implode(',', array_fill(0, count($purchaseStates), '%s'));
 
     // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
@@ -380,7 +371,7 @@ class OrderAttributionRevenueReader {
     array $newsletterIds,
     ?\DateTimeInterface $from,
     ?\DateTimeInterface $to,
-    bool $excludeCompleteWooAttribution,
+    bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
     if ($this->isEmptyDateRange($from, $to, $excludeTo)) {
@@ -392,12 +383,7 @@ class OrderAttributionRevenueReader {
     $dateParams = [];
     $dateSql = $this->getDateRangeSql('swp.created_at', $from, $to, true, $excludeTo, $dateParams);
     $excludeParams = [];
-    // COMPLETE_FOR_SUBSCRIBER (not _NEWSLETTER as the revenue path uses) is intentional:
-    // the Woo order-row path (getWooNewsletterOrderRows) requires a subscriber and skips
-    // rows without subscriber meta, so the legacy fallback must only exclude orders that
-    // are complete down to the subscriber. Excluding on _NEWSLETTER would drop
-    // click+newsletter-but-no-subscriber orders from both paths and undercount the list.
-    $excludeSql = $excludeCompleteWooAttribution ? $this->getCompleteWooAttributionExclusionSql(self::COMPLETE_FOR_SUBSCRIBER, 'swp.order_id', $excludeParams) : '';
+    $excludeSql = $excludeResolvedSource ? $this->getResolvedSourceExclusionSql('swp.order_id', $excludeParams) : '';
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
     $orderTable = $this->getOrderTable();
     $orderStatusColumn = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled()
@@ -529,62 +515,64 @@ class OrderAttributionRevenueReader {
     $typeSql = $orderLookup['type_column'] !== null ? ' AND woo_order.' . $orderLookup['type_column'] . ' = %s' : '';
     $typeParams = $orderLookup['type_column'] !== null ? ['shop_order'] : [];
     $meta = $this->getOrderMetaTable();
-    $metaKeys = OrderAttributionFields::getMetaKeys([
-      OrderAttributionFields::FIELD_CLICK_ID,
-      OrderAttributionFields::FIELD_NEWSLETTER_ID,
-      OrderAttributionFields::FIELD_SUBSCRIBER_ID,
-      OrderAttributionFields::FIELD_QUEUE_ID,
-    ]);
     $utmSourceMetaKey = OrderAttributionFields::getMetaKey('utm_source');
+    $purchasesTable = $wpdb->prefix . 'mailpoet_statistics_woocommerce_purchases';
+    $clicksTable = $wpdb->prefix . 'mailpoet_statistics_clicks';
 
-    $having = 'click_id IS NOT NULL AND click_id <> \'\' AND newsletter_id IS NOT NULL AND newsletter_id <> \'\'';
-    $havingParams = [];
+    $filterSql = '';
+    $filterParams = [];
     if ($newsletterIds) {
-      $having .= ' AND newsletter_id IN (' . implode(',', array_fill(0, count($newsletterIds), '%s')) . ')';
-      $havingParams = array_merge($havingParams, array_map('strval', $newsletterIds));
+      $filterSql .= ' AND p.newsletter_id IN (' . implode(',', array_fill(0, count($newsletterIds), '%d')) . ')';
+      $filterParams = array_merge($filterParams, array_map('intval', $newsletterIds));
     }
     if ($subscriberId !== null) {
-      $having .= ' AND subscriber_id IS NOT NULL AND subscriber_id <> \'\' AND subscriber_id = %s';
-      $havingParams[] = (string)$subscriberId;
+      $filterSql .= ' AND p.subscriber_id = %d';
+      $filterParams[] = $subscriberId;
     }
 
+    // The MailPoet namespace meta that pre-resolved the canonical click was dropped
+    // (STOMAIL-8200). Per-order newsletter/subscriber/queue/click detail is recovered
+    // from the legacy statistics_woocommerce_purchases rows instead, gated on the
+    // order's standard source resolving to mailpoet (the won-arbitration marker). The
+    // self-anti-join keeps the single most recent click per order, matching
+    // OrderAttributionWriter::isMoreRecent (updated_at desc, then click id desc).
     // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
     $query = $wpdb->prepare(
       '
         SELECT
           ' . $orderIdColumn . ' AS order_id,
           ' . $orderDateColumn . ' AS date_created_gmt,
-          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS click_id,
-          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS newsletter_id,
-          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS subscriber_id,
-          MAX(CASE WHEN meta.meta_key = %s THEN meta.meta_value END) AS queue_id
+          p.newsletter_id AS newsletter_id,
+          p.subscriber_id AS subscriber_id,
+          p.queue_id AS queue_id
         FROM %i woo_order
         INNER JOIN %i source_meta ON source_meta.%i = ' . $orderIdColumn . '
           AND source_meta.meta_key = %s
           AND source_meta.meta_value = %s
-        INNER JOIN %i meta ON meta.%i = ' . $orderIdColumn . '
-          AND meta.meta_key IN (%s, %s, %s, %s)
-        WHERE 1 = 1
+        INNER JOIN %i p ON p.order_id = ' . $orderIdColumn . '
+        INNER JOIN %i c ON c.id = p.click_id
+        LEFT JOIN (%i p2 INNER JOIN %i c2 ON c2.id = p2.click_id) ON p2.order_id = p.order_id
+          AND (c2.updated_at > c.updated_at OR (c2.updated_at = c.updated_at AND p2.click_id > p.click_id))
+        WHERE p2.id IS NULL
           ' . $typeSql . '
           ' . $dateSql . '
-        GROUP BY ' . $orderIdColumn . ', ' . $orderDateColumn . '
-        HAVING ' . $having . '
+          ' . $filterSql . '
       ',
       array_merge(
-        $metaKeys,
         [
           $orderLookup['table'],
           $meta['table'],
           $meta['order_id_column'],
           $utmSourceMetaKey,
           'mailpoet',
-          $meta['table'],
-          $meta['order_id_column'],
+          $purchasesTable,
+          $clicksTable,
+          $purchasesTable,
+          $clicksTable,
         ],
-        $metaKeys,
         $typeParams,
         $dateParams,
-        $havingParams
+        $filterParams
       )
     );
     // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
@@ -718,31 +706,23 @@ class OrderAttributionRevenueReader {
   }
 
   /**
-   * @param array<int, string|int> $params
+   * Post-boundary legacy fallback exclusion. Skips orders whose Woo standard
+   * attribution source is already resolved (any non-empty utm_source): those are
+   * either counted by the Woo path (source = mailpoet) or intentionally left out
+   * for parity (a non-MailPoet source won last-click). Orders with no resolved
+   * source — e.g. Woo attribution unavailable when the order was tracked — fall
+   * back to the legacy table so their revenue is not dropped.
+   *
+   * @param array<int, string> $params
    */
-  private function getCompleteWooAttributionExclusionSql(string $completeFor, string $orderIdExpression, array &$params): string {
+  private function getResolvedSourceExclusionSql(string $orderIdExpression, array &$params): string {
     $meta = $this->getOrderMetaTable();
-    $requiredFields = [
-      OrderAttributionFields::FIELD_CLICK_ID,
-      OrderAttributionFields::FIELD_NEWSLETTER_ID,
+    $params = [
+      $meta['table'],
+      $meta['order_id_column'],
+      OrderAttributionFields::getMetaKey('utm_source'),
     ];
-    if ($completeFor === self::COMPLETE_FOR_SUBSCRIBER) {
-      $requiredFields[] = OrderAttributionFields::FIELD_SUBSCRIBER_ID;
-    }
-
-    $params = [];
-    $exists = [];
-    // Namespace completeness is intentional here: post-boundary legacy fallback
-    // must not re-add orders where email touched the order but did not win
-    // standard-source arbitration.
-    foreach ($requiredFields as $fieldName) {
-      $exists[] = 'EXISTS (SELECT 1 FROM %i woo_meta WHERE woo_meta.%i = ' . $orderIdExpression . ' AND woo_meta.meta_key = %s AND woo_meta.meta_value <> \'\')';
-      $params[] = $meta['table'];
-      $params[] = $meta['order_id_column'];
-      $params[] = OrderAttributionFields::getMetaKey($fieldName);
-    }
-
-    return ' AND NOT (' . implode(' AND ', $exists) . ')';
+    return ' AND NOT EXISTS (SELECT 1 FROM %i woo_meta WHERE woo_meta.%i = ' . $orderIdExpression . ' AND woo_meta.meta_key = %s AND woo_meta.meta_value <> \'\')';
   }
 
   /**

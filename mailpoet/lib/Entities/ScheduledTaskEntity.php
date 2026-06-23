@@ -23,6 +23,7 @@ class ScheduledTaskEntity {
   const STATUS_CANCELLED = 'cancelled';
   const STATUS_PAUSED = 'paused';
   const STATUS_INVALID = 'invalid';
+  const STATUS_CLI = 'cli'; // A task claimed and run by a WP-CLI process; hidden from the web daemon, which only queries known statuses (null, scheduled).
   const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
