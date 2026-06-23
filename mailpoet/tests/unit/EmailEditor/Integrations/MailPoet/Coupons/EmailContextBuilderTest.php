@@ -5,19 +5,17 @@ namespace unit\EmailEditor\Integrations\MailPoet\Coupons;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 
 class EmailContextBuilderTest extends \MailPoetUnitTest {
   public function testItMarksSingleRecipientAutomationAsRealSendWithoutValidRecipientEmail(): void {
-    $builder = new EmailContextBuilder($this->makeWpFunctions());
+    $builder = $this->makeBuilder();
 
     $context = $builder->build(
       $this->makeNewsletter(NewsletterEntity::TYPE_AUTOMATION),
-      $this->makeSendingQueue('not-an-email'),
+      $this->makeSendingQueue(1, 'not-an-email'),
       false
     );
 
@@ -29,17 +27,37 @@ class EmailContextBuilderTest extends \MailPoetUnitTest {
   }
 
   public function testItAddsRecipientEmailForSingleRecipientAutomationWithValidRecipientEmail(): void {
-    $builder = new EmailContextBuilder($this->makeWpFunctions());
+    $builder = $this->makeBuilder();
 
     $context = $builder->build(
       $this->makeNewsletter(NewsletterEntity::TYPE_AUTOMATION),
-      $this->makeSendingQueue('subscriber@example.com'),
+      $this->makeSendingQueue(1, 'subscriber@example.com'),
       false
     );
 
     verify($context['recipient_email'])->equals('subscriber@example.com');
     verify($context['is_real_send'])->true();
     verify($context['is_single_recipient'])->true();
+  }
+
+  public function testItDoesNotMarkAsSingleRecipientWhenTaskHasMultipleRecipients(): void {
+    // One recipient already sent (log) and one still pending (queue) => 2 recipients total,
+    // so this is not a 1:1 send and must not expose a single recipient email.
+    $builder = $this->makeBuilder();
+
+    $context = $builder->build(
+      $this->makeNewsletter(NewsletterEntity::TYPE_AUTOMATION),
+      $this->makeSendingQueue(2, 'subscriber@example.com'),
+      false
+    );
+
+    verify($context['is_single_recipient'])->false();
+    verify($context['subscriber_count'])->equals(2);
+    verify(isset($context['recipient_email']))->false();
+  }
+
+  private function makeBuilder(): EmailContextBuilder {
+    return new EmailContextBuilder($this->makeWpFunctions());
   }
 
   private function makeNewsletter(string $type): NewsletterEntity {
@@ -49,15 +67,15 @@ class EmailContextBuilderTest extends \MailPoetUnitTest {
     ]);
   }
 
-  private function makeSendingQueue(string $subscriberEmail): SendingQueueEntity {
+  private function makeSendingQueue(int $totalSubscribers = 1, ?string $recipientEmail = null): SendingQueueEntity {
     $subscriber = $this->make(SubscriberEntity::class, [
-      'getEmail' => $subscriberEmail,
-    ]);
-    $taskSubscriber = $this->make(ScheduledTaskSubscriberEntity::class, [
-      'getSubscriber' => $subscriber,
+      'getEmail' => $recipientEmail,
     ]);
     $task = $this->make(ScheduledTaskEntity::class, [
-      'getSubscribers' => new ArrayCollection([$taskSubscriber]),
+      'getId' => 5,
+      'getTotalSubscribersCount' => $totalSubscribers,
+      'getQueuedCount' => $totalSubscribers,
+      'getFirstQueuedSubscriber' => $recipientEmail !== null ? $subscriber : null,
     ]);
 
     return $this->make(SendingQueueEntity::class, [

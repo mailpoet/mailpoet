@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Coupons;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\AutomationEmailContextProvider;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -49,8 +50,8 @@ class EmailContextBuilder {
     }
 
     $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    $subscriberCount = $subscribers ? count($subscribers) : 0;
+    // A 1:1 automation send targets exactly one recipient total (queue + log).
+    $subscriberCount = $task ? $task->getTotalSubscribersCount() : 0;
     $context['subscriber_count'] = $subscriberCount;
 
     if ($subscriberCount !== 1) {
@@ -65,9 +66,7 @@ class EmailContextBuilder {
     // Only one-recipient automation sends can safely expose a unique recipient
     // email to WooCommerce. Bulk renders must not use the first subscriber as a
     // stand-in for everyone who will receive the email.
-    $firstSubscriber = $subscribers ? $subscribers->first() : null;
-    $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
-    $recipientEmail = $subscriber ? $subscriber->getEmail() : null;
+    $recipientEmail = $task ? $this->getFirstQueuedRecipientEmail($task) : null;
     if (is_string($recipientEmail) && $this->wp->isEmail($recipientEmail)) {
       $context['recipient_email'] = $recipientEmail;
     }
@@ -77,8 +76,12 @@ class EmailContextBuilder {
 
   private function getQueueSubscriberCount(SendingQueueEntity $sendingQueue): int {
     $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    return $subscribers ? count($subscribers) : 0;
+    return $task ? $task->getQueuedCount() : 0;
+  }
+
+  private function getFirstQueuedRecipientEmail(ScheduledTaskEntity $task): ?string {
+    $subscriber = $task->getFirstQueuedSubscriber();
+    return $subscriber ? $subscriber->getEmail() : null;
   }
 
   private function isAutomationType(NewsletterEntity $newsletter): bool {

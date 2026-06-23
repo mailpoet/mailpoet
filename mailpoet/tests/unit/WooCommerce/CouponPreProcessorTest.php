@@ -6,16 +6,16 @@ use Codeception\Stub;
 use Helper\WordPress;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\NewsletterProcessingException;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\RandomCouponCodeGenerator;
-use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 
 class CouponPreProcessorTest extends \MailPoetUnitTest {
 
@@ -36,10 +36,9 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       new \DateTimeZone('UTC');
     });
 
-    $this->processor = new CouponPreProcessor(
+    $this->processor = $this->makeProcessor(
       Stub::make(Helper::class),
-      Stub::make(NewslettersRepository::class),
-      new RandomCouponCodeGenerator()
+      Stub::make(NewslettersRepository::class)
     );
 
   }
@@ -64,12 +63,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(), // for type = NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body shouldn't update
-      ], $this),
-      new RandomCouponCodeGenerator()
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -91,12 +89,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::once(), // for type != NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body should update
-      ], $this),
-      new RandomCouponCodeGenerator()
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -119,12 +116,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      new RandomCouponCodeGenerator()
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -148,12 +144,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => false,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      new RandomCouponCodeGenerator()
+      ], $this)
     );
     $newsletter = (new NewsletterEntity());
 
@@ -174,12 +169,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      new RandomCouponCodeGenerator()
+      ], $this)
     );
 
     [$newsletter, $blocks] = $this->createNewsletterAndBlockForType(NewsletterEntity::TYPE_STANDARD, 5);
@@ -196,16 +190,20 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'getEmail' => $subscriberEmail,
     ]);
 
-    $taskSubscriber = $this->make(ScheduledTaskSubscriberEntity::class, [
-      'getSubscriber' => $subscriber,
-    ]);
-
     $task = $this->make(ScheduledTaskEntity::class, [
-      'getSubscribers' => new ArrayCollection([$taskSubscriber]),
+      'getId' => 42,
+      'getTotalSubscribersCount' => 1,
     ]);
 
     $queue = $this->make(SendingQueueEntity::class, [
       'getTask' => $task,
+    ]);
+
+    $queueRepository = $this->make(ScheduledTaskQueuedSubscriberRepository::class, [
+      'getSubscriberIdsBatchForTask' => [42],
+    ]);
+    $subscribersRepository = $this->make(SubscribersRepository::class, [
+      'findOneById' => $subscriber,
     ]);
 
     $wcHelper = $this->make(Helper::class, [
@@ -213,10 +211,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $processor = new CouponPreProcessor(
+    $processor = $this->makeProcessor(
       $wcHelper,
       $this->make(NewslettersRepository::class),
-      new RandomCouponCodeGenerator()
+      $queueRepository,
+      $subscribersRepository
     );
 
     $newsletter = new NewsletterEntity();
@@ -249,6 +248,73 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     // Test with additional emailRestrictions
     $blocks[0]['blocks'][0]['emailRestrictions'] = 'other@example.com';
     $processor->processCoupons($newsletter, $blocks, false, $queue);
+  }
+
+  public function testItDoesNotRestrictCouponToSubscriberWhenTaskHasMultipleRecipients(): void {
+    $wcCoupon = $this->createCouponMock();
+
+    // One pending (queue) + one already sent (log) => 2 recipients total, not a 1:1 send.
+    $task = $this->make(ScheduledTaskEntity::class, [
+      'getId' => 42,
+      'getTotalSubscribersCount' => 2,
+    ]);
+
+    $queue = $this->make(SendingQueueEntity::class, [
+      'getTask' => $task,
+    ]);
+
+    $wcHelper = $this->make(Helper::class, [
+      'createWcCoupon' => $wcCoupon,
+      'isWooCommerceActive' => true,
+    ]);
+
+    $processor = $this->makeProcessor(
+      $wcHelper,
+      $this->make(NewslettersRepository::class)
+    );
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $blocks = [
+      [
+        'type' => 'any',
+        'blocks' => [
+          [
+            'type' => Coupon::TYPE,
+            'discountType' => 'percent',
+            'amount' => '100',
+            'restrictToSubscriber' => true,
+          ],
+        ],
+      ],
+    ];
+    $newsletter->setBody(['blocks' => $blocks, 'content' => []]);
+
+    // The recipient email must not be injected for a multi-recipient send.
+    $wcCoupon->expects($this->once())
+      ->method('set_email_restrictions')
+      ->with([]);
+
+    $processor->processCoupons($newsletter, $blocks, false, $queue);
+  }
+
+  /**
+   * @param ScheduledTaskQueuedSubscriberRepository|null $queueRepository
+   * @param SubscribersRepository|null $subscribersRepository
+   */
+  private function makeProcessor(
+    Helper $wcHelper,
+    NewslettersRepository $newslettersRepository,
+    $queueRepository = null,
+    $subscribersRepository = null
+  ): CouponPreProcessor {
+    return new CouponPreProcessor(
+      $wcHelper,
+      $newslettersRepository,
+      new RandomCouponCodeGenerator(),
+      $queueRepository ?? Stub::make(ScheduledTaskQueuedSubscriberRepository::class),
+      $subscribersRepository ?? Stub::make(SubscribersRepository::class)
+    );
   }
 
   private function assertWCCouponReceivesCorrectValues($mockedWCCoupon, $expectedCouponId, $expiryDay) {

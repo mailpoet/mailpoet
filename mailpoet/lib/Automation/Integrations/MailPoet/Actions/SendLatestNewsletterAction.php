@@ -14,7 +14,6 @@ use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -199,12 +198,12 @@ class SendLatestNewsletterAction implements Action {
       return true;
     }
 
-    $newsletter = $this->latestNewsletterScheduler->getScheduledTaskSubscriber(
+    $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber(
       $this->getNewsletter($newsletterId),
       $subscriber,
       $args->getAutomationRun()
     );
-    if (!$newsletter) {
+    if (!$taskSubscriber) {
       if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
         $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER, $newsletterId);
         return true;
@@ -212,22 +211,21 @@ class SendLatestNewsletterAction implements Action {
       throw InvalidStateException::create()->withMessage(__('Email failed to schedule.', 'mailpoet'));
     }
 
-    if ($newsletter->getFailed() === ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED) {
+    if ($taskSubscriber->hasFailed()) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the error message.
-        sprintf(__('Email failed to send. Error: %s', 'mailpoet'), $newsletter->getError() ?: 'Unknown error')
+        sprintf(__('Email failed to send. Error: %s', 'mailpoet'), $taskSubscriber->getError() ?: 'Unknown error')
       );
     }
 
-    $wasSent = $newsletter->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
-    if ($wasSent) {
+    if ($taskSubscriber->wasProcessed()) {
       $this->saveOutcome($controller, self::OUTCOME_SENT, $newsletterId);
       return true;
     }
 
     if ($this->isSubscriberIneligible($subscriber, $segmentId)) {
       $this->latestNewsletterScheduler->saveErrorAndPause(
-        $newsletter,
+        $taskSubscriber,
         __('Subscriber is no longer eligible for this email.', 'mailpoet')
       );
       $this->saveOutcome($controller, self::OUTCOME_SKIPPED_INELIGIBLE_SUBSCRIBER, $newsletterId);
@@ -243,7 +241,7 @@ class SendLatestNewsletterAction implements Action {
     }
 
     $error = __('Email sending process timed out.', 'mailpoet');
-    $this->latestNewsletterScheduler->saveErrorAndPause($newsletter, $error);
+    $this->latestNewsletterScheduler->saveErrorAndPause($taskSubscriber, $error);
     throw InvalidStateException::create()->withMessage($error);
   }
 

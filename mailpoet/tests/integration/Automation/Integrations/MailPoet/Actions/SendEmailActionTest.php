@@ -36,7 +36,9 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\DynamicProductsBlock;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -296,14 +298,15 @@ class SendEmailActionTest extends \MailPoetTest {
       'automation' => ['id' => 1, 'run_id' => 1, 'step_id' => 'step-id', 'run_number' => 1],
     ], $scheduled[0]->getMeta());
 
-    // scheduled task subscriber
+    // the recipient is queued for sending
     $this->scheduledTasksRepository->refresh($scheduled[0]);
-    $scheduledTaskSubscribers = $scheduled[0]->getSubscribers();
-    $this->assertCount(1, $scheduledTaskSubscribers);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscribers[0]);
+    $queuedIds = $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)
+      ->getSubscriberIdsBatchForTask((int)$scheduled[0]->getId(), 0, 100);
+    $this->assertSame([(int)$subscriber->getId()], $queuedIds);
 
-    // mark email as sent
-    $scheduledTaskSubscribers[0]->setProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    // mark email as sent (simulate the sending worker moving the recipient to the log)
+    $this->diContainer->get(ScheduledTaskSubscriberMover::class)
+      ->moveProcessedToLog($scheduled[0], [(int)$subscriber->getId()]);
 
     // progress — won't throw an exception when the email was sent (= step will be completed)
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 2);
