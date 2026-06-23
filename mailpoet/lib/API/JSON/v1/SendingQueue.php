@@ -192,7 +192,7 @@ class SendingQueue extends APIEndpoint {
 
         $this->scheduledTasksRepository->refresh($scheduledTask);
         $this->subscribersFinder->addSubscribersToTaskFromSegments($scheduledTask, $segments, $newsletter->getFilterSegmentId());
-        $subscribersCount = $scheduledTask->getSubscribers()->count();
+        $subscribersCount = $scheduledTask->getQueuedCount();
 
         if (!$subscribersCount) {
           return $this->errorResponse([

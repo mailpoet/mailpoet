@@ -8,6 +8,7 @@ use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -131,11 +132,8 @@ class Help {
     if ($task->getType() === SendingQueue::TASK_TYPE) {
       $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task]);
       $newsletter = $queue ? $queue->getNewsletter() : null;
-      $subscribers = $task->getSubscribers();
-      // We only show subscriber's email for 1:1 emails (e.g. automations) and not bulk campaigns
-      if ($subscribers->count() === 1) {
-        $subscriber = $subscribers->first() ? $subscribers->first()->getSubscriber() : null;
-      }
+      // We only show subscriber's email for 1:1 emails (e.g. automations) and not bulk campaigns.
+      $subscriber = $this->getSingleTaskSubscriber($task);
     }
 
     return [
@@ -164,5 +162,21 @@ class Help {
       ],
       'subscriberEmail' => $subscriber ? $subscriber->getEmail() : null,
     ];
+  }
+
+  private function getSingleTaskSubscriber(ScheduledTaskEntity $task): ?SubscriberEntity {
+    // 1:1 emails (e.g. automations) target exactly one recipient total, whether it is
+    // still pending in the queue or already moved to the log once sent.
+    if ($task->getTotalSubscribersCount() !== 1) {
+      return null;
+    }
+
+    $queued = $task->getFirstQueuedSubscriber();
+    if ($queued) {
+      return $queued;
+    }
+
+    $logged = $task->getSubscribers()->first();
+    return $logged ? $logged->getSubscriber() : null;
   }
 }

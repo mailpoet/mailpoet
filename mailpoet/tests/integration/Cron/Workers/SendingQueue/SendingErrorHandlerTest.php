@@ -10,7 +10,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoetVendor\Monolog\Logger;
 
@@ -33,10 +33,10 @@ class SendingErrorHandlerTest extends \MailPoetTest {
       $subscriberErrors
     );
 
-    $scheduledTaskSubscribersRepository = Stub::make(
-      ScheduledTaskSubscribersRepository::class,
+    $scheduledTaskSubscriberMover = Stub::make(
+      ScheduledTaskSubscriberMover::class,
       [
-        'saveError' => Expected::exactly(
+        'moveFailedToLog' => Expected::exactly(
           2,
           function ($task, $id, $message) {
             if ($id === 2) {
@@ -53,7 +53,7 @@ class SendingErrorHandlerTest extends \MailPoetTest {
     $errorHandler = $this->getServiceWithOverrides(
       SendingErrorHandler::class,
       [
-        'scheduledTaskSubscribersRepository' => $scheduledTaskSubscribersRepository,
+        'scheduledTaskSubscriberMover' => $scheduledTaskSubscriberMover,
       ]
     );
     $errorHandler->processError($error, new ScheduledTaskEntity(), $subscriberIds, $subscribers);

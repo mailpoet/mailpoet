@@ -16,7 +16,9 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
@@ -79,6 +81,12 @@ class SendingQueue {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
+  /** @var ScheduledTaskSubscriberMover */
+  private $scheduledTaskSubscriberMover;
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -109,6 +117,8 @@ class SendingQueue {
     Links $links,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
     MailerTask $mailerTask,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
@@ -132,6 +142,8 @@ class SendingQueue {
     $this->links = $links;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->entityManager = $entityManager;
@@ -144,6 +156,7 @@ class SendingQueue {
     $timer = $timer ?: microtime(true);
     $this->enforceSendingAndExecutionLimits($timer);
     foreach ($this->scheduledTasksRepository->findRunningSendingTasks(self::TASK_BATCH_SIZE) as $task) {
+      $this->scheduledTasksRepository->refresh($task);
       $queue = $task->getSendingQueue();
       if (!$queue) {
         continue;
@@ -308,7 +321,10 @@ class SendingQueue {
           $foundSubscribersIds
         );
 
-        $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($task, $subscribersToRemove);
+        $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTaskAndSubscriberIds($task, $subscribersToRemove);
+        // Removing the last pending recipients (all deleted/unsubscribed) can empty
+        // the queue without any send happening, so re-check completion here too.
+        $this->scheduledTaskQueuedSubscriberRepository->checkCompleted($task);
         $this->sendingQueuesRepository->updateCounts($queue);
 
         // if there aren't any subscribers to process in the batch (e.g. all unsubscribed or were deleted), continue with the next batch
@@ -545,7 +561,9 @@ class SendingQueue {
         return;
       }
       try {
-        $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, $preparedSubscribersIds);
+        $this->scheduledTaskSubscriberMover->moveProcessedToLog($task, $preparedSubscribersIds);
+        // The mover does not mark the task complete, so the completion check is explicit.
+        $this->scheduledTaskQueuedSubscriberRepository->checkCompleted($task);
         $this->sendingQueuesRepository->updateCounts($queue);
       } catch (Throwable $e) {
         MailerLog::processError(
@@ -678,7 +696,7 @@ class SendingQueue {
     // This may happen when we send to all but the execution is interrupted (e.g. by PHP time limit) and we don't update the task status
     // or if we trigger sending to a newsletter without any subscriber (e.g. scheduled for long time but all were deleted)
     // Lets set status to completed and update the queue counts
-    if ($task->getStatus() === null && $this->scheduledTaskSubscribersRepository->countUnprocessed($task) === 0) {
+    if ($task->getStatus() === null && $this->scheduledTaskQueuedSubscriberRepository->countForTask($task) === 0) {
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
       $queue = $task->getSendingQueue();
       if ($queue) {
