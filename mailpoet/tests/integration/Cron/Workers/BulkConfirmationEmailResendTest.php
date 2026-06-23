@@ -5,11 +5,13 @@ namespace MailPoet\Cron\Workers;
 use Codeception\Stub;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -23,24 +25,16 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
       ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
       ->create();
 
-    $task = new ScheduledTaskEntity();
-    $task->setType(BulkConfirmationEmailResend::TASK_TYPE);
-    $task->setStatus(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING);
-    $task->setScheduledAt(Carbon::now());
-    $this->entityManager->persist($task);
-    $this->entityManager->flush();
-
-    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
-    $this->entityManager->persist($taskSubscriber);
-    $this->entityManager->flush();
+    $task = $this->createTaskWithSubscribers([$subscriber]);
 
     $worker = $this->diContainer->get(BulkConfirmationEmailResend::class);
     verify($worker->supportsMultipleInstances())->false();
     verify($worker->scheduleAutomatically())->false();
     verify($worker->processTaskStrategy($task, microtime(true)))->true();
 
-    $this->entityManager->refresh($taskSubscriber);
     $this->entityManager->refresh($task);
+    // The skipped recipient is moved from the queue to the log with a failure + error.
+    $taskSubscriber = $this->getTaskSubscriber($task, $subscriber);
     verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($taskSubscriber->getFailed())->equals(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
     verify($taskSubscriber->getError())->equals('skipped:max_confirmations_reached');
@@ -48,7 +42,9 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
     $this->assertIsArray($taskMeta);
     verify($taskMeta['failed_count'])->equals(1);
     verify($taskMeta['skipped_by_reason']['max_confirmations_reached'])->equals(1);
-    verify($this->diContainer->get(ScheduledTaskSubscribersRepository::class)->countUnprocessed($task))->equals(0);
+    // The queue is drained and the log only holds the processed row.
+    verify($this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)->countForTask($task))->equals(0);
+    verify($this->countPendingLogSubscribers($task))->equals(0);
   }
 
   public function testItRecordsSentFailedSkippedCountsAndIgnoresUnrelatedTasks(): void {
@@ -71,11 +67,6 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
 
     $task = $this->createTaskWithSubscribers([$sent, $sendFailed, $skipped]);
     $unrelatedTask = $this->createTaskWithSubscribers([$unrelated]);
-    $unrelatedTaskSubscriber = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findOneBy([
-      'task' => $unrelatedTask,
-      'subscriber' => $unrelated,
-    ]);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $unrelatedTaskSubscriber);
 
     $mailer = Stub::makeEmpty(ConfirmationEmailMailer::class, [
       'sendAdminConfirmationEmail' => function(SubscriberEntity $subscriber): array {
@@ -91,14 +82,13 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
     $worker = new BulkConfirmationEmailResend(
       $mailer,
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(ScheduledTaskSubscribersRepository::class),
+      $this->diContainer->get(ScheduledTaskSubscriberMover::class),
       $this->diContainer->get(LogRepository::class)
     );
 
     verify($worker->processTaskStrategy($task, microtime(true)))->true();
 
     $this->entityManager->refresh($task);
-    $this->entityManager->refresh($unrelatedTaskSubscriber);
     $sentTaskSubscriber = $this->getTaskSubscriber($task, $sent);
     $sendFailedTaskSubscriber = $this->getTaskSubscriber($task, $sendFailed);
     $skippedTaskSubscriber = $this->getTaskSubscriber($task, $skipped);
@@ -111,7 +101,14 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
     verify($skippedTaskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($skippedTaskSubscriber->getFailed())->equals(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
     verify($skippedTaskSubscriber->getError())->equals('skipped:recently_sent');
-    verify($unrelatedTaskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+
+    // The unrelated task was not processed, so its recipient is still pending in the queue and not in the log.
+    verify($this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)->countForTask($unrelatedTask))->equals(1);
+    $unrelatedLogRow = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->findOneBy([
+      'task' => $unrelatedTask,
+      'subscriber' => $unrelated,
+    ]);
+    $this->assertNull($unrelatedLogRow);
 
     $taskMeta = $task->getMeta();
     $this->assertIsArray($taskMeta);
@@ -143,7 +140,7 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     foreach ($subscribers as $subscriber) {
-      $this->entityManager->persist(new ScheduledTaskSubscriberEntity($task, $subscriber));
+      $this->entityManager->persist(new ScheduledTaskQueuedSubscriberEntity($task, $subscriber));
     }
     $this->entityManager->flush();
 
@@ -157,5 +154,12 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
     ]);
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
     return $taskSubscriber;
+  }
+
+  private function countPendingLogSubscribers(ScheduledTaskEntity $task): int {
+    return $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([
+      'task' => $task,
+      'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+    ]);
   }
 }
