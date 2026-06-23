@@ -3,12 +3,12 @@
 namespace MailPoet\Segments;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -24,19 +24,19 @@ class SubscribersFinder {
   /** @var EntityManager */
   private $entityManager;
 
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
 
   public function __construct(
     SegmentSubscribersRepository $segmentSubscriberRepository,
     SegmentsRepository $segmentsRepository,
     EntityManager $entityManager,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository
   ) {
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->entityManager = $entityManager;
-    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
   }
 
   /**
@@ -144,7 +144,7 @@ class SubscribersFinder {
    * @return int
    */
   private function addSubscribersToTaskFromStaticSegments(ScheduledTaskEntity $task, array $segmentIds, ?int $filterSegmentId = null) {
-    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $scheduledTaskQueuedSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
@@ -152,9 +152,9 @@ class SubscribersFinder {
     $selectQueryBuilder = $connection->createQueryBuilder();
     $selectQueryBuilder
       // No DISTINCT needed: the INSERT IGNORE relies on the (task_id, subscriber_id)
-      // primary key of scheduled_task_subscribers to drop duplicates, and DISTINCT
+      // primary key of scheduled_task_queued_subscribers to drop duplicates, and DISTINCT
       // forces an expensive temporary table on large segments.
-      ->select(':task_id as task_id', 'subscribers.id as subscriber_id', ':processed as processed')
+      ->select(':task_id as task_id', 'subscribers.id as subscriber_id')
       ->from($subscriberSegmentTable, 'relation')
       ->join('relation', $subscriberTable, 'subscribers', 'subscribers.id = relation.subscriber_id')
       ->where('subscribers.deleted_at IS NULL')
@@ -162,7 +162,6 @@ class SubscribersFinder {
       ->andWhere('relation.status = :relation_status')
       ->andWhere($selectQueryBuilder->expr()->in('relation.segment_id', ':segment_ids'))
       ->setParameter('task_id', $task->getId(), ParameterType::INTEGER)
-      ->setParameter('processed', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED, ParameterType::INTEGER)
       ->setParameter('subscribers_status', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING)
       ->setParameter('relation_status', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING)
       ->setParameter('segment_ids', $segmentIds, ArrayParameterType::INTEGER);
@@ -175,7 +174,7 @@ class SubscribersFinder {
     }
 
     // queryBuilder doesn't support INSERT IGNORE directly
-    $sql = "INSERT IGNORE INTO $scheduledTaskSubscriberTable (task_id, subscriber_id, processed) " . $selectQueryBuilder->getSQL();
+    $sql = "INSERT IGNORE INTO $scheduledTaskQueuedSubscriberTable (task_id, subscriber_id) " . $selectQueryBuilder->getSQL();
     $result = $connection->executeQuery($sql, $selectQueryBuilder->getParameters(), $selectQueryBuilder->getParameterTypes());
 
     return (int)$result->rowCount();
@@ -205,7 +204,7 @@ class SubscribersFinder {
     }
 
     if ($subscriberIds) {
-      $count += $this->scheduledTaskSubscribersRepository->addSubscribersByIds($task, $subscriberIds);
+      $count += $this->scheduledTaskQueuedSubscriberRepository->addSubscribersByIds($task, $subscriberIds);
     }
     return $count;
   }

@@ -11,7 +11,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Router;
@@ -21,6 +20,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\Emoji;
 
@@ -58,7 +58,6 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
-    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $newsletterBody =
       json_decode(
         '{
@@ -130,7 +129,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $this->scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
     $this->sendingQueue = (new SendingQueueFactory())->create($this->scheduledTask, $newsletter);
     $this->sendingQueue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithoutTracking);
-    $scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [$subscriber->getId()]);
+    (new ScheduledTaskSubscriberFactory())->createProcessed($this->scheduledTask, $subscriber);
     $this->newsletterRepository->refresh($newsletter);
     $this->newsletter = $newsletter;
 

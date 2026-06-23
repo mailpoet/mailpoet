@@ -11,7 +11,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
@@ -71,8 +70,6 @@ class TrackTest extends \MailPoetTest {
       'link_hash' => $link->getHash(),
       'preview' => false,
     ];
-    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
-    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [(int)$subscriber->getId()]);
     // instantiate class
     $this->track = $this->diContainer->get(Track::class);
   }
@@ -186,9 +183,6 @@ class TrackTest extends \MailPoetTest {
     $this->entityManager->persist($scheduledTaskSubscriber);
     $this->entityManager->flush();
     $scheduledTaskEntity->getSubscribers()->add($scheduledTaskSubscriber);
-
-    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
-    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($scheduledTaskEntity, [$this->subscriber->getId()]);
 
     $queue = $newsletter->getLatestQueue();
     $trackData = $this->trackData;

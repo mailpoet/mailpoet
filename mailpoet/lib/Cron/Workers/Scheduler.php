@@ -7,7 +7,6 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -120,15 +119,16 @@ class Scheduler {
     $scheduledTasks = $this->getScheduledSendingTasks();
     $this->updateTasks($scheduledTasks);
     foreach ($scheduledTasks as $task) {
-      $queue = $task->getSendingQueue();
-      if (!$queue) {
-        $this->deleteByTask($task);
-        continue;
-      }
-
-      $newsletter = $queue->getNewsletter();
-      $isLatestNewsletterReplay = NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta());
       try {
+        $this->scheduledTasksRepository->refresh($task);
+        $queue = $task->getSendingQueue();
+        if (!$queue) {
+          $this->deleteByTask($task);
+          continue;
+        }
+
+        $newsletter = $queue->getNewsletter();
+        $isLatestNewsletterReplay = NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta());
         if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
           $this->deleteByTask($task);
         } elseif (
@@ -169,12 +169,12 @@ class Scheduler {
   }
 
   public function processWelcomeNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
-    $subscribers = $task->getSubscribers();
-    if (empty($subscribers[0])) {
+    $subscriber = $task->getFirstQueuedSubscriber();
+    $subscriberId = $subscriber ? $subscriber->getId() : null;
+    if (!$subscriberId) {
       $this->deleteByTask($task);
       return false;
     }
-    $subscriberId = (int)$subscribers[0]->getSubscriberId();
     if ($newsletter->getOptionValue('event') === 'segment') {
       if ($this->verifyMailpoetSubscriber($subscriberId, $newsletter, $task) === false) {
         return false;
@@ -210,7 +210,7 @@ class Scheduler {
 
     // ensure that subscribers are in segments
     $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
-    $subscribersCount = $task->getSubscribers()->count();
+    $subscribersCount = $task->getQueuedCount();
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no subscribers',
@@ -257,14 +257,13 @@ class Scheduler {
       $segment = $this->segmentsRepository->findOneById($newsletter->getOptionValue('segment'));
       if ($segment instanceof SegmentEntity) {
         $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [(int)$segment->getId()]);
-        if (!$task->getSubscribers()->count()) {
+        if (!$task->getQueuedCount()) {
           $this->deleteByTask($task);
           return false;
         }
       }
     } else {
-      $subscribers = $task->getSubscribers();
-      $subscriber = isset($subscribers[0]) ? $subscribers[0]->getSubscriber() : null;
+      $subscriber = $task->getFirstQueuedSubscriber();
       if (!$subscriber) {
         $this->deleteByTask($task);
         return false;
@@ -280,8 +279,7 @@ class Scheduler {
   }
 
   public function processScheduledAutomationEmail(ScheduledTaskEntity $task): bool {
-    $subscribers = $task->getSubscribers();
-    $subscriber = isset($subscribers[0]) ? $subscribers[0]->getSubscriber() : null;
+    $subscriber = $task->getFirstQueuedSubscriber();
     if (!$subscriber) {
       $this->deleteByTask($task);
       return false;
@@ -296,8 +294,7 @@ class Scheduler {
   }
 
   public function processScheduledTransactionalEmail(ScheduledTaskEntity $task): bool {
-    $subscribers = $task->getSubscribers();
-    $subscriber = isset($subscribers[0]) ? $subscribers[0]->getSubscriber() : null;
+    $subscriber = $task->getFirstQueuedSubscriber();
     if (!$subscriber) {
       $this->deleteByTask($task);
       return false;
@@ -335,21 +332,22 @@ class Scheduler {
   }
 
   private function processLatestNewsletterReplay(ScheduledTaskEntity $task): bool {
-    $subscribers = $task->getSubscribers();
-    if ($subscribers->isEmpty()) {
+    $subscribersCount = $task->getQueuedCount();
+    if ($subscribersCount === 0) {
       $this->deleteByTask($task);
       return false;
     }
 
     $queue = $task->getSendingQueue();
     $meta = $queue ? $queue->getMeta() : [];
-    $taskSubscriber = $subscribers->first();
+    $firstQueuedSubscriber = $task->getFirstQueuedSubscriber();
+    $subscriberId = $firstQueuedSubscriber ? $firstQueuedSubscriber->getId() : null;
     $expectedSubscriberId = $meta[NewsletterReplayMetadata::REPLAY_SUBSCRIBER_ID] ?? null;
     if (
-      $subscribers->count() !== 1
-      || !$taskSubscriber instanceof ScheduledTaskSubscriberEntity
+      $subscribersCount !== 1
+      || $subscriberId === null
       || !is_numeric($expectedSubscriberId)
-      || (int)$taskSubscriber->getSubscriberId() !== (int)$expectedSubscriberId
+      || $subscriberId !== (int)$expectedSubscriberId
     ) {
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
       $this->scheduledTasksRepository->flush();

@@ -3,9 +3,13 @@
 namespace MailPoet\Tasks\Subscribers;
 
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 
 /**
+ * Iterates the pending recipients of a task in id-ordered batches. Pending
+ * recipients always live in the queue table (`scheduled_task_queued_subscribers`);
+ * once processed they are moved to the log, so the iterator never reads the log.
+ *
  * @implements \Iterator<null, array>
  */
 class BatchIterator implements \Iterator, \Countable {
@@ -14,8 +18,8 @@ class BatchIterator implements \Iterator, \Countable {
   private $lastProcessedId = 0;
   private $batchLastId;
 
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
 
   public function __construct(
     $taskId,
@@ -28,7 +32,7 @@ class BatchIterator implements \Iterator, \Countable {
     }
     $this->taskId = (int)$taskId;
     $this->batchSize = (int)$batchSize;
-    $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
+    $this->scheduledTaskQueuedSubscriberRepository = ContainerWrapper::getInstance()->get(ScheduledTaskQueuedSubscriberRepository::class);
   }
 
   public function rewind(): void {
@@ -40,7 +44,7 @@ class BatchIterator implements \Iterator, \Countable {
    */
   #[\ReturnTypeWillChange]
   public function current() {
-    $subscribers = $this->scheduledTaskSubscribersRepository->getSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId, $this->batchSize);
+    $subscribers = $this->scheduledTaskQueuedSubscriberRepository->getSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId, $this->batchSize);
     $this->batchLastId = end($subscribers);
     return $subscribers;
   }
@@ -62,6 +66,7 @@ class BatchIterator implements \Iterator, \Countable {
   }
 
   public function count(): int {
-    return max(0, $this->scheduledTaskSubscribersRepository->countSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId));
+    $count = $this->scheduledTaskQueuedSubscriberRepository->countSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId);
+    return max(0, $count);
   }
 }
