@@ -386,6 +386,11 @@ class SegmentSubscribersRepository {
   }
 
   public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {
+    if ($this->isSegmentsCountColumnReady()) {
+      $queryBuilder->andWhere('s.segmentsCount = 0');
+      return;
+    }
+
     $deletedSegmentsQueryBuilder = $this->entityManager->createQueryBuilder();
     $deletedSegmentsQueryBuilder->select('sg.id')
       ->from(SegmentEntity::class, 'sg')
