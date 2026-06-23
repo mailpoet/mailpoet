@@ -1318,7 +1318,7 @@ function SubscriberList() {
           className="mailpoet-subscribers-select-all-warning"
         >
           {__(
-            'Large operations may take a while and could time out on very large lists.',
+            'Large operations may take a while and could time out on very large lists!',
             'mailpoet',
           )}
         </Notice>
