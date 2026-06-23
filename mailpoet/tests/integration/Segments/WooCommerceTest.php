@@ -641,7 +641,8 @@ class WooCommerceTest extends \MailPoetTest {
       $this->entityManager,
       $this->entityManager->getConnection(),
       $this->createMock(\MailPoet\Config\SubscriberChangesNotifier::class),
-      $this->diContainer->get(\MailPoet\Services\Validator::class)
+      $this->diContainer->get(\MailPoet\Services\Validator::class),
+      $this->diContainer->get(\MailPoet\Subscribers\SegmentsCountRecalculator::class)
     );
 
     $guest = $this->insertGuestCustomer();
