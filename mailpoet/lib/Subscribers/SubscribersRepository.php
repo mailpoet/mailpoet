@@ -991,6 +991,41 @@ class SubscribersRepository extends Repository {
   }
 
   /**
+   * Returns [count, maxId] of the next $batchSize subscriber rows with id >= $startId, ordered by id.
+   * count === 0 means there are no more subscribers from $startId onward.
+   *
+   * @return array{0:int,1:int}
+   */
+  public function getNextIdWindow(int $startId, int $batchSize): array {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $result = $this->entityManager->getConnection()->executeQuery(
+      "
+      SELECT COUNT(ids.id) as count, COALESCE(MAX(ids.id), 0) as max FROM (
+        SELECT s.id FROM {$subscribersTable} as s
+        WHERE s.id >= :startId
+        ORDER BY s.id
+        LIMIT :batchSize
+        ) ids
+    ",
+      [
+        'startId' => $startId,
+        'batchSize' => $batchSize,
+      ],
+      [
+        'startId' => ParameterType::INTEGER,
+        'batchSize' => ParameterType::INTEGER,
+      ]
+    )->fetchAssociative();
+
+    if (!is_array($result)) {
+      return [0, 0];
+    }
+
+    /** @var array{count: int, max: int} $result - it's required for PHPStan */
+    return [intval($result['count']), intval($result['max'])];
+  }
+
+  /**
    * Returns count of subscribers who subscribed after given date regardless of their current status.
    * @return int
    */

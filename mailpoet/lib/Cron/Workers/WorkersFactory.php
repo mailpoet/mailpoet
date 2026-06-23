@@ -35,9 +35,8 @@ class WorkersFactory {
     WooCommerceSyncWorker::TASK_TYPE,
     SubscriberLinkTokens::TASK_TYPE,
     UnsubscribeTokens::TASK_TYPE,
-    InactiveSubscribers::TASK_TYPE,
+    InactiveSubscribersMaintenance::TASK_TYPE,
     UnconfirmedSubscribersCleanup::TASK_TYPE,
-    SubscribersEmailCount::TASK_TYPE,
     StatsNotificationsWorkerForAutomatedEmails::TASK_TYPE,
     StatsNotificationsWorker::TASK_TYPE,
     BackfillEngagementData::TASK_TYPE,
@@ -128,9 +127,9 @@ class WorkersFactory {
     return $this->container->get(SendingQueueBodyCleanup::class);
   }
 
-  /** @return InactiveSubscribers */
-  public function createInactiveSubscribersWorker() {
-    return $this->container->get(InactiveSubscribers::class);
+  /** @return InactiveSubscribersMaintenance */
+  public function createInactiveSubscribersMaintenanceWorker() {
+    return $this->container->get(InactiveSubscribersMaintenance::class);
   }
 
   /** @return UnconfirmedSubscribersCleanup */
@@ -186,11 +185,6 @@ class WorkersFactory {
   /** @return NewsletterTemplateThumbnails */
   public function createNewsletterTemplateThumbnailsWorker() {
     return $this->container->get(NewsletterTemplateThumbnails::class);
-  }
-
-  /** @return SubscribersEmailCount */
-  public function createSubscribersEmailCountsWorker() {
-    return $this->container->get(SubscribersEmailCount::class);
   }
 
   /** @return AbandonedCartWorker */

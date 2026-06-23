@@ -358,8 +358,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SendingTaskSubscribersCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\BounceTaskSubscribersCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueueBodyCleanup::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\Workers\SubscribersEmailCount::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\Workers\InactiveSubscribers::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\InactiveSubscribersMaintenance::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Mixpanel::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Tracks::class)->setPublic(true);
