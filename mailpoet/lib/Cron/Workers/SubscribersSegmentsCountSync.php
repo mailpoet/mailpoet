@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
@@ -48,6 +49,14 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer): bool {
+    // The recalculator relies on UPDATE ... LEFT JOIN, which the SQLite
+    // integration in WordPress Playground does not support. Make the task a
+    // no-op there and never flip the backfill flag, so reads stay on the
+    // anti-join fallback instead of trusting an unpopulated column.
+    if (Connection::isSQLite()) {
+      return true;
+    }
+
     $meta = $task->getMeta();
     $lastId = isset($meta['last_subscriber_id']) ? (int)$meta['last_subscriber_id'] : 0;
     $highestId = $this->getHighestSubscriberId();

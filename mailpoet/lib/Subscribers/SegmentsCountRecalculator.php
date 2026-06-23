@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -43,6 +44,14 @@ class SegmentsCountRecalculator {
    * @param int[] $subscriberIds
    */
   public function recalculateForSubscribers(array $subscriberIds): void {
+    // The UPDATE ... LEFT JOIN syntax below is not supported by the SQLite
+    // integration used in WordPress Playground. Reads stay on the anti-join
+    // there because the sync worker never flips the backfill flag (see
+    // SubscribersSegmentsCountSync::processTaskStrategy()).
+    if (Connection::isSQLite()) {
+      return;
+    }
+
     $subscriberIds = array_values(array_unique($subscriberIds));
     if ($subscriberIds === []) {
       return;
@@ -69,6 +78,11 @@ class SegmentsCountRecalculator {
    * Used by the backfill and reconcile workers.
    */
   public function recalculateForIdRange(int $minId, int $maxId): void {
+    // See recalculateForSubscribers(): UPDATE ... LEFT JOIN is unsupported on SQLite.
+    if (Connection::isSQLite()) {
+      return;
+    }
+
     if ($minId > $maxId) {
       return;
     }
@@ -91,6 +105,30 @@ class SegmentsCountRecalculator {
    * changes the count of all of its members at once.
    */
   public function recalculateForSegment(int $segmentId): void {
+    $this->recalculateForSegments([$segmentId]);
+  }
+
+  /**
+   * Recalculate the count for every subscriber that has a membership in any of
+   * the given segments. Used when segments are trashed, restored or deleted,
+   * which changes the count of all of their members at once.
+   *
+   * Members are walked in keyset-paginated batches rather than materialized into
+   * one array, so this stays memory-safe even on multi-million-member segments.
+   *
+   * @param int[] $segmentIds
+   */
+  public function recalculateForSegments(array $segmentIds): void {
+    // recalculateForSubscribers() is a no-op on SQLite, so skip the walk too.
+    if (Connection::isSQLite()) {
+      return;
+    }
+
+    $segmentIds = array_values(array_unique(array_map('intval', $segmentIds)));
+    if ($segmentIds === []) {
+      return;
+    }
+
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $connection = $this->entityManager->getConnection();
 
@@ -98,12 +136,12 @@ class SegmentsCountRecalculator {
     do {
       $batchSize = self::BATCH_SIZE;
       $ids = $connection->executeQuery(
-        "SELECT subscriber_id FROM {$subscriberSegmentTable}
-          WHERE segment_id = :segmentId AND subscriber_id > :lastId
+        "SELECT DISTINCT subscriber_id FROM {$subscriberSegmentTable}
+          WHERE segment_id IN (:segmentIds) AND subscriber_id > :lastId
           ORDER BY subscriber_id ASC
           LIMIT {$batchSize}",
-        ['segmentId' => $segmentId, 'lastId' => $lastId],
-        ['segmentId' => ParameterType::INTEGER, 'lastId' => ParameterType::INTEGER]
+        ['segmentIds' => $segmentIds, 'lastId' => $lastId],
+        ['segmentIds' => ArrayParameterType::INTEGER, 'lastId' => ParameterType::INTEGER]
       )->fetchFirstColumn();
 
       if ($ids === []) {

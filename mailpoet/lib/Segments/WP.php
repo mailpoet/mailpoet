@@ -425,6 +425,11 @@ class WP {
     $this->removeOrphanedSubscribers();
     // insertUsersToSegment adds WP users to the WP-Users segment via raw SQL,
     // so refresh segments_count for that segment's members.
+    // recalculateForSegment() only sees subscribers that still have a membership
+    // row, but that is fine here: removeOrphanedSubscribers() hard-deletes the
+    // subscriber rows it removes, so their stale count is moot. (Contrast with
+    // the WooCommerce path, which deletes only the membership row while the
+    // subscriber survives, and therefore recomputes the affected ids explicitly.)
     $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWPUsersSegment()->getId());
     $this->subscribersRepository->invalidateTotalSubscribersCache();
     $this->subscribersRepository->refreshAll();
