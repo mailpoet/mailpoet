@@ -31,7 +31,6 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
-    $this->entityManager->getConnection()->executeQuery('DROP TABLE IF EXISTS processed_task_ids');
     $this->newsletter = new NewsletterEntity();
     $this->newsletter->setSubject('Subject');
     $this->newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -49,7 +48,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
 
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 3);
+    $count = $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber1->getId(), (int)$subscriber3->getId());
     verify($count)->equals(3);
 
     $this->entityManager->clear();
@@ -78,7 +77,8 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $dateFromCarbon = new Carbon();
     $dateFrom = $dateFromCarbon->subDays(7)->toDateTime();
 
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts($dateFrom, 3);
+    verify($this->controller->hasNewSendingTasksSince($dateFrom))->true();
+    $count = $this->controller->updateSubscribersEmailCounts($dateFrom, (int)$subscriber1->getId(), (int)$subscriber3->getId());
     verify($count)->equals(3);
 
     $this->entityManager->clear();
@@ -105,9 +105,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber3, 1, 4);
 
     // Count
-    $this->controller->updateSubscribersEmailCounts(null, 3);
+    $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber1->getId(), (int)$subscriber3->getId());
     // Recount
-    $this->controller->updateSubscribersEmailCounts(null, 3);
+    $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber1->getId(), (int)$subscriber3->getId());
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -132,10 +132,10 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber3, 1, 4);
 
     // First batch of 1
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
+    $count = $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber1->getId(), (int)$subscriber1->getId());
     verify($count)->equals(1);
     // Second batch of 1
-    $this->controller->updateSubscribersEmailCounts(null, 1, $maxSubscriberId + 1);
+    $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber2->getId(), (int)$subscriber2->getId());
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -153,7 +153,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
 
   public function testItDoesNotCountIfThereAreNoSubscribersOrTasksToUpdate() {
     // Subscribers empty table
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
+    $count = $this->controller->updateSubscribersEmailCounts(null, 0, 1);
     verify($count)->equals(0);
 
     $subscriber1 = $this->createSubscriber('s1@email.com', 100);
@@ -163,15 +163,14 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     // Tasks empty table
     $dateFromCarbon = new Carbon();
     $dateFrom = $dateFromCarbon->subDays(7)->toDateTime();
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts($dateFrom, 1);
-    verify($count)->equals(0);
+    verify($this->controller->hasNewSendingTasksSince($dateFrom))->false();
 
     $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
     $this->createCompletedSendingTasksForSubscriber($subscriber3, 1, 4);
 
     // No subscribers to update from startId
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1, 4);
+    $count = $this->controller->updateSubscribersEmailCounts(null, (int)$subscriber3->getId() + 1, (int)$subscriber3->getId() + 1);
     verify($count)->equals(0);
 
     $this->entityManager->clear();

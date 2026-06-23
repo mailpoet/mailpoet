@@ -6,7 +6,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\ReEngagementEmailsScheduler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
@@ -14,7 +14,6 @@ use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
-use MailPoet\Cron\Workers\SubscribersEmailCount;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
@@ -226,13 +225,8 @@ class WordPressTest extends \MailPoetTest {
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
-  public function testItExecutesWhenSubscribersEmailCountTaskIsDue() {
-    $this->addScheduledTask(SubscribersEmailCount::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
-  }
-
-  public function testItExecutesWhenInactiveSubscribersTaskIsDue() {
-    $this->addScheduledTask(InactiveSubscribers::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+  public function testItExecutesWhenInactiveSubscribersMaintenanceTaskIsDue() {
+    $this->addScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
