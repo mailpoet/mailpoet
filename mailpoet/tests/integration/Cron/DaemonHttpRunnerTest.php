@@ -323,6 +323,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createNewsletterTemplateThumbnailsWorker' => $worker,
       'createAbandonedCartWorker' => $worker,
       'createBackfillEngagementDataWorker' => $worker,
+      'createSubscribersSegmentsCountSyncWorker' => $worker,
       'createMixpanelWorker' => $worker,
       'createTracksWorker' => $worker,
       'createStatisticsExportWorker' => $worker,
