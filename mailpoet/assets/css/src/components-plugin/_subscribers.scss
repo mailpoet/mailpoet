@@ -458,21 +458,32 @@
 }
 
 .mailpoet-subscribers-select-all-banner {
-  background: #f0f6fc;
-  border: 1px solid #c3c4c7;
+  // Derive from the active WP admin color scheme so the banner reads correctly
+  // on every profile colour (Light, Coffee, Sunrise, …) rather than a fixed
+  // blue that clashes with darker themes.
+  background: color-mix(
+    in srgb,
+    rgb(var(--wp-admin-theme-color--rgb)) 4%,
+    #fff
+  );
+  border: 1px solid rgba(var(--wp-admin-theme-color--rgb), 0.12);
   border-radius: 2px;
   margin-bottom: 8px;
   padding: 8px 12px;
   text-align: center;
 
-  // The WordPress `button-link` aligns differently from adjacent inline text,
-  // which left the link sitting below the sentence. Match the surrounding
-  // text metrics and baseline so they read as one line.
-  .button-link {
+  // The link button aligns differently from adjacent inline text, which left
+  // the link sitting below the sentence. Match the surrounding text metrics and
+  // baseline so they read as one line.
+  .components-button.is-link {
     font-size: inherit;
     line-height: inherit;
     vertical-align: baseline;
   }
+}
+
+.mailpoet-subscribers-select-all-warning {
+  margin: 0 0 12px;
 }
 
 .mailpoet-subscribers-select-all-caveat {

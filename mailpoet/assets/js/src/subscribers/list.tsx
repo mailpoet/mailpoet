@@ -576,6 +576,7 @@ function PickerModal({
       isDismissible
       contentClassName="mailpoet-subscribers-picker-modal"
     >
+      {caveat}
       <Selection
         field={fieldConfig}
         width="100%"
@@ -584,7 +585,6 @@ function PickerModal({
           setValue(Number.isFinite(next) ? next : 0);
         }}
       />
-      {caveat}
       <div className="mailpoet-subscribers-bulk-confirm-actions">
         <Button onClick={handleApply} isDisabled={!value}>
           {__('Apply', 'mailpoet')}
@@ -1312,12 +1312,16 @@ function SubscriberList() {
     const count = pendingSelectAll ? meta.count : targets.length;
     const largeOpCaveat =
       pendingSelectAll && shouldWarnLargeOperation(count) ? (
-        <p className="mailpoet-subscribers-select-all-caveat">
+        <Notice
+          status="warning"
+          isDismissible={false}
+          className="mailpoet-subscribers-select-all-warning"
+        >
           {__(
             'Large operations may take a while and could time out on very large lists.',
             'mailpoet',
           )}
-        </p>
+        </Notice>
       ) : null;
     // Select-all permanent delete keeps WordPress users and WooCommerce
     // customers (SubscribersRepository::bulkDelete only deletes rows with no
@@ -1339,13 +1343,13 @@ function SubscriberList() {
           onRequestClose={closePendingAction}
           isDismissible
         >
+          {largeOpCaveat}
           <p>
             {__(
               'This action will be applied to all %s subscribers matching the current view.',
               'mailpoet',
             ).replace('%s', formatCount(count))}
           </p>
-          {largeOpCaveat}
           {deleteSkipCaveat}
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
@@ -1371,13 +1375,13 @@ function SubscriberList() {
           onRequestClose={closePendingAction}
           isDismissible
         >
+          {largeOpCaveat}
           <p>
             {__(
               'This action will unsubscribe %s subscribers from all lists. This action cannot be undone. Are you sure, you want to continue?',
               'mailpoet',
             ).replace('%s', formatCount(count))}
           </p>
-          {largeOpCaveat}
           <div className="mailpoet-subscribers-bulk-confirm-actions">
             <Button
               onClick={() => handlePendingActionSubmit()}
