@@ -788,6 +788,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Logging\RestApi\Api::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\RestApi\Endpoints\LogsListingEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\RestApi\Endpoints\LogsDeleteEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Logging\LogsDownload::class)->setPublic(true);
     // Subscribers REST API
     $container->autowire(\MailPoet\Subscribers\RestApi\Api::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\RestApi\Endpoints\SubscribersListingEndpoint::class)->setPublic(true);

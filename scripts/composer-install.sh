@@ -10,9 +10,9 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "==> composer install in mailpoet/"
 (cd "$ROOT_DIR/mailpoet" && composer install --no-interaction)
 
-if [ -d "$ROOT_DIR/mailpoet-premium" ]; then
+if [ -f "$ROOT_DIR/mailpoet-premium/composer.json" ]; then
   echo "==> composer install in mailpoet-premium/"
   (cd "$ROOT_DIR/mailpoet-premium" && composer install --no-interaction)
 else
-  echo "==> skipping mailpoet-premium/ (directory not present)"
+  echo "==> skipping mailpoet-premium/ (no composer.json found)"
 fi

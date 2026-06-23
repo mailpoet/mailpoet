@@ -22,6 +22,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEdito
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
+use MailPoet\Logging\LogsDownload;
 use MailPoet\Logging\RestApi\Api as LogsRestApi;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\Newsletter\RestApi\Api as NewslettersRestApi;
@@ -150,6 +151,9 @@ class Initializer {
   /** @var NewslettersRestApi */
   private $newslettersRestApi;
 
+  /** @var LogsDownload */
+  private $logsDownload;
+
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
@@ -220,6 +224,7 @@ class Initializer {
     LogsRestApi $logsRestApi,
     SubscribersRestApi $subscribersRestApi,
     NewslettersRestApi $newslettersRestApi,
+    LogsDownload $logsDownload,
     PublicEmailRoute $publicEmailRoute
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -262,6 +267,7 @@ class Initializer {
     $this->logsRestApi = $logsRestApi;
     $this->subscribersRestApi = $subscribersRestApi;
     $this->newslettersRestApi = $newslettersRestApi;
+    $this->logsDownload = $logsDownload;
     $this->publicEmailRoute = $publicEmailRoute;
 
     $emailEditorContainer = Email_Editor_Container::container();
@@ -445,6 +451,7 @@ class Initializer {
       $this->logsRestApi->initialize();
       $this->subscribersRestApi->initialize();
       $this->newslettersRestApi->initialize();
+      $this->logsDownload->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {

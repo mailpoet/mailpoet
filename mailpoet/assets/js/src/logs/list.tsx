@@ -36,8 +36,14 @@ const DEFAULT_VIEW: View = {
   showTitle: true,
 };
 
+type DownloadConfig = {
+  action_url: string;
+  nonce: string;
+};
+
 type Props = {
   defaultFrom: string;
+  downloadConfig?: DownloadConfig;
 };
 
 function buildInitialView(defaultFrom: string): View {
@@ -65,7 +71,7 @@ function filtersKey(view: View): string {
   return JSON.stringify(view.filters ?? []);
 }
 
-export function List({ defaultFrom }: Props): JSX.Element {
+export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   const initialView = useMemo(
     () => buildInitialView(defaultFrom),
     [defaultFrom],
@@ -171,6 +177,18 @@ export function List({ defaultFrom }: Props): JSX.Element {
     [meta],
   );
 
+  const downloadLogs = useCallback((): void => {
+    if (!downloadConfig) return;
+    const params = new URLSearchParams({
+      action: 'mailpoet_download_logs',
+      _wpnonce: downloadConfig.nonce,
+    });
+    if (requestFilter.from) params.set('from', requestFilter.from);
+    if (requestFilter.to) params.set('to', requestFilter.to);
+    window.location.assign(`${downloadConfig.action_url}?${params.toString()}`);
+  }, [downloadConfig, requestFilter]);
+
+
   const retryLoading = useCallback((): void => {
     clearLoadError();
     refresh();
@@ -246,6 +264,16 @@ export function List({ defaultFrom }: Props): JSX.Element {
               {__('Delete logs...', 'mailpoet')}
             </Button>
             <DataViews.ViewConfig />
+            {downloadConfig && (
+              <Button
+                dimension="small"
+                variant="secondary"
+                onClick={downloadLogs}
+                isDisabled={isLoading}
+              >
+                {__('Download', 'mailpoet')}
+              </Button>
+            )}
           </div>
         </div>
         <DataViews.Filters />
