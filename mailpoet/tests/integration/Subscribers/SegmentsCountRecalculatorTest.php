@@ -5,9 +5,11 @@ namespace MailPoet\Subscribers;
 use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -98,6 +100,26 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
 
     $segmentsRepository->bulkRestore([(int)$segment->getId()]);
     $this->assertSame(1, $this->getSegmentsCount($subscriber));
+  }
+
+  public function testListingQueryUsesColumnWhenBackfilled(): void {
+    $segment = (new Segment())->create();
+    $withList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
+    $withoutList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $this->recalculator->recalculateForSubscribers([(int)$withList->getId(), (int)$withoutList->getId()]);
+
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, true);
+
+    // The listing repository uses addConstraintsForSubscribersWithoutSegment()
+    // on a Doctrine ORM query builder (DQL). Verify it switches to the
+    // segments_count = 0 path instead of the LEFT JOIN anti-join.
+    $definition = new ListingDefinition('all', ['segment' => SubscriberListingRepository::FILTER_WITHOUT_LIST], '', [], 'id', 'asc', 0, 100, []);
+    $items = $this->diContainer->get(SubscriberListingRepository::class)->getData($definition);
+    $ids = array_map(fn(SubscriberEntity $s) => $s->getId(), $items);
+
+    $this->assertContains($withoutList->getId(), $ids);
+    $this->assertNotContains($withList->getId(), $ids);
   }
 
   public function testReadPathUsesColumnWhenBackfilled(): void {
