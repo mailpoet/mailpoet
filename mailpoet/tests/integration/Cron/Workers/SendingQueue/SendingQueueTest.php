@@ -21,6 +21,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -33,7 +34,9 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
@@ -105,6 +108,12 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
+  /** @var ScheduledTaskSubscriberMover */
+  private $scheduledTaskSubscriberMover;
+
   /** @var ScheduledTaskEntity */
   private $scheduledTask;
 
@@ -124,6 +133,8 @@ class SendingQueueTest extends \MailPoetTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $this->scheduledTaskQueuedSubscriberRepository = $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class);
+    $this->scheduledTaskSubscriberMover = $this->diContainer->get(ScheduledTaskSubscriberMover::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->segment = (new SegmentFactory())->withName('segment')->create();
     $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe', [$this->segment]);
@@ -140,7 +151,7 @@ class SendingQueueTest extends \MailPoetTest {
     $scheduledTask = $this->sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->scheduledTask = $scheduledTask;
-    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [$this->subscriber->getId()]);
+    $this->seedQueuedSubscribers($this->scheduledTask, [$this->subscriber->getId()]);
 
     $queue = $this->newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -220,6 +231,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
@@ -254,6 +267,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -305,6 +320,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -354,6 +371,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
@@ -448,7 +467,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($scheduledTask))
       ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
@@ -486,7 +505,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue->setNewsletterRenderedSubject('News for [subscriber:email]');
     $scheduledTask = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$subscriber1->getId(), $subscriber2->getId()]);
+    $this->seedQueuedSubscribers($scheduledTask, [$subscriber1->getId(), $subscriber2->getId()]);
 
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
 
@@ -559,7 +578,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($scheduledTask))
       ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
@@ -609,7 +628,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($updatedNewsletter->getSentAt())->equalsWithDelta($scheduledTask->getProcessedAt(), 1);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($scheduledTask))
       ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
@@ -632,7 +651,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue = $this->createQueueWithTask($this->newsletter);
     $scheduledTask = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId(), $wrongSubscriber->getId()]);
+    $this->seedQueuedSubscribers($scheduledTask, [$this->subscriber->getId(), $wrongSubscriber->getId()]);
 
     // Error that simulates sending error from the bridge
     $mailerError = new MailerError(
@@ -657,6 +676,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -682,7 +703,7 @@ class SendingQueueTest extends \MailPoetTest {
     // compare data after first sending
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->equals([$this->subscriber]);
+    verify($this->getQueuedSubscribers($scheduledTask))->equals([$this->subscriber]);
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->equals([$wrongSubscriber]);
     verify($sendingQueue->getCountTotal())->equals(2);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -700,7 +721,7 @@ class SendingQueueTest extends \MailPoetTest {
     // load queue and compare data after second sending
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->equals([]);
+    verify($this->getQueuedSubscribers($scheduledTask))->equals([]);
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->equals([$this->subscriber, $wrongSubscriber]);
     verify($sendingQueue->getCountTotal())->equals(2);
     verify($sendingQueue->getCountProcessed())->equals(2);
@@ -752,7 +773,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($this->scheduledTask))
       ->equals([]);
     verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
@@ -807,7 +828,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->create();
 
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $unsubscribedSubscriber->getId()]
     );
@@ -876,7 +897,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItCompletesEverythingProperlyWhenThereIsNoOneToSendTo() {
     // No subscribers in queue
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       []
     );
@@ -906,13 +927,15 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountProcessed())->equals(0);
     verify($sendingQueue->getCountToProcess())->equals(0);
     verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
+    // The empty-queue completion fallback must stamp processedAt, like the normal completion path.
+    $this->assertNotNull($scheduledTask->getProcessedAt());
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
   }
 
   public function testItRemovesSubscribersFromProcessingListWhenNewsletterHasSegmentAndSubscriberIsNotPartOfIt() {
     $subscriberNotPartOfNewsletterSegment = $this->createSubscriber('subscriber1@mailpoet.com', 'Subscriber', 'One');
 
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $subscriberNotPartOfNewsletterSegment->getId()]
     );
@@ -930,7 +953,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // queue subscriber processed/to process count is updated
-    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($this->scheduledTask))
       ->equals([]);
     verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
@@ -947,7 +970,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter->getNewsletterSegments()->clear();
     $invalidSubscriberId = 99999;
 
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $invalidSubscriberId]
     );
@@ -969,7 +992,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($this->sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($scheduledTask))
       ->equals([]);
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
@@ -989,7 +1012,7 @@ class SendingQueueTest extends \MailPoetTest {
     }
     $subscribers[] = $this->subscriber->getId();
 
-    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, $subscribers);
+    $this->seedQueuedSubscribers($this->scheduledTask, $subscribers);
     $this->sendingQueue->setCountTotal(count($subscribers));
     $this->entityManager->persist($this->sendingQueue);
     $this->entityManager->flush();
@@ -1013,7 +1036,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($scheduledTask))
       ->equals([]);
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
@@ -1024,7 +1047,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
-    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [123, 456,]);
+    $this->seedQueuedSubscribers($this->scheduledTask, [123, 456,]);
     $this->sendingQueue->setCountTotal(2);
     $this->entityManager->persist($this->sendingQueue);
     $this->entityManager->flush();
@@ -1038,7 +1061,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // queue subscriber processed/to process count is updated
-    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->getQueuedSubscribers($this->scheduledTask))
       ->equals([]);
     verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([]);
@@ -1184,9 +1207,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $scheduledTaskSubscribersRepository = $this->createMock(ScheduledTaskSubscribersRepository::class);
-    $scheduledTaskSubscribersRepository
-      ->method('updateProcessedSubscribers')
+    $scheduledTaskSubscriberMover = $this->createMock(ScheduledTaskSubscriberMover::class);
+    $scheduledTaskSubscriberMover
+      ->method('moveProcessedToLog')
       ->willThrowException(new \Exception());
     $sendingQueueWorker = $this->make(
       $this->getSendingQueueWorker()
@@ -1202,7 +1225,9 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
-      $scheduledTaskSubscribersRepository,
+      $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $scheduledTaskSubscriberMover,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -1412,7 +1437,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
     $mailerTaskCampaignIds = [];
     $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two', [$this->segment]);
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $secondSubscriber->getId()]
     );
@@ -1462,7 +1487,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItLogsWhenSendingReachesEndAndTaskHasAnUnexpectedState() {
     // No subscribers in queue to skip batch processing
-    $this->scheduledTaskSubscribersRepository->setSubscribers(
+    $this->seedQueuedSubscribers(
       $this->scheduledTask,
       []
     );
@@ -1613,6 +1638,39 @@ class SendingQueueTest extends \MailPoetTest {
     return $queue;
   }
 
+  /**
+   * Seeds the QUEUE table (sending tasks now read pending recipients from there).
+   *
+   * @param array<int|null> $subscriberIds
+   */
+  private function seedQueuedSubscribers(ScheduledTaskEntity $task, array $subscriberIds): void {
+    $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($task);
+    foreach ($subscriberIds as $subscriberId) {
+      /** @var SubscriberEntity $subscriber */
+      $subscriber = $this->entityManager->getReference(SubscriberEntity::class, (int)$subscriberId);
+      $this->entityManager->persist(new ScheduledTaskQueuedSubscriberEntity($task, $subscriber));
+    }
+    $this->entityManager->flush();
+  }
+
+  /**
+   * Returns the still-pending recipients of a sending task from the QUEUE.
+   * Replaces $task->getSubscribersByProcessed(STATUS_UNPROCESSED), which read the log relation.
+   *
+   * @return SubscriberEntity[]
+   */
+  private function getQueuedSubscribers(ScheduledTaskEntity $task): array {
+    $ids = $this->scheduledTaskQueuedSubscriberRepository->getSubscriberIdsBatchForTask((int)$task->getId(), 0, 1000);
+    $subscribers = [];
+    foreach ($ids as $id) {
+      $subscriber = $this->subscribersRepository->findOneById($id);
+      if ($subscriber instanceof SubscriberEntity) {
+        $subscribers[] = $subscriber;
+      }
+    }
+    return $subscribers;
+  }
+
   private function getSendingQueueWorker($mailerMock = null, $authorizedEmailControllerMock = null): SendingQueueWorker {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
@@ -1626,6 +1684,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->scheduledTaskSubscribersRepository,
+      $this->scheduledTaskQueuedSubscriberRepository,
+      $this->scheduledTaskSubscriberMover,
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,

@@ -7,12 +7,16 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 
 class SendingErrorHandler {
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
+  /** @var ScheduledTaskSubscriberMover */
+  private $scheduledTaskSubscriberMover;
+
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
 
   /** @var SendingThrottlingHandler */
   private $throttlingHandler;
@@ -24,12 +28,14 @@ class SendingErrorHandler {
   private $loggerFactory;
 
   public function __construct(
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     SendingThrottlingHandler $throttlingHandler,
     SendingQueuesRepository $sendingQueuesRepository,
     LoggerFactory $loggerFactory
   ) {
-    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->throttlingHandler = $throttlingHandler;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->loggerFactory = $loggerFactory;
@@ -61,10 +67,16 @@ class SendingErrorHandler {
 
   private function processSoftError(MailerError $error, ScheduledTaskEntity $task, $preparedSubscribersIds, $preparedSubscribers) {
     foreach ($error->getSubscriberErrors() as $subscriberError) {
-      $subscriberIdIndex = array_search($subscriberError->getEmail(), $preparedSubscribers);
+      $subscriberIdIndex = array_search($subscriberError->getEmail(), $preparedSubscribers, true);
+      // An error for an email we didn't send in this batch can't be mapped to a
+      // queued recipient; skip it instead of moving the wrong subscriber (index 0) to the failed log.
+      if ($subscriberIdIndex === false || !array_key_exists($subscriberIdIndex, $preparedSubscribersIds)) {
+        continue;
+      }
       $message = $subscriberError->getMessage() ?: $error->getMessage();
-      $this->scheduledTaskSubscribersRepository->saveError($task, $preparedSubscribersIds[$subscriberIdIndex], $message ?? '');
+      $this->scheduledTaskSubscriberMover->moveFailedToLog($task, $preparedSubscribersIds[$subscriberIdIndex], $message ?? '');
     }
+    $this->scheduledTaskQueuedSubscriberRepository->checkCompleted($task);
 
     $queue = $task->getSendingQueue();
 

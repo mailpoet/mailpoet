@@ -6,11 +6,11 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
@@ -43,11 +43,9 @@ class UnsubscribesTest extends \MailPoetTest {
       ->create();
 
     // create queue
-    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
     $this->sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
-    $scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId()]);
-    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($scheduledTask, [(int)$this->subscriber->getId()]);
+    (new ScheduledTaskSubscriberFactory())->createProcessed($scheduledTask, $this->subscriber);
 
     // instantiate class
     $this->unsubscribes = $this->diContainer->get(Unsubscribes::class);

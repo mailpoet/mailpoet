@@ -21,6 +21,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\Security;
 
@@ -84,8 +85,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
     $this->scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
     $this->sendingQueue = (new SendingQueueFactory())->create($this->scheduledTask, $newsletter);
-    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [$subscriber->getId()]);
-    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTask, [(int)$subscriber->getId()]);
+    (new ScheduledTaskSubscriberFactory())->createProcessed($this->scheduledTask, $subscriber);
 
     // build browser preview data
     $this->browserPreviewData = [
@@ -134,8 +134,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItThrowsWhenSubscriberIsNotOnProcessedList() {
     $data = $this->browserPreviewData;
-    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, []);
-    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTask, []);
+    $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($this->scheduledTask);
     $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
