@@ -54,6 +54,10 @@ parameters:
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
       count: 2
+    - # Same as above for the queued subscriber entity (composite FK primary key)
+      message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
+      path: ../../lib/Entities/ScheduledTaskQueuedSubscriberEntity.php
+      count: 2
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
