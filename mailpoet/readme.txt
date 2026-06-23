@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.30.0
+Stable tag: 5.31.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,24 +227,32 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.30.0 - 2026-06-16 =
-* Added: Email content for post-purchase automation templates;
-* Added: Email content patterns for birthday and win-back automations;
-* Added: Email content patterns for win-back inactive customer automations;
-* Added: Pre-built email content for review follow-up and reviewer reward automation templates;
-* Added: Order-aware product recommendations in post-purchase automation emails: cross-sells of the purchased products, products with the same tag, or products from the same category;
-* Added: Email campaign attribution on WooCommerce orders;
-* Added: Per-user listing preferences and sorting across MailPoet list pages;
-* Added: Personal data export and erasure for email attribution data stored on WooCommerce orders;
-* Improved: Speed up sorting the subscribers list by subscription date on large lists;
-* Improved: Reduce JavaScript size in the admin area;
-* Improved: Performance when WooCommerce is inactive by hiding the WooCommerce Customers list instead of running a slow database check;
-* Improved: Improve WooCommerce revenue reporting with order attribution data;
-* Changed: Subscriber search to match from the start of each field for faster results on large lists, with the asterisk wildcard to match anywhere;
-* Changed: Replaced the per-page Screen Options on the Emails, Subscribers, and Lists pages with the DataViews view settings;
-* Fixed: Sign-up Confirmation email template now respects Styles sidebar settings for content background, text color, and font;
-* Fixed: An issue where crawlers requesting the sign-up form URL caused an exception in the WordPress debug log;
-* Fixed: Form editor block inserter close button not closing the panel;
-* Fixed: Modern Manage Subscription page text contrast on dark themes.
+= 5.31.0 - 2026-06-23 =
+* Added: Subscription email content patterns for automations;
+* Added: Booking email content patterns for automation templates;
+* Added: WP-CLI commands for managing MailPoet cron tasks (wp mailpoet cron);
+* Added: Log deletion from the Logs page, removing the logs matching the current filters and search;
+* Added: Native filters and sorting on the Logs listing;
+* Added: Native DataViews filters and sorting for the Tags and Custom Fields listings;
+* Added: WP-CLI command "wp mailpoet import" to import subscribers from a CSV file;
+* Added: Recurring cleanup task that removes leftover subscriber rows from completed bounce tasks;
+* Added: Notice in the email editor explaining a sent email can be edited but must be duplicated to send again, with a Duplicate action;
+* Added: Filtering by status, creation date and modified date plus sorting by creation and modified date on the Forms listing;
+* Added: Option to mark public emails as private from the email listing;
+* Added: Native DataViews filters and sorting on the Lists and Segments listings, including filtering by type, creation and modification date, and list engagement score;
+* Added: Preview of an automation template's pre-built email content before starting to build;
+* Updated: Inbox preview panel now shows the MailPoet sender details instead of the WordPress site title and admin email;
+* Updated: DOMPurify HTML sanitizer to a patched version;
+* Improved: Speed up adding subscribers to sending tasks for large static segments by removing a redundant DISTINCT that forced a temporary table;
+* Improved: Preview automation emails without leaving the automation editor;
+* Changed: Subscribers list sorting to the Created on column only for faster performance on large lists;
+* Changed: Detect bounced subscribers via the sending service bounces report endpoint instead of scanning all subscribers;
+* Changed: WooCommerce revenue reporting now matches Woo Analytics by counting orders WooCommerce attributes to the mailpoet source, with the mailpoet_woo_backed_revenue_reporting filter to opt back to the previous MailPoet reporting;
+* Fixed: Preserve math formatting in subscription forms;
+* Fixed: Custom CAPTCHA page selection no longer reset after plugin update;
+* Fixed: Load images on public email URL when image optimizer plugin is active;
+* Fixed: Apply button in the subscribers bulk action modals being disabled until the pre-selected list was changed;
+* Fixed: Restore partial email address search on the Subscribers page;
+* Fixed: WooCommerce customer conditions for subscribers without customer records.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
