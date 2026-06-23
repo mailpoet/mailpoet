@@ -23,6 +23,9 @@ class SendingQueuesRepository extends Repository {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
   /** @var FilterFactory */
   private $filterFactory;
 
@@ -32,11 +35,13 @@ class SendingQueuesRepository extends Repository {
   public function __construct(
     EntityManager $entityManager,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     FilterFactory $filterFactory,
     LoggerFactory $loggerFactory
   ) {
     parent::__construct($entityManager);
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->filterFactory = $filterFactory;
     $this->loggerFactory = $loggerFactory;
   }
@@ -288,7 +293,7 @@ class SendingQueuesRepository extends Repository {
       // query DB to update counts, slower but more accurate, to be used if count isn't known
       $task = $queue->getTask();
       $processed = $task ? $this->scheduledTaskSubscribersRepository->countProcessed($task) : 0;
-      $unprocessed = $task ? $this->scheduledTaskSubscribersRepository->countUnprocessed($task) : 0;
+      $unprocessed = $task ? $this->scheduledTaskQueuedSubscriberRepository->countForTask($task) : 0;
       $queue->setCountProcessed($processed);
       $queue->setCountToProcess($unprocessed);
       $queue->setCountTotal($processed + $unprocessed);

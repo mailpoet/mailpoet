@@ -6,6 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -100,25 +101,40 @@ class ScheduledTasksRepository extends Repository {
    * @return ScheduledTaskEntity[]
    */
   public function findByNewsletterAndSubscriberId(NewsletterEntity $newsletter, int $subscriberId): array {
-    return $this->doctrineRepository->createQueryBuilder('st')
-      ->select('st')
-      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
-      ->join(ScheduledTaskSubscriberEntity::class, 'sts', Join::WITH, 'st = sts.task')
-      ->andWhere('sq.newsletter = :newsletter')
-      ->andWhere('sts.subscriber = :subscriber')
-      ->setParameter('newsletter', $newsletter)
-      ->setParameter('subscriber', $subscriberId)
-      ->getQuery()
-      ->getResult();
+    // A recipient that is still pending lives in the queue; once sent it is moved to the log.
+    // Check both so the welcome dedup keeps matching scheduled and already-sent tasks.
+    $tasks = [];
+    foreach ([ScheduledTaskQueuedSubscriberEntity::class, ScheduledTaskSubscriberEntity::class] as $subscriberEntityClass) {
+      $results = $this->doctrineRepository->createQueryBuilder('st')
+        ->select('st')
+        ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
+        ->join($subscriberEntityClass, 'sts', Join::WITH, 'st = sts.task')
+        ->andWhere('sq.newsletter = :newsletter')
+        ->andWhere('sts.subscriber = :subscriber')
+        ->setParameter('newsletter', $newsletter)
+        ->setParameter('subscriber', $subscriberId)
+        ->getQuery()
+        ->getResult();
+      foreach ($results as $task) {
+        if ($task instanceof ScheduledTaskEntity && $task->getId()) {
+          $tasks[$task->getId()] = $task;
+        }
+      }
+    }
+    return array_values($tasks);
   }
 
   public function findOneScheduledByNewsletterAndSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): ?ScheduledTaskEntity {
+    // Scoped to status = scheduled: the worker has not started yet (it flips the
+    // status away from "scheduled" before moving any recipient to the log), so
+    // every recipient is still pending in the queue. Checking the queue alone is
+    // therefore correct here, even for a multi-recipient task.
     $scheduledTask = $this->doctrineRepository->createQueryBuilder('st')
       ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
-      ->join(ScheduledTaskSubscriberEntity::class, 'sts', Join::WITH, 'st = sts.task')
+      ->join(ScheduledTaskQueuedSubscriberEntity::class, 'stsq', Join::WITH, 'st = stsq.task')
       ->andWhere('st.status = :status')
       ->andWhere('sq.newsletter = :newsletter')
-      ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere('stsq.subscriber = :subscriber')
       ->setMaxResults(1)
       ->setParameter('status', ScheduledTaskEntity::STATUS_SCHEDULED)
       ->setParameter('newsletter', $newsletter)

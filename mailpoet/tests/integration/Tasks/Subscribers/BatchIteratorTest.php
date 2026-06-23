@@ -5,7 +5,7 @@ namespace MailPoet\Test\Tasks\Subscribers;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
-use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber as ScheduledTaskQueuedSubscriberFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -24,12 +24,12 @@ class BatchIteratorTest extends \MailPoetTest {
     $task = $scheduledTaskFactory->create('some_task_type', ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $this->taskId = $task->getId();
 
-    $scheduledTaskSubscriberFactory = new ScheduledTaskSubscriberFactory();
+    $queuedSubscriberFactory = new ScheduledTaskQueuedSubscriberFactory();
 
     for ($i = 0; $i < $this->subscriberCount; $i++) {
       $subscriberFactory = new SubscriberFactory();
       $subscriber = $subscriberFactory->create();
-      $scheduledTaskSubscriberFactory->createUnprocessed($task, $subscriber);
+      $queuedSubscriberFactory->create($task, $subscriber);
     }
     $this->iterator = new BatchIterator($this->taskId, $this->batchSize);
   }

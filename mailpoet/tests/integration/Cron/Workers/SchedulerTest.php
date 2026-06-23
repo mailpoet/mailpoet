@@ -11,7 +11,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -21,7 +21,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -32,6 +34,7 @@ use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use WP_User;
 
 class SchedulerTest extends \MailPoetTest {
@@ -261,6 +264,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->newsletterOptionFactory->create($newsletter, 'event', 'user');
     $task = $this->createTaskWithQueue($newsletter);
     $this->createTaskSubscriber($task, $subscriber);
+    [$task, $newsletter] = $this->reloadTaskAndNewsletter($task, $newsletter);
 
     // return false when WP user cannot be verified
     $scheduler = Stub::make(Scheduler::class, [
@@ -277,6 +281,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->newsletterOptionFactory->create($newsletter, 'event', 'segment');
     $task = $this->createTaskWithQueue($newsletter);
     $this->createTaskSubscriber($task, $subscriber);
+    [$task, $newsletter] = $this->reloadTaskAndNewsletter($task, $newsletter);
 
     // return false when subscriber cannot be verified
     $scheduler = Stub::make(Scheduler::class, [
@@ -295,6 +300,7 @@ class SchedulerTest extends \MailPoetTest {
     // return true when subscriber is verified and update the task status to null
     $task = $this->createTaskWithQueue($newsletter);
     $this->createTaskSubscriber($task, $subscriber);
+    [$task, $newsletter] = $this->reloadTaskAndNewsletter($task, $newsletter);
     $scheduler = Stub::make(Scheduler::class, [
       'verifyMailpoetSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
@@ -316,6 +322,7 @@ class SchedulerTest extends \MailPoetTest {
     // return true when WP user is verified
     $task = $this->createTaskWithQueue($newsletter);
     $this->createTaskSubscriber($task, $subscriber);
+    [$task, $newsletter] = $this->reloadTaskAndNewsletter($task, $newsletter);
     $scheduler = Stub::make(Scheduler::class, [
       'verifyWPSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
@@ -446,11 +453,8 @@ class SchedulerTest extends \MailPoetTest {
     // return true
     verify($scheduler->processScheduledStandardNewsletter($newsletter, $task))->true();
     // update queue's list of subscribers to process
-    $updatedSubscribers = $task->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
-    $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
-      return (int)$subscriber->getId();
-    }, $updatedSubscribers);
-    verify($updatedSubscribersIds)->equals([$subscriber->getId()]);
+    $updatedSubscribersIds = $this->getQueuedSubscriberIds($task);
+    verify($updatedSubscribersIds)->equals([(int)$subscriber->getId()]);
     // set queue's status to null
     verify($task->getStatus())->null();
     // set newsletter's status to sending
@@ -508,11 +512,8 @@ class SchedulerTest extends \MailPoetTest {
     // to that of the notification history
     $sendingQueue = $task->getSendingQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    $updatedSubscribers = $task->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
-    $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
-      return (int)$subscriber->getId();
-    }, $updatedSubscribers);
-    verify($updatedSubscribersIds)->equals([$subscriber->getId()]);
+    $updatedSubscribersIds = $this->getQueuedSubscriberIds($task);
+    verify($updatedSubscribersIds)->equals([(int)$subscriber->getId()]);
     $scheduledNewsletter = $sendingQueue->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $scheduledNewsletter);
     verify($scheduledNewsletter->getId())->equals($notificationHistory->getId());
@@ -537,10 +538,12 @@ class SchedulerTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
 
     // Prefill scheduled task subscriber
-    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $scheduledTaskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($scheduledTaskSubscriber);
-    $task->getSubscribers()->add($scheduledTaskSubscriber);
     $this->entityManager->flush();
+    // reload so the task's EXTRA_LAZY queue collection reads from the DB, as in
+    // production where the scheduler processes tasks loaded from the database
+    [$task, $newsletter] = $this->reloadTaskAndNewsletter($task, $newsletter);
 
     // return true
     verify($scheduler->processPostNotificationNewsletter($newsletter, $task))->true();
@@ -569,6 +572,34 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
     verify($this->scheduledTasksRepository->findOneByNewsletter($newsletter))->null();
+  }
+
+  public function testItDeletesQueueDuringProcessingWhenTaskRefreshFails() {
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $task = $this->createTaskWithQueue($newsletter);
+
+    $scheduler = $this->getSchedulerMock([
+      'scheduledTasksRepository' => $this->makeEmpty(ScheduledTasksRepository::class, [
+        'findScheduledSendingTasks' => Expected::once([$task]),
+        'touchAllByIds' => Expected::once(),
+        'refresh' => Expected::once(function() use ($task) {
+          throw EntityNotFoundException::fromClassNameAndIdentifier(ScheduledTaskEntity::class, ['id' => (string)$task->getId()]);
+        }),
+        'remove' => Expected::once(),
+        'flush' => Expected::once(),
+      ]),
+      'sendingQueuesRepository' => $this->makeEmpty(SendingQueuesRepository::class, [
+        'remove' => Expected::once(),
+      ]),
+      'scheduledTaskQueuedSubscriberRepository' => $this->makeEmpty(ScheduledTaskQueuedSubscriberRepository::class, [
+        'deleteByScheduledTask' => Expected::once(),
+      ]),
+      'scheduledTaskSubscribersRepository' => $this->makeEmpty(ScheduledTaskSubscribersRepository::class, [
+        'deleteByScheduledTask' => Expected::once(),
+      ]),
+    ]);
+
+    $scheduler->process();
   }
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
@@ -682,9 +713,7 @@ class SchedulerTest extends \MailPoetTest {
     verify($refetchedTask->getStatus())->null();
     verify($refetchedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
 
-    $scheduledSubscriberIds = array_map(function (ScheduledTaskSubscriberEntity $taskSubscriber): int {
-      return (int)$taskSubscriber->getSubscriberId();
-    }, $refetchedTask->getSubscribers()->toArray());
+    $scheduledSubscriberIds = $this->getQueuedSubscriberIds($refetchedTask);
 
     verify($scheduledSubscriberIds)->equals([(int)$replaySubscriber->getId()]);
 
@@ -840,10 +869,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getStatus())->null();
     // task should have 1 subscriber added from segment
-    $subscribers = $task->getSubscribers();
-    $this->assertCount(1, $subscribers);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $subscribers[0]);
-    $this->assertSame($subscriber, $subscribers[0]->getSubscriber());
+    $this->assertSame([(int)$subscriber->getId()], $this->getQueuedSubscriberIds($task));
   }
 
   public function testItProcessesScheduledAutomaticEmailWhenSendingToSegmentAndSubscriberIsPrefilled() {
@@ -861,9 +887,8 @@ class SchedulerTest extends \MailPoetTest {
 
     $task = $this->createTaskWithQueue($newsletter);
     // Prefill scheduled task subscriber
-    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $scheduledTaskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($scheduledTaskSubscriber);
-    $task->getSubscribers()->add($scheduledTaskSubscriber);
     $this->entityManager->flush();
 
     // task should have its status set to null (i.e., sending)
@@ -874,10 +899,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getStatus())->null();
     // task should have 1 subscriber added from segment
-    $subscribers = $task->getSubscribers();
-    $this->assertCount(1, $subscribers);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $subscribers[0]);
-    $this->assertSame($subscriber, $subscribers[0]->getSubscriber());
+    $this->assertSame([(int)$subscriber->getId()], $this->getQueuedSubscriberIds($task));
   }
 
   public function testItProcessesScheduledAutomationEmail() {
@@ -1022,12 +1044,38 @@ class SchedulerTest extends \MailPoetTest {
     return $task;
   }
 
-  private function createTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber): ScheduledTaskSubscriberEntity {
-    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+  private function createTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber): ScheduledTaskQueuedSubscriberEntity {
+    $scheduledTaskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($scheduledTaskSubscriber);
-    $task->getSubscribers()->add($scheduledTaskSubscriber);
     $this->entityManager->flush();
     return $scheduledTaskSubscriber;
+  }
+
+  /**
+   * Reloads test setup entities so queue reads use DB-backed EXTRA_LAZY state
+   * after queued subscribers were inserted outside the task collection.
+   *
+   * @return array{0: ScheduledTaskEntity, 1: NewsletterEntity}
+   */
+  private function reloadTaskAndNewsletter(ScheduledTaskEntity $task, NewsletterEntity $newsletter): array {
+    $taskId = (int)$task->getId();
+    $newsletterId = (int)$newsletter->getId();
+    $this->entityManager->clear();
+    $reloadedTask = $this->scheduledTasksRepository->findOneById($taskId);
+    $reloadedNewsletter = $this->newslettersRepository->findOneById($newsletterId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $reloadedTask);
+    $this->assertInstanceOf(NewsletterEntity::class, $reloadedNewsletter);
+    return [$reloadedTask, $reloadedNewsletter];
+  }
+
+  /** @return int[] */
+  private function getQueuedSubscriberIds(ScheduledTaskEntity $task): array {
+    $taskId = $task->getId();
+    if (!$taskId) {
+      return [];
+    }
+    return $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)
+      ->getSubscriberIdsBatchForTask($taskId, 0, 100);
   }
 
   private function getSchedulerMock(array $mocks): Scheduler {
