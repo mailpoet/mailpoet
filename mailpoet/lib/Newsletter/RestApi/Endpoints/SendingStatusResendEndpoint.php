@@ -8,6 +8,8 @@ use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Validator\Builder;
@@ -24,6 +26,9 @@ class SendingStatusResendEndpoint extends Endpoint {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskSubscriberMover */
+  private $scheduledTaskSubscriberMover;
+
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
@@ -32,10 +37,12 @@ class SendingStatusResendEndpoint extends Endpoint {
 
   public function __construct(
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
     SendingQueuesRepository $sendingQueuesRepository,
     WPFunctions $wp
   ) {
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->wp = $wp;
   }
@@ -101,8 +108,17 @@ class SendingStatusResendEndpoint extends Endpoint {
       );
     }
 
-    $taskSubscriber->resetToUnprocessed();
-    $taskSubscriber->getTask()->setStatus(null);
+    $task = $taskSubscriber->getTask();
+    if (!$task instanceof ScheduledTaskEntity) {
+      throw new ApiException(
+        __('Failed sending task not found!', 'mailpoet'),
+        404,
+        'mailpoet_sending_status_task_not_found'
+      );
+    }
+    // Move the failed recipient from the log back into the queue so the next cron run resends it.
+    $this->scheduledTaskSubscriberMover->moveBackToQueue($task, (int)$taskSubscriber->getSubscriberId());
+    $task->setStatus(null);
     if (!$newsletter->canBeSetActive()) {
       $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
     }

@@ -13,6 +13,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\Segment;
@@ -124,7 +125,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     verify($scheduledAt->getTimestamp())->equalsWithDelta(Carbon::now()->getTimestamp(), 1);
-    verify($task->getSubscribers()->count())->equals(2);
+    verify(count($this->getQueuedSubscriberIds($task)))->equals(2);
 
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -154,7 +155,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $task = $this->scheduler->scheduleAll()[0];
     $this->entityManager->refresh($task);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    verify($task->getSubscribers()->count())->equals(1);
+    verify(count($this->getQueuedSubscriberIds($task)))->equals(1);
 
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -207,5 +208,15 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $subscriber->setLastSubscribedAt($lastEngagement);
     $this->entityManager->flush();
     return $subscriber;
+  }
+
+  /** @return int[] */
+  private function getQueuedSubscriberIds(ScheduledTaskEntity $task): array {
+    $taskId = $task->getId();
+    if (!$taskId) {
+      return [];
+    }
+    return $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)
+      ->getSubscriberIdsBatchForTask($taskId, 0, 100);
   }
 }
