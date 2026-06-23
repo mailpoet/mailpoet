@@ -1,3 +1,4 @@
+import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { SelectAllBannerMode } from './select-all';
 
@@ -36,14 +37,13 @@ export function SelectAllBanner({
             'mailpoet',
           ).replace('%s', formatCount(totalCount))}
         </span>{' '}
-        <button
-          type="button"
-          className="button button-link"
+        <Button
+          variant="link"
           data-automation-id="subscribers_select_all_clear"
           onClick={onClear}
         >
           {__('Clear selection', 'mailpoet')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -59,9 +59,8 @@ export function SelectAllBanner({
           'mailpoet',
         ).replace('%s', formatCount(pageItemCount))}
       </span>{' '}
-      <button
-        type="button"
-        className="button button-link"
+      <Button
+        variant="link"
         data-automation-id="subscribers_select_all_offer"
         onClick={onSelectAll}
       >
@@ -69,7 +68,7 @@ export function SelectAllBanner({
           '%s',
           formatCount(totalCount),
         )}
-      </button>
+      </Button>
     </div>
   );
 }
