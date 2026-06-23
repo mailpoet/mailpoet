@@ -5,7 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Logging\LoggerFactory;
@@ -132,7 +132,7 @@ class BulkConfirmationEmailResender {
       foreach ($queuedIds as $subscriberId) {
         /** @var SubscriberEntity $subscriberReference */
         $subscriberReference = $entityManager->getReference(SubscriberEntity::class, $subscriberId);
-        $entityManager->persist(new ScheduledTaskSubscriberEntity(
+        $entityManager->persist(new ScheduledTaskQueuedSubscriberEntity(
           $task,
           $subscriberReference
         ));
