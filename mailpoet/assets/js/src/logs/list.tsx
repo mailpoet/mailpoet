@@ -188,7 +188,6 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
     window.location.assign(`${downloadConfig.action_url}?${params.toString()}`);
   }, [downloadConfig, requestFilter]);
 
-
   const retryLoading = useCallback((): void => {
     clearLoadError();
     refresh();
