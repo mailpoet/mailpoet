@@ -98,6 +98,12 @@ class ScheduledTaskEntity {
   private $subscribers;
 
   /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
+   * @var Collection<int, ScheduledTaskQueuedSubscriberEntity>
+   */
+  private $queuedSubscribers;
+
+  /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="task", fetch="EAGER")
    * @var SendingQueueEntity|null
    */
@@ -105,6 +111,7 @@ class ScheduledTaskEntity {
 
   public function __construct() {
     $this->subscribers = new ArrayCollection();
+    $this->queuedSubscribers = new ArrayCollection();
   }
 
   /**
@@ -235,6 +242,46 @@ class ScheduledTaskEntity {
    */
   public function getSubscribers(): Collection {
     return $this->subscribers;
+  }
+
+  /**
+   * Pending recipients of an in-flight task that uses subscriber queue/log storage.
+   *
+   * @return Collection<int, ScheduledTaskQueuedSubscriberEntity>
+   */
+  public function getQueuedSubscribers(): Collection {
+    return $this->queuedSubscribers;
+  }
+
+  /**
+   * Total recipients across the queue (pending) and the log (processed).
+   * Both collections are EXTRA_LAZY, so this is two COUNT queries, no hydration.
+   */
+  public function getTotalSubscribersCount(): int {
+    return $this->subscribers->count() + $this->queuedSubscribers->count();
+  }
+
+  /**
+   * Number of pending recipients in the queue. The collection is EXTRA_LAZY, so
+   * this is a single COUNT query and never hydrates the (possibly huge) set.
+   * Only accurate for a managed (DB-loaded) task.
+   */
+  public function getQueuedCount(): int {
+    return $this->queuedSubscribers->count();
+  }
+
+  /**
+   * First pending recipient (lowest subscriber id), or null if the queue is empty.
+   * Criteria matching on the EXTRA_LAZY collection runs a single
+   * `ORDER BY subscriber_id LIMIT 1` query instead of hydrating the queue.
+   * Only accurate for a managed (DB-loaded) task.
+   */
+  public function getFirstQueuedSubscriber(): ?SubscriberEntity {
+    $criteria = Criteria::create()
+      ->orderBy(['subscriber' => 'ASC'])
+      ->setMaxResults(1);
+    $first = $this->queuedSubscribers->matching($criteria)->first();
+    return ($first instanceof ScheduledTaskQueuedSubscriberEntity) ? $first->getSubscriber() : null;
   }
 
   /**
