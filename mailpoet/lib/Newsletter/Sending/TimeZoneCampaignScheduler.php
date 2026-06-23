@@ -38,6 +38,7 @@ class TimeZoneCampaignScheduler {
   private FeaturesController $featuresController;
   private ScheduledTasksRepository $scheduledTasksRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
+  private ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository;
   private SendingQueuesRepository $sendingQueuesRepository;
   private SubscribersFinder $subscribersFinder;
   private SubscribersRepository $subscribersRepository;
@@ -49,6 +50,7 @@ class TimeZoneCampaignScheduler {
     FeaturesController $featuresController,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     SubscribersFinder $subscribersFinder,
     SubscribersRepository $subscribersRepository,
@@ -59,6 +61,7 @@ class TimeZoneCampaignScheduler {
     $this->featuresController = $featuresController;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->subscribersFinder = $subscribersFinder;
     $this->subscribersRepository = $subscribersRepository;
@@ -143,7 +146,7 @@ class TimeZoneCampaignScheduler {
         $this->sendingQueuesRepository->persist($queue);
         $this->entityManager->flush();
 
-        $this->scheduledTaskSubscribersRepository->addSubscribersByIds($task, $group['subscriberIds']);
+        $this->scheduledTaskQueuedSubscriberRepository->addSubscribersByIds($task, $group['subscriberIds']);
         $this->sendingQueuesRepository->updateCounts($queue);
         $createdQueues[] = $queue;
       }
@@ -517,6 +520,7 @@ class TimeZoneCampaignScheduler {
   private function deleteQueue(SendingQueueEntity $queue): void {
     $task = $queue->getTask();
     if ($task instanceof ScheduledTaskEntity) {
+      $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($task);
       $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
     }
     $this->sendingQueuesRepository->remove($queue);

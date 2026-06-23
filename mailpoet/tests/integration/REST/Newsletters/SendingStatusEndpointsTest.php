@@ -204,6 +204,11 @@ class SendingStatusEndpointsTest extends Test {
     $this->assertEquals(0, $failedTaskSubscriber->getFailed());
     $this->assertEquals(0, $failedTaskSubscriber->getProcessed());
 
+    // The queue counters are refreshed immediately so sending status reflects the re-queued recipient.
+    $sendingQueue = $newsletter->getLatestQueue();
+    $this->entityManager->refresh($sendingQueue);
+    $this->assertEquals(1, $sendingQueue->getCountToProcess());
+
     $this->entityManager->refresh($newsletter);
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter->getStatus());
   }

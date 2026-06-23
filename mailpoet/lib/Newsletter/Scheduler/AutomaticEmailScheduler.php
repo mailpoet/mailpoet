@@ -6,9 +6,10 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -27,15 +28,20 @@ class AutomaticEmailScheduler {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
   public function __construct(
     Scheduler $scheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->scheduler = $scheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
@@ -127,6 +133,9 @@ class AutomaticEmailScheduler {
           $this->sendingQueuesRepository->remove($queue);
         }
         $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
+        // The recipient of a still-scheduled task lives in the queue, so clear
+        // it too — otherwise removing the task orphans the queue row.
+        $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($task);
         $this->scheduledTasksRepository->remove($task);
         $this->scheduledTasksRepository->flush();
       }
@@ -163,10 +172,9 @@ class AutomaticEmailScheduler {
     $this->sendingQueuesRepository->flush();
 
     if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SEND_TO) === 'user' && $subscriber) {
-      $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($scheduledTask, $subscriber);
-      $this->scheduledTaskSubscribersRepository->persist($scheduledTaskSubscriber);
-      $this->scheduledTaskSubscribersRepository->flush();
-      $scheduledTask->getSubscribers()->add($scheduledTaskSubscriber);
+      $scheduledTaskSubscriber = new ScheduledTaskQueuedSubscriberEntity($scheduledTask, $subscriber);
+      $this->scheduledTaskQueuedSubscriberRepository->persist($scheduledTaskSubscriber);
+      $this->scheduledTaskQueuedSubscriberRepository->flush();
     }
 
     return $scheduledTask;
