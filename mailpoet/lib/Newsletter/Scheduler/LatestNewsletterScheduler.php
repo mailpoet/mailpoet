@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
@@ -13,6 +14,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -29,19 +32,23 @@ class LatestNewsletterScheduler {
 
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
 
+  private ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover;
+
   public function __construct(
     EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover
   ) {
     $this->entityManager = $entityManager;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
   }
 
   /**
    * @param array{id:mixed,run_id:mixed,step_id:mixed,run_number:mixed} $automationMeta
-   * @return array{outcome: string, newsletter: NewsletterEntity|null, task_subscriber: ScheduledTaskSubscriberEntity|null}
+   * @return array{outcome: string, newsletter: NewsletterEntity|null, task_subscriber: ScheduledTaskSubscriber|null}
    */
   public function schedule(SubscriberEntity $subscriber, int $segmentId, array $automationMeta): array {
     $source = $this->newslettersRepository->findLatestSentStandardForSegment($segmentId);
@@ -84,7 +91,7 @@ class LatestNewsletterScheduler {
         }
 
         $existingReplay = $this->findExistingReplayTaskSubscriber($newsletter, $subscriber);
-        if ($existingReplay instanceof ScheduledTaskSubscriberEntity) {
+        if ($existingReplay !== null) {
           $task = $existingReplay->getTask();
           $meta = $task ? $task->getMeta() : [];
           $isSameRun = ($meta[NewsletterReplayMetadata::AUTOMATION]['run_id'] ?? null) === ($automationMeta['run_id'] ?? null);
@@ -107,14 +114,49 @@ class LatestNewsletterScheduler {
     }
   }
 
-  public function getScheduledTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber, AutomationRun $run): ?ScheduledTaskSubscriberEntity {
+  public function getScheduledTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber, AutomationRun $run): ?ScheduledTaskSubscriber {
+    // a finished send (sent or failed) was moved to the log
+    $processed = $this->findRunReplayTaskSubscriber(ScheduledTaskSubscriberEntity::class, 'sts', $newsletter, $subscriber, $run);
+    if ($processed instanceof ScheduledTaskSubscriberEntity) {
+      return ScheduledTaskSubscriber::fromProcessed($processed);
+    }
+
+    // a still-pending send sits in the queue
+    $queued = $this->findRunReplayTaskSubscriber(ScheduledTaskQueuedSubscriberEntity::class, 'stsq', $newsletter, $subscriber, $run);
+    if ($queued instanceof ScheduledTaskQueuedSubscriberEntity) {
+      return ScheduledTaskSubscriber::fromQueued($queued);
+    }
+
+    return null;
+  }
+
+  public function saveErrorAndPause(ScheduledTaskSubscriber $scheduledTaskSubscriber, string $error): void {
+    $task = $scheduledTaskSubscriber->getTask();
+    $subscriberId = $scheduledTaskSubscriber->getSubscriberId();
+    if (!$task || !$subscriberId) {
+      return;
+    }
+    if ($scheduledTaskSubscriber->isPending()) {
+      $this->scheduledTaskSubscriberMover->moveFailedToLog($task, $subscriberId, $error);
+    } else {
+      $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, $error);
+    }
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->flush();
+  }
+
+  /**
+   * @param class-string $entityClass
+   * @return ScheduledTaskSubscriberEntity|ScheduledTaskQueuedSubscriberEntity|null
+   */
+  private function findRunReplayTaskSubscriber(string $entityClass, string $alias, NewsletterEntity $newsletter, SubscriberEntity $subscriber, AutomationRun $run) {
     $results = $this->entityManager->createQueryBuilder()
-      ->select('sts')
-      ->from(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->join('sts.task', 'st')
+      ->select($alias)
+      ->from($entityClass, $alias)
+      ->join("$alias.task", 'st')
       ->join('st.sendingQueue', 'sq')
       ->where('sq.newsletter = :newsletter')
-      ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere("$alias.subscriber = :subscriber")
       ->andWhere('st.createdAt >= :runCreatedAt')
       ->setParameter('newsletter', $newsletter)
       ->setParameter('subscriber', $subscriber)
@@ -122,31 +164,23 @@ class LatestNewsletterScheduler {
       ->getQuery()
       ->getResult();
 
-    foreach ($results as $scheduledTaskSubscriber) {
-      if (!$scheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity) {
+    foreach ($results as $taskSubscriber) {
+      if (
+        !$taskSubscriber instanceof ScheduledTaskSubscriberEntity
+        && !$taskSubscriber instanceof ScheduledTaskQueuedSubscriberEntity
+      ) {
         continue;
       }
-      $task = $scheduledTaskSubscriber->getTask();
+      $task = $taskSubscriber->getTask();
       if (!$task instanceof ScheduledTaskEntity || !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($task->getMeta())) {
         continue;
       }
       $meta = $task->getMeta();
       if (($meta[NewsletterReplayMetadata::AUTOMATION]['run_id'] ?? null) === $run->getId()) {
-        return $scheduledTaskSubscriber;
+        return $taskSubscriber;
       }
     }
     return null;
-  }
-
-  public function saveErrorAndPause(ScheduledTaskSubscriberEntity $scheduledTaskSubscriber, string $error): void {
-    $task = $scheduledTaskSubscriber->getTask();
-    $subscriber = $scheduledTaskSubscriber->getSubscriber();
-    if (!$task || !$subscriber || !$subscriber->getId()) {
-      return;
-    }
-    $this->scheduledTaskSubscribersRepository->saveError($task, $subscriber->getId(), $error);
-    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
-    $this->entityManager->flush();
   }
 
   private function hasSuccessfulProcessedSend(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
@@ -174,18 +208,16 @@ class LatestNewsletterScheduler {
   private function hasPendingNonReplayTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
     $result = $this->entityManager->createQueryBuilder()
       ->select('COUNT(st)')
-      ->from(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->join('sts.task', 'st')
+      ->from(ScheduledTaskQueuedSubscriberEntity::class, 'stsq')
+      ->join('stsq.task', 'st')
       ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'sq.task = st')
       ->where('sq.newsletter = :newsletter')
-      ->andWhere('sts.subscriber = :subscriber')
-      ->andWhere('sts.failed = :notFailed')
+      ->andWhere('stsq.subscriber = :subscriber')
       ->andWhere('(st.status = :scheduled OR st.status IS NULL)')
-      ->andWhere('st.meta IS NULL OR st.meta NOT LIKE :latestNewsletterReplayMeta')
-      ->andWhere('sq.meta IS NULL OR sq.meta NOT LIKE :latestNewsletterReplayMeta')
+      ->andWhere('(st.meta IS NULL OR st.meta NOT LIKE :latestNewsletterReplayMeta)')
+      ->andWhere('(sq.meta IS NULL OR sq.meta NOT LIKE :latestNewsletterReplayMeta)')
       ->setParameter('newsletter', $newsletter)
       ->setParameter('subscriber', $subscriber)
-      ->setParameter('notFailed', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK)
       ->setParameter('scheduled', ScheduledTaskEntity::STATUS_SCHEDULED)
       ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
       ->getQuery()
@@ -208,8 +240,35 @@ class LatestNewsletterScheduler {
     return (int)$result > 0;
   }
 
-  private function findExistingReplayTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): ?ScheduledTaskSubscriberEntity {
-    $results = $this->entityManager->createQueryBuilder()
+  private function findExistingReplayTaskSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): ?ScheduledTaskSubscriber {
+    // a pending replay still sits in the queue
+    $queuedResults = $this->entityManager->createQueryBuilder()
+      ->select('stsq')
+      ->from(ScheduledTaskQueuedSubscriberEntity::class, 'stsq')
+      ->join('stsq.task', 'st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'sq.task = st')
+      ->where('sq.newsletter = :newsletter')
+      ->andWhere('stsq.subscriber = :subscriber')
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('subscriber', $subscriber)
+      ->getQuery()
+      ->getResult();
+
+    foreach ($queuedResults as $queued) {
+      if (!$queued instanceof ScheduledTaskQueuedSubscriberEntity) {
+        continue;
+      }
+      $task = $queued->getTask();
+      if (!$task instanceof ScheduledTaskEntity || !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($task->getMeta())) {
+        continue;
+      }
+      if (in_array($task->getStatus(), [ScheduledTaskEntity::STATUS_SCHEDULED, null], true)) {
+        return ScheduledTaskSubscriber::fromQueued($queued);
+      }
+    }
+
+    // a completed replay was moved to the log
+    $processedResults = $this->entityManager->createQueryBuilder()
       ->select('sts')
       ->from(ScheduledTaskSubscriberEntity::class, 'sts')
       ->join('sts.task', 'st')
@@ -223,32 +282,29 @@ class LatestNewsletterScheduler {
       ->getQuery()
       ->getResult();
 
-    foreach ($results as $scheduledTaskSubscriber) {
-      if (!$scheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity) {
+    foreach ($processedResults as $processed) {
+      if (!$processed instanceof ScheduledTaskSubscriberEntity) {
         continue;
       }
-      $task = $scheduledTaskSubscriber->getTask();
+      $task = $processed->getTask();
       if (!$task instanceof ScheduledTaskEntity || !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($task->getMeta())) {
         continue;
       }
-      $status = $task->getStatus();
-      if (in_array($status, [ScheduledTaskEntity::STATUS_SCHEDULED, null], true)) {
-        return $scheduledTaskSubscriber;
-      }
       if (
-        $status === ScheduledTaskEntity::STATUS_COMPLETED
-        && $scheduledTaskSubscriber->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED
+        $task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED
+        && $processed->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED
       ) {
-        return $scheduledTaskSubscriber;
+        return ScheduledTaskSubscriber::fromProcessed($processed);
       }
     }
+
     return null;
   }
 
   /**
    * @param array{newsletter: NewsletterEntity, queue: SendingQueueEntity, task: ScheduledTaskEntity} $source
    */
-  private function createReplaySendingTask(array $source, SubscriberEntity $subscriber, array $automationMeta): ScheduledTaskSubscriberEntity {
+  private function createReplaySendingTask(array $source, SubscriberEntity $subscriber, array $automationMeta): ScheduledTaskSubscriber {
     $sourceTask = $source['task'];
     $sourceQueue = $source['queue'];
     $newsletter = $source['newsletter'];
@@ -270,9 +326,8 @@ class LatestNewsletterScheduler {
     $task->setMeta($meta);
     $this->entityManager->persist($task);
 
-    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $taskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($taskSubscriber);
-    $task->getSubscribers()->add($taskSubscriber);
 
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
@@ -283,7 +338,7 @@ class LatestNewsletterScheduler {
     $queue->setCountTotal(1);
     $this->entityManager->persist($queue);
 
-    return $taskSubscriber;
+    return ScheduledTaskSubscriber::fromQueued($taskSubscriber);
   }
 
   private function acquireLock(string $lockName): void {

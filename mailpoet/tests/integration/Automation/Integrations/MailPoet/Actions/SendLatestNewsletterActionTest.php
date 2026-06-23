@@ -25,6 +25,8 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\LatestNewsletterScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -42,6 +44,8 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
 
   private SubscriberSubject $subscriberSubject;
 
+  private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
+
   public function _before() {
     parent::_before();
     $this->action = $this->diContainer->get(SendLatestNewsletterAction::class);
@@ -49,6 +53,7 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->latestNewsletterScheduler = $this->diContainer->get(LatestNewsletterScheduler::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function testItReturnsRequiredSubjects(): void {
@@ -105,7 +110,8 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->action->run($args, $controller);
 
     $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber($sourceNewsletter, $subscriber, $run);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $taskSubscriber);
+    $this->assertTrue($taskSubscriber->isPending());
     $task = $taskSubscriber->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $this->assertSame(ScheduledTaskEntity::STATUS_SCHEDULED, $task->getStatus());
@@ -122,7 +128,7 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->action->run($args, $controller);
 
     $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber($sourceNewsletter, $subscriber, $run);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $taskSubscriber);
     $task = $taskSubscriber->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     [$timeoutArgs, $timeoutController] = $this->createStepRun($automation, $run, $step, $subjects, 8);
@@ -134,12 +140,14 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
       }
     );
     $this->entityManager->refresh($task);
-    $this->entityManager->refresh($taskSubscriber);
 
     $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task->getStatus());
-    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $taskSubscriber->getProcessed());
-    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $taskSubscriber->getFailed());
-    $this->assertSame('Email sending process timed out.', $taskSubscriber->getError());
+    // the recipient was moved to the log as failed
+    $logSubscriber = $this->scheduledTaskSubscribersRepository->findOneBy(['task' => $task]);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $logSubscriber);
+    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $logSubscriber->getProcessed());
+    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $logSubscriber->getFailed());
+    $this->assertSame('Email sending process timed out.', $logSubscriber->getError());
   }
 
   public function testItPausesReplayTaskWhenSubscriberBecomesIneligible(): void {
@@ -149,7 +157,7 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->action->run($args, $controller);
 
     $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber($sourceNewsletter, $subscriber, $run);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $taskSubscriber);
     $task = $taskSubscriber->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
@@ -159,12 +167,14 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     [$pollArgs, $pollController] = $this->createStepRun($automation, $run, $step, $subjects, 2);
     $this->action->run($pollArgs, $pollController);
     $this->entityManager->refresh($task);
-    $this->entityManager->refresh($taskSubscriber);
 
     $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task->getStatus());
-    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $taskSubscriber->getProcessed());
-    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $taskSubscriber->getFailed());
-    $this->assertSame('Subscriber is no longer eligible for this email.', $taskSubscriber->getError());
+    // the recipient was moved to the log as failed
+    $logSubscriber = $this->scheduledTaskSubscribersRepository->findOneBy(['task' => $task]);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $logSubscriber);
+    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $logSubscriber->getProcessed());
+    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $logSubscriber->getFailed());
+    $this->assertSame('Subscriber is no longer eligible for this email.', $logSubscriber->getError());
     $this->assertSame('skipped-ineligible-subscriber', $pollController->getRunLog()->getLog()->getData()['outcome']);
   }
 
@@ -182,7 +192,7 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->action->run($confirmedRunArgs, $confirmedRunController);
 
     $taskSubscriber = $this->latestNewsletterScheduler->getScheduledTaskSubscriber($sourceNewsletter, $subscriber, $run);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $taskSubscriber);
     $scheduledActions = array_values(array_filter($this->getScheduledAutomationActions(), function(ActionScheduler_Action $action) use ($run, $step): bool {
       $args = $action->get_args();
       return ($args[0]['automation_run_id'] ?? null) === $run->getId()

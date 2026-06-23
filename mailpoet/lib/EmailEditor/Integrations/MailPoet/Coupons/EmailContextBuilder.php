@@ -49,8 +49,8 @@ class EmailContextBuilder {
     }
 
     $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    $subscriberCount = $subscribers ? count($subscribers) : 0;
+    // A 1:1 automation send targets exactly one recipient total (queue + log).
+    $subscriberCount = $task ? $task->getTotalSubscribersCount() : 0;
     $context['subscriber_count'] = $subscriberCount;
 
     if ($subscriberCount !== 1) {
@@ -65,8 +65,7 @@ class EmailContextBuilder {
     // Only one-recipient automation sends can safely expose a unique recipient
     // email to WooCommerce. Bulk renders must not use the first subscriber as a
     // stand-in for everyone who will receive the email.
-    $firstSubscriber = $subscribers ? $subscribers->first() : null;
-    $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
+    $subscriber = $task ? $task->getFirstQueuedSubscriber() : null;
     $wpUserId = $subscriber ? $subscriber->getWpUserId() : null;
     if ($wpUserId) {
       $context['user_id'] = (int)$wpUserId;
@@ -81,8 +80,7 @@ class EmailContextBuilder {
 
   private function getQueueSubscriberCount(SendingQueueEntity $sendingQueue): int {
     $task = $sendingQueue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    return $subscribers ? count($subscribers) : 0;
+    return $task ? $task->getQueuedCount() : 0;
   }
 
   private function isAutomationType(NewsletterEntity $newsletter): bool {
