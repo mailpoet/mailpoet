@@ -128,6 +128,7 @@ class WorkerTypesCatalogTest extends \MailPoetTest {
       'subscribers_email_count',
       'subscribers_engagement_score',
       'subscribers_last_engagement',
+      'subscribers_segments_count_sync',
       'subscribers_stats_report',
       'tracks',
       'unconfirmed_subscribers_cleanup',
