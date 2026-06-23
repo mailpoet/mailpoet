@@ -3,10 +3,13 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\NewsletterProcessingException;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\DateTime;
 
 class CouponPreProcessor {
@@ -22,14 +25,24 @@ class CouponPreProcessor {
 
   private RandomCouponCodeGenerator $randomCouponCodeGenerator;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     Helper $wcHelper,
     NewslettersRepository $newslettersRepository,
-    RandomCouponCodeGenerator $randomCouponCodeGenerator
+    RandomCouponCodeGenerator $randomCouponCodeGenerator,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->wcHelper = $wcHelper;
     $this->newslettersRepository = $newslettersRepository;
     $this->randomCouponCodeGenerator = $randomCouponCodeGenerator;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   /**
@@ -138,14 +151,14 @@ class CouponPreProcessor {
       $emailRestrictions = explode(',', $couponBlock['emailRestrictions']);
     }
 
-    if (!empty($couponBlock['restrictToSubscriber']) && $sendingQueue && $sendingQueue->getTask()) {
-      $subscribers = $sendingQueue->getTask()->getSubscribers();
-      if (is_iterable($subscribers) && count($subscribers) === 1) { // Only apply to single-subscriber sending queues
-        foreach ($subscribers as $taskSubscriber) {
-          $subscriber = $taskSubscriber->getSubscriber();
-          if ($subscriber && $subscriber->getEmail()) {
-            $emailRestrictions[] = $subscriber->getEmail();
-          }
+    $task = $sendingQueue ? $sendingQueue->getTask() : null;
+    if (!empty($couponBlock['restrictToSubscriber']) && $task) {
+      // Only apply to single-recipient sends (queue + log == 1). The recipient is still
+      // pending in the queue at coupon-generation time, so we read it from there.
+      if ($task->getTotalSubscribersCount() === 1) {
+        $recipientEmail = $this->getFirstQueuedRecipientEmail($task);
+        if ($recipientEmail) {
+          $emailRestrictions[] = $recipientEmail;
         }
       }
     }
@@ -166,6 +179,19 @@ class CouponPreProcessor {
     return array_map(function ($item) {
       return $item['id'];
     }, $items);
+  }
+
+  private function getFirstQueuedRecipientEmail(ScheduledTaskEntity $task): ?string {
+    $taskId = $task->getId();
+    if (!$taskId) {
+      return null;
+    }
+    $subscriberIds = $this->scheduledTaskQueuedSubscriberRepository->getSubscriberIdsBatchForTask($taskId, 0, 1);
+    if (!$subscriberIds) {
+      return null;
+    }
+    $subscriber = $this->subscribersRepository->findOneById($subscriberIds[0]);
+    return $subscriber ? $subscriber->getEmail() : null;
   }
 
   private function shouldGenerateCoupon(array $block): bool {
