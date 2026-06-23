@@ -6,7 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -130,14 +130,14 @@ class ReEngagementScheduler {
     $taskId = $scheduledTask->getId();
     $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
     $newsletterStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
-    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $scheduledTaskQueuedSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $nowSql = Carbon::now()->millisecond(0)->toDateTimeString();
 
-    $query = "INSERT IGNORE INTO $scheduledTaskSubscribersTable
-      (subscriber_id, task_id,  processed, created_at)
-      SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, 0 as processed, :now as created_at
+    $query = "INSERT IGNORE INTO $scheduledTaskQueuedSubscribersTable
+      (subscriber_id, task_id, created_at)
+      SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, :now as created_at
       FROM $newsletterStatsTable as ns
       JOIN $subscribersTable s ON
         ns.subscriber_id = s.id

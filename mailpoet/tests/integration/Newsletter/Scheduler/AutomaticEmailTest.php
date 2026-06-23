@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -68,10 +69,8 @@ class AutomaticEmailTest extends \MailPoetTest {
     verify($queue->getCountTotal())->equals(1);
     verify($queue->getCountToProcess())->equals(1);
     verify($queue->getCountProcessed())->equals(0);
-    // task should have 1 associated user
-    $subscribers = $task->getSubscribers()->toArray();
-    verify($subscribers)->arrayCount(1);
-    verify($subscribers[0]->getSubscriber())->equals($subscriber);
+    // task should have 1 associated user queued for sending
+    verify($this->getQueuedSubscriberIds($task))->equals([(int)$subscriber->getId()]);
   }
 
   public function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
@@ -100,9 +99,8 @@ class AutomaticEmailTest extends \MailPoetTest {
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
     verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
-    // task should not have any subscribers
-    $subscribers = $task->getSubscribers();
-    verify($subscribers)->arrayCount(0);
+    // task should not have any subscribers queued for sending
+    verify($this->getQueuedSubscriberIds($task))->arrayCount(0);
   }
 
   public function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
@@ -212,5 +210,15 @@ class AutomaticEmailTest extends \MailPoetTest {
       ]
     );
     return $newsletter;
+  }
+
+  /** @return int[] */
+  private function getQueuedSubscriberIds(ScheduledTaskEntity $task): array {
+    $taskId = $task->getId();
+    if (!$taskId) {
+      return [];
+    }
+    return $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)
+      ->getSubscriberIdsBatchForTask($taskId, 0, 100);
   }
 }

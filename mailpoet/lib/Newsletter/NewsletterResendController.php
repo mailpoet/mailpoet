@@ -7,7 +7,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -280,27 +280,25 @@ class NewsletterResendController {
 
   /** @param int[] $subscriberIds */
   private function addSubscribersToTask(ScheduledTaskEntity $task, array $subscriberIds): int {
-    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $scheduledTaskQueuedSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
     $connection = $this->entityManager->getConnection();
 
     $result = $connection->executeQuery(
-      "INSERT IGNORE INTO $scheduledTaskSubscriberTable
-       (task_id, subscriber_id, processed)
-       SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
+      "INSERT IGNORE INTO $scheduledTaskQueuedSubscriberTable
+       (task_id, subscriber_id)
+       SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id
        FROM $subscriberTable subscribers
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
        AND subscribers.`id` IN (?)",
       [
         $task->getId(),
-        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
         SubscriberEntity::STATUS_SUBSCRIBED,
         $subscriberIds,
       ],
       [
-        ParameterType::INTEGER,
         ParameterType::INTEGER,
         ParameterType::STRING,
         ArrayParameterType::INTEGER,

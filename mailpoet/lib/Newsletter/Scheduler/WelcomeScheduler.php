@@ -6,7 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -143,8 +143,7 @@ class WelcomeScheduler {
     $this->entityManager->persist($queue);
 
     // task subscriber
-    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
-    $task->getSubscribers()->add($taskSubscriber);
+    $taskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($taskSubscriber);
 
     $this->entityManager->flush();

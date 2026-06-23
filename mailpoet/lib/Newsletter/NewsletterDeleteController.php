@@ -9,6 +9,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -29,6 +30,7 @@ class NewsletterDeleteController {
   private NewsletterSegmentRepository $newsletterSegmentRepository;
   private ScheduledTasksRepository $scheduledTasksRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
+  private ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository;
   private SendingQueuesRepository $sendingQueuesRepository;
   private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
@@ -46,6 +48,7 @@ class NewsletterDeleteController {
     NewsletterSegmentRepository $newsletterSegmentRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
@@ -62,6 +65,7 @@ class NewsletterDeleteController {
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
@@ -122,6 +126,7 @@ class NewsletterDeleteController {
         ->getSingleColumnResult();
       $taskIds = array_map('intval', $taskIds);
 
+      $this->scheduledTaskQueuedSubscriberRepository->deleteByTaskIds($taskIds);
       $this->scheduledTaskSubscribersRepository->deleteByTaskIds($taskIds);
       $this->scheduledTasksRepository->deleteByIds($taskIds);
       $this->sendingQueuesRepository->deleteByNewsletterIds($ids);

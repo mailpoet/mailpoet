@@ -672,6 +672,7 @@ class SendingQueue {
     if ($queue) {
       $this->sendingQueuesRepository->remove($queue);
     }
+    $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($task);
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
     $this->scheduledTasksRepository->remove($task);
     $this->scheduledTasksRepository->flush();

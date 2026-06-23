@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
@@ -314,7 +314,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
 
   private function getTaskSubscriberCount(int $taskId): int {
     $connection = $this->entityManager->getConnection();
-    $table = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     $result = $connection->executeQuery(
       "SELECT COUNT(*) FROM $table WHERE task_id = ?",
       [$taskId]
