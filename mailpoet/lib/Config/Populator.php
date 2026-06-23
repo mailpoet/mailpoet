@@ -7,7 +7,7 @@ use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\BackfillEngagementData;
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\Mixpanel;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
@@ -676,7 +676,7 @@ class Populator {
 
   private function scheduleInitialInactiveSubscribersCheck() {
     $this->scheduleTask(
-      InactiveSubscribers::TASK_TYPE,
+      InactiveSubscribersMaintenance::TASK_TYPE,
       Carbon::now()->millisecond(0)->addHour()
     );
   }

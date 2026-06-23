@@ -3,7 +3,7 @@
 namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronWorkerScheduler;
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -61,12 +61,12 @@ class SettingsChangeHandler {
 
   public function onInactiveSubscribersIntervalChange(): void {
     $task = $this->scheduledTasksRepository->findOneBy([
-      'type' => InactiveSubscribers::TASK_TYPE,
+      'type' => InactiveSubscribersMaintenance::TASK_TYPE,
       'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       'deletedAt' => null,
     ], ['createdAt' => 'DESC']);
     if (!($task instanceof ScheduledTaskEntity)) {
-      $task = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
+      $task = $this->createScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE);
     }
     $datetime = Carbon::now()->millisecond(0);
     $task->setScheduledAt($datetime->subMinute());

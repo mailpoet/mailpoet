@@ -27,7 +27,7 @@ class SubscribersEmailCountsController {
     $this->scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
   }
 
-  public function updateSubscribersEmailCounts(?\DateTimeInterface $dateLastProcessed, int $batchSize, ?int $startId = null): array {
+  public function updateSubscribersEmailCounts(?\DateTimeInterface $dateLastProcessed, int $startId, int $endId): int {
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
     $connection = $this->entityManager->getConnection();
@@ -35,16 +35,9 @@ class SubscribersEmailCountsController {
     $dayAgo = new Carbon();
     $dayAgoIso = $dayAgo->subDay()->toDateTimeString();
 
-    $startId = (int)$startId;
-
-    // Return if there are no new sending tasks
-    if ($dateLastProcessed && !$this->newSendingTasksSince($dateLastProcessed)) {
-      return [0, 0];
-    }
-    // Return if there are no subscribers to update
-    [$countSubscribersToUpdate, $endId] = $this->countAndMaxOfSubscribersInRange($startId, $batchSize);
+    $countSubscribersToUpdate = $this->countSubscribersInRange($startId, $endId);
     if (!$countSubscribersToUpdate) {
-      return [0, 0];
+      return 0;
     }
 
     $queryParams = [
@@ -61,7 +54,7 @@ class SubscribersEmailCountsController {
     $initUpdateValue = $dateLastProcessed ? 's.email_count' : '';
     $dateLastProcessedSql = $dateLastProcessed ? ' AND st.processed_at >= :dateFrom' : '';
 
-    $connection->executeQuery(
+    $connection->executeStatement(
       "
       UPDATE {$this->subscribersTable} as s
       JOIN (
@@ -82,10 +75,10 @@ class SubscribersEmailCountsController {
       $queryParams
     );
 
-    return [$countSubscribersToUpdate, $endId];
+    return $countSubscribersToUpdate;
   }
 
-  private function newSendingTasksSince(\DateTimeInterface $dateLastProcessed): bool {
+  public function hasNewSendingTasksSince(\DateTimeInterface $dateLastProcessed): bool {
     $carbonDateLastProcessed = Carbon::createFromTimestamp($dateLastProcessed->getTimestamp());
     $dateFromIso = ($carbonDateLastProcessed->subDay())->toDateTimeString();
     $queryParams['dateFrom'] = $dateFromIso;
@@ -108,29 +101,24 @@ class SubscribersEmailCountsController {
     return is_array($result) && isset($result[0]) && ((int)$result[0] > 0);
   }
 
-  private function countAndMaxOfSubscribersInRange(int $startId, int $batchSize): array {
+  private function countSubscribersInRange(int $startId, int $endId): int {
     $result = $this->entityManager->getConnection()->executeQuery(
       "
-      SELECT COUNT(ids.id) as count, COALESCE(MAX(ids.id), 0) as max FROM (
-        SELECT s.id FROM {$this->subscribersTable} as s
-        WHERE s.id >= :startId
-        ORDER BY s.id
-        LIMIT :batchSize
-        ) ids
+      SELECT COUNT(s.id) FROM {$this->subscribersTable} as s
+      WHERE s.id >= :startId
+      AND s.id <= :endId
     ",
       [
         'startId' => $startId,
-        'batchSize' => $batchSize,
+        'endId' => $endId,
       ],
       [
         'startId' => ParameterType::INTEGER,
-        'batchSize' => ParameterType::INTEGER,
+        'endId' => ParameterType::INTEGER,
       ]
-    );
+    )->fetchNumeric();
 
-    /** @var array{0: array{count:int, max:int}} $subscribersInRange */
-    $subscribersInRange = $result->fetchAllAssociative();
-
-    return [intval($subscribersInRange[0]['count']), intval($subscribersInRange[0]['max'])];
+    /** @var int[] $result - it's required for PHPStan */
+    return is_array($result) && isset($result[0]) ? intval($result[0]) : 0;
   }
 }
