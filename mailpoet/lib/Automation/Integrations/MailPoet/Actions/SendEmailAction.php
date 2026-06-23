@@ -24,7 +24,6 @@ use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUr
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewsletterSaveController;
@@ -419,14 +418,14 @@ class SendEmailAction implements Action {
     }
 
     // email sending failed
-    if ($scheduledTaskSubscriber->getFailed() === ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED) {
+    if ($scheduledTaskSubscriber->hasFailed()) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the error message.
         sprintf(__('Email failed to send. Error: %s', 'mailpoet'), $scheduledTaskSubscriber->getError() ?: 'Unknown error')
       );
     }
 
-    $wasSent = $scheduledTaskSubscriber->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
+    $wasSent = $scheduledTaskSubscriber->wasProcessed();
     $isLastRun = $args->getRunNumber() >= 1 + count(self::POLL_INTERVALS);
 
     // email was never sent

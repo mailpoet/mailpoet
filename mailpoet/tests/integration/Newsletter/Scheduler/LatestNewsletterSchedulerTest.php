@@ -5,10 +5,14 @@ namespace MailPoet\Newsletter\Scheduler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
@@ -20,10 +24,16 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
 
   private NewslettersRepository $newslettersRepository;
 
+  private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
+
+  private ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository;
+
   public function _before() {
     parent::_before();
     $this->scheduler = $this->diContainer->get(LatestNewsletterScheduler::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $this->scheduledTaskQueuedSubscriberRepository = $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class);
   }
 
   public function testItFindsLatestCompletedNonReplayStandardNewsletterForSegment(): void {
@@ -96,11 +106,13 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $this->assertSame(LatestNewsletterScheduler::OUTCOME_SCHEDULED, $result['outcome']);
     $this->assertInstanceOf(NewsletterEntity::class, $result['newsletter']);
     $this->assertSame($sourceNewsletter->getId(), $result['newsletter']->getId());
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $result['task_subscriber']);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $result['task_subscriber']);
+    $this->assertTrue($result['task_subscriber']->isPending());
     $task = $result['task_subscriber']->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    $this->assertCount(1, $task->getSubscribers());
-    $this->assertSame($result['task_subscriber'], $task->getSubscribers()->first());
+    // the recipient is queued for sending, not in the log
+    $this->assertSame([(int)$subscriber->getId()], $this->getQueuedSubscriberIds($task));
+    $this->assertCount(0, $task->getSubscribers());
     $queue = $task->getSendingQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
 
@@ -181,15 +193,46 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $queue->setNewsletter($sourceNewsletter);
     $this->entityManager->persist($queue);
 
-    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $taskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($taskSubscriber);
-    $task->getSubscribers()->add($taskSubscriber);
     $this->entityManager->flush();
 
     $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
 
     $this->assertSame(LatestNewsletterScheduler::OUTCOME_DUPLICATE, $result['outcome']);
     $this->assertNull($result['task_subscriber']);
+  }
+
+  public function testItIgnoresPendingNonReplayTaskOfAnotherSubscriberAndNewsletter(): void {
+    // Regression: without parentheses around the meta OR conditions the WHERE clause
+    // fractured, so any non-replay queued row (even for a different newsletter and
+    // subscriber) made schedule() wrongly treat this subscriber as a duplicate.
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    (new Newsletter())
+      ->withSentStatus()
+      ->withSegments([$segment])
+      ->withSendingQueue(['processed_at' => Carbon::parse('2026-01-02 10:00:00')])
+      ->create();
+
+    // Unrelated pending non-replay task: different subscriber, different newsletter.
+    $otherSubscriber = (new Subscriber())->create();
+    $otherNewsletter = (new Newsletter())->create();
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingQueue::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $task->setSendingQueue($queue);
+    $queue->setNewsletter($otherNewsletter);
+    $this->entityManager->persist($queue);
+    $this->entityManager->persist(new ScheduledTaskQueuedSubscriberEntity($task, $otherSubscriber));
+    $this->entityManager->flush();
+
+    $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
+
+    $this->assertSame(LatestNewsletterScheduler::OUTCOME_SCHEDULED, $result['outcome']);
   }
 
   public function testItDoesNotTreatCompletedUnprocessedReplayTaskAsDuplicate(): void {
@@ -218,7 +261,7 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
     $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
 
     $this->assertSame(LatestNewsletterScheduler::OUTCOME_SCHEDULED, $result['outcome']);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $result['task_subscriber']);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $result['task_subscriber']);
     $task = $result['task_subscriber']->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $this->assertNotSame($staleReplayTask->getId(), $task->getId());
@@ -257,18 +300,31 @@ class LatestNewsletterSchedulerTest extends \MailPoetTest {
 
     $result = $this->scheduler->schedule($subscriber, (int)$segment->getId(), $this->automationMeta());
     $taskSubscriber = $result['task_subscriber'];
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $taskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $taskSubscriber);
     $task = $taskSubscriber->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
     $this->scheduler->saveErrorAndPause($taskSubscriber, 'Replay timed out');
     $this->entityManager->refresh($task);
-    $this->entityManager->refresh($taskSubscriber);
 
     $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task->getStatus());
-    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $taskSubscriber->getProcessed());
-    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $taskSubscriber->getFailed());
-    $this->assertSame('Replay timed out', $taskSubscriber->getError());
+
+    // the recipient was moved from the queue to the log as failed
+    $this->assertSame(0, $this->scheduledTaskQueuedSubscriberRepository->countForTask($task));
+    $logSubscriber = $this->scheduledTaskSubscribersRepository->findOneBy(['task' => $task]);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $logSubscriber);
+    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, $logSubscriber->getProcessed());
+    $this->assertSame(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED, $logSubscriber->getFailed());
+    $this->assertSame('Replay timed out', $logSubscriber->getError());
+  }
+
+  /** @return int[] */
+  private function getQueuedSubscriberIds(ScheduledTaskEntity $task): array {
+    $taskId = $task->getId();
+    if (!$taskId) {
+      return [];
+    }
+    return $this->scheduledTaskQueuedSubscriberRepository->getSubscriberIdsBatchForTask($taskId, 0, 100);
   }
 
   private function createReplayQueue(NewsletterEntity $newsletter, Carbon $processedAt, array $meta): ScheduledTaskEntity {

@@ -345,8 +345,9 @@ class Newsletter {
 
   private function getTaskSubscriberCount(SendingQueueEntity $queue): int {
     $task = $queue->getTask();
-    $subscribers = $task ? $task->getSubscribers() : null;
-    return $subscribers ? count($subscribers) : 0;
+    // Coupon preflight runs before any recipient is sent, so the still-pending
+    // recipients live in the queue. For a single-recipient automation this is 1.
+    return $task ? $task->getQueuedCount() : 0;
   }
 
   /**

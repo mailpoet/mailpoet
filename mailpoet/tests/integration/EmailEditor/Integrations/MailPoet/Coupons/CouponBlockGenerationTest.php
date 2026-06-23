@@ -8,6 +8,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFail
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -251,8 +252,9 @@ class CouponBlockGenerationTest extends \MailPoetTest {
       ->withWpPostId($postId)
       ->withScheduledQueue(['count_processed' => 0, 'count_total' => $subscriberCount]);
 
+    $subscribers = [];
     for ($i = 0; $i < $subscriberCount; $i++) {
-      $factory->withSubscriber((new SubscriberFactory())->withEmail("subscriber-{$i}@example.com")->create());
+      $subscribers[] = (new SubscriberFactory())->withEmail("subscriber-{$i}@example.com")->create();
     }
 
     $newsletter = $factory->create();
@@ -261,6 +263,11 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     if ($queue && $task) {
       $this->entityManager->refresh($task);
       $task->setSendingQueue($queue);
+      // The recipients are still pending, so they live in the queue (not the log).
+      foreach ($subscribers as $subscriber) {
+        $this->entityManager->persist(new ScheduledTaskQueuedSubscriberEntity($task, $subscriber));
+      }
+      $this->entityManager->flush();
     }
     return $newsletter;
   }

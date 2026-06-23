@@ -6,10 +6,13 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -20,12 +23,16 @@ class AutomationEmailScheduler {
 
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
 
+  private ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover;
+
   public function __construct(
     EntityManager $entityManager,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover
   ) {
     $this->entityManager = $entityManager;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
   }
 
   public function createSendingTask(NewsletterEntity $email, SubscriberEntity $subscriber, array $meta): ScheduledTaskEntity {
@@ -44,7 +51,7 @@ class AutomationEmailScheduler {
     $task->setMeta($meta);
     $this->entityManager->persist($task);
 
-    $taskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $taskSubscriber = new ScheduledTaskQueuedSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($taskSubscriber);
 
     $queue = new SendingQueueEntity();
@@ -59,41 +66,70 @@ class AutomationEmailScheduler {
     return $task;
   }
 
-  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, AutomationRun $run): ?ScheduledTaskSubscriberEntity {
+  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, AutomationRun $run): ?ScheduledTaskSubscriber {
+    // a finished send (sent or failed) was moved to the log
+    $processed = $this->findRunTaskSubscriber(ScheduledTaskSubscriberEntity::class, 'sts', $email, $subscriber, $run);
+    if ($processed instanceof ScheduledTaskSubscriberEntity) {
+      return ScheduledTaskSubscriber::fromProcessed($processed);
+    }
+
+    // a still-pending send sits in the queue
+    $queued = $this->findRunTaskSubscriber(ScheduledTaskQueuedSubscriberEntity::class, 'stsq', $email, $subscriber, $run);
+    if ($queued instanceof ScheduledTaskQueuedSubscriberEntity) {
+      return ScheduledTaskSubscriber::fromQueued($queued);
+    }
+
+    return null;
+  }
+
+  public function saveError(ScheduledTaskSubscriber $scheduledTaskSubscriber, string $error): void {
+    $task = $scheduledTaskSubscriber->getTask();
+    $subscriberId = $scheduledTaskSubscriber->getSubscriberId();
+    if (!$task || !$subscriberId) {
+      return;
+    }
+    if ($scheduledTaskSubscriber->isPending()) {
+      $this->scheduledTaskSubscriberMover->moveFailedToLog($task, $subscriberId, $error);
+    } else {
+      $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, $error);
+    }
+  }
+
+  /**
+   * @param class-string $entityClass
+   * @return ScheduledTaskSubscriberEntity|ScheduledTaskQueuedSubscriberEntity|null
+   */
+  private function findRunTaskSubscriber(string $entityClass, string $alias, NewsletterEntity $email, SubscriberEntity $subscriber, AutomationRun $run) {
     $results = $this->entityManager->createQueryBuilder()
-      ->select('sts')
-      ->from(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->join('sts.task', 'st')
+      ->select($alias)
+      ->from($entityClass, $alias)
+      ->join("$alias.task", 'st')
       ->join('st.sendingQueue', 'sq')
       ->where('sq.newsletter = :newsletter')
-      ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere("$alias.subscriber = :subscriber")
       ->andWhere('st.createdAt >= :runCreatedAt')
       ->setParameter('newsletter', $email)
       ->setParameter('subscriber', $subscriber)
       ->setParameter('runCreatedAt', $run->getCreatedAt())
       ->getQuery()
       ->getResult();
-    $result = null;
-    foreach ($results as $scheduledTaskSubscriber) {
-      $task = $scheduledTaskSubscriber->getTask();
+
+    foreach ($results as $taskSubscriber) {
+      if (
+        !$taskSubscriber instanceof ScheduledTaskSubscriberEntity
+        && !$taskSubscriber instanceof ScheduledTaskQueuedSubscriberEntity
+      ) {
+        continue;
+      }
+      $task = $taskSubscriber->getTask();
       if (!$task instanceof ScheduledTaskEntity) {
         continue;
       }
       $meta = $task->getMeta();
       if (($meta['automation']['run_id'] ?? null) === $run->getId()) {
-        $result = $scheduledTaskSubscriber;
-        break;
+        return $taskSubscriber;
       }
     }
-    return $result instanceof ScheduledTaskSubscriberEntity ? $result : null;
-  }
-
-  public function saveError(ScheduledTaskSubscriberEntity $scheduledTaskSubscriber, string $error): void {
-    $task = $scheduledTaskSubscriber->getTask();
-    $subscriber = $scheduledTaskSubscriber->getSubscriber();
-    if (!$task || !$subscriber || !$subscriber->getId()) {
-      return;
-    }
-    $this->scheduledTaskSubscribersRepository->saveError($task, $subscriber->getId(), $error);
+    return null;
   }
 }

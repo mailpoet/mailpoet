@@ -4,8 +4,8 @@ namespace MailPoet\Newsletter\Scheduler;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\AutomationRun;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -53,7 +53,8 @@ class AutomationEmailSchedulerTest extends \MailPoetTest {
     verify($scheduledTaskSubscriber)->null();
 
     $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($this->newsletter, $this->subscriber, $run2);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $scheduledTaskSubscriber);
+    verify($scheduledTaskSubscriber->isPending())->true();
   }
 
   public function testGetScheduledTaskSubscriberReturnsProperEntityForRun() {
@@ -64,7 +65,7 @@ class AutomationEmailSchedulerTest extends \MailPoetTest {
     $this->automationEmailScheduler->createSendingTask($this->newsletter, $this->subscriber, $this->getMeta($run->getId() + 2));
 
     $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($this->newsletter, $this->subscriber, $run);
-    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscriber);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $scheduledTaskSubscriber);
     $task = $scheduledTaskSubscriber->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $meta = $task->getMeta();
