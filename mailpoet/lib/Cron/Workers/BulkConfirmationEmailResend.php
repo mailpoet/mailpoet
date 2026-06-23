@@ -7,7 +7,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -29,8 +29,8 @@ class BulkConfirmationEmailResend extends SimpleWorker {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var ScheduledTaskSubscribersRepository */
-  private $scheduledTaskSubscribersRepository;
+  /** @var ScheduledTaskSubscriberMover */
+  private $scheduledTaskSubscriberMover;
 
   /** @var LogRepository */
   private $logRepository;
@@ -38,12 +38,12 @@ class BulkConfirmationEmailResend extends SimpleWorker {
   public function __construct(
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscribersRepository $subscribersRepository,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
     LogRepository $logRepository
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscribersRepository = $subscribersRepository;
-    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
     $this->logRepository = $logRepository;
     parent::__construct();
   }
@@ -69,7 +69,7 @@ class BulkConfirmationEmailResend extends SimpleWorker {
         try {
           $result = $this->confirmationEmailMailer->sendAdminConfirmationEmail($subscriber, $oldestLifecycleDate);
         } catch (\Throwable $throwable) {
-          $this->scheduledTaskSubscribersRepository->saveError($task, (int)$subscriberId, 'send_failed:mailer_error');
+          $this->scheduledTaskSubscriberMover->moveFailedToLog($task, (int)$subscriberId, 'send_failed:mailer_error');
           $failedCount++;
           continue;
         }
@@ -81,12 +81,14 @@ class BulkConfirmationEmailResend extends SimpleWorker {
           $this->saveSkipped($task, (int)$subscriberId, $result['reason'] ?? 'not_found', $skippedByReason);
           $failedCount++;
         } else {
-          $this->scheduledTaskSubscribersRepository->saveError($task, (int)$subscriberId, 'send_failed:' . ($result['reason'] ?? 'sending_method'));
+          $this->scheduledTaskSubscriberMover->moveFailedToLog($task, (int)$subscriberId, 'send_failed:' . ($result['reason'] ?? 'sending_method'));
           $failedCount++;
         }
       }
 
-      $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, $sentIds);
+      if ($sentIds) {
+        $this->scheduledTaskSubscriberMover->moveProcessedToLog($task, $sentIds);
+      }
     }
 
     $meta = $task->getMeta() ?? [];
@@ -105,7 +107,7 @@ class BulkConfirmationEmailResend extends SimpleWorker {
    */
   private function saveSkipped(ScheduledTaskEntity $task, int $subscriberId, string $reason, array &$skippedByReason): void {
     $skippedByReason[$reason] = ($skippedByReason[$reason] ?? 0) + 1;
-    $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, 'skipped:' . $reason);
+    $this->scheduledTaskSubscriberMover->moveFailedToLog($task, $subscriberId, 'skipped:' . $reason);
   }
 
   /**
