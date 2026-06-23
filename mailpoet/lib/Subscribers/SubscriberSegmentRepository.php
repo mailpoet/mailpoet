@@ -72,7 +72,9 @@ class SubscriberSegmentRepository extends Repository {
           continue;
         }
 
-        $this->createOrUpdate($subscriber, $segment, SubscriberEntity::STATUS_UNSUBSCRIBED);
+        // Defer the recompute: there is a single recalculateForSubscribers()
+        // call for this subscriber at the end of the method.
+        $this->createOrUpdate($subscriber, $segment, SubscriberEntity::STATUS_UNSUBSCRIBED, false, true);
       }
       $this->entityManager->flush();
     } else {
@@ -156,15 +158,19 @@ class SubscriberSegmentRepository extends Repository {
    */
   public function subscribeToSegments(SubscriberEntity $subscriber, array $segments, bool $skipHooks = false): void {
     foreach ($segments as $segment) {
-      $this->createOrUpdate($subscriber, $segment, SubscriberEntity::STATUS_SUBSCRIBED, $skipHooks);
+      // Defer the per-segment recompute: subscribing to N segments only changes
+      // this one subscriber's count, so recompute it once after the loop.
+      $this->createOrUpdate($subscriber, $segment, SubscriberEntity::STATUS_SUBSCRIBED, $skipHooks, true);
     }
+    $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
   }
 
   public function createOrUpdate(
     SubscriberEntity $subscriber,
     SegmentEntity $segment,
     string $status,
-    bool $skipHooks = false
+    bool $skipHooks = false,
+    bool $skipSegmentsCountRecalculation = false
   ): SubscriberSegmentEntity {
     $subscriberSegment = $this->findOneBy(['segment' => $segment, 'subscriber' => $subscriber]);
 
@@ -189,7 +195,7 @@ class SubscriberSegmentRepository extends Repository {
       $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
     }
 
-    if ($oldStatus !== $status) {
+    if ($oldStatus !== $status && !$skipSegmentsCountRecalculation) {
       $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
     }
 

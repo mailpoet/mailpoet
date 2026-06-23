@@ -109,8 +109,9 @@ class WooCommerce {
     switch ($currentFilter) {
       case 'woocommerce_delete_customer':
         // subscriber should be already deleted in WP users sync
+        // unsubscribeUsersFromSegment() recomputes segments_count for the rows it
+        // removes, so no whole-segment sweep is needed here.
         $this->unsubscribeUsersFromSegment(); // remove leftover association
-        $this->segmentsCountRecalculator->recalculateForSegment((int)$wcSegment->getId());
         break;
       case 'woocommerce_new_customer':
       case 'woocommerce_created_customer':
@@ -462,6 +463,21 @@ class WooCommerce {
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+
+    // Capture the affected subscriber ids before the DELETE: once the membership
+    // rows are gone, recalculateForSegment() can no longer see these subscribers,
+    // so a surviving subscriber would keep a stale segments_count. Recompute them
+    // explicitly afterwards (same pattern as SegmentsRepository::bulkDelete()).
+    $affectedIds = $this->connection->executeQuery(
+      "
+      SELECT mpss.subscriber_id FROM {$subscriberSegmentsTable} mpss
+      LEFT JOIN {$subscribersTable} mps ON mpss.subscriber_id = mps.id
+      WHERE mpss.segment_id = :segmentId AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
+    ",
+      ['segmentId' => $wcSegment->getId()],
+      ['segmentId' => ParameterType::INTEGER]
+    )->fetchFirstColumn();
+
     // Unsubscribe non-WC or invalid users from segment
     $this->connection->executeQuery(
       "
@@ -472,6 +488,11 @@ class WooCommerce {
       ['segmentId' => $wcSegment->getId()],
       ['segmentId' => ParameterType::INTEGER]
     );
+
+    $subscriberIds = array_map(function ($id): int {
+      return is_numeric($id) ? (int)$id : 0;
+    }, $affectedIds);
+    $this->segmentsCountRecalculator->recalculateForSubscribers($subscriberIds);
   }
 
   private function updateGlobalStatus(): void {

@@ -387,11 +387,10 @@ class SegmentsRepository extends Repository {
     ->getQuery()->execute();
 
     // Trashing or restoring a segment changes whether its memberships count
-    // towards segments_count, so refresh every affected subscriber in a single
-    // deduplicated pass (a subscriber in several of these segments is counted once).
-    $this->segmentsCountRecalculator->recalculateForSubscribers(
-      $this->getSubscriberIdsForSegments($ids, $type)
-    );
+    // towards segments_count, so refresh every affected subscriber. The
+    // memberships still exist here (only deleted_at changed), so walk them in
+    // keyset-paginated batches instead of materializing every member id at once.
+    $this->segmentsCountRecalculator->recalculateForSegments($ids);
 
     return $rows;
   }

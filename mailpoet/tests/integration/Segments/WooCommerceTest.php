@@ -10,6 +10,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -118,6 +119,36 @@ class WooCommerceTest extends \MailPoetTest {
     $hook = 'woocommerce_delete_customer';
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
     verify($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+  }
+
+  public function testItRefreshesSegmentsCountForSurvivingSubscriberOnDelete(): void {
+    // Regression: unsubscribeUsersFromSegment() DELETEs the membership row of a
+    // non-WC/invalid subscriber. recalculateForSegment() could no longer see the
+    // surviving subscriber afterwards, leaving a stale segments_count, so the
+    // delete path must capture the affected ids before the DELETE and recompute.
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $user = $this->insertRegisteredCustomer();
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      $user->ID,
+      Source::WORDPRESS_USER
+    );
+    // is_woocommerce_user defaults to 0, so its WC-segment membership matches the
+    // DELETE condition in unsubscribeUsersFromSegment() while the subscriber row
+    // itself survives this isolated call (no WP-users sync runs to delete it).
+    $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
+    $this->diContainer->get(SegmentsCountRecalculator::class)
+      ->recalculateForSubscribers([(int)$subscriber->getId()]);
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getSegmentsCount())->equals(1);
+
+    $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_delete_customer');
+
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getSegmentsCount())->equals(0);
   }
 
   public function testItSynchronizesNewGuestCustomer(): void {
