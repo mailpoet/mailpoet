@@ -16,6 +16,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -48,6 +49,9 @@ class Scheduler {
 
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
+
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
 
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
@@ -83,6 +87,7 @@ class Scheduler {
     CronWorkerScheduler $cronWorkerScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -99,6 +104,7 @@ class Scheduler {
     $this->cronWorkerScheduler = $cronWorkerScheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -497,6 +503,7 @@ class Scheduler {
     if ($queue) {
       $this->sendingQueuesRepository->remove($queue);
     }
+    $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($task);
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
     $this->scheduledTasksRepository->remove($task);
     $this->scheduledTasksRepository->flush();

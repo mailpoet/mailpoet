@@ -4,6 +4,8 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -26,11 +28,15 @@ class AutomaticEmailsRepository extends Repository {
   }
 
   private function getAllQueuesForSubscscriberQuery(QueryBuilder $query, int $newsletterId, int $subscriberId): QueryBuilder {
+    // A recipient lives in the queue while the task is pending and moves to the
+    // processed log once it is sent, so the subscriber may be in either table.
     return $query
       ->join('q.task', 't')
-      ->join('t.subscribers', 's')
       ->andWhere('q.newsletter = :newsletterId')
-      ->andWhere('s.subscriber = :subscriberId')
+      ->andWhere(
+        '(EXISTS (SELECT 1 FROM ' . ScheduledTaskSubscriberEntity::class . ' sts WHERE sts.task = t AND sts.subscriber = :subscriberId)'
+        . ' OR EXISTS (SELECT 1 FROM ' . ScheduledTaskQueuedSubscriberEntity::class . ' stsq WHERE stsq.task = t AND stsq.subscriber = :subscriberId))'
+      )
       ->setParameter('newsletterId', $newsletterId)
       ->setParameter('subscriberId', $subscriberId);
   }

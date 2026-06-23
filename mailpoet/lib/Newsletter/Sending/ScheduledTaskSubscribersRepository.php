@@ -8,23 +8,11 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
  * @extends Repository<ScheduledTaskSubscriberEntity>
  */
 class ScheduledTaskSubscribersRepository extends Repository {
-  /** @var ScheduledTaskQueuedSubscriberRepository */
-  private $scheduledTaskQueuedSubscriberRepository;
-
-  public function __construct(
-    EntityManager $entityManager,
-    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository
-  ) {
-    parent::__construct($entityManager);
-    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
-  }
-
   protected function getEntityClassName() {
     return ScheduledTaskSubscriberEntity::class;
   }
@@ -57,9 +45,6 @@ class ScheduledTaskSubscribersRepository extends Repository {
       $task = $entity->getTask();
       return $task && in_array($task->getId(), $ids, true);
     });
-
-    // also clear any pending (queued) rows for these sending tasks; no-op for non-sending tasks
-    $this->scheduledTaskQueuedSubscriberRepository->deleteByTaskIds($ids);
   }
 
   public function deleteByScheduledTask(ScheduledTaskEntity $scheduledTask): void {
@@ -74,9 +59,6 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($scheduledTask) {
       return $entity->getTask() === $scheduledTask;
     });
-
-    // also clear any pending (queued) rows for this sending task; no-op for non-sending tasks
-    $this->scheduledTaskQueuedSubscriberRepository->deleteByScheduledTask($scheduledTask);
   }
 
   public function saveError(ScheduledTaskEntity $scheduledTask, int $subscriberId, string $errorMessage): void {

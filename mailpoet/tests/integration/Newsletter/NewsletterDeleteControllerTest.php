@@ -11,6 +11,7 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -25,6 +26,7 @@ use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
+use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterDeleteControllerTest extends \MailPoetTest {
@@ -74,6 +76,8 @@ class NewsletterDeleteControllerTest extends \MailPoetTest {
 
     $subscriber = $standardScheduledTaskSubscriber->getSubscriber();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $standardTaskId = (int)$standardScheduledTaks->getId();
+    (new ScheduledTaskQueuedSubscriber())->create($standardScheduledTaks, $subscriber);
     $statisticsNewsletter = $this->createNewsletterStatistics($standardNewsletter, $standardQueue, $subscriber);
     $statisticsOpen = $this->createOpenStatistics($standardNewsletter, $standardQueue, $subscriber);
     $statisticsClick = $this->createClickStatistics($standardNewsletter, $standardQueue, $subscriber, $standardLink);
@@ -96,6 +100,10 @@ class NewsletterDeleteControllerTest extends \MailPoetTest {
     // Sending queues
     verify($this->entityManager->find(SendingQueueEntity::class, $standardQueue->getId()))->null();
     verify($this->entityManager->find(SendingQueueEntity::class, $notificationHistoryQueue->getId()))->null();
+
+    // Queued recipients of the deleted task are cleaned up too, now that the log
+    // repo no longer cascades and each delete path clears the queue explicitly.
+    verify($this->entityManager->getRepository(ScheduledTaskQueuedSubscriberEntity::class)->count(['task' => $standardTaskId]))->equals(0);
 
     // Scheduled tasks subscribers
     verify($this->taskSubscribersRepository->findOneBy(['task' => $standardScheduledTaks]))->null();

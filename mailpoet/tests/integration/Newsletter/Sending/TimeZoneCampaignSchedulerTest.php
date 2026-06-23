@@ -11,8 +11,8 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterDeleteController;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -462,7 +462,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
 
     $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
-    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $scheduledTaskQueuedSubscriberRepository = $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class);
     $newsletterId = (int)$newsletter->getId();
 
     $queueIds = array_map(fn(SendingQueueEntity $queue): int => (int)$queue->getId(), $sendingQueuesRepository->findBy(['newsletter' => $newsletter]));
@@ -477,7 +477,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
 
     $totalTaskSubscribers = 0;
     foreach ($taskIds as $taskId) {
-      $totalTaskSubscribers += count($scheduledTaskSubscribersRepository->findBy(['task' => $taskId]));
+      $totalTaskSubscribers += count($scheduledTaskQueuedSubscriberRepository->findBy(['task' => $taskId]));
     }
     verify($totalTaskSubscribers)->greaterThanOrEqual(2);
 
@@ -486,7 +486,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     verify($sendingQueuesRepository->findBy(['newsletter' => $newsletterId]))->equals([]);
     foreach ($taskIds as $taskId) {
       verify($scheduledTasksRepository->findOneById($taskId))->null();
-      verify($scheduledTaskSubscribersRepository->findBy(['task' => $taskId]))->equals([]);
+      verify($scheduledTaskQueuedSubscriberRepository->findBy(['task' => $taskId]))->equals([]);
     }
   }
 

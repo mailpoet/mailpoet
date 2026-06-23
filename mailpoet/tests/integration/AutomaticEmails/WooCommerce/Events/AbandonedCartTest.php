@@ -6,10 +6,12 @@ use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -63,6 +65,9 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskQueuedSubscriberRepository */
+  private $scheduledTaskQueuedSubscriberRepository;
+
   /** @var AutomaticEmailScheduler */
   private $automaticEmailScheduler;
 
@@ -76,6 +81,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $this->scheduledTaskQueuedSubscriberRepository = $this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class);
 
     $this->currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($this->currentTime);
@@ -258,6 +264,7 @@ class AbandonedCartTest extends \MailPoetTest {
 
     $this->assertCount(0, $this->scheduledTasksRepository->findAll());
     $this->assertCount(0, $this->scheduledTaskSubscribersRepository->findAll());
+    $this->assertCount(0, $this->scheduledTaskQueuedSubscriberRepository->findAll());
     $this->assertCount(0, $this->sendingQueuesRepository->findAll());
   }
 
@@ -376,13 +383,17 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->entityManager->persist($sendingQueue);
     $this->entityManager->flush();
 
-    $sendingQueueSubscriber = new ScheduledTaskSubscriberEntity($scheduledTask, $subscriber, ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
-    $this->entityManager->persist($sendingQueueSubscriber);
-    $this->entityManager->flush();
-
     $scheduledTask->setScheduledAt($scheduleAt);
     $scheduledTask->setSendingQueue($sendingQueue);
     $scheduledTask->setStatus(($this->currentTime < $scheduleAt) ? ScheduledTaskEntity::STATUS_SCHEDULED : ScheduledTaskEntity::STATUS_COMPLETED);
+
+    // A pending (scheduled) task keeps its recipient in the queue; a completed
+    // one has already moved it into the processed log.
+    if ($scheduledTask->getStatus() === ScheduledTaskEntity::STATUS_SCHEDULED) {
+      $this->entityManager->persist(new ScheduledTaskQueuedSubscriberEntity($scheduledTask, $subscriber));
+    } else {
+      $this->entityManager->persist(new ScheduledTaskSubscriberEntity($scheduledTask, $subscriber, ScheduledTaskSubscriberEntity::STATUS_PROCESSED));
+    }
     $this->entityManager->flush();
 
     return $scheduledTask;
