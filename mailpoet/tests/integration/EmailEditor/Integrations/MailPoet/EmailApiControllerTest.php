@@ -67,7 +67,7 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($emailData['reply_to_address'])->equals('reply-jane@example.com');
   }
 
-  public function testItFallsBackToDefaultSenderAndReplyToWhenNewsletterAddressesAreMissing(): void {
+  public function testItKeepsEmptyNewsletterSenderAndReplyToValues(): void {
     $wpPostId = 21;
     (new NewsletterFactory())
       ->withSenderName('')
@@ -81,10 +81,10 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->settings->set('reply_to', ['name' => 'Default Reply', 'address' => 'default-reply@example.com']);
 
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
-    verify($emailData['sender_name'])->equals('Default Name');
-    verify($emailData['sender_address'])->equals('default@example.com');
-    verify($emailData['reply_to_name'])->equals('Default Reply');
-    verify($emailData['reply_to_address'])->equals('default-reply@example.com');
+    verify($emailData['sender_name'])->equals('');
+    verify($emailData['sender_address'])->equals('');
+    verify($emailData['reply_to_name'])->equals('');
+    verify($emailData['reply_to_address'])->equals('');
   }
 
   public function testItKeepsNewsletterSenderAndReplyToNamesEmptyWhenOnlyAddressesAreSet(): void {
