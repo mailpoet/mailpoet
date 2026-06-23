@@ -2,7 +2,7 @@
 
 namespace MailPoet\Settings;
 
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
@@ -49,10 +49,10 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
   }
 
   public function testItReschedulesScheduledTaskForInactiveSubscribers(): void {
-    $newTask = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
+    $newTask = $this->createScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE);
     $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
 
-    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    $task = $this->getScheduledTaskByType(InactiveSubscribersMaintenance::TASK_TYPE);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTime::class, $scheduledAt);
@@ -63,10 +63,10 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
   }
 
   public function testItCreatesScheduledTaskForInactiveSubscribers(): void {
-    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    $task = $this->getScheduledTaskByType(InactiveSubscribersMaintenance::TASK_TYPE);
     verify($task)->null();
     $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
-    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    $task = $this->getScheduledTaskByType(InactiveSubscribersMaintenance::TASK_TYPE);
     verify($task)->instanceOf(ScheduledTaskEntity::class);
   }
 

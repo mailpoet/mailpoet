@@ -2,7 +2,7 @@
 
 namespace MailPoet\Migrations\App;
 
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
@@ -72,7 +72,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
     // Double check there isn't already a task in the DB
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $shouldBeNull = $scheduledTasksRepository->findOneBy([
-      'type' => InactiveSubscribers::TASK_TYPE,
+      'type' => InactiveSubscribersMaintenance::TASK_TYPE,
     ]);
     $this->assertNull($shouldBeNull);
 
@@ -83,7 +83,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
 
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $task = $scheduledTasksRepository->findOneBy([
-      'type' => InactiveSubscribers::TASK_TYPE,
+      'type' => InactiveSubscribersMaintenance::TASK_TYPE,
     ]);
     $this->assertNotNull($task);
     $this->assertEquals($currentTime->subMinute(), $task->getScheduledAt());
@@ -99,7 +99,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
 
     // Create existing task scheduled for the future
     $existingTask = new ScheduledTaskEntity();
-    $existingTask->setType(InactiveSubscribers::TASK_TYPE);
+    $existingTask->setType(InactiveSubscribersMaintenance::TASK_TYPE);
     $existingTask->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $existingTask->setScheduledAt($twoHoursFromNow);
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);

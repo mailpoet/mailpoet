@@ -340,7 +340,7 @@ class ClaimedTaskRunnerTest extends \MailPoetTest {
       public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
         $this->processCalled = true;
         if ($this->metaToWrite !== null) {
-          // Workers like InactiveSubscribers overwrite meta wholesale mid-run.
+          // Some workers overwrite meta wholesale mid-run.
           $task->setMeta($this->metaToWrite);
         }
         if ($this->throwsExecutionLimit) {

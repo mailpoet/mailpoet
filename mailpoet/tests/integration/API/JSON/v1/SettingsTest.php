@@ -10,7 +10,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -237,7 +237,7 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint->set($settings);
     $task = $this->scheduledTasksRepository->findOneBy(
       [
-        'type' => InactiveSubscribers::TASK_TYPE,
+        'type' => InactiveSubscribersMaintenance::TASK_TYPE,
         'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       ]
     );
@@ -247,7 +247,7 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint->set($settings);
     $task = $this->scheduledTasksRepository->findOneBy(
       [
-        'type' => InactiveSubscribers::TASK_TYPE,
+        'type' => InactiveSubscribersMaintenance::TASK_TYPE,
         'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       ]
     );
