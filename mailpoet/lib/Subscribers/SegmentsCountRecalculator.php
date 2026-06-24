@@ -142,20 +142,20 @@ class SegmentsCountRecalculator {
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $connection = $this->entityManager->getConnection();
 
-    $statusFilter = $subscribedOnly
-      ? "AND status = '" . SubscriberEntity::STATUS_SUBSCRIBED . "'"
-      : '';
     $lastId = 0;
     do {
       $batchSize = self::BATCH_SIZE;
-      $ids = $connection->executeQuery(
-        "SELECT DISTINCT subscriber_id FROM {$subscriberSegmentTable}
-          WHERE segment_id IN (:segmentIds) {$statusFilter} AND subscriber_id > :lastId
-          ORDER BY subscriber_id ASC
-          LIMIT {$batchSize}",
-        ['segmentIds' => $segmentIds, 'lastId' => $lastId],
-        ['segmentIds' => ArrayParameterType::INTEGER, 'lastId' => ParameterType::INTEGER]
-      )->fetchFirstColumn();
+      $sql = "SELECT DISTINCT subscriber_id FROM {$subscriberSegmentTable}
+          WHERE segment_id IN (:segmentIds) AND subscriber_id > :lastId";
+      $params = ['segmentIds' => $segmentIds, 'lastId' => $lastId];
+      $types = ['segmentIds' => ArrayParameterType::INTEGER, 'lastId' => ParameterType::INTEGER];
+      if ($subscribedOnly) {
+        $sql .= ' AND status = :status';
+        $params['status'] = SubscriberEntity::STATUS_SUBSCRIBED;
+        $types['status'] = ParameterType::STRING;
+      }
+      $sql .= ' ORDER BY subscriber_id ASC LIMIT ' . $batchSize;
+      $ids = $connection->executeQuery($sql, $params, $types)->fetchFirstColumn();
 
       if ($ids === []) {
         break;
