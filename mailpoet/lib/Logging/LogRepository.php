@@ -163,6 +163,28 @@ class LogRepository extends Repository {
     return $deleted;
   }
 
+  /**
+   * Fetch logs matching the listing's filter shape (`from`/`to`/`name`/`level`)
+   * and free-text search for export, so a download contains exactly the rows the
+   * filtered listing shows. Mirrors deleteLogs()'s WHERE clause and is capped by
+   * $limit to keep memory bounded on large log tables.
+   *
+   * @param array{from?: string, to?: string, name?: string[], level?: int[]} $filter
+   * @return array<int, array{created_at: string, name: string|null, message: string|null}>
+   */
+  public function getLogsForExport(array $filter, ?string $search = null, int $limit = 50000): array {
+    $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
+    [$where, $parameters, $types] = $this->buildFilterSql($filter, $search);
+    $parameters['export_limit'] = $limit;
+    $types['export_limit'] = ParameterType::INTEGER;
+
+    $sql = "SELECT `created_at`, `name`, `message` FROM `{$logsTable}`{$where} ORDER BY `created_at` DESC, `id` DESC LIMIT :export_limit";
+
+    return $this->entityManager->getConnection()
+      ->executeQuery($sql, $parameters, $types)
+      ->fetchAllAssociative();
+  }
+
   public function getRawMessagesForNewsletter(NewsletterEntity $newsletter, string $topic): array {
     return $this->entityManager->createQueryBuilder()
       ->select('DISTINCT logs.rawMessage message')
