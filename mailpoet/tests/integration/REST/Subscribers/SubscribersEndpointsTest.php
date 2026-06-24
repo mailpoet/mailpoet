@@ -192,6 +192,39 @@ class SubscribersEndpointsTest extends Test {
     $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneById($subscriberId));
   }
 
+  public function testBulkDeleteWithSelectAllIgnoresSubmittedSelection(): void {
+    $live = (new SubscriberFactory())
+      ->withEmail('rest-select-all-delete-selection-live-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $trashed = (new SubscriberFactory())
+      ->withEmail('rest-select-all-delete-selection-trash-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+    $liveId = (int)$live->getId();
+    $trashedId = (int)$trashed->getId();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'delete',
+      'group' => 'trash',
+      'selection' => [$liveId],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame('delete', $payload['action']);
+    $this->assertGreaterThanOrEqual(1, $payload['count']);
+    $this->entityManager->clear();
+
+    $liveSubscriber = $this->subscribersRepository->findOneById($liveId);
+    $this->assertInstanceOf(SubscriberEntity::class, $liveSubscriber);
+    $this->assertNull($liveSubscriber->getDeletedAt());
+    $this->assertNull($this->subscribersRepository->findOneById($trashedId));
+  }
+
   public function testBulkTrashWithSelectAllIsRejectedFromTrash(): void {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'trash',

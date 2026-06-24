@@ -198,6 +198,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
   private function buildDefinition(Request $request): ListingDefinition {
     $filter = $request->getParam('filter');
     $selection = $request->getParam('selection');
+    $selectAll = $request->getParam('select_all') === true;
     $searchParam = $request->getParam('search');
     $groupParam = $request->getParam('group');
 
@@ -209,7 +210,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       'search' => is_string($searchParam) ? $searchParam : null,
       'group' => is_string($groupParam) ? $groupParam : null,
       'filter' => is_array($filter) ? $filter : [],
-      'selection' => is_array($selection) ? $this->toIntList($selection) : [],
+      'selection' => !$selectAll && is_array($selection) ? $this->toIntList($selection) : [],
       'params' => [],
     ]);
   }
