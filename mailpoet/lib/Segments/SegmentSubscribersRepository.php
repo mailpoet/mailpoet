@@ -321,11 +321,7 @@ class SegmentSubscribersRepository {
     try {
       $queryBuilder = $this->createWithoutSegmentStatisticsQueryBuilder();
 
-      if ($this->isSegmentsCountColumnReady()) {
-        $queryBuilder->where('s.segments_count = 0');
-      } else {
-        $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
-      }
+      $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
 
       $statement = $this->executeQuery($queryBuilder);
       $result = $statement->fetch();
@@ -412,6 +408,11 @@ class SegmentSubscribersRepository {
   }
 
   public function addConstraintsForSubscribersWithoutSegmentToDBAL(QueryBuilder $queryBuilder): void {
+    if ($this->isSegmentsCountColumnReady()) {
+      $queryBuilder->andWhere('s.segments_count = 0');
+      return;
+    }
+
     $deletedSegmentsQueryBuilder = $this->entityManager->createQueryBuilder();
     $subscribersSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $deletedSegmentsQueryBuilder->select('sg.id')
