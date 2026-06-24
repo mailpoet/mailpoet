@@ -257,7 +257,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
             {downloadConfig && (
               <Button
                 dimension="small"
-                variant="secondary"
+                variant="tertiary"
                 onClick={() => setIsDownloadModalOpen(true)}
                 isDisabled={!canDownload}
               >
