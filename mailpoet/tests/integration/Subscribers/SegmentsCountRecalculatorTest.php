@@ -103,6 +103,19 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
     $this->assertSame(1, $this->getSegmentsCount($subscriber));
   }
 
+  public function testHardDeletingASegmentDecrementsCountForMembers(): void {
+    $segment1 = (new Segment())->create();
+    $segment2 = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment1, $segment2])->create();
+    $segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->recalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
+    $this->assertSame(2, $this->getSegmentsCount($subscriber));
+
+    $segmentsRepository->bulkDelete([(int)$segment1->getId()]);
+
+    $this->assertSame(1, $this->getSegmentsCount($subscriber));
+  }
+
   public function testListingQueryUsesColumnWhenBackfilled(): void {
     $segment = (new Segment())->create();
     $withList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
