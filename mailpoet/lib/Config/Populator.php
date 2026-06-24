@@ -761,32 +761,34 @@ class Populator {
   }
 
   private function scheduleBackfillEngagementData(): void {
-    $existingTask = $this->scheduledTasksRepository->findOneBy(
-      [
-        'type' => BackfillEngagementData::TASK_TYPE,
-      ]
-    );
-    if ($existingTask) {
-      return;
-    }
-    $this->scheduleTask(
-      BackfillEngagementData::TASK_TYPE,
-      Carbon::now()->millisecond(0)
-    );
+    $this->scheduleOneTimeBackfillTask(BackfillEngagementData::TASK_TYPE);
   }
 
   private function scheduleSubscribersSegmentsCountSync(): void {
+    $this->scheduleOneTimeBackfillTask(SubscribersSegmentsCountSync::TASK_TYPE);
+  }
+
+  /**
+   * Schedule a one-time backfill task unless a healthy instance already exists.
+   * Uses an allowlist of healthy statuses rather than finding any task, so a
+   * failed or cancelled task does not permanently block re-scheduling.
+   */
+  private function scheduleOneTimeBackfillTask(string $type): void {
     $existingTask = $this->scheduledTasksRepository->findOneBy(
       [
-        'type' => SubscribersSegmentsCountSync::TASK_TYPE,
+        'type' => $type,
+        'status' => [
+          ScheduledTaskEntity::STATUS_SCHEDULED,
+          null, // running (stored as null for historical reasons)
+          ScheduledTaskEntity::STATUS_COMPLETED,
+          ScheduledTaskEntity::STATUS_PAUSED,
+          ScheduledTaskEntity::STATUS_CLI,
+        ],
       ]
     );
     if ($existingTask) {
       return;
     }
-    $this->scheduleTask(
-      SubscribersSegmentsCountSync::TASK_TYPE,
-      Carbon::now()->millisecond(0)
-    );
+    $this->scheduleTask($type, Carbon::now()->millisecond(0));
   }
 }
