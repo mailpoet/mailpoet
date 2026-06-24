@@ -104,8 +104,8 @@ class SegmentsCountRecalculator {
    * given segment. Used when a segment is trashed, restored or deleted, which
    * changes the count of all of its members at once.
    */
-  public function recalculateForSegment(int $segmentId): void {
-    $this->recalculateForSegments([$segmentId]);
+  public function recalculateForSegment(int $segmentId, bool $subscribedOnly = true): void {
+    $this->recalculateForSegments([$segmentId], $subscribedOnly);
   }
 
   /**
@@ -116,9 +116,19 @@ class SegmentsCountRecalculator {
    * Members are walked in keyset-paginated batches rather than materialized into
    * one array, so this stays memory-safe even on multi-million-member segments.
    *
+   * $subscribedOnly = true (default): only walk members whose current
+   * subscriber_segment.status = 'subscribed'. Safe when the segment's
+   * deleted_at changed but no membership statuses changed — non-subscribed
+   * members were never counted and their recomputation is a no-op.
+   *
+   * $subscribedOnly = false: walk all members regardless of status. Required
+   * when the caller performed raw-SQL writes that may have changed membership
+   * statuses (e.g. the WooCommerce sync), so subscribers transitioning away
+   * from subscribed must also be recomputed.
+   *
    * @param int[] $segmentIds
    */
-  public function recalculateForSegments(array $segmentIds): void {
+  public function recalculateForSegments(array $segmentIds, bool $subscribedOnly = true): void {
     // recalculateForSubscribers() is a no-op on SQLite, so skip the walk too.
     if (Connection::isSQLite()) {
       return;
@@ -132,13 +142,15 @@ class SegmentsCountRecalculator {
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $connection = $this->entityManager->getConnection();
 
-    $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
+    $statusFilter = $subscribedOnly
+      ? "AND status = '" . SubscriberEntity::STATUS_SUBSCRIBED . "'"
+      : '';
     $lastId = 0;
     do {
       $batchSize = self::BATCH_SIZE;
       $ids = $connection->executeQuery(
         "SELECT DISTINCT subscriber_id FROM {$subscriberSegmentTable}
-          WHERE segment_id IN (:segmentIds) AND status = '{$subscribedStatus}' AND subscriber_id > :lastId
+          WHERE segment_id IN (:segmentIds) {$statusFilter} AND subscriber_id > :lastId
           ORDER BY subscriber_id ASC
           LIMIT {$batchSize}",
         ['segmentIds' => $segmentIds, 'lastId' => $lastId],

@@ -215,8 +215,10 @@ class WooCommerce {
       $this->updateStatus();
       $this->updateGlobalStatus();
       // The bulk operations above add/remove/restatus the WooCommerce segment's
-      // memberships en masse via raw SQL, so refresh segments_count for them.
-      $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWooCommerceSegment()->getId());
+      // memberships en masse via raw SQL, so refresh segments_count for all
+      // members regardless of status — some may have just transitioned away
+      // from subscribed and must be recomputed too.
+      $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWooCommerceSegment()->getId(), false);
     }
 
     $this->subscribersRepository->invalidateTotalSubscribersCache();
