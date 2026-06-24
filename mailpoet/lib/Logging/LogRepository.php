@@ -180,9 +180,26 @@ class LogRepository extends Repository {
 
     $sql = "SELECT `created_at`, `name`, `message` FROM `{$logsTable}`{$where} ORDER BY `created_at` DESC, `id` DESC LIMIT :export_limit";
 
-    return $this->entityManager->getConnection()
+    $rows = $this->entityManager->getConnection()
       ->executeQuery($sql, $parameters, $types)
       ->fetchAllAssociative();
+
+    $logs = [];
+    foreach ($rows as $row) {
+      $logs[] = [
+        'created_at' => $this->castToNullableString($row['created_at']) ?? '',
+        'name' => $this->castToNullableString($row['name']),
+        'message' => $this->castToNullableString($row['message']),
+      ];
+    }
+    return $logs;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function castToNullableString($value): ?string {
+    return is_scalar($value) ? (string)$value : null;
   }
 
   public function getRawMessagesForNewsletter(NewsletterEntity $newsletter, string $topic): array {
