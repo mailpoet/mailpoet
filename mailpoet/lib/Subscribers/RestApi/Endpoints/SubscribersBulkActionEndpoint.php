@@ -19,6 +19,32 @@ use MailPoet\WP\Functions as WPFunctions;
 class SubscribersBulkActionEndpoint extends Endpoint {
   public const ACTION_RESEND_CONFIRMATION_EMAILS = 'resendConfirmationEmails';
 
+  private const VALID_SELECT_ALL_GROUPS = [
+    'all',
+    SubscriberEntity::STATUS_SUBSCRIBED,
+    SubscriberEntity::STATUS_UNCONFIRMED,
+    SubscriberEntity::STATUS_UNSUBSCRIBED,
+    SubscriberEntity::STATUS_INACTIVE,
+    SubscriberEntity::STATUS_BOUNCED,
+    'trash',
+  ];
+
+  private const TRASH_ONLY_ACTIONS = [
+    BulkActionController::ACTION_DELETE,
+    BulkActionController::ACTION_RESTORE,
+  ];
+
+  private const NON_TRASH_ACTIONS = [
+    BulkActionController::ACTION_TRASH,
+    BulkActionController::ACTION_UNSUBSCRIBE,
+    BulkActionController::ACTION_MOVE_TO_LIST,
+    BulkActionController::ACTION_ADD_TO_LIST,
+    BulkActionController::ACTION_REMOVE_FROM_LIST,
+    BulkActionController::ACTION_REMOVE_FROM_ALL_LISTS,
+    BulkActionController::ACTION_ADD_TAG,
+    BulkActionController::ACTION_REMOVE_TAG,
+  ];
+
   /** @var ListingHandler */
   private $listingHandler;
 
@@ -65,6 +91,9 @@ class SubscribersBulkActionEndpoint extends Endpoint {
         400,
         'mailpoet_subscribers_no_selection'
       );
+    }
+    if ($selectAll) {
+      $this->validateSelectAllScope($action, $definition);
     }
 
     $data = [];
@@ -183,6 +212,33 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       'selection' => is_array($selection) ? $this->toIntList($selection) : [],
       'params' => [],
     ]);
+  }
+
+  private function validateSelectAllScope(string $action, ListingDefinition $definition): void {
+    $group = $definition->getGroup();
+    if (!is_string($group) || !in_array($group, self::VALID_SELECT_ALL_GROUPS, true)) {
+      throw new ApiException(
+        __('Select all requires a valid subscriber view.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_invalid_select_all_group'
+      );
+    }
+
+    if (in_array($action, self::TRASH_ONLY_ACTIONS, true) && $group !== 'trash') {
+      throw new ApiException(
+        __('This bulk action can only be applied from the Trash view.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_invalid_select_all_scope'
+      );
+    }
+
+    if (in_array($action, self::NON_TRASH_ACTIONS, true) && $group === 'trash') {
+      throw new ApiException(
+        __('This bulk action cannot be applied from the Trash view.', 'mailpoet'),
+        400,
+        'mailpoet_subscribers_invalid_select_all_scope'
+      );
+    }
   }
 
   /**
