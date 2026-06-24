@@ -63,6 +63,9 @@ class SubscribersSegmentsCountSyncTest extends \MailPoetTest {
     // The reconcile run re-derives from source and repairs the drift.
     $this->worker->processTaskStrategy($this->createTask(), microtime(true));
     $this->assertSame(1, $this->getSegmentsCount($subscriber));
+    // The backfill flag must remain set after a reconcile run — if it were
+    // ever cleared, reads would silently fall back to the anti-join.
+    $this->assertTrue((bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY));
   }
 
   public function testReadsSwitchToTheColumnOnlyAfterTheBackfillCompletes(): void {
