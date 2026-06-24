@@ -70,13 +70,16 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
       $this->cronHelper->enforceExecutionLimit($timer); // throws and reschedules when over the limit
     }
 
-    // The whole table has been recomputed: reads can trust segments_count now.
-    $this->settings->set(self::BACKFILLED_SETTING_KEY, true);
-
     // Reset progress so the next (reconcile) run starts a fresh sweep.
+    // Flush this before flipping the backfill flag: if the process dies
+    // between the two writes, the next run resumes from 0 rather than from
+    // a stale mid-table cursor while reads already trust the column.
     $task->setMeta(['last_subscriber_id' => 0]);
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
+
+    // The whole table has been recomputed: reads can trust segments_count now.
+    $this->settings->set(self::BACKFILLED_SETTING_KEY, true);
 
     return true;
   }
