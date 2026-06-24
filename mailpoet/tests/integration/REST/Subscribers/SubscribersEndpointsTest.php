@@ -156,6 +156,57 @@ class SubscribersEndpointsTest extends Test {
     $this->assertNotNull($second->getDeletedAt());
   }
 
+  public function testBulkActionWithSelectAllRequiresValidGroup(): void {
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_subscribers_invalid_select_all_group', $response['code']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
+  }
+
+  public function testBulkDeleteWithSelectAllIsRejectedOutsideTrash(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('rest-select-all-delete-live-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $subscriberId = (int)$subscriber->getId();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'delete',
+      'group' => 'all',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_subscribers_invalid_select_all_scope', $response['code']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneById($subscriberId));
+  }
+
+  public function testBulkTrashWithSelectAllIsRejectedFromTrash(): void {
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'group' => 'trash',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_subscribers_invalid_select_all_scope', $response['code']);
+    $errorData = $response['data'];
+    $this->assertIsArray($errorData);
+    $this->assertSame(400, $errorData['status']);
+  }
+
   public function testBulkActionWithExplicitSelectionIgnoresSelectAllFlagWhenAbsent(): void {
     $kept = (new SubscriberFactory())
       ->withEmail('rest-explicit-keep-' . uniqid() . '@example.com')
