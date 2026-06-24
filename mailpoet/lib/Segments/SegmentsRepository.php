@@ -9,6 +9,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\InvalidStateException;
@@ -341,14 +342,17 @@ class SegmentsRepository extends Repository {
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
 
+    $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
     $ids = $this->entityManager->getConnection()->executeQuery("
        SELECT DISTINCT ss.`subscriber_id` FROM $subscriberSegmentTable ss
        JOIN $segmentTable s ON ss.`segment_id` = s.`id`
        WHERE ss.`segment_id` IN (:ids)
        AND s.`type` = :type
+       AND ss.`status` = :subscribedStatus
     ", [
       'ids' => $segmentIds,
       'type' => $type,
+      'subscribedStatus' => $subscribedStatus,
     ], ['ids' => ArrayParameterType::INTEGER])->fetchFirstColumn();
 
     return array_map(function ($id): int {
