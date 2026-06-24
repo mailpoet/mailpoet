@@ -33,12 +33,20 @@ const EVENT_TYPE_OPTIONS: Array<{ label: string; value: ActivityEventType }> = [
   { label: __('Unsubscribes', 'mailpoet'), value: 'unsubscribe' },
 ];
 
+function isDetailedAnalyticsRestricted(): boolean {
+  const capability = MailPoet.capabilities?.detailedAnalytics;
+  return !capability || capability.isRestricted;
+}
+
 export function ActivityShell({
   lastEngagementAt,
   location,
   params,
 }: Props): JSX.Element {
   const [eventType, setEventType] = useState<ActivityEventType>('all');
+  // Premium replaces this dropdown with a native DataViews event-type filter, so
+  // only restricted/free users (who see the upsell) need the control here.
+  const showEventTypeFilter = isDetailedAnalyticsRestricted();
   const subtitle = lastEngagementAt
     ? sprintf(
         // translators: %s is a date and time when the subscriber was last seen.
@@ -64,14 +72,16 @@ export function ActivityShell({
               </div>
             </div>
           </FlexBlock>
-          <SelectControl
-            className="mailpoet-subscriber-stats-activity-filter"
-            hideLabelFromVision
-            label={__('Activity event type', 'mailpoet')}
-            onChange={(value) => setEventType(value as ActivityEventType)}
-            options={EVENT_TYPE_OPTIONS}
-            value={eventType}
-          />
+          {showEventTypeFilter && (
+            <SelectControl
+              className="mailpoet-subscriber-stats-activity-filter"
+              hideLabelFromVision
+              label={__('Activity event type', 'mailpoet')}
+              onChange={(value) => setEventType(value as ActivityEventType)}
+              options={EVENT_TYPE_OPTIONS}
+              value={eventType}
+            />
+          )}
         </Flex>
       </CardHeader>
       <CardBody className="mailpoet-subscriber-stats-activity-body">
