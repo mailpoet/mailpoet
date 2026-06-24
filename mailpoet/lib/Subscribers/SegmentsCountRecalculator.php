@@ -132,12 +132,13 @@ class SegmentsCountRecalculator {
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $connection = $this->entityManager->getConnection();
 
+    $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
     $lastId = 0;
     do {
       $batchSize = self::BATCH_SIZE;
       $ids = $connection->executeQuery(
         "SELECT DISTINCT subscriber_id FROM {$subscriberSegmentTable}
-          WHERE segment_id IN (:segmentIds) AND subscriber_id > :lastId
+          WHERE segment_id IN (:segmentIds) AND status = '{$subscribedStatus}' AND subscriber_id > :lastId
           ORDER BY subscriber_id ASC
           LIMIT {$batchSize}",
         ['segmentIds' => $segmentIds, 'lastId' => $lastId],
