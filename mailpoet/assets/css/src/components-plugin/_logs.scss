@@ -89,7 +89,8 @@
   }
 }
 
-.mailpoet-logs-delete-modal {
+.mailpoet-logs-delete-modal,
+.mailpoet-logs-download-modal {
   .components-modal__content {
     min-width: 420px;
   }
@@ -99,7 +100,8 @@
   }
 }
 
-.mailpoet-logs-delete-modal__actions {
+.mailpoet-logs-delete-modal__actions,
+.mailpoet-logs-download-modal__actions {
   display: flex;
   gap: $grid-gap-half;
   justify-content: flex-end;

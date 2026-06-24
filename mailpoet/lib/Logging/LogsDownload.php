@@ -40,18 +40,37 @@ class LogsDownload {
 
     $from = isset($_GET['from']) && is_string($_GET['from']) ? sanitize_text_field(wp_unslash($_GET['from'])) : null;
     $to = isset($_GET['to']) && is_string($_GET['to']) ? sanitize_text_field(wp_unslash($_GET['to'])) : null;
+    $search = isset($_GET['search']) && is_string($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : null;
 
+    $filter = [];
     $dateFrom = $this->parseDateParam($from);
+    if ($dateFrom instanceof \DateTimeImmutable) {
+      $filter['from'] = $dateFrom->format('Y-m-d');
+    }
     $dateTo = $this->parseDateParam($to);
+    if ($dateTo instanceof \DateTimeImmutable) {
+      $filter['to'] = $dateTo->format('Y-m-d');
+    }
+    $names = $this->parseStringArrayParam('name');
+    if ($names) {
+      $filter['name'] = $names;
+    }
+    $levels = $this->parseIntArrayParam('level');
+    if ($levels) {
+      $filter['level'] = $levels;
+    }
+    if ($search === '') {
+      $search = null;
+    }
 
-    $logs = $this->logRepository->getLogs($dateFrom, $dateTo, null, null, (string)self::MAX_LOGS);
+    $logs = $this->logRepository->getLogsForExport($filter, $search, self::MAX_LOGS);
 
     $filename = 'mailpoet-logs';
-    if ($from) {
-      $filename .= '-from-' . $from;
+    if (isset($filter['from'])) {
+      $filename .= '-from-' . $filter['from'];
     }
-    if ($to) {
-      $filename .= '-to-' . $to;
+    if (isset($filter['to'])) {
+      $filename .= '-to-' . $filter['to'];
     }
     $filename .= '.txt';
 
@@ -62,13 +81,45 @@ class LogsDownload {
     header('Expires: 0');
 
     foreach ($logs as $log) {
-      $createdAt = $log->getCreatedAt() ? $log->getCreatedAt()->format('Y-m-d H:i:s') : 'N/A';
-      $name = $log->getName() ?? '';
-      $message = $log->getMessage() ?? '';
+      $createdAt = $log['created_at'] ?? 'N/A';
+      $name = $log['name'] ?? '';
+      $message = $log['message'] ?? '';
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo '[' . $createdAt . '] [' . $name . '] ' . $message . "\n";
     }
     exit;
+  }
+
+  /**
+   * @return string[]
+   */
+  private function parseStringArrayParam(string $key): array {
+    if (!isset($_GET[$key]) || !is_array($_GET[$key])) {
+      return [];
+    }
+    $values = [];
+    foreach (wp_unslash($_GET[$key]) as $value) {
+      if (is_string($value) && $value !== '') {
+        $values[] = sanitize_text_field($value);
+      }
+    }
+    return array_values(array_unique($values));
+  }
+
+  /**
+   * @return int[]
+   */
+  private function parseIntArrayParam(string $key): array {
+    if (!isset($_GET[$key]) || !is_array($_GET[$key])) {
+      return [];
+    }
+    $values = [];
+    foreach ($_GET[$key] as $value) {
+      if (is_numeric($value)) {
+        $values[] = (int)$value;
+      }
+    }
+    return array_values(array_unique($values));
   }
 
   public static function createNonce(WPFunctions $wp): string {

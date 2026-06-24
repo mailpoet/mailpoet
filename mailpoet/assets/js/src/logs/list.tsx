@@ -13,6 +13,7 @@ import {
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
 import { DeleteLogsModal } from './delete-modal';
+import { DownloadLogsModal } from './download-modal';
 import { getLogActions, getLogFieldDefinitions, getLogFields } from './fields';
 import {
   getLogFilterOptions,
@@ -80,6 +81,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
     () => new Set(),
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const didMountRef = useRef(false);
 
@@ -125,6 +127,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   const isUnrestrictedDelete =
     Object.keys(requestFilter).length === 0 && !searchTerm;
   const canDelete = !isLoading && !dateRangeError && meta.count > 0;
+  const canDownload = canDelete;
 
   const persistedViewChange = usePersistedDataViewsPreference(
     'logs',
@@ -176,17 +179,6 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
     () => ({ totalItems: meta.count, totalPages: meta.pages }),
     [meta],
   );
-
-  const downloadLogs = useCallback((): void => {
-    if (!downloadConfig) return;
-    const params = new URLSearchParams({
-      action: 'mailpoet_download_logs',
-      _wpnonce: downloadConfig.nonce,
-    });
-    if (requestFilter.from) params.set('from', requestFilter.from);
-    if (requestFilter.to) params.set('to', requestFilter.to);
-    window.location.assign(`${downloadConfig.action_url}?${params.toString()}`);
-  }, [downloadConfig, requestFilter]);
 
   const retryLoading = useCallback((): void => {
     clearLoadError();
@@ -262,17 +254,17 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
             >
               {__('Delete logs...', 'mailpoet')}
             </Button>
-            <DataViews.ViewConfig />
             {downloadConfig && (
               <Button
                 dimension="small"
                 variant="secondary"
-                onClick={downloadLogs}
-                isDisabled={isLoading}
+                onClick={() => setIsDownloadModalOpen(true)}
+                isDisabled={!canDownload}
               >
-                {__('Download', 'mailpoet')}
+                {__('Download...', 'mailpoet')}
               </Button>
             )}
+            <DataViews.ViewConfig />
           </div>
         </div>
         <DataViews.Filters />
@@ -287,6 +279,16 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
           isUnrestricted={isUnrestrictedDelete}
           onClose={() => setIsDeleteModalOpen(false)}
           onDeleted={handleDeleted}
+        />
+      )}
+      {isDownloadModalOpen && downloadConfig && (
+        <DownloadLogsModal
+          count={meta.count}
+          filter={requestFilter}
+          search={searchTerm}
+          isUnrestricted={isUnrestrictedDelete}
+          downloadConfig={downloadConfig}
+          onClose={() => setIsDownloadModalOpen(false)}
         />
       )}
     </div>
