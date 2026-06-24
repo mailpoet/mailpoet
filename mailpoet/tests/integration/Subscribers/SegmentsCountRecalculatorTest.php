@@ -18,6 +18,7 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
   private $recalculator;
 
   public function _before() {
+    parent::_before();
     $this->recalculator = $this->diContainer->get(SegmentsCountRecalculator::class);
   }
 
