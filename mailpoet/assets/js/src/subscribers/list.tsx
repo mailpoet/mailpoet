@@ -72,8 +72,9 @@ type PendingModalAction =
 
 type PendingAction = {
   action: SubscriberBulkAction;
-  targets: Subscriber[];
   selectAll: boolean;
+  scope: SubscriberBulkActionScope;
+  count: number;
 } | null;
 
 const SELECT_ALL_GENERIC_CONFIRM_ACTIONS: SubscriberBulkAction[] = [
@@ -896,9 +897,21 @@ function SubscriberList() {
   const openPendingAction = useCallback(
     (action: SubscriberBulkAction, targets: Subscriber[]): void => {
       triggerElementRef.current = document.activeElement as HTMLElement | null;
-      setPendingAction({ action, targets, selectAll });
+      const selectedIds = targets.map((subscriber) => Number(subscriber.id));
+      setPendingAction({
+        action,
+        selectAll,
+        count: selectAll ? meta.count : targets.length,
+        scope: {
+          group,
+          filter: { ...filter },
+          search: view.search || '',
+          selection: selectAll ? [] : selectedIds,
+          ...(selectAll ? { selectAll: true } : {}),
+        },
+      });
     },
-    [selectAll],
+    [filter, group, meta.count, selectAll, view.search],
   );
 
   const handleSelectionChange = useCallback((next: string[]): void => {
@@ -1044,16 +1057,16 @@ function SubscriberList() {
     async (extra: Record<string, unknown> = {}): Promise<void> => {
       if (!pendingAction || pendingActionInFlightRef.current) return;
       pendingActionInFlightRef.current = true;
-      const { action, targets } = pendingAction;
+      const { action, scope } = pendingAction;
       try {
-        await handleBulkAction(action, targets, extra);
+        await runBulkAction(action, scope, extra);
       } finally {
         pendingActionInFlightRef.current = false;
         setPendingAction(null);
         window.setTimeout(restoreTriggerFocus);
       }
     },
-    [handleBulkAction, pendingAction, restoreTriggerFocus],
+    [pendingAction, restoreTriggerFocus, runBulkAction],
   );
 
   const handleSendConfirmationEmail = useCallback(
@@ -1308,8 +1321,7 @@ function SubscriberList() {
 
   const renderPendingActionModal = (): JSX.Element | null => {
     if (!pendingAction) return null;
-    const { action, targets, selectAll: pendingSelectAll } = pendingAction;
-    const count = pendingSelectAll ? meta.count : targets.length;
+    const { action, count, selectAll: pendingSelectAll } = pendingAction;
     const largeOpCaveat =
       pendingSelectAll && shouldWarnLargeOperation(count) ? (
         <Notice
