@@ -175,6 +175,11 @@ class SubscribersRepository extends Repository {
       return 0;
     }
 
+    $ids = $this->findPermanentlyDeletableIds($ids);
+    if (empty($ids)) {
+      return 0;
+    }
+
     $count = 0;
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, &$count) {
       // Delete subscriber segments
@@ -213,6 +218,29 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersDeleted($ids);
     $this->invalidateTotalSubscribersCache();
     return $count;
+  }
+
+  /**
+   * @param int[] $ids
+   * @return int[]
+   */
+  private function findPermanentlyDeletableIds(array $ids): array {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $deletableIds = $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`
+       FROM $subscriberTable
+       WHERE `id` IN (:ids)
+       AND `is_woocommerce_user` = false
+       AND `wp_user_id` IS NULL",
+      ['ids' => $ids],
+      ['ids' => ArrayParameterType::INTEGER]
+    )->fetchFirstColumn();
+
+    $ids = [];
+    foreach ($deletableIds as $id) {
+      $ids[] = $this->toInt($id);
+    }
+    return $ids;
   }
 
   public function sendPublicConfirmationEmailWithCap(

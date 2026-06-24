@@ -369,28 +369,42 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
   public function testItDoesntRemovePermanentlyWordpressSubscriber(): void {
     $subscriber = $this->createSubscriber('wpsubscriber@delete.com');
+    $segment = $this->segmentRepository->createOrUpdate('WP subscriber delete guard');
+    $this->createSubscriberSegment($segment, $subscriber);
     $subscriber->setWpUserId(1);
     $this->repository->flush();
     $this->entityManager->clear();
     $subscriberId = $subscriber->getId();
+    $segmentId = $segment->getId();
 
     $count = $this->repository->bulkDelete([$subscriber->getId()]);
 
     verify($count)->equals(0);
     verify($this->repository->findOneById($subscriberId))->notNull();
+    verify($this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriberId,
+      'segment' => $segmentId,
+    ]))->notNull();
   }
 
   public function testItDoesntRemovePermanentlyWoocommerceSubscriber(): void {
     $subscriber = $this->createSubscriber('wcsubscriber@delete.com');
+    $segment = $this->segmentRepository->createOrUpdate('WC subscriber delete guard');
+    $this->createSubscriberSegment($segment, $subscriber);
     $subscriber->setIsWoocommerceUser(true);
     $this->repository->flush();
     $this->entityManager->clear();
     $subscriberId = $subscriber->getId();
+    $segmentId = $segment->getId();
 
     $count = $this->repository->bulkDelete([$subscriberId]);
 
     verify($count)->equals(0);
     verify($this->repository->findOneById($subscriberId))->notNull();
+    verify($this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriberId,
+      'segment' => $segmentId,
+    ]))->notNull();
   }
 
   public function testItGetsMaxSubscriberId(): void {
