@@ -6,6 +6,7 @@ use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\NotFoundException;
+use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\ORMException;
 
@@ -16,12 +17,17 @@ class SegmentSaveController {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var SegmentsCountRecalculator */
+  private $segmentsCountRecalculator;
+
   public function __construct(
     SegmentsRepository $segmentsRepository,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    SegmentsCountRecalculator $segmentsCountRecalculator
   ) {
     $this->segmentsRepository = $segmentsRepository;
     $this->entityManager = $entityManager;
+    $this->segmentsCountRecalculator = $segmentsCountRecalculator;
   }
 
   /**
@@ -73,6 +79,11 @@ class SegmentSaveController {
       $stmt->bindValue('segmentId', $segmentEntity->getId());
       $stmt->executeQuery();
     });
+
+    // The bulk INSERT above copies subscribed memberships from the original
+    // segment. Only subscribed members gain a new counted membership, so only
+    // they need their segments_count refreshed.
+    $this->segmentsCountRecalculator->recalculateForSegment((int)$duplicate->getId());
 
     return $duplicate;
   }
