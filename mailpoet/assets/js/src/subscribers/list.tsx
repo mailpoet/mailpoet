@@ -531,12 +531,16 @@ function PickerModal({
   title,
   config,
   caveat,
+  selectionNotice,
+  requireChoice,
   onApply,
   onClose,
 }: {
   title: string;
   config: PickerConfig;
   caveat?: JSX.Element | null;
+  selectionNotice?: JSX.Element | null;
+  requireChoice?: boolean;
   onApply: (value: number) => void;
   onClose: () => void;
 }) {
@@ -544,7 +548,7 @@ function PickerModal({
   // a controlled component by reading values out of its `onValueChange` callback
   // — no jQuery DOM lookups leak into this file.
   const [value, setValue] = useState<number>(() =>
-    getInitialPickerValue(config),
+    requireChoice ? 0 : getInitialPickerValue(config),
   );
   const fieldConfig = useMemo(
     () => ({
@@ -578,6 +582,7 @@ function PickerModal({
       contentClassName="mailpoet-subscribers-picker-modal"
     >
       {caveat}
+      {selectionNotice}
       <Selection
         field={fieldConfig}
         width="100%"
@@ -1420,11 +1425,21 @@ function SubscriberList() {
       return null;
     }
     const config = PICKERS[action];
+    const selectAllScopeNotice = pendingSelectAll ? (
+      <p>
+        {__(
+          'This action will be applied to all %s subscribers matching the current view.',
+          'mailpoet',
+        ).replace('%s', formatCount(count))}
+      </p>
+    ) : null;
     return (
       <PickerModal
         title={modalTitle(action)}
         config={config}
         caveat={largeOpCaveat}
+        selectionNotice={selectAllScopeNotice}
+        requireChoice={pendingSelectAll}
         onApply={(value) =>
           handlePendingActionSubmit(
             config.kind === 'segment'
