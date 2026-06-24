@@ -84,6 +84,7 @@ class LogsDownload {
       $createdAt = $log['created_at'] ?? 'N/A';
       $name = $log['name'] ?? '';
       $message = $log['message'] ?? '';
+      // Output is a text/plain attachment download, not HTML; HTML-escaping would corrupt the log content.
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo '[' . $createdAt . '] [' . $name . '] ' . $message . "\n";
     }
@@ -91,30 +92,25 @@ class LogsDownload {
   }
 
   private function getStringParam(string $key): ?string {
-    if (!isset($_GET[$key])) {
+    if (!isset($_GET[$key]) || !is_string($_GET[$key])) {
       return null;
     }
-    $value = $this->wp->wpUnslash($_GET[$key]);
-    return is_string($value) ? $this->wp->sanitizeTextField($value) : null;
+    return sanitize_text_field(wp_unslash($_GET[$key]));
   }
 
   /**
    * @return string[]
    */
   private function parseStringArrayParam(string $key): array {
-    if (!isset($_GET[$key])) {
+    if (!isset($_GET[$key]) || !is_array($_GET[$key])) {
       return [];
     }
-    $unslashed = $this->wp->wpUnslash($_GET[$key]);
-    if (!is_array($unslashed)) {
-      return [];
-    }
-    $values = [];
-    foreach ($unslashed as $value) {
-      if (is_string($value) && $value !== '') {
-        $values[] = $this->wp->sanitizeTextField($value);
+    $values = array_filter(
+      array_map('sanitize_text_field', wp_unslash($_GET[$key])),
+      static function (string $value): bool {
+        return $value !== '';
       }
-    }
+    );
     return array_values(array_unique($values));
   }
 
@@ -125,12 +121,7 @@ class LogsDownload {
     if (!isset($_GET[$key]) || !is_array($_GET[$key])) {
       return [];
     }
-    $values = [];
-    foreach ($_GET[$key] as $value) {
-      if (is_numeric($value)) {
-        $values[] = (int)$value;
-      }
-    }
+    $values = array_map('intval', wp_unslash($_GET[$key]));
     return array_values(array_unique($values));
   }
 
