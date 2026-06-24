@@ -1066,10 +1066,15 @@ class SubscribersRepository extends Repository {
       // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
       // and who are not WC customers — they have nowhere left to belong, but we keep
       // them as soft-deleted so admins can recover them if needed.
+      // segments_count is set to 0 directly: the NOT EXISTS clause below already
+      // guarantees these subscribers have no other active segments, so 0 is provably
+      // correct after their WP-Users membership is deleted. Using = 0 rather than
+      // = segments_count - 1 avoids going negative when the membership status was
+      // not 'subscribed' (and wasn't counted in the first place).
       $this->entityManager->getConnection()->executeStatement(
         "UPDATE {$subscribersTable} s
          LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
-         SET s.deleted_at = :deletedAt, s.status = :unconfirmed
+         SET s.deleted_at = :deletedAt, s.status = :unconfirmed, s.segments_count = 0
          WHERE s.deleted_at IS NULL
            AND s.is_woocommerce_user = 0
            AND s.wp_user_id IS NOT NULL
