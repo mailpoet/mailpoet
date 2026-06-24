@@ -474,10 +474,11 @@ class WooCommerce {
       "
       SELECT mpss.subscriber_id FROM {$subscriberSegmentsTable} mpss
       LEFT JOIN {$subscribersTable} mps ON mpss.subscriber_id = mps.id
-      WHERE mpss.segment_id = :segmentId AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
+      WHERE mpss.segment_id = :segmentId AND mpss.status = :subscribedStatus
+        AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
     ",
-      ['segmentId' => $wcSegment->getId()],
-      ['segmentId' => ParameterType::INTEGER]
+      ['segmentId' => $wcSegment->getId(), 'subscribedStatus' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segmentId' => ParameterType::INTEGER, 'subscribedStatus' => ParameterType::STRING]
     )->fetchFirstColumn();
 
     // Unsubscribe non-WC or invalid users from segment
