@@ -30,17 +30,17 @@ class LogsDownload {
 
   public function handle(): void {
     if (!$this->wp->currentUserCan(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) {
-      wp_die(esc_html__('You do not have permission to download logs.', 'mailpoet'), '', ['response' => 403]);
+      $this->wp->wpDie(esc_html__('You do not have permission to download logs.', 'mailpoet'), '', ['response' => 403]);
     }
 
-    $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+    $nonce = $this->getStringParam('_wpnonce') ?? '';
     if (!$this->wp->wpVerifyNonce($nonce, self::NONCE_ACTION)) {
-      wp_die(esc_html__('Security check failed.', 'mailpoet'), '', ['response' => 403]);
+      $this->wp->wpDie(esc_html__('Security check failed.', 'mailpoet'), '', ['response' => 403]);
     }
 
-    $from = isset($_GET['from']) && is_string($_GET['from']) ? sanitize_text_field(wp_unslash($_GET['from'])) : null;
-    $to = isset($_GET['to']) && is_string($_GET['to']) ? sanitize_text_field(wp_unslash($_GET['to'])) : null;
-    $search = isset($_GET['search']) && is_string($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : null;
+    $from = $this->getStringParam('from');
+    $to = $this->getStringParam('to');
+    $search = $this->getStringParam('search');
 
     $filter = [];
     $dateFrom = $this->parseDateParam($from);
@@ -90,17 +90,29 @@ class LogsDownload {
     exit;
   }
 
+  private function getStringParam(string $key): ?string {
+    if (!isset($_GET[$key])) {
+      return null;
+    }
+    $value = $this->wp->wpUnslash($_GET[$key]);
+    return is_string($value) ? $this->wp->sanitizeTextField($value) : null;
+  }
+
   /**
    * @return string[]
    */
   private function parseStringArrayParam(string $key): array {
-    if (!isset($_GET[$key]) || !is_array($_GET[$key])) {
+    if (!isset($_GET[$key])) {
+      return [];
+    }
+    $unslashed = $this->wp->wpUnslash($_GET[$key]);
+    if (!is_array($unslashed)) {
       return [];
     }
     $values = [];
-    foreach (wp_unslash($_GET[$key]) as $value) {
+    foreach ($unslashed as $value) {
       if (is_string($value) && $value !== '') {
-        $values[] = sanitize_text_field($value);
+        $values[] = $this->wp->sanitizeTextField($value);
       }
     }
     return array_values(array_unique($values));

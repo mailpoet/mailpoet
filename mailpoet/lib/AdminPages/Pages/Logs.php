@@ -48,7 +48,7 @@ class Logs {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'download' => [
-        'action_url' => admin_url('admin-post.php'),
+        'action_url' => $this->wp->adminUrl('admin-post.php'),
         'nonce' => LogsDownload::createNonce($this->wp),
       ],
     ];
