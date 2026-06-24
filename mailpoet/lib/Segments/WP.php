@@ -427,9 +427,9 @@ class WP {
     // so refresh segments_count for that segment's members.
     // recalculateForSegment() only sees subscribers that still have a membership
     // row. Orphans that are hard-deleted by removeOrphanedSubscribers() are fine
-    // (row gone, count moot). Orphans that are soft-trashed have their
-    // segments_count zeroed directly in the soft-trash UPDATE, so they are also
-    // handled before the membership rows are removed.
+    // (row gone, count moot). Orphans whose membership is deleted but who survive
+    // (soft-trashed or still on other lists) are recalculated explicitly inside
+    // removeOrphanedSubscribersFromWpSegment() before the membership DELETE.
     $this->segmentsCountRecalculator->recalculateForSegment((int)$this->segmentsRepository->getWPUsersSegment()->getId());
     $this->subscribersRepository->invalidateTotalSubscribersCache();
     $this->subscribersRepository->refreshAll();

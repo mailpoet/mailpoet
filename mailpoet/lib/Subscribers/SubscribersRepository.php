@@ -1031,7 +1031,8 @@ class SubscribersRepository extends Repository {
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
     $deletedAt = $this->getCurrentDateTime()->format('Y-m-d H:i:s');
 
-    $this->entityManager->wrapInTransaction(function () use ($segmentId, $subscribersTable, $subscriberSegmentsTable, $segmentsTable, $deletedAt, $wpdb): void {
+    $affectedIds = [];
+    $this->entityManager->wrapInTransaction(function () use ($segmentId, $subscribersTable, $subscriberSegmentsTable, $segmentsTable, $deletedAt, $wpdb, &$affectedIds): void {
       // Hard-delete broken subscribers in the WP-Users segment when they have no
       // email, or when they have no WP user ID and no other list to belong to.
       $this->entityManager->getConnection()->executeStatement(
@@ -1066,15 +1067,10 @@ class SubscribersRepository extends Repository {
       // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
       // and who are not WC customers — they have nowhere left to belong, but we keep
       // them as soft-deleted so admins can recover them if needed.
-      // segments_count is set to 0 directly: the NOT EXISTS clause below already
-      // guarantees these subscribers have no other active segments, so 0 is provably
-      // correct after their WP-Users membership is deleted. Using = 0 rather than
-      // = segments_count - 1 avoids going negative when the membership status was
-      // not 'subscribed' (and wasn't counted in the first place).
       $this->entityManager->getConnection()->executeStatement(
         "UPDATE {$subscribersTable} s
          LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
-         SET s.deleted_at = :deletedAt, s.status = :unconfirmed, s.segments_count = 0
+         SET s.deleted_at = :deletedAt, s.status = :unconfirmed
          WHERE s.deleted_at IS NULL
            AND s.is_woocommerce_user = 0
            AND s.wp_user_id IS NOT NULL
@@ -1104,6 +1100,24 @@ class SubscribersRepository extends Repository {
         ]
       );
 
+      // Capture subscribers whose WP-Users membership is subscribed before
+      // deleting it — only those have a segments_count that needs updating.
+      // Subscribers already handled by the soft-trash above (no other segments)
+      // are included here too; their recalculation will be a no-op (re-derives 0).
+      $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
+      $rows = $this->entityManager->getConnection()->executeQuery(
+        "SELECT ss.subscriber_id
+         FROM {$subscriberSegmentsTable} ss
+         INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         WHERE ss.segment_id = :segmentId
+           AND (s.wp_user_id IS NULL OR u.id IS NULL)
+           AND ss.status = :status",
+        ['segmentId' => $segmentId, 'status' => $subscribedStatus],
+        ['segmentId' => ParameterType::INTEGER, 'status' => ParameterType::STRING]
+      )->fetchFirstColumn();
+      $affectedIds = array_map(fn($id): int => is_numeric($id) ? (int)$id : 0, $rows);
+
       // Remove WP-Users segment memberships for orphans.
       $this->entityManager->getConnection()->executeStatement(
         "DELETE ss
@@ -1126,6 +1140,10 @@ class SubscribersRepository extends Repository {
         ['source' => ParameterType::STRING]
       );
     });
+
+    if ($affectedIds !== []) {
+      $this->segmentsCountRecalculator->recalculateForSubscribers($affectedIds);
+    }
   }
 
   public function removeByWpUserIds(array $wpUserIds) {
