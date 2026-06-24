@@ -714,12 +714,14 @@ class Populator {
   }
 
   private function scheduleTask($type, $datetime, $priority = null) {
-    $task = $this->scheduledTasksRepository->findOneBy(
-      [
-        'type' => $type,
-        'status' => [ScheduledTaskEntity::STATUS_SCHEDULED, null],
-      ]
-    );
+    $task = $this->scheduledTasksRepository->createQueryBuilder('t')
+      ->where('t.type = :type')
+      ->andWhere('t.status = :scheduled OR t.status IS NULL')
+      ->setParameter('type', $type)
+      ->setParameter('scheduled', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setMaxResults(1)
+      ->getQuery()
+      ->getOneOrNullResult();
 
     if ($task) {
       return true;
@@ -774,18 +776,20 @@ class Populator {
    * failed or cancelled task does not permanently block re-scheduling.
    */
   private function scheduleOneTimeBackfillTask(string $type): void {
-    $existingTask = $this->scheduledTasksRepository->findOneBy(
-      [
-        'type' => $type,
-        'status' => [
-          ScheduledTaskEntity::STATUS_SCHEDULED,
-          null, // running (stored as null for historical reasons)
-          ScheduledTaskEntity::STATUS_COMPLETED,
-          ScheduledTaskEntity::STATUS_PAUSED,
-          ScheduledTaskEntity::STATUS_CLI,
-        ],
-      ]
-    );
+    $existingTask = $this->scheduledTasksRepository->createQueryBuilder('t')
+      ->where('t.type = :type')
+      ->andWhere('t.status IN (:statuses) OR t.status IS NULL')
+      ->setParameter('type', $type)
+      ->setParameter('statuses', [
+        ScheduledTaskEntity::STATUS_SCHEDULED,
+        ScheduledTaskEntity::STATUS_COMPLETED,
+        ScheduledTaskEntity::STATUS_PAUSED,
+        ScheduledTaskEntity::STATUS_CLI,
+      ])
+      ->setMaxResults(1)
+      ->getQuery()
+      ->getOneOrNullResult();
+
     if ($existingTask) {
       return;
     }
