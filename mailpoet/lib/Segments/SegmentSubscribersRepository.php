@@ -202,49 +202,110 @@ class SegmentSubscribersRepository {
       ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
   }
 
-  private function createStaticStatisticsQueryBuilder(SegmentEntity $segment): QueryBuilder {
+  /**
+   * Per-status counts for a static segment, derived from cheap indexed reads
+   * instead of a single COUNT(DISTINCT) join over the whole membership table.
+   *
+   * On a large list that join scans millions of rows (tens of seconds on a 5M
+   * list). Here the dominant "subscribed" mass is never counted directly: we
+   * read the total membership (index-only), subtract the trashed members, and
+   * subtract the sparse non-subscribed buckets — each a seek driven from the
+   * subscriber status index or the (segment_id, status, subscriber_id) index.
+   *
+   * subscriber_segment.status is only ever subscribed/unsubscribed, so the
+   * buckets partition the non-deleted members exactly and
+   * subscribed = all - unsubscribed - inactive - unconfirmed - bounced is exact,
+   * equivalent to the old query's "s.status = subscribed AND ss.status =
+   * subscribed".
+   *
+   * @return array<string, int>
+   */
+  private function getStaticSegmentStatisticsCount(SegmentEntity $segment): array {
+    $segmentId = (int)$segment->getId();
+    $unsubscribed = SubscriberEntity::STATUS_UNSUBSCRIBED;
+
+    $totalMembership = $this->countSegmentMemberships($segmentId);
+    $trash = $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb): void {
+      $qb->andWhere('s.deleted_at IS NOT NULL');
+    });
+
+    $inactive = $this->countStaticSegmentMembersWithStatus($segmentId, SubscriberEntity::STATUS_INACTIVE);
+    $unconfirmed = $this->countStaticSegmentMembersWithStatus($segmentId, SubscriberEntity::STATUS_UNCONFIRMED);
+    $bounced = $this->countStaticSegmentMembersWithStatus($segmentId, SubscriberEntity::STATUS_BOUNCED);
+
+    // unsubscribed = members unsubscribed globally OR unsubscribed from this list.
+    // The two halves are disjoint (the second excludes s.status = unsubscribed),
+    // so their counts add up without double counting the overlap.
+    $unsubscribedGlobal = $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb) use ($unsubscribed): void {
+      $qb->andWhere('s.deleted_at IS NULL')
+        ->andWhere('s.status = :unsubGlobal')
+        ->setParameter('unsubGlobal', $unsubscribed);
+    });
+    $unsubscribedFromList = $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb) use ($unsubscribed): void {
+      $qb->andWhere('s.deleted_at IS NULL')
+        ->andWhere('ss.status = :unsubList')
+        ->andWhere('s.status != :notUnsub')
+        ->setParameter('unsubList', $unsubscribed)
+        ->setParameter('notUnsub', $unsubscribed);
+    });
+    $unsubscribedCount = $unsubscribedGlobal + $unsubscribedFromList;
+
+    $all = max(0, $totalMembership - $trash);
+    $subscribed = max(0, $all - $unsubscribedCount - $inactive - $unconfirmed - $bounced);
+
+    return [
+      'all' => $all,
+      'trash' => $trash,
+      SubscriberEntity::STATUS_SUBSCRIBED => $subscribed,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => $unsubscribedCount,
+      SubscriberEntity::STATUS_INACTIVE => $inactive,
+      SubscriberEntity::STATUS_UNCONFIRMED => $unconfirmed,
+      SubscriberEntity::STATUS_BOUNCED => $bounced,
+    ];
+  }
+
+  /**
+   * A non-subscribed global status bucket: members of the list whose subscriber
+   * status is $status and who are not unsubscribed from the list (a list
+   * unsubscribe wins, placing them in the unsubscribed bucket instead). Driven
+   * from the subscriber status index, so it seeks over a sparse population.
+   */
+  private function countStaticSegmentMembersWithStatus(int $segmentId, string $status): int {
+    return $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb) use ($status): void {
+      $qb->andWhere('s.deleted_at IS NULL')
+        ->andWhere('s.status = :memberStatus')
+        ->andWhere('ss.status != :memberNotUnsub')
+        ->setParameter('memberStatus', $status)
+        ->setParameter('memberNotUnsub', SubscriberEntity::STATUS_UNSUBSCRIBED);
+    });
+  }
+
+  private function countSegmentMemberships(int $segmentId): int {
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('COUNT(*)')
+      ->from($subscriberSegmentTable, 'ss')
+      ->where('ss.segment_id = :segmentId')
+      ->setParameter('segmentId', $segmentId);
+    $count = $this->executeQuery($queryBuilder)->fetchOne();
+    return is_numeric($count) ? (int)$count : 0;
+  }
+
+  /**
+   * @param callable(QueryBuilder): void $constrain
+   */
+  private function countStaticSegmentMembers(int $segmentId, callable $constrain): int {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->from($subscriberSegmentTable, 'subscriber_segment')
-      ->where('subscriber_segment.segment_id = :segment_id')
-      ->setParameter('segment_id', $segment->getId())
-      ->join('subscriber_segment', $subscribersTable, 'subscribers', 'subscribers.id = subscriber_segment.subscriber_id')
-      ->addSelect('IFNULL(SUM(
-            CASE WHEN subscribers.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ), 0) as `all`')
-      ->addSelect('IFNULL(SUM(
-            CASE WHEN subscribers.deleted_at IS NOT NULL
-              THEN 1 ELSE 0 END
-        ), 0) as trash')
-      ->addSelect('IFNULL(SUM(
-            CASE WHEN subscribers.status = :status_subscribed AND subscriber_segment.status = :status_subscribed AND subscribers.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ), 0) as :status_subscribed')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN (subscribers.status = :status_unsubscribed OR subscriber_segment.status = :status_unsubscribed) AND subscribers.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_unsubscribed')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN subscribers.status = :status_inactive AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_inactive')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN subscribers.status = :status_unconfirmed  AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_unconfirmed')
-      ->addSelect('IFNULL(SUM(
-          CASE WHEN subscribers.status = :status_bounced AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ), 0) as :status_bounced')
-      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
-      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
-      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
-      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('COUNT(*)')
+      ->from($subscriberSegmentTable, 'ss')
+      ->innerJoin('ss', $subscribersTable, 's', 's.id = ss.subscriber_id')
+      ->where('ss.segment_id = :segmentId')
+      ->setParameter('segmentId', $segmentId);
+    $constrain($queryBuilder);
+    $count = $this->executeQuery($queryBuilder)->fetchOne();
+    return is_numeric($count) ? (int)$count : 0;
   }
 
   private function createStaticGlobalStatusStatisticsQueryBuilder(SegmentEntity $segment): QueryBuilder {
@@ -572,12 +633,11 @@ class SegmentSubscribersRepository {
   public function getSubscribersStatisticsCount(SegmentEntity $segment): array {
     try {
       if ($segment->isStatic()) {
-        $queryBuilder = $this->createStaticStatisticsQueryBuilder($segment);
-      } else {
-        $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-        $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+        return $this->getStaticSegmentStatisticsCount($segment);
       }
 
+      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
       $statement = $this->executeQuery($queryBuilder);
       $result = $statement->fetch();
       if (is_array($result)) {
