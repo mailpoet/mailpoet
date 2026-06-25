@@ -42,6 +42,18 @@ class EmailContextBuilderTest extends \MailPoetUnitTest {
     verify($context['is_single_recipient'])->true();
   }
 
+  public function testItAddsUserIdForSingleRecipientAutomationLinkedToWpUser(): void {
+    $builder = new EmailContextBuilder($this->makeWpFunctions());
+
+    $context = $builder->build(
+      $this->makeNewsletter(NewsletterEntity::TYPE_AUTOMATION),
+      $this->makeSendingQueue('subscriber@example.com', 123),
+      false
+    );
+
+    verify($context['user_id'])->equals(123);
+  }
+
   private function makeNewsletter(string $type): NewsletterEntity {
     return $this->make(NewsletterEntity::class, [
       'getId' => 1,
@@ -49,9 +61,10 @@ class EmailContextBuilderTest extends \MailPoetUnitTest {
     ]);
   }
 
-  private function makeSendingQueue(string $subscriberEmail): SendingQueueEntity {
+  private function makeSendingQueue(string $subscriberEmail, ?int $wpUserId = null): SendingQueueEntity {
     $subscriber = $this->make(SubscriberEntity::class, [
       'getEmail' => $subscriberEmail,
+      'getWpUserId' => $wpUserId,
     ]);
     $taskSubscriber = $this->make(ScheduledTaskSubscriberEntity::class, [
       'getSubscriber' => $subscriber,

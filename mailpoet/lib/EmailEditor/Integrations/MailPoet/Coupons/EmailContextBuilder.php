@@ -67,6 +67,10 @@ class EmailContextBuilder {
     // stand-in for everyone who will receive the email.
     $firstSubscriber = $subscribers ? $subscribers->first() : null;
     $subscriber = $firstSubscriber ? $firstSubscriber->getSubscriber() : null;
+    $wpUserId = $subscriber ? $subscriber->getWpUserId() : null;
+    if ($wpUserId) {
+      $context['user_id'] = (int)$wpUserId;
+    }
     $recipientEmail = $subscriber ? $subscriber->getEmail() : null;
     if (is_string($recipientEmail) && $this->wp->isEmail($recipientEmail)) {
       $context['recipient_email'] = $recipientEmail;
