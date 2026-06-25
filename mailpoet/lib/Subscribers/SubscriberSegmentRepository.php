@@ -195,7 +195,12 @@ class SubscriberSegmentRepository extends Repository {
       $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
     }
 
-    if ($oldStatus !== $status && !$skipSegmentsCountRecalculation) {
+    // segments_count only counts 'subscribed' memberships, so it can only change
+    // when the status crosses the subscribed boundary. A transition between two
+    // non-subscribed statuses (e.g. unconfirmed -> bounced) leaves it untouched.
+    $crossesSubscribedBoundary = $oldStatus !== $status
+      && ($oldStatus === SubscriberEntity::STATUS_SUBSCRIBED || $status === SubscriberEntity::STATUS_SUBSCRIBED);
+    if ($crossesSubscribedBoundary && !$skipSegmentsCountRecalculation) {
       $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
     }
 
