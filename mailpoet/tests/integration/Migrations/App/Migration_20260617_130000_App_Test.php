@@ -5,6 +5,7 @@ namespace MailPoet\Migrations\App;
 use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MailerLog;
@@ -14,6 +15,7 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 
 // phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 class Migration_20260617_130000_App_Test extends \MailPoetTest {
@@ -56,6 +58,27 @@ class Migration_20260617_130000_App_Test extends \MailPoetTest {
     $this->migration->run();
 
     verify($this->queueRepository->countForTask($task))->equals(1);
+    verify($this->countPendingLogSubscribers($task))->equals(0);
+  }
+
+  public function testItBackfillsCreatedAtForLegacyPendingRowsWithoutCreatedAt(): void {
+    $subscriber = $this->createSubscriber();
+    $task = $this->createTask(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->createLegacyPendingLogSubscriberWithoutCreatedAt($task, $subscriber);
+    $legacyRow = $this->getLogSubscriberRow($task, $subscriber);
+    if (!$legacyRow) {
+      $this->fail('Expected legacy pending row to exist.');
+    }
+    verify($legacyRow['created_at'])->null();
+    verify($legacyRow['updated_at'])->notNull();
+
+    $this->migration->run();
+
+    $queueRow = $this->getQueueSubscriberRow($task, $subscriber);
+    if (!$queueRow) {
+      $this->fail('Expected queued subscriber row to exist.');
+    }
+    verify($queueRow['created_at'])->equals($legacyRow['updated_at']);
     verify($this->countPendingLogSubscribers($task))->equals(0);
   }
 
@@ -123,10 +146,74 @@ class Migration_20260617_130000_App_Test extends \MailPoetTest {
     (new ScheduledTaskSubscriberFactory())->createUnprocessed($task, $subscriber);
   }
 
+  private function createLegacyPendingLogSubscriberWithoutCreatedAt(ScheduledTaskEntity $task, SubscriberEntity $subscriber): void {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $this->connection->executeStatement(
+      "INSERT INTO $table (`task_id`, `subscriber_id`, `processed`)
+       VALUES (:taskId, :subscriberId, :processed)",
+      [
+        'taskId' => $task->getId(),
+        'subscriberId' => $subscriber->getId(),
+        'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+      ],
+      [
+        'taskId' => ParameterType::INTEGER,
+        'subscriberId' => ParameterType::INTEGER,
+        'processed' => ParameterType::INTEGER,
+      ]
+    );
+  }
+
   private function countPendingLogSubscribers(ScheduledTaskEntity $task): int {
     return $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([
       'task' => $task,
       'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
     ]);
+  }
+
+  /**
+   * @return array<string, mixed>|null
+   */
+  private function getLogSubscriberRow(ScheduledTaskEntity $task, SubscriberEntity $subscriber): ?array {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $row = $this->connection->executeQuery(
+      "SELECT *
+       FROM $table
+       WHERE `task_id` = :taskId
+       AND `subscriber_id` = :subscriberId",
+      [
+        'taskId' => $task->getId(),
+        'subscriberId' => $subscriber->getId(),
+      ],
+      [
+        'taskId' => ParameterType::INTEGER,
+        'subscriberId' => ParameterType::INTEGER,
+      ]
+    )->fetchAssociative();
+
+    return $row ?: null;
+  }
+
+  /**
+   * @return array<string, mixed>|null
+   */
+  private function getQueueSubscriberRow(ScheduledTaskEntity $task, SubscriberEntity $subscriber): ?array {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
+    $row = $this->connection->executeQuery(
+      "SELECT *
+       FROM $table
+       WHERE `task_id` = :taskId
+       AND `subscriber_id` = :subscriberId",
+      [
+        'taskId' => $task->getId(),
+        'subscriberId' => $subscriber->getId(),
+      ],
+      [
+        'taskId' => ParameterType::INTEGER,
+        'subscriberId' => ParameterType::INTEGER,
+      ]
+    )->fetchAssociative();
+
+    return $row ?: null;
   }
 }
