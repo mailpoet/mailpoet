@@ -58,7 +58,7 @@ class ManageSubscriptionBlock {
     ]);
   }
 
-  public function renderManageSubscription(): string {
+  public function renderManageSubscription(array $attributes = []): string {
     // getManageContent() does not enqueue the front-end form assets itself
     // (the subscription page flow does that separately), so load them here.
     $this->assetsController->setupFrontEndDependencies();
