@@ -1,0 +1,43 @@
+{
+  "name": "mailpoet/latest-posts",
+  "version": "1.0.0",
+  "title": "Latest Posts",
+  "description": "Automatically displays your most recent posts in the email when it is sent.",
+  "category": "mailpoet",
+  "keywords": ["posts", "latest", "blog", "automated", "dynamic"],
+  "textdomain": "mailpoet",
+  "icon": "list-view",
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "email": true,
+    "align": false
+  },
+  "apiVersion": 3,
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "attributes": {
+    "query": {
+      "type": "object",
+      "default": {
+        "selectionMode": "latest",
+        "perPage": 3,
+        "postType": "post",
+        "order": "newest",
+        "offset": 0,
+        "terms": [],
+        "inclusionType": "include",
+        "posts": []
+      }
+    },
+    "displayLayout": {
+      "type": "object",
+      "default": {
+        "columns": 1
+      }
+    }
+  },
+  "providesContext": {
+    "mailpoet/latestPostsQuery": "query",
+    "mailpoet/latestPostsDisplayLayout": "displayLayout"
+  }
+}

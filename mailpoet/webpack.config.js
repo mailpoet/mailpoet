@@ -576,6 +576,8 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
   entry: {
     'powered-by-mailpoet-block':
       '/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.tsx',
+    'latest-posts-block':
+      '/assets/js/src/mailpoet-custom-email-editor-blocks/latest-posts/index.tsx',
     mailpoet: '/assets/js/src/mailpoet.ts',
   },
   output: {
@@ -620,6 +622,14 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
         {
           from: 'assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.json',
           to: 'powered-by-mailpoet/block.json',
+        },
+        {
+          from: 'assets/js/src/mailpoet-custom-email-editor-blocks/latest-posts/block.json',
+          to: 'latest-posts/block.json',
+        },
+        {
+          from: 'assets/js/src/mailpoet-custom-email-editor-blocks/latest-posts/post-template/block.json',
+          to: 'latest-posts-template/block.json',
         },
       ],
     }),

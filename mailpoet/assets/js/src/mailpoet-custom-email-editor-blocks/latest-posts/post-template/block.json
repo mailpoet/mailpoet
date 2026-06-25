@@ -1,0 +1,24 @@
+{
+  "name": "mailpoet/latest-posts-template",
+  "version": "1.0.0",
+  "title": "Post Template",
+  "description": "Block layout that repeats for each of the latest posts.",
+  "category": "mailpoet",
+  "parent": ["mailpoet/latest-posts"],
+  "textdomain": "mailpoet",
+  "icon": "layout",
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "inserter": false,
+    "email": true
+  },
+  "usesContext": [
+    "mailpoet/latestPostsQuery",
+    "mailpoet/latestPostsDisplayLayout",
+    "postId",
+    "postType"
+  ],
+  "apiVersion": 3,
+  "$schema": "https://schemas.wp.org/trunk/block.json"
+}
