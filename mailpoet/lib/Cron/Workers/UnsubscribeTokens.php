@@ -46,8 +46,8 @@ class UnsubscribeTokens extends SimpleWorker {
     // A direct UPDATE keeps the backfill out of Doctrine's UnitOfWork: changes made to
     // PARTIAL-hydrated entities are not registered, so the previous entity-based approach
     // computed an empty changeset and silently wrote nothing. The token is derived from
-    // AUTH_KEY (so it stays unguessable) and the row id salted per entity type (so it stays
-    // unique within its table and never collides across the two tables).
+    // AUTH_KEY (so it stays unguessable) and salted per entity type (so it avoids
+    // systematic cross-table collisions; truncated-hash collisions remain extremely unlikely).
     return (int)$connection->executeStatement(
       "UPDATE {$tableName} SET unsubscribe_token = SUBSTRING(MD5(CONCAT(:authKey, :salt, id)), 1, :tokenLength) WHERE unsubscribe_token IS NULL LIMIT :limit",
       [
