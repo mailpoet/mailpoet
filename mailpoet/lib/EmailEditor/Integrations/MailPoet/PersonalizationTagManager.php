@@ -344,7 +344,10 @@ class PersonalizationTagManager {
     if (!isset($emailContent['html'])) {
       return $emailContent;
     }
-    $emailContent['html'] = $this->linksToShortcodesConvertor->convertLinkTagsToShortcodes($emailContent['html']);
+    $emailContent['html'] = $this->linksToShortcodesConvertor->convertLinkTagsToShortcodes(
+      $emailContent['html'],
+      $this->getPreTrackingUrlTokens()
+    );
     return $emailContent;
   }
 
@@ -369,6 +372,15 @@ class PersonalizationTagManager {
   private function getPersonalizedUrlTokens(array $context): array {
     return [
       '[woocommerce/order-review-url]' => $this->orderReviewUrl->getUrl($context),
+    ];
+  }
+
+  /**
+   * @return array<string, string>
+   */
+  private function getPreTrackingUrlTokens(): array {
+    return [
+      '[mailpoet/site-homepage-url]' => $this->site->getHomepageURL([]),
     ];
   }
 
