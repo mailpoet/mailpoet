@@ -100,10 +100,6 @@ progress::-moz-progress-bar {
   margin-top: $grid-gap;
 }
 
-.mailpoet-form-field-description {
-  grid-row: span 2;
-}
-
 .mailpoet-form-field-email-header {
   border-bottom: 1px solid $color-tertiary-light;
   grid-column: 1 / -1;
