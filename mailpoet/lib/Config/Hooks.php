@@ -7,6 +7,7 @@ use MailPoet\Captcha\ReCaptchaHooks;
 use MailPoet\Captcha\TurnstileHooks;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
+use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\ProductCollectionEmailRendererRegistrar;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -113,6 +114,8 @@ class Hooks {
 
   private CouponBlockGenerator $couponBlockGenerator;
 
+  private ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -137,7 +140,8 @@ class Hooks {
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
     AdminUserSubscription $adminUserSubscription,
-    CouponBlockGenerator $couponBlockGenerator
+    CouponBlockGenerator $couponBlockGenerator,
+    ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -163,6 +167,7 @@ class Hooks {
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
     $this->couponBlockGenerator = $couponBlockGenerator;
+    $this->productCollectionEmailRendererRegistrar = $productCollectionEmailRendererRegistrar;
   }
 
   public function init() {
@@ -178,6 +183,7 @@ class Hooks {
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
     $this->couponBlockGenerator->init();
+    $this->productCollectionEmailRendererRegistrar->init();
     $this->setupWoocommerceSystemInfo();
     $this->setupFooter();
     $this->setupSettingsLinkInPluginPage();

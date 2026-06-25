@@ -406,6 +406,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Coupons\EmailContextBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\OrderProductCollectionProcessor::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\ProductCollectionEmailRendererRegistrar::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl::class)->setPublic(true);
