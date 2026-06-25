@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.31.0
+Stable tag: 5.32.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,32 +227,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.31.0 - 2026-06-23 =
-* Added: Subscription email content patterns for automations;
-* Added: Booking email content patterns for automation templates;
-* Added: WP-CLI commands for managing MailPoet cron tasks (wp mailpoet cron);
-* Added: Log deletion from the Logs page, removing the logs matching the current filters and search;
-* Added: Native filters and sorting on the Logs listing;
-* Added: Native DataViews filters and sorting for the Tags and Custom Fields listings;
-* Added: WP-CLI command "wp mailpoet import" to import subscribers from a CSV file;
-* Added: Recurring cleanup task that removes leftover subscriber rows from completed bounce tasks;
-* Added: Notice in the email editor explaining a sent email can be edited but must be duplicated to send again, with a Duplicate action;
-* Added: Filtering by status, creation date and modified date plus sorting by creation and modified date on the Forms listing;
-* Added: Option to mark public emails as private from the email listing;
-* Added: Native DataViews filters and sorting on the Lists and Segments listings, including filtering by type, creation and modification date, and list engagement score;
-* Added: Preview of an automation template's pre-built email content before starting to build;
-* Updated: Inbox preview panel now shows the MailPoet sender details instead of the WordPress site title and admin email;
-* Updated: DOMPurify HTML sanitizer to a patched version;
-* Improved: Speed up adding subscribers to sending tasks for large static segments by removing a redundant DISTINCT that forced a temporary table;
-* Improved: Preview automation emails without leaving the automation editor;
-* Changed: Subscribers list sorting to the Created on column only for faster performance on large lists;
-* Changed: Detect bounced subscribers via the sending service bounces report endpoint instead of scanning all subscribers;
-* Changed: WooCommerce revenue reporting now matches Woo Analytics by counting orders WooCommerce attributes to the mailpoet source, with the mailpoet_woo_backed_revenue_reporting filter to opt back to the previous MailPoet reporting;
-* Fixed: Preserve math formatting in subscription forms;
-* Fixed: Custom CAPTCHA page selection no longer reset after plugin update;
-* Fixed: Load images on public email URL when image optimizer plugin is active;
-* Fixed: Apply button in the subscribers bulk action modals being disabled until the pre-selected list was changed;
-* Fixed: Restore partial email address search on the Subscribers page;
-* Fixed: WooCommerce customer conditions for subscribers without customer records.
+= 5.32.0 - 2026-06-25 =
+* Added: Restore selecting all subscribers across every page for bulk actions;
+* Added: Sender and Reply-to fields to the email editor Send panel;
+* Added: Download button on the Logs page to export logs respecting active filters;
+* Updated: Bump the minimum required WooCommerce version to 10.8 and tested up to version to 10.9;
+* Fixed: Abandoned cart products not showing in block editor emails;
+* Fixed: Backfill unsubscribe tokens for subscribers and newsletters that were missing them;
+* Fixed: Critical error during WordPress user synchronization on hosts that enforce a low database MAX_JOIN_SIZE limit.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
