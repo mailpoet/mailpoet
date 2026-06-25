@@ -76,6 +76,20 @@ class SubscribersCountsController {
     return $result;
   }
 
+  public function getGlobalStatusStatisticsCount(): array {
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY, 0)['item'] ?? null;
+    if (!$result) {
+      $result = $this->recalculateGlobalStatusStatisticsCache();
+    }
+    return $result;
+  }
+
+  public function recalculateGlobalStatusStatisticsCache(): array {
+    $result = $this->subscribersRepository->getStatusStatisticsCount();
+    $this->setCacheItem(TransientCache::SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY, $result, 0);
+    return $result;
+  }
+
   public function getHomepageStatistics(): array {
     $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY, 0)['item'] ?? [];
     if (!$result) {
