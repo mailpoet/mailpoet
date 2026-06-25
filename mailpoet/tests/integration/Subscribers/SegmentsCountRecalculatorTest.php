@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\ListingDefinition;
@@ -123,7 +122,7 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
     $this->recalculator->recalculateForSubscribers([(int)$withList->getId(), (int)$withoutList->getId()]);
 
     $settings = $this->diContainer->get(SettingsController::class);
-    $settings->set(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, true);
+    $settings->set(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, true);
 
     // The listing repository uses addConstraintsForSubscribersWithoutSegment()
     // on a Doctrine ORM query builder (DQL). Verify it switches to the
@@ -145,7 +144,7 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
     $this->recalculator->recalculateForSubscribers([(int)$withList->getId(), (int)$withoutList->getId()]);
 
     $settings = $this->diContainer->get(SettingsController::class);
-    $settings->set(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, true);
+    $settings->set(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, true);
 
     $stats = $this->diContainer->get(SegmentSubscribersRepository::class)->getSubscribersWithoutSegmentStatisticsCount();
 
