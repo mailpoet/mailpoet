@@ -1,0 +1,13 @@
+.mailpoet-latest-posts {
+  display: grid;
+  gap: 20px;
+}
+
+.mailpoet-latest-posts.columns-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mailpoet-latest-posts__item {
+  margin: 0;
+  min-width: 0;
+}
