@@ -2,9 +2,15 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection;
 
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
+use MailPoet\Entities\SendingQueueEntity;
+
 /**
- * Fills product collection blocks using one of the MailPoet order-aware
- * collections with products derived from the order that triggered the email.
+ * Fills product collection blocks from MailPoet automation context.
+ *
+ * Order-aware collections use products derived from the order that triggered
+ * the email. Abandoned-cart emails expose the queued cart product snapshot to
+ * WooCommerce's cart-contents collection during rendering.
  *
  * The collection slug stored in the block's `collection` attribute is the
  * marker — it is a declared block attribute, so it survives editing and
@@ -28,6 +34,7 @@ class OrderProductCollectionProcessor {
   ];
 
   private const PRODUCT_COLLECTION_BLOCK = 'woocommerce/product-collection';
+  private const PERSISTENT_CART_META_KEY_PREFIX = '_woocommerce_persistent_cart_';
   private const MAX_PRODUCTS = 24;
   private const RELATED_PRODUCTS_PER_ITEM = 8;
 
@@ -50,6 +57,49 @@ class OrderProductCollectionProcessor {
   }
 
   /**
+   * WooCommerce's cart-contents collection reads products from persistent cart
+   * user meta during email rendering. MailPoet already stores the abandoned cart
+   * snapshot on the queue, so expose that snapshot only while rendering the queue.
+   *
+   * @param array<string, mixed> $renderContext
+   */
+  public function createAbandonedCartPersistentCartFilter(
+    array $renderContext,
+    ?SendingQueueEntity $sendingQueue
+  ): ?callable {
+    $userId = isset($renderContext['user_id']) && is_numeric($renderContext['user_id'])
+      ? (int)$renderContext['user_id']
+      : 0;
+    if (!$userId || !$sendingQueue) {
+      return null;
+    }
+
+    $meta = $sendingQueue->getMeta() ?: [];
+    $productIds = $this->normalizeProductIds($meta[AbandonedCart::TASK_META_NAME] ?? []);
+    if (!$productIds) {
+      return null;
+    }
+
+    $persistentCart = $this->buildPersistentCart($productIds);
+    // Return a single-element value list. get_metadata_raw() unwraps it to
+    // $persistentCart for $single calls (its $check[0]) and hands it back as an
+    // array of values otherwise. WooCommerce reads the persistent cart with
+    // $single = true, so returning the bare cart here would make WP read index 0
+    // of an associative array and yield null.
+    return function($value, $objectId, $metaKey) use ($userId, $persistentCart) {
+      if (
+        (int)$objectId !== $userId
+        || !is_string($metaKey)
+        || strpos($metaKey, self::PERSISTENT_CART_META_KEY_PREFIX) !== 0
+      ) {
+        return $value;
+      }
+
+      return [$persistentCart];
+    };
+  }
+
+  /**
    * Set hand-picked products on every product collection block using one of the
    * order-aware collections, descending into inner blocks. Each collection is
    * resolved at most once per call.
@@ -60,6 +110,41 @@ class OrderProductCollectionProcessor {
   public function fillOrderCollections(array $blocks, \WC_Order $order): array {
     $resolvedIds = [];
     return $this->walkBlocks($blocks, $order, $resolvedIds);
+  }
+
+  /**
+   * @param mixed $productIds
+   * @return int[]
+   */
+  private function normalizeProductIds($productIds): array {
+    if (!is_array($productIds)) {
+      return [];
+    }
+
+    $normalized = [];
+    foreach ($productIds as $productId) {
+      if (!is_numeric($productId)) {
+        continue;
+      }
+      $productId = (int)$productId;
+      if ($productId > 0) {
+        $normalized[] = $productId;
+      }
+    }
+
+    return array_values(array_unique($normalized));
+  }
+
+  /**
+   * @param int[] $productIds
+   * @return array{cart: array<string, array{product_id: int}>}
+   */
+  private function buildPersistentCart(array $productIds): array {
+    $cart = [];
+    foreach ($productIds as $index => $productId) {
+      $cart['mailpoet_abandoned_cart_' . $index] = ['product_id' => $productId];
+    }
+    return ['cart' => $cart];
   }
 
   /**

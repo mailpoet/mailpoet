@@ -111,9 +111,15 @@ class Renderer {
         return array_merge($context, $renderContext);
       };
       $orderProductsFilter = null;
+      $abandonedCartPersistentCartFilter = null;
 
       try {
         $this->wp->addFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
+        $abandonedCartPersistentCartFilter = $this->orderProductCollectionProcessor
+          ->createAbandonedCartPersistentCartFilter($renderContext, $sendingQueue);
+        if ($abandonedCartPersistentCartFilter) {
+          $this->wp->addFilter('get_user_metadata', $abandonedCartPersistentCartFilter, 10, 4);
+        }
         $orderProductsFilter = $this->orderProductCollectionProcessor->createBlocksFilter($renderContext);
         if ($orderProductsFilter) {
           $this->wp->addFilter('woocommerce_email_blocks_renderer_parsed_blocks', $orderProductsFilter);
@@ -134,6 +140,9 @@ class Renderer {
         $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $filterCallback);
         if ($orderProductsFilter) {
           $this->wp->removeFilter('woocommerce_email_blocks_renderer_parsed_blocks', $orderProductsFilter);
+        }
+        if ($abandonedCartPersistentCartFilter) {
+          $this->wp->removeFilter('get_user_metadata', $abandonedCartPersistentCartFilter);
         }
         $this->couponBlockFailureCollector->clear();
       }
