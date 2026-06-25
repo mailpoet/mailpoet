@@ -67,7 +67,7 @@ class Migration_20260617_130000_App extends AppMigration {
 
     $connection->executeStatement(
       "INSERT IGNORE INTO {$queueTable} (task_id, subscriber_id, created_at)
-       SELECT sts.`task_id`, sts.`subscriber_id`, sts.`created_at`
+       SELECT sts.`task_id`, sts.`subscriber_id`, COALESCE(sts.`created_at`, sts.`updated_at`, NOW())
        FROM {$logTable} sts
        WHERE sts.`task_id` IN ({$taskIdsList})
          AND sts.`processed` = :unprocessed",
