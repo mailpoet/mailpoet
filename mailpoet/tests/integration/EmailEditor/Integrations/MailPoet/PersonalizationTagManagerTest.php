@@ -48,6 +48,7 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
         <a data-link-href="[mailpoet/subscription-unsubscribe-url]">Unsubscribe</a>
         <a data-link-href="[mailpoet/subscription-manage-url]">Manage</a>
         <a data-link-href="[mailpoet/newsletter-view-in-browser-url]">View in browser</a>
+        <a href="http://%5Bmailpoet/site-homepage-url%5D">Homepage</a>
         <!--[mailpoet/subscription-unsubscribe-url]-->
       ';
     $this->newsletter->setBody((array)$body);
@@ -74,6 +75,12 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $viewInBrowserLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[link:newsletter_view_in_browser_url]']);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $viewInBrowserLink);
     $this->assertStringContainsString('<a href="[mailpoet_click_data]-' . $viewInBrowserLink->getHash() . '">View in browser</a>', $rendered['html']);
+
+    $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
+    $homepageLink = $this->findNewsletterLinkStartingWithUrl($homepageUrl);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $homepageLink);
+    $this->assertStringContainsString('<a href="[mailpoet_click_data]-' . $homepageLink->getHash() . '">Homepage</a>', $rendered['html']);
+    $this->assertNull($newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => 'http://%5Bmailpoet/site-homepage-url%5D']));
 
     // Tag placed out of href was not replaced
     $this->assertStringContainsString('<!--[mailpoet/subscription-unsubscribe-url]-->', $rendered['html']);
@@ -155,6 +162,19 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('%5Bwoocommerce/order-review-url%5D', $emailContent['html']);
   }
 
+  public function testItResolvesEncodedHomepageUrlHrefBeforeLinkTracking(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a href="http://%5Bmailpoet/site-homepage-url%5D">Homepage</a>',
+    ]);
+
+    $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
+    $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
+    $this->assertStringNotContainsString('%5Bmailpoet/site-homepage-url%5D', $emailContent['html']);
+    $this->assertStringNotContainsString('[mailpoet/site-homepage-url]', $emailContent['html']);
+  }
+
   public function testItOnlyRemovesTemporaryHttpPrefixForKnownLinkTokens(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
@@ -228,5 +248,17 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
         $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL");
       }
     }
+  }
+
+  private function findNewsletterLinkStartingWithUrl(string $url): ?NewsletterLinkEntity {
+    $newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
+    /** @var NewsletterLinkEntity[] $newsletterLinks */
+    $newsletterLinks = $newsletterLinkRepository->findBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity]);
+    foreach ($newsletterLinks as $newsletterLink) {
+      if (strpos($newsletterLink->getUrl(), $url) === 0) {
+        return $newsletterLink;
+      }
+    }
+    return null;
   }
 }

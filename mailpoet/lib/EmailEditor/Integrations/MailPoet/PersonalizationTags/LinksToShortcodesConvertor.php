@@ -22,7 +22,10 @@ class LinksToShortcodesConvertor {
     '[woocommerce/order-review-url]' => true,
   ];
 
-  public function convertLinkTagsToShortcodes(string $content): string {
+  /**
+   * @param array<string, string> $resolvedUrlTokens
+   */
+  public function convertLinkTagsToShortcodes(string $content, array $resolvedUrlTokens = []): string {
     $contentProcessor = new HTML_Tag_Processor($content);
     while ($contentProcessor->next_token()) {
       if ($contentProcessor->get_token_type() !== '#tag' || $contentProcessor->get_tag() !== 'A') {
@@ -31,8 +34,9 @@ class LinksToShortcodesConvertor {
 
       $href = $contentProcessor->get_attribute('data-link-href');
       if (is_string($href)) {
-        if (isset(self::TOKEN_MAP[$href])) {
-          $contentProcessor->set_attribute('href', 'http://' . self::TOKEN_MAP[$href]);
+        $shortcode = $this->getShortcodeForUrlToken($href);
+        if ($shortcode !== null) {
+          $contentProcessor->set_attribute('href', 'http://' . $shortcode);
           $contentProcessor->remove_attribute('data-link-href');
           $contentProcessor->remove_attribute('contenteditable');
           continue;
@@ -42,6 +46,14 @@ class LinksToShortcodesConvertor {
         if ($personalizedUrlToken !== null) {
           $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
           $contentProcessor->remove_attribute('href');
+          continue;
+        }
+
+        $resolvedUrl = $this->getResolvedUrlToken($href, $resolvedUrlTokens);
+        if ($resolvedUrl !== null) {
+          $contentProcessor->set_attribute('href', $resolvedUrl);
+          $contentProcessor->remove_attribute('data-link-href');
+          $contentProcessor->remove_attribute('contenteditable');
         }
         continue;
       }
@@ -51,10 +63,22 @@ class LinksToShortcodesConvertor {
         continue;
       }
 
+      $shortcode = $this->getShortcodeForUrlToken($href);
+      if ($shortcode !== null) {
+        $contentProcessor->set_attribute('href', 'http://' . $shortcode);
+        continue;
+      }
+
       $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
       if ($personalizedUrlToken !== null) {
         $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
         $contentProcessor->remove_attribute('href');
+        continue;
+      }
+
+      $resolvedUrl = $this->getResolvedUrlToken($href, $resolvedUrlTokens);
+      if ($resolvedUrl !== null) {
+        $contentProcessor->set_attribute('href', $resolvedUrl);
       }
     }
     $contentProcessor->flush_updates();
@@ -126,13 +150,46 @@ class LinksToShortcodesConvertor {
   }
 
   private function normalizePersonalizedUrlToken(string $url): ?string {
-    $decodedUrl = rawurldecode($url);
-    foreach (array_keys(self::PERSONALIZED_URL_TOKENS) as $token) {
+    return $this->normalizeUrlToken($url, array_keys(self::PERSONALIZED_URL_TOKENS));
+  }
+
+  private function getShortcodeForUrlToken(string $url): ?string {
+    $token = $this->normalizeUrlToken($url, array_keys(self::TOKEN_MAP));
+    if ($token === null) {
+      return null;
+    }
+    return self::TOKEN_MAP[$token];
+  }
+
+  /**
+   * @param array<string, string> $resolvedUrlTokens
+   */
+  private function getResolvedUrlToken(string $url, array $resolvedUrlTokens): ?string {
+    $token = $this->normalizeUrlToken($url, array_keys($resolvedUrlTokens));
+    if ($token === null) {
+      return null;
+    }
+
+    $resolvedUrl = $resolvedUrlTokens[$token];
+    return $resolvedUrl === '' ? null : $resolvedUrl;
+  }
+
+  /**
+   * @param string[] $tokens
+   */
+  private function normalizeUrlToken(string $url, array $tokens): ?string {
+    $decodedUrl = trim($this->decodeUrl($url));
+    foreach ($tokens as $token) {
       if ($decodedUrl === $token || $decodedUrl === 'http://' . $token || $decodedUrl === 'https://' . $token) {
         return $token;
       }
     }
+
     return null;
+  }
+
+  private function decodeUrl(string $url): string {
+    return html_entity_decode(rawurldecode($url), ENT_QUOTES, 'UTF-8');
   }
 
   /**
