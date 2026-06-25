@@ -8,6 +8,7 @@ use MailPoetVendor\Carbon\Carbon;
 class TransientCache {
   public const SUBSCRIBERS_STATISTICS_COUNT_KEY = 'mailpoet_subscribers_statistics_count_cache';
   public const SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY = 'mailpoet_subscribers_statistics_count_homepage_cache';
+  public const SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY = 'mailpoet_subscribers_statistics_count_global_cache';
 
   private $cacheEnabled;
 
@@ -68,6 +69,7 @@ class TransientCache {
   public function invalidateAllItems(): void {
     $this->invalidateItems(self::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $this->invalidateItems(self::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY);
+    $this->invalidateItems(self::SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY);
   }
 
   private function deleteItems(string $key): void {

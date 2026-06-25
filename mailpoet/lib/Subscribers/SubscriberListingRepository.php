@@ -830,11 +830,49 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array{counts: array<string, int>, consolidated: bool}
    */
   private function getGroupCountsForDefinition(ListingDefinition $definition): array {
-    $consolidated = !$this->hasSegmentListFilter($definition);
-    return [
-      'counts' => $consolidated ? $this->getGroupCounts($definition) : $this->getGroupCountsPerStatus($definition),
-      'consolidated' => $consolidated,
-    ];
+    if (!$this->hasSegmentListFilter($definition)) {
+      // The unfiltered "All Lists" view maps to the cron-warmed global status
+      // counts — the default, most-loaded view, served from cache instead of a
+      // grouped scan over every subscriber on each page load.
+      if ($this->canUseGlobalStatisticsCache($definition)) {
+        return ['counts' => $this->globalStatisticsToCounts(), 'consolidated' => true];
+      }
+      return ['counts' => $this->getGroupCounts($definition), 'consolidated' => true];
+    }
+    return ['counts' => $this->getGroupCountsPerStatus($definition), 'consolidated' => false];
+  }
+
+  /**
+   * The global status counts cover the unfiltered listing only — no search and
+   * no active filter at all. Any filter (tag, status, dates, engagement) narrows
+   * the set below "all subscribers", so the cache no longer matches.
+   */
+  private function canUseGlobalStatisticsCache(ListingDefinition $definition): bool {
+    $search = $definition->getSearch();
+    if ($search !== null && strlen(trim($search)) > 0) {
+      return false;
+    }
+    $filters = $definition->getFilters() ?: [];
+    foreach ($filters as $value) {
+      if (!empty($value)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * @return array<string, int>
+   */
+  private function globalStatisticsToCounts(): array {
+    $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
+    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts['trash'] = 0;
+    foreach (self::$supportedStatuses as $status) {
+      $counts[$status] = (int)($stats[$status] ?? 0);
+    }
+    $counts['trash'] = (int)($stats['trash'] ?? 0);
+    return $counts;
   }
 
   /**
