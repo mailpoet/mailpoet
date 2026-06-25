@@ -136,6 +136,12 @@ class SubscribersCountsController {
       return (int)$segment->getId();
     }, $segments);
     foreach ($this->transientCache->getItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) as $id => $item) {
+      // id 0 is the "subscribers without a list" entry, not an orphaned segment —
+      // keep it, otherwise every cache warm deletes it right after building it and
+      // the (expensive) count is recomputed live on the next page load.
+      if ($id === 0) {
+        continue;
+      }
       if (!in_array($id, $segmentIds)) {
         $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $id);
       }
