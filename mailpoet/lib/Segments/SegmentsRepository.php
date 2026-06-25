@@ -283,9 +283,14 @@ class SegmentsRepository extends Repository {
       return 0;
     }
 
+    // Dynamic segments never materialize memberships in subscriber_segment, so
+    // deleting them cannot change any subscriber's segments_count. Skip the
+    // capture (and the recalc below) for them.
+    $isDynamic = $type === SegmentEntity::TYPE_DYNAMIC;
+
     // Capture the affected subscribers before the cascade removes their
     // memberships, so segments_count can be refreshed for them afterwards.
-    $affectedSubscriberIds = $this->getSubscriberIdsForSegments($ids, $type);
+    $affectedSubscriberIds = $isDynamic ? [] : $this->getSubscriberIdsForSegments($ids, $type);
 
     $count = 0;
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $type, &$count) {
@@ -325,7 +330,9 @@ class SegmentsRepository extends Repository {
         ->getQuery()->execute();
     });
 
-    $this->segmentsCountRecalculator->recalculateForSubscribers($affectedSubscriberIds);
+    if (!$isDynamic) {
+      $this->segmentsCountRecalculator->recalculateForSubscribers($affectedSubscriberIds);
+    }
 
     return $count;
   }
@@ -394,7 +401,11 @@ class SegmentsRepository extends Repository {
     // towards segments_count, so refresh every affected subscriber. The
     // memberships still exist here (only deleted_at changed), so walk them in
     // keyset-paginated batches instead of materializing every member id at once.
-    $this->segmentsCountRecalculator->recalculateForSegments($ids);
+    // Dynamic segments have no materialized memberships, so there is nothing to
+    // recalculate for them.
+    if ($type !== SegmentEntity::TYPE_DYNAMIC) {
+      $this->segmentsCountRecalculator->recalculateForSegments($ids);
+    }
 
     return $rows;
   }
