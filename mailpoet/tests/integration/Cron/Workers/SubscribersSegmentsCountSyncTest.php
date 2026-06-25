@@ -29,13 +29,13 @@ class SubscribersSegmentsCountSyncTest extends \MailPoetTest {
     $withoutList = (new Subscriber())->create();
 
     $this->assertSame(0, $this->getSegmentsCount($withList));
-    $this->assertFalse((bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, false));
+    $this->assertFalse((bool)$this->settings->get(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, false));
 
     $this->worker->processTaskStrategy($this->createTask(), microtime(true));
 
     $this->assertSame(1, $this->getSegmentsCount($withList));
     $this->assertSame(0, $this->getSegmentsCount($withoutList));
-    $this->assertTrue((bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, false));
+    $this->assertTrue((bool)$this->settings->get(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, false));
   }
 
   public function testItResetsProgressMetaAfterAFullSweep(): void {
@@ -65,7 +65,7 @@ class SubscribersSegmentsCountSyncTest extends \MailPoetTest {
     $this->assertSame(1, $this->getSegmentsCount($subscriber));
     // The backfill flag must remain set after a reconcile run — if it were
     // ever cleared, reads would silently fall back to the anti-join.
-    $this->assertTrue((bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY));
+    $this->assertTrue((bool)$this->settings->get(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY));
   }
 
   public function testReadsSwitchToTheColumnOnlyAfterTheBackfillCompletes(): void {

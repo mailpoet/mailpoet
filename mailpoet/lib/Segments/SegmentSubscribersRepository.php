@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments;
 
-use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -23,6 +22,8 @@ use MailPoetVendor\Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
 use Throwable;
 
 class SegmentSubscribersRepository {
+  const BACKFILLED_SETTING_KEY = 'subscribers_segments_count_backfilled';
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -313,8 +314,17 @@ class SegmentSubscribersRepository {
    * (see SubscribersSegmentsCountSync). Until then the read paths fall back to
    * the anti-join so they never report 0 for everyone.
    */
-  private function isSegmentsCountColumnReady(): bool {
-    return (bool)$this->settings->get(SubscribersSegmentsCountSync::BACKFILLED_SETTING_KEY, false);
+  public function isSegmentsCountColumnReady(): bool {
+    return (bool)$this->settings->get(self::BACKFILLED_SETTING_KEY, false);
+  }
+
+  /**
+   * Flip the readiness flag once the backfill sweep has recomputed the whole
+   * table. Called by SubscribersSegmentsCountSync; the setting key lives here
+   * because this is the read path that decides whether to trust the column.
+   */
+  public function markSegmentsCountColumnReady(): void {
+    $this->settings->set(self::BACKFILLED_SETTING_KEY, true);
   }
 
   public function getSubscribersWithoutSegmentStatisticsCount(): array {

@@ -5,7 +5,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -13,8 +13,9 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  * Populates and reconciles SubscriberEntity::$segmentsCount.
  *
  * The first run is the backfill: it sweeps the whole subscribers table by id
- * range, recomputes segments_count for every row, and then flips the
- * SEGMENTS_COUNT_BACKFILLED setting so reads start trusting the column.
+ * range, recomputes segments_count for every row, and then calls
+ * SegmentSubscribersRepository::markSegmentsCountColumnReady() so reads start
+ * trusting the column.
  *
  * Every subsequent (weekly) run is the reconcile backstop: it re-sweeps the
  * table to repair any drift left by a write path that forgot to update the
@@ -26,7 +27,6 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
   const TASK_TYPE = 'subscribers_segments_count_sync';
   const BATCH_SIZE = 5000;
   const SUPPORT_MULTIPLE_INSTANCES = false;
-  const BACKFILLED_SETTING_KEY = 'subscribers_segments_count_backfilled';
 
   /** @var EntityManager */
   private $entityManager;
@@ -34,18 +34,18 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
   /** @var SegmentsCountRecalculator */
   private $segmentsCountRecalculator;
 
-  /** @var SettingsController */
-  private $settings;
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
 
   public function __construct(
     EntityManager $entityManager,
     SegmentsCountRecalculator $segmentsCountRecalculator,
-    SettingsController $settings
+    SegmentSubscribersRepository $segmentSubscribersRepository
   ) {
     parent::__construct();
     $this->entityManager = $entityManager;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
-    $this->settings = $settings;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer): bool {
@@ -79,7 +79,7 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
     $this->scheduledTasksRepository->flush();
 
     // The whole table has been recomputed: reads can trust segments_count now.
-    $this->settings->set(self::BACKFILLED_SETTING_KEY, true);
+    $this->segmentSubscribersRepository->markSegmentsCountColumnReady();
 
     return true;
   }
