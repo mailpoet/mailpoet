@@ -29,6 +29,11 @@ class MigrationSendingPauser {
       $this->settings->set(self::BACKUP_SETTING_NAME, $mailerLog);
     }
 
+    $mailerLog = MailerLog::setError(
+      $mailerLog,
+      MailerError::OPERATION_MIGRATION,
+      __('MailPoet is updating its database. Email sending is temporarily paused and will resume automatically when the database update finishes.', 'mailpoet')
+    );
     MailerLog::pauseSending($mailerLog);
   }
 

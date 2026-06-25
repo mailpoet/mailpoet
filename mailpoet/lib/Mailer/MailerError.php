@@ -11,6 +11,7 @@ class MailerError {
   const OPERATION_SUBSCRIBER_LIMIT_REACHED = 'subscriber_limit_reached';
   const OPERATION_EMAIL_LIMIT_REACHED = 'email_limit_reached';
   const OPERATION_PENDING_APPROVAL = 'pending_approval';
+  const OPERATION_MIGRATION = 'migration';
 
   const LEVEL_HARD = 'hard';
   const LEVEL_SOFT = 'soft';

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Mailer;
 
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MigrationSendingPauser;
 use MailPoet\Settings\SettingsController;
@@ -35,6 +36,18 @@ class MigrationSendingPauserTest extends \MailPoetTest {
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('Sending has been paused.');
     }
+  }
+
+  public function testItAddsMigrationNoticeWhilePaused(): void {
+    $this->pauser->pause();
+
+    $error = MailerLog::getError();
+    if ($error === null) {
+      self::fail('Migration pause notice was not added.');
+    }
+
+    verify($error['operation'])->equals(MailerError::OPERATION_MIGRATION);
+    verify($error['error_message'])->equals('MailPoet is updating its database. Email sending is temporarily paused and will resume automatically when the database update finishes.');
   }
 
   public function testItResumesActiveSendingWithMailerLogIntact(): void {
