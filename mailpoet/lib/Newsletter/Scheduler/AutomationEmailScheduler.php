@@ -11,6 +11,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscriber;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -25,14 +26,18 @@ class AutomationEmailScheduler {
 
   private ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover;
 
+  private ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository;
+
   public function __construct(
     EntityManager $entityManager,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
-    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
+    ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository
   ) {
     $this->entityManager = $entityManager;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
+    $this->scheduledTaskQueuedSubscriberRepository = $scheduledTaskQueuedSubscriberRepository;
   }
 
   public function createSendingTask(NewsletterEntity $email, SubscriberEntity $subscriber, array $meta): ScheduledTaskEntity {
@@ -93,6 +98,7 @@ class AutomationEmailScheduler {
     } else {
       $this->scheduledTaskSubscribersRepository->saveError($task, $subscriberId, $error);
     }
+    $this->scheduledTaskQueuedSubscriberRepository->checkCompleted($task);
   }
 
   /**

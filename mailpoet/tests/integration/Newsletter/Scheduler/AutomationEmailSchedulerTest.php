@@ -72,6 +72,27 @@ class AutomationEmailSchedulerTest extends \MailPoetTest {
     verify($meta['automation']['run_id'] ?? null)->equals($run->getId());
   }
 
+  public function testSaveErrorMovesPendingSubscriberToLogAndCompletesTask() {
+    $run = (new AutomationRun())->create();
+    $task = $this->automationEmailScheduler->createSendingTask($this->newsletter, $this->subscriber, $this->getMeta($run->getId()));
+
+    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($this->newsletter, $this->subscriber, $run);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $scheduledTaskSubscriber);
+    verify($scheduledTaskSubscriber->isPending())->true();
+
+    $this->automationEmailScheduler->saveError($scheduledTaskSubscriber, 'sending failed');
+
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->assertInstanceOf(\DateTimeInterface::class, $task->getProcessedAt());
+
+    // the recipient is now a failed entry in the log, no longer pending in the queue
+    $afterError = $this->automationEmailScheduler->getScheduledTaskSubscriber($this->newsletter, $this->subscriber, $run);
+    $this->assertInstanceOf(ScheduledTaskSubscriber::class, $afterError);
+    verify($afterError->isPending())->false();
+    verify($afterError->hasFailed())->true();
+    verify($afterError->getError())->equals('sending failed');
+  }
+
   private function getMeta(int $runId) {
     return ['automation' => ['run_id' => $runId]];
   }
