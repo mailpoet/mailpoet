@@ -13,6 +13,7 @@ import {
   mapFontSizeSlugToValue,
   mapGradientSlugToValue,
 } from './mapping/from-blocks/styles-mapper';
+import { normalizePadding } from './normalize-padding';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- block attributes are dynamically typed
 type FormBlock = Block<Record<string, any>>;
@@ -170,7 +171,9 @@ export const blocksToFormBodyFactory = (
                 ),
                 anchor: block.attributes.anchor || null,
                 class_name: block.attributes.className || null,
-                padding: block.attributes.style?.spacing?.padding || null,
+                padding:
+                  normalizePadding(block.attributes.style?.spacing?.padding) ||
+                  null,
               },
             };
           case 'core/paragraph':
@@ -207,7 +210,9 @@ export const blocksToFormBodyFactory = (
                     ?.gradient as unknown as string) || null,
                 ),
                 class_name: block.attributes.className || null,
-                padding: block.attributes.style?.spacing?.padding || null,
+                padding:
+                  normalizePadding(block.attributes.style?.spacing?.padding) ||
+                  null,
               },
             };
           case 'core/image':
@@ -241,7 +246,9 @@ export const blocksToFormBodyFactory = (
                 class_name: block.attributes.className || null,
                 vertical_alignment: block.attributes.verticalAlignment || null,
                 width: block.attributes.width || null,
-                padding: block.attributes.style?.spacing?.padding || null,
+                padding:
+                  normalizePadding(block.attributes.style?.spacing?.padding) ||
+                  null,
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
                   block.attributes.textColor as unknown as string,
@@ -274,7 +281,9 @@ export const blocksToFormBodyFactory = (
                     ? '1'
                     : '0',
                 class_name: block.attributes.className || null,
-                padding: block.attributes.style?.spacing?.padding || null,
+                padding:
+                  normalizePadding(block.attributes.style?.spacing?.padding) ||
+                  null,
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
                   block.attributes.textColor as unknown as string,
