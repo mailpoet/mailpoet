@@ -30,7 +30,7 @@ const { BlockContextProvider } = BlockEditor as unknown as {
 const castBlockEditor = BlockEditor as unknown as {
   __experimentalUseBlockPreview: UseBlockPreview;
 };
-// eslint-disable-next-line no-underscore-dangle -- WordPress exposes this experimental hook under a dunder-prefixed name.
+// eslint-disable-next-line no-underscore-dangle
 const useBlockPreview = castBlockEditor.__experimentalUseBlockPreview;
 
 type Term = { id: number; taxonomy: string };
@@ -59,8 +59,7 @@ type EditProps = {
 type PostRecord = { id: number; type: string };
 type BlockContext = { postId: number; postType: string };
 
-// Default per-post layout. Users can add, remove and reorder these inner
-// blocks; the server renders whatever they compose, once per selected post.
+// This is the default layout for each post. Users can customize it by adding, removing, or rearranging the inner blocks below.
 const POST_TEMPLATE: Array<[string, Record<string, unknown>?]> = [
   ['core/post-featured-image'],
   ['core/post-title', { level: 3, isLink: true }],
@@ -155,7 +154,8 @@ function TemplateBlockPreview({
       tabIndex={0}
       role="button"
       onClick={handleOnClick}
-      onKeyPress={handleOnClick}
+      onKeyDown={handleOnClick}
+      onKeyUp={handleOnClick}
       style={{ display: isHidden ? 'none' : undefined }}
     />
   );

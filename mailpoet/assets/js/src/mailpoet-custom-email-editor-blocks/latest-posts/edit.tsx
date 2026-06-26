@@ -228,43 +228,39 @@ export function Edit({
             />
           )}
           {!isManual && (
-            <RangeControl
-              label={__('Number of posts', 'mailpoet')}
-              value={query.perPage}
-              min={1}
-              max={10}
-              onChange={(value) => updateQuery({ perPage: value ?? 1 })}
-              __nextHasNoMarginBottom
-            />
-          )}
-          {!isManual && (
-            <SelectControl
-              label={__('Order', 'mailpoet')}
-              value={query.order}
-              options={ORDER_OPTIONS}
-              onChange={(value) => updateQuery({ order: value })}
-              __nextHasNoMarginBottom
-            />
-          )}
-          {!isManual && (
-            <BaseControl>
-              <TermControl
-                value={query.terms ?? []}
-                onChange={(terms) => updateQuery({ terms })}
+            <>
+              <RangeControl
+                label={__('Number of posts', 'mailpoet')}
+                value={query.perPage}
+                min={1}
+                max={10}
+                onChange={(value) => updateQuery({ perPage: value ?? 1 })}
+                __nextHasNoMarginBottom
               />
-            </BaseControl>
-          )}
-          {!isManual && (
-            <ToggleControl
-              label={__('Exclude selected categories & tags', 'mailpoet')}
-              checked={query.inclusionType === 'exclude'}
-              onChange={(exclude) =>
-                updateQuery({
-                  inclusionType: exclude ? 'exclude' : 'include',
-                })
-              }
-              __nextHasNoMarginBottom
-            />
+              <SelectControl
+                label={__('Order', 'mailpoet')}
+                value={query.order}
+                options={ORDER_OPTIONS}
+                onChange={(value) => updateQuery({ order: value })}
+                __nextHasNoMarginBottom
+              />
+              <BaseControl>
+                <TermControl
+                  value={query.terms ?? []}
+                  onChange={(terms) => updateQuery({ terms })}
+                />
+              </BaseControl>
+              <ToggleControl
+                label={__('Exclude selected categories & tags', 'mailpoet')}
+                checked={query.inclusionType === 'exclude'}
+                onChange={(exclude) =>
+                  updateQuery({
+                    inclusionType: exclude ? 'exclude' : 'include',
+                  })
+                }
+                __nextHasNoMarginBottom
+              />
+            </>
           )}
         </PanelBody>
         <PanelBody title={__('Layout', 'mailpoet')}>

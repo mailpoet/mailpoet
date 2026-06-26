@@ -1,6 +1,6 @@
 .mailpoet-latest-posts {
   display: grid;
-  gap: 20px;
+  gap: var(--wp--style--block-gap, 20px);
 }
 
 .mailpoet-latest-posts.columns-2 {
