@@ -1172,13 +1172,14 @@ workflows:
             - build_release_zip
 
   nightly:
-    triggers:
-      - schedule:
-          cron: '0 1 * * 1-5'
-          filters:
-            branches:
-              only:
-                - trunk
+    # TEMP: triggers disabled to run nightly on push for CI verification — REVERT before merge
+    # triggers:
+    #   - schedule:
+    #       cron: '0 1 * * 1-5'
+    #       filters:
+    #         branches:
+    #           only:
+    #             - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
@@ -1211,7 +1212,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 10.7.0
+          woo_core_version: 10.8.1
           woo_subscriptions_version: 8.7.1
           automate_woo_version: 6.3.1
           mysql_command: --max_allowed_packet=100M
@@ -1254,7 +1255,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          woo_core_version: 10.7.0
+          woo_core_version: 10.8.1
           woo_subscriptions_version: 8.7.1
           automate_woo_version: 6.3.1
           codeception_image_version: 7.4-cli_20220605.0
@@ -1316,7 +1317,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_with_premium_oldest
-          woo_core_version: 10.7.0
+          woo_core_version: 10.8.1
           woo_subscriptions_version: 8.7.1
           automate_woo_version: 6.3.1
           codeception_image_version: 7.4-cli_20220605.0
@@ -1327,7 +1328,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
-          woo_core_version: 10.7.0
+          woo_core_version: 10.8.1
           woo_subscriptions_version: 8.7.1
           automate_woo_version: 6.3.1
           codeception_image_version: 7.4-cli_20220605.0
