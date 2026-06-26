@@ -15,7 +15,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
-use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber as ScheduledTaskQueuedSubscriberFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -69,7 +69,7 @@ class WelcomeTest extends \MailPoetTest {
 
     $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
     (new SendingQueueFactory())->create($scheduledTask, $newsletter);
-    (new ScheduledTaskSubscriberFactory())->createProcessed($scheduledTask, $this->subscriber);
+    (new ScheduledTaskQueuedSubscriberFactory())->create($scheduledTask, $this->subscriber);
 
     // queue is not scheduled
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $existingSubscriber);
