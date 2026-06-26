@@ -60,15 +60,7 @@ class AssetsControllerTest extends \MailPoetUnitTest {
       ],
     ], $result['enqueuedScripts']);
     $this->assertSame('mailpoet_form_editor', $result['inlineScripts'][1][0]);
-    $this->assertSame([
-      [
-        'mailpoet_form_editor',
-        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-form-editor.css',
-        [],
-        false,
-        'all',
-      ],
-    ], $result['enqueuedStyles']);
+    $this->assertSame([], $result['enqueuedStyles']);
     $this->assertSame([
       ['mailpoet_form_editor', 'mailpoet', ''],
     ], $result['scriptTranslations']);

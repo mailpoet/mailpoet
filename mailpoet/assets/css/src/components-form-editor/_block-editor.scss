@@ -37,6 +37,20 @@
   }
 }
 
+// Keep the block appender visible while hovering an empty layout container
+// (e.g. a column), so it's easy to spot and click when adding the first block.
+.block-editor {
+  .is-layout-constrained.block-editor-block-list__block.is-hovered:not(.is-selected),
+  .is-layout-flow.block-editor-block-list__block.is-hovered:not(.is-selected) {
+    > .block-list-appender:only-child,
+    > .block-list-appender:only-child .block-editor-inserter,
+    > .block-list-appender:only-child .block-editor-button-block-appender {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
 // Html blocks contains iframe which captures clicks and in some cases prevents selecting block.
 // This adds an transparent overlay over the iframe.
 .mailpoet-html-block-editor-content-wrapper {
@@ -116,6 +130,8 @@ h2 {
 
 // Adjustments for correct form width rendering
 .wp-block {
+  margin-bottom: 28px;
+  margin-top: 28px;
   max-width: initial;
 }
 
@@ -150,4 +166,10 @@ h2 {
 // Scrollable inserter sidebar panel
 .block-editor-inserter__tabs .block-editor-inserter__block-list {
   overflow-y: auto;
+}
+
+body.admin_page_mailpoet-form-editor
+  .block-editor-inserter__block-list
+  .components-button.block-editor-block-types-list__item {
+  height: auto;
 }

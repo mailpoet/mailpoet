@@ -49,7 +49,6 @@ class AssetsController {
       $dependencies[] = 'code-editor';
     }
     $this->enqueueJsEntrypoint('form_editor', $dependencies, false);
-    $this->wp->wpEnqueueStyle('mailpoet_form_editor', $this->getCssUrl('mailpoet-form-editor.css'));
   }
 
   public function setupSettingsDependencies(): void {
