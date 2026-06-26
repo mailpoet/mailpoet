@@ -35,10 +35,9 @@ class FormWithColumnsCest {
     $i->waitForElement('.block-editor-block-list__block');
 
     $i->wantTo('Add first name input into the first column');
-    $this->addFieldInColumn($i, 'First name');
+    $this->addFieldInColumn($i, '[aria-label="Block: Column (1 of 2)"]', 'First name');
     $i->wantTo('Add last name input into the second column');
-    $i->click('[aria-label="Block: Column (2 of 2)"]');
-    $this->addFieldInColumn($i, 'Last name');
+    $this->addFieldInColumn($i, '[aria-label="Block: Column (2 of 2)"]', 'Last name');
     $i->seeNoJSErrors();
     $i->saveFormInEditor();
 
@@ -68,8 +67,9 @@ class FormWithColumnsCest {
     $i->waitForText($subscriberLastName);
   }
 
-  private function addFieldInColumn(\AcceptanceTester $i, $name) {
-    $appenderElementPath = '(//button[contains(@class,"block-editor-button-block-appender")])[1]';
+  private function addFieldInColumn(\AcceptanceTester $i, string $columnSelector, string $name) {
+    $i->moveMouseOver($columnSelector);
+    $appenderElementPath = $columnSelector . ' button.block-editor-button-block-appender';
     $i->waitForElementClickable($appenderElementPath);
     $i->click($appenderElementPath);
     $blockInserterSearchInput = '.block-editor-inserter__search .components-input-control__input';

@@ -5,6 +5,16 @@ namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsLoader {
+  private const FORM_EDITOR_WORDPRESS_STYLE_DEPENDENCIES = [
+    'wp-components',
+    'wp-block-library',
+    'wp-block-library-theme',
+    'wp-block-editor',
+    'wp-edit-blocks',
+    'wp-editor',
+    'wp-edit-post',
+    'wp-format-library',
+  ];
 
   /** @var Renderer */
   private $renderer;
@@ -30,13 +40,17 @@ class AssetsLoader {
       ]);
     }
     if ($page === 'mailpoet-form-editor') {
-      // Form-editor CSS has to be loaded after plugin style because it contains @wordpress/components dependency
-      $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin']);
+      $this->enqueueStyle(
+        'mailpoet-form-editor',
+        array_merge(['mailpoet-plugin'], self::FORM_EDITOR_WORDPRESS_STYLE_DEPENDENCIES)
+      );
       $this->enqueueStyle('mailpoet-public');
+    }
+    if ($page === 'mailpoet-form-editor-template-selection') {
+      $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin', 'wp-components']);
     }
     // We reuse a part of CSS in the newsletter editor
     if ($page === 'mailpoet-newsletter-editor') {
-      // Newsletter-editor CSS has to be loaded after plugin style because it contains @wordpress/components dependency
       $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin']);
     }
   }
