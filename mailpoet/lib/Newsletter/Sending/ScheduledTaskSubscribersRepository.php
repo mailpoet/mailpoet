@@ -70,17 +70,11 @@ class ScheduledTaskSubscribersRepository extends Repository {
       $scheduledTaskSubscriber->setError($errorMessage);
       $this->persist($scheduledTaskSubscriber);
       $this->flush();
-
-      $this->checkCompleted($scheduledTask);
     }
   }
 
   public function countProcessed(ScheduledTaskEntity $scheduledTaskEntity): int {
     return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED]);
-  }
-
-  private function countUnprocessed(ScheduledTaskEntity $scheduledTaskEntity): int {
-    return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
   }
 
   public function purgeOldTaskSubscribers(int $daysToKeep, int $taskBatchSize, int $rowLimit): int {
@@ -177,14 +171,5 @@ class ScheduledTaskSubscribersRepository extends Repository {
     );
 
     return (int)$deleted;
-  }
-
-  private function checkCompleted(ScheduledTaskEntity $task): void {
-    $count = $this->countUnprocessed($task);
-    if ($count === 0) {
-      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-      $task->setProcessedAt(Carbon::now()->millisecond(0));
-      $this->entityManager->flush();
-    }
   }
 }

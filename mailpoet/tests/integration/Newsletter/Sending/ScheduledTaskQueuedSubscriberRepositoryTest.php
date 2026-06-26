@@ -158,6 +158,37 @@ class ScheduledTaskQueuedSubscriberRepositoryTest extends \MailPoetTest {
     $this->assertTrue($this->entityManager->contains($task3Subscriber));
   }
 
+  public function testItMarksTaskCompletedWhenNoSubscribersAreQueued(): void {
+    $task = $this->createTask();
+
+    $this->repository->checkCompleted($task);
+
+    $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
+    $this->assertInstanceOf(\DateTimeInterface::class, $task->getProcessedAt());
+  }
+
+  public function testItDoesNotMarkTaskCompletedWhileSubscribersAreQueued(): void {
+    $task = $this->createTask();
+    $this->createQueuedSubscriber($task);
+
+    $this->repository->checkCompleted($task);
+
+    $this->assertNotSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
+    $this->assertNull($task->getProcessedAt());
+  }
+
+  public function testItKeepsProcessedAtWhenTaskIsAlreadyCompleted(): void {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setProcessedAt(Carbon::now()->subDays(3)->millisecond(0));
+    $this->entityManager->flush();
+    $originalProcessedAt = $task->getProcessedAt();
+
+    $this->repository->checkCompleted($task);
+
+    $this->assertSame($originalProcessedAt, $task->getProcessedAt());
+  }
+
   private function createTask(): ScheduledTaskEntity {
     return $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
   }

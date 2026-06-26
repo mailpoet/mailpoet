@@ -80,6 +80,9 @@ class ScheduledTaskQueuedSubscriberRepository extends Repository {
   }
 
   public function checkCompleted(ScheduledTaskEntity $task): void {
+    if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
+      return;
+    }
     if ($this->hasUnprocessed($task)) {
       return;
     }
