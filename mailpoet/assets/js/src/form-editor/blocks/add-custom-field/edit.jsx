@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Placeholder, Spinner } from '@wordpress/components';
-import { BlockIcon } from '@wordpress/block-editor';
+import { BlockIcon, useBlockProps } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
@@ -10,6 +10,7 @@ import { storeName } from '../../store/constants';
 
 function AddCustomField({ clientId }) {
   const { createCustomField } = useDispatch(storeName);
+  const blockProps = useBlockProps();
 
   const dateSettings = useSelect(
     (sel) => sel(storeName).getDateSettingsData(),
@@ -26,20 +27,25 @@ function AddCustomField({ clientId }) {
   };
 
   return (
-    <Placeholder
-      icon={<BlockIcon icon={Icon} showColors />}
-      label={MailPoet.I18n.t('blockAddCustomFieldFormHeading')}
-      className="mailpoet_custom_field_add_placeholder"
-    >
-      {!isCreating ? (
-        <>
-          <p>{MailPoet.I18n.t('blockAddCustomFieldDescription')}</p>
-          <AddCustomFieldForm onSubmit={onSubmit} dateSettings={dateSettings} />
-        </>
-      ) : (
-        <Spinner />
-      )}
-    </Placeholder>
+    <div {...blockProps}>
+      <Placeholder
+        icon={<BlockIcon icon={Icon} showColors />}
+        label={MailPoet.I18n.t('blockAddCustomFieldFormHeading')}
+        className="mailpoet_custom_field_add_placeholder"
+      >
+        {!isCreating ? (
+          <>
+            <p>{MailPoet.I18n.t('blockAddCustomFieldDescription')}</p>
+            <AddCustomFieldForm
+              onSubmit={onSubmit}
+              dateSettings={dateSettings}
+            />
+          </>
+        ) : (
+          <Spinner />
+        )}
+      </Placeholder>
+    </div>
   );
 }
 
