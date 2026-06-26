@@ -7,6 +7,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Newsletter\NewsletterPostsRepository;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -152,8 +153,12 @@ class LatestPostsTest extends \MailPoetTest {
 
     $html = $this->render(['perPage' => 2], ['columns' => 2]);
 
-    verify($html)->stringContainsString('width="50%"');
-    verify(substr_count($html, '<td valign="top" width="50%"'))->equals(2);
+    // Columns are rendered with the core email Columns/Column renderers, so the
+    // output matches how the editor renders a real core/columns block.
+    verify($html)->stringContainsString('email-block-columns');
+    verify(substr_count($html, 'email-block-column-content'))->equals(2);
+    verify($html)->stringContainsString('Latest posts block C');
+    verify($html)->stringContainsString('Latest posts block B');
   }
 
   public function testItIncludesPostsFromSelectedCategory(): void {
@@ -211,6 +216,213 @@ class LatestPostsTest extends \MailPoetTest {
 
     verify($html)->stringContainsString('No posts found.');
     verify($html)->stringNotContainsString('Latest posts block');
+  }
+
+  public function testItRendersFeaturedImageAsRegularImageBlock(): void {
+    // core/post-featured-image renders as a bare <figure> with a fixed height
+    // and object-fit:cover. It must be routed through the email image renderer
+    // so it is table-wrapped and scales by width like a regular image block.
+    [$attachmentId, $url] = $this->createAttachment();
+    $figure = sprintf(
+      '<figure class="wp-block-post-featured-image"><img width="600" height="400" src="%s" class="wp-post-image" alt="" style="object-fit:cover;" srcset="%s 600w" sizes="100vw" /></figure>',
+      $url,
+      $url
+    );
+
+    $html = $this->block->renderImageBlockForEmail($figure, [
+      'blockName' => 'core/post-featured-image',
+      'attrs' => ['id' => $attachmentId, 'sizeSlug' => 'full'],
+      'email_attrs' => ['width' => '320px'],
+    ], $this->renderingContext());
+
+    verify($html)->stringContainsString('<table');
+    verify($html)->stringNotContainsString('<figure');
+    verify($html)->stringContainsString($url);
+
+    $image = $this->getImageAttributes($html);
+    // Filling the available width (capped by the 600px intrinsic size).
+    verify($image['width'])->equals(320);
+    // No fixed height + no object-fit means it keeps its natural aspect ratio.
+    verify($image['height'])->null();
+    verify((string)$image['style'])->stringNotContainsString('object-fit');
+
+    wp_delete_post($attachmentId, true);
+  }
+
+  public function testItRendersAvatarAsRegularImageBlockKeepingItsSize(): void {
+    // core/avatar renders as a <div><img> at a fixed pixel size. It must be
+    // table-wrapped like an image while keeping that size (not stretched).
+    $avatar = '<div class="wp-block-avatar">'
+      . '<img src="http://example.com/avatar.jpg" alt="" class="avatar" height="96" width="96" />'
+      . '</div>';
+
+    $html = $this->block->renderImageBlockForEmail($avatar, [
+      'blockName' => 'core/avatar',
+      'attrs' => [],
+      'email_attrs' => ['width' => '600px'],
+    ], $this->renderingContext());
+
+    verify($html)->stringContainsString('<table');
+    verify($html)->stringNotContainsString('<div class="wp-block-avatar"');
+
+    $image = $this->getImageAttributes($html);
+    verify($image['width'])->equals(96);
+    verify($image['height'])->null();
+  }
+
+  public function testItAppliesTheBlocksOwnTopMarginToTheFirstRow(): void {
+    // The block itself is a render_email_callback, so the engine never wraps it
+    // in add_spacer. We carry the block's engine-assigned margin-top onto the
+    // first row: present when a block precedes us, absent when we are first.
+    $template = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":1},"displayLayout":{"columns":1}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template --><!-- wp:post-title /--><!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+
+    $whenFirst = $this->getRenderedBlockOutput($template);
+    $whenPreceded = $this->getRenderedBlockOutput('<!-- wp:paragraph --><p>Intro</p><!-- /wp:paragraph -->' . $template);
+
+    verify($this->firstLayoutStyle($whenFirst))->stringNotContainsString('margin-top');
+    verify($this->firstLayoutStyle($whenPreceded))->stringContainsString('margin-top');
+  }
+
+  /**
+   * Renders an email and returns the raw HTML our latest-posts block produced
+   * (captured before CSS inlining via the engine's render_block filter).
+   */
+  private function getRenderedBlockOutput(string $content): string {
+    $captured = '';
+    $capture = static function ($blockContent, $parsedBlock) use (&$captured) {
+      if (($parsedBlock['blockName'] ?? '') === 'mailpoet/latest-posts') {
+        $captured = (string)$blockContent;
+      }
+      return $blockContent;
+    };
+    add_filter('render_block', $capture, 11, 2);
+    try {
+      $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+      $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    } finally {
+      remove_filter('render_block', $capture, 11);
+    }
+    return $captured;
+  }
+
+  private function firstLayoutStyle(string $html): string {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    while ($processor->next_tag('div')) {
+      $class = (string)$processor->get_attribute('class');
+      if (strpos($class, 'email-block-layout') !== false) {
+        return (string)$processor->get_attribute('style');
+      }
+    }
+    return '';
+  }
+
+  public function testItSpacesRowsUsingTheEngineLayoutSpacerNotABespokeMargin(): void {
+    // Posts/rows must be separated with the engine's own add_spacer output
+    // (`email-block-layout` margin-top), like every other block, not a custom
+    // margin wrapper.
+    $content = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":3},"displayLayout":{"columns":1}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template --><!-- wp:post-title /--><!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+
+    $rendered = $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    $this->assertIsArray($rendered);
+    $html = $rendered['html'] ?? '';
+    $this->assertIsString($html);
+
+    verify($html)->stringNotContainsString('margin:0 0');
+    verify($html)->stringContainsString('email-block-layout');
+    verify($html)->stringContainsString('margin-top');
+  }
+
+  public function testItFitsColumnsAndGapWithinTheAvailableWidth(): void {
+    // The engine applies the column gap as padding on top of the column widths,
+    // which would overflow the row. We pre-shrink the split so the columns plus
+    // the gap add up to the available width: the single-column image width.
+    [$attachmentId] = $this->createAttachment();
+    set_post_thumbnail($this->postIds[1], $attachmentId);
+    set_post_thumbnail($this->postIds[2], $attachmentId);
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $singleColumn = $this->render(['perPage' => 1], ['columns' => 1], [$this->block('core/post-featured-image', ['sizeSlug' => 'full'])]);
+    $available = $this->getImageAttributes($singleColumn)['width'];
+    $this->assertIsInt($available);
+
+    $twoColumns = $this->render(['perPage' => 2], ['columns' => 2], [$this->block('core/post-featured-image', ['sizeSlug' => 'full'])]);
+    $layout = $this->getColumnLayout($twoColumns);
+
+    verify(count($layout['widths']))->equals(2);
+    verify($layout['widths'][0])->equals($layout['widths'][1]);
+    verify($layout['gap'])->greaterThan(0);
+    // Columns + the inter-column gap must not exceed the available width.
+    verify($layout['widths'][0] + $layout['widths'][1] + $layout['gap'])->lessThanOrEqual($available);
+
+    wp_delete_post($attachmentId, true);
+  }
+
+  public function testItRendersFeaturedImageAtFullWidthInSingleColumn(): void {
+    // In a single-column layout the featured image fills the whole content
+    // width (capped only by its 600px intrinsic size).
+    [$attachmentId] = $this->createAttachment();
+    set_post_thumbnail($this->postIds[2], $attachmentId);
+
+    $content = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":1},"displayLayout":{"columns":1}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template -->'
+      . '<!-- wp:post-featured-image {"sizeSlug":"full"} /-->'
+      . '<!-- wp:post-title /-->'
+      . '<!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+
+    $rendered = $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    $this->assertIsArray($rendered);
+    $html = $rendered['html'] ?? '';
+    $this->assertIsString($html);
+
+    $src = wp_get_attachment_image_url($attachmentId, 'full');
+    $this->assertIsString($src);
+    $image = $this->getImageAttributesBySrc($html, basename($src));
+    $this->assertNotNull($image);
+    $this->assertNotNull($image['width']);
+    // Single column: image spans the full content width, well above a column.
+    verify($image['width'])->greaterThan(400);
+    verify($image['height'])->null();
+
+    wp_delete_post($attachmentId, true);
+  }
+
+  public function testItConstrainsFeaturedImageToColumnWidthInRenderedEmail(): void {
+    // In a multi-column layout the featured image must be capped to the column
+    // width, not the full email width, or it overflows the email container.
+    [$attachmentId] = $this->createAttachment();
+    set_post_thumbnail($this->postIds[2], $attachmentId);
+
+    $content = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":1},"displayLayout":{"columns":2}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template -->'
+      . '<!-- wp:post-featured-image {"sizeSlug":"full"} /-->'
+      . '<!-- wp:post-title /-->'
+      . '<!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+
+    $rendered = $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    $this->assertIsArray($rendered);
+    $html = $rendered['html'] ?? '';
+    $this->assertIsString($html);
+
+    $src = wp_get_attachment_image_url($attachmentId, 'full');
+    $this->assertIsString($src);
+    $image = $this->getImageAttributesBySrc($html, basename($src));
+    $this->assertNotNull($image);
+    $this->assertNotNull($image['width']);
+    // Content width 600px in two columns leaves ~290px per column.
+    verify($image['width'])->lessThanOrEqual(320);
+    // No fixed height keeps the natural aspect ratio.
+    verify($image['height'])->null();
+
+    wp_delete_post($attachmentId, true);
   }
 
   public function testItRewritesLinkColorSelectorSoItCanBeInlined(): void {
@@ -292,12 +504,12 @@ class LatestPostsTest extends \MailPoetTest {
     ]);
   }
 
-  private function createBlockEmailNewsletter(string $type, ?NewsletterEntity $parent = null): NewsletterEntity {
+  private function createBlockEmailNewsletter(string $type, ?NewsletterEntity $parent = null, string $content = '<!-- wp:mailpoet/latest-posts /-->'): NewsletterEntity {
     $postId = $this->wp->wpInsertPost([
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => 'publish',
       'post_title' => 'Latest posts email',
-      'post_content' => '<!-- wp:mailpoet/latest-posts /-->',
+      'post_content' => $content,
     ]);
     $this->assertGreaterThan(0, $postId);
     $this->postIds[] = $postId;
@@ -320,5 +532,107 @@ class LatestPostsTest extends \MailPoetTest {
     $post = $this->wp->getPost($wpPostId);
     $this->assertInstanceOf(\WP_Post::class, $post);
     $GLOBALS['post'] = $post;
+  }
+
+  /**
+   * @return array{0: int, 1: string}
+   */
+  private function createAttachment(): array {
+    $filename = dirname(__DIR__, 5) . '/_data/600x400.jpg';
+    $contents = file_get_contents($filename);
+    $this->assertIsString($contents);
+    $upload = wp_upload_bits(basename($filename), null, $contents);
+    $this->assertEmpty($upload['error']);
+
+    $attachmentId = wp_insert_attachment([
+      'post_title' => basename($upload['file']),
+      'post_content' => '',
+      'post_type' => 'attachment',
+      'post_mime_type' => 'image/jpeg',
+      'guid' => $upload['url'],
+    ], $upload['file']);
+    $this->assertIsInt($attachmentId);
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    $metadata = wp_generate_attachment_metadata($attachmentId, $upload['file']);
+    wp_update_attachment_metadata($attachmentId, $metadata);
+
+    return [$attachmentId, $upload['url']];
+  }
+
+  private function renderingContext(): \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context {
+    return new \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context(new \WP_Theme_JSON());
+  }
+
+  /**
+   * Returns the numeric width/height of the first <img> whose src contains the
+   * given needle. A null value means the attribute is absent.
+   *
+   * @return array{width: ?int, height: ?int}|null
+   */
+  private function getImageAttributesBySrc(string $html, string $srcNeedle): ?array {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    while ($processor->next_tag('img')) {
+      $src = $processor->get_attribute('src');
+      if (!is_string($src) || strpos($src, $srcNeedle) === false) {
+        continue;
+      }
+      $width = $processor->get_attribute('width');
+      $height = $processor->get_attribute('height');
+      return [
+        'width' => (is_string($width) && is_numeric($width)) ? (int)$width : null,
+        'height' => (is_string($height) && is_numeric($height)) ? (int)$height : null,
+      ];
+    }
+    return null;
+  }
+
+  /**
+   * Reads the per-column cell widths and the inter-column gap (padding-left of
+   * the non-first columns) from a rendered core/columns row.
+   *
+   * @return array{widths: int[], gap: int}
+   */
+  private function getColumnLayout(string $html): array {
+    $widths = [];
+    $gap = 0;
+    $processor = new \WP_HTML_Tag_Processor($html);
+    while ($processor->next_tag('td')) {
+      $class = (string)$processor->get_attribute('class');
+      if (strpos($class, 'email-block-column') === false || strpos($class, 'content') !== false) {
+        continue;
+      }
+      $width = $processor->get_attribute('width');
+      $widths[] = (is_string($width) && is_numeric($width)) ? (int)$width : 0;
+
+      $style = (string)$processor->get_attribute('style');
+      foreach (explode(';', $style) as $declaration) {
+        [$property, $value] = array_pad(explode(':', $declaration, 2), 2, '');
+        if (trim($property) === 'padding-left') {
+          $gap = max($gap, (int)round((float)str_replace('px', '', trim($value))));
+        }
+      }
+    }
+    return ['widths' => $widths, 'gap' => $gap];
+  }
+
+  /**
+   * Returns the numeric width/height attributes and style of the first <img>.
+   * A null width/height means the attribute is absent.
+   *
+   * @return array{width: ?int, height: ?int, style: ?string}
+   */
+  private function getImageAttributes(string $html): array {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    if (!$processor->next_tag('img')) {
+      return ['width' => null, 'height' => null, 'style' => null];
+    }
+    $width = $processor->get_attribute('width');
+    $height = $processor->get_attribute('height');
+    $style = $processor->get_attribute('style');
+    return [
+      'width' => (is_string($width) && is_numeric($width)) ? (int)$width : null,
+      'height' => (is_string($height) && is_numeric($height)) ? (int)$height : null,
+      'style' => is_string($style) ? $style : null,
+    ];
   }
 }
