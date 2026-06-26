@@ -7,6 +7,7 @@ import {
   mapFontSizeSlug,
   mapGradientSlug,
 } from './mapping/to-blocks/styles-mapper';
+import { normalizePadding } from './normalize-padding';
 import { formatCustomFieldBlockName } from '../blocks/format-custom-field-block-name.jsx';
 import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider-types';
 
@@ -149,7 +150,9 @@ const mapColumnBlocks = (
     mapped.attributes.className = data.params.class_name;
   }
   if (has(data.params, 'padding')) {
-    mapped.attributes.style.spacing = { padding: data.params.padding };
+    mapped.attributes.style.spacing = {
+      padding: normalizePadding(data.params.padding),
+    };
   }
   if (has(data.params, 'is_stacked_on_mobile')) {
     mapped.attributes.isStackedOnMobile =
@@ -307,7 +310,9 @@ export const formBodyToBlocksFactory = (
           }
         }
         if (has(item.params, 'padding')) {
-          mapped.attributes.style.spacing = { padding: item.params.padding };
+          mapped.attributes.style.spacing = {
+            padding: normalizePadding(item.params.padding),
+          };
         }
         if (item.params && has(item.params, 'font_size')) {
           const fontSize = `${item.params.font_size}${

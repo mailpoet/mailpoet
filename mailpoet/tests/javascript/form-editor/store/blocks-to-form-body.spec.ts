@@ -418,6 +418,32 @@ describe('Blocks to Form Body', () => {
     expect(input.params.padding).to.be.deep.equal(paddingValue);
   });
 
+  it('Should add px to unitless paragraph padding values', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...paragraphBlock,
+        attributes: {
+          style: {
+            spacing: {
+              padding: {
+                top: '228',
+                right: '0',
+                bottom: '3.5',
+                left: '2em',
+              },
+            },
+          },
+        },
+      },
+    ]);
+    expect(input.params.padding).to.be.deep.equal({
+      top: '228px',
+      right: '0',
+      bottom: '3.5px',
+      left: '2em',
+    });
+  });
+
   it('Should map custom font size and line height in paragraph block', () => {
     const [input] = formBlocksToBody([
       {
