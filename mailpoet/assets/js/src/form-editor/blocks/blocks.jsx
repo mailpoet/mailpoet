@@ -3,6 +3,7 @@ import { select } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { formatCustomFieldBlockName } from './format-custom-field-block-name.jsx';
 import { getCustomFieldBlockSettings } from './custom-fields-blocks.jsx';
+import { withFormBlockApiVersion } from './form-block-api-version';
 
 import * as divider from './divider/divider';
 import * as email from './email/email.jsx';
@@ -28,7 +29,10 @@ export const registerCustomFieldBlock = (customField) => {
     namesMap[customField.type].name,
     customField,
   );
-  registerBlockType(blockName, namesMap[customField.type].settings);
+  registerBlockType(
+    blockName,
+    withFormBlockApiVersion(namesMap[customField.type].settings),
+  );
   return blockName;
 };
 
@@ -56,14 +60,23 @@ export const initBlocks = () => {
   });
   setCategories(categories);
 
-  registerBlockType(divider.name, divider.settings);
-  registerBlockType(email.name, email.settings);
-  registerBlockType(submit.name, submit.settings);
-  registerBlockType(firstName.name, firstName.settings);
-  registerBlockType(lastName.name, lastName.settings);
-  registerBlockType(segmentSelect.name, segmentSelect.settings);
-  registerBlockType(html.name, html.settings);
-  registerBlockType(addCustomField.name, addCustomField.settings);
+  registerBlockType(divider.name, withFormBlockApiVersion(divider.settings));
+  registerBlockType(email.name, withFormBlockApiVersion(email.settings));
+  registerBlockType(submit.name, withFormBlockApiVersion(submit.settings));
+  registerBlockType(
+    firstName.name,
+    withFormBlockApiVersion(firstName.settings),
+  );
+  registerBlockType(lastName.name, withFormBlockApiVersion(lastName.settings));
+  registerBlockType(
+    segmentSelect.name,
+    withFormBlockApiVersion(segmentSelect.settings),
+  );
+  registerBlockType(html.name, withFormBlockApiVersion(html.settings));
+  registerBlockType(
+    addCustomField.name,
+    withFormBlockApiVersion(addCustomField.settings),
+  );
   registerBlockType(columns.name, columns.settings);
   registerBlockType(column.name, column.settings);
   registerBlockType(paragraph.name, paragraph.settings);

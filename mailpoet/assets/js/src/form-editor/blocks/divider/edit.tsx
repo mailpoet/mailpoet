@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { ColorGradientSettings } from 'form-editor/components/color-gradient-settings';
 import {
   Panel,
@@ -23,6 +23,20 @@ export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
   const attributeDividerWidth =
     attributes.dividerWidth ?? defaultAttributes.dividerWidth;
   const attributeHeight = attributes.height ?? defaultAttributes.height;
+
+  const spacerStyles: CSSProperties = {
+    height: attributeHeight,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'center',
+  };
+
+  const blockProps = useBlockProps({
+    className: classnames('mailpoet_spacer', attributes.className),
+    style: spacerStyles,
+  });
 
   const dividerSettings = (
     <div className="mailpoet-styles-settings">
@@ -138,18 +152,7 @@ export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
         </Panel>
       </InspectorControls>
 
-      <div
-        className={classnames('mailpoet_spacer', attributes.className)}
-        data-automation-id="editor_spacer_block"
-        style={{
-          height: attributeHeight,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          width: '100%',
-          justifyContent: 'center',
-        }}
-      >
+      <div {...blockProps} data-automation-id="editor_spacer_block">
         <div
           className="mailpoet_divider"
           data-automation-id="editor_divider_block"
