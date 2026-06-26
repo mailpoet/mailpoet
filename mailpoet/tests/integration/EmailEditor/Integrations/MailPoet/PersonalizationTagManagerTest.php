@@ -15,9 +15,11 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalizationTagManagerTest extends \MailPoetTest {
   private NewsletterTask $newsletterTask;
@@ -74,6 +76,33 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
 
     // Tag placed out of href was not replaced
     $this->assertStringContainsString('<!--[mailpoet/subscription-unsubscribe-url]-->', $rendered['html']);
+  }
+
+  public function testItRegistersPersonalizationTagsForLegacyShortcodes(): void {
+    $customField = (new CustomFieldFactory())->create();
+
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+    $personalizationManager->initialize();
+
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
+
+    $expectedTokens = [
+      '[mailpoet/subscriber-displayname]',
+      '[mailpoet/subscriber-count]',
+      '[mailpoet/subscriber-cf-' . $customField->getId() . ']',
+      '[mailpoet/newsletter-subject]',
+      '[mailpoet/date-day]',
+      '[mailpoet/date-day-ordinal]',
+      '[mailpoet/date-day-name]',
+      '[mailpoet/date-month]',
+      '[mailpoet/date-month-name]',
+      '[mailpoet/date-year]',
+    ];
+
+    foreach ($expectedTokens as $token) {
+      $this->assertNotNull($registry->get_by_token($token), "Expected personalization tag {$token} to be registered.");
+    }
   }
 
   public function testItRegistersOrderReviewUrlTagForOrderAutomations(): void {

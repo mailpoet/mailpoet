@@ -7,8 +7,11 @@ use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalizatio
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Date;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Newsletter;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
@@ -19,33 +22,42 @@ class PersonalizationTagManager {
   private Subscriber $subscriber;
   private Site $site;
   private Link $link;
+  private Newsletter $newsletter;
+  private Date $date;
   private OrderReviewUrl $orderReviewUrl;
   private WPFunctions $wp;
   private LinksToShortcodesConvertor $linksToShortcodesConvertor;
   private AutomationStorage $automationStorage;
   private Registry $registry;
   private NewslettersRepository $newslettersRepository;
+  private CustomFieldsRepository $customFieldsRepository;
 
   public function __construct(
     Subscriber $subscriber,
     Site $site,
     Link $link,
+    Newsletter $newsletter,
+    Date $date,
     OrderReviewUrl $orderReviewUrl,
     WPFunctions $wp,
     LinksToShortcodesConvertor $linksToShortcodesConvertor,
     AutomationStorage $automationStorage,
     Registry $registry,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    CustomFieldsRepository $customFieldsRepository
   ) {
     $this->subscriber = $subscriber;
     $this->site = $site;
     $this->link = $link;
+    $this->newsletter = $newsletter;
+    $this->date = $date;
     $this->orderReviewUrl = $orderReviewUrl;
     $this->wp = $wp;
     $this->linksToShortcodesConvertor = $linksToShortcodesConvertor;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
     $this->newslettersRepository = $newslettersRepository;
+    $this->customFieldsRepository = $customFieldsRepository;
   }
 
   /**
@@ -133,6 +145,92 @@ class PersonalizationTagManager {
         null,
         [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
+      $registry->register(new Personalization_Tag(
+        __('WordPress User Display Name', 'mailpoet'),
+        'mailpoet/subscriber-displayname',
+        __('Subscriber', 'mailpoet'),
+        [$this->subscriber, 'getDisplayName'],
+        ['default' => __('member', 'mailpoet')],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Total Number of Subscribers', 'mailpoet'),
+        'mailpoet/subscriber-count',
+        __('Subscriber', 'mailpoet'),
+        [$this->subscriber, 'getCount'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $this->registerSubscriberCustomFieldTags($registry);
+
+      // Newsletter Personalization Tags
+      $registry->register(new Personalization_Tag(
+        __('Newsletter Subject', 'mailpoet'),
+        'mailpoet/newsletter-subject',
+        __('Newsletter', 'mailpoet'),
+        [$this->newsletter, 'getSubject'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+
+      // Date Personalization Tags
+      $registry->register(new Personalization_Tag(
+        __('Current day of the month number', 'mailpoet'),
+        'mailpoet/date-day',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getDay'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
+        'mailpoet/date-day-ordinal',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getDayOrdinal'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Full name of current day', 'mailpoet'),
+        'mailpoet/date-day-name',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getDayName'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Current month number', 'mailpoet'),
+        'mailpoet/date-month',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getMonth'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Full name of current month', 'mailpoet'),
+        'mailpoet/date-month-name',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getMonthName'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Year', 'mailpoet'),
+        'mailpoet/date-year',
+        __('Date', 'mailpoet'),
+        [$this->date, 'getYear'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
 
       // Site Personalization Tags
       $registry->register(new Personalization_Tag(
@@ -213,6 +311,24 @@ class PersonalizationTagManager {
       10,
       2
     );
+  }
+
+  private function registerSubscriberCustomFieldTags(Personalization_Tags_Registry $registry): void {
+    $customFields = $this->customFieldsRepository->findAllActive();
+    foreach ($customFields as $customField) {
+      $customFieldId = (int)$customField->getId();
+      $registry->register(new Personalization_Tag(
+        $customField->getName(),
+        'mailpoet/subscriber-cf-' . $customFieldId,
+        __('Subscriber', 'mailpoet'),
+        function (array $context, array $args = []) use ($customFieldId): string {
+          return $this->subscriber->getCustomField($customFieldId, $context, $args);
+        },
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
+    }
   }
 
   public function convertLinksToShortcodes(array $emailContent): array {
