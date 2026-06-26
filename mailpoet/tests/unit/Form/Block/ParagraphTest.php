@@ -101,6 +101,26 @@ class ParagraphTest extends \MailPoetUnitTest {
     verify($html)->stringContainsString('padding:10px 20px 30px 40px;');
   }
 
+  public function testItShouldRenderUnitlessPaddingWithPx() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'padding' => ['top' => '228', 'right' => '0', 'bottom' => '3.5', 'left' => '2em'],
+      ],
+    ]);
+    verify($html)->stringContainsString('padding:228px 0 3.5px 2em;');
+  }
+
+  public function testItShouldRenderScalarPadding() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'padding' => '20px',
+      ],
+    ]);
+    verify($html)->stringContainsString('padding:20px;');
+  }
+
   public function testItShouldRenderFontSizeWithUnit() {
     $html = $this->paragraph->render([
       'params' => [

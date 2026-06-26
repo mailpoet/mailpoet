@@ -83,12 +83,16 @@ class Paragraph {
     if (!empty($block['params']['line_height'])) {
       $styles[] = 'line-height: ' . $block['params']['line_height'];
     }
-    if (!empty($block['params']['padding']) && is_array($block['params']['padding'])) {
-      $top = is_scalar($block['params']['padding']['top'] ?? null) ? (string)$block['params']['padding']['top'] : '0';
-      $right = is_scalar($block['params']['padding']['right'] ?? null) ? (string)$block['params']['padding']['right'] : '0';
-      $bottom = is_scalar($block['params']['padding']['bottom'] ?? null) ? (string)$block['params']['padding']['bottom'] : '0';
-      $left = is_scalar($block['params']['padding']['left'] ?? null) ? (string)$block['params']['padding']['left'] : '0';
-      $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
+    if (!empty($block['params']['padding'])) {
+      if (is_array($block['params']['padding'])) {
+        $top = $this->normalizePaddingValue($block['params']['padding']['top'] ?? '0');
+        $right = $this->normalizePaddingValue($block['params']['padding']['right'] ?? '0');
+        $bottom = $this->normalizePaddingValue($block['params']['padding']['bottom'] ?? '0');
+        $left = $this->normalizePaddingValue($block['params']['padding']['left'] ?? '0');
+        $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
+      } elseif (is_scalar($block['params']['padding'])) {
+        $styles[] = 'padding:' . $this->normalizePaddingValue($block['params']['padding']) . ';';
+      }
     }
     if (empty($styles)) {
       return null;
@@ -96,5 +100,17 @@ class Paragraph {
     return 'style="'
       . $this->wp->escAttr(join('; ', $styles))
       . '"';
+  }
+
+  private function normalizePaddingValue($value): string {
+    if (!is_scalar($value)) {
+      return '0';
+    }
+
+    $cssValue = trim((string)$value);
+    if ($cssValue !== '' && is_numeric($cssValue) && (float)$cssValue !== 0.0) {
+      return $cssValue . 'px';
+    }
+    return $cssValue;
   }
 }
