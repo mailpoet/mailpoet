@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\DataInconsistency;
 
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -15,6 +16,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
+use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -70,6 +72,24 @@ class DataInconsistencyRepository {
       ['statuses' => ArrayParameterType::STRING]
     )->fetchOne();
     return intval($count);
+  }
+
+  public function getUnmigratedSendingTaskSubscribersCount(): int {
+    /** @var string $count */
+    $count = $this->queryUnmigratedSendingTaskSubscribers('SELECT COUNT(*)')->fetchOne();
+    return intval($count);
+  }
+
+  /**
+   * Task ids of not-completed sending/confirmation tasks that still hold pending
+   * rows in the log — the recovery feeds these to the Mover to finish the queue
+   * backfill an interrupted migration left undone.
+   *
+   * @return int[]
+   */
+  public function getUnmigratedSendingTaskIds(): array {
+    $ids = $this->queryUnmigratedSendingTaskSubscribers('SELECT DISTINCT sts.`task_id`')->fetchFirstColumn();
+    return array_map(static fn($id): int => is_scalar($id) ? (int)$id : 0, $ids);
   }
 
   public function getSendingQueuesWithoutNewsletterCount(): int {
@@ -302,6 +322,37 @@ class DataInconsistencyRepository {
     $queueTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     return "$taskAlias.`status` IN (:statuses)
       AND EXISTS (SELECT 1 FROM $queueTable stqs WHERE stqs.`task_id` = $taskAlias.`id`)";
+  }
+
+  /**
+   * Pending (processed = 0) log rows of not-completed sending/confirmation tasks.
+   * After a successful queue/log split migration these rows live in the queue, so
+   * any left in the log mean the migration was interrupted. Shared so the count
+   * and the task-id lookup target the exact same rows.
+   *
+   * $select is a fixed string from our own code, never user input.
+   */
+  private function queryUnmigratedSendingTaskSubscribers(string $select): Result {
+    $logTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $tasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    return $this->entityManager->getConnection()->executeQuery(
+      "$select FROM $logTable sts
+       JOIN $tasksTable st ON st.`id` = sts.`task_id`
+       WHERE st.`type` IN (:types)
+         AND (st.`status` IS NULL OR st.`status` != :completed)
+         AND st.`deleted_at` IS NULL
+         AND sts.`processed` = :unprocessed",
+      [
+        'types' => [SendingQueue::TASK_TYPE, BulkConfirmationEmailResend::TASK_TYPE],
+        'completed' => ScheduledTaskEntity::STATUS_COMPLETED,
+        'unprocessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+      ],
+      [
+        'types' => ArrayParameterType::STRING,
+        'completed' => ParameterType::STRING,
+        'unprocessed' => ParameterType::INTEGER,
+      ]
+    );
   }
 
   private function createOrphanedScheduledTaskSubscribersTemporaryTables(): void {

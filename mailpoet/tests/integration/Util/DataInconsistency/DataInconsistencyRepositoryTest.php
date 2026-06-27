@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\DataInconsistency;
 
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
@@ -17,6 +18,7 @@ use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoetVendor\Carbon\Carbon;
 
 class DataInconsistencyRepositoryTest extends \MailPoetTest {
   private DataInconsistencyRepository $repository;
@@ -164,6 +166,36 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
 
     // Reopening only flips the status; the queued rows stay put for the worker to send.
     verify($this->entityManager->getRepository(ScheduledTaskQueuedSubscriberEntity::class)->count([]))->equals(4);
+  }
+
+  public function testItDetectsAndScopesUnmigratedSendingTaskSubscribers(): void {
+    verify($this->repository->getUnmigratedSendingTaskSubscribersCount())->equals(0);
+
+    // In-flight sending + confirmation tasks with pending log rows — what an interrupted migration leaves.
+    $sendingTask = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new ScheduledTaskSubscriber())->createUnprocessed($sendingTask, (new Subscriber())->create());
+    $confirmationTask = (new ScheduledTask())->create(BulkConfirmationEmailResend::TASK_TYPE, null);
+    (new ScheduledTaskSubscriber())->createUnprocessed($confirmationTask, (new Subscriber())->create());
+
+    // Controls that must be ignored.
+    $completed = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    (new ScheduledTaskSubscriber())->createUnprocessed($completed, (new Subscriber())->create());
+    $bounce = (new ScheduledTask())->create('bounce', null);
+    (new ScheduledTaskSubscriber())->createUnprocessed($bounce, (new Subscriber())->create());
+    $alreadyProcessed = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new ScheduledTaskSubscriber())->createProcessed($alreadyProcessed, (new Subscriber())->create());
+    $deleted = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new ScheduledTaskSubscriber())->createUnprocessed($deleted, (new Subscriber())->create());
+    $deleted->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+
+    verify($this->repository->getUnmigratedSendingTaskSubscribersCount())->equals(2);
+
+    $ids = $this->repository->getUnmigratedSendingTaskIds();
+    sort($ids);
+    $expected = [(int)$sendingTask->getId(), (int)$confirmationTask->getId()];
+    sort($expected);
+    verify($ids)->equals($expected);
   }
 
   private function findScheduledTask(int $id): ScheduledTaskEntity {

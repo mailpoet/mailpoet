@@ -6,9 +6,13 @@ use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Help;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\MigrationSendingPauser;
+use MailPoet\Newsletter\Sending\ScheduledTaskQueuedSubscriberRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\ScheduledTaskQueuedSubscriber as ScheduledTaskQueuedSubscriberFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 use MailPoetVendor\Carbon\Carbon;
@@ -161,5 +165,26 @@ class HelpTest extends \MailPoetTest {
 
     $response = $this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS]);
     verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASK_QUEUED_SUBSCRIBERS] ?? null)->equals(0);
+  }
+
+  public function testItFixesUnmigratedSendingTaskSubscribersAndResumesSending(): void {
+    MailerLog::resumeSending();
+
+    // Interrupted migration: pending rows still in the log, sending left paused.
+    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    $subscriber = (new SubscriberFactory())->create();
+    (new ScheduledTaskSubscriberFactory())->createUnprocessed($task, $subscriber);
+    $this->diContainer->get(MigrationSendingPauser::class)->pause();
+    verify(MailerLog::isSendingPaused())->true();
+
+    $status = $this->endpoint->getInconsistentDataStatus();
+    verify($status->data[DataInconsistencyController::UNMIGRATED_SENDING_TASK_SUBSCRIBERS] ?? null)->equals(1);
+
+    $response = $this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::UNMIGRATED_SENDING_TASK_SUBSCRIBERS]);
+    verify($response->data[DataInconsistencyController::UNMIGRATED_SENDING_TASK_SUBSCRIBERS] ?? null)->equals(0);
+
+    // The pending recipient is moved into the queue and sending is resumed.
+    verify($this->diContainer->get(ScheduledTaskQueuedSubscriberRepository::class)->countForTask($task))->equals(1);
+    verify(MailerLog::isSendingPaused())->false();
   }
 }

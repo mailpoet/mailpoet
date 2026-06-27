@@ -2,6 +2,8 @@
 
 namespace MailPoet\Util\DataInconsistency;
 
+use MailPoet\Mailer\MigrationSendingPauser;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoet\UnexpectedValueException;
 
 class DataInconsistencyController {
@@ -13,6 +15,7 @@ class DataInconsistencyController {
   const ORPHANED_LINKS = 'orphaned_links';
   const ORPHANED_NEWSLETTER_POSTS = 'orphaned_newsletter_posts';
   const COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS = 'completed_sending_task_with_queued_subscribers';
+  const UNMIGRATED_SENDING_TASK_SUBSCRIBERS = 'unmigrated_sending_task_subscribers';
 
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
@@ -23,14 +26,21 @@ class DataInconsistencyController {
     self::ORPHANED_LINKS,
     self::ORPHANED_NEWSLETTER_POSTS,
     self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS,
+    self::UNMIGRATED_SENDING_TASK_SUBSCRIBERS,
   ];
 
   private DataInconsistencyRepository $repository;
+  private ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover;
+  private MigrationSendingPauser $migrationSendingPauser;
 
   public function __construct(
-    DataInconsistencyRepository $repository
+    DataInconsistencyRepository $repository,
+    ScheduledTaskSubscriberMover $scheduledTaskSubscriberMover,
+    MigrationSendingPauser $migrationSendingPauser
   ) {
     $this->repository = $repository;
+    $this->scheduledTaskSubscriberMover = $scheduledTaskSubscriberMover;
+    $this->migrationSendingPauser = $migrationSendingPauser;
   }
 
   public function getInconsistentDataStatus(): array {
@@ -43,6 +53,7 @@ class DataInconsistencyController {
       self::ORPHANED_LINKS => $this->repository->getOrphanedNewsletterLinksCount(),
       self::ORPHANED_NEWSLETTER_POSTS => $this->repository->getOrphanedNewsletterPostsCount(),
       self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS => $this->repository->getCompletedSendingTasksWithQueuedSubscribersCount(),
+      self::UNMIGRATED_SENDING_TASK_SUBSCRIBERS => $this->repository->getUnmigratedSendingTaskSubscribersCount(),
     ];
     $result['total'] = array_sum($result);
     return $result;
@@ -68,6 +79,12 @@ class DataInconsistencyController {
       $this->repository->cleanupOrphanedNewsletterPosts();
     } elseif ($inconsistency === self::COMPLETED_SENDING_TASK_WITH_QUEUED_SUBSCRIBERS) {
       $this->repository->reopenCompletedSendingTasksWithQueuedSubscribers();
+    } elseif ($inconsistency === self::UNMIGRATED_SENDING_TASK_SUBSCRIBERS) {
+      // Finish the queue backfill an interrupted migration left undone, then lift
+      // the migration pause it never reached resume() to clear (a no-op if we
+      // didn't pause). resume() restores the pre-migration sending state.
+      $this->scheduledTaskSubscriberMover->backfillPendingToQueue($this->repository->getUnmigratedSendingTaskIds());
+      $this->migrationSendingPauser->resume();
     }
   }
 }

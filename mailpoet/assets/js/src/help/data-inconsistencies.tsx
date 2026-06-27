@@ -52,6 +52,10 @@ export function DataInconsistencies() {
         'Completed Sending Tasks with Pending Recipients',
         'mailpoet',
       ),
+      unmigrated_sending_task_subscribers: __(
+        'Pending Recipients Awaiting Migration',
+        'mailpoet',
+      ),
     }),
     [],
   );
@@ -70,7 +74,13 @@ export function DataInconsistencies() {
         setCleaningKey('');
         setData((response.data as DataInconsistencies) || null);
         MailPoet.Notice.show({
-          message: __('Inconsistency fixed!', 'mailpoet'),
+          message:
+            key === 'unmigrated_sending_task_subscribers'
+              ? __(
+                  'Pending recipients migrated. Email sending has resumed.',
+                  'mailpoet',
+                )
+              : __('Inconsistency fixed!', 'mailpoet'),
           scroll: true,
         });
       })
