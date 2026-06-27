@@ -5,10 +5,9 @@ namespace MailPoet\Migrations\App;
 use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskQueuedSubscriberEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Mailer\MigrationSendingPauser;
 use MailPoet\Migrator\AppMigration;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscriberMover;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 
@@ -28,14 +27,14 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
  *
  * Sending is paused for the duration via MigrationSendingPauser. resume() is
  * only reached on success: if this migration is interrupted it leaves sending
- * paused (with the user notice) and is retried on the next run — both the
- * INSERT IGNORE and the processed=0 DELETE are idempotent.
+ * paused (with the user notice) and is retried on the next run. The move runs in
+ * idempotent batches (see ScheduledTaskSubscriberMover::backfillPendingToQueue),
+ * so each retry only processes the rows still left in the log — the migration
+ * converges even on a host where a single unbounded statement would time out.
  */
 class Migration_20260617_130000_App extends AppMigration {
   public function run(): void {
     $connection = $this->entityManager->getConnection();
-    $logTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
-    $queueTable = $this->entityManager->getClassMetadata(ScheduledTaskQueuedSubscriberEntity::class)->getTableName();
     $tasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
 
     $taskIds = $connection->executeQuery(
@@ -60,28 +59,11 @@ class Migration_20260617_130000_App extends AppMigration {
       return;
     }
 
-    /** @var int[] $taskIds */
-    $taskIdsList = implode(',', array_map('intval', $taskIds));
-
     $pauser->pause();
 
-    $connection->executeStatement(
-      "INSERT IGNORE INTO {$queueTable} (task_id, subscriber_id, created_at)
-       SELECT sts.`task_id`, sts.`subscriber_id`, COALESCE(sts.`created_at`, sts.`updated_at`, NOW())
-       FROM {$logTable} sts
-       WHERE sts.`task_id` IN ({$taskIdsList})
-         AND sts.`processed` = :unprocessed",
-      ['unprocessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED],
-      ['unprocessed' => ParameterType::INTEGER]
-    );
-
-    $connection->executeStatement(
-      "DELETE FROM {$logTable}
-       WHERE `task_id` IN ({$taskIdsList})
-         AND `processed` = :unprocessed",
-      ['unprocessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED],
-      ['unprocessed' => ParameterType::INTEGER]
-    );
+    /** @var ScheduledTaskSubscriberMover $mover */
+    $mover = $this->container->get(ScheduledTaskSubscriberMover::class);
+    $mover->backfillPendingToQueue(array_map(static fn($id): int => is_scalar($id) ? (int)$id : 0, $taskIds));
 
     $pauser->resume();
   }

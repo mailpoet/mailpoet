@@ -136,6 +136,94 @@ class ScheduledTaskSubscriberMoverTest extends \MailPoetTest {
     $this->assertNull($this->getLogRow($task, $subscriber));
   }
 
+  public function testItBackfillsPendingLogRowsToTheQueueInBatches(): void {
+    $task = $this->createTask();
+    $createdAt = '2024-05-06 07:08:09';
+    $subscribers = [];
+    for ($i = 0; $i < 5; $i++) {
+      $subscriber = $this->createSubscriber();
+      $subscribers[] = $subscriber;
+      $this->createPendingLogSubscriber($task, $subscriber, $createdAt);
+    }
+
+    // batchSize 2 forces three batches (2 + 2 + 1) over the 5 pending rows
+    $moved = $this->mover->backfillPendingToQueue([(int)$task->getId()], 2);
+
+    $this->assertSame(5, $moved);
+    foreach ($subscribers as $subscriber) {
+      $queueRow = $this->getQueueRow($task, $subscriber);
+      $this->assertNotNull($queueRow);
+      $this->assertSame($createdAt, $queueRow['created_at']);
+      $this->assertNull($this->getLogRow($task, $subscriber));
+    }
+  }
+
+  public function testItBackfillIsIdempotent(): void {
+    $task = $this->createTask();
+    $subscriber = $this->createSubscriber();
+    $this->createPendingLogSubscriber($task, $subscriber, '2024-05-06 07:08:09');
+
+    $this->mover->backfillPendingToQueue([(int)$task->getId()], 2);
+    $secondRunMoved = $this->mover->backfillPendingToQueue([(int)$task->getId()], 2);
+
+    $this->assertSame(0, $secondRunMoved);
+    $this->assertNotNull($this->getQueueRow($task, $subscriber));
+    $this->assertNull($this->getLogRow($task, $subscriber));
+  }
+
+  public function testItBackfillLeavesProcessedLogRowsUntouched(): void {
+    $task = $this->createTask();
+    $pending = $this->createSubscriber();
+    $processed = $this->createSubscriber();
+    $this->createPendingLogSubscriber($task, $pending, '2024-05-06 07:08:09');
+    $this->createLogSubscriber($task, $processed, '2024-05-06 07:08:09');
+
+    $this->mover->backfillPendingToQueue([(int)$task->getId()]);
+
+    $this->assertNotNull($this->getQueueRow($task, $pending));
+    $this->assertNull($this->getLogRow($task, $pending));
+
+    $this->assertNull($this->getQueueRow($task, $processed));
+    $processedRow = $this->getLogRow($task, $processed);
+    $this->assertNotNull($processedRow);
+    $this->assertSame(ScheduledTaskSubscriberEntity::STATUS_PROCESSED, (int)$processedRow['processed']);
+  }
+
+  public function testItBackfillsPendingRowsAcrossMultipleTasks(): void {
+    $taskA = $this->createTask();
+    $taskB = $this->createTask();
+    $subscriberA = $this->createSubscriber();
+    $subscriberB = $this->createSubscriber();
+    $this->createPendingLogSubscriber($taskA, $subscriberA, '2024-05-06 07:08:09');
+    $this->createPendingLogSubscriber($taskB, $subscriberB, '2024-05-06 07:08:09');
+
+    $moved = $this->mover->backfillPendingToQueue([(int)$taskA->getId(), (int)$taskB->getId()], 2);
+
+    $this->assertSame(2, $moved);
+    $this->assertNotNull($this->getQueueRow($taskA, $subscriberA));
+    $this->assertNotNull($this->getQueueRow($taskB, $subscriberB));
+    $this->assertNull($this->getLogRow($taskA, $subscriberA));
+    $this->assertNull($this->getLogRow($taskB, $subscriberB));
+  }
+
+  public function testItBackfillLeavesQueueRowsWithoutAPendingLogRowUntouched(): void {
+    $task = $this->createTask();
+    // post-upgrade enqueue: lives only in the queue, no processed=0 log row
+    $alreadyQueued = $this->createSubscriber();
+    // pre-split pending recipient still in the log
+    $pending = $this->createSubscriber();
+    $this->createQueuedSubscriber($task, $alreadyQueued, '2024-05-06 07:08:09');
+    $this->createPendingLogSubscriber($task, $pending, '2024-05-06 07:08:09');
+
+    $moved = $this->mover->backfillPendingToQueue([(int)$task->getId()]);
+
+    // only the pending log row counts as moved; the queue-only row is left alone
+    $this->assertSame(1, $moved);
+    $this->assertNotNull($this->getQueueRow($task, $alreadyQueued));
+    $this->assertNotNull($this->getQueueRow($task, $pending));
+    $this->assertNull($this->getLogRow($task, $pending));
+  }
+
   private function createTask(): ScheduledTaskEntity {
     return $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
   }
@@ -162,12 +250,24 @@ class ScheduledTaskSubscriberMoverTest extends \MailPoetTest {
     );
   }
 
+  private function createPendingLogSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber, string $createdAt): void {
+    $this->createLogSubscriber(
+      $task,
+      $subscriber,
+      $createdAt,
+      ScheduledTaskSubscriberEntity::FAIL_STATUS_OK,
+      null,
+      ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED
+    );
+  }
+
   private function createLogSubscriber(
     ScheduledTaskEntity $task,
     SubscriberEntity $subscriber,
     string $createdAt,
     int $failed = ScheduledTaskSubscriberEntity::FAIL_STATUS_OK,
-    ?string $error = null
+    ?string $error = null,
+    int $processed = ScheduledTaskSubscriberEntity::STATUS_PROCESSED
   ): void {
     $this->connection->executeStatement(
       "INSERT INTO $this->logTable
@@ -176,7 +276,7 @@ class ScheduledTaskSubscriberMoverTest extends \MailPoetTest {
       [
         'taskId' => $task->getId(),
         'subscriberId' => $subscriber->getId(),
-        'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED,
+        'processed' => $processed,
         'failed' => $failed,
         'error' => $error,
         'createdAt' => $createdAt,

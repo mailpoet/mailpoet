@@ -11,6 +11,8 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ScheduledTaskSubscriberMover {
+  const BACKFILL_BATCH_SIZE = 10000;
+
   private EntityManager $entityManager;
   private ScheduledTaskQueuedSubscriberRepository $scheduledTaskQueuedSubscriberRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
@@ -59,6 +61,82 @@ class ScheduledTaskSubscriberMover {
       $this->insertToQueue($connection, $task, $subscriberId);
     });
     $this->detachLogFromIdentityMap($task, $subscriberId);
+  }
+
+  /**
+   * Moves the pending (processed = 0) log rows of the given tasks into the queue,
+   * in batches. Used by the queue/log split migration and by the data-integrity
+   * recovery when a migration was interrupted.
+   *
+   * Each batch INSERT-then-DELETEs in a single transaction, entirely in the
+   * database — the queue itself records what was moved, so the DELETE removes the
+   * pending log rows that now have a queue counterpart. INSERT before DELETE so an
+   * interrupted batch can only duplicate a row (harmless while sending is paused),
+   * never drop a pending recipient. Every committed batch permanently shrinks the
+   * remaining work, so a retried run only does what's left, with no cursor to
+   * track. Idempotent: INSERT IGNORE skips rows already in the queue.
+   *
+   * Safe against over-deleting: a post-split pending recipient lives in the log
+   * XOR the queue, and post-upgrade enqueues write only the queue (no processed=0
+   * log row), so the join only ever matches rows this backfill just moved.
+   *
+   * Pending rows are expected to live only in the queue afterwards, so callers
+   * holding ScheduledTaskSubscriberEntity instances for the moved rows should
+   * re-query rather than trust the identity map.
+   *
+   * @param int[] $taskIds
+   * @return int Number of pending log rows moved to the queue.
+   */
+  public function backfillPendingToQueue(array $taskIds, int $batchSize = self::BACKFILL_BATCH_SIZE): int {
+    $taskIds = array_values(array_unique(array_filter($taskIds)));
+    if ($taskIds === []) {
+      return 0;
+    }
+
+    $logTable = $this->getLogTableName();
+    $queueTable = $this->getQueueTableName();
+    $connection = $this->entityManager->getConnection();
+    $movedCount = 0;
+
+    do {
+      $movedInBatch = (int)$connection->transactional(function (Connection $connection) use ($taskIds, $batchSize, $logTable, $queueTable): int {
+        $connection->executeStatement(
+          "INSERT IGNORE INTO $queueTable (`task_id`, `subscriber_id`, `created_at`)
+           SELECT log.`task_id`, log.`subscriber_id`, COALESCE(log.`created_at`, log.`updated_at`, NOW())
+           FROM $logTable log
+           WHERE log.`task_id` IN (:taskIds) AND log.`processed` = :unprocessed
+           LIMIT :limit",
+          [
+            'taskIds' => $taskIds,
+            'unprocessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+            'limit' => $batchSize,
+          ],
+          [
+            'taskIds' => ArrayParameterType::INTEGER,
+            'unprocessed' => ParameterType::INTEGER,
+            'limit' => ParameterType::INTEGER,
+          ]
+        );
+
+        return (int)$connection->executeStatement(
+          "DELETE log FROM $logTable log
+           JOIN $queueTable queue
+             ON queue.`task_id` = log.`task_id` AND queue.`subscriber_id` = log.`subscriber_id`
+           WHERE log.`task_id` IN (:taskIds) AND log.`processed` = :unprocessed",
+          [
+            'taskIds' => $taskIds,
+            'unprocessed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
+          ],
+          [
+            'taskIds' => ArrayParameterType::INTEGER,
+            'unprocessed' => ParameterType::INTEGER,
+          ]
+        );
+      });
+      $movedCount += $movedInBatch;
+    } while ($movedInBatch > 0);
+
+    return $movedCount;
   }
 
   /**
