@@ -2,7 +2,6 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
 
@@ -208,11 +207,9 @@ class OrderAttributionRevenueReader {
       '
         SELECT swp.newsletter_id AS newsletter_id, SUM(swp.order_price_total) AS total, COUNT(swp.id) AS count
         FROM %i swp
-        LEFT JOIN %i q ON q.id = swp.queue_id
         WHERE swp.newsletter_id IN (' . $newsletterPlaceholders . ')
           AND swp.order_currency = %s
           AND swp.status IN (' . $statePlaceholders . ')
-          AND (q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE %s)
           ' . $dateSql . '
           ' . $excludeSql . '
         GROUP BY swp.newsletter_id
@@ -220,12 +217,10 @@ class OrderAttributionRevenueReader {
       array_merge(
         [
           $wpdb->prefix . 'mailpoet_statistics_woocommerce_purchases',
-          $wpdb->prefix . 'mailpoet_sending_queues',
         ],
         $newsletterIds,
         [$currency],
         $purchaseStates,
-        [NewsletterReplayMetadata::getMetaLikePattern()],
         $dateParams,
         $excludeParams
       )
@@ -259,7 +254,7 @@ class OrderAttributionRevenueReader {
       return [];
     }
 
-    $rows = $this->excludeReplayAttributionRows($this->getWooAttributedOrders($from, $to, $newsletterIds, null));
+    $rows = $this->getWooAttributedOrders($from, $to, $newsletterIds, null);
     $result = [];
     foreach ($rows as $row) {
       $order = $this->wooHelper->wcGetOrder((int)$row['order_id']);
@@ -411,9 +406,7 @@ class OrderAttributionRevenueReader {
         INNER JOIN %i woo_order ON swp.order_id = ' . $orderIdColumn . '
         INNER JOIN %i subscriber ON subscriber.ID = swp.subscriber_id
         INNER JOIN %i newsletter ON newsletter.ID = swp.newsletter_id
-        LEFT JOIN %i q ON q.id = swp.queue_id
         WHERE swp.newsletter_id IN (' . $newsletterPlaceholders . ')
-          AND (q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE %s)
           ' . $dateSql . '
           ' . $excludeSql . '
       ',
@@ -423,10 +416,8 @@ class OrderAttributionRevenueReader {
           $orderTable,
           $wpdb->prefix . 'mailpoet_subscribers',
           $wpdb->prefix . 'mailpoet_newsletters',
-          $wpdb->prefix . 'mailpoet_sending_queues',
         ],
         $newsletterIds,
-        [NewsletterReplayMetadata::getMetaLikePattern()],
         $dateParams,
         $excludeParams
       )
@@ -450,7 +441,7 @@ class OrderAttributionRevenueReader {
       return [];
     }
 
-    $attributionRows = $this->excludeReplayAttributionRows($this->getWooAttributedOrders($from, $to, $newsletterIds, null));
+    $attributionRows = $this->getWooAttributedOrders($from, $to, $newsletterIds, null);
     if (!$attributionRows) {
       return [];
     }
@@ -579,49 +570,6 @@ class OrderAttributionRevenueReader {
 
     $rows = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
     return $this->normalizeAttributionRows(is_array($rows) ? $rows : []);
-  }
-
-  /**
-   * @param AttributionRow[] $rows
-   * @return AttributionRow[]
-   */
-  private function excludeReplayAttributionRows(array $rows): array {
-    $queueIds = $this->normalizeIds(array_map(function(array $row): int {
-      return (int)($row['queue_id'] ?? 0);
-    }, $rows));
-    if (!$queueIds) {
-      return $rows;
-    }
-
-    global $wpdb;
-
-    $placeholders = implode(',', array_fill(0, count($queueIds), '%d'));
-    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted placeholders; values are prepared below.
-    $query = $wpdb->prepare(
-      '
-        SELECT id
-        FROM %i
-        WHERE id IN (' . $placeholders . ')
-          AND meta LIKE %s
-      ',
-      array_merge(
-        [$wpdb->prefix . 'mailpoet_sending_queues'],
-        $queueIds,
-        [NewsletterReplayMetadata::getMetaLikePattern()]
-      )
-    );
-    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
-
-    $replayQueueIds = array_map('intval', (array)$wpdb->get_col($query)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
-    if (!$replayQueueIds) {
-      return $rows;
-    }
-
-    $replayQueueIds = array_flip($replayQueueIds);
-    return array_values(array_filter($rows, function(array $row) use ($replayQueueIds): bool {
-      $queueId = (int)($row['queue_id'] ?? 0);
-      return $queueId <= 0 || !isset($replayQueueIds[$queueId]);
-    }));
   }
 
   /**

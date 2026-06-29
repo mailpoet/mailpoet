@@ -159,7 +159,7 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $this->assertEquals(25, $revenue->getValue());
   }
 
-  public function testWooBackedRevenueExcludesReplayQueueAttribution(): void {
+  public function testWooBackedRevenueIncludesReplayQueueAttribution(): void {
     $this->enableWooBackedRevenueReadModel();
     $queue = $this->newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -170,7 +170,9 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
 
     $revenue = $this->testee->getWooCommerceRevenue($this->newsletter);
 
-    $this->assertNull($revenue);
+    $this->assertInstanceOf(WooCommerceRevenue::class, $revenue);
+    $this->assertEquals(1, $revenue->getOrdersCount());
+    $this->assertEquals(20, $revenue->getValue());
   }
 
   public function testWooBackedRevenueFallsBackToLegacyWhenPostBoundaryWooAttributionIsMissing(): void {

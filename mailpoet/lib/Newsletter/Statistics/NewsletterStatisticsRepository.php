@@ -14,7 +14,6 @@ use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\OrderAttributionRevenueReader;
@@ -208,9 +207,7 @@ class NewsletterStatisticsRepository extends Repository {
       ->where('t.status = :status')
       ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
       ->andWhere('q.newsletter IN (:newsletters)')
-      ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->setParameter('newsletters', $newsletters)
-      ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
       ->groupBy('n.id');
 
     if ($from && $to) {
@@ -271,12 +268,9 @@ class NewsletterStatisticsRepository extends Repository {
     return $this->entityManager->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, COUNT(DISTINCT stats.subscriber) as cnt')
       ->from($statisticsEntityName, 'stats')
-      ->leftJoin('stats.queue', 'q')
       ->where('stats.newsletter IN (:newsletters)')
-      ->andWhere('q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->groupBy('stats.newsletter')
-      ->setParameter('newsletters', $newsletters)
-      ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern());
+      ->setParameter('newsletters', $newsletters);
   }
 
   private function getWooCommerceRevenues(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null) {
@@ -307,13 +301,10 @@ class NewsletterStatisticsRepository extends Repository {
       ->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
       ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
-      ->leftJoin('stats.queue', 'q')
       ->where('stats.newsletter IN (:newsletters)')
-      ->andWhere('q.id IS NULL OR q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('stats.orderCurrency = :currency')
       ->andWhere('stats.status IN (:revenue_status)')
       ->setParameter('newsletters', $newsletters)
-      ->setParameter('latestNewsletterReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
       ->setParameter('currency', $currency)
       ->setParameter('revenue_status', $revenueStatus)
       ->groupBy('stats.newsletter');

@@ -10,6 +10,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
@@ -114,6 +115,30 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     /** @var string[] $renderedQueue */
     $renderedQueue = $response[0]['queue'];
     verify($renderedQueue['newsletter_rendered_subject'])->equals('Hello [mailpoet/subscriber-firstname default="subscriber"]!');
+  }
+
+  public function testItAggregatesStandardNewsletterQueueCountsForListing(): void {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'count_processed' => 2,
+        'count_total' => 2,
+        'processed_at' => new \DateTimeImmutable('2026-01-01 10:00:00'),
+      ])
+      ->withSendingQueue([
+        'count_processed' => 1,
+        'count_total' => 1,
+        'processed_at' => new \DateTimeImmutable('2026-01-02 10:00:00'),
+        'meta' => [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true],
+      ])
+      ->create();
+
+    $response = $responseBuilder->buildForListing([$newsletter]);
+
+    $this->assertIsArray($response[0]['queue']);
+    $this->assertSame('3', $response[0]['queue']['count_processed']);
+    $this->assertSame('3', $response[0]['queue']['count_total']);
   }
 
   public function testItAggregatesTimeZoneCampaignQueueForListing() {
