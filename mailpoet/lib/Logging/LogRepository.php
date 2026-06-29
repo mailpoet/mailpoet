@@ -220,7 +220,7 @@ class LogRepository extends Repository {
 
       foreach ($rows as $row) {
         $lastCreatedAt = $this->castToNullableString($row['created_at']);
-        $lastId = (int)$row['id'];
+        $lastId = (int)$this->castToNullableString($row['id']);
         yield [
           'created_at' => $this->castToNullableString($row['created_at']) ?? '',
           'name' => $this->castToNullableString($row['name']),
