@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue;
 
+use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
@@ -22,14 +23,19 @@ class SendingThrottlingHandler {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     LoggerFactory $loggerFactory,
     SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    FeaturesController $featuresController
   ) {
     $this->logger = $loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING);
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->featuresController = $featuresController;
   }
 
   public function getBatchSize(): int {
@@ -43,10 +49,11 @@ class SendingThrottlingHandler {
   private function getMaxBatchSize(): int {
     $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
     $batchSize = is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
-    // Never exceed the server-advertised ceiling reported by the sending service.
-    $serverMax = $this->settings->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
-    if (is_numeric($serverMax) && (int)$serverMax > 0) {
-      $batchSize = min($batchSize, (int)$serverMax);
+    if ($this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)) {
+      $serverMax = $this->settings->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
+      if (is_numeric($serverMax) && (int)$serverMax > 0) {
+        $batchSize = min($batchSize, (int)$serverMax);
+      }
     }
     return $batchSize;
   }

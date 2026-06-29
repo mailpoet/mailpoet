@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsSche
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -98,6 +99,9 @@ class SendingQueue {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
 
@@ -119,6 +123,7 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
+    FeaturesController $featuresController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false
   ) {
@@ -141,6 +146,7 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->featuresController = $featuresController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
@@ -436,10 +442,12 @@ class SendingQueue {
       return;
     }
 
-    $useTemplatedBatch = $processingMethod === 'bulk' && !(
-      $newsletter->getWpPostId() !== null
-      && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
-    );
+    $useTemplatedBatch = $processingMethod === 'bulk'
+      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && !(
+        $newsletter->getWpPostId() !== null
+        && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
+      );
     $templateBatch = null;
     $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];

@@ -26,6 +26,8 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Features\FeatureFlagsController;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -115,6 +117,12 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeatureFlagsController */
+  private $featureFlagsController;
+
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -166,7 +174,14 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->statisticsNewslettersRepository = $this->diContainer->get(StatisticsNewslettersRepository::class);
+    $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);
+    $this->featuresController = $this->diContainer->get(FeaturesController::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
+  }
+
+  public function _after() {
+    $this->disableMssTemplatedSending();
+    parent::_after();
   }
 
   private function getDirectUnsubscribeURL() {
@@ -226,7 +241,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->process();
@@ -265,7 +281,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -316,7 +333,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -360,7 +378,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->process();
   }
@@ -532,10 +551,14 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            verify($newsletter)->instanceOf(TemplateBatch::class);
-            $template = $newsletter->getTemplate();
-            verify(!empty($template['body']['html']))->true();
-            verify(!empty($template['body']['text']))->true();
+            $this->assertIsArray($newsletter);
+            $this->assertCount(1, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            verify(!empty($firstNewsletterBody['html']))->true();
+            verify(!empty($firstNewsletterBody['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
@@ -580,6 +603,8 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSubscribersInTemplatedBulk(): void {
+    $this->enableMssTemplatedSending();
+
     $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
     $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
       $this->subscriber->getId(),
@@ -625,6 +650,8 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItUsesRenderedBulkWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $this->enableMssTemplatedSending();
+
     $postId = $this->wp->wpInsertPost([
       'post_type' => 'mailpoet_email',
       'post_status' => 'private',
@@ -799,7 +826,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1515,7 +1543,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1933,7 +1962,18 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
+      $this->featuresController,
     );
+  }
+
+  private function enableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, true);
+    $this->featuresController->resetCache();
+  }
+
+  private function disableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, false);
+    $this->featuresController->resetCache();
   }
 
   private function createListWithSubscriber(): array {
