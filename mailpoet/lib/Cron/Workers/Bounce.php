@@ -205,9 +205,17 @@ class Bounce extends SimpleWorker {
 
   private function getReportFromDate(Carbon $now): Carbon {
     $lastReportTo = $this->settings->get(self::LAST_REPORT_TO_SETTING_KEY);
-    $from = is_string($lastReportTo) && $lastReportTo !== ''
-      ? Carbon::parse($lastReportTo)
-      : $now->copy()->subDay();
+    // A malformed stored value (corruption, manual edit, older code) would make
+    // Carbon::parse throw and crash the worker on every run, so guard it the
+    // same way the persist path above does and fall back to the default `from`.
+    $from = $now->copy()->subDay();
+    if (is_string($lastReportTo) && $lastReportTo !== '') {
+      try {
+        $from = Carbon::parse($lastReportTo);
+      } catch (\Exception $e) {
+        $from = $now->copy()->subDay();
+      }
+    }
 
     // Keep an hour of margin inside MAX_LOOKBACK_DAYS so clock skew and request
     // latency can't push the `from` past the limit the service enforces.
