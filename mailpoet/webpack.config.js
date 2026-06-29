@@ -595,10 +595,15 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
       (plugin) =>
         plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
     ),
-    // Add our custom DependencyExtractionWebpackPlugin that forces bundling of @wordpress/global-styles-engine
+    // Add our custom DependencyExtractionWebpackPlugin that forces bundling of
+    // @wordpress/global-styles-engine and @wordpress/ui (the latter is not
+    // registered as a `wp-ui` script in WordPress, so it must be bundled).
     new DependencyExtractionWebpackPlugin({
       requestToExternal: (request) => {
-        if (request === '@wordpress/global-styles-engine') {
+        if (
+          request === '@wordpress/global-styles-engine' ||
+          request === '@wordpress/ui'
+        ) {
           return false;
         }
         return;

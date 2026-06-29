@@ -1,7 +1,5 @@
-import {
-  TextareaControl,
-  __experimentalHStack as HStack,
-} from '@wordpress/components';
+import { TextareaControl } from '@wordpress/components';
+import { Stack } from '@wordpress/ui';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import {
@@ -54,7 +52,7 @@ export function ContentSettingsPanel() {
   const previewTextLength = mailpoetEmailData?.preheader?.length ?? 0;
 
   const subjectHelp = (
-    <HStack spacing={2} alignment="top">
+    <Stack gap="lg" align="start" render={<span />}>
       <span className="mailpoet-content-settings-panel__help-text">
         {__(
           'Personalise with tags: [site-title], [customer-firstname], [customer-lastname], [customer-email]',
@@ -69,11 +67,11 @@ export function ContentSettingsPanel() {
       >
         {subjectLength}/{subjectMaxLength}
       </span>
-    </HStack>
+    </Stack>
   );
 
   const preheaderHelp = (
-    <HStack spacing={2} alignment="top">
+    <Stack gap="lg" align="start" render={<span />}>
       <span className="mailpoet-content-settings-panel__help-text">
         {__(
           'Shown as a preview in the Inbox, next to the subject line.',
@@ -90,7 +88,7 @@ export function ContentSettingsPanel() {
       >
         {previewTextLength}/{previewTextMaxLength}
       </span>
-    </HStack>
+    </Stack>
   );
 
   return (
@@ -99,33 +97,33 @@ export function ContentSettingsPanel() {
       title={__('Content settings', 'mailpoet')}
       className="mailpoet-content-settings-panel"
     >
-      <AiSubjectSuggestions
-        onSelect={(suggestion) => {
-          updateEmailMailPoetProperty('subject', suggestion.subject);
-          updateEmailMailPoetProperty('preheader', suggestion.preheader);
-        }}
-      />
-
-      <TextareaControl
-        label={__('Subject', 'mailpoet')}
-        value={mailpoetEmailData?.subject || ''}
-        onChange={(value) => updateEmailMailPoetProperty('subject', value)}
-        help={subjectHelp}
-        placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
-        data-automation-id="email_subject"
-      />
-
-      <TextareaControl
-        label={__('Preview text', 'mailpoet')}
-        value={mailpoetEmailData?.preheader || ''}
-        onChange={(value) => updateEmailMailPoetProperty('preheader', value)}
-        help={preheaderHelp}
-        placeholder={__(
-          "Add a preview text to capture subscribers' attention and increase open rates.",
-          'mailpoet',
-        )}
-        data-automation-id="email_preheader"
-      />
+      <Stack direction="column" gap="lg">
+        <AiSubjectSuggestions
+          onSelect={(suggestion) => {
+            updateEmailMailPoetProperty('subject', suggestion.subject);
+            updateEmailMailPoetProperty('preheader', suggestion.preheader);
+          }}
+        />
+        <TextareaControl
+          label={__('Subject', 'mailpoet')}
+          value={mailpoetEmailData?.subject || ''}
+          onChange={(value) => updateEmailMailPoetProperty('subject', value)}
+          help={subjectHelp}
+          placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
+          data-automation-id="email_subject"
+        />
+        <TextareaControl
+          label={__('Preview text', 'mailpoet')}
+          value={mailpoetEmailData?.preheader || ''}
+          onChange={(value) => updateEmailMailPoetProperty('preheader', value)}
+          help={preheaderHelp}
+          placeholder={__(
+            "Add a preview text to capture subscribers' attention and increase open rates.",
+            'mailpoet',
+          )}
+          data-automation-id="email_preheader"
+        />
+      </Stack>
     </PluginDocumentSettingPanel>
   );
 }

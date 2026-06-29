@@ -1,13 +1,5 @@
-import {
-  Button,
-  PanelBody,
-  Notice,
-  Fill,
-  __experimentalHStack as HStack,
-  __experimentalVStack as VStack,
-  __experimentalHeading as Heading,
-  __experimentalSpacer as Spacer,
-} from '@wordpress/components';
+import { Button, PanelBody, Notice, Fill } from '@wordpress/components';
+import { Button as UiButton, Text, Stack } from '@wordpress/ui';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
@@ -88,7 +80,11 @@ export function SendPanel() {
   return (
     <Fill name="ComplementaryArea/core">
       <div className="mailpoet-send-panel">
-        <HStack className="mailpoet-send-panel__header" justify="space-between">
+        <Stack
+          className="mailpoet-send-panel__header"
+          direction="row"
+          justify="space-between"
+        >
           <Button
             variant="secondary"
             size="compact"
@@ -107,7 +103,7 @@ export function SendPanel() {
           >
             {sendButtonLabel}
           </Button>
-        </HStack>
+        </Stack>
 
         <div className="mailpoet-send-panel__content">
           <PanelBody>
@@ -126,12 +122,15 @@ export function SendPanel() {
             )}
             initialOpen={false}
           >
-            <VStack spacing={4}>
-              <HStack alignment="center">
-                <Heading level={2} size={13}>
+            <Stack direction="column" gap="lg">
+              <Stack direction="row" align="center" justify="space-between">
+                <Text
+                  variant="heading-md"
+                  /* eslint-disable-next-line jsx-a11y/heading-has-content */
+                  render={<h3 />}
+                >
                   {__('Send', 'mailpoet')}
-                </Heading>
-                <Spacer />
+                </Text>
                 <Button
                   size="small"
                   variant="tertiary"
@@ -139,9 +138,9 @@ export function SendPanel() {
                 >
                   {__('Now', 'mailpoet')}
                 </Button>
-              </HStack>
+              </Stack>
               <ScheduledDatePicker />
-            </VStack>
+            </Stack>
           </PanelBody>
 
           <PanelBody
@@ -157,9 +156,24 @@ export function SendPanel() {
           </PanelBody>
 
           <div className="mailpoet-send-panel__test-email">
-            <Button variant="link" onClick={handleSendTestEmail}>
+            <UiButton
+              variant="minimal"
+              className="mailpoet-send-panel__test-email-button"
+              onClick={handleSendTestEmail}
+            >
               {__('Send a test email', 'mailpoet')}
-            </Button>
+            </UiButton>
+            {hasNoRecipients && (
+              <Text
+                variant="body-sm"
+                className="mailpoet-send-panel__no-recipients"
+              >
+                {__(
+                  'No subscribers yet. You can still send a test email.',
+                  'mailpoet',
+                )}
+              </Text>
+            )}
           </div>
 
           {error && (
@@ -169,19 +183,6 @@ export function SendPanel() {
               onRemove={clearError}
             >
               {error}
-            </Notice>
-          )}
-
-          {hasNoRecipients && (
-            <Notice
-              status="warning"
-              className="mailpoet-send-panel__notice"
-              isDismissible={false}
-            >
-              {__(
-                'No subscribers yet. You can still send a test email.',
-                'mailpoet',
-              )}
             </Notice>
           )}
         </div>
