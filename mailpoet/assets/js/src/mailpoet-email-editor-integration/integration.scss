@@ -227,12 +227,34 @@
   }
 }
 
-.mailpoet-send-panel__test-email {
-  padding: 8px 16px 16px;
+.mailpoet-send-panel__test-email-button {
+  margin: $grid-unit-05;
+  margin-bottom: 0;
+}
+
+.mailpoet-send-panel__no-recipients {
+  color: $gray-700;
+  display: block;
+  padding: 0 $grid-unit-20;
 }
 
 .mailpoet-send-panel__notice {
   margin: 0 16px 16px;
+}
+
+.mailpoet-send-panel__sender-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.mailpoet-send-panel__sender-title-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailpoet-send-panel__sender-title-badge {
+  margin: -1 * $grid-unit-05 0;
 }
 
 .mailpoet-send-panel__field-error {

@@ -24,6 +24,18 @@ registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
 registerOrderProductCollectionsWhenAvailable();
 
+// MailPoet's shared Modal portals into a `#mailpoet-modal` container that the
+// legacy admin layout provides. The block editor has no such layout, so create
+// the container here to support modals like the sender authorization flow.
+function ensureMailPoetModalContainer(): void {
+  if (document.getElementById('mailpoet-modal')) {
+    return;
+  }
+  const container = document.createElement('div');
+  container.id = 'mailpoet-modal';
+  document.body.appendChild(container);
+}
+
 addFilter(
   'woocommerce_email_editor_wrap_editor_component',
   'mailpoet/email-editor-integration',
@@ -237,4 +249,5 @@ const initializeMailPoetEmailEditor = (): void => {
 };
 /* eslint-enable global-require, @typescript-eslint/no-var-requires */
 
+ensureMailPoetModalContainer();
 initializeMailPoetEmailEditor();
