@@ -363,6 +363,7 @@ Write descriptions so they start with a capital letter and read naturally after 
 - Create changelog entries for user-facing changes
 - Ensure backwards compatibility
 - Use guard clauses
+- Consider query performance at scale -- prefer sargable, indexed queries and pagination over large subscriber/sending/stats tables; see the `sql-performance` skill
 
 ### Never Do
 

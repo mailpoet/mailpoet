@@ -83,6 +83,7 @@ Launch multiple sub-agents in parallel using the Agent tool. Each agent receives
 - **Other file types:** Are they written properly, named according the correct standards?
 - Is the code well-organized -- right files, right namespaces, right directories?
 - Are there any design concerns?
+- Scalability: will any new or changed query stay fast at scale (large subscriber, sending, and statistics tables)? Watch for non-sargable `LIKE '%term%'`, JOINs added to listing/count queries, N+1 loops, unbounded scans, and missing indexes -- see the `sql-performance` skill.
 - Security & Safety - is the code safe to be shipped? Are all user inputs sanitized and validated properly? Are all security standards used?
 - Backward Compatibility - if the code is changed what happens to the users who already used the previous versions?
 - Is the code using only supported PHP versions?
