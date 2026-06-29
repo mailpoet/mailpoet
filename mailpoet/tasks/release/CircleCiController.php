@@ -15,6 +15,13 @@ class CircleCiController {
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
 
+  const TERMINAL_WORKFLOW_STATUSES = ['success', 'failed', 'error', 'canceled', 'unauthorized'];
+  const RERUNNABLE_WORKFLOW_STATUSES = ['running', 'failed', 'failing', 'canceled'];
+  // The full premium CI workflow runs close to 30 minutes; a 'failing' workflow
+  // stays non-terminal until its remaining jobs finish, so allow ample headroom.
+  const WORKFLOW_RERUN_WAIT_TIMEOUT_SECONDS = 2700;
+  const WORKFLOW_RERUN_POLL_INTERVAL_SECONDS = 30;
+
   /** @var string */
   private $token;
 
@@ -34,13 +41,14 @@ class CircleCiController {
     $username,
     $token,
     $project,
-    GitHubController $githubController
+    GitHubController $githubController,
+    ?Client $httpClient = null
   ) {
     $this->username = $username;
     $this->token = $token;
     $circleCiProject = $this->getCircleCiProject($project);
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
-    $this->httpClient = new Client([
+    $this->httpClient = $httpClient ?? new Client([
       'auth' => [$token, null],
       'headers' => [
         'Accept' => 'application/json',
@@ -93,14 +101,18 @@ class CircleCiController {
     }
     $workflowStatus = $workflow['status'] ?? null;
 
-    if (in_array($workflowStatus, ['running', 'failed', 'failing', 'canceled'], true)) {
-      if ($workflowStatus === 'running') {
-        $this->cancelWorkflow($workflow['id']);
-      }
-      $this->rerunWorkflow($workflow['id']);
-      return true;
+    if (!in_array($workflowStatus, self::RERUNNABLE_WORKFLOW_STATUSES, true)) {
+      return false;
     }
-    return false;
+
+    if ($workflowStatus === 'running') {
+      // Cancellation is asynchronous; the workflow stays non-terminal for a while.
+      $this->cancelWorkflow($workflow['id']);
+    }
+
+    $this->waitForWorkflowToReachTerminalState($workflow['id']);
+    $this->rerunWorkflow($workflow['id']);
+    return true;
   }
 
   private function getLatestZipBuildJob(): array {
@@ -190,6 +202,38 @@ class CircleCiController {
     return reset($workflows) ?: null;
   }
 
+  private function getWorkflowById(string $workflowId): ?array {
+    $response = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($workflowId));
+    $workflow = json_decode($response->getBody()->getContents(), true);
+    return isset($workflow['id']) ? $workflow : null;
+  }
+
+  /**
+   * Polls the workflow until it reaches a terminal state so it can be rerun.
+   * CircleCI returns 400 ("Workflow must be in a terminal state to be rerun")
+   * when rerunning a 'running'/'failing' workflow, so wait it out first.
+   */
+  private function waitForWorkflowToReachTerminalState(string $workflowId): void {
+    $timeout = $this->getRerunWaitTimeoutSeconds();
+    $deadline = time() + $timeout;
+    while (true) {
+      $workflow = $this->getWorkflowById($workflowId);
+      $lastStatus = $workflow['status'] ?? null;
+      if (in_array($lastStatus, self::TERMINAL_WORKFLOW_STATUSES, true)) {
+        return;
+      }
+      if (time() >= $deadline) {
+        throw new \Exception(sprintf(
+          "Timed out after %ds waiting for CircleCI workflow '%s' to reach a terminal state (last status: '%s').",
+          $timeout,
+          $workflowId,
+          $lastStatus ?? 'unknown'
+        ));
+      }
+      $this->sleep(self::WORKFLOW_RERUN_POLL_INTERVAL_SECONDS);
+    }
+  }
+
   private function rerunWorkflow(string $workflowId, bool $fromFailed = false): void {
     $this->httpClient->post(
       'https://circleci.com/api/v2/workflow/' . urlencode($workflowId) . '/rerun',
@@ -207,5 +251,13 @@ class CircleCiController {
 
   private function getCircleCiProject(string $project): string {
     return $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
+  }
+
+  protected function sleep(int $seconds): void {
+    sleep($seconds);
+  }
+
+  protected function getRerunWaitTimeoutSeconds(): int {
+    return self::WORKFLOW_RERUN_WAIT_TIMEOUT_SECONDS;
   }
 }
