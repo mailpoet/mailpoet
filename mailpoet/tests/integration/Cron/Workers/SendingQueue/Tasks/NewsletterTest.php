@@ -443,6 +443,83 @@ class NewsletterTest extends \MailPoetTest {
     );
   }
 
+  public function testItAppliesDeprecatedAutomationPersonalizationFiltersForBlockEmails(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Subject');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello</p>',
+      'text' => 'Hello',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html . '<p>Legacy HTML for ' . $context['recipient_email'] . '</p>';
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text . "\nLegacy text for " . $context['recipient_email'];
+    };
+    $deprecatedHooks = [];
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => Expected::exactly(2, function($hookName, $version, $replacement, $message) use (&$deprecatedHooks) {
+        $deprecatedHooks[] = [$hookName, $version, $replacement, $message];
+      }),
+    ]);
+    $newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $result = $newsletterTask->prepareNewsletterForSending(
+        $newsletter,
+        $this->subscriber,
+        $sendingQueue
+      );
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
+
+    $this->assertSame(
+      '<p>Hello</p><p>Legacy HTML for ' . $this->subscriber->getEmail() . '</p>',
+      $result['body']['html']
+    );
+    $this->assertSame("Hello\nLegacy text for " . $this->subscriber->getEmail(), $result['body']['text']);
+    $deprecationMessage = 'This filter is deprecated and will be removed in a future MailPoet release. '
+      . 'Migrate custom personalization to email editor personalization tags. '
+      . 'Use mailpoet_automation_email_personalization_context if you need to extend the personalization context.';
+    $this->assertSame([
+      [
+        'mailpoet_automation_email_personalize_html_after',
+        '5.32.0',
+        '',
+        $deprecationMessage,
+      ],
+      [
+        'mailpoet_automation_email_personalize_text_after',
+        '5.32.0',
+        '',
+        $deprecationMessage,
+      ],
+    ], $deprecatedHooks);
+  }
+
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
     $newsletterTask = $this->newsletterTask;
     $newsletterTask->trackingEnabled = false;

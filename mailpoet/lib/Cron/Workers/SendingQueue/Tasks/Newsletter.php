@@ -39,6 +39,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
+  private const AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER = 'mailpoet_automation_email_personalize_html_after';
+  private const AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER = 'mailpoet_automation_email_personalize_text_after';
+  private const DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION = '5.32.0';
+
   public $trackingEnabled;
   public $trackingImageInserted;
 
@@ -363,8 +367,14 @@ class Newsletter {
       $context = $this->getBlockEmailPersonalizationContext($newsletter, $subscriber, $queue);
       $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
       $preparedNewsletter = $this->blockEmailPersonalizationProcessor->personalize($preparedNewsletter, $context);
+      $preparedNewsletter = $this->applyDeprecatedAutomationPersonalizationFilters($preparedNewsletter, $context);
     }
     return $this->formatPreparedNewsletter($newsletter, $preparedNewsletter);
+  }
+
+  public function hasDeprecatedAutomationPersonalizationFilters(): bool {
+    return $this->hasAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER)
+      || $this->hasAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER);
   }
 
   /**
@@ -488,6 +498,58 @@ class Newsletter {
       is_string($parts[1] ?? null) ? $parts[1] : '',
       is_string($parts[2] ?? null) ? $parts[2] : '',
     ];
+  }
+
+  /**
+   * @param array{0: string, 1: string, 2: string} $preparedNewsletter
+   * @param array<string, mixed> $context
+   * @return array{0: string, 1: string, 2: string}
+   */
+  private function applyDeprecatedAutomationPersonalizationFilters(array $preparedNewsletter, array $context): array {
+    $personalizedHtml = $this->applyDeprecatedAutomationPersonalizationFilter(
+      self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER,
+      $preparedNewsletter[1],
+      $context
+    );
+    if (is_string($personalizedHtml)) {
+      $preparedNewsletter[1] = $personalizedHtml;
+    }
+
+    $personalizedText = $this->applyDeprecatedAutomationPersonalizationFilter(
+      self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER,
+      $preparedNewsletter[2],
+      $context
+    );
+    if (is_string($personalizedText)) {
+      $preparedNewsletter[2] = $personalizedText;
+    }
+
+    return $preparedNewsletter;
+  }
+
+  /**
+   * @param array<string, mixed> $context
+   * @return mixed
+   */
+  private function applyDeprecatedAutomationPersonalizationFilter(string $hookName, string $content, array $context) {
+    if (!$this->hasAutomationPersonalizationFilter($hookName)) {
+      return $content;
+    }
+
+    $this->wp->deprecatedHook(
+      $hookName,
+      self::DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION,
+      '',
+      'This filter is deprecated and will be removed in a future MailPoet release. '
+        . 'Migrate custom personalization to email editor personalization tags. '
+        . 'Use mailpoet_automation_email_personalization_context if you need to extend the personalization context.'
+    );
+
+    return $this->wp->applyFilters($hookName, $content, $context);
+  }
+
+  private function hasAutomationPersonalizationFilter(string $hookName): bool {
+    return $this->wp->hasFilter($hookName) !== false;
   }
 
   /**

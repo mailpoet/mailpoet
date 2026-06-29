@@ -436,7 +436,10 @@ class SendingQueue {
       return;
     }
 
-    $useTemplatedBatch = $processingMethod === 'bulk';
+    $useTemplatedBatch = $processingMethod === 'bulk' && !(
+      $newsletter->getWpPostId() !== null
+      && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
+    );
     $templateBatch = null;
     $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];

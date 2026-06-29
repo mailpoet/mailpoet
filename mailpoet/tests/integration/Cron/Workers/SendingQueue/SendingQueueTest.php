@@ -624,6 +624,90 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
   }
 
+  public function testItUsesRenderedBulkWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->entityManager->flush();
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html . '<p>Legacy HTML for ' . $context['recipient_email'] . '</p>';
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text . "\nLegacy text for " . $context['recipient_email'];
+    };
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
+            $this->assertIsArray($newsletter);
+            $this->assertCount(2, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $secondNewsletter = $newsletter[1] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $this->assertIsArray($secondNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $secondNewsletterBody = $secondNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            $this->assertIsArray($secondNewsletterBody);
+            $this->assertSame('Newsletter for John', $firstNewsletter['subject']);
+            $this->assertSame('Newsletter for Jane', $secondNewsletter['subject']);
+            $this->assertSame('<p>Hello John</p><p>Legacy HTML for john@doe.com</p>', $firstNewsletterBody['html']);
+            $this->assertSame('<p>Hello Jane</p><p>Legacy HTML for jane@doe.com</p>', $secondNewsletterBody['html']);
+            $this->assertSame("Hello John\nLegacy text for john@doe.com", $firstNewsletterBody['text']);
+            $this->assertSame("Hello Jane\nLegacy text for jane@doe.com", $secondNewsletterBody['text']);
+            verify($subscriber)->arrayCount(2);
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => Expected::exactly(4, function() {
+      }),
+    ]);
+    $sendingQueueWorker->newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$this->subscriber, $subscriber2], 1000000000000000000);
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
+  }
+
   public function testItProcessesStandardNewsletters() {
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
