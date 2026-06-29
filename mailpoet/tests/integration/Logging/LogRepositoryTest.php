@@ -93,4 +93,51 @@ class LogRepositoryTest extends \MailPoetTest {
     verify($remaining)->equals([$other->getId()]);
     verify(in_array($literal->getId(), $remaining, true))->false();
   }
+
+  public function testGetLogsForExportStreamsAllRowsAcrossBatches() {
+    $logFactory = new Log();
+    $sameTime = Carbon::now()->subMinutes(5);
+    $logFactory->withName('a')->withMessage('m1')->withCreatedAt(Carbon::now()->subMinutes(1))->create();
+    $logFactory->withName('b')->withMessage('m2')->withCreatedAt(Carbon::now()->subMinutes(2))->create();
+    // Two rows share a created_at so the (created_at, id) keyset tiebreak is exercised.
+    $logFactory->withName('c')->withMessage('m3')->withCreatedAt($sameTime)->create();
+    $logFactory->withName('d')->withMessage('m4')->withCreatedAt($sameTime)->create();
+    $logFactory->withName('e')->withMessage('m5')->withCreatedAt(Carbon::now()->subMinutes(9))->create();
+
+    // A batch size of 2 forces multiple pages and the keyset cursor.
+    $rows = [];
+    foreach ($this->repository->getLogsForExport([], null, 50000, 2) as $row) {
+      $rows[] = $row;
+    }
+
+    // Every row is returned exactly once (no gaps or duplicates across batches).
+    verify(count($rows))->equals(5);
+    $messages = array_map(function ($row) {
+      return $row['message'];
+    }, $rows);
+    sort($messages);
+    verify($messages)->equals(['m1', 'm2', 'm3', 'm4', 'm5']);
+
+    // Rows stay in newest-first order across batch boundaries.
+    $timestamps = array_map(function ($row) {
+      return $row['created_at'];
+    }, $rows);
+    $sorted = $timestamps;
+    rsort($sorted);
+    verify($timestamps)->equals($sorted);
+  }
+
+  public function testGetLogsForExportRespectsLimit() {
+    $logFactory = new Log();
+    for ($i = 0; $i < 5; $i++) {
+      $logFactory->withMessage('m' . $i)->withCreatedAt(Carbon::now()->subMinutes($i))->create();
+    }
+
+    $rows = [];
+    foreach ($this->repository->getLogsForExport([], null, 3, 2) as $row) {
+      $rows[] = $row;
+    }
+
+    verify(count($rows))->equals(3);
+  }
 }

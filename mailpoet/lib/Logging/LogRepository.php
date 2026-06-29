@@ -167,32 +167,73 @@ class LogRepository extends Repository {
    * Fetch logs matching the listing's filter shape (`from`/`to`/`name`/`level`)
    * and free-text search for export, so a download contains exactly the rows the
    * filtered listing shows. Mirrors deleteLogs()'s WHERE clause and is capped by
-   * $limit to keep memory bounded on large log tables.
+   * $limit.
+   *
+   * Yields rows in batches via keyset pagination on (`created_at`, `id`) rather
+   * than one big result set. MailPoet's WPDB-backed Doctrine driver buffers an
+   * entire result in memory (see Doctrine\WPDB\Result), so a single
+   * `LIMIT 50000` query would load every row at once and can exhaust PHP's
+   * memory on large installs. Paging keeps peak memory at one batch.
    *
    * @param array{from?: string, to?: string, name?: string[], level?: int[]} $filter
-   * @return array<int, array{created_at: string, name: string|null, message: string|null}>
+   * @return iterable<int, array{created_at: string, name: string|null, message: string|null}>
    */
-  public function getLogsForExport(array $filter, ?string $search = null, int $limit = 50000): array {
+  public function getLogsForExport(array $filter, ?string $search = null, int $limit = 50000, int $batchSize = 1000): iterable {
     $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
-    [$where, $parameters, $types] = $this->buildFilterSql($filter, $search);
-    $parameters['export_limit'] = $limit;
-    $types['export_limit'] = ParameterType::INTEGER;
+    [$where, $baseParameters, $baseTypes] = $this->buildFilterSql($filter, $search);
 
-    $sql = "SELECT `created_at`, `name`, `message` FROM `{$logsTable}`{$where} ORDER BY `created_at` DESC, `id` DESC LIMIT :export_limit";
+    $batchSize = $batchSize > 0 ? $batchSize : 1000;
+    $remaining = $limit;
+    $lastCreatedAt = null;
+    $lastId = null;
 
-    $rows = $this->entityManager->getConnection()
-      ->executeQuery($sql, $parameters, $types)
-      ->fetchAllAssociative();
+    while ($remaining > 0) {
+      $batch = (int)min($batchSize, $remaining);
+      $parameters = $baseParameters;
+      $types = $baseTypes;
+      $conditions = $where;
 
-    $logs = [];
-    foreach ($rows as $row) {
-      $logs[] = [
-        'created_at' => $this->castToNullableString($row['created_at']) ?? '',
-        'name' => $this->castToNullableString($row['name']),
-        'message' => $this->castToNullableString($row['message']),
-      ];
+      if ($lastCreatedAt !== null) {
+        // Keyset cursor: continue strictly after the last row in the same
+        // (`created_at` DESC, `id` DESC) order. Stable even while new rows are
+        // inserted at the top of the table during the export.
+        $keyset = '(`created_at` < :ks_created_at OR (`created_at` = :ks_created_at AND `id` < :ks_id))';
+        $conditions = $conditions === '' ? ' WHERE ' . $keyset : $conditions . ' AND ' . $keyset;
+        $parameters['ks_created_at'] = $lastCreatedAt;
+        $parameters['ks_id'] = $lastId;
+        $types['ks_created_at'] = ParameterType::STRING;
+        $types['ks_id'] = ParameterType::INTEGER;
+      }
+
+      $parameters['batch_limit'] = $batch;
+      $types['batch_limit'] = ParameterType::INTEGER;
+
+      $sql = "SELECT `id`, `created_at`, `name`, `message` FROM `{$logsTable}`{$conditions} ORDER BY `created_at` DESC, `id` DESC LIMIT :batch_limit";
+
+      $rows = $this->entityManager->getConnection()
+        ->executeQuery($sql, $parameters, $types)
+        ->fetchAllAssociative();
+
+      if ($rows === []) {
+        break;
+      }
+
+      foreach ($rows as $row) {
+        $lastCreatedAt = $this->castToNullableString($row['created_at']);
+        $lastId = (int)$row['id'];
+        yield [
+          'created_at' => $this->castToNullableString($row['created_at']) ?? '',
+          'name' => $this->castToNullableString($row['name']),
+          'message' => $this->castToNullableString($row['message']),
+        ];
+        $remaining--;
+      }
+
+      // A short page means the table is exhausted; stop before an empty query.
+      if (count($rows) < $batch) {
+        break;
+      }
     }
-    return $logs;
   }
 
   /**

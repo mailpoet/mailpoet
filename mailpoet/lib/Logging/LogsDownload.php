@@ -80,6 +80,7 @@ class LogsDownload {
     header('Pragma: no-cache');
     header('Expires: 0');
 
+    $count = 0;
     foreach ($logs as $log) {
       $createdAt = $log['created_at'] ?? 'N/A';
       $name = $log['name'] ?? '';
@@ -87,6 +88,12 @@ class LogsDownload {
       // Output is a text/plain attachment download, not HTML; HTML-escaping would corrupt the log content.
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo '[' . $createdAt . '] [' . $name . '] ' . $message . "\n";
+      // Stream to the client as we go so the output buffer doesn't accumulate
+      // the whole file in memory; the repository already pages the DB rows.
+      $count++;
+      if (($count % 1000) === 0) {
+        flush();
+      }
     }
     exit;
   }
