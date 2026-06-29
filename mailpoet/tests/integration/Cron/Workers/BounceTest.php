@@ -176,6 +176,20 @@ class BounceTest extends \MailPoetTest {
     verify($from->getTimestamp() - $earliestAllowed->getTimestamp())->lessThan(2 * 3600);
   }
 
+  public function testItFallsBackToDefaultFromDateWhenLastReportToIsMalformed() {
+    // A corrupted/manually-edited setting must not crash the worker: parsing is
+    // guarded and falls back to the default `from` (~ now - 1 day).
+    $this->settings->set(Bounce::LAST_REPORT_TO_SETTING_KEY, 'not-a-date');
+
+    $task = $this->createRunningTask();
+    $completed = $this->worker->processTaskStrategy($task, microtime(true));
+    verify($completed)->true();
+
+    $from = $this->api->getBouncesReportCalls[0]['from'];
+    $expected = Carbon::now()->subDay();
+    verify(abs($from->getTimestamp() - $expected->getTimestamp()))->lessThan(2 * 3600);
+  }
+
   public function testItStoresTheReportRangeOnTheTaskMeta() {
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
