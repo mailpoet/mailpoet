@@ -20,7 +20,7 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
     $this->statisticsRepository = $this->diContainer->get(NewsletterStatisticsRepository::class);
   }
 
-  public function testItExcludesReplayQueuesFromCampaignTotalSentCount(): void {
+  public function testItIncludesReplayQueuesInCampaignTotalSentCount(): void {
     $newsletter = (new Newsletter())
       ->withSentStatus()
       ->withSendingQueue([
@@ -38,10 +38,10 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
 
     $statistics = $this->statisticsRepository->getStatistics($newsletter);
 
-    $this->assertSame(5, $statistics->getTotalSentCount());
+    $this->assertSame(6, $statistics->getTotalSentCount());
   }
 
-  public function testItExcludesReplayQueuesFromCampaignOpenAndClickCounts(): void {
+  public function testItIncludesReplayQueuesInCampaignOpenAndClickCounts(): void {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())
       ->withSentStatus()
@@ -57,8 +57,37 @@ class LatestNewsletterReplayStatisticsTest extends \MailPoetTest {
 
     $statistics = $this->statisticsRepository->getStatistics($newsletter);
 
-    $this->assertSame(0, $statistics->getOpenCount());
-    $this->assertSame(0, $statistics->getClickCount());
+    $this->assertSame(1, $statistics->getOpenCount());
+    $this->assertSame(1, $statistics->getClickCount());
+  }
+
+  /**
+   * @group woo
+   */
+  public function testItIncludesReplayQueuesInCampaignRevenue(): void {
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())
+      ->withSentStatus()
+      ->withSendingQueue([
+        'processed_at' => Carbon::parse('2026-01-02 10:00:00'),
+        'meta' => [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true],
+      ])
+      ->create();
+
+    $link = (new NewsletterLink($newsletter))->create();
+    $click = (new StatisticsClicks($link, $subscriber))->create();
+    (new StatisticsWooCommercePurchases($click, [
+      'id' => 10001,
+      'currency' => 'USD',
+      'total' => 25,
+      'status' => 'completed',
+    ]))->create();
+
+    $revenue = $this->statisticsRepository->getWooCommerceRevenue($newsletter);
+
+    $this->assertInstanceOf(WooCommerceRevenue::class, $revenue);
+    $this->assertSame(1, $revenue->getOrdersCount());
+    $this->assertSame(25.0, $revenue->getValue());
   }
 
   public function testItIncludesCampaignStatisticsWithoutQueue(): void {
