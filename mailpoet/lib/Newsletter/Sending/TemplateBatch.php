@@ -6,7 +6,7 @@ class TemplateBatch {
   /** @var array{id?: int|null, subject: string, body: array{html?: string, text?: string}} */
   private array $template;
 
-  /** @var array<int, array<string, string>> */
+  /** @var array<int, array{subject: array<string, string>, html: array<string, string>, text: array<string, string>}> */
   private array $substitutions = [];
 
   /**
@@ -19,7 +19,7 @@ class TemplateBatch {
   }
 
   /**
-   * @param array<string, string> $substitutions
+   * @param array{subject: array<string, string>, html: array<string, string>, text: array<string, string>} $substitutions
    */
   public function addSubstitutions(array $substitutions): void {
     $this->substitutions[] = $substitutions;
@@ -33,7 +33,7 @@ class TemplateBatch {
   }
 
   /**
-   * @return array<int, array<string, string>>
+   * @return array<int, array{subject: array<string, string>, html: array<string, string>, text: array<string, string>}>
    */
   public function getSubstitutions(): array {
     return $this->substitutions;

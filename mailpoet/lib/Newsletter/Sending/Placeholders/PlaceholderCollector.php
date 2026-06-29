@@ -2,11 +2,22 @@
 
 namespace MailPoet\Newsletter\Sending\Placeholders;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
+
 class PlaceholderCollector {
-  /** @var array<string, string> */
-  private array $values = [];
+  public const PART_SUBJECT = 'subject';
+  public const PART_HTML = 'html';
+  public const PART_TEXT = 'text';
+
+  /** @var array{subject: array<string, string>, html: array<string, string>, text: array<string, string>} */
+  private array $values = [
+    self::PART_SUBJECT => [],
+    self::PART_HTML => [],
+    self::PART_TEXT => [],
+  ];
 
   private string $namespace;
+  private int $counter = 0;
 
   public function __construct(
     ?string $namespace = null
@@ -19,23 +30,53 @@ class PlaceholderCollector {
   }
 
   public function add(string $value): string {
-    $placeholder = '{{mailpoet_mss_' . $this->namespace . '_' . (count($this->values) + 1) . '}}';
-    $this->values[$placeholder] = $value;
-    return $placeholder;
+    return $this->addText($value);
+  }
+
+  public function addSubjectText(string $value): string {
+    return $this->addToPart(self::PART_SUBJECT, $this->htmlToText($value));
   }
 
   public function addHtmlText(string $value): string {
-    return $this->add($value);
+    return $this->addToPart(self::PART_HTML, $value);
   }
 
   public function addHtmlUrl(string $value): string {
-    return $this->add(esc_url($value));
+    return $this->addToPart(self::PART_HTML, esc_url($value));
+  }
+
+  public function addText(string $value): string {
+    return $this->addToPart(self::PART_TEXT, $value);
+  }
+
+  public function addTextFromHtml(string $value): string {
+    return $this->addToPart(self::PART_TEXT, $this->htmlToText($value));
   }
 
   /**
-   * @return array<string, string>
+   * @return array{subject: array<string, string>, html: array<string, string>, text: array<string, string>}
    */
   public function getValues(): array {
     return $this->values;
+  }
+
+  private function addToPart(string $part, string $value): string {
+    $placeholder = '{{mailpoet_mss_' . $this->namespace . '_' . (++$this->counter) . '}}';
+    if ($part === self::PART_SUBJECT) {
+      $this->values[self::PART_SUBJECT][$placeholder] = $value;
+    } elseif ($part === self::PART_HTML) {
+      $this->values[self::PART_HTML][$placeholder] = $value;
+    } else {
+      $this->values[self::PART_TEXT][$placeholder] = $value;
+    }
+    return $placeholder;
+  }
+
+  private function htmlToText(string $value): string {
+    if (!mb_detect_encoding($value, 'UTF-8', true)) {
+      $converted = mb_convert_encoding($value, 'UTF-8', mb_list_encodings());
+      $value = $converted !== false ? $converted : $value;
+    }
+    return @Html2Text::convert($value);
   }
 }

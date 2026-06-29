@@ -401,7 +401,14 @@ class BridgeApiTest extends \MailPoetTest {
       'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
       'template' => ['subject' => 'Hello {{mailpoet_mss_1}}'],
       'messages' => [
-        ['to' => ['address' => 'john@example.com', 'name' => 'John'], 'substitutions' => ['{{mailpoet_mss_1}}' => 'John']],
+        [
+          'to' => ['address' => 'john@example.com', 'name' => 'John'],
+          'substitutions' => [
+            'subject' => ['{{mailpoet_mss_1}}' => 'John'],
+            'html' => [],
+            'text' => [],
+          ],
+        ],
       ],
     ]);
     verify($result['status'])->equals(API::RESPONSE_STATUS_OK);

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
@@ -397,19 +398,102 @@ class NewsletterTest extends \MailPoetTest {
     $substitutions = $templatedNewsletter['substitutions'];
     $reconstructed = [
       'id' => $template['id'],
-      'subject' => strtr($template['subject'], $substitutions),
+      'subject' => strtr($template['subject'], $substitutions['subject']),
       'body' => [
-        'html' => strtr($template['body']['html'], $substitutions),
-        'text' => strtr($template['body']['text'], $substitutions),
+        'html' => strtr($template['body']['html'], $substitutions['html']),
+        'text' => strtr($template['body']['text'], $substitutions['text']),
       ],
     ];
 
     verify($template['subject'])->stringContainsString('{{mailpoet_mss_');
     verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
     verify($template['body']['text'])->stringContainsString('{{mailpoet_mss_');
-    $substitutionValues = implode("\n", $substitutions);
+    $substitutionValues = implode("\n", array_merge($substitutions['subject'], $substitutions['html'], $substitutions['text']));
     verify($substitutionValues)->stringContainsString('&endpoint=track');
+    $reconstructed['body']['html'] = str_replace('&#038;', '&', $reconstructed['body']['html']);
     verify($reconstructed)->equals($fullNewsletter);
+  }
+
+  public function testItScopesTemplatedSubstitutionsForHtmlAndTextValues(): void {
+    $homepageUrl = home_url();
+    $homepageLink = sprintf(
+      '<a target="_blank" href="%s">%s</a>',
+      esc_url($homepageUrl),
+      esc_html(get_bloginfo('name'))
+    );
+
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Visit [site:homepage_link]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Visit [site:homepage_link]</p>',
+      'text' => 'Visit [site:homepage_link]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    $this->assertStringContainsString('<p>Visit {{mailpoet_mss_', $template['body']['html']);
+    $this->assertStringContainsString('Visit {{mailpoet_mss_', $template['body']['text']);
+    $this->assertSame(
+      '<p>Visit ' . $homepageLink . '</p>',
+      strtr($template['body']['html'], $substitutions['html'])
+    );
+    $this->assertSame(
+      'Visit ' . @Html2Text::convert($homepageLink),
+      strtr($template['body']['text'], $substitutions['text'])
+    );
+    $this->assertSame(
+      'Visit ' . @Html2Text::convert($homepageLink),
+      strtr($template['subject'], $substitutions['subject'])
+    );
+  }
+
+  public function testItResolvesContentDependentShortcodesInAllTemplatedParts(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_title' => 'Templated shortcode title',
+      'post_status' => 'publish',
+    ]);
+
+    // The post title shortcode resolves by scanning the content for data-post-id,
+    // which exists only in the HTML part. The subject and text parts must borrow
+    // the HTML as content source to match the rendered sending path.
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('News: [newsletter:post_title]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p data-post-id="' . $postId . '">Read [newsletter:post_title]</p>',
+      'text' => 'Read [newsletter:post_title]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $fullNewsletter = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+    $reconstructed = [
+      'id' => $template['id'],
+      'subject' => strtr($template['subject'], $substitutions['subject']),
+      'body' => [
+        'html' => strtr($template['body']['html'], $substitutions['html']),
+        'text' => strtr($template['body']['text'], $substitutions['text']),
+      ],
+    ];
+
+    verify($reconstructed)->equals($fullNewsletter);
+    $this->assertSame('Read Templated shortcode title', $reconstructed['body']['text']);
   }
 
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
@@ -431,15 +515,15 @@ class NewsletterTest extends \MailPoetTest {
 
     $this->assertSame(
       'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
-      strtr($template['subject'], $substitutions)
+      strtr($template['subject'], $substitutions['subject'])
     );
     $this->assertSame(
       '<p>Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName() . '</p>',
-      strtr($template['body']['html'], $substitutions)
+      strtr($template['body']['html'], $substitutions['html'])
     );
     $this->assertSame(
       'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
-      strtr($template['body']['text'], $substitutions)
+      strtr($template['body']['text'], $substitutions['text'])
     );
   }
 

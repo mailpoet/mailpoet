@@ -29,9 +29,9 @@ class Shortcodes {
    * @param SubscriberEntity|null $subscriber
    * @param SendingQueueEntity|null $queue
    */
-  public static function processWithPlaceholders($content, $contentSource, ?NewsletterEntity $newsletter, ?SubscriberEntity $subscriber, ?SendingQueueEntity $queue, PlaceholderCollector $collector) {
+  public static function processWithPlaceholders($content, $contentSource, ?NewsletterEntity $newsletter, ?SubscriberEntity $subscriber, ?SendingQueueEntity $queue, PlaceholderCollector $collector, string $contentPart) {
     $shortcodes = self::getShortcodes($newsletter, $subscriber, $queue);
-    return $shortcodes->replaceWithPlaceholders($content, $contentSource, $collector);
+    return $shortcodes->replaceWithPlaceholders($content, $contentSource, $collector, $contentPart);
   }
 
   private static function getShortcodes(?NewsletterEntity $newsletter = null, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null): NewsletterShortcodes {

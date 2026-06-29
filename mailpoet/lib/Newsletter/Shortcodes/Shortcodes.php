@@ -224,7 +224,7 @@ class Shortcodes {
     return str_replace($shortcodes, $processedShortcodes, $content);
   }
 
-  public function replaceWithPlaceholders($content, $contentSource, PlaceholderCollector $collector, $categories = null) {
+  public function replaceWithPlaceholders($content, $contentSource, PlaceholderCollector $collector, string $contentPart, $categories = null) {
     $shortcodes = $this->extract($content, $categories);
     if (!$shortcodes) {
       return $content;
@@ -235,7 +235,14 @@ class Shortcodes {
     );
     $placeholders = [];
     foreach ($processedShortcodes as $processedShortcode) {
-      $placeholders[] = $collector->add((string)$processedShortcode);
+      $processedShortcode = (string)$processedShortcode;
+      if ($contentPart === PlaceholderCollector::PART_SUBJECT) {
+        $placeholders[] = $collector->addSubjectText($processedShortcode);
+      } elseif ($contentPart === PlaceholderCollector::PART_HTML) {
+        $placeholders[] = $collector->addHtmlText($processedShortcode);
+      } else {
+        $placeholders[] = $collector->addTextFromHtml($processedShortcode);
+      }
     }
     return str_replace($shortcodes, $placeholders, $content);
   }

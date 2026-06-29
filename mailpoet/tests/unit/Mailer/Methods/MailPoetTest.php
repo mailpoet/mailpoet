@@ -16,8 +16,16 @@ class MailPoetTest extends \MailPoetUnitTest {
         'text' => '{{mailpoet_mss_1}}',
       ],
     ]);
-    $batch->addSubstitutions(['{{mailpoet_mss_1}}' => 'Rosta &amp; Co']);
-    $batch->addSubstitutions(['{{mailpoet_mss_1}}' => 'Jane &amp; Co']);
+    $batch->addSubstitutions([
+      'subject' => ['{{mailpoet_mss_1}}' => 'Rosta & Co'],
+      'html' => ['{{mailpoet_mss_1}}' => 'Rosta &amp; Co'],
+      'text' => ['{{mailpoet_mss_1}}' => 'Rosta & Co'],
+    ]);
+    $batch->addSubstitutions([
+      'subject' => ['{{mailpoet_mss_1}}' => 'Jane & Co'],
+      'html' => ['{{mailpoet_mss_1}}' => 'Jane &amp; Co'],
+      'text' => ['{{mailpoet_mss_1}}' => 'Jane & Co'],
+    ]);
 
     $body = $this->createMethod()->getBody(
       $batch,
@@ -59,7 +67,11 @@ class MailPoetTest extends \MailPoetUnitTest {
             'address' => 'rosta@example.com',
             'name' => 'Rosta',
           ],
-          'substitutions' => ['{{mailpoet_mss_1}}' => 'Rosta &amp; Co'],
+          'substitutions' => [
+            'subject' => ['{{mailpoet_mss_1}}' => 'Rosta & Co'],
+            'html' => ['{{mailpoet_mss_1}}' => 'Rosta &amp; Co'],
+            'text' => ['{{mailpoet_mss_1}}' => 'Rosta & Co'],
+          ],
           'unsubscribe' => [
             'url' => 'https://example.com/one-click/1',
             'post' => true,
@@ -71,7 +83,11 @@ class MailPoetTest extends \MailPoetUnitTest {
             'address' => 'jane@example.com',
             'name' => '',
           ],
-          'substitutions' => ['{{mailpoet_mss_1}}' => 'Jane &amp; Co'],
+          'substitutions' => [
+            'subject' => ['{{mailpoet_mss_1}}' => 'Jane & Co'],
+            'html' => ['{{mailpoet_mss_1}}' => 'Jane &amp; Co'],
+            'text' => ['{{mailpoet_mss_1}}' => 'Jane & Co'],
+          ],
           'unsubscribe' => [
             'url' => 'http://example.com/unsubscribe/2',
             'post' => false,

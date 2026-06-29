@@ -432,14 +432,20 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringContainsString('<p>{{mailpoet_mss_test_1}}</p>', $content[1]);
     $this->assertStringContainsString('href="{{mailpoet_mss_test_2}}"', $content[1]);
     $this->assertSame('{{mailpoet_mss_test_3}} [Review]({{mailpoet_mss_test_4}})', $content[2]);
-    $this->assertSame($personalizedContent[0], strtr($content[0], $collector->getValues()));
-    $this->assertSame($personalizedContent[1], strtr($content[1], $collector->getValues()));
-    $this->assertSame($personalizedContent[2], strtr($content[2], $collector->getValues()));
+    $values = $collector->getValues();
+    $this->assertSame($personalizedContent[0], strtr($content[0], $values['subject']));
+    $this->assertSame($personalizedContent[1], strtr($content[1], $values['html']));
+    $this->assertSame($personalizedContent[2], strtr($content[2], $values['text']));
     $this->assertSame([
-      '{{mailpoet_mss_test_1}}' => 'Rosta & Co',
-      '{{mailpoet_mss_test_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
-      '{{mailpoet_mss_test_3}}' => 'Rosta & Co',
-      '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
-    ], $collector->getValues());
+      'subject' => [],
+      'html' => [
+        '{{mailpoet_mss_test_1}}' => 'Rosta & Co',
+        '{{mailpoet_mss_test_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
+      ],
+      'text' => [
+        '{{mailpoet_mss_test_3}}' => 'Rosta & Co',
+        '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
+      ],
+    ], $values);
   }
 }

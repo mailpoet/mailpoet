@@ -8,6 +8,7 @@ use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalizatio
 use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 
 class TemplatePersonalizer {
+  public const CONTEXT_SUBJECT = 'subject';
   public const CONTEXT_HTML = 'html';
   public const CONTEXT_TEXT = 'text';
 
@@ -134,7 +135,13 @@ class TemplatePersonalizer {
   }
 
   private function addValue(PlaceholderCollector $collector, string $value, string $contentContext): string {
-    return $contentContext === self::CONTEXT_HTML ? $collector->addHtmlText($value) : $collector->add($value);
+    if ($contentContext === self::CONTEXT_HTML) {
+      return $collector->addHtmlText($value);
+    }
+    if ($contentContext === self::CONTEXT_SUBJECT) {
+      return $collector->addSubjectText($value);
+    }
+    return $collector->addTextFromHtml($value);
   }
 
   private function getNormalizedHrefPlaceholder(string $placeholder): string {

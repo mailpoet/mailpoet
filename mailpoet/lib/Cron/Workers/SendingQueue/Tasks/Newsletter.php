@@ -378,7 +378,7 @@ class Newsletter {
   }
 
   /**
-   * @return array{newsletter: array{id: int|null, subject: string, body: array{html: string, text: string}}, substitutions: array<string, string>}
+   * @return array{newsletter: array{id: int|null, subject: string, body: array{html: string, text: string}}, substitutions: array{subject: array<string, string>, html: array<string, string>, text: array<string, string>}}
    */
   public function prepareNewsletterForTemplatedSending(
     NewsletterEntity $newsletter,
@@ -448,41 +448,62 @@ class Newsletter {
   ): array {
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
-    $preparedNewsletter = Helpers::joinObject(
-      [
-        $queue->getNewsletterRenderedSubject(),
+    $renderedSubject = $queue->getNewsletterRenderedSubject() ?? '';
+    $contentSource = Helpers::joinObject([
+      $renderedNewsletter['html'],
+      $renderedNewsletter['text'],
+    ]);
+    $preparedNewsletter = [
+      ShortcodesTask::processWithPlaceholders(
+        $renderedSubject,
+        $contentSource,
+        $newsletter,
+        $subscriber,
+        $queue,
+        $collector,
+        PlaceholderCollector::PART_SUBJECT
+      ),
+      ShortcodesTask::processWithPlaceholders(
         $renderedNewsletter['html'],
+        $contentSource,
+        $newsletter,
+        $subscriber,
+        $queue,
+        $collector,
+        PlaceholderCollector::PART_HTML
+      ),
+      ShortcodesTask::processWithPlaceholders(
         $renderedNewsletter['text'],
-      ]
-    );
-
-    $preparedNewsletter = ShortcodesTask::processWithPlaceholders(
-      $preparedNewsletter,
-      null,
-      $newsletter,
-      $subscriber,
-      $queue,
-      $collector
-    );
-    $preparedNewsletter = $this->splitPreparedNewsletter($preparedNewsletter);
+        $contentSource,
+        $newsletter,
+        $subscriber,
+        $queue,
+        $collector,
+        PlaceholderCollector::PART_TEXT
+      ),
+    ];
+    $preparedNewsletter = $this->splitPreparedNewsletter(Helpers::joinObject($preparedNewsletter));
     if ($this->trackingEnabled) {
       $preparedNewsletter[0] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
         $subscriber->getId(),
         $queue->getId(),
         $preparedNewsletter[0],
-        $collector
+        $collector,
+        PlaceholderCollector::PART_SUBJECT
       );
       $preparedNewsletter[1] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
         $subscriber->getId(),
         $queue->getId(),
         $preparedNewsletter[1],
-        $collector
+        $collector,
+        PlaceholderCollector::PART_HTML
       );
       $preparedNewsletter[2] = $this->newsletterLinks->replaceSubscriberDataWithPlaceholders(
         $subscriber->getId(),
         $queue->getId(),
         $preparedNewsletter[2],
-        $collector
+        $collector,
+        PlaceholderCollector::PART_TEXT
       );
     }
     return $preparedNewsletter;

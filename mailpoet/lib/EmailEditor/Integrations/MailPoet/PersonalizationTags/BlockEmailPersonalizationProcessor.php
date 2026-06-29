@@ -44,7 +44,13 @@ class BlockEmailPersonalizationProcessor {
   public function personalizeWithPlaceholders(array $content, array $context, PlaceholderCollector $collector): array {
     $this->templatePersonalizer->setContext($context);
     foreach ($content as $key => $part) {
-      $contentContext = $key === 1 ? TemplatePersonalizer::CONTEXT_HTML : TemplatePersonalizer::CONTEXT_TEXT;
+      if ($key === 0) {
+        $contentContext = TemplatePersonalizer::CONTEXT_SUBJECT;
+      } elseif ($key === 1) {
+        $contentContext = TemplatePersonalizer::CONTEXT_HTML;
+      } else {
+        $contentContext = TemplatePersonalizer::CONTEXT_TEXT;
+      }
       $content[$key] = $this->templatePersonalizer->personalizeContentWithPlaceholders((string)$part, $collector, $contentContext);
     }
 
@@ -64,7 +70,7 @@ class BlockEmailPersonalizationProcessor {
         $htmlUrlTokens[$token] = $collector->addHtmlUrl($url);
       }
       if (isset($content[2]) && $this->containsPersonalizedUrlToken($content[2], $token)) {
-        $textUrlTokens[$token] = $collector->add($url);
+        $textUrlTokens[$token] = $collector->addText($url);
       }
     }
 
