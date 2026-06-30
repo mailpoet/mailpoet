@@ -129,6 +129,22 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('Latest posts block C');
   }
 
+  public function testItIgnoresCategoryTermsForPages(): void {
+    // Categories/tags are post-only, so stale terms left over from a "post"
+    // selection must not filter out pages (which belong to no such taxonomy).
+    $this->postIds[] = $this->createPost('Latest pages block A', '2020-04-01 01:01:01', 'page');
+    $categoryId = $this->createTerm('Latest posts category', 'category');
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render([
+      'postType' => 'page',
+      'terms' => [['taxonomy' => 'category', 'id' => $categoryId]],
+      'inclusionType' => 'include',
+    ]);
+
+    verify($html)->stringContainsString('Latest pages block A');
+  }
+
   public function testItSupportsCustomPostTypes(): void {
     $this->postIds[] = $this->createPost('Latest products block A', '2020-04-01 01:01:01', 'product');
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
