@@ -2,6 +2,9 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Cron\CronWorkerScheduler;
+use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -29,6 +32,13 @@ class SegmentsCountRecalculator {
   /** Subscribers touched per UPDATE when recalculating large/segment-wide sets. */
   public const BATCH_SIZE = 10000;
 
+  /**
+   * When a single segment change would recompute at least this many memberships
+   * inline, defer to the background sweep instead. Read via static:: so tests
+   * can lower it without inserting hundreds of thousands of rows.
+   */
+  protected const DEFER_THRESHOLD = 200000;
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -36,6 +46,33 @@ class SegmentsCountRecalculator {
     EntityManager $entityManager
   ) {
     $this->entityManager = $entityManager;
+  }
+
+  public function getDeferThreshold(): int {
+    return static::DEFER_THRESHOLD;
+  }
+
+  /**
+   * Hand a recalculation off to the background sweep (scheduled to run as soon
+   * as possible) instead of doing it inline. Used when a single change touches
+   * too many subscribers to recompute within one request. The sweep re-derives
+   * every subscriber's count from source, so it converges regardless of what
+   * the deferred change was.
+   *
+   * CronWorkerScheduler is resolved lazily rather than injected: it transitively
+   * depends on SegmentsRepository, which depends on this class, so a constructor
+   * dependency would form a circular reference (the same reason SimpleWorker
+   * pulls it from the container).
+   */
+  public function scheduleBackgroundRecalculation(): void {
+    // The sweep worker no-ops on SQLite and reads never trust the column there,
+    // so there is nothing to schedule.
+    if (Connection::isSQLite()) {
+      return;
+    }
+    ContainerWrapper::getInstance()
+      ->get(CronWorkerScheduler::class)
+      ->scheduleImmediatelyIfNotRunning(SubscribersSegmentsCountSync::TASK_TYPE);
   }
 
   /**
@@ -139,6 +176,13 @@ class SegmentsCountRecalculator {
       return;
     }
 
+    // Recomputing a multi-million-member segment inline would blow the request
+    // budget, so hand the largest changes to the background sweep instead.
+    if ($this->countSegmentMembers($segmentIds, $subscribedOnly) >= $this->getDeferThreshold()) {
+      $this->scheduleBackgroundRecalculation();
+      return;
+    }
+
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $connection = $this->entityManager->getConnection();
 
@@ -167,6 +211,29 @@ class SegmentsCountRecalculator {
       $this->recalculateForSubscribers($subscriberIds);
       $lastId = (int)end($subscriberIds);
     } while (count($ids) === self::BATCH_SIZE);
+  }
+
+  /**
+   * Count the memberships a segment recalculation would touch. Uses COUNT(*)
+   * rather than COUNT(DISTINCT subscriber_id): a subscriber shared across
+   * several of the given segments is counted more than once, but an over-count
+   * only makes the deferral threshold trip slightly earlier, which is safe, and
+   * it keeps the query on the segment_id index.
+   *
+   * @param int[] $segmentIds
+   */
+  private function countSegmentMembers(array $segmentIds, bool $subscribedOnly): int {
+    $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
+    $sql = "SELECT COUNT(*) FROM {$subscriberSegmentTable} WHERE segment_id IN (:segmentIds)";
+    $params = ['segmentIds' => $segmentIds];
+    $types = ['segmentIds' => ArrayParameterType::INTEGER];
+    if ($subscribedOnly) {
+      $sql .= ' AND status = :status';
+      $params['status'] = SubscriberEntity::STATUS_SUBSCRIBED;
+      $types['status'] = ParameterType::STRING;
+    }
+    $count = $this->entityManager->getConnection()->executeQuery($sql, $params, $types)->fetchOne();
+    return is_numeric($count) ? (int)$count : 0;
   }
 
   private function membershipCountSubquery(string $subscriberCondition): string {

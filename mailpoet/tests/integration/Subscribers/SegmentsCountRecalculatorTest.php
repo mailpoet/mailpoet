@@ -2,15 +2,22 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Cron\Workers\SubscribersSegmentsCountSync;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Listing\ListingDefinition;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentsCountRecalculatorTest extends \MailPoetTest {
   /** @var SegmentsCountRecalculator */
@@ -115,6 +122,47 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
     $this->assertSame(1, $this->getSegmentsCount($subscriber));
   }
 
+  public function testItDefersLargeSegmentRecalculationToTheBackgroundSweep(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    $recalculator = new class($this->entityManager) extends SegmentsCountRecalculator {
+      protected const DEFER_THRESHOLD = 1;
+    };
+
+    // One subscribed membership meets the lowered threshold, so the recalc is
+    // handed to the background sweep. Pre-set a sentinel to prove the inline
+    // UPDATE never runs.
+    $this->setSegmentsCountDirectly($subscriber, 99);
+    $recalculator->recalculateForSegment((int)$segment->getId());
+
+    $this->assertSame(99, $this->getSegmentsCount($subscriber));
+    $this->assertBackgroundSweepScheduled();
+  }
+
+  public function testBulkDeleteDefersRecalculationForLargeSegments(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())->withSegments([$segment])->create();
+    $recalculator = new class($this->entityManager) extends SegmentsCountRecalculator {
+      protected const DEFER_THRESHOLD = 1;
+    };
+    $repository = new SegmentsRepository(
+      $this->entityManager,
+      $this->diContainer->get(NewsletterSegmentRepository::class),
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(LoggerFactory::class),
+      $recalculator
+    );
+
+    // Over the lowered threshold, so bulkDelete must not materialize ids or
+    // recompute inline; the sentinel stays untouched and the sweep is scheduled.
+    $this->setSegmentsCountDirectly($subscriber, 99);
+    $repository->bulkDelete([(int)$segment->getId()]);
+
+    $this->assertSame(99, $this->getSegmentsCount($subscriber));
+    $this->assertBackgroundSweepScheduled();
+  }
+
   public function testListingQueryUsesColumnWhenBackfilled(): void {
     $segment = (new Segment())->create();
     $withList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$segment])->create();
@@ -155,6 +203,20 @@ class SegmentsCountRecalculatorTest extends \MailPoetTest {
   private function getSegmentsCount(SubscriberEntity $subscriber): int {
     $this->entityManager->refresh($subscriber);
     return $subscriber->getSegmentsCount();
+  }
+
+  private function assertBackgroundSweepScheduled(): void {
+    $task = $this->diContainer->get(ScheduledTasksRepository::class)
+      ->findOneBy(['type' => SubscribersSegmentsCountSync::TASK_TYPE]);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+  }
+
+  private function setSegmentsCountDirectly(SubscriberEntity $subscriber, int $count): void {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$subscribersTable} SET segments_count = :count WHERE id = :id",
+      ['count' => $count, 'id' => $subscriber->getId()]
+    );
   }
 
   private function setMembershipStatus(SubscriberEntity $subscriber, SegmentEntity $segment, string $status): void {
