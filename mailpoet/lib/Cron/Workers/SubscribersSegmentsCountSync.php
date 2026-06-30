@@ -70,15 +70,11 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
       $this->cronHelper->enforceExecutionLimit($timer); // throws and reschedules when over the limit
     }
 
-    // Reset progress so the next (reconcile) run starts a fresh sweep.
-    // Flush this before flipping the backfill flag: if the process dies
-    // between the two writes, the next run resumes from 0 rather than from
-    // a stale mid-table cursor while reads already trust the column.
-    $task->setMeta(['last_subscriber_id' => 0]);
-    $this->scheduledTasksRepository->persist($task);
-    $this->scheduledTasksRepository->flush();
-
     // The whole table has been recomputed: reads can trust segments_count now.
+    // The cursor is intentionally left in place: each weekly reconcile run is a
+    // fresh task with empty meta, so it sweeps from id 0 again on its own. And if
+    // markSegmentsCountColumnReady() throws, the retry just re-runs the flag flip
+    // (the while loop is already exhausted) instead of re-sweeping the table.
     $this->segmentSubscribersRepository->markSegmentsCountColumnReady();
 
     return true;
