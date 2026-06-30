@@ -175,6 +175,7 @@ class SendingQueuesRepository extends Repository {
       ->leftJoin('n.newsletterSegments', 'ns')
       ->leftJoin('ns.segment', 's', 'WITH', 's.type = :dynamicType')
       ->andWhere('t.status = :taskStatus')
+      // Exclude "Send latest newsletter" replay queues so replay sends don't skew campaign analytics.
       ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('t.processedAt >= :since')
       ->setParameter('sevenDaysAgo', $sevenDaysAgo)

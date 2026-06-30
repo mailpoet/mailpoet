@@ -4,7 +4,6 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -163,7 +162,6 @@ class NewslettersResponseBuilder {
   public function buildForListing(array $newsletters): array {
     $statistics = $this->newslettersStatsRepository->getBatchStatistics($newsletters);
     $latestQueues = $this->getBatchLatestQueuesWithTasks($newsletters);
-    $completedQueueCounts = $this->getBatchCompletedQueueCounts($newsletters);
     $this->newslettersRepository->prefetchOptions($newsletters);
     $this->newslettersRepository->prefetchSegments($newsletters);
 
@@ -173,8 +171,7 @@ class NewslettersResponseBuilder {
       $data[] = $this->buildListingItem(
         $newsletter,
         $statistics[$id] ?? null,
-        $latestQueues[$id] ?? null,
-        $completedQueueCounts[$id] ?? null
+        $latestQueues[$id] ?? null
       );
     }
     return $data;
@@ -184,14 +181,12 @@ class NewslettersResponseBuilder {
    * @param NewsletterEntity $newsletter
    * @param NewsletterStatistics|null $statistics
    * @param SendingQueueEntity|null $latestQueue
-   * @param array{countTotal: int, countProcessed: int, countToProcess: int}|null $completedQueueCounts
    * @return array<string, mixed>
    */
   private function buildListingItem(
     NewsletterEntity $newsletter,
     ?NewsletterStatistics $statistics = null,
-    ?SendingQueueEntity $latestQueue = null,
-    ?array $completedQueueCounts = null
+    ?SendingQueueEntity $latestQueue = null
   ): array {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
@@ -225,10 +220,15 @@ class NewslettersResponseBuilder {
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
       $data['segments'] = $this->buildSegments($newsletter);
-      $data['queue'] = $latestQueue ? $this->buildQueue(
-        $latestQueue,
-        $newsletter->getStatus() === NewsletterEntity::STATUS_SENT ? $completedQueueCounts : null
-      ) : false; // false for BC
+      // For a sent newsletter the listing shows recipients across all completed queues,
+      // including "Send latest newsletter" replays. The statistics' total sent count already
+      // aggregates that (SUM of completed queues' count_processed), and for completed queues
+      // count_processed == count_total with count_to_process == 0, so it serves as all three
+      // queue counts below.
+      $sentCount = ($statistics && $newsletter->getStatus() === NewsletterEntity::STATUS_SENT)
+        ? $statistics->getTotalSentCount()
+        : null;
+      $data['queue'] = $latestQueue ? $this->buildQueue($latestQueue, $sentCount) : false; // false for BC
       $data['options'] = $this->buildOptions($newsletter);
     } elseif (in_array($newsletter->getType(), [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC], true)) {
       $data['segments'] = [];
@@ -317,9 +317,10 @@ class NewslettersResponseBuilder {
   }
 
   /**
-   * @param array{countTotal: int, countProcessed: int, countToProcess: int}|null $queueCounts
+   * @param int|null $sentCount Total recipients across all completed queues (incl. replays);
+   *   when set it overrides this single queue's counts for a fully-sent newsletter.
    */
-  private function buildQueue(SendingQueueEntity $queue, ?array $queueCounts = null) {
+  private function buildQueue(SendingQueueEntity $queue, ?int $sentCount = null) {
     $task = $queue->getTask();
     if ($task === null) {
       return null;
@@ -333,9 +334,9 @@ class NewslettersResponseBuilder {
       : null;
     $scheduledAt = $aggregateData ? $aggregateData['scheduledAt'] : $task->getScheduledAt();
     $processedAt = $aggregateData ? $aggregateData['processedAt'] : $task->getProcessedAt();
-    $countTotal = $queueCounts ? $queueCounts['countTotal'] : $queue->getCountTotal();
-    $countProcessed = $queueCounts ? $queueCounts['countProcessed'] : $queue->getCountProcessed();
-    $countToProcess = $queueCounts ? $queueCounts['countToProcess'] : $queue->getCountToProcess();
+    $countTotal = $sentCount ?? $queue->getCountTotal();
+    $countProcessed = $sentCount ?? $queue->getCountProcessed();
+    $countToProcess = $sentCount !== null ? 0 : $queue->getCountToProcess();
 
     return [
       'id' => (string)$queue->getId(), // (string) for BC
@@ -355,55 +356,6 @@ class NewslettersResponseBuilder {
       'count_processed' => (string)($aggregateData ? $aggregateData['countProcessed'] : $countProcessed), // (string) for BC
       'count_to_process' => (string)($aggregateData ? $aggregateData['countToProcess'] : $countToProcess), // (string) for BC
     ];
-  }
-
-  /**
-   * @param NewsletterEntity[] $newsletters
-   * @return array<int, array{countTotal: int, countProcessed: int, countToProcess: int}>
-   */
-  private function getBatchCompletedQueueCounts(array $newsletters): array {
-    if (empty($newsletters)) {
-      return [];
-    }
-
-    $results = $this->entityManager->createQueryBuilder()
-      ->select('IDENTITY(sq.newsletter) AS newsletterId')
-      ->addSelect('SUM(sq.countTotal) AS countTotal')
-      ->addSelect('SUM(sq.countProcessed) AS countProcessed')
-      ->addSelect('SUM(sq.countToProcess) AS countToProcess')
-      ->from(SendingQueueEntity::class, 'sq')
-      ->join('sq.task', 't')
-      ->where('sq.newsletter IN (:newsletters)')
-      ->andWhere('sq.deletedAt IS NULL')
-      ->andWhere('t.status = :status')
-      ->setParameter('newsletters', $newsletters)
-      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
-      ->groupBy('sq.newsletter')
-      ->getQuery()
-      ->getArrayResult();
-
-    $counts = [];
-    foreach ($results as $result) {
-      if (!is_array($result)) {
-        continue;
-      }
-
-      $newsletterId = $result['newsletterId'] ?? null;
-      $countTotal = $result['countTotal'] ?? null;
-      $countProcessed = $result['countProcessed'] ?? null;
-      $countToProcess = $result['countToProcess'] ?? null;
-
-      if (!is_numeric($newsletterId) || !is_numeric($countTotal) || !is_numeric($countProcessed) || !is_numeric($countToProcess)) {
-        continue;
-      }
-
-      $counts[(int)$newsletterId] = [
-        'countTotal' => (int)$countTotal,
-        'countProcessed' => (int)$countProcessed,
-        'countToProcess' => (int)$countToProcess,
-      ];
-    }
-    return $counts;
   }
 
   private function getBatchLatestQueuesWithTasks(array $newsletters): array {
