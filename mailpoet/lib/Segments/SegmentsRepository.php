@@ -289,8 +289,17 @@ class SegmentsRepository extends Repository {
     $isDynamic = $type === SegmentEntity::TYPE_DYNAMIC;
 
     // Capture the affected subscribers before the cascade removes their
-    // memberships, so segments_count can be refreshed for them afterwards.
-    $affectedSubscriberIds = $isDynamic ? [] : $this->getSubscriberIdsForSegments($ids, $type);
+    // memberships, so segments_count can be refreshed for them afterwards. When
+    // there are too many to recompute inline, skip the (potentially huge)
+    // capture and let the background sweep reconcile their counts instead.
+    $deferRecalculation = false;
+    $affectedSubscriberIds = [];
+    if (!$isDynamic) {
+      $deferRecalculation = $this->getSubscriberCountForSegments($ids, $type) >= $this->segmentsCountRecalculator->getDeferThreshold();
+      if (!$deferRecalculation) {
+        $affectedSubscriberIds = $this->getSubscriberIdsForSegments($ids, $type);
+      }
+    }
 
     $count = 0;
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $type, &$count) {
@@ -331,7 +340,11 @@ class SegmentsRepository extends Repository {
     });
 
     if (!$isDynamic) {
-      $this->segmentsCountRecalculator->recalculateForSubscribers($affectedSubscriberIds);
+      if ($deferRecalculation) {
+        $this->segmentsCountRecalculator->scheduleBackgroundRecalculation();
+      } else {
+        $this->segmentsCountRecalculator->recalculateForSubscribers($affectedSubscriberIds);
+      }
     }
 
     return $count;
@@ -365,6 +378,35 @@ class SegmentsRepository extends Repository {
     return array_map(function ($id): int {
       return is_numeric($id) ? (int)$id : 0;
     }, $ids);
+  }
+
+  /**
+   * Count the subscribers a bulkDelete would have to recompute. Uses COUNT(*)
+   * with no DISTINCT so an over-count (a subscriber shared across the deleted
+   * segments) only trips the deferral threshold slightly earlier, which is safe.
+   *
+   * @param int[] $segmentIds
+   */
+  private function getSubscriberCountForSegments(array $segmentIds, string $type): int {
+    if (empty($segmentIds)) {
+      return 0;
+    }
+
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+
+    $count = $this->entityManager->getConnection()->executeQuery("
+       SELECT COUNT(*) FROM $subscriberSegmentTable ss
+       JOIN $segmentTable s ON ss.`segment_id` = s.`id`
+       WHERE ss.`segment_id` IN (:ids)
+       AND s.`type` = :type
+       AND ss.`status` = :subscribedStatus
+    ", [
+      'ids' => $segmentIds,
+      'type' => $type,
+      'subscribedStatus' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ], ['ids' => ArrayParameterType::INTEGER])->fetchOne();
+    return is_numeric($count) ? (int)$count : 0;
   }
 
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
