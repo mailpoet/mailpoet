@@ -3,6 +3,7 @@
 namespace MailPoet\Analytics;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\UnexpectedValueException;
 
@@ -400,13 +401,25 @@ class ReporterCampaignData {
     foreach ($rawData as $sendingInfo) {
       $meta = $sendingInfo['sendingQueueMeta'];
       $campaignId = $meta['campaignId'] ?? null;
+      $newsletterType = $sendingInfo['newsletterType'];
+
+      // "Send latest newsletter" automation replays re-send a standard newsletter. For this report we
+      // count them as automation activity grouped per automation, instead of merging into the source
+      // newsletter's campaign or skipping them entirely.
+      if (NewsletterReplayMetadata::isLatestNewsletterReplayMeta($meta)) {
+        $automationId = $meta['automation']['id'] ?? null;
+        if (!is_numeric($automationId)) {
+          continue;
+        }
+        $campaignId = 'automation_' . (int)$automationId;
+        $newsletterType = NewsletterEntity::TYPE_AUTOMATION;
+      }
 
       if (!is_string($campaignId)) {
         continue;
       }
 
       if (!isset($processedResults[$campaignId])) {
-        $newsletterType = $sendingInfo['newsletterType'];
         $processedData = [
           'campaignId' => $campaignId,
           'newsletterType' => $newsletterType,
