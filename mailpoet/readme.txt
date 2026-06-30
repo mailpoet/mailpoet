@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.32.0
+Stable tag: 5.33.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,13 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.32.0 - 2026-06-25 =
-* Added: Restore selecting all subscribers across every page for bulk actions;
-* Added: Sender and Reply-to fields to the email editor Send panel;
-* Added: Download button on the Logs page to export logs respecting active filters;
-* Updated: Bump the minimum required WooCommerce version to 10.8 and tested up to version to 10.9;
-* Fixed: Abandoned cart products not showing in block editor emails;
-* Fixed: Backfill unsubscribe tokens for subscribers and newsletters that were missing them;
-* Fixed: Critical error during WordPress user synchronization on hosts that enforce a low database MAX_JOIN_SIZE limit.
+= 5.33.0 - 2026-06-30 =
+* Improved: minor changes and fixes.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
