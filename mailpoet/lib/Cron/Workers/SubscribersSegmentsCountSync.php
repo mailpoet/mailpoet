@@ -25,7 +25,6 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  */
 class SubscribersSegmentsCountSync extends SimpleWorker {
   const TASK_TYPE = 'subscribers_segments_count_sync';
-  const BATCH_SIZE = 5000;
   const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var EntityManager */
@@ -62,8 +61,8 @@ class SubscribersSegmentsCountSync extends SimpleWorker {
     $highestId = $this->getHighestSubscriberId();
 
     while ($lastId < $highestId) {
-      $this->segmentsCountRecalculator->recalculateForIdRange($lastId + 1, $lastId + self::BATCH_SIZE);
-      $lastId += self::BATCH_SIZE;
+      $this->segmentsCountRecalculator->recalculateForIdRange($lastId + 1, $lastId + SegmentsCountRecalculator::BATCH_SIZE);
+      $lastId += SegmentsCountRecalculator::BATCH_SIZE;
       $task->setMeta(['last_subscriber_id' => $lastId]);
       $this->scheduledTasksRepository->persist($task);
       $this->scheduledTasksRepository->flush();
