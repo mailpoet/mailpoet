@@ -97,23 +97,13 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check subscriber is in category segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
-    $i->see('2', $categorySegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->categorySegment, '2');
     $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
 
     $i->wantTo('Check subscriber is in product segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::PRODUCT_SEGMENT);
-    $productSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->productSegment->getId()}']";
-    $i->see('2', $productSegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->productSegment, '2');
     $this->clickAction($i, $this->productSegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
@@ -129,17 +119,8 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // Run action scheduler wc-admin hooks to sync customer and order data to lookup tables
-    // See https://github.com/woocommerce/woocommerce/blob/ba91c94ca9b1c4903964de70c8658cc7bff67d3f/plugins/woocommerce/src/Internal/Admin/Schedulers/ImportScheduler.php#L90
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check subscriber is in category segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
-
-    $i->see('2', $categorySegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->categorySegment, '2');
     $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
@@ -160,16 +141,8 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
-    $numberOfOrdersSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->numberOfOrdersSegment->getId()}']";
-
-    $i->see('1', $numberOfOrdersSegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->numberOfOrdersSegment, '1');
     $this->clickAction($i, $this->numberOfOrdersSegment, 'View subscribers');
     $i->waitForText($customer1Email);
   }
@@ -186,16 +159,8 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check that there is one subscriber in the single order value segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::SINGLE_ORDER_VALUE_SEGMENT);
-    $singleOrderValueSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->singleOrderValueSegment->getId()}']";
-
-    $i->see('1', $singleOrderValueSegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->singleOrderValueSegment, '1');
     $this->clickAction($i, $this->singleOrderValueSegment, 'View subscribers');
     $i->waitForText($customerEmail2);
     $i->dontSee($customerEmail1);
@@ -209,16 +174,8 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check that there is one subscriber in the total spent segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::TOTAL_SPENT_SEGMENT);
-    $totalSpentSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->totalSpentSegment->getId()}']";
-
-    $i->see('1', $totalSpentSegmentSubscribedElement);
+    $this->seeSubscribersCountInSegment($i, $this->totalSpentSegment, '1');
     $this->clickAction($i, $this->totalSpentSegment, 'View subscribers');
     $i->waitForText($customerEmail);
   }
@@ -233,15 +190,8 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
-    $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
-
     $i->wantTo('Check that there is one subscriber in customer country segment');
-    $i->amOnMailpoetPage('Segments');
-    $i->waitForText(self::CUSTOMER_IN_COUNTRY);
-    $customerInCountryCountElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->customerCountrySegment->getId()}']";
-    $i->waitForText('2', 30, $customerInCountryCountElement);
+    $this->seeSubscribersCountInSegment($i, $this->customerCountrySegment, '2');
     $this->clickAction($i, $this->customerCountrySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
@@ -275,6 +225,38 @@ class WooCommerceDynamicSegmentsCest {
     $this->seeDisabledEditAction($i, $this->totalSpentSegment);
     $this->seeDisabledEditAction($i, $this->customerCountrySegment);
     $i->seeNoJSErrors();
+  }
+
+  /**
+   * Assert a WooCommerce dynamic segment shows the expected "all" subscriber count.
+   *
+   * These counts come from WooCommerce's analytics lookup tables, which are filled
+   * by an asynchronous Action Scheduler batch import, not by the legacy per-item
+   * wc-admin_import_* actions. The listing reads the count once on load with no
+   * polling, so asserting after a single fixed wait races the import and sees 0
+   * before it finishes; Action Scheduler also claims only one batch per run, so the
+   * chain needs several runs to drain.
+   *
+   * Run the full Action Scheduler queue and reload the listing a few times until
+   * the count settles.
+   */
+  private function seeSubscribersCountInSegment(\AcceptanceTester $i, SegmentEntity $segment, string $expectedCount): void {
+    $countElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$segment->getId()}']";
+    $maxAttempts = 5;
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+      $i->cli(['action-scheduler', 'run', '--force']);
+      $i->amOnMailpoetPage('Segments');
+      $i->waitForText($segment->getName());
+      try {
+        $i->waitForText($expectedCount, 5, $countElement);
+        return;
+      } catch (\Exception $e) {
+        if ($attempt === $maxAttempts) {
+          throw $e;
+        }
+        $i->wait(2);
+      }
+    }
   }
 
   private function clickAction(\AcceptanceTester $i, SegmentEntity $segmentEntity, $actionName) {
