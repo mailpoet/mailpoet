@@ -27,7 +27,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  */
 class SegmentsCountRecalculator {
   /** Subscribers touched per UPDATE when recalculating large/segment-wide sets. */
-  private const BATCH_SIZE = 10000;
+  public const BATCH_SIZE = 10000;
 
   /** @var EntityManager */
   private $entityManager;
