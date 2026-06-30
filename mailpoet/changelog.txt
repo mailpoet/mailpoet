@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 5.33.0 - 2026-06-30 =
+* Improved: minor changes and fixes.
+
 = 5.32.0 - 2026-06-25 =
 * Added: Restore selecting all subscribers across every page for bulk actions;
 * Added: Sender and Reply-to fields to the email editor Send panel;
