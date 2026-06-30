@@ -8,13 +8,16 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberTest extends \MailPoetTest {
   private Subscriber $subscriber;
+  private WPFunctions $wp;
 
   public function _before() {
     parent::_before();
     $this->subscriber = $this->diContainer->get(Subscriber::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
   public function testItReturnsDisplayNameForWordPressUser(): void {
@@ -112,6 +115,7 @@ class SubscriberTest extends \MailPoetTest {
       ['format' => 'F j']
     );
 
-    $this->assertSame('April 20', $result);
+    $expected = $this->wp->dateI18n('F j', (int)strtotime('2010-04-20 00:00:00'));
+    $this->assertSame($expected, $result);
   }
 }
