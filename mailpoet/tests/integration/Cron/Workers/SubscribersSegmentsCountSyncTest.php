@@ -38,14 +38,20 @@ class SubscribersSegmentsCountSyncTest extends \MailPoetTest {
     $this->assertTrue((bool)$this->settings->get(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, false));
   }
 
-  public function testItResetsProgressMetaAfterAFullSweep(): void {
-    (new Subscriber())->create();
+  public function testItLeavesProgressMetaInPlaceAfterAFullSweep(): void {
+    $subscriber = (new Subscriber())->create();
     $task = $this->createTask();
 
     $this->worker->processTaskStrategy($task, microtime(true));
 
-    // Progress is reset so the next (reconcile) run starts a fresh sweep.
-    $this->assertSame(['last_subscriber_id' => 0], $task->getMeta());
+    // The cursor is intentionally not reset to 0. The next weekly reconcile run
+    // is a fresh task with empty meta (so it sweeps from 0 again on its own), and
+    // leaving the cursor past the table end means a markSegmentsCountColumnReady()
+    // failure retries only the flag flip instead of re-sweeping the whole table.
+    $meta = $task->getMeta();
+    $this->assertIsArray($meta);
+    $this->assertArrayHasKey('last_subscriber_id', $meta);
+    $this->assertGreaterThanOrEqual((int)$subscriber->getId(), (int)$meta['last_subscriber_id']);
   }
 
   public function testItRepairsDriftOnAReconcileRun(): void {
