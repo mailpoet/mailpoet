@@ -58,7 +58,11 @@ class SubscribersEmailCountsController {
       "
       UPDATE {$this->subscribersTable} as s
       JOIN (
-          SELECT s.id, COUNT(st.id) as email_count
+          -- STRAIGHT_JOIN pins the join order to subscribers -> sts -> scheduled_tasks so each
+          -- batch only scans its own subscribers' rows. Without it the optimizer may lead with
+          -- scheduled_tasks (type='sending' looks selective but isn't) and re-scan the whole
+          -- sending history on every batch -- observed on a particular site with heavy history.
+          SELECT STRAIGHT_JOIN s.id, COUNT(st.id) as email_count
           FROM {$this->subscribersTable} as s
           JOIN {$scheduledTaskSubscribersTable} as sts ON s.id = sts.subscriber_id
           JOIN {$this->scheduledTasksTable} as st ON st.id = sts.task_id
