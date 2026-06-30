@@ -185,14 +185,13 @@ class Cli {
     }
 
     $rowsRead = $totals['rows'] + $totals['skipped'];
-    $skippedNotice = $totals['skipped'] > 0
-      ? sprintf(
-        ' %d %s skipped because %s column count did not match the header.',
-        $totals['skipped'],
-        $totals['skipped'] === 1 ? 'row was' : 'rows were',
-        $totals['skipped'] === 1 ? 'its' : 'their'
-      )
-      : '';
+    $skippedNotice = '';
+    if ($totals['skipped'] > 0) {
+      $skippedTemplate = $totals['skipped'] === 1
+        ? ' %d row was skipped because its column count did not match the header.'
+        : ' %d rows were skipped because their column count did not match the header.';
+      $skippedNotice = sprintf($skippedTemplate, $totals['skipped']);
+    }
 
     if ($options['dry_run']) {
       WP_CLI::success(sprintf(
