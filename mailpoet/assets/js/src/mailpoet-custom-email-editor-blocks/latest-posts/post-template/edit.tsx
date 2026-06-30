@@ -194,7 +194,9 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
         perPage,
         offset,
         order,
-        terms,
+        // Categories and tags only apply to posts; ignore stale terms after a
+        // switch to pages so the preview matches the server-side query.
+        terms: postType === 'post' ? terms : [],
         inclusionType,
       });
 

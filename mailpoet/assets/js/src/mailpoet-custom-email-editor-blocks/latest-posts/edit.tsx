@@ -150,20 +150,36 @@ function ManualPostsControl({
     [search, postType, value.join(',')],
   );
 
-  const titleToId = new Map<string, number>();
-  [...selectedPosts, ...searchResults].forEach((post) => {
-    titleToId.set(postTitle(post), post.id);
+  // FormTokenField identifies tokens by their label, so posts that share a
+  // title (e.g. several "(no title)") would collide. Suffix the post ID only
+  // for titles that actually repeat, keeping unique titles clean.
+  const uniquePosts = [
+    ...new Map(
+      [...selectedPosts, ...searchResults].map((post) => [post.id, post]),
+    ).values(),
+  ];
+  const titleCounts = new Map<string, number>();
+  uniquePosts.forEach((post) => {
+    const title = postTitle(post);
+    titleCounts.set(title, (titleCounts.get(title) ?? 0) + 1);
   });
+  const labelFor = (post: PostRecord): string => {
+    const title = postTitle(post);
+    return (titleCounts.get(title) ?? 0) > 1 ? `${title} (#${post.id})` : title;
+  };
 
-  const selectedTitles = value
+  const labelToId = new Map<string, number>();
+  uniquePosts.forEach((post) => labelToId.set(labelFor(post), post.id));
+
+  const selectedLabels = value
     .map((id) => selectedPosts.find((post) => post.id === id))
     .filter((post): post is PostRecord => Boolean(post))
-    .map(postTitle);
+    .map(labelFor);
 
   const handleChange = (tokens: (string | { value: string })[]): void => {
     const ids = tokens
       .map((token) => (typeof token === 'string' ? token : token.value))
-      .map((title) => titleToId.get(title))
+      .map((label) => labelToId.get(label))
       .filter((id): id is number => typeof id === 'number');
     onChange(ids);
   };
@@ -171,8 +187,8 @@ function ManualPostsControl({
   return (
     <FormTokenField
       label={__('Choose posts', 'mailpoet')}
-      value={selectedTitles}
-      suggestions={searchResults.map(postTitle)}
+      value={selectedLabels}
+      suggestions={searchResults.map(labelFor)}
       onInputChange={setSearch}
       onChange={handleChange}
       __experimentalExpandOnFocus
@@ -190,13 +206,15 @@ export function Edit({
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     allowedBlocks: [TEMPLATE_BLOCK_NAME],
     template: INNER_TEMPLATE,
-    templateLock: false,
+    templateLock: 'insert',
   });
 
   const updateQuery = (next: Partial<LatestPostsQuery>): void =>
     setAttributes({ query: { ...query, ...next } });
 
   const isManual = query.selectionMode === 'manual';
+  // Categories and tags are post-only taxonomies.
+  const supportsTerms = query.postType === 'post';
 
   return (
     <>
@@ -244,22 +262,26 @@ export function Edit({
                 onChange={(value) => updateQuery({ order: value })}
                 __nextHasNoMarginBottom
               />
-              <BaseControl>
-                <TermControl
-                  value={query.terms ?? []}
-                  onChange={(terms) => updateQuery({ terms })}
-                />
-              </BaseControl>
-              <ToggleControl
-                label={__('Exclude selected categories & tags', 'mailpoet')}
-                checked={query.inclusionType === 'exclude'}
-                onChange={(exclude) =>
-                  updateQuery({
-                    inclusionType: exclude ? 'exclude' : 'include',
-                  })
-                }
-                __nextHasNoMarginBottom
-              />
+              {supportsTerms && (
+                <>
+                  <BaseControl>
+                    <TermControl
+                      value={query.terms ?? []}
+                      onChange={(terms) => updateQuery({ terms })}
+                    />
+                  </BaseControl>
+                  <ToggleControl
+                    label={__('Exclude selected categories & tags', 'mailpoet')}
+                    checked={query.inclusionType === 'exclude'}
+                    onChange={(exclude) =>
+                      updateQuery({
+                        inclusionType: exclude ? 'exclude' : 'include',
+                      })
+                    }
+                    __nextHasNoMarginBottom
+                  />
+                </>
+              )}
             </>
           )}
         </PanelBody>

@@ -32,6 +32,8 @@ class LatestPosts extends AbstractBlock {
   private const TEMPLATE_BLOCK = 'mailpoet/latest-posts-template';
   private const DEFAULT_COLUMNS = 1;
   private const MAX_COLUMNS = 2;
+  private const DEFAULT_POSTS = 3;
+  private const MAX_POSTS = 100;
   private const DEFAULT_BLOCK_GAP = '20px';
   private const DEFAULT_CONTENT_WIDTH_PX = 600;
 
@@ -336,11 +338,15 @@ class LatestPosts extends AbstractBlock {
       return $args;
     }
 
-    $args['amount'] = isset($query['perPage']) && is_numeric($query['perPage']) ? (int)$query['perPage'] : 3;
-    $args['offset'] = isset($query['offset']) && is_numeric($query['offset']) ? (int)$query['offset'] : 0;
+    $perPage = isset($query['perPage']) && is_numeric($query['perPage']) ? (int)$query['perPage'] : self::DEFAULT_POSTS;
+    $offset = isset($query['offset']) && is_numeric($query['offset']) ? (int)$query['offset'] : 0;
+    $args['amount'] = max(1, min(self::MAX_POSTS, $perPage));
+    $args['offset'] = max(0, $offset);
     $args['sortBy'] = $this->isOldestFirst($query) ? 'ASC' : 'DESC';
 
-    $terms = $this->getTerms($query);
+    // Categories and tags are post-only taxonomies; applying them to other
+    // content types would wrongly filter out every result.
+    $terms = $args['contentType'] === 'post' ? $this->getTerms($query) : [];
     if ($terms) {
       $args['terms'] = $terms;
       $args['inclusionType'] = $this->isExclude($query) ? 'exclude' : 'include';
@@ -357,7 +363,7 @@ class LatestPosts extends AbstractBlock {
     $posts = isset($query['posts']) && is_array($query['posts']) ? $query['posts'] : [];
     $ids = [];
     foreach ($posts as $post) {
-      if (is_numeric($post)) {
+      if (is_numeric($post) && (int)$post > 0) {
         $ids[] = (int)$post;
       }
     }
@@ -372,7 +378,7 @@ class LatestPosts extends AbstractBlock {
     $terms = isset($query['terms']) && is_array($query['terms']) ? $query['terms'] : [];
     $result = [];
     foreach ($terms as $term) {
-      if (is_array($term) && isset($term['taxonomy'], $term['id']) && is_string($term['taxonomy']) && is_numeric($term['id'])) {
+      if (is_array($term) && isset($term['taxonomy'], $term['id']) && is_string($term['taxonomy']) && is_numeric($term['id']) && (int)$term['id'] > 0) {
         $result[] = ['taxonomy' => $term['taxonomy'], 'id' => (int)$term['id']];
       }
     }
