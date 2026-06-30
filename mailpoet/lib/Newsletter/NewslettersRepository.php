@@ -142,6 +142,9 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * Returns the number of standard newsletter campaigns sent in the given period.
+   */
   public function getStandardNewsletterSentCount(DateTimeInterface $since): int {
     return (int)$this->doctrineRepository->createQueryBuilder('n')
       ->select('COUNT(n)')
@@ -150,6 +153,8 @@ class NewslettersRepository extends Repository {
       ->andWhere('n.type = :type')
       ->andWhere('n.status = :status')
       ->andWhere('t.status = :taskStatus')
+      // Intentionally skip "Send latest newsletter" replay sends; they would skew the campaign count.
+      // We use only the date of the initial sending.
       ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('t.meta IS NULL OR t.meta NOT LIKE :latestNewsletterReplayMeta')
       ->andWhere('t.processedAt >= :since')
@@ -444,6 +449,8 @@ class NewslettersRepository extends Repository {
         AND st.processed_at IS NOT NULL
         AND sq.count_processed > 0
         AND ns.segment_id = :segmentId
+        -- Skip replay queues/tasks so we pick the original standard send as the replay source,
+        -- not a previous replay (whose processed_at could otherwise win the ORDER BY).
         AND (sq.meta IS NULL OR sq.meta NOT LIKE :latestNewsletterReplayMeta)
         AND (st.meta IS NULL OR st.meta NOT LIKE :latestNewsletterReplayMeta)
       ORDER BY st.processed_at DESC, st.id DESC
