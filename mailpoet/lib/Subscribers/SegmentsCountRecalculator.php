@@ -214,21 +214,36 @@ class SegmentsCountRecalculator {
   }
 
   /**
-   * Count the memberships a segment recalculation would touch. Uses COUNT(*)
-   * rather than COUNT(DISTINCT subscriber_id): a subscriber shared across
-   * several of the given segments is counted more than once, but an over-count
-   * only makes the deferral threshold trip slightly earlier, which is safe, and
-   * it keeps the query on the segment_id index.
+   * Count the memberships a segment change would touch. Uses COUNT(*) rather
+   * than COUNT(DISTINCT subscriber_id): a subscriber shared across several of
+   * the given segments is counted more than once, but an over-count only makes
+   * the deferral threshold trip slightly earlier, which is safe.
+   *
+   * When $type is null the query stays on the segment_id index with no join,
+   * which is what the recalculation path wants. Pass a $type to scope the count
+   * to segments of that type (joining the segments table), matching a
+   * type-scoped delete.
    *
    * @param int[] $segmentIds
    */
-  private function countSegmentMembers(array $segmentIds, bool $subscribedOnly): int {
+  public function countSegmentMembers(array $segmentIds, bool $subscribedOnly, ?string $type = null): int {
+    if ($segmentIds === []) {
+      return 0;
+    }
+
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
-    $sql = "SELECT COUNT(*) FROM {$subscriberSegmentTable} WHERE segment_id IN (:segmentIds)";
+    $sql = "SELECT COUNT(*) FROM {$subscriberSegmentTable} ss";
     $params = ['segmentIds' => $segmentIds];
     $types = ['segmentIds' => ArrayParameterType::INTEGER];
+    if ($type !== null) {
+      $segmentsTable = $this->getTableName(SegmentEntity::class);
+      $sql .= " JOIN {$segmentsTable} s ON ss.segment_id = s.id AND s.type = :type";
+      $params['type'] = $type;
+      $types['type'] = ParameterType::STRING;
+    }
+    $sql .= " WHERE ss.segment_id IN (:segmentIds)";
     if ($subscribedOnly) {
-      $sql .= ' AND status = :status';
+      $sql .= ' AND ss.status = :status';
       $params['status'] = SubscriberEntity::STATUS_SUBSCRIBED;
       $types['status'] = ParameterType::STRING;
     }

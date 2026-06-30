@@ -295,7 +295,7 @@ class SegmentsRepository extends Repository {
     $deferRecalculation = false;
     $affectedSubscriberIds = [];
     if (!$isDynamic) {
-      $deferRecalculation = $this->getSubscriberCountForSegments($ids, $type) >= $this->segmentsCountRecalculator->getDeferThreshold();
+      $deferRecalculation = $this->segmentsCountRecalculator->countSegmentMembers($ids, true, $type) >= $this->segmentsCountRecalculator->getDeferThreshold();
       if (!$deferRecalculation) {
         $affectedSubscriberIds = $this->getSubscriberIdsForSegments($ids, $type);
       }
@@ -378,35 +378,6 @@ class SegmentsRepository extends Repository {
     return array_map(function ($id): int {
       return is_numeric($id) ? (int)$id : 0;
     }, $ids);
-  }
-
-  /**
-   * Count the subscribers a bulkDelete would have to recompute. Uses COUNT(*)
-   * with no DISTINCT so an over-count (a subscriber shared across the deleted
-   * segments) only trips the deferral threshold slightly earlier, which is safe.
-   *
-   * @param int[] $segmentIds
-   */
-  private function getSubscriberCountForSegments(array $segmentIds, string $type): int {
-    if (empty($segmentIds)) {
-      return 0;
-    }
-
-    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
-    $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
-
-    $count = $this->entityManager->getConnection()->executeQuery("
-       SELECT COUNT(*) FROM $subscriberSegmentTable ss
-       JOIN $segmentTable s ON ss.`segment_id` = s.`id`
-       WHERE ss.`segment_id` IN (:ids)
-       AND s.`type` = :type
-       AND ss.`status` = :subscribedStatus
-    ", [
-      'ids' => $segmentIds,
-      'type' => $type,
-      'subscribedStatus' => SubscriberEntity::STATUS_SUBSCRIBED,
-    ], ['ids' => ArrayParameterType::INTEGER])->fetchOne();
-    return is_numeric($count) ? (int)$count : 0;
   }
 
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
