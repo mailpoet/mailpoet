@@ -184,14 +184,20 @@ class Cli {
       return;
     }
 
+    $rowsRead = $totals['rows'] + $totals['skipped'];
     $skippedNotice = $totals['skipped'] > 0
-      ? sprintf(' %d row(s) were skipped because their column count did not match the header.', $totals['skipped'])
+      ? sprintf(
+        ' %d %s skipped because %s column count did not match the header.',
+        $totals['skipped'],
+        $totals['skipped'] === 1 ? 'row was' : 'rows were',
+        $totals['skipped'] === 1 ? 'its' : 'their'
+      )
       : '';
 
     if ($options['dry_run']) {
       WP_CLI::success(sprintf(
         'Dry run: %d rows read, %d subscribers with a valid email. Nothing was written.%s',
-        $totals['rows'],
+        $rowsRead,
         $totals['valid'],
         $skippedNotice
       ));
@@ -202,7 +208,7 @@ class Cli {
       'Import finished: %d created, %d updated (out of %d rows).%s',
       $totals['created'],
       $totals['updated'],
-      $totals['rows'],
+      $rowsRead,
       $skippedNotice
     ));
   }
