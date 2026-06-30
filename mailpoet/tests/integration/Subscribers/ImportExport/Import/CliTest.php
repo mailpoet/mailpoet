@@ -195,6 +195,62 @@ class CliTest extends \MailPoetTest {
     $this->cli->run($file, self::DEFAULT_OPTIONS);
   }
 
+  public function testItSkipsRowsWithFewerColumnsThanHeader(): void {
+    $messages = [];
+    $logger = function (string $message) use (&$messages): void {
+      $messages[] = $message;
+    };
+
+    // "email" is deliberately not the last column: a short row, if padded or
+    // passed through, would shift a later subscriber's value onto the wrong
+    // record (Carol's last name landing on Bob's email).
+    $file = $this->writeCsv([
+      ['first_name', 'email', 'last_name'],
+      ['Adam', 'adam@example.com', 'Smith'],
+      ['Bob', 'bob@example.com'], // short row: last_name missing
+      ['Carol', 'carol@example.com', 'Jones'],
+    ]);
+
+    $totals = $this->cli->run($file, self::DEFAULT_OPTIONS, $logger);
+
+    $this->assertSame(2, $totals['rows']);
+    $this->assertSame(2, $totals['created']);
+    $this->assertSame(1, $totals['skipped']);
+
+    $this->subscribersRepository->refreshAll();
+    $adam = $this->subscribersRepository->findOneBy(['email' => 'adam@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $adam);
+    $this->assertSame('Smith', $adam->getLastName());
+
+    $carol = $this->subscribersRepository->findOneBy(['email' => 'carol@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $carol);
+    $this->assertSame('Jones', $carol->getLastName());
+
+    // The malformed row must not be imported under a guessed alignment.
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => 'bob@example.com']));
+
+    $skippedWarnings = array_filter($messages, function (string $message): bool {
+      return strpos($message, 'Skipped line 3') !== false;
+    });
+    $this->assertCount(1, $skippedWarnings);
+  }
+
+  public function testItSkipsRowsWithMoreColumnsThanHeader(): void {
+    $file = $this->writeCsv([
+      ['email', 'first_name'],
+      ['valid@example.com', 'Valid'],
+      ['extra@example.com', 'Extra', 'unexpected-column'], // too many columns
+    ]);
+
+    $totals = $this->cli->run($file, self::DEFAULT_OPTIONS);
+
+    $this->assertSame(1, $totals['rows']);
+    $this->assertSame(1, $totals['created']);
+    $this->assertSame(1, $totals['skipped']);
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => 'valid@example.com']));
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => 'extra@example.com']));
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
