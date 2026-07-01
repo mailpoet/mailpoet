@@ -11,7 +11,7 @@ use MailPoetVendor\Carbon\Carbon;
 class SubscribersEngagementScore extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = true;
   const SUPPORT_MULTIPLE_INSTANCES = false;
-  const BATCH_SIZE = 60;
+  const BATCH_SIZE = 1000;
   const TASK_TYPE = 'subscribers_engagement_score';
 
   /** @var SegmentsRepository */
@@ -47,8 +47,10 @@ class SubscribersEngagementScore extends SimpleWorker {
 
   private function recalculateSubscribers(): int {
     $subscribers = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
-    foreach ($subscribers as $subscriber) {
-      $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
+    if ($subscribers) {
+      $this->statisticsOpensRepository->recalculateSubscribersScore($subscribers);
+      // Keep memory bounded across the loop; the scheduled task entity is a different type and stays managed.
+      $this->subscribersRepository->detachAll();
     }
     return count($subscribers);
   }

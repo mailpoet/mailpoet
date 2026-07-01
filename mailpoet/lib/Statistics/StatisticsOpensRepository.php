@@ -31,17 +31,31 @@ class StatisticsOpensRepository extends Repository {
   }
 
   public function recalculateSubscriberScore(SubscriberEntity $subscriber): void {
-    $subscriber->setEngagementScoreUpdatedAt(new \DateTimeImmutable());
-    $yearAgo = new \DateTimeImmutable('-1 year');
-    $newslettersSentCount = $this->subscriberStatisticsRepository->getTotalSentCount($subscriber, $yearAgo);
-    if ($newslettersSentCount < SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE) {
-      $subscriber->setEngagementScore(null);
-      $this->entityManager->flush();
+    $this->recalculateSubscribersScore([$subscriber]);
+  }
+
+  /**
+   * @param SubscriberEntity[] $subscribers
+   */
+  public function recalculateSubscribersScore(array $subscribers): void {
+    if (!$subscribers) {
       return;
     }
-    $opensCount = $this->subscriberStatisticsRepository->getStatisticsOpenCount($subscriber, $yearAgo);
-    $score = ($opensCount / $newslettersSentCount) * 100;
-    $subscriber->setEngagementScore($score);
+    $now = new \DateTimeImmutable();
+    $yearAgo = new \DateTimeImmutable('-1 year');
+    $sentCounts = $this->subscriberStatisticsRepository->getTotalSentCounts($subscribers, $yearAgo);
+    $openCounts = $this->subscriberStatisticsRepository->getStatisticsOpenCounts($subscribers, $yearAgo);
+    foreach ($subscribers as $subscriber) {
+      $subscriber->setEngagementScoreUpdatedAt($now);
+      $subscriberId = (int)$subscriber->getId();
+      $sentCount = $sentCounts[$subscriberId] ?? 0;
+      if ($sentCount < SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE) {
+        $subscriber->setEngagementScore(null);
+        continue;
+      }
+      $openCount = $openCounts[$subscriberId] ?? 0;
+      $subscriber->setEngagementScore(($openCount / $sentCount) * 100);
+    }
     $this->entityManager->flush();
   }
 
