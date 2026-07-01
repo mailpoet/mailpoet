@@ -42,6 +42,11 @@ export function DataInconsistencies() {
         'mailpoet',
       ),
       orphaned_subscriptions: __('Orphaned Subscriptions', 'mailpoet'),
+      orphaned_subscriber_custom_fields: __(
+        'Orphaned Subscriber Custom Fields',
+        'mailpoet',
+      ),
+      orphaned_subscriber_tags: __('Orphaned Subscriber Tags', 'mailpoet'),
       orphaned_links: __('Orphaned Links', 'mailpoet'),
       orphaned_newsletter_posts: __('Orphaned Newsletter Posts', 'mailpoet'),
     }),

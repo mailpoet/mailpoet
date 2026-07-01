@@ -9,6 +9,8 @@ class DataInconsistencyController {
   const ORPHANED_SENDING_TASK_SUBSCRIBERS = 'orphaned_sending_task_subscribers';
   const SENDING_QUEUE_WITHOUT_NEWSLETTER = 'sending_queue_without_newsletter';
   const ORPHANED_SUBSCRIPTIONS = 'orphaned_subscriptions';
+  const ORPHANED_SUBSCRIBER_CUSTOM_FIELDS = 'orphaned_subscriber_custom_fields';
+  const ORPHANED_SUBSCRIBER_TAGS = 'orphaned_subscriber_tags';
   const ORPHANED_LINKS = 'orphaned_links';
   const ORPHANED_NEWSLETTER_POSTS = 'orphaned_newsletter_posts';
 
@@ -17,6 +19,8 @@ class DataInconsistencyController {
     self::ORPHANED_SENDING_TASK_SUBSCRIBERS,
     self::SENDING_QUEUE_WITHOUT_NEWSLETTER,
     self::ORPHANED_SUBSCRIPTIONS,
+    self::ORPHANED_SUBSCRIBER_CUSTOM_FIELDS,
+    self::ORPHANED_SUBSCRIBER_TAGS,
     self::ORPHANED_LINKS,
     self::ORPHANED_NEWSLETTER_POSTS,
   ];
@@ -35,6 +39,8 @@ class DataInconsistencyController {
       self::ORPHANED_SENDING_TASK_SUBSCRIBERS => $this->repository->getOrphanedScheduledTasksSubscribersCount(),
       self::SENDING_QUEUE_WITHOUT_NEWSLETTER => $this->repository->getSendingQueuesWithoutNewsletterCount(),
       self::ORPHANED_SUBSCRIPTIONS => $this->repository->getOrphanedSubscriptionsCount(),
+      self::ORPHANED_SUBSCRIBER_CUSTOM_FIELDS => $this->repository->getOrphanedSubscriberCustomFieldsCount(),
+      self::ORPHANED_SUBSCRIBER_TAGS => $this->repository->getOrphanedSubscriberTagsCount(),
       self::ORPHANED_LINKS => $this->repository->getOrphanedNewsletterLinksCount(),
       self::ORPHANED_NEWSLETTER_POSTS => $this->repository->getOrphanedNewsletterPostsCount(),
     ];
@@ -54,6 +60,10 @@ class DataInconsistencyController {
       $this->repository->cleanupSendingQueuesWithoutNewsletter();
     } elseif ($inconsistency === self::ORPHANED_SUBSCRIPTIONS) {
       $this->repository->cleanupOrphanedSubscriptions();
+    } elseif ($inconsistency === self::ORPHANED_SUBSCRIBER_CUSTOM_FIELDS) {
+      $this->repository->cleanupOrphanedSubscriberCustomFields();
+    } elseif ($inconsistency === self::ORPHANED_SUBSCRIBER_TAGS) {
+      $this->repository->cleanupOrphanedSubscriberTags();
     } elseif ($inconsistency === self::ORPHANED_LINKS) {
       $this->repository->cleanupOrphanedNewsletterLinks();
     } elseif ($inconsistency === self::ORPHANED_NEWSLETTER_POSTS) {
