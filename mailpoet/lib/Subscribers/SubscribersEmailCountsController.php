@@ -27,13 +27,14 @@ class SubscribersEmailCountsController {
     $this->scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
   }
 
-  public function updateSubscribersEmailCounts(?\DateTimeInterface $dateLastProcessed, int $startId, int $endId): int {
+  public function updateSubscribersEmailCounts(?\DateTimeInterface $dateLastProcessed, int $startId, int $endId, ?\DateTimeInterface $now = null): int {
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
     $connection = $this->entityManager->getConnection();
 
-    $dayAgo = new Carbon();
-    $dayAgoIso = $dayAgo->subDay()->toDateTimeString();
+    // $now is the run's frozen cutoff reference; the caller passes it so all windows of a run
+    // (including resumes) share the same dayAgo and match the stored baseline exactly.
+    $dayAgoIso = Carbon::createFromTimestamp(($now ?? new Carbon())->getTimestamp())->subDay()->toDateTimeString();
 
     $countSubscribersToUpdate = $this->countSubscribersInRange($startId, $endId);
     if (!$countSubscribersToUpdate) {
@@ -82,12 +83,11 @@ class SubscribersEmailCountsController {
     return $countSubscribersToUpdate;
   }
 
-  public function hasNewSendingTasksSince(\DateTimeInterface $dateLastProcessed): bool {
+  public function hasNewSendingTasksSince(\DateTimeInterface $dateLastProcessed, ?\DateTimeInterface $now = null): bool {
     $carbonDateLastProcessed = Carbon::createFromTimestamp($dateLastProcessed->getTimestamp());
     $dateFromIso = ($carbonDateLastProcessed->subDay())->toDateTimeString();
     $queryParams['dateFrom'] = $dateFromIso;
-    $dayAgo = new Carbon();
-    $dayAgoIso = $dayAgo->subDay()->toDateTimeString();
+    $dayAgoIso = Carbon::createFromTimestamp(($now ?? new Carbon())->getTimestamp())->subDay()->toDateTimeString();
     $queryParams['dayAgo'] = $dayAgoIso;
 
     $result = $this->entityManager->getConnection()->executeQuery(

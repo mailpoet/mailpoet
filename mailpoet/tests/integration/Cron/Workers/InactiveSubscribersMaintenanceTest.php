@@ -168,12 +168,14 @@ class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
     $this->createSubscribers(1);
     $firstRunScheduledAt = (new Carbon())->subDays(10);
 
-    // First run counts and records the baseline.
+    // First run counts and records the baseline (the run cutoff, not the scheduled time).
     $firstRunDates = [];
+    $firstRunCutoffs = [];
     $firstRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
       'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
-        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId) use (&$firstRunDates) {
+        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId, $now) use (&$firstRunDates, &$firstRunCutoffs) {
           $firstRunDates[] = $dateLastProcessed;
+          $firstRunCutoffs[] = $now;
           return 0;
         }),
         'hasNewSendingTasksSince' => Expected::never(),
@@ -227,7 +229,148 @@ class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
     $reenabledRunWorker->processTaskStrategy($this->createRunningTask(), microtime(true));
 
     verify($firstRunDates)->equals([null]);
-    verify($this->formatDates($reenabledRunDates))->equals([$firstRunScheduledAt->format('Y-m-d H:i:s')]);
+    $this->assertCount(1, $firstRunCutoffs);
+    verify($this->formatDates($reenabledRunDates))->equals([$firstRunCutoffs[0]->format('Y-m-d H:i:s')]);
+  }
+
+  public function testItStoresRunCutoffAsBaselineNotScheduledTime(): void {
+    $this->createSubscribers(1);
+    $scheduledLongAgo = (new Carbon())->subDays(10);
+    $capturedCutoffs = [];
+
+    $worker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId, $now) use (&$capturedCutoffs) {
+          $capturedCutoffs[] = $now;
+          return 0;
+        }),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::once(0),
+        'markActiveSubscribers' => Expected::once(0),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+    // Task scheduled long ago (as if cron ran late) -- the baseline must be the run cutoff, not scheduledAt.
+    $worker->processTaskStrategy(
+      $this->scheduledTaskFactory->create(InactiveSubscribersMaintenance::TASK_TYPE, null, $scheduledLongAgo),
+      microtime(true)
+    );
+
+    $stored = $this->settings->get(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING);
+    $this->assertIsString($stored);
+    $this->assertCount(1, $capturedCutoffs);
+    verify(Carbon::parse($stored)->format('Y-m-d H:i:s'))->equals($capturedCutoffs[0]->format('Y-m-d H:i:s'));
+    verify(Carbon::parse($stored)->getTimestamp())->greaterThan($scheduledLongAgo->getTimestamp());
+  }
+
+  public function testItDoesNotRecountAWindowWhenMarkingFails(): void {
+    $subscriberIds = $this->createSubscribers(1);
+    $task = $this->createRunningTask();
+
+    // First run: counting succeeds and the cursor is committed, then marking throws.
+    $firstRunUpdateCalls = 0;
+    $firstRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::once(function() use (&$firstRunUpdateCalls) {
+          $firstRunUpdateCalls++;
+          return 0;
+        }),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::once(function() {
+          throw new \RuntimeException('marking failed');
+        }),
+        'markActiveSubscribers' => Expected::never(),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+
+    try {
+      $firstRunWorker->processTaskStrategy($task, microtime(true));
+      $this->fail('Expected the marking failure to bubble up.');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('marking failed');
+    }
+
+    // Cursor was committed before marking, so the counted window will not be reprocessed.
+    $this->entityManager->clear();
+    $task = $this->scheduledTasksRepository->findOneById((int)$task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $meta = $task->getMeta();
+    $this->assertIsArray($meta);
+    verify($meta['last_subscriber_id'])->equals($subscriberIds[0] + 1);
+
+    // Resume: the already-counted window is not counted again.
+    $secondRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::never(),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::never(),
+        'markActiveSubscribers' => Expected::once(0),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+    $secondRunWorker->processTaskStrategy($task, microtime(true));
+
+    verify($firstRunUpdateCalls)->equals(1);
+  }
+
+  public function testItResetsBaselineWhenPartiallyCountedRunIsDisabled(): void {
+    $this->createSubscribers(1);
+    // A prior completed run left a baseline; a later run counted one window then stalled,
+    // persisting its cursor and frozen cutoff but not yet the baseline.
+    $this->settings->set(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING, (new Carbon())->subDays(3)->format(\DateTimeInterface::ATOM));
+    $partialTask = $this->createRunningTask();
+    $partialTask->setMeta([
+      'last_subscriber_id' => 1,
+      'email_count_cutoff' => (new Carbon())->format(\DateTimeInterface::ATOM),
+    ]);
+    $this->entityManager->flush();
+
+    // Inactivity gets disabled before the partial run resumes -> it completes via the early
+    // return and must drop the now-stale baseline.
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 0);
+    $disabledWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::never(),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::never(),
+        'markActiveSubscribers' => Expected::never(),
+        'reactivateInactiveSubscribers' => Expected::once(),
+      ], $this),
+    ]);
+    $disabledWorker->processTaskStrategy($partialTask, microtime(true));
+
+    verify($this->settings->get(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING))->null();
+
+    // Re-enabled: with no baseline the next run full-recounts (dateLastProcessed = null),
+    // resetting counts instead of incrementing the already-counted window again.
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
+    $reenabledDates = [];
+    $reenabledWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId, $now) use (&$reenabledDates) {
+          $reenabledDates[] = $dateLastProcessed;
+          return 0;
+        }),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::once(0),
+        'markActiveSubscribers' => Expected::once(0),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+    $reenabledWorker->processTaskStrategy($this->createRunningTask(), microtime(true));
+
+    verify($reenabledDates)->equals([null]);
   }
 
   public function testItProcessesAllSubscriberWindows(): void {
