@@ -220,6 +220,72 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
+  public function testItRecalculatesScoresForMultipleSubscribersInSingleCall() {
+    $scored = $this->createSubscriber();
+    $belowThreshold = $this->createSubscriber();
+    // Scored subscriber: 3 sent, 1 open => 33%.
+    $this->createStatisticsNewsletter($this->createNewsletter(), $scored);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $scored);
+    $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter(), $scored);
+    $newsletter = $statisticsNewsletter->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $queue = $newsletter->getQueues()->first();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->entityManager->persist(new StatisticsOpenEntity($newsletter, $queue, $scored));
+    // Below-threshold subscriber: only 2 sent => no score.
+    $this->createStatisticsNewsletter($this->createNewsletter(), $belowThreshold);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $belowThreshold);
+    $this->entityManager->flush();
+
+    $this->repository->recalculateSubscribersScore([$scored, $belowThreshold]);
+
+    $this->entityManager->refresh($scored);
+    $this->entityManager->refresh($belowThreshold);
+    verify($scored->getEngagementScore())->equalsWithDelta(33, 1);
+    verify($scored->getEngagementScoreUpdatedAt())->notNull();
+    verify($belowThreshold->getEngagementScore())->null();
+    verify($belowThreshold->getEngagementScoreUpdatedAt())->notNull();
+  }
+
+  public function testItRecalculatesDistinctScoresAcrossABatchAndExcludesOldStats() {
+    $excellent = $this->createSubscriber();
+    $partial = $this->createSubscriber();
+    $zero = $this->createSubscriber();
+    $old = (new Carbon())->subMonths(13);
+
+    // excellent: 3 sent, 3 opened => 100
+    for ($i = 0; $i < 3; $i++) {
+      $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $excellent), $excellent);
+    }
+    // partial: 3 recent sent with 1 open, plus an older-than-12-months send+open that must be excluded => 33
+    $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $partial), $partial);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partial);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partial);
+    $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter($old), $partial, $old), $partial);
+    // zero: 3 sent, none opened => 0
+    for ($i = 0; $i < 3; $i++) {
+      $this->createStatisticsNewsletter($this->createNewsletter(), $zero);
+    }
+    $this->entityManager->flush();
+
+    $this->repository->recalculateSubscribersScore([$excellent, $partial, $zero]);
+
+    $this->entityManager->refresh($excellent);
+    $this->entityManager->refresh($partial);
+    $this->entityManager->refresh($zero);
+    verify($excellent->getEngagementScore())->equalsWithDelta(100, 1);
+    verify($partial->getEngagementScore())->equalsWithDelta(33, 1);
+    verify($zero->getEngagementScore())->equals(0.0);
+  }
+
+  private function createOpenOnNewsletter(StatisticsNewsletterEntity $statisticsNewsletter, SubscriberEntity $subscriber): void {
+    $newsletter = $statisticsNewsletter->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $queue = $newsletter->getQueues()->first();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->entityManager->persist(new StatisticsOpenEntity($newsletter, $queue, $subscriber));
+  }
+
   private function createSubscriber(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
