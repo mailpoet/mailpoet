@@ -3,10 +3,15 @@
 namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
+use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterPost;
@@ -15,6 +20,7 @@ use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\Tag;
 
 class DataInconsistencyRepositoryTest extends \MailPoetTest {
   private DataInconsistencyRepository $repository;
@@ -142,6 +148,58 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(SegmentEntity::class, $segmentToKeep);
   }
 
+  public function testItHandlesOrphanedSubscriberCustomFields(): void {
+    $customFieldToDelete = (new CustomField())->create();
+    $customFieldToKeep = (new CustomField())->create();
+    $subscriberToDelete = (new Subscriber())->create();
+    $subscriberToKeep = (new Subscriber())->create();
+
+    // Orphaned via subscriber, orphaned via custom field, and a healthy row.
+    $this->createSubscriberCustomField($subscriberToDelete, $customFieldToKeep);
+    $this->createSubscriberCustomField($subscriberToKeep, $customFieldToDelete);
+    $this->createSubscriberCustomField($subscriberToKeep, $customFieldToKeep);
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()
+      ->executeStatement("DELETE FROM $subscriberTable WHERE id = :id", ['id' => $subscriberToDelete->getId()]);
+    $customFieldTable = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
+    $this->entityManager->getConnection()
+      ->executeStatement("DELETE FROM $customFieldTable WHERE id = :id", ['id' => $customFieldToDelete->getId()]);
+
+    verify($this->repository->getOrphanedSubscriberCustomFieldsCount())->equals(2);
+    $this->repository->cleanupOrphanedSubscriberCustomFields();
+    verify($this->repository->getOrphanedSubscriberCustomFieldsCount())->equals(0);
+
+    // The healthy row is untouched.
+    verify($this->entityManager->getRepository(SubscriberCustomFieldEntity::class)->count([]))->equals(1);
+  }
+
+  public function testItHandlesOrphanedSubscriberTags(): void {
+    $tagToDelete = (new Tag())->create();
+    $tagToKeep = (new Tag())->create();
+    $subscriberToDelete = (new Subscriber())->create();
+    $subscriberToKeep = (new Subscriber())->create();
+
+    // Orphaned via subscriber, orphaned via tag, and a healthy row.
+    $this->createSubscriberTag($subscriberToDelete, $tagToKeep);
+    $this->createSubscriberTag($subscriberToKeep, $tagToDelete);
+    $this->createSubscriberTag($subscriberToKeep, $tagToKeep);
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()
+      ->executeStatement("DELETE FROM $subscriberTable WHERE id = :id", ['id' => $subscriberToDelete->getId()]);
+    $tagTable = $this->entityManager->getClassMetadata(TagEntity::class)->getTableName();
+    $this->entityManager->getConnection()
+      ->executeStatement("DELETE FROM $tagTable WHERE id = :id", ['id' => $tagToDelete->getId()]);
+
+    verify($this->repository->getOrphanedSubscriberTagsCount())->equals(2);
+    $this->repository->cleanupOrphanedSubscriberTags();
+    verify($this->repository->getOrphanedSubscriberTagsCount())->equals(0);
+
+    // The healthy row is untouched.
+    verify($this->entityManager->getRepository(SubscriberTagEntity::class)->count([]))->equals(1);
+  }
+
   public function testItHandlesOrphanedLinks(): void {
     $newsletterToDelete = (new Newsletter())->create();
     $task1 = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
@@ -183,5 +241,17 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     verify($this->repository->getOrphanedNewsletterPostsCount())->equals(1);
     $this->repository->cleanupOrphanedNewsletterPosts();
     verify($this->repository->getOrphanedNewsletterPostsCount())->equals(0);
+  }
+
+  private function createSubscriberCustomField(SubscriberEntity $subscriber, CustomFieldEntity $customField): void {
+    $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'some value');
+    $this->entityManager->persist($subscriberCustomField);
+    $this->entityManager->flush();
+  }
+
+  private function createSubscriberTag(SubscriberEntity $subscriber, TagEntity $tag): void {
+    $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+    $this->entityManager->persist($subscriberTag);
+    $this->entityManager->flush();
   }
 }

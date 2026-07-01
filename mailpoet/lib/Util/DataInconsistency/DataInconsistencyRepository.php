@@ -3,6 +3,7 @@
 namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
@@ -10,8 +11,11 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -74,6 +78,34 @@ class DataInconsistencyRepository {
       LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
       LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
       WHERE seg.`id` IS NULL OR sub.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedSubscriberCustomFieldsCount(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $customFieldTable = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
+    $subscriberCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+    /** @var string $count */
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(distinct scf.`id`) FROM $subscriberCustomFieldTable scf
+      LEFT JOIN $customFieldTable cf ON cf.`id` = scf.`custom_field_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = scf.`subscriber_id`
+      WHERE cf.`id` IS NULL OR sub.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedSubscriberTagsCount(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $tagTable = $this->entityManager->getClassMetadata(TagEntity::class)->getTableName();
+    $subscriberTagTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+    /** @var string $count */
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(distinct st.`id`) FROM $subscriberTagTable st
+      LEFT JOIN $tagTable t ON t.`id` = st.`tag_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = st.`subscriber_id`
+      WHERE t.`id` IS NULL OR sub.`id` IS NULL
     ")->fetchOne();
     return intval($count);
   }
@@ -193,6 +225,30 @@ class DataInconsistencyRepository {
       LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
       LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
       WHERE seg.`id` IS NULL OR sub.`id` IS NULL
+    ");
+  }
+
+  public function cleanupOrphanedSubscriberCustomFields(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $customFieldTable = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
+    $subscriberCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE scf FROM $subscriberCustomFieldTable scf
+      LEFT JOIN $customFieldTable cf ON cf.`id` = scf.`custom_field_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = scf.`subscriber_id`
+      WHERE cf.`id` IS NULL OR sub.`id` IS NULL
+    ");
+  }
+
+  public function cleanupOrphanedSubscriberTags(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $tagTable = $this->entityManager->getClassMetadata(TagEntity::class)->getTableName();
+    $subscriberTagTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE st FROM $subscriberTagTable st
+      LEFT JOIN $tagTable t ON t.`id` = st.`tag_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = st.`subscriber_id`
+      WHERE t.`id` IS NULL OR sub.`id` IS NULL
     ");
   }
 
