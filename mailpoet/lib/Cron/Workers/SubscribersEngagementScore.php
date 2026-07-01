@@ -10,6 +10,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersEngagementScore extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = true;
+  const SUPPORT_MULTIPLE_INSTANCES = false;
   const BATCH_SIZE = 60;
   const TASK_TYPE = 'subscribers_engagement_score';
 
@@ -34,18 +35,12 @@ class SubscribersEngagementScore extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $recalculatedSubscribersCount = $this->recalculateSubscribers();
-    if ($recalculatedSubscribersCount > 0) {
-      $this->scheduleImmediately();
-      return true;
+    while ($this->recalculateSubscribers() > 0) {
+      $this->cronHelper->enforceExecutionLimit($timer); // Throws exception and interrupts process if over execution limit
     }
-
-    $recalculatedSegmentsCount = $this->recalculateSegments();
-    if ($recalculatedSegmentsCount > 0) {
-      $this->scheduleImmediately();
-      return true;
+    while ($this->recalculateSegments() > 0) {
+      $this->cronHelper->enforceExecutionLimit($timer);
     }
-
     $this->schedule();
     return true;
   }
