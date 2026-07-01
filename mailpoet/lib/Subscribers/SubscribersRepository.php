@@ -1135,14 +1135,76 @@ class SubscribersRepository extends Repository {
   }
 
   public function removeByWpUserIds(array $wpUserIds) {
-    $queryBuilder = $this->entityManager->createQueryBuilder();
+    if (empty($wpUserIds)) {
+      return 0;
+    }
 
-    $queryBuilder
-      ->delete(SubscriberEntity::class, 's')
-      ->where('s.wpUserId IN (:wpUserIds)')
-      ->setParameter('wpUserIds', $wpUserIds);
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscriberIds = array_map(
+      function($id): int {
+        return $this->toInt($id);
+      },
+      $this->entityManager->getConnection()->executeQuery(
+        "SELECT `id` FROM $subscriberTable WHERE `wp_user_id` IN (:wpUserIds)",
+        ['wpUserIds' => $wpUserIds],
+        ['wpUserIds' => ArrayParameterType::INTEGER]
+      )->fetchFirstColumn()
+    );
 
-    return $queryBuilder->getQuery()->execute();
+    if (empty($subscriberIds)) {
+      return 0;
+    }
+
+    $count = 0;
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($subscriberIds, &$count) {
+      $this->removeSubscribersRelatedRows($subscriberIds);
+
+      $count = $entityManager->createQueryBuilder()
+        ->delete(SubscriberEntity::class, 's')
+        ->where('s.id IN (:ids)')
+        ->setParameter('ids', $subscriberIds)
+        ->getQuery()->execute();
+    });
+
+    $this->changesNotifier->subscribersDeleted($subscriberIds);
+    $this->invalidateTotalSubscribersCache();
+
+    return $count;
+  }
+
+  /**
+   * Removes rows in tables related to the given subscribers so no orphans are
+   * left behind after the subscribers themselves are deleted. Unlike
+   * removeSubscribersFromAllSegments() this removes every segment membership
+   * regardless of segment type, since the subscribers are being fully removed.
+   */
+  private function removeSubscribersRelatedRows(array $subscriberIds): void {
+    if (empty($subscriberIds)) {
+      return;
+    }
+
+    $connection = $this->entityManager->getConnection();
+    $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $subscriberCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+    $subscriberTagTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+
+    $connection->executeStatement(
+      "DELETE FROM $subscriberSegmentsTable WHERE `subscriber_id` IN (:ids)",
+      ['ids' => $subscriberIds],
+      ['ids' => ArrayParameterType::INTEGER]
+    );
+
+    $connection->executeStatement(
+      "DELETE FROM $subscriberCustomFieldTable WHERE `subscriber_id` IN (:ids)",
+      ['ids' => $subscriberIds],
+      ['ids' => ArrayParameterType::INTEGER]
+    );
+
+    $connection->executeStatement(
+      "DELETE FROM $subscriberTagTable WHERE `subscriber_id` IN (:ids)",
+      ['ids' => $subscriberIds],
+      ['ids' => ArrayParameterType::INTEGER]
+    );
   }
 
   /**

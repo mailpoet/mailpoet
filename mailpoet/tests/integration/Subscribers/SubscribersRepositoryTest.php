@@ -453,14 +453,50 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $wpUserId1 = $this->tester->createWordPressUser('subscriber1@email.com', 'author');
     $wpUserId2 = $this->tester->createWordPressUser('subscriber2@email.com', 'author');
     $wpUserId3 = $this->tester->createWordPressUser('subscriber3@email.com', 'author');
+
+    $subscriber1 = $this->repository->findOneBy(['wpUserId' => $wpUserId1]);
+    $subscriber2 = $this->repository->findOneBy(['wpUserId' => $wpUserId2]);
     $subscriber3 = $this->repository->findOneBy(['wpUserId' => $wpUserId3]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
+
+    $subscriber1Id = (int)$subscriber1->getId();
+    $subscriber2Id = (int)$subscriber2->getId();
+    $subscriber3Id = (int)$subscriber3->getId();
+
+    // Attach related rows to each subscriber so we can assert they get cleaned up.
+    $segment = $this->segmentRepository->createOrUpdate('Removed WP users segment');
+    $customField = $this->createCustomField('WP users CF');
+    $tag = $this->createTag('WP users tag');
+    foreach ([$subscriber1, $subscriber2, $subscriber3] as $subscriber) {
+      $this->createSubscriberSegment($segment, $subscriber);
+      $this->createSubscriberCustomField($subscriber, $customField);
+      $this->createSubscriberTag($subscriber, $tag);
+    }
+
+    $subscriberTagRepository = $this->entityManager->getRepository(SubscriberTagEntity::class);
 
     $deletedRows = $this->repository->removeByWpUserIds([$wpUserId1, $wpUserId2]);
+    $this->entityManager->clear();
 
     $this->assertSame(2, $deletedRows);
     $subscribers = $this->repository->findAll();
     $this->assertCount(1, $subscribers);
-    $this->assertSame($subscribers[0], $subscriber3);
+    $this->assertSame($subscriber3Id, $subscribers[0]->getId());
+
+    // Related rows of the removed subscribers are gone, including the WP-Users
+    // segment memberships created during synchronization.
+    foreach ([$subscriber1Id, $subscriber2Id] as $removedId) {
+      verify($this->subscriberSegmentRepository->findBy(['subscriber' => $removedId]))->empty();
+      verify($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $removedId]))->null();
+      verify($subscriberTagRepository->findOneBy(['subscriber' => $removedId]))->null();
+    }
+
+    // Related rows of the surviving subscriber are untouched.
+    verify($this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber3Id]))->notNull();
+    verify($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriber3Id]))->notNull();
+    verify($subscriberTagRepository->findOneBy(['subscriber' => $subscriber3Id]))->notNull();
   }
 
   public function testItDeletesOnlyEligibleUnconfirmedSubscribersForCleanup(): void {
