@@ -23,8 +23,6 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
-  private const LEGACY_EMAIL_COUNT_TYPE = 'subscribers_email_count';
-
   /** @var CronHelper */
   private $cronHelper;
 
@@ -52,6 +50,7 @@ class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
+    $this->settings->delete(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING);
 
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
@@ -132,12 +131,10 @@ class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
   }
 
-  public function testItUsesPreviousLegacyEmailCountTaskAsFirstIncrementalBaseline(): void {
+  public function testItUsesStoredSettingAsIncrementalBaseline(): void {
     $this->createSubscribers(1);
-    $oldLegacyScheduledAt = (new Carbon())->subDays(10);
-    $latestLegacyScheduledAt = (new Carbon())->subDays(4);
-    $this->scheduledTaskFactory->create(self::LEGACY_EMAIL_COUNT_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, $oldLegacyScheduledAt);
-    $this->scheduledTaskFactory->create(self::LEGACY_EMAIL_COUNT_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, $latestLegacyScheduledAt);
+    $baselineDate = (new Carbon())->subDays(4);
+    $this->settings->set(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING, $baselineDate->format(\DateTimeInterface::ATOM));
     $hasNewSendingTasksDates = [];
     $emailCountDates = [];
 
@@ -163,8 +160,74 @@ class InactiveSubscribersMaintenanceTest extends \MailPoetTest {
     ]);
     $worker->processTaskStrategy($this->createRunningTask(), microtime(true));
 
-    verify($this->formatDates($hasNewSendingTasksDates))->equals([$latestLegacyScheduledAt->format('Y-m-d H:i:s')]);
-    verify($this->formatDates($emailCountDates))->equals([$latestLegacyScheduledAt->format('Y-m-d H:i:s')]);
+    verify($this->formatDates($hasNewSendingTasksDates))->equals([$baselineDate->format('Y-m-d H:i:s')]);
+    verify($this->formatDates($emailCountDates))->equals([$baselineDate->format('Y-m-d H:i:s')]);
+  }
+
+  public function testItKeepsEmailCountBaselineAcrossDisabledPeriod(): void {
+    $this->createSubscribers(1);
+    $firstRunScheduledAt = (new Carbon())->subDays(10);
+
+    // First run counts and records the baseline.
+    $firstRunDates = [];
+    $firstRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId) use (&$firstRunDates) {
+          $firstRunDates[] = $dateLastProcessed;
+          return 0;
+        }),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::once(0),
+        'markActiveSubscribers' => Expected::once(0),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+    $firstRunWorker->processTaskStrategy(
+      $this->scheduledTaskFactory->create(InactiveSubscribersMaintenance::TASK_TYPE, null, $firstRunScheduledAt),
+      microtime(true)
+    );
+
+    // Inactivity detection is turned off: the run skips counting and must not move the baseline.
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 0);
+    $disabledRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::never(),
+        'hasNewSendingTasksSince' => Expected::never(),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::never(),
+        'markActiveSubscribers' => Expected::never(),
+        'reactivateInactiveSubscribers' => Expected::once(),
+      ], $this),
+    ]);
+    $disabledRunWorker->processTaskStrategy(
+      $this->scheduledTaskFactory->create(InactiveSubscribersMaintenance::TASK_TYPE, null, (new Carbon())->subDays(5)),
+      microtime(true)
+    );
+
+    // Re-enabled: the incremental baseline must still be the first (last counted) run, not the disabled one.
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
+    $reenabledRunDates = [];
+    $reenabledRunWorker = $this->getServiceWithOverrides(InactiveSubscribersMaintenance::class, [
+      'subscribersEmailCountsController' => Stub::make(SubscribersEmailCountsController::class, [
+        'updateSubscribersEmailCounts' => Expected::once(function($dateLastProcessed, $startId, $endId) use (&$reenabledRunDates) {
+          $reenabledRunDates[] = $dateLastProcessed;
+          return 0;
+        }),
+        'hasNewSendingTasksSince' => Expected::once(true),
+      ], $this),
+      'inactiveSubscribersController' => Stub::make(InactiveSubscribersController::class, [
+        'markInactiveSubscribers' => Expected::once(0),
+        'markActiveSubscribers' => Expected::once(0),
+        'reactivateInactiveSubscribers' => Expected::never(),
+      ], $this),
+    ]);
+    $reenabledRunWorker->processTaskStrategy($this->createRunningTask(), microtime(true));
+
+    verify($firstRunDates)->equals([null]);
+    verify($this->formatDates($reenabledRunDates))->equals([$firstRunScheduledAt->format('Y-m-d H:i:s')]);
   }
 
   public function testItProcessesAllSubscriberWindows(): void {
