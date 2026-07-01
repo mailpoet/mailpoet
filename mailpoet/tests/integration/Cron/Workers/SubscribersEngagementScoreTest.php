@@ -19,6 +19,14 @@ class SubscribersEngagementScoreTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
   }
 
+  public function _after() {
+    parent::_after();
+    // These tests create more than a full batch of subscribers. The integration cleanup deletes rows
+    // between tests but does not reset AUTO_INCREMENT, so truncate here to avoid leaking high subscriber
+    // ids into id-range-sensitive tests such as SubscribersLastEngagementTest.
+    $this->truncateEntity(SubscriberEntity::class);
+  }
+
   public function testItRecalculatesAllDueSubscribersAcrossMultipleBatchesInSingleRun() {
     // More than one batch to prove the worker keeps looping instead of stopping after BATCH_SIZE.
     $this->createSubscribers(SubscribersEngagementScore::BATCH_SIZE + 2);
