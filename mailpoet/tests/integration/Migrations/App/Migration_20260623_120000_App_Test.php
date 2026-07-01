@@ -5,6 +5,7 @@ namespace MailPoet\Migrations\App;
 use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
 //phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
@@ -18,10 +19,15 @@ class Migration_20260623_120000_App_Test extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
     $this->migration = new Migration_20260623_120000_App($this->diContainer);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->settings->delete(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING);
     $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
@@ -36,6 +42,24 @@ class Migration_20260623_120000_App_Test extends \MailPoetTest {
     $this->assertNull($this->scheduledTasksRepository->findOneById((int)$scheduledEmailCount->getId()));
     $this->assertNull($this->scheduledTasksRepository->findOneById((int)$runningInactive->getId()));
     $this->assertNotNull($this->scheduledTasksRepository->findOneById((int)$completedInactive->getId()));
+  }
+
+  public function testItSeedsEmailCountBaselineFromLastCompletedLegacyTask(): void {
+    $this->createTask(self::OLD_EMAIL_COUNT_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, (new Carbon())->subDays(10));
+    $latestScheduledAt = (new Carbon())->subDays(3);
+    $this->createTask(self::OLD_EMAIL_COUNT_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, $latestScheduledAt);
+
+    $this->migration->run();
+
+    $stored = $this->settings->get(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING);
+    $this->assertIsString($stored);
+    verify(Carbon::parse($stored)->format('Y-m-d H:i:s'))->equals($latestScheduledAt->format('Y-m-d H:i:s'));
+  }
+
+  public function testItDoesNotSeedEmailCountBaselineWithoutLegacyTask(): void {
+    $this->migration->run();
+
+    verify($this->settings->get(InactiveSubscribersMaintenance::LAST_EMAIL_COUNT_AT_SETTING))->null();
   }
 
   public function testItSchedulesTheMaintenanceTask(): void {
@@ -56,11 +80,11 @@ class Migration_20260623_120000_App_Test extends \MailPoetTest {
     verify(count($tasks))->equals(1);
   }
 
-  private function createTask(string $type, ?string $status): ScheduledTaskEntity {
+  private function createTask(string $type, ?string $status, ?\DateTimeInterface $scheduledAt = null): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
     $task->setType($type);
     $task->setStatus($status);
-    $task->setScheduledAt(Carbon::now());
+    $task->setScheduledAt($scheduledAt ?? Carbon::now());
     $this->entityManager->persist($task);
     $this->entityManager->flush();
     return $task;
