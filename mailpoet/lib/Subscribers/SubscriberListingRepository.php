@@ -572,10 +572,14 @@ class SubscriberListingRepository extends ListingRepository {
     // Under a static list, a member unsubscribed from THIS list belongs in the
     // unsubscribed tab — not in inactive/unconfirmed/bounced. Excluding them here
     // keeps the listed rows in step with the per-list statistics tab counts.
+    // ss.status is only ever subscribed/unsubscribed, so this is an equality
+    // (ss.status = subscribed) rather than != unsubscribed — same rows, but an
+    // equality seek the (segment_id, status, subscriber_id) index can use, and
+    // it mirrors the count query in SegmentSubscribersRepository.
     if ($staticSegment) {
       $queryBuilder
-        ->andWhere('ss.status != :ssNotUnsubscribed')
-        ->setParameter('ssNotUnsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED);
+        ->andWhere('ss.status = :ssSubscribed')
+        ->setParameter('ssSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
     }
   }
 
