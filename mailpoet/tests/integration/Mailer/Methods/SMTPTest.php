@@ -91,6 +91,13 @@ class SMTPTest extends \MailPoetTest {
       ->equals($this->settings['encryption']);
   }
 
+  public function testItDisablesAutoTLSWhenEncryptionIsDisabled() {
+    $this->mailer->encryption = '';
+    $mailer = $this->mailer->buildMailer();
+    verify($mailer->SMTPSecure)->equals('');
+    verify($mailer->SMTPAutoTLS)->false();
+  }
+
   public function testItCanCreateMessage() {
     $mailer = $this->mailer
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
