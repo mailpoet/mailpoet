@@ -23,6 +23,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { Button } from 'common';
 import {
+  DataViewsFooter,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
@@ -1551,7 +1552,13 @@ function SubscriberList() {
             </div>
           </div>
           <DataViews.Layout />
-          <DataViews.Footer />
+          <DataViewsFooter
+            view={view}
+            onChangeView={persistedViewChange}
+            paginationInfo={paginationInfo}
+            isLoading={isLoading}
+            hasData={items.length > 0}
+          />
         </DataViews>
       </div>
 
