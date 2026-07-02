@@ -269,14 +269,19 @@ class SegmentSubscribersRepository {
    * status is $status and who are not unsubscribed from the list (a list
    * unsubscribe wins, placing them in the unsubscribed bucket instead). Driven
    * from the subscriber status index, so it seeks over a sparse population.
+   *
+   * ss.status is only ever subscribed/unsubscribed, so "not unsubscribed from
+   * the list" is expressed as an equality (ss.status = subscribed) rather than
+   * ss.status != unsubscribed — same rows, but an equality seek the
+   * (segment_id, status, subscriber_id) index can use.
    */
   private function countStaticSegmentMembersWithStatus(int $segmentId, string $status): int {
     return $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb) use ($status): void {
       $qb->andWhere('s.deleted_at IS NULL')
         ->andWhere('s.status = :memberStatus')
-        ->andWhere('ss.status != :memberNotUnsub')
+        ->andWhere('ss.status = :memberSubscribed')
         ->setParameter('memberStatus', $status)
-        ->setParameter('memberNotUnsub', SubscriberEntity::STATUS_UNSUBSCRIBED);
+        ->setParameter('memberSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
     });
   }
 
