@@ -6,9 +6,10 @@
 3. [Commands](#commands)
    1. [Environment lifecycle](#environment-lifecycle)
    2. [Build and watch](#build-and-watch)
-   3. [Quality assurance](#quality-assurance)
-   4. [Tests](#tests)
-   5. [Migrations, templates, wp-cli](#migrations-templates-wp-cli)
+   3. [Release build](#release-build)
+   4. [Quality assurance](#quality-assurance)
+   5. [Tests](#tests)
+   6. [Migrations, templates, wp-cli](#migrations-templates-wp-cli)
 4. [Xdebug](#xdebug)
    1. [PhpStorm setup](#phpstorm-setup)
    2. [VS Code setup](#vs-code-setup)
@@ -73,6 +74,27 @@ pnpm compile:css    # Compile SCSS only
 pnpm watch:js       # Rebuild JS on change
 pnpm watch:css      # Rebuild SCSS on change
 ```
+
+### Release build
+
+Run the release build from the free plugin directory:
+
+```shell
+cd mailpoet
+./build.sh
+```
+
+The script creates `mailpoet/mailpoet.zip`. It installs production dependencies,
+compiles production CSS and JS, builds translation files and generated caches,
+copies the distributable plugin files, removes development-only sources and
+tools such as Tracy, removes vendor tests/demo files, adds direct-access guards,
+and strips vendor PHP comments/whitespace before zipping the `mailpoet/`
+directory.
+
+Start from a clean working tree when possible. The script removes and reinstalls
+`mailpoet/node_modules`, temporarily moves `vendor/` and `vendor-prefixed/`
+while installing production Composer dependencies, and restores the development
+dependencies at the end.
 
 ### Quality assurance
 
