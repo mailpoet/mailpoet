@@ -1,0 +1,4 @@
+// @wordpress/components styles, split out of mailpoet-plugin.css so pages that
+// already load them from WordPress core (the form editor) don't load them twice.
+
+@import '../../../node_modules/@wordpress/components/build-style/style';

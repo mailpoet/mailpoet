@@ -29,7 +29,7 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
       [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons'],
+        ['forms', 'buttons', 'wp-components'],
         false,
         'all',
       ],
@@ -67,7 +67,7 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
       [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons'],
+        ['forms', 'buttons', 'wp-components'],
         false,
         'all',
       ],
@@ -75,6 +75,27 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
         'mailpoet-form-editor',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-form-editor.css',
         ['mailpoet-plugin', 'wp-components'],
+        false,
+        'all',
+      ],
+    ], $enqueuedStyles);
+  }
+
+  public function testItLoadsBundledWordPressComponentsOnRegularPages(): void {
+    $enqueuedStyles = $this->loadStylesForPage('mailpoet-newsletters');
+
+    $this->assertSame([
+      [
+        'mailpoet-wp-components',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-wp-components.css',
+        [],
+        false,
+        'all',
+      ],
+      [
+        'mailpoet-plugin',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
+        ['forms', 'buttons', 'mailpoet-wp-components'],
         false,
         'all',
       ],

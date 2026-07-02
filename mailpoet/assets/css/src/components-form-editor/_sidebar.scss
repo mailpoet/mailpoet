@@ -36,14 +36,6 @@
   margin-top: 8px;
 }
 
-// mailpoet-plugin.css imports @wordpress/components and can load after
-// block-editor.css in built zips, so restore the block editor dropdown layout.
-.interface-interface-skeleton__sidebar
-  .block-editor-tools-panel-color-gradient-settings__dropdown {
-  display: block;
-  width: 100%;
-}
-
 // RadioControl in @wordpress/components v32+ uses <fieldset> + VStack
 // instead of BaseControl + .components-flex
 .mailpoet-form-inline-radios__control {
