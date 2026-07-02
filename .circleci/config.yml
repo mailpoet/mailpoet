@@ -1023,39 +1023,9 @@ workflows:
           <<: *slack-fail-post-step
       - build_premium:
           <<: *slack-fail-post-step
-          # TEMP (revert before merge): dropped *only_release so build_premium runs on this branch
+          <<: *only_release
           requires:
             - build
-      # TEMP (revert before merge): run the nightly-only PHP 7.4 integration jobs on push to
-      # verify the mailpoet/codeception.yml memory_limit bump. Both jobs run the free suite
-      # under the free config (the with_premium job just also activates the premium plugin),
-      # so this branch's bump covers both. Copied verbatim from the nightly workflow.
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_oldest
-          woo_core_version: 10.8.1
-          woo_subscriptions_version: 8.8.1
-          automate_woo_version: 6.5.0
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4
-          wordpress_version: 6.9.4
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_with_premium_oldest
-          woo_core_version: 10.8.1
-          woo_subscriptions_version: 8.8.1
-          automate_woo_version: 6.5.0
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4
-          wordpress_version: 6.9.4
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          requires:
-            - build_premium
       - unit_tests:
           <<: *slack-fail-post-step
           name: unit_tests
