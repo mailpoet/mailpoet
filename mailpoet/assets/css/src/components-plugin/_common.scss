@@ -53,6 +53,19 @@ p.sender_email_address_warning:first-child {
   margin-top: 0; // unify spacing with parsley errors
 }
 
+.mailpoet_sender_domain_authenticated {
+  align-items: center;
+  color: #005c12;
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 0;
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
 .button.mailpoet-button-bigger {
   font-size: 1.5em;
   height: 46px;
