@@ -619,11 +619,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function migrationsStatus() {
-    return $this->taskExec('vendor/bin/wp mailpoet:migrations:status');
+    return $this->taskExec('vendor/bin/wp mailpoet migrations status');
   }
 
   public function migrationsRun() {
-    return $this->taskExec('vendor/bin/wp mailpoet:migrations:run');
+    return $this->taskExec('vendor/bin/wp mailpoet migrations run');
   }
 
   public function qa() {
@@ -1545,7 +1545,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function emailCreateTemplates() {
-    return $this->taskExec('vendor/bin/wp mailpoet:email-editor:create-templates');
+    return $this->taskExec('vendor/bin/wp mailpoet email-editor create-templates');
   }
 
   protected function rsearch($folder, $extensions = []) {
