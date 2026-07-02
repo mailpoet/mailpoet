@@ -11,7 +11,7 @@ import {
   ToggleBlockInserterAction,
 } from './actions-types';
 import { BlockInsertionPoint } from './state-types';
-import { FONT_SIZES, storeName } from './constants';
+import { FONT_SIZES, FORM_EDITOR_COLOR_PALETTE, storeName } from './constants';
 
 export function toggleSidebar(toggleTo): ToggleAction {
   return {
@@ -238,7 +238,7 @@ export function* showPreview() {
 
   const blocksToFormBody = blocksToFormBodyFactory(
     FONT_SIZES,
-    SETTINGS_DEFAULTS.colors,
+    FORM_EDITOR_COLOR_PALETTE,
     SETTINGS_DEFAULTS.gradients,
     customFields,
   );

@@ -658,6 +658,10 @@ class Functions {
     return get_theme_support($feature, $args);
   }
 
+  public function wpGetGlobalSettings(array $path = [], array $context = []) {
+    return wp_get_global_settings($path, $context);
+  }
+
   public function wpInsertPost(array $postarr, $wpError = false) {
     return wp_insert_post($postarr, $wpError);
   }

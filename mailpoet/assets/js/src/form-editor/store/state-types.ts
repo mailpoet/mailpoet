@@ -1,5 +1,5 @@
 import { Block } from '@wordpress/blocks';
-import { FormData, CustomField } from './form-data-types';
+import { ColorDefinition, FormData, CustomField } from './form-data-types';
 
 export type BlockInsertionPoint = {
   rootClientId: string | undefined;
@@ -41,6 +41,7 @@ export interface FormEditorWindow extends Window {
   }[];
   mailpoet_close_icons_url: string;
   mailpoet_custom_fonts: string[];
+  mailpoet_form_editor_color_palette: ColorDefinition[];
   mailpoet_all_wp_posts: { id: string; name: string }[];
   mailpoet_all_wp_pages: { id: string; name: string }[];
   mailpoet_all_wp_categories: { id: string; name: string }[];
