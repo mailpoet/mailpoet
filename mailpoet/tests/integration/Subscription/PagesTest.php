@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
+use MailPoet\Config\Localizer;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
@@ -380,6 +381,36 @@ class PagesTest extends \MailPoetTest {
     verify($content)->stringNotContainsString('Your subscription settings have been saved.');
   }
 
+  public function testItLoadsWebsiteLocaleTextBeforeRenderingManageSubscriptionContent(): void {
+    $localeReloads = 0;
+    $localizer = $this->make(Localizer::class, [
+      'forceLoadWebsiteLocaleText' => function() use (&$localeReloads) {
+        $localeReloads++;
+      },
+    ]);
+    $wp = $this->make(WPFunctions::class, [
+      'applyFilters' => function($tag, $value) {
+        return $value;
+      },
+      'getLocale' => 'en_US',
+      'isAdmin' => false,
+    ]);
+    $manageSubscriptionFormRenderer = $this->make(ManageSubscriptionFormRenderer::class, [
+      'renderForm' => 'manage form',
+    ]);
+
+    $content = $this->getPages(
+      null,
+      null,
+      $wp,
+      $manageSubscriptionFormRenderer,
+      $localizer
+    )->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+
+    verify($content)->equals('manage form');
+    verify($localeReloads)->equals(1);
+  }
+
   public function testItDoesNotSaveUnsubscribeReasonForPreview() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     $this->testData['preview'] = 1;
@@ -414,19 +445,22 @@ class PagesTest extends \MailPoetTest {
 
   private function getPages(
     ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
-    ?Unsubscribes $unsubscribesMock = null
+    ?Unsubscribes $unsubscribesMock = null,
+    ?WPFunctions $wp = null,
+    ?ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer = null,
+    ?Localizer $localizer = null
   ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
-      $container->get(WPFunctions::class),
+      $wp ?? $container->get(WPFunctions::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),
       $container->get(AssetsController::class),
       $container->get(Renderer::class),
       $unsubscribesMock ?? $container->get(Unsubscribes::class),
-      $container->get(ManageSubscriptionFormRenderer::class),
+      $manageSubscriptionFormRenderer ?? $container->get(ManageSubscriptionFormRenderer::class),
       $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
       $container->get(TrackingConfig::class),
@@ -438,7 +472,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(SendingQueuesRepository::class),
       $container->get(SettingsController::class),
       $container->get(UnsubscribeReasonTracker::class),
-      $container->get(Request::class)
+      $container->get(Request::class),
+      $localizer ?? new Localizer()
     );
   }
 

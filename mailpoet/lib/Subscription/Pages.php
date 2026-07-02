@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Config\Localizer;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -104,6 +105,12 @@ class Pages {
   /*** @var Request */
   private $request;
 
+  /** @var Localizer */
+  private $localizer;
+
+  /** @var string|null */
+  private $subscriptionPageLocale;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -125,7 +132,8 @@ class Pages {
     SendingQueuesRepository $sendingQueuesRepository,
     SettingsController $settings,
     UnsubscribeReasonTracker $unsubscribeReasonTracker,
-    Request $request
+    Request $request,
+    ?Localizer $localizer = null
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -148,6 +156,7 @@ class Pages {
     $this->settings = $settings;
     $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
     $this->request = $request;
+    $this->localizer = $localizer ?? new Localizer();
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -307,6 +316,8 @@ class Pages {
   }
 
   public function setPageTitle($pageTitle = '') {
+    $this->ensureFrontendLocaleText();
+
     global $post;
 
     if (
@@ -342,6 +353,8 @@ class Pages {
   }
 
   public function setPageContent($pageContent = '[mailpoet_page]') {
+    $this->ensureFrontendLocaleText();
+
     if ($this->isPreview() === false && $this->subscriber === null) {
       return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
@@ -446,6 +459,8 @@ class Pages {
   }
 
   public function getManageContent() {
+    $this->ensureFrontendLocaleText();
+
     if ($this->isPreview()) {
       $subscriber = new SubscriberEntity();
       $previewEmail = $this->wp->applyFilters('mailpoet_manage_subscription_preview_subscriber_email', self::DEMO_EMAIL);
@@ -589,6 +604,8 @@ class Pages {
   }
 
   public function getManageLink($params) {
+    $this->ensureFrontendLocaleText();
+
     $subscriber = $this->subscriber;
     if (!$subscriber && $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()])) {
       $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()]);
@@ -632,5 +649,19 @@ class Pages {
     }
     // using the same value as mailpoet/views/subscription/confirm_unsubscribe.html#4
     return $this->wp->addQueryArg('type', 'confirmation', $unsubscribeUrl);
+  }
+
+  private function ensureFrontendLocaleText(): void {
+    if ($this->wp->isAdmin()) {
+      return;
+    }
+
+    $locale = $this->wp->getLocale();
+    if ($this->subscriptionPageLocale === $locale) {
+      return;
+    }
+
+    $this->localizer->forceLoadWebsiteLocaleText();
+    $this->subscriptionPageLocale = $locale;
   }
 }
