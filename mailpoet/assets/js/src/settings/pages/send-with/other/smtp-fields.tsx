@@ -76,8 +76,8 @@ export function SmtpFields() {
           dimension="small"
         >
           <option value="">{t('no')}</option>
-          <option value="ssl">SSL</option>
-          <option value="tls">TLS</option>
+          <option value="ssl">SSL/TLS</option>
+          <option value="tls">STARTTLS</option>
         </Select>
       </Inputs>
       <Label
