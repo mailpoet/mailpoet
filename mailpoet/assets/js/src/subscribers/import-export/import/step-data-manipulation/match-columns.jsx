@@ -1,3 +1,17 @@
+const FIRST_NAME_HEADERS = ['first', 'first name', 'given name'];
+const LAST_NAME_HEADERS = ['last', 'last name'];
+
+const getMatchedNameColumnId = (headerName) => {
+  const normalizedHeaderName = String(headerName).trim().toLowerCase();
+  if (FIRST_NAME_HEADERS.includes(normalizedHeaderName)) {
+    return 'first_name';
+  }
+  if (LAST_NAME_HEADERS.includes(normalizedHeaderName)) {
+    return 'last_name';
+  }
+  return 'ignore';
+};
+
 export const matchColumns = (subscribers, header) => {
   const displayedColumns = [];
   const displayedColumnsIds = [];
@@ -21,12 +35,7 @@ export const matchColumns = (subscribers, header) => {
       if (headerNameMatch !== -1) {
         columnId = window.mailpoetColumns[headerNameMatch].id;
       } else if (headerName) {
-        // set column type using header name
-        if (/first|first name|given name/i.test(headerName)) {
-          columnId = 'first_name';
-        } else if (/last|last name/i.test(headerName)) {
-          columnId = 'last_name';
-        }
+        columnId = getMatchedNameColumnId(headerName);
       }
     }
     // make sure the column id has not been previously selected
