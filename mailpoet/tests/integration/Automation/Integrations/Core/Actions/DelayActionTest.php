@@ -30,11 +30,24 @@ class DelayActionTest extends \MailPoetTest {
     $automation = $this->createMock(Automation::class);
     $automationRun = $this->createMock(AutomationRun::class);
     $controller = $this->createMock(StepRunController::class);
-    $controller->expects($this->once())->method('scheduleProgress')->with(time() + $expectation);
+    $scheduledTimestamp = null;
+    $controller->expects($this->once())
+      ->method('scheduleProgress')
+      ->willReturnCallback(function (?int $timestamp) use (&$scheduledTimestamp): int {
+        $scheduledTimestamp = $timestamp;
+        return (int)$timestamp;
+      });
 
     $args = new StepRunArgs($automation, $automationRun, $step, [], 1);
     $testee = new DelayAction();
+    // DelayAction::run() samples time() internally, so bracket the call and assert the
+    // scheduled timestamp lands in that window rather than matching a single time() snapshot
+    // captured here (which flakes when the clock ticks over a second boundary in between).
+    $before = time();
     $testee->run($args, $controller);
+    $after = time();
+    $this->assertGreaterThanOrEqual($before + $expectation, $scheduledTimestamp);
+    $this->assertLessThanOrEqual($after + $expectation, $scheduledTimestamp);
   }
 
   public function dataForTestItCalculatesDelayTypesCorrectly(): array {
