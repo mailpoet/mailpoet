@@ -48,18 +48,44 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     verify($task)->instanceOf(ScheduledTaskEntity::class);
   }
 
-  public function testItReschedulesScheduledTaskForInactiveSubscribers(): void {
-    $newTask = $this->createScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE);
-    $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
+  public function testItReplacesPendingScheduledTaskForInactiveSubscribers(): void {
+    $oldTask = $this->createScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE);
+    $oldTask->setScheduledAt(Carbon::now()->addDay());
+    $oldTask->setMeta(['last_subscriber_id' => 500]);
+    $this->tasksRepository->flush();
+    $oldTaskId = (int)$oldTask->getId();
 
+    $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
+    $this->entityManager->clear();
+
+    // The partially-progressed task is dropped and replaced with a fresh one starting from 0.
+    verify($this->tasksRepository->findOneById($oldTaskId))->null();
     $task = $this->getScheduledTaskByType(InactiveSubscribersMaintenance::TASK_TYPE);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify((int)$task->getId())->notEquals($oldTaskId);
+    verify($task->getMeta())->null();
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTime::class, $scheduledAt);
     $expectedScheduledAt = Carbon::now()->millisecond(0);
     $expectedScheduledAt->subMinute();
-    $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
-    verify($newTask->getId())->equals($task->getId());
+    $this->tester->assertEqualDateTimes($scheduledAt, $expectedScheduledAt, 1);
+  }
+
+  public function testItReplacesInProgressTaskForInactiveSubscribers(): void {
+    $runningTask = $this->createScheduledTask(InactiveSubscribersMaintenance::TASK_TYPE);
+    $runningTask->setStatus(null);
+    $runningTask->setMeta(['last_subscriber_id' => 500]);
+    $this->tasksRepository->flush();
+    $runningTaskId = (int)$runningTask->getId();
+
+    $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
+    $this->entityManager->clear();
+
+    // An in-progress run (null status) is removed too, so it can't resume mid-way on the old interval.
+    verify($this->tasksRepository->findOneById($runningTaskId))->null();
+    $task = $this->getScheduledTaskByType(InactiveSubscribersMaintenance::TASK_TYPE);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify((int)$task->getId())->notEquals($runningTaskId);
   }
 
   public function testItCreatesScheduledTaskForInactiveSubscribers(): void {
