@@ -9,6 +9,7 @@ import {
   type LoadListing,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  DataViewsFooter,
 } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
 import { CustomFieldsForm } from './custom-fields-form';
@@ -520,7 +521,13 @@ export function CustomFieldsPage() {
                 </div>
               )}
               <DataViews.Layout />
-              <DataViews.Footer />
+              <DataViewsFooter
+                view={view}
+                onChangeView={handleViewChange}
+                paginationInfo={paginationInfo}
+                isLoading={isLoading}
+                hasData={items.length > 0}
+              />
             </DataViews>
           </div>
         )}

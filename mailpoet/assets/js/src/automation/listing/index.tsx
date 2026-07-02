@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { storeName } from './store/constants';
 import type { AutomationItem } from './store/types';
@@ -660,7 +661,13 @@ export function AutomationListing(): JSX.Element {
                 </div>
               </div>
               <DataViews.Layout />
-              <DataViews.Footer />
+              <DataViewsFooter
+                view={view}
+                onChangeView={persistedViewChange}
+                paginationInfo={paginationInfo}
+                isLoading={!automations}
+                hasData={data.length > 0}
+              />
             </DataViews>
           </div>
         )}

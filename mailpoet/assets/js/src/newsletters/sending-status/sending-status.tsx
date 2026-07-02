@@ -19,6 +19,7 @@ import {
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import {
   checkCronStatus,
@@ -449,7 +450,13 @@ export function SendingStatus() {
             </div>
           </div>
           <DataViews.Layout />
-          <DataViews.Footer />
+          <DataViewsFooter
+            view={view}
+            onChangeView={persistedViewChange}
+            paginationInfo={paginationInfo}
+            isLoading={isLoading}
+            hasData={items.length > 0}
+          />
         </DataViews>
       </div>
     </>

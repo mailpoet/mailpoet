@@ -26,6 +26,7 @@ import {
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { Select } from 'common/form/select/select';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
@@ -773,7 +774,13 @@ export function NewslettersListing({
             </div>
           </div>
           <DataViews.Layout />
-          <DataViews.Footer />
+          <DataViewsFooter
+            view={view}
+            onChangeView={persistedViewChange}
+            paginationInfo={paginationInfo}
+            isLoading={isLoading}
+            hasData={items.length > 0}
+          />
         </DataViews>
       </div>
     </div>

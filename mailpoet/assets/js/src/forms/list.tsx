@@ -12,6 +12,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { FormsHeading, onAddNewForm } from './heading';
 import { listFields } from './fields';
@@ -380,7 +381,13 @@ function FormListComponent(): JSX.Element {
               </div>
               <DataViews.Filters />
               <DataViews.Layout />
-              <DataViews.Footer />
+              <DataViewsFooter
+                view={view}
+                onChangeView={handleViewChange}
+                paginationInfo={paginationInfo}
+                isLoading={isLoading}
+                hasData={items.length > 0}
+              />
             </DataViews>
           </div>
         )}
