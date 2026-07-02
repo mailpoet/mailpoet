@@ -286,6 +286,10 @@ class Hooks {
 
     // Manage subscription
     $this->wp->addAction(
+      'wp_loaded',
+      [$this->subscriptionManage, 'onFrontendSave']
+    );
+    $this->wp->addAction(
       'admin_post_mailpoet_subscription_update',
       [$this->subscriptionManage, 'onSave']
     );

@@ -32,7 +32,8 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
   public function testItGeneratesForm() {
     $form = $this->formRenderer->renderForm($this->subscriber);
-    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription mailpoet-manage-subscription--modern" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
+    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription mailpoet-manage-subscription--modern" method="post" action="[^"]+" novalidate>/');
+    verify($form)->stringNotContainsString('wp-admin/admin-post.php');
     verify($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     verify($form)->stringMatchesRegExp('/<input type="text" autocomplete="given-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     verify($form)->stringMatchesRegExp('/<input type="text" autocomplete="family-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
@@ -59,7 +60,8 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
     $form = $this->formRenderer->renderForm($this->subscriber, ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS);
 
-    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
+    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription" method="post" action="[^"]+" novalidate>/');
+    verify($form)->stringNotContainsString('wp-admin/admin-post.php');
     verify($form)->stringNotContainsString('mailpoet-manage-subscription--modern');
     verify($form)->stringMatchesRegExp('/<input type="checkbox" class="mailpoet_checkbox" id="mailpoet_segment_[a-zA-Z0-9]+" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="' . $this->segment->getId() . '" checked="checked" data-parsley-errors-container=".mailpoet_error_[a-zA-Z0-9]{5}" \/> Test segment/');
     verify($form)->stringContainsString('mailpoet-manage-subscription-list-fields');
@@ -88,7 +90,8 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
     $form = $this->formRenderer->renderForm($this->subscriber);
 
-    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
+    verify($form)->stringMatchesRegExp('/<form class="mailpoet-manage-subscription" method="post" action="[^"]+" novalidate>/');
+    verify($form)->stringNotContainsString('wp-admin/admin-post.php');
     verify($form)->stringNotContainsString('mailpoet-manage-subscription--global-unsubscribed');
     verify($form)->stringContainsString('mailpoet-manage-subscription-list-fields');
   }

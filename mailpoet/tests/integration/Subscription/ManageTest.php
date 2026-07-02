@@ -101,6 +101,49 @@ class ManageTest extends \MailPoetTest {
     ]);
   }
 
+  public function testFrontendSaveProcessesManageSubscriptionUpdate() {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segment_choices' => [
+        (string)$this->segmentA->getId() => 'unsubscribed',
+      ],
+    ];
+
+    $manage->onFrontendSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($this->createSegmentsMap($subscriber))->equals([
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+    ]);
+  }
+
+  public function testFrontendSaveIgnoresOtherPostActions() {
+    $manage = $this->getManageService();
+    $_POST['action'] = 'other_action';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'Changed',
+      'last_name' => 'Changed',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+    ];
+
+    $manage->onFrontendSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getFirstName())->equals('John');
+  }
+
   public function testItUsesSegmentChoicesAndIgnoresLegacySegmentsWhenPresent() {
     $manage = $this->getManageService();
     $_POST['action'] = 'mailpoet_subscription_update';

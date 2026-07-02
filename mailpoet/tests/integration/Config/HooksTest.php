@@ -6,6 +6,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\Hooks;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Subscription\Manage;
 use MailPoet\WP\Functions as WPFunctions;
 
 class HooksTest extends \MailPoetTest {
@@ -16,6 +17,7 @@ class HooksTest extends \MailPoetTest {
   }
 
   public function testItHooksSubscriberChangesNotifier() {
+    WPHooksHelper::releaseAllHooks();
     $wp = $this->make(new WPFunctions(), [
       'addAction' => asCallable([WPHooksHelper::class, 'addAction']),
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
@@ -35,5 +37,29 @@ class HooksTest extends \MailPoetTest {
     // manual hook execution and check with mocked return value
     $shutdownHook = WPHooksHelper::getActionAdded('shutdown');
     $this->assertEquals('success', call_user_func($shutdownHook[0]));
+    WPHooksHelper::releaseAllHooks();
+  }
+
+  public function testItHooksManageSubscriptionSaveOnFrontend() {
+    WPHooksHelper::releaseAllHooks();
+    $wp = $this->make(new WPFunctions(), [
+      'addAction' => asCallable([WPHooksHelper::class, 'addAction']),
+      'addFilter' => asCallable([WPHooksHelper::class, 'addFilter']),
+    ]);
+    $subscriptionManage = $this->make(Manage::class, [
+      'onFrontendSave' => 'frontend-save',
+      'onSave' => 'admin-post-save',
+    ]);
+    $hooks = $this->getServiceWithOverrides(Hooks::class, [
+      'wp' => $wp,
+      'subscriptionManage' => $subscriptionManage,
+    ]);
+
+    $hooks->setupSubscriptionEvents();
+
+    $this->assertSame([$subscriptionManage, 'onFrontendSave'], WPHooksHelper::getActionAdded('wp_loaded')[0]);
+    $this->assertSame([$subscriptionManage, 'onSave'], WPHooksHelper::getActionAdded('admin_post_mailpoet_subscription_update')[0]);
+    $this->assertSame([$subscriptionManage, 'onSave'], WPHooksHelper::getActionAdded('admin_post_nopriv_mailpoet_subscription_update')[0]);
+    WPHooksHelper::releaseAllHooks();
   }
 }

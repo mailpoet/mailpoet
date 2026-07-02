@@ -81,8 +81,8 @@ class Manage {
   }
 
   public function onSave() {
-    $action = (isset($_POST['action']) && is_string($_POST['action']) ? sanitize_text_field(wp_unslash($_POST['action'])) : '');
-    $token = (isset($_POST['token']) && is_string($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '');
+    $action = $this->getPostString('action');
+    $token = $this->getPostString('token');
 
     if ($action !== 'mailpoet_subscription_update' || empty($_POST['data'])) {
       $this->urlHelper->redirectBack();
@@ -132,6 +132,14 @@ class Manage {
     }
 
     $this->urlHelper->redirectBack($result);
+  }
+
+  public function onFrontendSave() {
+    if ($this->getPostString('action') !== 'mailpoet_subscription_update') {
+      return;
+    }
+
+    $this->onSave();
   }
 
   private function updateSubscriptions(
@@ -486,5 +494,11 @@ class Manage {
       }
     }
     return $mandatory;
+  }
+
+  private function getPostString(string $key): string {
+    return isset($_POST[$key]) && is_string($_POST[$key])
+      ? sanitize_text_field(wp_unslash($_POST[$key]))
+      : '';
   }
 }

@@ -98,9 +98,10 @@ class ManageSubscriptionFormRenderer {
       $form = $filteredForm;
     }
 
+    $currentUrl = $this->urlHelper->getCurrentUrl();
     $templateData = [
-      'actionUrl' => admin_url('admin-post.php'),
-      'redirectUrl' => $this->urlHelper->getCurrentUrl(),
+      'actionUrl' => $currentUrl,
+      'redirectUrl' => $currentUrl,
       'email' => $subscriber->getEmail(),
       'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe using the form below, then simply sign up again.', 'mailpoet'),
