@@ -496,6 +496,36 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame('Read Templated shortcode title', $reconstructed['body']['text']);
   }
 
+  public function testItDeduplicatesRepeatedTrackedLinksIntoSingleHtmlPlaceholder(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $repeatedLink = Links::DATA_TAG_CLICK . '-abcdef123456';
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Newsletter');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p><a href="' . $repeatedLink . '">Manage</a> and <a href="' . $repeatedLink . '">Manage subscription</a></p>',
+      'text' => 'Manage subscription',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    // Every html substitution must exist in the html template, otherwise the MSS server rejects the batch.
+    foreach (array_keys($substitutions['html']) as $placeholder) {
+      $this->assertStringContainsString($placeholder, $template['body']['html']);
+    }
+
+    // The repeated link collapses to a single placeholder used for both occurrences.
+    $this->assertCount(1, $substitutions['html']);
+    $placeholder = (string)array_key_first($substitutions['html']);
+    $this->assertSame(2, substr_count($template['body']['html'], $placeholder));
+  }
+
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
     $this->sendingQueueEntity->setNewsletterRenderedSubject('Literal {{mailpoet_mss_1}} for [subscriber:firstname]');
     $this->sendingQueueEntity->setNewsletterRenderedBody([

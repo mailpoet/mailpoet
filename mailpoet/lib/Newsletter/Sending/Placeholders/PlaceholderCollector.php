@@ -9,8 +9,15 @@ class PlaceholderCollector {
   public const PART_HTML = 'html';
   public const PART_TEXT = 'text';
 
-  /** @var array{subject: array<string, string>, html: array<string, string>, text: array<string, string>} */
+  /** @var array<string, array<string, string>> */
   private array $values = [
+    self::PART_SUBJECT => [],
+    self::PART_HTML => [],
+    self::PART_TEXT => [],
+  ];
+
+  /** @var array<string, array<string, string>> */
+  private array $placeholdersByValue = [
     self::PART_SUBJECT => [],
     self::PART_HTML => [],
     self::PART_TEXT => [],
@@ -57,18 +64,21 @@ class PlaceholderCollector {
    * @return array{subject: array<string, string>, html: array<string, string>, text: array<string, string>}
    */
   public function getValues(): array {
-    return $this->values;
+    return [
+      self::PART_SUBJECT => $this->values[self::PART_SUBJECT] ?? [],
+      self::PART_HTML => $this->values[self::PART_HTML] ?? [],
+      self::PART_TEXT => $this->values[self::PART_TEXT] ?? [],
+    ];
   }
 
   private function addToPart(string $part, string $value): string {
-    $placeholder = '{{mailpoet_mss_' . $this->namespace . '_' . (++$this->counter) . '}}';
-    if ($part === self::PART_SUBJECT) {
-      $this->values[self::PART_SUBJECT][$placeholder] = $value;
-    } elseif ($part === self::PART_HTML) {
-      $this->values[self::PART_HTML][$placeholder] = $value;
-    } else {
-      $this->values[self::PART_TEXT][$placeholder] = $value;
+    $existing = $this->placeholdersByValue[$part][$value] ?? null;
+    if ($existing !== null) {
+      return $existing;
     }
+    $placeholder = '{{mailpoet_mss_' . $this->namespace . '_' . (++$this->counter) . '}}';
+    $this->values[$part][$placeholder] = $value;
+    $this->placeholdersByValue[$part][$value] = $placeholder;
     return $placeholder;
   }
 
