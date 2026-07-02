@@ -835,12 +835,31 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   /**
-   * A static segment redefines the subscribed/unsubscribed buckets in terms of
-   * the per-list status (s.status OR/AND ss.status), and a dynamic segment
-   * routes counts through an id subquery — neither can be expressed as a single
-   * GROUP BY over s.status, so they fall back to one count per group. Both are
-   * scoped to a single segment, so that loop runs over a far smaller set than
-   * the full list.
+   * The status-tab counts, resolved through a three-tier cascade that prefers a
+   * cron-warmed cache and only computes live when nothing cheaper fits. Cheapest
+   * first:
+   *
+   *   1. Global cache — unfiltered "All Lists" view (no segment, no search, no
+   *      other filter). Served from the cron-warmed global status counts.
+   *   2. Per-segment cache — a plain single-list filter and nothing else. Served
+   *      from that segment's cron-warmed statistics.
+   *   3. Live fetch — anything narrower (search, tag, status, dates,
+   *      engagement...). No cache matches, so the counts are computed now: a
+   *      grouped scan on the non-segment path, or one count per status bucket
+   *      when a segment redefines the buckets.
+   *
+   * Why a segment can't share the non-segment grouped scan: a static segment
+   * redefines the subscribed/unsubscribed buckets in terms of the per-list
+   * status (s.status OR/AND ss.status), and a dynamic segment routes counts
+   * through an id subquery — neither is a single GROUP BY over s.status, so they
+   * fall back to one count per group (still cheap: scoped to one segment).
+   *
+   * 'consolidated' promises that the per-status buckets partition the whole
+   * non-deleted population exactly, so their sum IS the "all" total and
+   * countForCurrentGroup can skip a separate count. It is true only for the
+   * global/grouped scan; the live per-status path leaves it false because those
+   * ad-hoc counts are not guaranteed to add up to "all" (e.g. a segment member
+   * whose status lands in no displayed bucket).
    *
    * @return array{counts: array<string, int>, consolidated: bool}
    */
