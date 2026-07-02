@@ -105,13 +105,22 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $scheduledTasksRepository->persist($existingTask);
     $scheduledTasksRepository->flush();
+    $existingTaskId = (int)$existingTask->getId();
 
     // Run the migration
     $this->settings->set('db_version', '3.78.0');
     $this->settings->set('deactivate_subscriber_after_inactive_days', '180');
     $this->migration->run();
+    $this->entityManager->clear();
 
-    $this->assertEquals($currentTime->subMinute(), $existingTask->getScheduledAt());
+    // The future-scheduled task is replaced with a fresh one due to run now.
+    $this->assertNull($scheduledTasksRepository->findOneById($existingTaskId));
+    $task = $scheduledTasksRepository->findOneBy([
+      'type' => InactiveSubscribersMaintenance::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $this->tester->assertEqualDateTimes($task->getScheduledAt(), $currentTime->copy()->subMinute(), 1);
     Carbon::setTestNow();
   }
 
