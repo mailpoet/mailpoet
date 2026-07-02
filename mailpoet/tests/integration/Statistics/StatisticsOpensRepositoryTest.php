@@ -223,7 +223,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
   private function createSubscriber(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $subscriber->setEmail('subscriber' . rand(0, 10000) . '@example.com');
+    $subscriber->setEmail('subscriber' . bin2hex(random_bytes(7)) . '@example.com');
     $this->entityManager->persist($subscriber);
     return $subscriber;
   }

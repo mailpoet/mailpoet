@@ -123,8 +123,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
 
   private function createSubscriberEntity(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
-    $rand = rand(0, 100000);
-    $subscriber->setEmail("john{$rand}@mailpoet.com");
+    $subscriber->setEmail('john' . bin2hex(random_bytes(7)) . '@mailpoet.com');
     $subscriber->setFirstName('John');
     $subscriber->setLastName('Doe');
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
