@@ -104,6 +104,7 @@ class CaptchaFormRenderer {
     $hiddenFields .= '<input type="hidden" name="endpoint" value="subscribers" />';
     $hiddenFields .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
     $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $this->wp->escUrl($redirectUrl) . '" />';
+    $hiddenFields .= '<input type="hidden" name="token" value="' . $this->wp->escAttr($this->wp->wpCreateNonce('mailpoet_token')) . '" />';
 
     $actionUrl = admin_url('admin-post.php?action=mailpoet_subscription_form');
 

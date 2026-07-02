@@ -34,7 +34,9 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
-    $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wpMock->method('escAttr')->willReturnCallback(function($value): string {
+      return htmlspecialchars((string)$value, ENT_QUOTES);
+    });
     $this->wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->wpMock->method('wpKsesPost')->will($this->returnArgument(0));
     $this->obfuscatorMock = $this->createMock(FieldNameObfuscator::class);
@@ -74,6 +76,16 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $label = $this->rendererHelper->renderLabel($block, []);
 
     verify($label)->stringContainsString('for="custom_input_id"');
+  }
+
+  public function testItShouldEscapeGeneratedLabelTarget(): void {
+    $block = $this->block;
+    $block['id'] = 'field"><invalid';
+
+    $label = $this->rendererHelper->renderLabel($block, ['id' => 123]);
+
+    verify($label)->stringContainsString('for="form_field&quot;&gt;&lt;invalid_123"');
+    verify($label)->stringNotContainsString('field"><invalid');
   }
 
   public function testItShouldRenderLegend() {

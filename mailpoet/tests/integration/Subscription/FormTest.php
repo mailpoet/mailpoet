@@ -244,6 +244,45 @@ class FormTest extends \MailPoetTest {
     verify($result)->equals('redirected-back');
   }
 
+  public function testItRedirectsBackWhenApiRouteDoesNotMatchSubscriptionSubmit() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    $requestData['endpoint'] = 'forms';
+    $requestData['mailpoet_method'] = 'save_editor';
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result)->equals('redirected-back');
+  }
+
+  public function testItRedirectsBackWhenTokenIsInvalid() {
+    $urlHelper = Stub::make(UrlHelper::class, [
+      'redirectBack' => function($params = []) {
+        return 'redirected-back';
+      },
+    ], $this);
+    $api = Stub::makeEmpty(API::class, [
+      'setRequestData' => Stub\Expected::never(),
+      'processRoute' => Stub\Expected::never(),
+    ], $this);
+    $formController = new Form($api, $urlHelper);
+    $requestData = $this->requestData;
+    $requestData['token'] = 'invalid-token';
+
+    $result = $formController->onSubmit($requestData);
+
+    verify($result)->equals('redirected-back');
+  }
+
   public function testItAcceptsMethodAliasForApiRoute() {
     $urlHelper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params = []) {
