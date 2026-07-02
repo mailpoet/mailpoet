@@ -32,6 +32,9 @@ class Api {
       $this->api->registerPostRoute('newsletters/bulk-action', NewslettersBulkActionEndpoint::class);
       $this->api->registerPostRoute('newsletters/(?P<id>\d+)/duplicate', NewsletterDuplicateEndpoint::class);
       $this->api->registerPutRoute('newsletters/(?P<id>\d+)/status', NewsletterStatusEndpoint::class);
+      // @wordpress/api-fetch sends PUT requests as POST with X-HTTP-Method-Override.
+      // Accept POST too so hosts that strip the override header can still update the status.
+      $this->api->registerPostRoute('newsletters/(?P<id>\d+)/status', NewsletterStatusEndpoint::class);
       $this->api->registerGetRoute('newsletters/(?P<id>\d+)/sending-status', SendingStatusListingEndpoint::class);
       $this->api->registerPostRoute('newsletters/(?P<id>\d+)/sending-status/resend', SendingStatusResendEndpoint::class);
     });
