@@ -24,6 +24,7 @@ export function getSenderAuthorizationState(senderFields: UseSenderFields): {
 
   const isEnforced =
     window.mailpoet_mss_active &&
+    window.mailpoet_mta_method === 'MailPoet' &&
     !senderRestrictions?.skipAuthorization &&
     Boolean(senderAddress);
 
