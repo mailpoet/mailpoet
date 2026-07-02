@@ -118,6 +118,10 @@ describe('Spacer', function () {
       expect(view.$('.mailpoet_spacer').css('height')).to.equal('71px');
     });
 
+    it('allows spacer height to be resized down to 2px', function () {
+      expect(view.behaviors.ResizableBehavior.minLength).to.equal(2);
+    });
+
     it('opens settings if clicked', function () {
       var mock = sinon.mock().once();
       model.on('startEditing', mock);

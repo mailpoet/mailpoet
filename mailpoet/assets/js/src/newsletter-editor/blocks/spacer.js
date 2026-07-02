@@ -35,7 +35,7 @@ Module.SpacerBlockView = base.BlockView.extend({
       ResizableBehavior: {
         elementSelector: '.mailpoet_spacer',
         resizeHandleSelector: '.mailpoet_resize_handle',
-        minLength: 20, // TODO: Move this number to editor configuration
+        minLength: 2, // TODO: Move this number to editor configuration
         modelField: 'styles.block.height',
       },
       ShowSettingsBehavior: {
