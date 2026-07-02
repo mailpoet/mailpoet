@@ -66,7 +66,7 @@ class Date {
         $html .= '<select class="mailpoet_date_day" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => $this->wp->escAttr(__('Please select a day', 'mailpoet')),
+          'required-message' => $this->wp->escAttr(__('This field is required.', 'mailpoet')),
         ], $formId);
         $html .= 'name="' . $fieldName . '[day]" placeholder="' . $this->wp->escAttr(__('Day', 'mailpoet')) . '">';
         $html .= $this->getDays($block);
@@ -75,7 +75,7 @@ class Date {
         $html .= '<select class="mailpoet_select mailpoet_date_month" data-automation-id="form_date_month" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => $this->wp->escAttr(__('Please select a month', 'mailpoet')),
+          'required-message' => $this->wp->escAttr(__('This field is required.', 'mailpoet')),
         ], $formId);
         $html .= 'name="' . $fieldName . '[month]" placeholder="' . $this->wp->escAttr(__('Month', 'mailpoet')) . '">';
         $html .= $this->getMonths($block);
@@ -84,7 +84,7 @@ class Date {
         $html .= '<select class="mailpoet_date_year" data-automation-id="form_date_year" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => $this->wp->escAttr(__('Please select a year', 'mailpoet')),
+          'required-message' => $this->wp->escAttr(__('This field is required.', 'mailpoet')),
         ], $formId);
         $html .= 'name="' . $fieldName . '[year]" placeholder="' . $this->wp->escAttr(__('Year', 'mailpoet')) . '">';
         $html .= $this->getYears($block);

@@ -314,8 +314,7 @@ class EditorCreateCustomFieldCest {
     $i->assertAttributeContains('[data-automation-id="form_date_year"]', 'placeholder', 'Year');
     $i->assertAttributeContains('[data-automation-id="form_date_month"]', 'placeholder', 'Month');
     $i->click('.mailpoet_submit');
-    $i->waitForText('Please select a year');
-    $i->waitForText('Please select a month');
+    $i->waitForText('This field is required.');
     $i->selectOption('[data-automation-id="form_date_year"]', '2000');
     $i->selectOption('[data-automation-id="form_date_month"]', 'January');
     $i->click('.mailpoet_submit');

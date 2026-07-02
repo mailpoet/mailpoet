@@ -110,6 +110,20 @@ class DateTest extends \MailPoetUnitTest {
     verify($selectedYear->textContent)->equals($currentYear);
   }
 
+  public function testItShouldUseGenericRequiredMessageForDateSelects() {
+    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->baseMock->expects($this->exactly(2))
+      ->method('getInputValidation')
+      ->withConsecutive(
+        [$this->block, ['required-message' => 'This field is required.'], null],
+        [$this->block, ['required-message' => 'This field is required.'], null]
+      )
+      ->willReturn(' validation="1" ');
+
+    $this->date->render($this->block, []);
+  }
+
   public function testItShouldAddValue() {
     $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
