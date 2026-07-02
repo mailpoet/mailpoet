@@ -216,6 +216,7 @@ class Pages {
 
     $subscriberData = json_decode((string)$this->subscriber->getUnconfirmedData(), true);
     $originalStatus = $this->subscriber->getStatus();
+    $confirmationCompleted = $originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED || $subscriberData !== null;
 
     $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->subscriber->setConfirmedIp(Helpers::getIP());
@@ -255,7 +256,7 @@ class Pages {
     }
 
     // Send new subscriber notification only when status changes to subscribed or there are unconfirmed data to avoid spamming
-    if ($originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED || $subscriberData !== null) {
+    if ($confirmationCompleted) {
       $this->newSubscriberNotificationSender->send($this->subscriber, $subscriberSegments);
     }
 
@@ -263,6 +264,10 @@ class Pages {
     if (!empty($subscriberData)) {
       $this->subscriberSaveController->createOrUpdate((array)$subscriberData, $this->subscriber);
       $this->subscriberSaveController->updateCustomFields((array)$subscriberData, $this->subscriber);
+    }
+
+    if ($confirmationCompleted) {
+      $this->wp->doAction('mailpoet_subscription_confirmed', $this->subscriber);
     }
   }
 

@@ -132,6 +132,41 @@ class PagesTest extends \MailPoetTest {
     $this->assertSame('Nickname', $subscriberCustomField->getValue());
   }
 
+  public function testItTriggersSubscriptionConfirmedHookAfterStoredDataIsApplied() {
+    $firstName = 'Jane';
+    $this->subscriber->setUnconfirmedData((string)json_encode([
+      'first_name' => $firstName,
+      'email' => 'jane.doe@example.com',
+    ]));
+    $this->entityManager->persist($this->subscriber);
+    $this->entityManager->flush();
+
+    $hookCalls = 0;
+    $hookSubscriberId = null;
+    $hookFirstName = null;
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->removeAllActions('mailpoet_subscription_confirmed');
+    $wp->addAction('mailpoet_subscription_confirmed', function (SubscriberEntity $subscriber) use (&$hookCalls, &$hookSubscriberId, &$hookFirstName) {
+      $hookCalls++;
+      $hookSubscriberId = $subscriber->getId();
+      $hookFirstName = $subscriber->getFirstName();
+    }, 10, 1);
+
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberAndSegmentEntities' => Stub\Expected::once()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
+    $subscription = $pages->init(false, $this->testData, false, false);
+
+    try {
+      $subscription->confirm();
+    } finally {
+      $wp->removeAllActions('mailpoet_subscription_confirmed');
+    }
+
+    $this->assertSame(1, $hookCalls); // @phpstan-ignore-line -- PHPStan doesn't get the $hookCalls side effect
+    $this->assertSame($this->subscriber->getId(), $hookSubscriberId);
+    $this->assertSame($firstName, $hookFirstName);
+  }
+
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
@@ -143,7 +178,20 @@ class PagesTest extends \MailPoetTest {
     $subscriber->setConfirmedIp('111.111.111.111');
     $this->entityManager->flush();
     $subscription = $pages->init(false, $this->testData, false, false);
-    $subscription->confirm();
+
+    $hookCalls = 0;
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->removeAllActions('mailpoet_subscription_confirmed');
+    $wp->addAction('mailpoet_subscription_confirmed', function () use (&$hookCalls) {
+      $hookCalls++;
+    });
+    try {
+      $subscription->confirm();
+    } finally {
+      $wp->removeAllActions('mailpoet_subscription_confirmed');
+    }
+
+    $this->assertSame(0, $hookCalls); // @phpstan-ignore-line -- PHPStan doesn't get the $hookCalls side effect
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
