@@ -861,6 +861,11 @@ class SubscriberListingRepository extends ListingRepository {
     if ($this->canUseSegmentStatisticsCache($definition)) {
       $segment = $this->getSegmentFromDefinition($definition);
       if ($segment instanceof SegmentEntity) {
+        // 'consolidated' stays false here even though the buckets do partition
+        // the members exactly: countForCurrentGroup recognises this same case
+        // via canUseSegmentStatisticsCache($definition), so the "all" tab still
+        // takes the sum-of-buckets path. The two conditions are equivalent for
+        // this branch — the flag would be redundant, not contradictory.
         return ['counts' => $this->segmentStatisticsToCounts($segment), 'consolidated' => false];
       }
     }
