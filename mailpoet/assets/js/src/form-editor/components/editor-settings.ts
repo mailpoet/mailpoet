@@ -2,6 +2,7 @@ export function getEditorExperimentalFeatures(
   colors: unknown,
   gradients: unknown,
   fontSizes: unknown,
+  themeColors: unknown,
 ) {
   return {
     spacing: {
@@ -16,6 +17,7 @@ export function getEditorExperimentalFeatures(
       defaultPalette: true,
       palette: {
         default: colors,
+        theme: themeColors,
       },
       gradients: {
         default: gradients,

@@ -31,7 +31,7 @@ import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form-styling-background.jsx';
 import { CustomFontsStyleSheetLink } from './font-family-settings';
 import { Fullscreen } from './fullscreen';
-import { FONT_SIZES, storeName } from '../store';
+import { FONT_SIZES, storeName, THEME_COLOR_PALETTE } from '../store';
 import { getEditorExperimentalFeatures } from './editor-settings';
 
 /**
@@ -90,6 +90,7 @@ export function Editor() {
         SETTINGS_DEFAULTS.colors,
         SETTINGS_DEFAULTS.gradients,
         FONT_SIZES,
+        THEME_COLOR_PALETTE,
       ),
     }),
     [canUserUpload, toggleInserter],

@@ -10,7 +10,7 @@ import { validateForm } from './form-validator.jsx';
 import { formBodyToBlocksFactory } from './form-body-to-blocks.jsx';
 import { mapFormDataAfterLoading } from './map-form-data-after-loading.jsx';
 import { FormEditorWindow } from './state-types';
-import { FONT_SIZES, storeName } from './constants';
+import { FONT_SIZES, FORM_EDITOR_COLOR_PALETTE, storeName } from './constants';
 import { isCoreBlockTypographyTextAlignSupported } from '../blocks/core-block-settings';
 
 declare let window: FormEditorWindow;
@@ -23,7 +23,7 @@ export const initStore = () => {
 
   const formBodyToBlocks = formBodyToBlocksFactory(
     FONT_SIZES,
-    SETTINGS_DEFAULTS.colors,
+    FORM_EDITOR_COLOR_PALETTE,
     SETTINGS_DEFAULTS.gradients,
     customFields,
     {

@@ -2,7 +2,7 @@ import { getEditorExperimentalFeatures } from '../../../../assets/js/src/form-ed
 
 describe('Form editor settings', () => {
   it('enables block text alignment controls', () => {
-    const features = getEditorExperimentalFeatures([], [], []);
+    const features = getEditorExperimentalFeatures([], [], [], []);
 
     expect(features.typography.textAlign).to.equal(true);
   });

@@ -266,6 +266,7 @@ class FormEditor {
       'editor_tutorial_seen' => $this->userFlags->get('form_editor_tutorial_seen'),
       'preview_page_url' => $this->getPreviewPageUrl(),
       'custom_fonts' => CustomFonts::FONTS,
+      'editor_color_palette' => $this->getEditorColorPalette(),
       'translations' => $this->getGutenbergScriptsTranslations(),
       'posts' => $this->wpPostListLoader->getPosts(),
       'pages' => $this->wpPostListLoader->getPages(),
@@ -281,6 +282,56 @@ class FormEditor {
     $this->wp->wpEnqueueMedia();
     $this->assetsController->setupFormEditorDependencies();
     $this->pageRenderer->displayPage('form/editor.html', $data);
+  }
+
+  private function getEditorColorPalette(): array {
+    $palette = $this->normalizeColorPalette(
+      $this->wp->wpGetGlobalSettings(['color', 'palette', 'theme'])
+    );
+    if ($palette) {
+      return $palette;
+    }
+    return $this->normalizeColorPalette(
+      $this->wp->wpGetThemeSupport('editor-color-palette')
+    );
+  }
+
+  private function normalizeColorPalette($palette): array {
+    if (!is_array($palette)) {
+      return [];
+    }
+    if (
+      isset($palette[0])
+      && is_array($palette[0])
+      && !isset($palette[0]['color'])
+    ) {
+      $palette = $palette[0];
+    }
+
+    $normalizedPalette = [];
+    foreach ($palette as $color) {
+      if (!is_array($color)) {
+        continue;
+      }
+      $name = isset($color['name']) && is_scalar($color['name'])
+        ? $this->wp->sanitizeTextField((string)$color['name'])
+        : '';
+      $slug = isset($color['slug']) && is_scalar($color['slug'])
+        ? $this->wp->sanitizeKey((string)$color['slug'])
+        : '';
+      $colorValue = isset($color['color']) && is_scalar($color['color'])
+        ? $this->wp->sanitizeTextField((string)$color['color'])
+        : '';
+      if (!$name || !$slug || !$colorValue) {
+        continue;
+      }
+      $normalizedPalette[] = [
+        'name' => $name,
+        'slug' => $slug,
+        'color' => $colorValue,
+      ];
+    }
+    return $normalizedPalette;
   }
 
   public function renderTemplateSelection() {
