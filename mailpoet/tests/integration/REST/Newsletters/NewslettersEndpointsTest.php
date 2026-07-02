@@ -292,6 +292,26 @@ class NewslettersEndpointsTest extends Test {
     $this->assertSame(NewsletterEntity::STATUS_DRAFT, $newsletter->getStatus());
   }
 
+  public function testStatusEndpointUpdatesNewsletterStatusWithPostRequest(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Status_' . uniqid())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSentStatus()
+      ->create();
+
+    $response = $this->post('/mailpoet/v1/newsletters/' . $newsletter->getId() . '/status', [
+      'json' => ['status' => NewsletterEntity::STATUS_DRAFT],
+    ]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame(NewsletterEntity::STATUS_DRAFT, $payload['status']);
+
+    $this->newslettersRepository->refresh($newsletter);
+    $this->assertSame(NewsletterEntity::STATUS_DRAFT, $newsletter->getStatus());
+  }
+
   public function testStatusEndpointReturnsNotFoundForUnknownId(): void {
     $response = $this->put('/mailpoet/v1/newsletters/9999999/status', [
       'json' => ['status' => NewsletterEntity::STATUS_DRAFT],
