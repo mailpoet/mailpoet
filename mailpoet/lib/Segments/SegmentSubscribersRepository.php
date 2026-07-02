@@ -224,7 +224,7 @@ class SegmentSubscribersRepository {
     $segmentId = (int)$segment->getId();
     $unsubscribed = SubscriberEntity::STATUS_UNSUBSCRIBED;
 
-    $totalMembership = $this->countSegmentMemberships($segmentId);
+    $totalMembership = $this->countStaticSegmentMembers($segmentId);
     $trash = $this->countStaticSegmentMembers($segmentId, function (QueryBuilder $qb): void {
       $qb->andWhere('s.deleted_at IS NOT NULL');
     });
@@ -280,30 +280,27 @@ class SegmentSubscribersRepository {
     });
   }
 
-  private function countSegmentMemberships(int $segmentId): int {
-    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
-    $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder()
-      ->select('COUNT(*)')
-      ->from($subscriberSegmentTable, 'ss')
-      ->where('ss.segment_id = :segmentId')
-      ->setParameter('segmentId', $segmentId);
-    $count = $this->executeQuery($queryBuilder)->fetchOne();
-    return is_numeric($count) ? (int)$count : 0;
-  }
-
   /**
-   * @param callable(QueryBuilder): void $constrain
+   * Count members of a static segment. Without $constrain this is an index-only
+   * read of the membership table (no join) — the cheap total the per-status
+   * derivation leans on. Pass $constrain to filter on subscriber columns; the
+   * subscribers table is joined in (alias 's') only then, so the unconstrained
+   * total never pays for the join it doesn't need.
+   *
+   * @param callable(QueryBuilder): void|null $constrain
    */
-  private function countStaticSegmentMembers(int $segmentId, callable $constrain): int {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+  private function countStaticSegmentMembers(int $segmentId, ?callable $constrain = null): int {
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder()
       ->select('COUNT(*)')
       ->from($subscriberSegmentTable, 'ss')
-      ->innerJoin('ss', $subscribersTable, 's', 's.id = ss.subscriber_id')
       ->where('ss.segment_id = :segmentId')
       ->setParameter('segmentId', $segmentId);
-    $constrain($queryBuilder);
+    if ($constrain !== null) {
+      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $queryBuilder->innerJoin('ss', $subscribersTable, 's', 's.id = ss.subscriber_id');
+      $constrain($queryBuilder);
+    }
     $count = $this->executeQuery($queryBuilder)->fetchOne();
     return is_numeric($count) ? (int)$count : 0;
   }
