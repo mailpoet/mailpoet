@@ -29,12 +29,25 @@ class Cli {
       return;
     }
 
-    WP_CLI::add_command('mailpoet:migrations:run', [$this, 'run'], [
+    WP_CLI::add_command('mailpoet migrations run', [$this, 'run'], [
       'shortdesc' => 'Runs MailPoet database migrations',
     ]);
 
-    WP_CLI::add_command('mailpoet:migrations:status', [$this, 'status'], [
+    WP_CLI::add_command('mailpoet migrations status', [$this, 'status'], [
       'shortdesc' => 'Shows status of MailPoet database migrations',
+    ]);
+
+    // Deprecated colon-named aliases kept for backwards compatibility. Remove in a future release (STOMAIL-8177).
+    $this->registerDeprecatedAlias('mailpoet:migrations:run', 'mailpoet migrations run', [$this, 'run']);
+    $this->registerDeprecatedAlias('mailpoet:migrations:status', 'mailpoet migrations status', [$this, 'status']);
+  }
+
+  private function registerDeprecatedAlias(string $oldName, string $newName, callable $handler): void {
+    WP_CLI::add_command($oldName, function () use ($oldName, $newName, $handler): void {
+      WP_CLI::warning(sprintf('`wp %s` is deprecated and will be removed in a future release. Use `wp %s` instead.', $oldName, $newName));
+      $handler();
+    }, [
+      'shortdesc' => sprintf('Deprecated. Use `wp %s` instead', $newName),
     ]);
   }
 

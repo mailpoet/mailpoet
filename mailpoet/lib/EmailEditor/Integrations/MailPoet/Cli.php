@@ -33,8 +33,20 @@ class Cli {
       return;
     }
 
-    WP_CLI::add_command('mailpoet:email-editor:create-templates', [$this, 'createTemplates'], [
+    WP_CLI::add_command('mailpoet email-editor create-templates', [$this, 'createTemplates'], [
       'shortdesc' => 'Create MailPoet email editor templates',
+    ]);
+
+    // Deprecated colon-named alias kept for backwards compatibility. Remove in a future release (STOMAIL-8177).
+    $this->registerDeprecatedAlias('mailpoet:email-editor:create-templates', 'mailpoet email-editor create-templates', [$this, 'createTemplates']);
+  }
+
+  private function registerDeprecatedAlias(string $oldName, string $newName, callable $handler): void {
+    WP_CLI::add_command($oldName, function () use ($oldName, $newName, $handler): void {
+      WP_CLI::warning(sprintf('`wp %s` is deprecated and will be removed in a future release. Use `wp %s` instead.', $oldName, $newName));
+      $handler();
+    }, [
+      'shortdesc' => sprintf('Deprecated. Use `wp %s` instead', $newName),
     ]);
   }
 
