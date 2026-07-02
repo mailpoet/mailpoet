@@ -6,6 +6,7 @@ use MailPoet\API\JSON\API;
 use MailPoet\API\JSON\Endpoint;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Form {
 
@@ -14,6 +15,9 @@ class Form {
 
   /** @var UrlHelper */
   private $urlHelper;
+
+  private const SUBSCRIBE_ENDPOINT = 'subscribers';
+  private const SUBSCRIBE_METHOD = 'subscribe';
 
   public function __construct(
     API $api,
@@ -43,6 +47,9 @@ class Form {
     $method = (isset($requestData[$methodParamName]) && is_string($requestData[$methodParamName]))
       ? trim($requestData[$methodParamName])
       : '';
+    $token = (isset($requestData['token']) && is_string($requestData['token']))
+      ? trim($requestData['token'])
+      : '';
     $rawFormId = (isset($requestData['data']) && is_array($requestData['data']))
       ? ($requestData['data']['form_id'] ?? false)
       : false;
@@ -54,6 +61,9 @@ class Form {
       || $apiVersion === ''
       || $endpoint === ''
       || $method === ''
+      || $endpoint !== self::SUBSCRIBE_ENDPOINT
+      || $method !== self::SUBSCRIBE_METHOD
+      || WPFunctions::get()->wpVerifyNonce($token, 'mailpoet_token') === false
     ) {
       return $this->urlHelper->redirectBack();
     }

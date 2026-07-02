@@ -10,6 +10,7 @@ class ApiDataSanitizerTest extends \MailPoetTest {
   private $body = [
     [
       'type' => 'paragraph',
+      'id' => 'paragraph"><invalid',
       'params' => [
         'content' => '<script>alert(1);</script>Paragraph',
         'align' => 'left',
@@ -21,6 +22,7 @@ class ApiDataSanitizerTest extends \MailPoetTest {
       'body' => [
         [
           'type' => 'heading',
+          'id' => 'heading"><invalid',
           'params' => [
             'content' => '<script>alert(2);</script>Heading',
             'align' => 'right',
@@ -52,8 +54,10 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     $nestedCheckbox = $result[1]['body'][1];
     verify($paragraph['params']['content'])->equals('alert(1);Paragraph');
     verify($paragraph['params']['align'])->equals('left');
+    verify($paragraph['id'])->equals('paragraphinvalid');
     verify($nestedHeading['params']['content'])->equals('alert(2);Heading');
     verify($nestedHeading['params']['align'])->equals('right');
+    verify($nestedHeading['id'])->equals('headinginvalid');
     verify($nestedCheckbox['params']['values'][0]['value'])->equals('alert(3);Checkbox');
     verify($nestedCheckbox['params']['label'])->equals('Label');
   }
