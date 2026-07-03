@@ -48,6 +48,26 @@ describe('Subscriber import column matching', () => {
     ]);
   });
 
+  it('matches single-word name headers without a space', () => {
+    const columns = matchColumns(
+      [
+        {
+          0: 'John',
+          1: 'Doe',
+        },
+      ],
+      {
+        0: 'FirstName',
+        1: 'lastname',
+      },
+    );
+
+    expect(columns).to.deep.equal([
+      { column_id: 'first_name' },
+      { column_id: 'last_name' },
+    ]);
+  });
+
   it('does not match unrelated headers containing name words', () => {
     const columns = matchColumns(
       [
