@@ -149,7 +149,13 @@ class CleanupExtension extends Extension {
     try {
       $result = $this->rootConnection->query($sql);
     } catch (\mysqli_sql_exception $e) {
-      return false; // Action Scheduler tables absent — nothing to wait for.
+      // 1146 = "table doesn't exist": Action Scheduler isn't installed in this suite, so there
+      // is nothing to wait for. Let any other error (lost connection, permissions, ...) surface
+      // rather than silently skipping the drain and masking a real DB problem.
+      if ($e->getCode() === 1146) {
+        return false;
+      }
+      throw $e;
     }
     if (!$result instanceof \mysqli_result) {
       return false;
