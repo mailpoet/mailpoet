@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -50,7 +51,7 @@ class SubscribersEngagementScoreTest extends \MailPoetTest {
       $exception = $e;
     }
     $this->assertInstanceOf(\Exception::class, $exception);
-    verify($exception->getMessage())->stringStartsWith('The maximum execution time');
+    verify($exception->getCode())->equals(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
     $remainingAfterInterrupt = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
     verify(count($remainingAfterInterrupt))->equals(2);
 
