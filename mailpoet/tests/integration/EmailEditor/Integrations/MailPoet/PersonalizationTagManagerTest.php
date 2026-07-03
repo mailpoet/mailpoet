@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use Codeception\Util\Fixtures;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
@@ -173,6 +174,79 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
     $this->assertStringNotContainsString('%5Bmailpoet/site-homepage-url%5D', $emailContent['html']);
     $this->assertStringNotContainsString('[mailpoet/site-homepage-url]', $emailContent['html']);
+  }
+
+  public function testItResolvesUnencodedHomepageUrlHrefBeforeLinkTracking(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a href="[mailpoet/site-homepage-url]">Homepage</a>',
+    ]);
+
+    $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
+    $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
+    $this->assertStringNotContainsString('[mailpoet/site-homepage-url]', $emailContent['html']);
+  }
+
+  public function testItResolvesHomepageUrlDataLinkHrefBeforeLinkTracking(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $emailContent = $personalizationManager->convertLinksToShortcodes([
+      'html' => '<a data-link-href="[mailpoet/site-homepage-url]" contenteditable="false">Homepage</a>',
+    ]);
+
+    $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
+    $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
+    $this->assertStringNotContainsString('data-link-href=', $emailContent['html']);
+    $this->assertStringNotContainsString('contenteditable=', $emailContent['html']);
+  }
+
+  public function testItResolvesRegisteredWooCommerceUrlTokensBeforeLinkTracking(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $originalTag = $registry->unregister('[woocommerce/store-url]');
+    $registry->register(new Personalization_Tag(
+      'Store URL',
+      'woocommerce/store-url',
+      'Store',
+      function (): string {
+        return 'https://example.com/shop';
+      }
+    ));
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+      $emailContent = $personalizationManager->convertLinksToShortcodes([
+        'html' => '<a href="http://%5Bwoocommerce/store-url%5D">Shop now</a>',
+      ]);
+
+      $this->assertStringContainsString('href="https://example.com/shop"', $emailContent['html']);
+      $this->assertStringNotContainsString('%5Bwoocommerce/store-url%5D', $emailContent['html']);
+    } finally {
+      $registry->unregister('[woocommerce/store-url]');
+      if ($originalTag) {
+        $registry->register($originalTag);
+      }
+    }
+  }
+
+  public function testItLeavesUnregisteredPreTrackingUrlTokensUntouched(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $originalTag = $registry->unregister('[woocommerce/my-account-url]');
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+      $emailContent = $personalizationManager->convertLinksToShortcodes([
+        'html' => '<a href="http://%5Bwoocommerce/my-account-url%5D">My account</a>',
+      ]);
+
+      $this->assertStringContainsString('href="http://%5Bwoocommerce/my-account-url%5D"', $emailContent['html']);
+    } finally {
+      if ($originalTag) {
+        $registry->register($originalTag);
+      }
+    }
   }
 
   public function testItOnlyRemovesTemporaryHttpPrefixForKnownLinkTokens(): void {

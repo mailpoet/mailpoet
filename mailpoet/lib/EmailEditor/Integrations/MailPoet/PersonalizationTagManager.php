@@ -21,6 +21,18 @@ use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
 use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class PersonalizationTagManager {
+  /**
+   * URL tokens that don't depend on subscriber or order context and can be
+   * resolved before link tracking hashes hrefs. Context-dependent URL tokens
+   * (activation link, order URLs) must not be added here.
+   */
+  private const PRE_TRACKING_URL_TOKENS = [
+    '[mailpoet/site-homepage-url]',
+    '[woocommerce/site-homepage-url]',
+    '[woocommerce/store-url]',
+    '[woocommerce/my-account-url]',
+  ];
+
   private Subscriber $subscriber;
   private Site $site;
   private Link $link;
@@ -379,9 +391,16 @@ class PersonalizationTagManager {
    * @return array<string, string>
    */
   private function getPreTrackingUrlTokens(): array {
-    return [
-      '[mailpoet/site-homepage-url]' => $this->site->getHomepageURL([]),
-    ];
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $tokens = [];
+    foreach (self::PRE_TRACKING_URL_TOKENS as $token) {
+      $tag = $registry->get_by_token($token);
+      if (!$tag) {
+        continue;
+      }
+      $tokens[$token] = $tag->execute_callback([]);
+    }
+    return $tokens;
   }
 
   /**
