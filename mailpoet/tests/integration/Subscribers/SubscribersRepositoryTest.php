@@ -639,6 +639,37 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($subscriber->getConfirmationsCount())->equals(3);
   }
   
+  public function testEngagementUpdatesReactivateInactiveSubscribers(): void {
+    $engagementUpdates = [
+      fn(SubscriberEntity $s) => $this->repository->maybeUpdateLastEngagement($s),
+      fn(SubscriberEntity $s) => $this->repository->maybeUpdateLastOpenAt($s),
+      fn(SubscriberEntity $s) => $this->repository->maybeUpdateLastClickAt($s),
+      fn(SubscriberEntity $s) => $this->repository->maybeUpdateLastPurchaseAt($s),
+      fn(SubscriberEntity $s) => $this->repository->maybeUpdateLastPageViewAt($s),
+    ];
+
+    foreach ($engagementUpdates as $index => $update) {
+      $subscriber = $this->createSubscriber("inactive-{$index}@reactivate.com");
+      $subscriber->setStatus(SubscriberEntity::STATUS_INACTIVE);
+      $this->entityManager->flush();
+
+      $update($subscriber);
+
+      verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+      verify($subscriber->getLastEngagementAt())->notNull();
+    }
+  }
+
+  public function testEngagementUpdatesDoNotChangeStatusOfActiveSubscriber(): void {
+    $subscriber = $this->createSubscriber('active@reactivate.com');
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $this->repository->maybeUpdateLastOpenAt($subscriber);
+
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getLastEngagementAt())->notNull();
+  }
+
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

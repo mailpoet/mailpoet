@@ -682,8 +682,24 @@ class SubscriberEntity {
     return $this->lastEngagementAt;
   }
 
+  /**
+   * Sets the raw engagement timestamp without touching status. Prefer markEngaged() when
+   * recording a real engagement event (open, click, purchase, page view) so inactive
+   * subscribers are reactivated immediately instead of waiting for the maintenance cron.
+   */
   public function setLastEngagementAt(DateTimeInterface $lastEngagementAt): void {
     $this->lastEngagementAt = $lastEngagementAt;
+  }
+
+  /**
+   * Records engagement and immediately reactivates the subscriber if they were inactive,
+   * so they don't wait for the InactiveSubscribersMaintenance cron to be reactivated.
+   */
+  public function markEngaged(DateTimeInterface $engagedAt): void {
+    $this->setLastEngagementAt($engagedAt);
+    if ($this->getStatus() === self::STATUS_INACTIVE) {
+      $this->setStatus(self::STATUS_SUBSCRIBED);
+    }
   }
 
   public function getLastSendingAt(): ?DateTimeInterface {
