@@ -32,7 +32,6 @@ if [ -z "$(ls -A mailpoet/vendor-prefixed 2>/dev/null)" ]; then
   echo "  ! vendor-prefixed/ is empty — running prefixer and post-install fixers"
   (cd mailpoet \
     && bash prefixer/process.sh \
-    && php ./tasks/fix-guzzle.php \
     && php ./tasks/fix-php82-deprecations.php \
     && php ./tasks/FixPhp84Deprecations.php)
 else
