@@ -698,7 +698,23 @@ class LatestPosts extends AbstractBlock {
       $wp_query = $previousQuery; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
     }
 
-    return $content;
+    return $this->withPostId($content, $postId);
+  }
+
+  /**
+   * Adds data-post-id to the post markup. Post notifications read it back from
+   * the sent email (Tasks\Posts) to know which posts already went out.
+   */
+  private function withPostId(string $html, int $postId): string {
+    if (trim($html) === '') {
+      return $html;
+    }
+    $processor = new \WP_HTML_Tag_Processor($html);
+    if (!$processor->next_tag()) {
+      return $html;
+    }
+    $processor->set_attribute('data-post-id', (string)$postId);
+    return $processor->get_updated_html();
   }
 
   /**
