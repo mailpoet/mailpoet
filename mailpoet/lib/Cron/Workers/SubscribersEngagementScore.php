@@ -46,13 +46,9 @@ class SubscribersEngagementScore extends SimpleWorker {
   }
 
   private function recalculateSubscribers(): int {
-    $subscribers = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
-    if ($subscribers) {
-      $this->statisticsOpensRepository->recalculateSubscribersScore($subscribers);
-      // Keep memory bounded across the loop; the scheduled task entity is a different type and stays managed.
-      $this->subscribersRepository->detachAll();
-    }
-    return count($subscribers);
+    $subscriberIds = $this->subscribersRepository->findIdsByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
+    $this->statisticsOpensRepository->recalculateSubscribersScore($subscriberIds);
+    return count($subscriberIds);
   }
 
   private function recalculateSegments(): int {

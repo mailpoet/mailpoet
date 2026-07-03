@@ -41,6 +41,8 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
     $this->repository->recalculateSegmentScore($segment);
+    // The score is updated via bulk SQL, so the managed entity must be refreshed.
+    $this->entityManager->refresh($subscriber);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->null();
@@ -60,6 +62,8 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
     $this->repository->recalculateSegmentScore($segment);
+    // The score is updated via bulk SQL, so the managed entity must be refreshed.
+    $this->entityManager->refresh($subscriber);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->null();
@@ -109,6 +113,8 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $this->repository->recalculateSubscriberScore($subscriber);
     $this->repository->recalculateSegmentScore($segment);
+    // The score is updated via bulk SQL, so the managed entity must be refreshed.
+    $this->entityManager->refresh($subscriber);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
@@ -165,6 +171,8 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->repository->recalculateSubscriberScore($subscriber);
     $this->repository->recalculateSubscriberScore($subscriber2);
     $this->repository->recalculateSegmentScore($segment);
+    $this->entityManager->refresh($subscriber);
+    $this->entityManager->refresh($subscriber2);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
@@ -209,6 +217,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->repository->recalculateSubscriberScore($subscriber);
+    $this->entityManager->refresh($subscriber);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
@@ -237,7 +246,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createStatisticsNewsletter($this->createNewsletter(), $belowThreshold);
     $this->entityManager->flush();
 
-    $this->repository->recalculateSubscribersScore([$scored, $belowThreshold]);
+    $this->repository->recalculateSubscribersScore([(int)$scored->getId(), (int)$belowThreshold->getId()]);
 
     $this->entityManager->refresh($scored);
     $this->entityManager->refresh($belowThreshold);
@@ -268,7 +277,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     }
     $this->entityManager->flush();
 
-    $this->repository->recalculateSubscribersScore([$excellent, $partial, $zero]);
+    $this->repository->recalculateSubscribersScore([(int)$excellent->getId(), (int)$partial->getId(), (int)$zero->getId()]);
 
     $this->entityManager->refresh($excellent);
     $this->entityManager->refresh($partial);
