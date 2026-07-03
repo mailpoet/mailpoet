@@ -131,7 +131,15 @@ class SubscriberStatisticsRepository extends Repository {
   }
 
   public function getStatisticsOpenCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
-    return $this->getStatisticsOpenCounts([$subscriber], $startTime)[(int)$subscriber->getId()] ?? 0;
+    $queryBuilder = $this->getStatisticsOpenCountQuery($subscriber, $startTime);
+    if ($this->trackingConfig->areOpensSeparated()) {
+      $queryBuilder
+        ->andWhere('(stats.userAgentType = :userAgentType)')
+        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    }
+    return (int)$queryBuilder
+      ->getQuery()
+      ->getSingleScalarResult();
   }
 
   public function getStatisticsMachineOpenCount(SubscriberEntity $subscriber, ?\DateTimeInterface $startTime = null): int {
@@ -158,10 +166,7 @@ class SubscriberStatisticsRepository extends Repository {
    * @param SubscriberEntity[] $subscribers
    * @return array<int, int>
    */
-  public function getTotalSentCounts(array $subscribers, ?\DateTimeInterface $startTime = null): array {
-    if (!$subscribers) {
-      return [];
-    }
+  private function getTotalSentCounts(array $subscribers, ?\DateTimeInterface $startTime = null): array {
     $queryBuilder = $this->entityManager->createQueryBuilder()
       ->select('IDENTITY(stats.subscriber) AS subscriber_id, COUNT(DISTINCT stats.newsletter) AS sent_count')
       ->from(StatisticsNewsletterEntity::class, 'stats')
@@ -177,36 +182,6 @@ class SubscriberStatisticsRepository extends Repository {
     $counts = [];
     foreach ($rows as $row) {
       $counts[(int)$row['subscriber_id']] = (int)$row['sent_count'];
-    }
-    return $counts;
-  }
-
-  /**
-   * @param SubscriberEntity[] $subscribers
-   * @return array<int, int>
-   */
-  public function getStatisticsOpenCounts(array $subscribers, ?\DateTimeInterface $startTime = null): array {
-    if (!$subscribers) {
-      return [];
-    }
-    $queryBuilder = $this->entityManager->createQueryBuilder()
-      ->select('IDENTITY(stats.subscriber) AS subscriber_id, COUNT(DISTINCT stats.newsletter) AS open_count')
-      ->from(StatisticsOpenEntity::class, 'stats')
-      ->where('stats.subscriber IN (:subscribers)')
-      ->groupBy('stats.subscriber')
-      ->setParameter('subscribers', $subscribers);
-    if ($startTime) {
-      $this->applyDateConstraint($queryBuilder, $startTime);
-    }
-    if ($this->trackingConfig->areOpensSeparated()) {
-      $queryBuilder
-        ->andWhere('stats.userAgentType = :userAgentType')
-        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
-    }
-    $rows = $queryBuilder->getQuery()->getResult();
-    $counts = [];
-    foreach ($rows as $row) {
-      $counts[(int)$row['subscriber_id']] = (int)$row['open_count'];
     }
     return $counts;
   }

@@ -35,7 +35,7 @@ class SubscribersEngagementScoreTest extends \MailPoetTest {
     $result = $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     verify($result)->true();
-    $remaining = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
+    $remaining = $this->subscribersRepository->findIdsByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
     verify(count($remaining))->equals(0);
   }
 
@@ -52,13 +52,13 @@ class SubscribersEngagementScoreTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\Exception::class, $exception);
     verify($exception->getCode())->equals(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
-    $remainingAfterInterrupt = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
+    $remainingAfterInterrupt = $this->subscribersRepository->findIdsByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
     verify(count($remainingAfterInterrupt))->equals(2);
 
     $result = $this->worker->processTaskStrategy($task, microtime(true));
 
     verify($result)->true();
-    $remaining = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
+    $remaining = $this->subscribersRepository->findIdsByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
     verify(count($remaining))->equals(0);
   }
 

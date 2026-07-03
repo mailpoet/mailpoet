@@ -126,28 +126,6 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
   }
 
-  public function testItFetchesOpenCountsForMultipleSubscribersExcludingMachineOpensWhenSeparated(): void {
-    $subA = (new Subscriber())->create();
-    $subB = (new Subscriber())->create();
-    $newsletter1 = (new Newsletter())->withSendingQueue()->create();
-    $newsletter2 = (new Newsletter())->withSendingQueue()->create();
-    $sentAt = Carbon::now()->subMonth();
-    // subA opened newsletter1 as a human and newsletter2 as a machine.
-    (new StatisticsOpens($newsletter1, $subA))->withCreatedAt($sentAt)->create();
-    (new StatisticsOpens($newsletter2, $subA))->withMachineUserAgentType()->withCreatedAt($sentAt)->create();
-    (new StatisticsNewsletters($newsletter1, $subA))->withSentAt($sentAt)->create();
-    (new StatisticsNewsletters($newsletter2, $subA))->withSentAt($sentAt)->create();
-    // subB opened newsletter1 as a human.
-    (new StatisticsOpens($newsletter1, $subB))->withCreatedAt($sentAt)->create();
-    (new StatisticsNewsletters($newsletter1, $subB))->withSentAt($sentAt)->create();
-
-    $this->settings->set('tracking.opens', TrackingConfig::OPENS_SEPARATED);
-
-    $counts = $this->repository->getStatisticsOpenCounts([$subA, $subB], Carbon::now()->subYear());
-    verify($counts[(int)$subA->getId()])->equals(1); // machine open excluded
-    verify($counts[(int)$subB->getId()])->equals(1);
-  }
-
   public function testItFetchesMachineOpenCount(): void {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())->withSendingQueue()->create();

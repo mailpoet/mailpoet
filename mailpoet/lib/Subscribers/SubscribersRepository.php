@@ -936,17 +936,27 @@ class SubscribersRepository extends Repository {
     return $this->findOneBy(['wpUserId' => $wpUser->ID]);
   }
 
-  public function findByUpdatedScoreNotInLastMonth(int $limit): array {
+  /**
+   * @return int[]
+   */
+  public function findIdsByUpdatedScoreNotInLastMonth(int $limit): array {
     $dateTime = (new Carbon())->subMonths(1);
-    return $this->entityManager->createQueryBuilder()
-      ->select('s')
+    $ids = $this->entityManager->createQueryBuilder()
+      ->select('s.id')
       ->from(SubscriberEntity::class, 's')
       ->where('s.engagementScoreUpdatedAt IS NULL')
       ->orWhere('s.engagementScoreUpdatedAt < :dateTime')
       ->setParameter('dateTime', $dateTime)
       ->getQuery()
       ->setMaxResults($limit)
-      ->getResult();
+      ->getSingleColumnResult();
+    $intIds = [];
+    foreach ($ids as $id) {
+      if (is_numeric($id)) {
+        $intIds[] = (int)$id;
+      }
+    }
+    return $intIds;
   }
 
   public function maybeUpdateLastEngagement(SubscriberEntity $subscriberEntity): void {
