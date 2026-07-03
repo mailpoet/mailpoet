@@ -218,6 +218,8 @@ class SendingQueue {
 
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
+    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $this->throttlingHandler->setUseTemplatedSending($this->shouldUseTemplatedSending($newsletter, $processingMethod));
     // get newsletter segments
     $newsletterSegmentsIds = $newsletter->getSegmentIds();
     $segmentIdsToCheck = $newsletterSegmentsIds;
@@ -385,7 +387,8 @@ class SendingQueue {
           $task,
           $newsletter,
           $foundSubscribers,
-          $timer
+          $timer,
+          $processingMethod
         );
         if (!$newsletter->isTransactional()) {
           $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
@@ -424,12 +427,21 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
+  private function shouldUseTemplatedSending(NewsletterEntity $newsletter, ?string $processingMethod): bool {
+    return $processingMethod === 'bulk'
+      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && !(
+        $newsletter->getWpPostId() !== null
+        && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
+      );
+  }
+
   /**
    * @param SubscriberEntity[] $subscribers
    */
-  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer) {
+  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer, ?string $processingMethod = null) {
     // determine if processing is done in bulk or individually
-    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $processingMethod = $processingMethod ?? $this->mailerTask->getProcessingMethod();
     $preparedNewsletters = [];
     $preparedSubscribers = [];
     $preparedSubscribersIds = [];
@@ -442,12 +454,7 @@ class SendingQueue {
       return;
     }
 
-    $useTemplatedBatch = $processingMethod === 'bulk'
-      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
-      && !(
-        $newsletter->getWpPostId() !== null
-        && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
-      );
+    $useTemplatedBatch = $this->shouldUseTemplatedSending($newsletter, $processingMethod);
     $templateBatch = null;
     $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];

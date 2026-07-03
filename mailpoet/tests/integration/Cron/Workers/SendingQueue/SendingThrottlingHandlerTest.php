@@ -3,8 +3,6 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
-use MailPoet\Features\FeatureFlagsController;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 
@@ -16,23 +14,11 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  /** @var FeatureFlagsController */
-  private $featureFlagsController;
-
-  /** @var FeaturesController */
-  private $featuresController;
-
   public function _before() {
     parent::_before();
     $this->throttlingHandler = $this->diContainer->get(SendingThrottlingHandler::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
-    $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);
-    $this->featuresController = $this->diContainer->get(FeaturesController::class);
-  }
-
-  public function _after() {
-    $this->disableMssTemplatedSending();
-    parent::_after();
+    $this->throttlingHandler->setUseTemplatedSending(false);
   }
 
   public function testItReturnsDefaultBatchSize(): void {
@@ -40,29 +26,38 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
     verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
-  public function testItIgnoresServerAdvertisedMaxWhenMssTemplatedSendingIsDisabled(): void {
+  public function testItIgnoresServerAdvertisedMaxWhenNotUsingTemplatedSending(): void {
     $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, 5);
     verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
-  public function testItCapsBatchSizeToServerAdvertisedMaxWhenMssTemplatedSendingIsEnabled(): void {
-    $this->enableMssTemplatedSending();
-
-    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, 5);
-    verify($this->throttlingHandler->getBatchSize())->equals(5);
+  public function testItUsesTemplatedBatchSizeWhenTemplatedSendingIsUsed(): void {
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE);
   }
 
-  public function testItIgnoresServerMaxWhenHigherThanLocalBatchSize(): void {
-    $this->enableMssTemplatedSending();
+  public function testItCapsTemplatedBatchSizeToServerAdvertisedMax(): void {
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, 500);
+    verify($this->throttlingHandler->getBatchSize())->equals(500);
+  }
 
-    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, SendingThrottlingHandler::BATCH_SIZE + 100);
-    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+  public function testItIgnoresServerMaxHigherThanTemplatedBatchSize(): void {
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    $this->settings->set(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, SendingThrottlingHandler::TEMPLATED_BATCH_SIZE + 100);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE);
   }
 
   public function testItThrottlesBatchSizeToHalf(): void {
     $batchSize = $this->throttlingHandler->getBatchSize();
     verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
     verify($this->throttlingHandler->throttleBatchSize())->equals($batchSize / 2);
+  }
+
+  public function testItThrottlesTemplatedBatchSizeToHalf(): void {
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE);
+    verify($this->throttlingHandler->throttleBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE / 2);
   }
 
   public function testItIncreaseSuccessRequestCountInRow(): void {
@@ -89,13 +84,22 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
     verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
-  private function enableMssTemplatedSending(): void {
-    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, true);
-    $this->featuresController->resetCache();
-  }
+  public function testItKeepsTemplatedAndStandardThrottlingStateSeparate(): void {
+    // A templated send throttles its batch size down.
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    verify($this->throttlingHandler->throttleBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE / 2);
 
-  private function disableMssTemplatedSending(): void {
-    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, false);
-    $this->featuresController->resetCache();
+    // A standard send throttles down and then scales all the way back to its
+    // max, which clears its own throttling state.
+    $this->throttlingHandler->setUseTemplatedSending(false);
+    $this->throttlingHandler->throttleBatchSize();
+    for ($i = 1; $i <= SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
+      $this->throttlingHandler->processSuccess();
+    }
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+
+    // The templated throttle-down must survive the standard send.
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE / 2);
   }
 }

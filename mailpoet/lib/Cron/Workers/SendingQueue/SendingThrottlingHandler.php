@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
@@ -11,7 +10,9 @@ use MailPoetVendor\Monolog\Logger;
 
 class SendingThrottlingHandler {
   public const BATCH_SIZE = 20;
+  public const TEMPLATED_BATCH_SIZE = 1500;
   public const SETTINGS_KEY = 'mta_throttling';
+  public const TEMPLATED_SETTINGS_KEY = 'mta_throttling_templated';
   public const SUCCESS_THRESHOLD_TO_INCREASE = 10;
 
   /** @var Logger */
@@ -23,19 +24,21 @@ class SendingThrottlingHandler {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var FeaturesController */
-  private $featuresController;
+  /** @var bool */
+  private $useTemplatedSending = false;
 
   public function __construct(
     LoggerFactory $loggerFactory,
     SettingsController $settings,
-    WPFunctions $wp,
-    FeaturesController $featuresController
+    WPFunctions $wp
   ) {
     $this->logger = $loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING);
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->featuresController = $featuresController;
+  }
+
+  public function setUseTemplatedSending(bool $useTemplatedSending): void {
+    $this->useTemplatedSending = $useTemplatedSending;
   }
 
   public function getBatchSize(): int {
@@ -47,15 +50,16 @@ class SendingThrottlingHandler {
   }
 
   private function getMaxBatchSize(): int {
-    $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
-    $batchSize = is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
-    if ($this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)) {
+    if ($this->useTemplatedSending) {
+      $batchSize = self::TEMPLATED_BATCH_SIZE;
       $serverMax = $this->settings->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
       if (is_numeric($serverMax) && (int)$serverMax > 0) {
         $batchSize = min($batchSize, (int)$serverMax);
       }
+      return $batchSize;
     }
-    return $batchSize;
+    $batchSize = $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
+    return is_int($batchSize) ? $batchSize : self::BATCH_SIZE;
   }
 
   public function throttleBatchSize(): int {
@@ -91,10 +95,16 @@ class SendingThrottlingHandler {
   }
 
   private function loadSettings(): ?array {
-    return $this->settings->get(self::SETTINGS_KEY);
+    return $this->settings->get($this->getSettingsKey());
   }
 
   private function saveSettings(array $settings): void {
-    $this->settings->set(self::SETTINGS_KEY, $settings);
+    $this->settings->set($this->getSettingsKey(), $settings);
+  }
+
+  private function getSettingsKey(): string {
+    // Templated and non-templated sending have very different max batch sizes,
+    // so they must not share throttling state or they corrupt each other.
+    return $this->useTemplatedSending ? self::TEMPLATED_SETTINGS_KEY : self::SETTINGS_KEY;
   }
 }
