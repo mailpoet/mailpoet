@@ -43,7 +43,6 @@ class LatestPosts extends AbstractBlock {
     'core/post-featured-image',
     'core/post-title',
     'core/post-excerpt',
-    'core/post-content',
     'core/post-date',
     'core/post-author',
     'core/post-author-name',
