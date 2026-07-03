@@ -145,6 +145,17 @@ export function DefaultSender({ showModal }) {
                 });
               }
               if (data.type === 'domain') {
+                // keep the global verified list in sync so a later blur or
+                // email change still recognises the domain as verified
+                const verifiedDomain = data.data ? String(data.data) : '';
+                if (
+                  verifiedDomain &&
+                  !window.mailpoet_verified_sender_domains.includes(
+                    verifiedDomain,
+                  )
+                ) {
+                  window.mailpoet_verified_sender_domains.push(verifiedDomain);
+                }
                 setShowSenderDomainWarning(false);
                 setIsPartiallyVerifiedDomain(false);
                 setIsSenderDomainVerified(true);
