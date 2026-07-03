@@ -16,6 +16,9 @@ class CleanupExtension extends Extension {
   const DB_PASSWORD = 'wordpress';
   const DB_NAME = 'wordpress';
   const MAILHOG_DATA_PATH = '/mailhog-data';
+  const ACTION_SCHEDULER_ACTIONS_TABLE = 'mp_actionscheduler_actions';
+  const ACTION_SCHEDULER_DRAIN_TIMEOUT_SECONDS = 10;
+  const ACTION_SCHEDULER_DRAIN_POLL_MICROSECONDS = 50000; // 50ms
 
   public static $events = [
     Events::SUITE_BEFORE => 'backupDatabase',
@@ -85,6 +88,8 @@ class CleanupExtension extends Extension {
   }
 
   public function cleanupEnvironment(TestEvent $event) {
+    $this->waitForActionSchedulerToFinish();
+
     $backupSql = file_get_contents(self::DB_BACKUP_PATH);
     if (!is_string($backupSql)) {
       throw new \RuntimeException('Missing or empty DB backup file: ' . self::DB_BACKUP_PATH);
@@ -110,6 +115,48 @@ class CleanupExtension extends Extension {
     if ($wp_object_cache) {
       $wp_object_cache->flush();
     }
+  }
+
+  /**
+   * A background Action Scheduler runner (fire-and-forget async request) can outlive the test
+   * that triggered it. If we restore the DB below while such a runner is mid-batch, the
+   * actionscheduler rows it is processing get wiped, and its mark_failure()/mark_complete()
+   * calls then throw "Unidentified action X: ... deleted by another process." That uncaught
+   * exception is logged and fails an unrelated test via ErrorsExtension. Wait for any active
+   * runner to finish before restoring so the row is still there when it writes its result.
+   *
+   * A short timeout keeps a genuinely stuck runner from ever hanging the suite; the next
+   * restore wipes its rows anyway, so the worst case is a single test paying the timeout.
+   */
+  private function waitForActionSchedulerToFinish(): void {
+    $deadline = microtime(true) + self::ACTION_SCHEDULER_DRAIN_TIMEOUT_SECONDS;
+    while ($this->hasActiveActionSchedulerClaim()) {
+      if (microtime(true) >= $deadline) {
+        return;
+      }
+      usleep(self::ACTION_SCHEDULER_DRAIN_POLL_MICROSECONDS);
+    }
+  }
+
+  /**
+   * Mirrors Action Scheduler's own ActionScheduler_DBStore::get_claim_count(): a claim is
+   * active while it still holds actions that haven't reached a terminal status. This brackets
+   * the whole vulnerable window, from staking the claim through writing the final result.
+   */
+  private function hasActiveActionSchedulerClaim(): bool {
+    $sql = "SELECT COUNT(*) FROM " . self::ACTION_SCHEDULER_ACTIONS_TABLE
+      . " WHERE claim_id != 0 AND status IN ('pending', 'in-progress')";
+    try {
+      $result = $this->rootConnection->query($sql);
+    } catch (\mysqli_sql_exception $e) {
+      return false; // Action Scheduler tables absent — nothing to wait for.
+    }
+    if (!$result instanceof \mysqli_result) {
+      return false;
+    }
+    $row = $result->fetch_row();
+    $result->free();
+    return $row !== null && (int)$row[0] > 0;
   }
 
   private function createMysqlDumpCommand() {
