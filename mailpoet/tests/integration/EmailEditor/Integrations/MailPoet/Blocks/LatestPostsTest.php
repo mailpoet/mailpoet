@@ -222,6 +222,25 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('Latest posts block C');
   }
 
+  public function testItPreservesTheOrderOfManuallySelectedPosts(): void {
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    // Pick in an order that is neither ascending nor descending by date.
+    $html = $this->render([
+      'selectionMode' => 'manual',
+      'posts' => [$this->postIds[1], $this->postIds[0], $this->postIds[2]],
+    ]);
+
+    $positionB = strpos($html, 'Latest posts block B');
+    $positionA = strpos($html, 'Latest posts block A');
+    $positionC = strpos($html, 'Latest posts block C');
+    $this->assertIsInt($positionB);
+    $this->assertIsInt($positionA);
+    $this->assertIsInt($positionC);
+    verify($positionB)->lessThan($positionA);
+    verify($positionA)->lessThan($positionC);
+  }
+
   public function testItRendersNoPostsMessageForEmptyManualSelection(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
