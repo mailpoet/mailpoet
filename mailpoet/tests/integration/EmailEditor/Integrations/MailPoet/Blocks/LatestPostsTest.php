@@ -465,6 +465,38 @@ class LatestPostsTest extends \MailPoetTest {
     verify(in_array('core/paragraph', $allowed, true))->true();
   }
 
+  public function testItTagsEachPostWithADataPostIdForNotificationHistory(): void {
+    // Post notifications detect already-sent posts by scanning the rendered
+    // email for data-post-id attributes, so every post must carry exactly one.
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 2]);
+
+    verify(substr_count($html, 'data-post-id'))->equals(2);
+    verify($html)->stringContainsString('data-post-id="' . $this->postIds[2] . '"');
+    verify($html)->stringContainsString('data-post-id="' . $this->postIds[1] . '"');
+
+    // The IDs must be readable by the sending task's extraction regex.
+    preg_match_all('/data-post-id="(\d+)"/', $html, $matches);
+    verify(array_map('intval', $matches[1]))->equals([$this->postIds[2], $this->postIds[1]]);
+  }
+
+  public function testItKeepsDataPostIdThroughTheFullRenderingPipeline(): void {
+    // The attribute must survive CSS inlining so the sending task can read it
+    // from the final email HTML.
+    $content = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":2},"displayLayout":{"columns":1}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template --><!-- wp:post-title /--><!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+
+    $rendered = $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    $this->assertIsArray($rendered);
+    $html = $rendered['html'] ?? '';
+    $this->assertIsString($html);
+
+    verify(substr_count($html, 'data-post-id'))->equals(2);
+  }
+
   public function testItRewritesLinkColorSelectorSoItCanBeInlined(): void {
     // WordPress styles link colors with a `:where()` selector the email CSS
     // inliner cannot parse; it must be rewritten to a `:not()` equivalent.
