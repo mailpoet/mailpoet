@@ -354,6 +354,22 @@ class OpensTest extends \MailPoetTest {
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
+  public function testItReactivatesInactiveSubscriberOnOpen() {
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_INACTIVE);
+    $this->entityManager->flush();
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+
+    $opens->track($this->trackData);
+
+    verify($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
     $now = Carbon::now();
     Carbon::setTestNow($now);

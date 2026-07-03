@@ -932,7 +932,7 @@ class SubscribersRepository extends Repository {
       return;
     }
     // Update last engagement
-    $subscriberEntity->setLastEngagementAt($now);
+    $subscriberEntity->markEngaged($now);
     $this->flush();
   }
 
@@ -943,7 +943,7 @@ class SubscribersRepository extends Repository {
       return;
     }
     $subscriberEntity->setLastOpenAt($now);
-    $subscriberEntity->setLastEngagementAt($now);
+    $subscriberEntity->markEngaged($now);
     $this->flush();
   }
 
@@ -954,7 +954,7 @@ class SubscribersRepository extends Repository {
       return;
     }
     $subscriberEntity->setLastClickAt($now);
-    $subscriberEntity->setLastEngagementAt($now);
+    $subscriberEntity->markEngaged($now);
     $this->flush();
   }
 
@@ -965,7 +965,7 @@ class SubscribersRepository extends Repository {
       return;
     }
     $subscriberEntity->setLastPurchaseAt($now);
-    $subscriberEntity->setLastEngagementAt($now);
+    $subscriberEntity->markEngaged($now);
     $this->flush();
   }
 
@@ -976,7 +976,7 @@ class SubscribersRepository extends Repository {
       return;
     }
     $subscriberEntity->setLastPageViewAt($now);
-    $subscriberEntity->setLastEngagementAt($now);
+    $subscriberEntity->markEngaged($now);
     $this->flush();
   }
 
