@@ -22,9 +22,6 @@ class LinksToShortcodesConvertor {
     '[woocommerce/order-review-url]' => true,
   ];
 
-  /**
-   * @param array<string, string> $resolvedUrlTokens
-   */
   public function convertLinkTagsToShortcodes(string $content, array $resolvedUrlTokens = []): string {
     $contentProcessor = new HTML_Tag_Processor($content);
     while ($contentProcessor->next_token()) {
@@ -110,9 +107,6 @@ class LinksToShortcodesConvertor {
     return $content;
   }
 
-  /**
-   * @param array<string, string> $resolvedUrlTokens
-   */
   private function convertLinkToken(HTML_Tag_Processor $contentProcessor, string $href, array $resolvedUrlTokens): void {
     $shortcode = $this->getShortcodeForUrlToken($href);
     if ($shortcode !== null) {
@@ -149,9 +143,6 @@ class LinksToShortcodesConvertor {
     return self::TOKEN_MAP[$token];
   }
 
-  /**
-   * @param array<string, string> $resolvedUrlTokens
-   */
   private function getResolvedUrlToken(string $url, array $resolvedUrlTokens): ?string {
     $token = $this->normalizeUrlToken($url, array_keys($resolvedUrlTokens));
     if ($token === null) {
@@ -162,9 +153,6 @@ class LinksToShortcodesConvertor {
     return $resolvedUrl === '' ? null : $resolvedUrl;
   }
 
-  /**
-   * @param string[] $tokens
-   */
   private function normalizeUrlToken(string $url, array $tokens): ?string {
     $decodedUrl = trim($this->decodeUrl($url));
     foreach ($tokens as $token) {
