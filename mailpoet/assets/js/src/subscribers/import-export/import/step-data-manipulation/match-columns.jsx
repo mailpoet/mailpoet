@@ -1,5 +1,11 @@
 const FIRST_NAME_HEADERS = ['first', 'first name', 'firstname', 'given name'];
-const LAST_NAME_HEADERS = ['last', 'last name', 'lastname'];
+const LAST_NAME_HEADERS = [
+  'last',
+  'last name',
+  'lastname',
+  'surname',
+  'family name',
+];
 
 const getMatchedNameColumnId = (headerName) => {
   const normalizedHeaderName = String(headerName).trim().toLowerCase();

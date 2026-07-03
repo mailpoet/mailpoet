@@ -48,6 +48,39 @@ describe('Subscriber import column matching', () => {
     ]);
   });
 
+  it('matches surname variants for the last name column', () => {
+    const columns = matchColumns(
+      [
+        {
+          0: 'John',
+          1: 'Doe',
+        },
+      ],
+      {
+        0: 'Given name',
+        1: 'Surname',
+      },
+    );
+
+    expect(columns).to.deep.equal([
+      { column_id: 'first_name' },
+      { column_id: 'last_name' },
+    ]);
+
+    const familyName = matchColumns(
+      [
+        {
+          0: 'Doe',
+        },
+      ],
+      {
+        0: 'Family name',
+      },
+    );
+
+    expect(familyName).to.deep.equal([{ column_id: 'last_name' }]);
+  });
+
   it('matches single-word name headers without a space', () => {
     const columns = matchColumns(
       [
