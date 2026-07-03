@@ -162,7 +162,7 @@ class PagesTest extends \MailPoetTest {
       $wp->removeAllActions('mailpoet_subscription_confirmed');
     }
 
-    $this->assertSame(1, $hookCalls); // @phpstan-ignore-line -- PHPStan doesn't get the $hookCalls side effect
+    $this->assertSame(1, $hookCalls);
     $this->assertSame($this->subscriber->getId(), $hookSubscriberId);
     $this->assertSame($firstName, $hookFirstName);
   }
@@ -191,7 +191,7 @@ class PagesTest extends \MailPoetTest {
       $wp->removeAllActions('mailpoet_subscription_confirmed');
     }
 
-    $this->assertSame(0, $hookCalls); // @phpstan-ignore-line -- PHPStan doesn't get the $hookCalls side effect
+    $this->assertSame(0, $hookCalls);
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
