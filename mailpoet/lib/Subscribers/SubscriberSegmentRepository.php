@@ -78,6 +78,15 @@ class SubscriberSegmentRepository extends Repository {
       }
       $this->entityManager->flush();
     } else {
+      $subscriberSegmentsToUnsubscribe = array_values(array_filter(
+        $subscriber->getSubscriberSegments()->toArray(),
+        function (SubscriberSegmentEntity $subscriberSegment): bool {
+          $segment = $subscriberSegment->getSegment();
+          return $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+            && $segment instanceof SegmentEntity
+            && $segment->getType() !== SegmentEntity::TYPE_WP_USERS;
+        }
+      ));
       $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
       $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
       $this->entityManager->getConnection()->executeStatement("
@@ -93,6 +102,9 @@ class SubscriberSegmentRepository extends Repository {
       // Refresh SubscriberSegments status
       foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
         $this->entityManager->refresh($subscriberSegment);
+      }
+      foreach ($subscriberSegmentsToUnsubscribe as $subscriberSegment) {
+        $this->wp->doAction('mailpoet_segment_unsubscribed', $subscriberSegment);
       }
     }
     $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
@@ -193,6 +205,13 @@ class SubscriberSegmentRepository extends Repository {
       && $oldStatus !== SubscriberEntity::STATUS_SUBSCRIBED
     ) {
       $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+    }
+    if (
+      !$skipHooks
+      && $oldStatus === SubscriberEntity::STATUS_SUBSCRIBED
+      && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
+    ) {
+      $this->wp->doAction('mailpoet_segment_unsubscribed', $subscriberSegment);
     }
 
     // segments_count only counts 'subscribed' memberships, so it can only change

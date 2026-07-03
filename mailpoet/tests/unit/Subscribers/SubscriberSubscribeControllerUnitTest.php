@@ -735,14 +735,17 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ]
     );
     $statisticsFormsRepository = Stub::makeEmpty(StatisticsFormsRepository::class);
+    $receivedHooks = [];
     $wp = Stub::make(
       WPFunctions::class,
       [
-      'doAction' => function($receivedHook, $receivedData, $receivedSegmentIds, $receivedForm) use ($formFields, $segmentIds, $form) {
-        verify($receivedHook)->equals('mailpoet_subscription_before_subscribe');
-        verify($receivedData)->equals($formFields);
-        verify($receivedSegmentIds)->equals($segmentIds);
-        verify($receivedForm)->equals($form);
+      'doAction' => function($receivedHook, ...$args) use (&$receivedHooks, $formFields, $segmentIds, $form, $subscriber) {
+        $receivedHooks[] = $receivedHook;
+        if ($receivedHook === 'mailpoet_subscription_before_subscribe') {
+          verify($args)->equals([$formFields, $segmentIds, $form]);
+        } elseif ($receivedHook === 'mailpoet_subscription_after_subscribe') {
+          verify($args)->equals([$subscriber, $formFields, $segmentIds, $form]);
+        }
       },
       ]
     );
@@ -783,6 +786,10 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
     verify($result)->equals([]);
+    verify($receivedHooks)->equals([
+      'mailpoet_subscription_before_subscribe',
+      'mailpoet_subscription_after_subscribe',
+    ]);
   }
 
   public function testBehavioralBaselineEscalatesWhenSignalsAreMissing() {
