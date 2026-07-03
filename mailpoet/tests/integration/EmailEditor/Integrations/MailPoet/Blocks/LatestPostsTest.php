@@ -441,6 +441,30 @@ class LatestPostsTest extends \MailPoetTest {
     wp_delete_post($attachmentId, true);
   }
 
+  public function testItKeepsTheBlockAvailableInsideTheEmailEditor(): void {
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $wpPostId = $newsletter->getWpPostId();
+    $this->assertIsInt($wpPostId);
+    $emailPost = $this->wp->getPost($wpPostId);
+    $context = new \WP_Block_Editor_Context(['post' => $emailPost]);
+
+    // The email editor leaves the allow-list untouched (blocks stay available).
+    verify($this->block->restrictBlocksToEmailEditor(true, $context))->equals(true);
+  }
+
+  public function testItHidesTheBlockOutsideTheEmailEditor(): void {
+    $regularPost = $this->wp->getPost($this->postIds[0]);
+    $context = new \WP_Block_Editor_Context(['post' => $regularPost]);
+
+    $allowed = $this->block->restrictBlocksToEmailEditor(true, $context);
+
+    $this->assertIsArray($allowed);
+    verify(in_array('mailpoet/latest-posts', $allowed, true))->false();
+    verify(in_array('mailpoet/latest-posts-template', $allowed, true))->false();
+    // Other blocks remain available.
+    verify(in_array('core/paragraph', $allowed, true))->true();
+  }
+
   public function testItRewritesLinkColorSelectorSoItCanBeInlined(): void {
     // WordPress styles link colors with a `:where()` selector the email CSS
     // inliner cannot parse; it must be rewritten to a `:not()` equivalent.
