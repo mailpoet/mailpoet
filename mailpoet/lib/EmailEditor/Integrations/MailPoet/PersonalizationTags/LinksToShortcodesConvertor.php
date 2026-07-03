@@ -33,53 +33,14 @@ class LinksToShortcodesConvertor {
       }
 
       $href = $contentProcessor->get_attribute('data-link-href');
-      if (is_string($href)) {
-        $shortcode = $this->getShortcodeForUrlToken($href);
-        if ($shortcode !== null) {
-          $contentProcessor->set_attribute('href', 'http://' . $shortcode);
-          $contentProcessor->remove_attribute('data-link-href');
-          $contentProcessor->remove_attribute('contenteditable');
-          continue;
-        }
-
-        $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
-        if ($personalizedUrlToken !== null) {
-          $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
-          $contentProcessor->remove_attribute('href');
-          continue;
-        }
-
-        $resolvedUrl = $this->getResolvedUrlToken($href, $resolvedUrlTokens);
-        if ($resolvedUrl !== null) {
-          $contentProcessor->set_attribute('href', $resolvedUrl);
-          $contentProcessor->remove_attribute('data-link-href');
-          $contentProcessor->remove_attribute('contenteditable');
-        }
-        continue;
+      if (!is_string($href)) {
+        $href = $contentProcessor->get_attribute('href');
       }
-
-      $href = $contentProcessor->get_attribute('href');
       if (!is_string($href)) {
         continue;
       }
 
-      $shortcode = $this->getShortcodeForUrlToken($href);
-      if ($shortcode !== null) {
-        $contentProcessor->set_attribute('href', 'http://' . $shortcode);
-        continue;
-      }
-
-      $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
-      if ($personalizedUrlToken !== null) {
-        $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
-        $contentProcessor->remove_attribute('href');
-        continue;
-      }
-
-      $resolvedUrl = $this->getResolvedUrlToken($href, $resolvedUrlTokens);
-      if ($resolvedUrl !== null) {
-        $contentProcessor->set_attribute('href', $resolvedUrl);
-      }
+      $this->convertLinkToken($contentProcessor, $href, $resolvedUrlTokens);
     }
     $contentProcessor->flush_updates();
     $updated = $contentProcessor->get_updated_html();
@@ -147,6 +108,33 @@ class LinksToShortcodesConvertor {
       $content = str_replace($variants, $resolvedUrl, $content);
     }
     return $content;
+  }
+
+  /**
+   * @param array<string, string> $resolvedUrlTokens
+   */
+  private function convertLinkToken(HTML_Tag_Processor $contentProcessor, string $href, array $resolvedUrlTokens): void {
+    $shortcode = $this->getShortcodeForUrlToken($href);
+    if ($shortcode !== null) {
+      $contentProcessor->set_attribute('href', 'http://' . $shortcode);
+      $contentProcessor->remove_attribute('data-link-href');
+      $contentProcessor->remove_attribute('contenteditable');
+      return;
+    }
+
+    $personalizedUrlToken = $this->normalizePersonalizedUrlToken($href);
+    if ($personalizedUrlToken !== null) {
+      $contentProcessor->set_attribute('data-link-href', $personalizedUrlToken);
+      $contentProcessor->remove_attribute('href');
+      return;
+    }
+
+    $resolvedUrl = $this->getResolvedUrlToken($href, $resolvedUrlTokens);
+    if ($resolvedUrl !== null) {
+      $contentProcessor->set_attribute('href', $resolvedUrl);
+      $contentProcessor->remove_attribute('data-link-href');
+      $contentProcessor->remove_attribute('contenteditable');
+    }
   }
 
   private function normalizePersonalizedUrlToken(string $url): ?string {

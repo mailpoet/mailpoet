@@ -2,4 +2,4 @@
 
 # Description
 
-Homepage links in email editor emails becoming dead tracked links
+Homepage, store, and account links in email editor emails becoming dead tracked links
