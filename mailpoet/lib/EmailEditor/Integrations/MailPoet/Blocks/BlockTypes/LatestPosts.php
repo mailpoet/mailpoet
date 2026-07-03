@@ -348,9 +348,35 @@ class LatestPosts extends AbstractBlock {
     }
     $this->renderedPostsByRequest[$cacheKey] = $renderedIds;
 
-    return array_values(array_filter($posts, static function ($post) {
+    $posts = array_values(array_filter($posts, static function ($post) {
       return $post instanceof \WP_Post;
     }));
+
+    // post__in is queried in date order, not the picked order, so restore the
+    // order the posts were selected in.
+    return $isManual ? $this->orderByIds($posts, $manualPosts) : $posts;
+  }
+
+  /**
+   * Reorders posts to match the given list of IDs, dropping any that are not
+   * in it.
+   *
+   * @param \WP_Post[] $posts
+   * @param int[] $ids
+   * @return \WP_Post[]
+   */
+  private function orderByIds(array $posts, array $ids): array {
+    $postsById = [];
+    foreach ($posts as $post) {
+      $postsById[(int)$post->ID] = $post;
+    }
+    $ordered = [];
+    foreach ($ids as $id) {
+      if (isset($postsById[$id])) {
+        $ordered[] = $postsById[$id];
+      }
+    }
+    return $ordered;
   }
 
   /**
