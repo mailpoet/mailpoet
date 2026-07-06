@@ -46,6 +46,16 @@ class FormWithColumnsCest {
     $i->seeElement('[data-automation-id="editor_first_name_input"]');
     $i->seeElement('[data-automation-id="editor_last_name_input"]');
 
+    $i->wantTo('Verify the columns render aligned and spaced like the front end');
+    // Regression guard: a global .wp-block margin used to leak onto the flex column
+    // children, pushing the second column down and dropping the gap between columns.
+    $i->assertCssProperty('.wp-block-columns.is-layout-flex', 'column-gap', '20px');
+    $columnsTopDelta = $i->executeJS(<<<'JS'
+      const columns = document.querySelectorAll('.wp-block-columns > .wp-block-column');
+      return Math.abs(columns[0].getBoundingClientRect().top - columns[1].getBoundingClientRect().top);
+JS);
+    \PHPUnit\Framework\Assert::assertLessThan(2, $columnsTopDelta, 'Form columns should be vertically aligned in the editor');
+
     $i->wantTo('Go to post page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
