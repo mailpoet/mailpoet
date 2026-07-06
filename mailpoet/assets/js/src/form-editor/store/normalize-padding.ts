@@ -23,11 +23,16 @@ export const normalizePadding = (padding: unknown): unknown => {
     return addPxToUnitlessLength(padding);
   }
 
+  const source = padding as Record<string, unknown>;
+  let changed = false;
   const normalized: Record<string, unknown> = {};
-  Object.keys(padding).forEach((key) => {
-    normalized[key] = addPxToUnitlessLength(
-      (padding as Record<string, unknown>)[key],
-    );
+  Object.keys(source).forEach((key) => {
+    const value = source[key];
+    const next = addPxToUnitlessLength(value);
+    normalized[key] = next;
+    if (next !== value) {
+      changed = true;
+    }
   });
-  return normalized;
+  return changed ? normalized : padding;
 };
