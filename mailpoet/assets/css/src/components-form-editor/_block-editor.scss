@@ -78,12 +78,6 @@ h2 {
   box-sizing: border-box;
 }
 
-// Remove block margins for first block and also first block in columns
-// This is done to improve WYSIWYG experience
-.mailpoet-form-background .block-editor-block-list__block:first-child {
-  margin-top: 0;
-}
-
 // Remove min-height so that lower values of input padding have visible effect in form editor
 .block-editor-block-list__layout .mailpoet_text,
 .block-editor-block-list__layout .mailpoet_textarea {
@@ -128,10 +122,24 @@ h2 {
   }
 }
 
+// Space stacked blocks vertically, mirroring WordPress' flow-layout model, which
+// the form editor doesn't load: zero every block's intrinsic vertical margins,
+// then add MailPoet's spacing between adjacent blocks. Scoped to the root
+// container and flow layouts (e.g. inside columns), so flex children (columns)
+// are never spaced -- their alignment and gap are preserved with no explicit
+// reset -- and the adjacent-sibling selector leaves the first block untouched.
+.block-editor-block-list__layout.is-root-container > .wp-block,
+.mailpoet-form-background .is-layout-flow > .wp-block {
+  margin-block: 0;
+}
+
+.block-editor-block-list__layout.is-root-container > .wp-block + .wp-block,
+.mailpoet-form-background .is-layout-flow > .wp-block + .wp-block {
+  margin-top: 28px;
+}
+
 // Adjustments for correct form width rendering
 .wp-block {
-  margin-bottom: 28px;
-  margin-top: 28px;
   max-width: initial;
 }
 
@@ -149,6 +157,13 @@ h2 {
 // Unify padding o wp-block-columns with background with front end rendering
 .wp-block-columns.has-background {
   padding: 10px;
+}
+
+// Space columns like the front end does ($form-columns-space-between in the public
+// styles). The canvas doesn't load the theme's layout gap, so without this the
+// columns would sit flush together instead of matching the rendered form.
+.wp-block-columns.is-layout-flex {
+  gap: 20px;
 }
 
 // Hide block selector header with close button on desktops
