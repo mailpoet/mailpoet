@@ -398,7 +398,12 @@ class PersonalizationTagManager {
       if (!$tag) {
         continue;
       }
-      $tokens[$token] = $tag->execute_callback([]);
+      try {
+        $tokens[$token] = $tag->execute_callback([]);
+      } catch (\Throwable $e) {
+        // A broken tag callback must not block newsletter pre-processing
+        continue;
+      }
     }
     return $tokens;
   }
