@@ -53,6 +53,14 @@ function FormStylingBackground({ children }) {
     maxWidth: '100%',
   };
 
+  // Only popup and slide-in forms add padding on top of the configured width on
+  // the front end (content-box); other placements put padding on an inner element,
+  // so the width already includes it (border-box, the default). Match that here so
+  // the canvas width -- and the column widths inside it -- match the rendered form.
+  if (['popup', 'slide_in'].includes(previewSettings.formType)) {
+    style.boxSizing = 'content-box';
+  }
+
   if (borderSize && borderColor) {
     style.borderWidth = borderSize;
     style.borderColor = borderColor;
