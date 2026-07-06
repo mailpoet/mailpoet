@@ -230,6 +230,37 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     }
   }
 
+  public function testItSkipsPreTrackingTokensWhoseCallbackFails(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $originalTag = $registry->unregister('[woocommerce/store-url]');
+    $registry->register(new Personalization_Tag(
+      'Store URL',
+      'woocommerce/store-url',
+      'Store',
+      function (): string {
+        throw new \RuntimeException('Broken tag callback');
+      }
+    ));
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+      $emailContent = $personalizationManager->convertLinksToShortcodes([
+        'html' => '<a href="http://%5Bwoocommerce/store-url%5D">Shop now</a><a href="[mailpoet/site-homepage-url]">Homepage</a>',
+      ]);
+
+      // The failing tag is skipped, other tokens still resolve
+      $this->assertStringContainsString('href="http://%5Bwoocommerce/store-url%5D"', $emailContent['html']);
+      $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
+      $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
+    } finally {
+      $registry->unregister('[woocommerce/store-url]');
+      if ($originalTag) {
+        $registry->register($originalTag);
+      }
+    }
+  }
+
   public function testItLeavesUnregisteredPreTrackingUrlTokensUntouched(): void {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $originalTag = $registry->unregister('[woocommerce/my-account-url]');
