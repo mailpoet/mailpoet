@@ -32,13 +32,13 @@ class EditorTextInputStylesCest {
     $i->waitForElement('[data-automation-id="input_styles_settings"]');
     $i->click('.mailpoet-automation-inherit-theme-toggle input'); // Display custom settings
     $i->click('Font');
-    $i->selectPanelColor('[6]'); // Select Vivid orange
+    $i->selectPanelColor('[6]'); // Select a theme color
     $i->click('[data-automation-id="editor_first_name_input"]');
     $i->click('(//button[contains(@class,"block-editor-panel-color-gradient-settings__dropdown")])[2]'); // Click Background color
-    $i->selectPanelColor('[10]'); // Select Cyan blue
+    $i->selectPanelColor('[10]'); // Select a theme color
     $i->click('[data-automation-id="editor_first_name_input"]');
     $i->click('Border');
-    $i->selectPanelColor('[7]'); // Select Vivid amber
+    $i->selectPanelColor('[7]'); // Select a theme color
     $i->click('[data-automation-id="editor_first_name_input"]');
     $i->click('.mailpoet-automation-styles-bold-toggle input'); // Toggle bold on
     $i->clearFormField('.mailpoet-automation-styles-border-size input[type="number"]');
@@ -80,6 +80,12 @@ class EditorTextInputStylesCest {
     $i->wantTo('Check email block has styles too and save the form');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-width', '10px');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-radius', '40px');
+
+    // Grab the applied colors so the assertions stay independent of the active theme palette.
+    $fontColor = $i->grabCssPropertyFrom('[data-automation-id="editor_first_name_input"]', 'color');
+    $borderColor = $i->grabCssPropertyFrom('[data-automation-id="editor_first_name_input"]', 'border-color');
+    $backgroundColor = $i->grabCssPropertyFrom('[data-automation-id="editor_first_name_input"]', 'background-color');
+
     $i->saveFormInEditor();
 
     $i->wantTo('Reload page and check data were saved');
@@ -90,10 +96,10 @@ class EditorTextInputStylesCest {
     $i->assertCssProperty('[data-automation-id="editor_first_name_label"]', 'font-weight', '700');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-width', '10px');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-radius', '40px');
-    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-color', 'rgb(252, 185, 0)');
-    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'background-color', 'rgba(142, 209, 252, 1)');
-    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-color', 'rgb(252, 185, 0)');
-    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'background-color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-color', $borderColor);
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'background-color', $backgroundColor);
+    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-color', $borderColor);
+    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'background-color', $backgroundColor);
     $i->see('Heading Lorem');
     $i->see('Paragraph ipsum dolor');
 
@@ -106,12 +112,12 @@ class EditorTextInputStylesCest {
     $i->assertCssProperty('[data-automation-id="form_first_name_label"]', 'font-weight', '700');
     $i->assertCssProperty('[data-automation-id="form_email"]', 'border-width', '10px');
     $i->assertCssProperty('[data-automation-id="form_email"]', 'border-radius', '40px');
-    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'color', 'rgba(255, 105, 0, 1)');
-    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'border-color', 'rgb(252, 185, 0)');
-    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'background-color', 'rgba(142, 209, 252, 1)');
-    $i->assertCssProperty('[data-automation-id="form_email"]', 'color', 'rgba(255, 105, 0, 1)');
-    $i->assertCssProperty('[data-automation-id="form_email"]', 'border-color', 'rgb(252, 185, 0)');
-    $i->assertCssProperty('[data-automation-id="form_email"]', 'background-color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'color', $fontColor);
+    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'border-color', $borderColor);
+    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'background-color', $backgroundColor);
+    $i->assertCssProperty('[data-automation-id="form_email"]', 'color', $fontColor);
+    $i->assertCssProperty('[data-automation-id="form_email"]', 'border-color', $borderColor);
+    $i->assertCssProperty('[data-automation-id="form_email"]', 'background-color', $backgroundColor);
     $i->see('Heading Lorem');
     $i->see('Paragraph ipsum dolor');
   }
