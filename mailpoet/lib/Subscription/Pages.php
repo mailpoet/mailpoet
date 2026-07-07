@@ -159,6 +159,10 @@ class Pages {
     return $this;
   }
 
+  public function isInitialized(): bool {
+    return $this->data !== null;
+  }
+
   private function isPreview() {
     return (array_key_exists('preview', $_GET) || array_key_exists('preview', $this->data));
   }

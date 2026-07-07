@@ -64,9 +64,13 @@ class ManageSubscriptionBlock {
     $this->assetsController->setupFrontEndDependencies();
 
     // Make sure the Pages service has its internal state initialised (notably
-    // $data) before rendering, so it resolves the current logged-in user as a
-    // subscriber on any page or the WooCommerce My Account page.
-    $this->subscriptionPages->init();
+    // $data, which isPreview() reads and which is null until init()) before
+    // rendering, so it resolves the current logged-in user as a subscriber on
+    // any page or the WooCommerce My Account page. Guarded so we don't clobber
+    // an already-initialised shared instance (e.g. the router subscription page).
+    if (!$this->subscriptionPages->isInitialized()) {
+      $this->subscriptionPages->init();
+    }
 
     return (string)$this->subscriptionPages->getManageContent();
   }
