@@ -101,6 +101,55 @@ describe('Subscriber import column matching', () => {
     ]);
   });
 
+  it('matches name headers regardless of the word separator', () => {
+    const separatorVariants = [
+      ['first_name', 'last_name'],
+      ['first-name', 'last-name'],
+      ['first.name', 'last.name'],
+      ['First Name', 'Last Name'],
+    ];
+
+    separatorVariants.forEach(([firstHeader, lastHeader]) => {
+      const columns = matchColumns(
+        [
+          {
+            0: 'John',
+            1: 'Doe',
+          },
+        ],
+        {
+          0: firstHeader,
+          1: lastHeader,
+        },
+      );
+
+      expect(columns).to.deep.equal([
+        { column_id: 'first_name' },
+        { column_id: 'last_name' },
+      ]);
+    });
+  });
+
+  it('matches abbreviated fname and lname headers', () => {
+    const columns = matchColumns(
+      [
+        {
+          0: 'John',
+          1: 'Doe',
+        },
+      ],
+      {
+        0: 'fname',
+        1: 'lname',
+      },
+    );
+
+    expect(columns).to.deep.equal([
+      { column_id: 'first_name' },
+      { column_id: 'last_name' },
+    ]);
+  });
+
   it('does not match unrelated headers containing name words', () => {
     const columns = matchColumns(
       [
@@ -108,17 +157,23 @@ describe('Subscriber import column matching', () => {
           0: 'customer@example.com',
           1: '2026-07-02',
           2: '2026-07-02',
+          3: '2026-07-02',
+          4: '5',
         },
       ],
       {
         0: 'Email',
         1: 'FIRSTUPDATED',
         2: 'LASTUPDATED',
+        3: 'first_seen',
+        4: 'last_order',
       },
     );
 
     expect(columns).to.deep.equal([
       { column_id: 'email' },
+      { column_id: 'ignore' },
+      { column_id: 'ignore' },
       { column_id: 'ignore' },
       { column_id: 'ignore' },
     ]);
