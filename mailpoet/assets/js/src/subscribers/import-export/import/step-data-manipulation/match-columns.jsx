@@ -1,14 +1,36 @@
-const FIRST_NAME_HEADERS = ['first', 'first name', 'firstname', 'given name'];
+const FIRST_NAME_HEADERS = [
+  'first',
+  'first name',
+  'firstname',
+  'given name',
+  'fname',
+];
 const LAST_NAME_HEADERS = [
   'last',
   'last name',
   'lastname',
   'surname',
   'family name',
+  'lname',
 ];
 
+// Collapse common word separators (underscore, hyphen, dot) to a single space
+// so that first_name, first-name, first.name and "first name" all normalize to
+// the same value. Whole-string matching is preserved, so unrelated headers such
+// as first_updated or last_login still fall through to "ignore".
+const normalizeHeaderName = (headerName) =>
+  String(headerName)
+    .trim()
+    .toLowerCase()
+    .replaceAll('_', ' ')
+    .replaceAll('-', ' ')
+    .replaceAll('.', ' ')
+    .split(' ')
+    .filter(Boolean)
+    .join(' ');
+
 const getMatchedNameColumnId = (headerName) => {
-  const normalizedHeaderName = String(headerName).trim().toLowerCase();
+  const normalizedHeaderName = normalizeHeaderName(headerName);
   if (FIRST_NAME_HEADERS.includes(normalizedHeaderName)) {
     return 'first_name';
   }
