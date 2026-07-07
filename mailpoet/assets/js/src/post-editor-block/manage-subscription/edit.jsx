@@ -10,7 +10,10 @@ function Edit() {
   return (
     <div {...blockProps}>
       <Disabled>
-        <ServerSideRender block="mailpoet/manage-subscription-block-render" />
+        <ServerSideRender
+          block="mailpoet/manage-subscription-block-render"
+          attributes={{ preview: true }}
+        />
       </Disabled>
     </div>
   );

@@ -11,6 +11,12 @@ const title = locale.title || 'MailPoet Manage Subscription';
 registerBlockType('mailpoet/manage-subscription-block-render', {
   title,
   apiVersion: 3,
+  attributes: {
+    preview: {
+      type: 'boolean',
+      default: false,
+    },
+  },
   supports: {
     inserter: false,
   },

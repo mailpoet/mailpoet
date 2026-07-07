@@ -31,6 +31,12 @@ class ManageSubscriptionBlock {
     // Registered in every context (including REST) so the editor's
     // ServerSideRender preview can render this block.
     $this->wp->registerBlockType('mailpoet/manage-subscription-block-render', [
+      'attributes' => [
+        'preview' => [
+          'type' => 'boolean',
+          'default' => false,
+        ],
+      ],
       'render_callback' => [$this, 'renderManageSubscription'],
     ]);
   }
@@ -63,12 +69,24 @@ class ManageSubscriptionBlock {
     // (the subscription page flow does that separately), so load them here.
     $this->assetsController->setupFrontEndDependencies();
 
-    // Make sure the Pages service has its internal state initialised (notably
-    // $data, which isPreview() reads and which is null until init()) before
-    // rendering, so it resolves the current logged-in user as a subscriber on
-    // any page or the WooCommerce My Account page. Guarded so we don't clobber
-    // an already-initialised shared instance (e.g. the router subscription page).
-    if (!$this->subscriptionPages->isInitialized()) {
+    if (!empty($attributes['preview']) && $this->wp->currentUserCan('edit_posts')) {
+      // The editor's ServerSideRender preview passes preview=true so it shows a
+      // representative demo form instead of the current admin's own subscription
+      // (or the "subscribers only" message when the admin isn't a subscriber).
+      // Force the demo regardless of any prior Pages state. WordPress passes
+      // attributes that a block type doesn't register through to the render
+      // callback verbatim, so hand-written block markup in content can carry
+      // preview=true; the capability check (the same one the block-renderer
+      // REST endpoint enforces) keeps visitors from forcing the demo form.
+      $this->subscriptionPages->init(false, ['preview' => true]);
+    } elseif (!$this->subscriptionPages->isInitialized()) {
+      // Make sure the Pages instance has its internal state initialised (notably
+      // $data, which isPreview() reads and which is null until init()) before
+      // rendering, so it resolves the current logged-in user as a subscriber on
+      // any page or the WooCommerce My Account page. Pages is registered
+      // non-shared, so this instance belongs to this block alone and persists
+      // only across renders within a single request; the guard just avoids
+      // re-initialising it on repeated renders.
       $this->subscriptionPages->init();
     }
 
