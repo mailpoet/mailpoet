@@ -79,10 +79,13 @@ class EditorUpdateNewFormCest {
     $i->click('Form', '.editor-sidebar__panel-tabs');
     $i->click('Styles');
     $i->click('Success');
-    $i->selectPanelColor('[10]'); // Select Cyan blue
+    $i->selectPanelColor('[10]'); // Select a theme color
+    // Grab the chosen colors so the assertions stay independent of the active theme palette.
+    $successColor = $i->grabCssPropertyFrom('.components-circular-option-picker__option[aria-selected="true"]', 'color');
     $i->click('Form', '.editor-sidebar__panel-tabs');
     $i->click('Error');
-    $i->selectPanelColor('[12]'); // Select Vivid purple
+    $i->selectPanelColor('[8]'); // Select a theme color
+    $errorColor = $i->grabCssPropertyFrom('.components-circular-option-picker__option[aria-selected="true"]', 'color');
     $i->click('Form', '.editor-sidebar__panel-tabs');
 
     $i->saveFormInEditor();
@@ -102,11 +105,11 @@ class EditorUpdateNewFormCest {
     $i->waitForElement('.mailpoet_submit');
     $i->fillField('[data-automation-id="form_email"]', $invalidEmail);
     $i->click('.mailpoet_submit');
-    $i->assertCssProperty('.parsley-type', 'color', 'rgba(155, 81, 224, 1)');
+    $i->assertCssProperty('.parsley-type', 'color', $errorColor);
     $i->fillField('[data-automation-id="form_email"]', $subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText($newConfMessage, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
-    $i->assertCssProperty('.mailpoet_validate_success', 'color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('.mailpoet_validate_success', 'color', $successColor);
     $i->seeNoJSErrors();
   }
 }
