@@ -407,11 +407,7 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   public function assertCssProperty($cssSelector, $cssProperty, $value) {
-    $i = $this;
-    $attributeValue = $i->executeInSelenium(function (\Facebook\WebDriver\WebDriver $webdriver) use ($cssSelector, $cssProperty){
-      return $webdriver->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector($cssSelector))->getCSSValue($cssProperty);
-    });
-    verify($attributeValue)->equals($value);
+    verify($this->grabCssPropertyFrom($cssSelector, $cssProperty))->equals($value);
   }
 
   public function grabCssPropertyFrom($cssSelector, $cssProperty) {

@@ -1,5 +1,6 @@
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import type { ColorDefinition } from './form-data-types';
+import type { FormEditorWindow } from './state-types';
 import { getFormEditorColorPalette } from './color-palette';
 
 export const storeName = 'mailpoet-form-editor';
@@ -13,9 +14,7 @@ const getThemeColorPalette = (): ColorDefinition[] => {
   if (typeof window === 'undefined') {
     return [];
   }
-  const formEditorWindow = window as Window & {
-    mailpoet_form_editor_color_palette?: ColorDefinition[];
-  };
+  const formEditorWindow = window as unknown as FormEditorWindow;
   if (!Array.isArray(formEditorWindow.mailpoet_form_editor_color_palette)) {
     return [];
   }
