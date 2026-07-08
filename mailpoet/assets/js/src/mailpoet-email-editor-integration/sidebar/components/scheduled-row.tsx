@@ -12,11 +12,15 @@ import {
 import { __ } from '@wordpress/i18n';
 import { useRef } from '@wordpress/element';
 import { closeSmall } from '@wordpress/icons';
+import { SCHEDULE_MODE_SUBSCRIBER_TIMEZONE } from 'common/newsletter-schedule-mode';
 import { useScheduledDate } from '../../shared/use-scheduled-date';
 import { ScheduledDatePicker } from '../../shared/scheduled-date-picker';
+import { ScheduleModeControls } from '../../shared/schedule-mode-controls';
 
 export function ScheduledRow() {
-  const { formattedDate, setScheduledDate } = useScheduledDate();
+  const { formattedDate, setScheduledDate, scheduleMode } = useScheduledDate();
+  const isSubscriberTimezoneMode =
+    scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
   const sendPopoverAnchor = useRef(null);
 
   return (
@@ -57,15 +61,17 @@ export function ScheduledRow() {
                       {__('Send', 'mailpoet')}
                     </Heading>
                     <Spacer />
-                    <Button
-                      size="small"
-                      className="block-editor-inspector-popover-header__action"
-                      label={__('Now', 'mailpoet')}
-                      variant="tertiary"
-                      onClick={() => setScheduledDate(null)}
-                    >
-                      {__('Now', 'mailpoet')}
-                    </Button>
+                    {!isSubscriberTimezoneMode && (
+                      <Button
+                        size="small"
+                        className="block-editor-inspector-popover-header__action"
+                        label={__('Now', 'mailpoet')}
+                        variant="tertiary"
+                        onClick={() => setScheduledDate(null)}
+                      >
+                        {__('Now', 'mailpoet')}
+                      </Button>
+                    )}
                     <Button
                       size="small"
                       className="block-editor-inspector-popover-header__action"
@@ -75,7 +81,8 @@ export function ScheduledRow() {
                     />
                   </HStack>
                 </VStack>
-                <ScheduledDatePicker />
+                <ScheduleModeControls />
+                {!isSubscriberTimezoneMode && <ScheduledDatePicker />}
               </div>
             )}
           />

@@ -5,10 +5,12 @@ import { useCallback } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName as emailEditorStore } from '@woocommerce/email-editor';
+import { SCHEDULE_MODE_SUBSCRIBER_TIMEZONE } from 'common/newsletter-schedule-mode';
 import { InboxPreviewCard } from '../shared/inbox-preview-card';
 import { useScheduledDate } from '../shared/use-scheduled-date';
 import { useRecipients } from '../shared/use-recipients';
 import { ScheduledDatePicker } from '../shared/scheduled-date-picker';
+import { ScheduleModeControls } from '../shared/schedule-mode-controls';
 import { RecipientsSelector } from '../shared/recipients-selector';
 import { store as emailEditorIntegrationStore } from '../store';
 import { useSendEmail } from './use-send-email';
@@ -28,7 +30,10 @@ export function SendPanel() {
   const { closeSendPanel } = useDispatch(emailEditorIntegrationStore);
   const { setEmailPost, togglePreviewModal } = useDispatch(emailEditorStore);
 
-  const { isScheduled, formattedDate, setScheduledDate } = useScheduledDate();
+  const { isScheduled, formattedDate, setScheduledDate, scheduleMode } =
+    useScheduledDate();
+  const isSubscriberTimezoneMode =
+    scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
   const recipients = useRecipients();
   const {
     recipientLabel,
@@ -131,15 +136,18 @@ export function SendPanel() {
                 >
                   {__('Send', 'mailpoet')}
                 </Text>
-                <Button
-                  size="small"
-                  variant="tertiary"
-                  onClick={() => setScheduledDate(null)}
-                >
-                  {__('Now', 'mailpoet')}
-                </Button>
+                {!isSubscriberTimezoneMode && (
+                  <Button
+                    size="small"
+                    variant="tertiary"
+                    onClick={() => setScheduledDate(null)}
+                  >
+                    {__('Now', 'mailpoet')}
+                  </Button>
+                )}
               </Stack>
-              <ScheduledDatePicker />
+              <ScheduleModeControls />
+              {!isSubscriberTimezoneMode && <ScheduledDatePicker />}
             </Stack>
           </PanelBody>
 

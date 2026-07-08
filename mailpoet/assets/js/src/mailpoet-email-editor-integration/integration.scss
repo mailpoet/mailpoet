@@ -238,6 +238,36 @@
   padding: 0 $grid-unit-20;
 }
 
+.mailpoet-schedule-mode-controls {
+  display: flex;
+  flex-direction: column;
+  gap: $grid-unit-10;
+}
+
+.mailpoet-schedule-mode-controls__selector {
+  display: flex;
+  flex-direction: column;
+  gap: $grid-unit-05;
+}
+
+.mailpoet-schedule-mode-controls__option {
+  align-items: center;
+  display: flex;
+  gap: $grid-unit-05;
+}
+
+.mailpoet-schedule-mode-controls__local-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: $grid-unit-10;
+}
+
+.mailpoet-schedule-mode-controls__hint {
+  color: $gray-700;
+  font-size: $font-size-small;
+  margin: 0;
+}
+
 .mailpoet-send-panel__notice {
   margin: 0 16px 16px;
 }
