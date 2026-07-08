@@ -13,6 +13,7 @@ use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersRepositoryTest extends \MailPoetTest {
@@ -668,6 +669,55 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     verify($subscriber->getLastEngagementAt())->notNull();
+  }
+
+  public function testItBulkAddTagFiresTagAddedHookOnlyForNewlyTaggedSubscribers(): void {
+    $tag = $this->createTag('Bulk added tag');
+    $subscriberOne = $this->createSubscriber('one@bulk-add-tag.com');
+    $subscriberTwo = $this->createSubscriber('two@bulk-add-tag.com');
+    $this->createSubscriberTag($subscriberTwo, $tag);
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $firedFor = [];
+    $wp->addAction('mailpoet_subscriber_tag_added', function (SubscriberTagEntity $subscriberTag) use (&$firedFor) {
+      $subscriber = $subscriberTag->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = $subscriber->getEmail();
+    });
+
+    $count = $this->repository->bulkAddTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()]);
+
+    verify($count)->equals(1);
+    verify($firedFor)->equals(['one@bulk-add-tag.com']);
+    $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy(['tag' => $tag]);
+    verify($subscriberTags)->arrayCount(2);
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+  }
+
+  public function testItBulkRemoveTagFiresTagRemovedHookOnlyForSubscribersThatHadTag(): void {
+    $tag = $this->createTag('Bulk removed tag');
+    $subscriberOne = $this->createSubscriber('one@bulk-remove-tag.com');
+    $subscriberTwo = $this->createSubscriber('two@bulk-remove-tag.com');
+    $this->createSubscriberTag($subscriberOne, $tag);
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $firedFor = [];
+    $wp->addAction('mailpoet_subscriber_tag_removed', function (SubscriberTagEntity $subscriberTag) use (&$firedFor) {
+      $subscriber = $subscriberTag->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = $subscriber->getEmail();
+    });
+
+    $count = $this->repository->bulkRemoveTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()]);
+
+    verify($count)->equals(1);
+    verify($firedFor)->equals(['one@bulk-remove-tag.com']);
+    $this->entityManager->clear();
+    $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy(['tag' => $tag]);
+    verify($subscriberTags)->arrayCount(0);
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
   }
 
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
