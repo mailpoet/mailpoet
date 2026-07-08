@@ -69,7 +69,7 @@ class EditorTextInputStylesCest {
 
     $i->wantTo('Add heading block and write some title');
     $i->addFromBlockInEditor('Heading');
-    $i->fillField('[data-title="Heading 2"]', 'Heading Lorem'); // Default inserted heading is with level 2
+    $i->fillField('[data-title^="Heading"]', 'Heading Lorem'); // Matches 'Heading' (WP 6.9) and 'Heading 2' (latest WP)
     $i->see('Heading Lorem');
 
     $i->wantTo('Add paragraph block and write some text');
