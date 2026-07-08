@@ -11,6 +11,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
@@ -80,6 +81,9 @@ class EmailApiController {
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
       'deleted_at' => $newsletter && $newsletter->getDeletedAt() !== null ? $newsletter->getDeletedAt()->format('c') : null,
       'scheduled_at' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT) : null,
+      'schedule_mode' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE) : null,
+      'scheduled_local_date' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE) : null,
+      'scheduled_local_time' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME) : null,
       'utm_campaign' => $newsletter ? $newsletter->getGaCampaign() : '',
       'segment_ids' => $newsletter ? $newsletter->getSegmentIds() : [],
       'is_automation_newsletter' => $isAutomationNewsletter,
@@ -145,6 +149,30 @@ class EmailApiController {
       $this->updateScheduledAtOption($newsletter, $data['scheduled_at']);
     }
 
+    if (array_key_exists('schedule_mode', $data)) {
+      $this->updateScheduleModeOption($newsletter, $data['schedule_mode']);
+    }
+
+    if (array_key_exists('scheduled_local_date', $data)) {
+      $this->updateScheduledLocalOption(
+        $newsletter,
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE,
+        $data['scheduled_local_date'],
+        'Y-m-d',
+        'Invalid scheduled_local_date format. Expected a Y-m-d date string.'
+      );
+    }
+
+    if (array_key_exists('scheduled_local_time', $data)) {
+      $this->updateScheduledLocalOption(
+        $newsletter,
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME,
+        $data['scheduled_local_time'],
+        'H:i:s',
+        'Invalid scheduled_local_time format. Expected a H:i:s time string.'
+      );
+    }
+
     if (array_key_exists('share_visibility', $data)) {
       $this->updateOption(
         $newsletter,
@@ -203,6 +231,36 @@ class EmailApiController {
     }
 
     $option->setValue($optionValue);
+  }
+
+  private function updateScheduleModeOption(NewsletterEntity $newsletter, $scheduleModeValue): void {
+    $allowedModes = [
+      TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME,
+      TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+    ];
+    if ($scheduleModeValue !== null && $scheduleModeValue !== '' && !in_array($scheduleModeValue, $allowedModes, true)) {
+      throw new UnexpectedValueException('Invalid schedule_mode value.');
+    }
+
+    $this->updateOption($newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE, $scheduleModeValue);
+
+    // Subscriber timezone scheduling has no scheduled_at datetime, so the isScheduled
+    // option derived from scheduled_at would stay '0' and sending would dispatch to the
+    // immediate path instead of TimeZoneCampaignScheduler.
+    if ($scheduleModeValue === TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE) {
+      $this->updateOption($newsletter, NewsletterOptionFieldEntity::NAME_IS_SCHEDULED, '1');
+    }
+  }
+
+  private function updateScheduledLocalOption(NewsletterEntity $newsletter, string $optionName, $value, string $format, string $errorMessage): void {
+    if ($value !== null && $value !== '') {
+      $parsed = is_string($value) ? \DateTimeImmutable::createFromFormat("!{$format}", $value) : false;
+      if (!$parsed || $parsed->format($format) !== $value) {
+        throw new UnexpectedValueException($errorMessage);
+      }
+    }
+
+    $this->updateOption($newsletter, $optionName, $value);
   }
 
   private function updateScheduledAtOption($newsletter, $scheduledAtValue): void {
@@ -287,6 +345,9 @@ class EmailApiController {
       'preview_url' => Builder::string(),
       'deleted_at' => Builder::string()->nullable(),
       'scheduled_at' => Builder::string()->nullable(),
+      'schedule_mode' => Builder::string()->nullable(),
+      'scheduled_local_date' => Builder::string()->nullable(),
+      'scheduled_local_time' => Builder::string()->nullable(),
       'utm_campaign' => Builder::string(),
       'segment_ids' => Builder::array(),
       'is_automation_newsletter' => Builder::boolean(),
