@@ -161,6 +161,12 @@ export const getUpgradeInfo = (
           'mailpoet',
         );
         break;
+      case 'sendByTimezone':
+        info = __(
+          'Sending emails in each subscriber’s time zone is not available in your current plan. Upgrade your MailPoet plan to deliver campaigns at the right local time for every subscriber.',
+          'mailpoet',
+        );
+        break;
       case 'segmentFilters':
         info = __(
           'Advanced contact segmentation is not available in your current plan. Upgrade your MailPoet plan to create highly targeted subscriber segments using multiple subscriber properties and AND/OR logic, ensuring you send the right message to the right people.',

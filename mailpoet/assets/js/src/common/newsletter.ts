@@ -47,6 +47,9 @@ export type NewsLetter = {
   options: {
     isScheduled: string;
     scheduledAt: string;
+    scheduleMode?: string;
+    scheduledLocalDate?: string;
+    scheduledLocalTime?: string;
     shareVisibility?: 'default' | 'public' | 'private';
     disabled?: string;
     group: NewsletterOptionGroup;
