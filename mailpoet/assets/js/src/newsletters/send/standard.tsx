@@ -1,11 +1,14 @@
 import { ChangeEvent, Component, useEffect } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import { DateTime } from 'newsletters/send/date-time';
+import { DateText } from 'newsletters/send/date-text';
+import { TimeSelect } from 'newsletters/send/time-select.jsx';
 import { SenderField } from 'newsletters/send/sender-address-field.jsx';
 import { GATrackingField } from 'newsletters/send/ga-tracking';
+import { Grid } from 'common/grid';
 import { Toggle } from 'common/form/toggle/toggle';
 import { Radio } from 'common/form/radio/radio';
 import { withBoundary } from 'common';
@@ -14,6 +17,18 @@ import {
   getExcludeFromArchiveOptionValue,
   isNewsletterShownInArchive,
 } from 'common/newsletter-archive-visibility';
+import {
+  DEFAULT_SCHEDULED_LOCAL_TIME,
+  SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+  SCHEDULE_MODE_WEBSITE_TIME,
+  SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
+  ScheduleMode,
+  getScheduleMode,
+  getScheduleModeOptionChanges,
+  isLocalDateTimeInFuture,
+} from 'common/newsletter-schedule-mode';
+import { PremiumModal } from 'common/premium-modal';
+import { LockedBadge } from 'common/premium-modal/locked-badge';
 import { Field } from 'form/types';
 import { SendToFieldWithCount } from './send-to-field';
 
@@ -38,8 +53,20 @@ type StandardSchedulingProps = {
   field: Field;
 };
 
-class StandardScheduling extends Component<StandardSchedulingProps> {
-  getCurrentValue = () => {
+type StandardSchedulingState = {
+  showPremiumModal: boolean;
+};
+
+class StandardScheduling extends Component<
+  StandardSchedulingProps,
+  StandardSchedulingState
+> {
+  constructor(props: StandardSchedulingProps) {
+    super(props);
+    this.state = { showPremiumModal: false };
+  }
+
+  getCurrentValue = (): Partial<NewsLetter['options']> => {
     const schedulingOptions = {
       isScheduled: '0',
       scheduledAt: tomorrowDateTime,
@@ -47,7 +74,9 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
 
     return {
       ...schedulingOptions,
-      ...(this.props.item?.[this.props.field.name] ?? {}),
+      ...((this.props.item?.[this.props.field.name] as Partial<
+        NewsLetter['options']
+      >) ?? {}),
     };
   };
 
@@ -61,6 +90,39 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
   });
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
+
+  isTimezoneSchedulingAvailable = () =>
+    MailPoet.FeaturesController.isSupported(
+      MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
+    );
+
+  isSubscriberTimezoneRestricted = () =>
+    !MailPoet.capabilities.sendByTimezone ||
+    MailPoet.capabilities.sendByTimezone.isRestricted;
+
+  handleScheduleModeChange = (mode: ScheduleMode) => {
+    if (
+      mode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE &&
+      this.isSubscriberTimezoneRestricted()
+    ) {
+      this.setState({ showPremiumModal: true });
+      return;
+    }
+    const oldValue = this.getCurrentValue();
+    this.props.onValueChange({
+      target: {
+        name: this.props.field.name,
+        value: {
+          ...oldValue,
+          ...getScheduleModeOptionChanges(
+            mode,
+            oldValue,
+            window.mailpoet_tomorrow_date,
+          ),
+        },
+      },
+    });
+  };
 
   handleCheckboxChange = (_, event: ChangeEvent<HTMLInputElement>): void => {
     const changeEvent = { ...event };
@@ -81,34 +143,146 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
     });
   };
 
-  render() {
-    let schedulingOptions;
+  renderScheduleModeSelector = (isSubscriberTimezoneMode: boolean) => (
+    <>
+      <div className="mailpoet-settings-inputs-row">
+        <Radio
+          id="mailpoet-schedule-mode-website-time"
+          value={SCHEDULE_MODE_WEBSITE_TIME}
+          checked={!isSubscriberTimezoneMode}
+          onCheck={() =>
+            this.handleScheduleModeChange(SCHEDULE_MODE_WEBSITE_TIME)
+          }
+          disabled={this.props.field.disabled}
+          name="scheduleMode"
+          automationId="email-schedule-mode-website-time"
+        />
+        <label htmlFor="mailpoet-schedule-mode-website-time">
+          {__('Website time', 'mailpoet')}
+        </label>
+      </div>
+      <div className="mailpoet-settings-inputs-row">
+        <Radio
+          id="mailpoet-schedule-mode-subscriber-timezone"
+          value={SCHEDULE_MODE_SUBSCRIBER_TIMEZONE}
+          checked={isSubscriberTimezoneMode}
+          onCheck={() =>
+            this.handleScheduleModeChange(SCHEDULE_MODE_SUBSCRIBER_TIMEZONE)
+          }
+          disabled={this.props.field.disabled}
+          name="scheduleMode"
+          automationId="email-schedule-mode-subscriber-timezone"
+        />
+        <label htmlFor="mailpoet-schedule-mode-subscriber-timezone">
+          {__('Subscriber’s time zone', 'mailpoet')}{' '}
+          {this.isSubscriberTimezoneRestricted() && (
+            <LockedBadge text={__('Premium', 'mailpoet')} />
+          )}
+        </label>
+      </div>
+      <div className="mailpoet-gap" />
+    </>
+  );
 
+  renderSubscriberTimezoneScheduling = () => {
+    const currentValue = this.getCurrentValue();
     const maxDate = new Date();
     maxDate.setFullYear(maxDate.getFullYear() + 5);
 
-    if (this.isScheduled()) {
-      schedulingOptions = (
-        <>
-          <span className="mailpoet-form-schedule-time">
-            {__('Your website’s time is', 'mailpoet')}{' '}
-            {MailPoet.Date.time(new Date())}
-          </span>
-          <div className="mailpoet-gap" />
-          <div id="mailpoet_scheduling">
-            <DateTime
-              name="scheduledAt"
-              value={this.getCurrentValue().scheduledAt}
+    return (
+      <>
+        <span className="mailpoet-form-schedule-time">
+          {__(
+            'Emails will arrive at the selected time in each subscriber’s time zone.',
+            'mailpoet',
+          )}
+        </span>
+        <div className="mailpoet-gap" />
+        <div id="mailpoet_scheduling">
+          <Grid.Column className="mailpoet-datetime-container">
+            <DateText
+              name="scheduledLocalDate"
+              value={
+                currentValue.scheduledLocalDate || window.mailpoet_tomorrow_date
+              }
               onChange={this.handleValueChange}
+              displayFormat={dateDisplayFormat}
+              storageFormat={dateStorageFormat}
               disabled={this.props.field.disabled}
-              dateValidation={this.getDateValidation()}
-              defaultDateTime={tomorrowDateTime}
-              timeOfDayItems={timeOfDayItems}
-              dateDisplayFormat={dateDisplayFormat}
-              dateStorageFormat={dateStorageFormat}
+              validation={this.getDateValidation()}
               maxDate={maxDate}
             />
-          </div>
+            <div className="mailpoet-gap" />
+            <TimeSelect
+              name="scheduledLocalTime"
+              value={
+                currentValue.scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME
+              }
+              onChange={this.handleValueChange}
+              disabled={this.props.field.disabled}
+              timeOfDayItems={timeOfDayItems}
+            />
+          </Grid.Column>
+        </div>
+        <p className="mailpoet-form-field-description">
+          {sprintf(
+            // translators: %d is the minimum number of hours required before the first timezone batch can send.
+            __(
+              'Scheduling requires at least %d hours of lead time before the earliest time zone.',
+              'mailpoet',
+            ),
+            SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
+          )}
+        </p>
+      </>
+    );
+  };
+
+  renderWebsiteTimeScheduling = () => {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 5);
+
+    return (
+      <>
+        <span className="mailpoet-form-schedule-time">
+          {__('Your website’s time is', 'mailpoet')}{' '}
+          {MailPoet.Date.time(new Date())}
+        </span>
+        <div className="mailpoet-gap" />
+        <div id="mailpoet_scheduling">
+          <DateTime
+            name="scheduledAt"
+            value={this.getCurrentValue().scheduledAt}
+            onChange={this.handleValueChange}
+            disabled={this.props.field.disabled}
+            dateValidation={this.getDateValidation()}
+            defaultDateTime={tomorrowDateTime}
+            timeOfDayItems={timeOfDayItems}
+            dateDisplayFormat={dateDisplayFormat}
+            dateStorageFormat={dateStorageFormat}
+            maxDate={maxDate}
+          />
+        </div>
+      </>
+    );
+  };
+
+  render() {
+    let schedulingOptions;
+
+    if (this.isScheduled()) {
+      const isSubscriberTimezoneMode =
+        this.isTimezoneSchedulingAvailable() &&
+        getScheduleMode(this.getCurrentValue().scheduleMode) ===
+          SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
+
+      schedulingOptions = (
+        <>
+          {this.isTimezoneSchedulingAvailable() &&
+            this.renderScheduleModeSelector(isSubscriberTimezoneMode)}
+          {isSubscriberTimezoneMode
+            ? this.renderSubscriberTimezoneScheduling()
+            : this.renderWebsiteTimeScheduling()}
         </>
       );
     }
@@ -123,6 +297,21 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
         />
 
         {schedulingOptions}
+        {this.state.showPremiumModal && (
+          <PremiumModal
+            onRequestClose={() => this.setState({ showPremiumModal: false })}
+            data={{ capabilities: { sendByTimezone: true } }}
+            tracking={{
+              utm_medium: 'upsell_modal',
+              utm_campaign: 'send_by_timezone',
+            }}
+          >
+            {__(
+              'Sending emails in each subscriber’s time zone is a premium feature.',
+              'mailpoet',
+            )}
+          </PremiumModal>
+        )}
       </div>
     );
   }
@@ -370,10 +559,24 @@ export const StandardNewsletterFields = {
   getSendButtonOptions: (
     newsletter: Partial<NewsLetter> = {},
   ): SendButtonOptions => {
+    const isSubscriberTimezoneMode =
+      MailPoet.FeaturesController.isSupported(
+        MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
+      ) &&
+      getScheduleMode(newsletter.options?.scheduleMode) ===
+        SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
     const isScheduled =
       typeof newsletter.options === 'object' &&
       newsletter.options?.isScheduled === '1' &&
-      MailPoet.Date.isInFuture(newsletter.options?.scheduledAt, new Date());
+      (isSubscriberTimezoneMode
+        ? isLocalDateTimeInFuture(
+            newsletter.options?.scheduledLocalDate,
+            newsletter.options?.scheduledLocalTime,
+          )
+        : MailPoet.Date.isInFuture(
+            newsletter.options?.scheduledAt,
+            new Date(),
+          ));
 
     const options: SendButtonOptions = {
       value: isScheduled ? __('Schedule', 'mailpoet') : __('Send', 'mailpoet'),
