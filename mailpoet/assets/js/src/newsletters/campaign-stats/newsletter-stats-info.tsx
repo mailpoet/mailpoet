@@ -14,13 +14,13 @@ import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import {
-  confirmAlert,
   FilterSegmentTag,
   SegmentTags,
   Tag,
   getNewsletterStatusString,
 } from 'common';
 import { duplicateNewsletter as duplicateNewsletterRest } from 'newsletters/api';
+import { confirmEdit } from 'newsletters/listings/utils.jsx';
 import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
 import { TimezoneCampaignIcon } from 'newsletters/timezone-campaign-icon';
 import { ExportButton } from './export-button';
@@ -40,28 +40,6 @@ const redirectToNewsletterHome = () => {
 
 const getEditorLink = (newsletter: NewsletterType) =>
   MailPoet.getActiveEmailEditorUrl(newsletter);
-
-const editNewsletter = (newsletter: NewsletterType) => {
-  const editorHref = getEditorLink(newsletter);
-
-  if (
-    !newsletter.queue ||
-    newsletter.status !== 'sending' ||
-    newsletter.queue.status !== null
-  ) {
-    window.location.href = editorHref;
-  } else {
-    confirmAlert({
-      message: __(
-        'Sending is in progress. Do you want to pause sending and edit the newsletter?',
-        'mailpoet',
-      ),
-      onConfirm: () => {
-        window.location.href = `${editorHref}&pauseConfirmed=yes`;
-      },
-    });
-  }
-};
 
 const duplicateNewsletter = (
   newsletter: NewsletterType,
@@ -341,7 +319,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 <Button
                   disabled={newsletter.type !== 'standard'}
                   onClick={() => {
-                    editNewsletter(newsletter);
+                    confirmEdit(newsletter);
                   }}
                   variant="primary"
                 >
