@@ -25,7 +25,6 @@ import {
   ScheduleMode,
   getScheduleMode,
   getScheduleModeOptionChanges,
-  isLocalDateTimeInFuture,
 } from 'common/newsletter-schedule-mode';
 import { PremiumModal } from 'common/premium-modal';
 import { LockedBadge } from 'common/premium-modal/locked-badge';
@@ -559,18 +558,14 @@ export const StandardNewsletterFields = {
       ) &&
       getScheduleMode(newsletter.options?.scheduleMode) ===
         SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
+    // Subscriber timezone campaigns are always scheduled sends; whether the
+    // selected local date is still valid is decided by the server, which sees
+    // it relative to every subscriber's timezone.
     const isScheduled =
       typeof newsletter.options === 'object' &&
       newsletter.options?.isScheduled === '1' &&
-      (isSubscriberTimezoneMode
-        ? isLocalDateTimeInFuture(
-            newsletter.options?.scheduledLocalDate,
-            newsletter.options?.scheduledLocalTime,
-          )
-        : MailPoet.Date.isInFuture(
-            newsletter.options?.scheduledAt,
-            new Date(),
-          ));
+      (isSubscriberTimezoneMode ||
+        MailPoet.Date.isInFuture(newsletter.options?.scheduledAt, new Date()));
 
     const options: SendButtonOptions = {
       value: isScheduled ? __('Schedule', 'mailpoet') : __('Send', 'mailpoet'),
