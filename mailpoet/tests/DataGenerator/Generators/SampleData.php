@@ -54,6 +54,21 @@ class SampleData implements Generator {
     SubscriberEntity::STATUS_BOUNCED => 5,
   ];
 
+  private const SUBSCRIBER_TIME_ZONE_SHARE = 70;
+
+  private const SUBSCRIBER_TIME_ZONES = [
+    'America/New_York',
+    'America/Chicago',
+    'America/Los_Angeles',
+    'America/Sao_Paulo',
+    'Europe/London',
+    'Europe/Berlin',
+    'Europe/Prague',
+    'Asia/Kolkata',
+    'Asia/Tokyo',
+    'Australia/Sydney',
+  ];
+
   private const AUTOMATION_RUN_STATUS_DISTRIBUTION = [
     AutomationRunData::STATUS_COMPLETE => 78,
     AutomationRunData::STATUS_RUNNING => 8,
@@ -189,15 +204,28 @@ class SampleData implements Generator {
       $createdAt = $this->randomPastDate();
       $subscriberLists = $this->pickRandomElements($lists, random_int(1, min(3, count($lists))));
 
-      $subscriber = (new SubscriberFactory())
+      $subscriberFactory = (new SubscriberFactory())
         ->withEmail(sprintf('sample-%s-%05d@%s', $runSuffix, $i, $this->config->getEmailDomain()))
         ->withStatus($status)
         ->withFirstName('Sample')
         ->withLastName('Subscriber ' . $i)
         ->withSource('imported')
         ->withEngagementScore(random_int(0, 100))
-        ->withCreatedAt($createdAt)
-        ->create();
+        ->withCreatedAt($createdAt);
+
+      $timeZone = random_int(1, 100) <= self::SUBSCRIBER_TIME_ZONE_SHARE
+        ? self::SUBSCRIBER_TIME_ZONES[array_rand(self::SUBSCRIBER_TIME_ZONES)]
+        : null;
+      if ($timeZone !== null) {
+        $subscriberFactory->withTimeZone($timeZone);
+      }
+
+      $subscriber = $subscriberFactory->create();
+      if ($timeZone !== null) {
+        $subscriber->setTimeZoneSource(SubscriberEntity::TIME_ZONE_SOURCE_FORM);
+        $subscriber->setTimeZoneConfidence(SubscriberEntity::TIME_ZONE_CONFIDENCE_BROWSER);
+        $subscriber->setTimeZoneUpdatedAt($createdAt);
+      }
 
       $segmentStatus = $status === SubscriberEntity::STATUS_UNSUBSCRIBED
         ? SubscriberEntity::STATUS_UNSUBSCRIBED
