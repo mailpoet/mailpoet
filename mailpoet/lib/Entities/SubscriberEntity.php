@@ -42,8 +42,10 @@ class SubscriberEntity {
   public const LINK_TOKEN_LENGTH = 32;
   public const TIME_ZONE_FIELD_NAME = 'mailpoet_subscriber_timezone';
   public const TIME_ZONE_SOURCE_FORM = 'form';
+  public const TIME_ZONE_SOURCE_MANUAL = 'manual';
   public const TIME_ZONE_SOURCE_SITE_FALLBACK = 'site_fallback';
   public const TIME_ZONE_CONFIDENCE_BROWSER = 90;
+  public const TIME_ZONE_CONFIDENCE_MANUAL = 100;
 
   /** @var array<string,bool>|null */
   private static $validTimeZones = null;
