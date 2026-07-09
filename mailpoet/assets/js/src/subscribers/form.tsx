@@ -60,6 +60,7 @@ declare global {
   interface Window {
     mailpoet_custom_fields: CustomField[];
     mailpoet_api_version: string;
+    mailpoet_timezone_list: string[];
   }
 }
 
@@ -164,10 +165,10 @@ const fields: FormField[] = [
     automationId: 'subscriber-timezone',
     placeholder: __('Not set', 'mailpoet'),
     values: Object.fromEntries(
-      (typeof Intl.supportedValuesOf === 'function'
-        ? Intl.supportedValuesOf('timeZone')
-        : []
-      ).map((timezone) => [timezone, timezone.replaceAll('_', ' ')]),
+      (window.mailpoet_timezone_list || []).map((timezone) => [
+        timezone,
+        timezone.replaceAll('_', ' '),
+      ]),
     ),
   },
   {
