@@ -15,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
   getDataViewsPreference,
+  getStoredDataViewsFieldIds,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
@@ -257,17 +258,46 @@ export function SendingStatus() {
   );
 
   // The time zone column only exists for time zone campaigns, which is known
-  // once items arrive. Inject it into the visible columns a single time per
-  // mount so hiding it via the view config afterwards sticks.
+  // once items arrive. The mount-time preference read filtered the column out
+  // (it was not an available field yet), so re-apply the user's raw stored
+  // choice: keep it hidden when they removed it, restore it when they kept
+  // it, and inject it after the status column when they never customized
+  // columns at all.
   const timezoneColumnInjected = useRef(false);
+
+  // The component stays mounted when the route id changes (e.g. navigating
+  // between sending status pages), so the time zone column state of the
+  // previous newsletter must not leak into the next one.
+  useEffect(() => {
+    timezoneColumnInjected.current = false;
+    setIncludeTimezone(false);
+    setView((currentView) =>
+      currentView.fields?.includes('timezone')
+        ? {
+            ...currentView,
+            fields: currentView.fields.filter((id) => id !== 'timezone'),
+          }
+        : currentView,
+    );
+  }, [newsletterId, setView]);
+
   useEffect(() => {
     if (timezoneColumnInjected.current) return;
     if (!items.some((item) => item.timezone !== null)) return;
     timezoneColumnInjected.current = true;
     setIncludeTimezone(true);
+    const storedFields = getStoredDataViewsFieldIds('sending-status');
     setView((currentView) => {
       const viewFields = currentView.fields ?? [];
       if (viewFields.includes('timezone')) return currentView;
+      if (storedFields) {
+        if (!storedFields.includes('timezone')) return currentView;
+        const knownIds = new Set([...viewFields, 'timezone']);
+        return {
+          ...currentView,
+          fields: storedFields.filter((id) => knownIds.has(id)),
+        };
+      }
       const failedIndex = viewFields.indexOf('failed');
       const nextFields = [...viewFields];
       nextFields.splice(

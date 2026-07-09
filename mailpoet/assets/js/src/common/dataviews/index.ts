@@ -7,6 +7,7 @@ export {
   getDataViewsPreference,
   getDataViewsPreferenceKey,
   getPersistedDataViewsPreference,
+  getStoredDataViewsFieldIds,
   persistDataViewsPreference,
   usePersistedDataViewsPreference,
 } from './preferences';
