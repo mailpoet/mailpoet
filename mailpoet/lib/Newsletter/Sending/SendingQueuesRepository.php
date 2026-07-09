@@ -108,6 +108,44 @@ class SendingQueuesRepository extends Repository {
     return array_map('intval', array_column($results, 'task_id'));
   }
 
+  /**
+   * Returns the time zone group each sending task belongs to, keyed by task id.
+   * Only tasks of time zone campaigns are included.
+   *
+   * @param int[] $taskIds
+   * @return array<int, array{timezone: string|null, fallbackUsed: bool}>
+   */
+  public function getGroupTimezonesByTaskIds(array $taskIds): array {
+    if (!$taskIds) {
+      return [];
+    }
+    $queues = $this->entityManager->createQueryBuilder()
+      ->select('s')
+      ->from(SendingQueueEntity::class, 's')
+      ->andWhere('s.task IN (:taskIds)')
+      ->setParameter('taskIds', $taskIds)
+      ->getQuery()
+      ->getResult();
+
+    $timezones = [];
+    foreach ($queues as $queue) {
+      $meta = $queue->getMeta() ?? [];
+      if (empty($meta[TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE])) {
+        continue;
+      }
+      $task = $queue->getTask();
+      if (!$task instanceof ScheduledTaskEntity) {
+        continue;
+      }
+      $timezone = $meta[TimeZoneCampaignScheduler::META_GROUP_TIMEZONE] ?? null;
+      $timezones[(int)$task->getId()] = [
+        'timezone' => is_string($timezone) && $timezone !== '' ? $timezone : null,
+        'fallbackUsed' => !empty($meta[TimeZoneCampaignScheduler::META_FALLBACK_USED]),
+      ];
+    }
+    return $timezones;
+  }
+
   public function isSubscriberProcessed(SendingQueueEntity $queue, SubscriberEntity $subscriber): bool {
     $task = $queue->getTask();
     if (is_null($task)) return false;
