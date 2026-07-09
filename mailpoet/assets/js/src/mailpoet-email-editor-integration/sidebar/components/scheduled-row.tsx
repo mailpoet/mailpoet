@@ -82,7 +82,7 @@ export function ScheduledRow() {
                   </HStack>
                 </VStack>
                 <ScheduleModeControls />
-                {!isSubscriberTimezoneMode && <ScheduledDatePicker />}
+                <ScheduledDatePicker />
               </div>
             )}
           />

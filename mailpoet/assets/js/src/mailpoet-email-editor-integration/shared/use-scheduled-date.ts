@@ -24,8 +24,7 @@ type UseScheduledDate = {
   scheduledLocalTime: string | null;
   isTimezoneSchedulingAvailable: boolean;
   setScheduleMode: (mode: ScheduleMode) => void;
-  setScheduledLocalDate: (date: string) => void;
-  setScheduledLocalTime: (time: string) => void;
+  setScheduledLocalDateTime: (date: string, time: string) => void;
 };
 
 function editMailpoetData(changes: Record<string, string | null>): void {
@@ -99,12 +98,11 @@ export function useScheduledDate(): UseScheduledDate {
     });
   };
 
-  const setScheduledLocalDate = (date: string) => {
-    editMailpoetData({ scheduled_local_date: date });
-  };
-
-  const setScheduledLocalTime = (time: string) => {
-    editMailpoetData({ scheduled_local_time: time });
+  const setScheduledLocalDateTime = (date: string, time: string) => {
+    editMailpoetData({
+      scheduled_local_date: date,
+      scheduled_local_time: time,
+    });
   };
 
   let formattedDate;
@@ -137,7 +135,6 @@ export function useScheduledDate(): UseScheduledDate {
     scheduledLocalTime,
     isTimezoneSchedulingAvailable,
     setScheduleMode,
-    setScheduledLocalDate,
-    setScheduledLocalTime,
+    setScheduledLocalDateTime,
   };
 }
