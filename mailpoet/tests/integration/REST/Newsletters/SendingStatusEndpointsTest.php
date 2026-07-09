@@ -5,6 +5,7 @@ namespace MailPoet\Test\REST\Newsletters;
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\REST\Test;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as TaskSubscriberFactory;
@@ -129,6 +130,73 @@ class SendingStatusEndpointsTest extends Test {
     $this->assertArrayHasKey('mta_method', $payload);
     $this->assertArrayHasKey('cron_accessible', $payload);
     $this->assertArrayHasKey('current_time', $payload);
+  }
+
+  public function testListingCarriesTimezoneFieldsForTimezoneCampaigns(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Timezone_' . uniqid())
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue([
+        'meta' => [
+          TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+          TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'Europe/Prague',
+          TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+        ],
+      ])
+      ->create();
+    $task = $newsletter->getLatestQueue()->getTask();
+    $subscriber = (new SubscriberFactory())->withEmail('tz_' . uniqid() . '@example.com')->create();
+    (new TaskSubscriberFactory())->createProcessed($task, $subscriber);
+
+    $payload = $this->payload($this->get($this->listingPath((int)$newsletter->getId()), ['query' => ['per_page' => 10]]));
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $this->assertCount(1, $items);
+    $this->assertIsArray($items[0]);
+    $this->assertSame('Europe/Prague', $items[0]['timezone']);
+    $this->assertFalse($items[0]['timezoneFallbackUsed']);
+  }
+
+  public function testListingCarriesFallbackFlagForSiteDefaultTimezoneBatches(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('TimezoneFallback_' . uniqid())
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue([
+        'meta' => [
+          TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+          TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'UTC',
+          TimeZoneCampaignScheduler::META_FALLBACK_USED => true,
+        ],
+      ])
+      ->create();
+    $task = $newsletter->getLatestQueue()->getTask();
+    $subscriber = (new SubscriberFactory())->withEmail('tzf_' . uniqid() . '@example.com')->create();
+    (new TaskSubscriberFactory())->createProcessed($task, $subscriber);
+
+    $payload = $this->payload($this->get($this->listingPath((int)$newsletter->getId()), ['query' => ['per_page' => 10]]));
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $this->assertIsArray($items[0]);
+    $this->assertSame('UTC', $items[0]['timezone']);
+    $this->assertTrue($items[0]['timezoneFallbackUsed']);
+  }
+
+  public function testListingReturnsNullTimezoneForRegularNewsletters(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('NoTimezone_' . uniqid())
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue()
+      ->create();
+    $task = $newsletter->getLatestQueue()->getTask();
+    $subscriber = (new SubscriberFactory())->withEmail('ntz_' . uniqid() . '@example.com')->create();
+    (new TaskSubscriberFactory())->createProcessed($task, $subscriber);
+
+    $payload = $this->payload($this->get($this->listingPath((int)$newsletter->getId()), ['query' => ['per_page' => 10]]));
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $this->assertIsArray($items[0]);
+    $this->assertNull($items[0]['timezone']);
+    $this->assertFalse($items[0]['timezoneFallbackUsed']);
   }
 
   public function testListingReturnsStatusGroups(): void {
