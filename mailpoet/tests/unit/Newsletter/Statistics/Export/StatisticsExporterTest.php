@@ -4,6 +4,8 @@ namespace MailPoet\Newsletter\Statistics\Export;
 
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
@@ -175,7 +177,7 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       },
       'homeUrl' => 'https://example.test',
     ]);
-    $exporter = new StatisticsExporter($repository, $wp);
+    $exporter = new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
 
     $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
     verify($result['totalExported'])->equals(1);
@@ -201,10 +203,118 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       },
       'homeUrl' => 'https://example.test',
     ]);
-    $exporter = new StatisticsExporter($repository, $wp);
+    $exporter = new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
 
     $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
     verify($result['totalExported'])->equals(0);
+  }
+
+  public function testRecipientHeadersStayUnchangedForNonTimeZoneCampaigns() {
+    $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
+    $exporter = $this->createExporter($stats);
+
+    $expectedHeaders = [
+      'Subscriber ID',
+      'Email',
+      'First name',
+      'Last name',
+      'Status',
+      'Opened',
+      'First open at',
+      'Open count',
+      'Machine opened',
+      'Clicked',
+      'Click count',
+      'Bounced',
+      'Unsubscribed',
+    ];
+
+    verify($exporter->getRecipientHeaders())->equals($expectedHeaders);
+
+    $regularQueue = new SendingQueueEntity();
+    $newsletter = $this->createNewsletter(5, 'Regular', null, null, $regularQueue);
+    verify($exporter->getRecipientHeaders($newsletter))->equals($expectedHeaders);
+  }
+
+  public function testItAppendsTimezoneHeadersForTimeZoneCampaigns() {
+    $stats = $this->createStats(0, 0, 0, 0, 0, 0, null);
+    $exporter = $this->createExporter($stats);
+    $newsletter = $this->createNewsletter(6, 'Timezone', null, null, $this->createTimeZoneQueue());
+
+    $headers = $exporter->getRecipientHeaders($newsletter);
+
+    verify($headers)->arrayCount(16);
+    verify(array_slice($headers, 0, 13))->equals($exporter->getRecipientHeaders());
+    verify(array_slice($headers, 13))->equals([
+      'Delivery timezone',
+      'Timezone fallback used',
+      'Local send time',
+    ]);
+  }
+
+  public function testItExportsTimezoneRecipientCsvWithAlignedColumns() {
+    $newsletter = $this->createNewsletter(77, 'Timezone recipients', null, '2026-02-01 00:00:00', $this->createTimeZoneQueue());
+
+    $rows = [
+      [1, 'a@example.test', 'Alice', 'Smith', 'subscribed', 'Y', '', 0, 'N', 'N', 0, 'N', 'N', 'Europe/Prague', 'No', '2026-02-01 01:00:00'],
+    ];
+
+    $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
+      'applyFilters' => function (string $hook, $value) use ($rows) {
+        if ($hook === StatisticsExporter::FILTER_RECIPIENT_ROWS) {
+          return $rows;
+        }
+        return $value;
+      },
+      'homeUrl' => 'https://example.test',
+    ]);
+    $exporter = new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
+
+    $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
+    verify($result['totalExported'])->equals(1);
+
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
+    verify($files)->arrayCount(1);
+    $exportedRows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
+    verify($exportedRows)->arrayCount(2);
+    verify($exportedRows[0])->arrayCount(16);
+    verify($exportedRows[0][13])->equals('Delivery timezone');
+    verify($exportedRows[0][14])->equals('Timezone fallback used');
+    verify($exportedRows[0][15])->equals('Local send time');
+    verify($exportedRows[1])->arrayCount(16);
+    verify($exportedRows[1][13])->equals('Europe/Prague');
+    verify($exportedRows[1][15])->equals('2026-02-01 01:00:00');
+  }
+
+  public function testItExportsTimezoneRecipientsAsXlsx() {
+    $newsletter = $this->createNewsletter(78, 'Timezone xlsx', null, '2026-02-01 00:00:00', $this->createTimeZoneQueue());
+    $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
+      'applyFilters' => function (string $hook, $value) {
+        if ($hook === StatisticsExporter::FILTER_RECIPIENT_ROWS) {
+          return [
+            [1, 'a@example.test', 'Alice', 'Smith', 'subscribed', 'Y', '', 0, 'N', 'N', 0, 'N', 'N', 'Europe/Prague', 'No', '2026-02-01 01:00:00'],
+          ];
+        }
+        return $value;
+      },
+      'homeUrl' => 'https://example.test',
+    ]);
+    $exporter = new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
+
+    $result = $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_XLSX);
+
+    verify($result['totalExported'])->equals(1);
+    $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
+    verify($files)->arrayCount(1);
+    verify(filesize($files[0]))->greaterThan(0);
   }
 
   private function createExporter(NewsletterStatistics $stats): StatisticsExporter {
@@ -217,7 +327,18 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       },
       'homeUrl' => 'https://example.test',
     ]);
-    return new StatisticsExporter($repository, $wp);
+    return new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
+  }
+
+  private function createTimeZoneQueue(): SendingQueueEntity {
+    $queue = new SendingQueueEntity();
+    $queue->setMeta([
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'campaign1234567890',
+      TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'Europe/Prague',
+      TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+    ]);
+    return $queue;
   }
 
   private function verifyStatisticsDownloadUrl(string $url, string $extension): void {
@@ -250,12 +371,13 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     );
   }
 
-  private function createNewsletter(int $id, string $subject, ?string $campaignName, ?string $sentAt): NewsletterEntity {
+  private function createNewsletter(int $id, string $subject, ?string $campaignName, ?string $sentAt, ?SendingQueueEntity $queue = null): NewsletterEntity {
     $newsletter = $this->makeEmpty(NewsletterEntity::class, [
       'getId' => $id,
       'getSubject' => $subject,
       'getCampaignName' => $campaignName,
       'getSentAt' => $sentAt ? new \DateTimeImmutable($sentAt) : null,
+      'getLatestQueue' => $queue,
     ]);
     return $newsletter;
   }
