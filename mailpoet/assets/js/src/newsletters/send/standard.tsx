@@ -97,7 +97,7 @@ class StandardScheduling extends Component<
     );
 
   isSubscriberTimezoneRestricted = () =>
-    !MailPoet.capabilities.sendByTimezone ||
+    !MailPoet.capabilities?.sendByTimezone ||
     MailPoet.capabilities.sendByTimezone.isRestricted;
 
   handleScheduleModeChange = (mode: ScheduleMode) => {

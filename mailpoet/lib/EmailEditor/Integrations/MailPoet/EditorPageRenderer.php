@@ -12,6 +12,7 @@ use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
@@ -20,6 +21,7 @@ use MailPoet\Settings\SettingsController as MailPoetSettings;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\FreeDomains;
+use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -54,6 +56,10 @@ class EditorPageRenderer {
 
   private AuthorizedSenderDomainController $senderDomainController;
 
+  private FeaturesController $featuresController;
+
+  private CapabilitiesManager $capabilitiesManager;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -66,7 +72,9 @@ class EditorPageRenderer {
     Analytics $analytics,
     Bridge $bridge,
     AuthorizedEmailsController $authorizedEmailsController,
-    AuthorizedSenderDomainController $senderDomainController
+    AuthorizedSenderDomainController $senderDomainController,
+    FeaturesController $featuresController,
+    CapabilitiesManager $capabilitiesManager
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -83,6 +91,8 @@ class EditorPageRenderer {
     $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->senderDomainController = $senderDomainController;
+    $this->featuresController = $featuresController;
+    $this->capabilitiesManager = $capabilitiesManager;
   }
 
   public function render() {
@@ -225,6 +235,8 @@ class EditorPageRenderer {
       ],
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
       'mailpoet_automation_id' => $automationId,
+      'mailpoet_feature_flags' => $this->featuresController->getAllFlags(),
+      'mailpoet_capabilities' => $this->capabilitiesManager->getCapabilities(),
       'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
     ];

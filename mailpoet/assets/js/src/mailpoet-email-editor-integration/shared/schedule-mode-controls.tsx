@@ -37,7 +37,7 @@ export function ScheduleModeControls(): JSX.Element | null {
   }
 
   const isRestricted =
-    !MailPoet.capabilities.sendByTimezone ||
+    !MailPoet.capabilities?.sendByTimezone ||
     MailPoet.capabilities.sendByTimezone.isRestricted;
   const isSubscriberTimezoneMode =
     scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
