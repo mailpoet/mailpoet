@@ -3,6 +3,10 @@ import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 import { confirmAlert } from 'common/confirm-alert.jsx';
+import {
+  hasStartedTimezoneBatches,
+  isTimezoneCampaignQueue,
+} from 'newsletters/timezone-campaign';
 
 export const trackStatsCTAClicked = () => {
   MailPoet.trackEvent('User has clicked a CTA to view detailed stats');
@@ -92,6 +96,24 @@ export const automationTypes = ['automation', 'automation_transactional'];
 
 export const confirmEdit = (newsletter) => {
   const editorHref = MailPoet.getActiveEmailEditorUrl(newsletter);
+
+  // A subscriber time zone campaign can no longer be edited once one of its
+  // batches has started; the backend rejects the save with the same message
+  // (canReplaceScheduledCampaign guard), so surface it before opening the
+  // editor instead of failing on save.
+  if (
+    isTimezoneCampaignQueue(newsletter.queue) &&
+    hasStartedTimezoneBatches(newsletter.queue)
+  ) {
+    MailPoet.Notice.error(
+      __(
+        'This email can no longer be edited because one or more time zone batches have already started.',
+        'mailpoet',
+      ),
+      { scroll: true },
+    );
+    return;
+  }
 
   // A newsletter that is mid-send (status `sending`, queue not yet paused)
   // must be paused before it can be edited.

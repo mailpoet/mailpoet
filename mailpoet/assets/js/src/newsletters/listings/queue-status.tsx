@@ -10,6 +10,7 @@ import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
 } from 'common/newsletter';
+import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
@@ -106,7 +107,15 @@ type QueueStatusProps = {
 };
 
 function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
-  const newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
+  // A running timezone campaign (authoritative null status) aggregates
+  // scheduled_at as the NEXT future batch; passing that date would classify
+  // the row as "scheduled" and hide the aggregate progress.
+  const isRunningTimezoneCampaign =
+    isTimezoneCampaignQueue(newsletter.queue) &&
+    newsletter.queue.status === null;
+  const newsletterDate = isRunningTimezoneCampaign
+    ? newsletter.sent_at
+    : newsletter.sent_at || newsletter.queue.scheduled_at;
   const isNewsletterCancelled =
     newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =

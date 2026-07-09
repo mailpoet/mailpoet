@@ -9,6 +9,8 @@ import { ErrorBoundary, withBoundary } from 'common';
 import type { NewsLetter } from 'common/newsletter';
 import { NewsletterTypes } from 'newsletters/types';
 import { QueueStatus } from 'newsletters/listings/queue-status';
+import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
+import { TimezoneCampaignIcon } from 'newsletters/timezone-campaign-icon';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import { addStatsCTAAction, confirmEdit } from 'newsletters/listings/utils.jsx';
 import {
@@ -139,14 +141,26 @@ function buildFields(
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
-      render: ({ item }) =>
-        item.sent_at ? (
+      render: ({ item }) => {
+        const isTimezoneCampaign = isTimezoneCampaignQueue(
+          asNewsLetter(item).queue,
+        );
+        if (!item.sent_at && !isTimezoneCampaign) return null;
+        return (
           <>
-            {MailPoet.Date.short(item.sent_at)}
-            <br />
-            {MailPoet.Date.time(item.sent_at)}
+            {item.sent_at && (
+              <>
+                {MailPoet.Date.short(item.sent_at)}
+                <br />
+                {MailPoet.Date.time(item.sent_at)}
+              </>
+            )}
+            {isTimezoneCampaign && (
+              <TimezoneCampaignIcon newsletterId={item.id} />
+            )}
           </>
-        ) : null,
+        );
+      },
     },
   ];
 }
