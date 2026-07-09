@@ -140,9 +140,9 @@ class SampleData implements Generator {
     );
 
     $sentEmails = [];
-    foreach ($this->createSentStandardNewsletters($lists, $subscribersByList, $runSuffix) as $messageAndEmail) {
-      $sentEmails[] = $messageAndEmail['email'];
-      yield $messageAndEmail['message'];
+    foreach ($this->createSentStandardNewsletters($lists, $subscribersByList, $allSubscribers, $runSuffix) as $messageAndEmails) {
+      $sentEmails = array_merge($sentEmails, $messageAndEmails['emails']);
+      yield $messageAndEmails['message'];
     }
     yield sprintf('Sent standard newsletters done (%d)', $this->config->getSentNewslettersCount());
 
@@ -425,33 +425,7 @@ class SampleData implements Generator {
     string $localTime
   ): void {
     $siteTimeZone = wp_timezone()->getName();
-    $groups = [];
-    foreach ($recipientIds as $subscriberId) {
-      $subscriber = $allSubscribers[$subscriberId] ?? null;
-      $timeZone = $subscriber ? $subscriber->getTimeZone() : null;
-      $fallbackUsed = $timeZone === null;
-      $resolvedTimeZone = $timeZone ?: $siteTimeZone;
-      $key = $resolvedTimeZone . ':' . (int)$fallbackUsed;
-      if (!isset($groups[$key])) {
-        $groups[$key] = [
-          'timeZone' => $resolvedTimeZone,
-          'fallbackUsed' => $fallbackUsed,
-          'subscriberIds' => [],
-        ];
-      }
-      $groups[$key]['subscriberIds'][] = $subscriberId;
-    }
-
-    $schedule = [];
-    foreach ($groups as $group) {
-      $scheduledAt = new \DateTimeImmutable("{$localDate} {$localTime}", new \DateTimeZone($group['timeZone']));
-      $group['scheduledAt'] = $scheduledAt->setTimezone(new \DateTimeZone('UTC'));
-      $schedule[] = $group;
-    }
-    usort($schedule, function(array $a, array $b): int {
-      return $a['scheduledAt'] <=> $b['scheduledAt'];
-    });
-
+    $schedule = $this->buildTimeZoneSchedule($recipientIds, $allSubscribers, $siteTimeZone, $localDate, $localTime);
     $campaignId = Security::generateRandomString(16);
     $firstScheduledAt = $schedule[0]['scheduledAt']->format('Y-m-d H:i:s');
     $lastScheduledAt = $schedule[count($schedule) - 1]['scheduledAt']->format('Y-m-d H:i:s');
@@ -488,11 +462,57 @@ class SampleData implements Generator {
   }
 
   /**
+   * Groups recipients by their time zone (site time zone as fallback) and computes
+   * the UTC send time of each group for the selected local date and time. Groups
+   * are ordered by send time.
+   *
+   * @param int[] $recipientIds
+   * @param array<int, SubscriberEntity> $allSubscribers
+   * @return array<int, array{timeZone: string, fallbackUsed: bool, subscriberIds: int[], scheduledAt: \DateTimeImmutable}>
+   */
+  private function buildTimeZoneSchedule(
+    array $recipientIds,
+    array $allSubscribers,
+    string $siteTimeZone,
+    string $localDate,
+    string $localTime
+  ): array {
+    $groups = [];
+    foreach ($recipientIds as $subscriberId) {
+      $subscriber = $allSubscribers[$subscriberId] ?? null;
+      $timeZone = $subscriber ? $subscriber->getTimeZone() : null;
+      $fallbackUsed = $timeZone === null;
+      $resolvedTimeZone = $timeZone ?: $siteTimeZone;
+      $key = $resolvedTimeZone . ':' . (int)$fallbackUsed;
+      if (!isset($groups[$key])) {
+        $groups[$key] = [
+          'timeZone' => $resolvedTimeZone,
+          'fallbackUsed' => $fallbackUsed,
+          'subscriberIds' => [],
+        ];
+      }
+      $groups[$key]['subscriberIds'][] = $subscriberId;
+    }
+
+    $schedule = [];
+    foreach ($groups as $group) {
+      $scheduledAt = new \DateTimeImmutable("{$localDate} {$localTime}", new \DateTimeZone($group['timeZone']));
+      $group['scheduledAt'] = $scheduledAt->setTimezone(new \DateTimeZone('UTC'));
+      $schedule[] = $group;
+    }
+    usort($schedule, function(array $a, array $b): int {
+      return $a['scheduledAt'] <=> $b['scheduledAt'];
+    });
+    return $schedule;
+  }
+
+  /**
    * @param array<int, SegmentEntity> $lists
    * @param array<int, int[]> $subscribersByList
-   * @return \Generator<array{message: string, email: array{newsletter_id: int, queue_id: int, sent_at: int, link_id: int}}>
+   * @param array<int, SubscriberEntity> $allSubscribers
+   * @return \Generator<array{message: string, emails: array<int, array{newsletter_id: int, queue_id: int, sent_at: int, link_id: int}>}>
    */
-  private function createSentStandardNewsletters(array $lists, array $subscribersByList, string $runSuffix): \Generator {
+  private function createSentStandardNewsletters(array $lists, array $subscribersByList, array $allSubscribers, string $runSuffix): \Generator {
     if (!$lists) {
       return;
     }
@@ -511,19 +531,155 @@ class SampleData implements Generator {
         return $lists[$id];
       }, $targetListIds);
       $recipientIds = $this->getRecipientsForLists($targetListIds, $subscribersByList);
-      $sentAt = $this->randomPastDate()->toDateTimeString();
 
-      $newsletter = (new NewsletterFactory())
-        ->withSubject(sprintf('[%s sent %d %s] Newsletter', $this->config->getPrefix(), $i, $runSuffix))
-        ->withSegments($targetLists)
-        ->withCreatedAt($sentAt)
-        ->create();
+      // Alternate so that both modes are present even for low counts. Time zone
+      // batches need recipients, so fall back to website time when there are none.
+      $byTimeZone = $i % 2 === 0 && $recipientIds;
+
+      if ($byTimeZone) {
+        // Send times spread up to ~26 hours around the local date across time zones,
+        // so keep the whole campaign at least two days in the past.
+        $localDate = Carbon::now()->subDays(random_int(2, max(2, $this->config->getMaxDaysAgo())))->format('Y-m-d');
+        $localTime = sprintf('%02d:%02d:00', random_int(8, 20), 15 * random_int(0, 3));
+        $newsletter = (new NewsletterFactory())
+          ->withSubject(sprintf('[%s sent %d %s] Newsletter', $this->config->getPrefix(), $i, $runSuffix))
+          ->withSegments($targetLists)
+          ->withCreatedAt(Carbon::parse($localDate)->subDays(random_int(1, 10))->toDateTimeString())
+          ->withOptions([
+            NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+            NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+            NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => $localDate,
+            NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => $localTime,
+          ])
+          ->create();
+        $emails = $this->createSentTimeZoneCampaignData($newsletter, $recipientIds, $allSubscribers, $localDate, $localTime);
+        $message = sprintf(
+          'Sent newsletter %d/%d (to %d recipients, by subscriber time zone)',
+          $i,
+          $this->config->getSentNewslettersCount(),
+          count($recipientIds)
+        );
+      } else {
+        $sentAt = $this->randomPastDate()->toDateTimeString();
+        $newsletter = (new NewsletterFactory())
+          ->withSubject(sprintf('[%s sent %d %s] Newsletter', $this->config->getPrefix(), $i, $runSuffix))
+          ->withSegments($targetLists)
+          ->withCreatedAt($sentAt)
+          ->create();
+        $emails = [$this->createSentEmailData($newsletter, $sentAt, $recipientIds)];
+        $message = sprintf('Sent newsletter %d/%d (to %d recipients)', $i, $this->config->getSentNewslettersCount(), count($recipientIds));
+      }
 
       yield [
-        'message' => sprintf('Sent newsletter %d/%d (to %d recipients)', $i, $this->config->getSentNewslettersCount(), count($recipientIds)),
-        'email' => $this->createSentEmailData($newsletter, $sentAt, $recipientIds),
+        'message' => $message,
+        'emails' => $emails,
       ];
     }
+  }
+
+  /**
+   * Creates the state a fully delivered time zone campaign is left in: one completed
+   * task and queue per time zone group with staggered send times, full time zone
+   * meta on each queue, and the newsletter marked as sent.
+   *
+   * @param int[] $recipientIds
+   * @param array<int, SubscriberEntity> $allSubscribers
+   * @return array<int, array{newsletter_id: int, queue_id: int, sent_at: int, link_id: int}>
+   */
+  private function createSentTimeZoneCampaignData(
+    NewsletterEntity $newsletter,
+    array $recipientIds,
+    array $allSubscribers,
+    string $localDate,
+    string $localTime
+  ): array {
+    $connection = $this->entityManager->getConnection();
+    $siteTimeZone = wp_timezone()->getName();
+    $schedule = $this->buildTimeZoneSchedule($recipientIds, $allSubscribers, $siteTimeZone, $localDate, $localTime);
+
+    $campaignId = Security::generateRandomString(16);
+    $firstScheduledAt = $schedule[0]['scheduledAt']->format('Y-m-d H:i:s');
+    $lastScheduledAt = $schedule[count($schedule) - 1]['scheduledAt']->format('Y-m-d H:i:s');
+
+    $taskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $statsNewslettersTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $newsletterId = $newsletter->getId();
+
+    $queueData = [];
+    $lastProcessedAt = null;
+    foreach ($schedule as $group) {
+      $processedAt = Carbon::instance($group['scheduledAt'])->addMinutes(random_int(1, 30));
+      $lastProcessedAt = $processedAt;
+      $sentAt = $processedAt->format('Y-m-d H:i:s');
+
+      $task = new ScheduledTaskEntity();
+      $task->setType(SendingQueue::TASK_TYPE);
+      $task->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
+      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+      $task->setScheduledAt($group['scheduledAt']);
+      $task->setProcessedAt($processedAt);
+      $this->scheduledTasksRepository->persist($task);
+
+      $queue = new SendingQueueEntity();
+      $queue->setNewsletter($newsletter);
+      $queue->setTask($task);
+      $queue->setNewsletterRenderedSubject($newsletter->getSubject());
+      $queue->setCountTotal(count($group['subscriberIds']));
+      $queue->setCountProcessed(count($group['subscriberIds']));
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+        TimeZoneCampaignScheduler::META_SELECTED_LOCAL_DATE => $localDate,
+        TimeZoneCampaignScheduler::META_SELECTED_LOCAL_TIME => $localTime,
+        TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => $group['timeZone'],
+        TimeZoneCampaignScheduler::META_FALLBACK_USED => $group['fallbackUsed'],
+        TimeZoneCampaignScheduler::META_SITE_TIMEZONE => $siteTimeZone,
+        TimeZoneCampaignScheduler::META_FIRST_SCHEDULED_AT => $firstScheduledAt,
+        TimeZoneCampaignScheduler::META_LAST_SCHEDULED_AT => $lastScheduledAt,
+      ]);
+      $this->sendingQueuesRepository->persist($queue);
+      $this->entityManager->flush();
+
+      $taskId = $task->getId();
+      $queueId = $queue->getId();
+      foreach (array_chunk($group['subscriberIds'], self::BULK_INSERT_BATCH_SIZE) as $subscriberIdsChunk) {
+        $taskBatch = [];
+        $statsBatch = [];
+        foreach ($subscriberIdsChunk as $subscriberId) {
+          $taskBatch[] = "($taskId, $subscriberId, 1, '$sentAt')";
+          $statsBatch[] = "($newsletterId, $subscriberId, $queueId, '$sentAt')";
+        }
+        $connection->executeStatement(
+          "INSERT INTO $taskSubscribersTable (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $taskBatch)
+        );
+        $connection->executeStatement(
+          "INSERT INTO $statsNewslettersTable (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatch)
+        );
+      }
+
+      $queueData[] = [
+        'queue_id' => $queueId,
+        'sent_at' => $processedAt->getTimestamp(),
+      ];
+    }
+
+    $this->entityManager->refresh($newsletter);
+    $link = (new NewsletterLinkFactory($newsletter))->withCreatedAt($firstScheduledAt)->create();
+
+    if ($newsletter->getStatus() === NewsletterEntity::STATUS_DRAFT && $lastProcessedAt !== null) {
+      $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+      $newsletter->setSentAt($lastProcessedAt);
+      $this->entityManager->flush();
+    }
+
+    return array_map(function(array $data) use ($newsletterId, $link): array {
+      return [
+        'newsletter_id' => $newsletterId,
+        'queue_id' => $data['queue_id'],
+        'sent_at' => $data['sent_at'],
+        'link_id' => $link->getId(),
+      ];
+    }, $queueData);
   }
 
   /**
