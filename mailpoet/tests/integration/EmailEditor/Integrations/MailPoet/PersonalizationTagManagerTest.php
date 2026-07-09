@@ -201,14 +201,17 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
   }
 
   public function testItSkipsCustomFieldTagsWhenDeletedAtColumnIsMissing(): void {
-    (new CustomFieldFactory())->create();
+    $customField = (new CustomFieldFactory())->create();
 
-    // Reproduce the plugin-update window: the deleted_at column the entity maps has not been added yet.
     $table = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
     $connection = $this->entityManager->getConnection();
-    $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `deleted_at`");
+    $dropped = false;
 
     try {
+      // Reproduce the plugin-update window: the deleted_at column the entity maps has not been added yet.
+      $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `deleted_at`");
+      $dropped = true;
+
       $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
       $personalizationManager->initialize();
 
@@ -216,10 +219,14 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
       // Must not throw an uncaught QueryException / fatal.
       WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
 
-      // Custom-field tags are skipped, but the static (non-DB) tags still register.
+      // The custom-field tag is skipped because its query hit the missing column...
+      $this->assertNull($registry->get_by_token('[mailpoet/subscriber-cf-' . $customField->getId() . ']'));
+      // ...but the static (non-DB) tags still register.
       $this->assertNotNull($registry->get_by_token('[mailpoet/subscriber-email]'));
     } finally {
-      $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL");
+      if ($dropped) {
+        $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL");
+      }
     }
   }
 }
