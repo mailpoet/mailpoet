@@ -109,17 +109,25 @@ type QueueStatusProps = {
 function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
   // A running timezone campaign (authoritative null status) aggregates
   // scheduled_at as the NEXT future batch; passing that date would classify
-  // the row as "scheduled" and hide the aggregate progress.
+  // the row as "scheduled" and hide the aggregate progress. Between batches
+  // the aggregate status falls back to "scheduled" even though recipients
+  // were already processed, so a started campaign counts as running too.
+  const isTimezoneCampaign = isTimezoneCampaignQueue(newsletter.queue);
+  const hasStartedSending =
+    parseInt(newsletter.queue.count_processed, 10) > 0 ||
+    newsletter.status === NewsletterStatusEnum.Sending;
   const isRunningTimezoneCampaign =
-    isTimezoneCampaignQueue(newsletter.queue) &&
-    newsletter.queue.status === null;
+    isTimezoneCampaign &&
+    (newsletter.queue.status === null ||
+      (newsletter.queue.status === 'scheduled' && hasStartedSending));
   const newsletterDate = isRunningTimezoneCampaign
     ? newsletter.sent_at
     : newsletter.sent_at || newsletter.queue.scheduled_at;
   const isNewsletterCancelled =
     newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =
-    newsletter.queue && newsletter.queue.status !== 'scheduled';
+    newsletter.queue &&
+    (newsletter.queue.status !== 'scheduled' || isRunningTimezoneCampaign);
   const isMtaPaused = mailerLog.status === 'paused';
 
   const renderSentNewsletter = (
