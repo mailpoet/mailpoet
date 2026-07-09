@@ -249,6 +249,19 @@ class EmailApiController {
     // immediate path instead of TimeZoneCampaignScheduler.
     if ($scheduleModeValue === TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE) {
       $this->updateOption($newsletter, NewsletterOptionFieldEntity::NAME_IS_SCHEDULED, '1');
+      return;
+    }
+
+    // Switching back to website time must re-derive isScheduled from scheduledAt,
+    // otherwise a payload without the scheduled_at key would leave isScheduled
+    // stuck at '1' with no datetime and sending would take the scheduled path.
+    if ($scheduleModeValue === TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME) {
+      $scheduledAt = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT);
+      $this->updateOption(
+        $newsletter,
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        $scheduledAt !== null && $scheduledAt !== '' ? '1' : '0'
+      );
     }
   }
 
