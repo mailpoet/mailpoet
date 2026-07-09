@@ -147,7 +147,7 @@ export function SendPanel() {
                 )}
               </Stack>
               <ScheduleModeControls />
-              {!isSubscriberTimezoneMode && <ScheduledDatePicker />}
+              <ScheduledDatePicker />
             </Stack>
           </PanelBody>
 

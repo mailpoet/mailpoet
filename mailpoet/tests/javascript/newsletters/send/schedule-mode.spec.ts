@@ -2,12 +2,12 @@ import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
   SCHEDULE_MODE_WEBSITE_TIME,
-  getLocalTimeOfDayItems,
   getScheduleMode,
   getScheduleModeOptionChanges,
   getTomorrowLocalDate,
   isLocalDateTimeInFuture,
   normalizeLocalTime,
+  snapLocalDateTimeToQuarterHour,
 } from '../../../../assets/js/src/common/newsletter-schedule-mode';
 
 describe('newsletter schedule mode helpers', () => {
@@ -123,15 +123,30 @@ describe('newsletter schedule mode helpers', () => {
     });
   });
 
-  describe('getLocalTimeOfDayItems', () => {
-    it('generates 15-minute steps for the whole day', () => {
-      const items = getLocalTimeOfDayItems();
-      const keys = Object.keys(items);
-      expect(keys).to.have.length(96);
-      expect(keys[0]).to.equal('00:00:00');
-      expect(keys[1]).to.equal('00:15:00');
-      expect(keys[95]).to.equal('23:45:00');
-      expect(items['08:30:00']).to.equal('08:30');
+  describe('snapLocalDateTimeToQuarterHour', () => {
+    it('keeps values already on a quarter hour', () => {
+      expect(
+        snapLocalDateTimeToQuarterHour('2026-07-10T08:15:00'),
+      ).to.deep.equal({ localDate: '2026-07-10', localTime: '08:15:00' });
+    });
+
+    it('snaps to the nearest quarter hour', () => {
+      expect(
+        snapLocalDateTimeToQuarterHour('2026-07-10T08:07:00'),
+      ).to.deep.equal({ localDate: '2026-07-10', localTime: '08:00:00' });
+      expect(
+        snapLocalDateTimeToQuarterHour('2026-07-10T08:08:00'),
+      ).to.deep.equal({ localDate: '2026-07-10', localTime: '08:15:00' });
+    });
+
+    it('rolls over to the next day when rounding up near midnight', () => {
+      expect(
+        snapLocalDateTimeToQuarterHour('2026-07-10T23:53:00'),
+      ).to.deep.equal({ localDate: '2026-07-11', localTime: '00:00:00' });
+    });
+
+    it('returns null for invalid values', () => {
+      expect(snapLocalDateTimeToQuarterHour('not-a-date')).to.equal(null);
     });
   });
 });

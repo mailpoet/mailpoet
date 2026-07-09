@@ -59,24 +59,38 @@ export function isLocalDateTimeInFuture(
   return parsed.getTime() > now.getTime();
 }
 
+function formatLocalDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 export function getTomorrowLocalDate(now: Date = new Date()): string {
   const tomorrow = new Date(now.getTime());
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
-  return `${tomorrow.getFullYear()}-${month}-${day}`;
+  return formatLocalDate(tomorrow);
 }
 
-export function getLocalTimeOfDayItems(): Record<string, string> {
-  const items: Record<string, string> = {};
-  for (let hour = 0; hour < 24; hour += 1) {
-    for (let minute = 0; minute < 60; minute += 15) {
-      const label = `${String(hour).padStart(2, '0')}:${String(minute).padStart(
-        2,
-        '0',
-      )}`;
-      items[`${label}:00`] = label;
-    }
+export type LocalDateTime = {
+  localDate: string;
+  localTime: string;
+};
+
+export function snapLocalDateTimeToQuarterHour(
+  value: string,
+): LocalDateTime | null {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
   }
-  return items;
+  const quarterHourMs = 15 * 60 * 1000;
+  const snapped = new Date(
+    Math.round(parsed.getTime() / quarterHourMs) * quarterHourMs,
+  );
+  const hours = String(snapped.getHours()).padStart(2, '0');
+  const minutes = String(snapped.getMinutes()).padStart(2, '0');
+  return {
+    localDate: formatLocalDate(snapped),
+    localTime: `${hours}:${minutes}:00`,
+  };
 }
