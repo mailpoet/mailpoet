@@ -17,6 +17,8 @@ use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
+use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class PersonalizationTagManager {
   private Subscriber $subscriber;
@@ -314,7 +316,14 @@ class PersonalizationTagManager {
   }
 
   private function registerSubscriberCustomFieldTags(Personalization_Tags_Registry $registry): void {
-    $customFields = $this->customFieldsRepository->findAllActive();
+    try {
+      $customFields = $this->customFieldsRepository->findAllActive();
+    } catch (InvalidFieldNameException | TableNotFoundException $e) {
+      // The custom_fields schema may be mid-migration during a plugin update (e.g. the deleted_at
+      // column added in 5.33.1). Skip custom-field tags for this request rather than fataling; they
+      // register on the next request once the migration completes.
+      return;
+    }
     foreach ($customFields as $customField) {
       $customFieldId = (int)$customField->getId();
       $registry->register(new Personalization_Tag(

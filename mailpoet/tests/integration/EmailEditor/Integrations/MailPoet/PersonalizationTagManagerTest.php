@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -197,5 +198,28 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     );
 
     $this->assertSame('[Leave a review](https://example.com/review-order/abc)', $text);
+  }
+
+  public function testItSkipsCustomFieldTagsWhenDeletedAtColumnIsMissing(): void {
+    (new CustomFieldFactory())->create();
+
+    // Reproduce the plugin-update window: the deleted_at column the entity maps has not been added yet.
+    $table = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `deleted_at`");
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+      $personalizationManager->initialize();
+
+      $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+      // Must not throw an uncaught QueryException / fatal.
+      WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
+
+      // Custom-field tags are skipped, but the static (non-DB) tags still register.
+      $this->assertNotNull($registry->get_by_token('[mailpoet/subscriber-email]'));
+    } finally {
+      $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL");
+    }
   }
 }
