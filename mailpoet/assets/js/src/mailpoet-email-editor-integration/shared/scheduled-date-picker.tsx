@@ -4,10 +4,9 @@ import { getSettings } from '@wordpress/date';
 import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
-  getTomorrowLocalDate,
   snapLocalDateTimeToQuarterHour,
 } from 'common/newsletter-schedule-mode';
-import { useScheduledDate } from './use-scheduled-date';
+import { getSiteTomorrowDate, useScheduledDate } from './use-scheduled-date';
 
 /**
  * The date & time picker used to choose when an email is sent. Shared between
@@ -42,7 +41,7 @@ export function ScheduledDatePicker() {
   const today = new Date().setHours(0, 0, 0, 0);
 
   const currentDate = isSubscriberTimezoneMode
-    ? `${scheduledLocalDate || getTomorrowLocalDate()}T${
+    ? `${scheduledLocalDate || getSiteTomorrowDate()}T${
         scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME
       }`
     : scheduledDate;

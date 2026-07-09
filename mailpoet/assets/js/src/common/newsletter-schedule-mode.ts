@@ -40,35 +40,10 @@ export function getScheduleModeOptionChanges(
   };
 }
 
-export function normalizeLocalTime(localTime: string): string {
-  return localTime.length === 5 ? `${localTime}:00` : localTime;
-}
-
-export function isLocalDateTimeInFuture(
-  localDate?: string | null,
-  localTime?: string | null,
-  now: Date = new Date(),
-): boolean {
-  if (!localDate || !localTime) {
-    return false;
-  }
-  const parsed = new Date(`${localDate}T${normalizeLocalTime(localTime)}`);
-  if (Number.isNaN(parsed.getTime())) {
-    return false;
-  }
-  return parsed.getTime() > now.getTime();
-}
-
 function formatLocalDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day}`;
-}
-
-export function getTomorrowLocalDate(now: Date = new Date()): string {
-  const tomorrow = new Date(now.getTime());
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  return formatLocalDate(tomorrow);
 }
 
 export type LocalDateTime = {

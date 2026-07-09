@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { dateI18n, getSettings } from '@wordpress/date';
+import { date as formatWpDate, dateI18n, getSettings } from '@wordpress/date';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
@@ -10,7 +10,6 @@ import {
   ScheduleMode,
   getScheduleMode,
   getScheduleModeOptionChanges,
-  getTomorrowLocalDate,
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 
@@ -26,6 +25,15 @@ type UseScheduledDate = {
   setScheduleMode: (mode: ScheduleMode) => void;
   setScheduledLocalDateTime: (date: string, time: string) => void;
 };
+
+/**
+ * Tomorrow's date in the site timezone (wp date() falls back to it when no
+ * timezone is passed), matching the default the legacy send page gets from
+ * the server via mailpoet_tomorrow_date.
+ */
+export function getSiteTomorrowDate(): string {
+  return formatWpDate('Y-m-d', new Date(Date.now() + 24 * 60 * 60 * 1000));
+}
 
 function editMailpoetData(changes: Record<string, string | null>): void {
   const postId = select(editorStore).getCurrentPostId();
@@ -89,7 +97,7 @@ export function useScheduledDate(): UseScheduledDate {
         scheduledLocalDate: scheduledLocalDate || undefined,
         scheduledLocalTime: scheduledLocalTime || undefined,
       },
-      getTomorrowLocalDate(),
+      getSiteTomorrowDate(),
     );
     editMailpoetData({
       schedule_mode: changes.scheduleMode,
