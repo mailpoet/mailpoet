@@ -191,12 +191,16 @@ class StandardScheduling extends Component<
 
     return (
       <>
-        <span className="mailpoet-form-schedule-time">
-          {__(
-            'Emails will arrive at the selected time in each subscriber’s time zone.',
-            'mailpoet',
+        <div>
+          {sprintf(
+            // translators: %d is the minimum number of hours required before the first timezone batch can send.
+            __(
+              'Emails will arrive at the selected time in each subscriber’s time zone — or your website’s time zone if unknown. Schedule at least %d hours ahead.',
+              'mailpoet',
+            ),
+            SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
           )}
-        </span>
+        </div>
         <div className="mailpoet-gap" />
         <div id="mailpoet_scheduling">
           <Grid.Column className="mailpoet-datetime-container">
@@ -224,16 +228,6 @@ class StandardScheduling extends Component<
             />
           </Grid.Column>
         </div>
-        <p className="mailpoet-form-field-description">
-          {sprintf(
-            // translators: %d is the minimum number of hours required before the first timezone batch can send.
-            __(
-              'Scheduling requires at least %d hours of lead time before the earliest time zone.',
-              'mailpoet',
-            ),
-            SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
-          )}
-        </p>
       </>
     );
   };
@@ -244,10 +238,10 @@ class StandardScheduling extends Component<
 
     return (
       <>
-        <span className="mailpoet-form-schedule-time">
+        <div>
           {__('Your website’s time is', 'mailpoet')}{' '}
           {MailPoet.Date.time(new Date())}
-        </span>
+        </div>
         <div className="mailpoet-gap" />
         <div id="mailpoet_scheduling">
           <DateTime

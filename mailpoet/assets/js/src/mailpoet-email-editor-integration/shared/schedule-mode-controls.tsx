@@ -101,14 +101,10 @@ export function ScheduleModeControls(): JSX.Element | null {
             onChange={setScheduledLocalTime}
           />
           <p className="mailpoet-schedule-mode-controls__hint">
-            {__(
-              'Emails will arrive at the selected time in each subscriber’s time zone.',
-              'mailpoet',
-            )}{' '}
             {sprintf(
               // translators: %d is the minimum number of hours required before the first timezone batch can send.
               __(
-                'Scheduling requires at least %d hours of lead time before the earliest time zone.',
+                'Emails will arrive at the selected time in each subscriber’s time zone — or your website’s time zone if unknown. Schedule at least %d hours ahead.',
                 'mailpoet',
               ),
               SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
