@@ -379,7 +379,9 @@ class SampleData implements Generator {
         ->withCreatedAt($this->randomPastDate()->toDateTimeString());
 
       if ($mode === TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME) {
-        $scheduledAt = Carbon::parse("{$localDate} {$localTime}");
+        // Production stores the scheduledAt option and queue scheduled_at in UTC;
+        // the site-local wall clock is converted before persisting.
+        $scheduledAt = Carbon::parse("{$localDate} {$localTime}", wp_timezone())->setTimezone('UTC');
         $newsletterFactory
           ->withOptions([
             NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
