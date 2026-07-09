@@ -156,7 +156,10 @@ function buildFields(
               </>
             )}
             {isTimezoneCampaign && (
-              <TimezoneCampaignIcon newsletterId={item.id} />
+              <TimezoneCampaignIcon
+                newsletterId={item.id}
+                sent={item.status === 'sent'}
+              />
             )}
           </>
         );
