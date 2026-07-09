@@ -36,6 +36,24 @@ function formatDateTime(value: string): string {
   return `${MailPoet.Date.short(value)} ${MailPoet.Date.time(value)}`;
 }
 
+// Batch scheduled_at values are UTC; each row's send moment only makes sense
+// as the wall clock of that batch's recipient time zone. Falls back to site
+// time when the zone is not IANA-resolvable (e.g. an offset like "+02:00").
+function formatDateTimeInZone(value: string, timeZone: string | null): string {
+  if (timeZone) {
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone,
+      }).format(new Date(`${value.replace(' ', 'T')}Z`));
+    } catch {
+      // fall through to site-time formatting
+    }
+  }
+  return formatDateTime(value);
+}
+
 const fields: Field<TimezoneRow>[] = [
   {
     id: 'timezone',
@@ -59,7 +77,9 @@ const fields: Field<TimezoneRow>[] = [
     enableGlobalSearch: false,
     getValue: ({ item }) => item.scheduledAt ?? '',
     render: ({ item }) =>
-      item.scheduledAt ? formatDateTime(item.scheduledAt) : '—',
+      item.scheduledAt
+        ? formatDateTimeInZone(item.scheduledAt, item.timezone)
+        : '—',
   },
   {
     id: 'status',
