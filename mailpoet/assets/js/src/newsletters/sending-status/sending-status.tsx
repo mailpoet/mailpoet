@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import jQuery from 'jquery';
 import { Link, useParams } from 'react-router-dom';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Notice } from '@wordpress/components';
 import {
   DataViews,
@@ -24,6 +24,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import { formatTimezoneLabel } from 'newsletters/timezone-campaign';
 import { buildHash, parseHash } from 'newsletters/listings/hash-state';
 import {
   getSendingStatusSubscribers,
@@ -65,7 +66,7 @@ function StatsLink({ newsletter }: { newsletter: Newsletter }) {
   );
 }
 
-function buildFields(): Field<SendingStatusItem>[] {
+function buildFields(includeTimezone: boolean): Field<SendingStatusItem>[] {
   return [
     {
       id: 'subscriberId',
@@ -107,6 +108,28 @@ function buildFields(): Field<SendingStatusItem>[] {
         );
       },
     },
+    ...(includeTimezone
+      ? [
+          {
+            id: 'timezone',
+            label: __('Time zone', 'mailpoet'),
+            enableSorting: false,
+            enableGlobalSearch: false,
+            render: ({ item }) => (
+              <span
+                data-automation-id={`timezone_${item.taskId}_${item.subscriberId}`}
+              >
+                {item.timezone !== null
+                  ? formatTimezoneLabel(
+                      item.timezone,
+                      item.timezoneFallbackUsed,
+                    )
+                  : ''}
+              </span>
+            ),
+          } as Field<SendingStatusItem>,
+        ]
+      : []),
     {
       id: 'error',
       label: __('Failure reason (if applicable)', 'mailpoet'),
@@ -154,7 +177,8 @@ export function SendingStatus() {
     [baseUrl],
   );
   const [group, setGroup] = useState<string>(hashState.group ?? 'all');
-  const fields = useMemo(() => buildFields(), []);
+  const [includeTimezone, setIncludeTimezone] = useState(false);
+  const fields = useMemo(() => buildFields(includeTimezone), [includeTimezone]);
 
   const getPreferredView = useCallback(
     () =>
@@ -231,6 +255,29 @@ export function SendingStatus() {
     view,
     onChangeView,
   );
+
+  // The time zone column only exists for time zone campaigns, which is known
+  // once items arrive. Inject it into the visible columns a single time per
+  // mount so hiding it via the view config afterwards sticks.
+  const timezoneColumnInjected = useRef(false);
+  useEffect(() => {
+    if (timezoneColumnInjected.current) return;
+    if (!items.some((item) => item.timezone !== null)) return;
+    timezoneColumnInjected.current = true;
+    setIncludeTimezone(true);
+    setView((currentView) => {
+      const viewFields = currentView.fields ?? [];
+      if (viewFields.includes('timezone')) return currentView;
+      const failedIndex = viewFields.indexOf('failed');
+      const nextFields = [...viewFields];
+      nextFields.splice(
+        failedIndex >= 0 ? failedIndex + 1 : nextFields.length,
+        0,
+        'timezone',
+      );
+      return { ...currentView, fields: nextFields };
+    });
+  }, [items, setView]);
 
   useEffect(() => {
     // Compare against the preference-merged defaults, resolved at write time

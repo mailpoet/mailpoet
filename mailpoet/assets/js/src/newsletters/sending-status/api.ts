@@ -34,6 +34,8 @@ export type SendingStatusItem = {
   processed: number;
   failed: number;
   error: string | null;
+  timezone: string | null;
+  timezoneFallbackUsed: boolean;
 };
 
 // Mailer / cron envelope fields the endpoint appends to the listing response;

@@ -92,7 +92,15 @@ class SendingStatusListingEndpoint extends AbstractListingEndpoint {
   }
 
   protected function buildItems(array $rows, ListingDefinition $definition): array {
-    return $this->responseBuilder->buildForListing($rows);
+    $items = $this->responseBuilder->buildForListing($rows);
+    $taskIds = array_values(array_unique(array_filter(array_column($items, 'taskId'))));
+    $timezones = $this->sendingQueuesRepository->getGroupTimezonesByTaskIds($taskIds);
+    foreach ($items as &$item) {
+      $group = $timezones[$item['taskId']] ?? null;
+      $item['timezone'] = $group ? $group['timezone'] : null;
+      $item['timezoneFallbackUsed'] = $group ? $group['fallbackUsed'] : false;
+    }
+    return $items;
   }
 
   protected function getDefaultSortBy(): string {
