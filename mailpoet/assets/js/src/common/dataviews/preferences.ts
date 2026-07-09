@@ -112,6 +112,23 @@ function getFieldPreference(
   return undefined;
 }
 
+// Raw stored column selection, unfiltered by field availability. Lets pages
+// with fields that only exist for some items (e.g. the sending status time
+// zone column) distinguish "the user removed this column" from "the column
+// was unavailable when the preference was read".
+export function getStoredDataViewsFieldIds(name: string): string[] | undefined {
+  const preference = readPreference(
+    VIEW_PREFERENCES_SCOPE,
+    getDataViewsPreferenceKey(name),
+  );
+  if (!isRecord(preference) || !Array.isArray(preference.fields)) {
+    return undefined;
+  }
+  return preference.fields.filter(
+    (field): field is string => typeof field === 'string',
+  );
+}
+
 export function getDataViewsPreference<T>(
   name: string,
   defaultView: View,
