@@ -86,6 +86,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertArrayHasKey('count_confirmations', $response);
     $this->assertArrayHasKey('unsubscribe_token', $response);
     $this->assertArrayHasKey('link_token', $response);
+    $this->assertEquals($subscriber->getTimeZone(), $response['timezone']);
     // check subscriptions
     $this->assertCount(0, $response['unsubscribes']);
     $this->checkSubscription($response, $subscriber);

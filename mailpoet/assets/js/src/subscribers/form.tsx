@@ -77,6 +77,7 @@ interface TextField extends BaseField {
 interface SelectField extends BaseField {
   type: 'select';
   automationId?: string;
+  placeholder?: string;
   values: Record<string, string>;
 }
 
@@ -155,6 +156,19 @@ const fields: FormField[] = [
       inactive: MailPoet.I18n.t('inactive'),
       bounced: MailPoet.I18n.t('bounced'),
     },
+  },
+  {
+    name: 'timezone',
+    label: __('Timezone', 'mailpoet'),
+    type: 'select',
+    automationId: 'subscriber-timezone',
+    placeholder: __('Not set', 'mailpoet'),
+    values: Object.fromEntries(
+      (typeof Intl.supportedValuesOf === 'function'
+        ? Intl.supportedValuesOf('timeZone')
+        : []
+      ).map((timezone) => [timezone, timezone.replaceAll('_', ' ')]),
+    ),
   },
   {
     name: 'segments',
