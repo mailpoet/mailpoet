@@ -104,6 +104,69 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getTimeZoneUpdatedAt())->null();
   }
 
+  public function testItSavesManuallyEditedTimeZoneEvenWhenCollectionIsDisabled(): void {
+    $this->settings->set('collect_subscriber_timezones', ['enabled' => '']);
+
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-manual@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'timezone' => 'Europe/Prague',
+    ]);
+
+    verify($subscriber->getTimeZone())->equals('Europe/Prague');
+    verify($subscriber->getTimeZoneSource())->equals(SubscriberEntity::TIME_ZONE_SOURCE_MANUAL);
+    verify($subscriber->getTimeZoneConfidence())->equals(SubscriberEntity::TIME_ZONE_CONFIDENCE_MANUAL);
+    verify($subscriber->getTimeZoneUpdatedAt())->notNull();
+  }
+
+  public function testItClearsTimeZoneWhenManualValueIsEmpty(): void {
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-clear@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'timezone' => 'Europe/Prague',
+    ]);
+    verify($subscriber->getTimeZone())->equals('Europe/Prague');
+
+    $subscriber = $this->saveController->save([
+      'id' => $subscriber->getId(),
+      'timezone' => '',
+    ]);
+
+    verify($subscriber->getTimeZone())->null();
+    verify($subscriber->getTimeZoneSource())->null();
+    verify($subscriber->getTimeZoneConfidence())->null();
+    verify($subscriber->getTimeZoneUpdatedAt())->null();
+  }
+
+  public function testItIgnoresInvalidManualTimeZone(): void {
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-invalid@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'timezone' => 'Invalid/Zone',
+    ]);
+
+    verify($subscriber->getTimeZone())->null();
+    verify($subscriber->getTimeZoneSource())->null();
+  }
+
+  public function testItKeepsTimeZoneSourceWhenManualValueIsUnchanged(): void {
+    $subscriber = $this->saveController->save([
+      'email' => 'timezone-unchanged@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::TIME_ZONE_FIELD_NAME => 'Europe/Prague',
+    ]);
+    verify($subscriber->getTimeZoneSource())->equals(SubscriberEntity::TIME_ZONE_SOURCE_FORM);
+
+    $subscriber = $this->saveController->save([
+      'id' => $subscriber->getId(),
+      'timezone' => 'Europe/Prague',
+    ]);
+
+    verify($subscriber->getTimeZone())->equals('Europe/Prague');
+    verify($subscriber->getTimeZoneSource())->equals(SubscriberEntity::TIME_ZONE_SOURCE_FORM);
+    verify($subscriber->getTimeZoneConfidence())->equals(SubscriberEntity::TIME_ZONE_CONFIDENCE_BROWSER);
+  }
+
   public function testItCanUpdateASubscriber(): void {
     $subscriber = $this->createSubscriber('second@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
     $segmentOne = $this->segmentsRepository->createOrUpdate('Segment One');

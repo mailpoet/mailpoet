@@ -244,6 +244,9 @@ class SubscriberSaveController {
         $subscriber->setTimeZoneUpdatedAt(Carbon::now()->millisecond(0));
       }
     }
+    if (array_key_exists('timezone', $data)) {
+      $this->updateTimeZoneManually($subscriber, $data['timezone']);
+    }
     $createdAt = isset($data['created_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']) : null;
     if ($createdAt) $subscriber->setCreatedAt($createdAt);
     $confirmedAt = isset($data['confirmed_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']) : null;
@@ -265,6 +268,31 @@ class SubscriberSaveController {
     }
 
     return $subscriber;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function updateTimeZoneManually(SubscriberEntity $subscriber, $value): void {
+    if ($value === '' || $value === null) {
+      if ($subscriber->getTimeZone() === null) {
+        return;
+      }
+      $subscriber->setTimeZone(null);
+      $subscriber->setTimeZoneSource(null);
+      $subscriber->setTimeZoneConfidence(null);
+      $subscriber->setTimeZoneUpdatedAt(null);
+      return;
+    }
+
+    $timeZone = SubscriberEntity::sanitizeTimeZone($value);
+    if ($timeZone === null || $timeZone === $subscriber->getTimeZone()) {
+      return;
+    }
+    $subscriber->setTimeZone($timeZone);
+    $subscriber->setTimeZoneSource(SubscriberEntity::TIME_ZONE_SOURCE_MANUAL);
+    $subscriber->setTimeZoneConfidence(SubscriberEntity::TIME_ZONE_CONFIDENCE_MANUAL);
+    $subscriber->setTimeZoneUpdatedAt(Carbon::now()->millisecond(0));
   }
 
   private function isNewEmail(string $email, ?SubscriberEntity $subscriber): bool {
