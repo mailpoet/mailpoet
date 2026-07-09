@@ -260,7 +260,10 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             {MailPoet.Date.time(newsletterDate)}
           </b>
           {isTimezoneCampaignQueue(newsletter.queue) && (
-            <TimezoneCampaignIcon newsletterId={newsletter.id} />
+            <TimezoneCampaignIcon
+              newsletterId={newsletter.id}
+              sent={newsletter.status === 'sent'}
+            />
           )}
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (

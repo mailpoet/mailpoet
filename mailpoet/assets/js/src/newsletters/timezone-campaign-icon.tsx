@@ -4,9 +4,10 @@ import { Tooltip } from 'common/tooltip/tooltip';
 
 type Props = {
   newsletterId: string;
+  sent: boolean;
 };
 
-export function TimezoneCampaignIcon({ newsletterId }: Props) {
+export function TimezoneCampaignIcon({ newsletterId, sent }: Props) {
   const tooltipId = `timezone-campaign-${newsletterId}`;
   return (
     <span
@@ -21,7 +22,9 @@ export function TimezoneCampaignIcon({ newsletterId }: Props) {
         style={{ fill: 'currentColor', verticalAlign: 'middle' }}
       />
       <Tooltip place="right" id={tooltipId}>
-        {__("Sent in subscriber's time zone", 'mailpoet')}
+        {sent
+          ? __("Sent in subscriber's time zone", 'mailpoet')
+          : __("Sends in subscriber's time zone", 'mailpoet')}
       </Tooltip>
     </span>
   );
