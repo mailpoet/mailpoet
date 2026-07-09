@@ -5,6 +5,7 @@ import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { MailPoet } from 'mailpoet';
 import {
+  DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
   SCHEDULE_MODE_WEBSITE_TIME,
   ScheduleMode,
@@ -21,6 +22,8 @@ type UseScheduledDate = {
   scheduleMode: ScheduleMode;
   scheduledLocalDate: string | null;
   scheduledLocalTime: string | null;
+  effectiveLocalDate: string;
+  effectiveLocalTime: string;
   isTimezoneSchedulingAvailable: boolean;
   setScheduleMode: (mode: ScheduleMode) => void;
   setScheduledLocalDateTime: (date: string, time: string) => void;
@@ -84,6 +87,11 @@ export function useScheduledDate(): UseScheduledDate {
     (mailpoetEmailData?.scheduled_local_date as string) || null;
   const scheduledLocalTime =
     (mailpoetEmailData?.scheduled_local_time as string) || null;
+  // Defaults shown by the picker when the local options are not stored yet;
+  // used everywhere the local schedule is displayed so the panel stays
+  // consistent with what the picker shows.
+  const effectiveLocalDate = scheduledLocalDate || getSiteTomorrowDate();
+  const effectiveLocalTime = scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME;
   const settings = getSettings();
 
   const setScheduledDate = (date: string | null) => {
@@ -118,8 +126,8 @@ export function useScheduledDate(): UseScheduledDate {
     formattedDate = sprintf(
       // translators: %1$s is a date, %2$s is a time. Example: "2026-07-10 at 08:00 in subscriber’s time zone".
       __('%1$s at %2$s in subscriber’s time zone', 'mailpoet'),
-      scheduledLocalDate || '',
-      (scheduledLocalTime || '').slice(0, 5),
+      effectiveLocalDate,
+      effectiveLocalTime.slice(0, 5),
     );
   } else {
     formattedDate = scheduledDate
@@ -133,14 +141,16 @@ export function useScheduledDate(): UseScheduledDate {
 
   return {
     scheduledDate,
-    isScheduled: isSubscriberTimezoneMode
-      ? Boolean(scheduledLocalDate)
-      : Boolean(scheduledDate),
+    // Subscriber timezone mode is always a scheduled send — the picker shows
+    // the effective local date even before the options are stored.
+    isScheduled: isSubscriberTimezoneMode || Boolean(scheduledDate),
     formattedDate,
     setScheduledDate,
     scheduleMode,
     scheduledLocalDate,
     scheduledLocalTime,
+    effectiveLocalDate,
+    effectiveLocalTime,
     isTimezoneSchedulingAvailable,
     setScheduleMode,
     setScheduledLocalDateTime,
