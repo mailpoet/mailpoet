@@ -16,6 +16,7 @@ const breakdownEntry = (overrides: Record<string, unknown> = {}) => ({
   fallback_used: false,
   scheduled_at: '2026-07-20 09:00:00',
   status: 'scheduled',
+  in_progress: false,
   count_total: 10,
   count_processed: 0,
   count_to_process: 10,
@@ -60,6 +61,7 @@ describe('timezone campaign helpers', () => {
           fallbackUsed: false,
           scheduledAt: '2026-07-20 09:00:00',
           status: 'scheduled',
+          inProgress: false,
           countTotal: 10,
           countProcessed: 0,
           countToProcess: 10,
@@ -69,6 +71,7 @@ describe('timezone campaign helpers', () => {
           fallbackUsed: true,
           scheduledAt: '2026-07-20 09:00:00',
           status: null,
+          inProgress: false,
           countTotal: 10,
           countProcessed: 3,
           countToProcess: 10,
@@ -188,6 +191,13 @@ describe('timezone campaign helpers', () => {
     it('returns true when a batch has processed subscribers', () => {
       const queue = timezoneQueue({
         timezoneBreakdown: [breakdownEntry({ count_processed: 1 })],
+      });
+      expect(hasStartedTimezoneBatches(queue)).to.equal(true);
+    });
+
+    it('treats a batch picked up by a worker as started', () => {
+      const queue = timezoneQueue({
+        timezoneBreakdown: [breakdownEntry({ in_progress: true })],
       });
       expect(hasStartedTimezoneBatches(queue)).to.equal(true);
     });

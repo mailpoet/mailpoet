@@ -311,6 +311,7 @@ class TimeZoneCampaignScheduler {
         'fallback_used' => $queueMeta[self::META_FALLBACK_USED] ?? false,
         'scheduled_at' => $scheduledAt ? $scheduledAt->format('Y-m-d H:i:s') : null,
         'status' => $task->getStatus(),
+        'in_progress' => (bool)$task->getInProgress(),
         'count_total' => $campaignQueue->getCountTotal(),
         'count_processed' => $campaignQueue->getCountProcessed(),
         'count_to_process' => $campaignQueue->getCountToProcess(),

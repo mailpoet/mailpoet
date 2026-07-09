@@ -5,6 +5,7 @@ export type TimezoneBreakdownEntry = {
   fallbackUsed: boolean;
   scheduledAt: string | null;
   status: string | null;
+  inProgress: boolean;
   countTotal: number;
   countProcessed: number;
   countToProcess: number;
@@ -58,6 +59,7 @@ export const getTimezoneBreakdown = (
       fallbackUsed: Boolean(entry.fallback_used),
       scheduledAt: toStringOrNull(entry.scheduled_at),
       status: toStringOrNull(entry.status),
+      inProgress: Boolean(entry.in_progress),
       countTotal: toCount(entry.count_total),
       countProcessed: toCount(entry.count_processed),
       countToProcess: toCount(entry.count_to_process),
@@ -111,16 +113,18 @@ export const formatTimezoneLabel = (
   );
 };
 
-// Client-side mirror of the backend canReplaceScheduledCampaign() guard: a
+// Client-side mirror of the backend isReplaceableScheduledQueue() guard: a
 // batch is still replaceable while it is scheduled or paused with nothing
-// processed. Anything else (running, completed, cancelled, invalid, or a
-// batch with processed recipients) means the campaign can no longer be
-// edited. The server remains authoritative; this only enables a clean
-// message before the editor is opened.
+// processed and not picked up by a worker (in_progress). Anything else
+// (running, in progress, completed, cancelled, invalid, or a batch with
+// processed recipients) means the campaign can no longer be edited. The
+// server remains authoritative; this only enables a clean message before
+// the editor is opened.
 export const hasStartedTimezoneBatches = (queue: QueueLike): boolean =>
   getTimezoneBreakdown(queue).some(
     (entry) =>
       entry.countProcessed > 0 ||
+      entry.inProgress ||
       entry.status === null ||
       !['scheduled', 'paused'].includes(entry.status),
   );
