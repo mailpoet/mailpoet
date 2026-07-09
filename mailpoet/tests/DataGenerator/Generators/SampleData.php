@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -23,7 +24,9 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\AutomationRun as AutomationRunFactory;
 use MailPoet\Test\DataFactories\AutomationRunLog as AutomationRunLogFactory;
@@ -32,6 +35,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -85,6 +89,9 @@ class SampleData implements Generator {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
@@ -94,6 +101,7 @@ class SampleData implements Generator {
     $this->config = $config ?? SampleDataConfig::fromArray();
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
   }
 
@@ -123,6 +131,13 @@ class SampleData implements Generator {
 
     $this->createDraftNewsletters($lists, $runSuffix);
     yield sprintf('Draft newsletters done (%d)', $this->config->getDraftNewslettersCount());
+
+    $scheduledCounts = $this->createScheduledStandardNewsletters($lists, $subscribersByList, $allSubscribers, $runSuffix);
+    yield sprintf(
+      'Scheduled newsletters done (%d by subscriber time zone, %d by website time)',
+      $scheduledCounts[TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE],
+      $scheduledCounts[TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME]
+    );
 
     $sentEmails = [];
     foreach ($this->createSentStandardNewsletters($lists, $subscribersByList, $runSuffix) as $messageAndEmail) {
@@ -322,6 +337,153 @@ class SampleData implements Generator {
         ->withSegments($targetLists)
         ->withCreatedAt($this->randomPastDate()->toDateTimeString())
         ->create();
+    }
+  }
+
+  /**
+   * @param array<int, SegmentEntity> $lists
+   * @param array<int, int[]> $subscribersByList
+   * @param array<int, SubscriberEntity> $allSubscribers
+   * @return array<string, int>
+   */
+  private function createScheduledStandardNewsletters(array $lists, array $subscribersByList, array $allSubscribers, string $runSuffix): array {
+    $counts = [
+      TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE => 0,
+      TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME => 0,
+    ];
+    if (!$lists) {
+      return $counts;
+    }
+
+    $listIds = array_keys($lists);
+    for ($i = 1; $i <= $this->config->getScheduledNewslettersCount(); $i++) {
+      $targetListIds = $this->pickRandomValues($listIds, random_int(1, min(2, count($listIds))));
+      $targetLists = array_map(function($id) use ($lists) {
+        return $lists[$id];
+      }, $targetListIds);
+      $recipientIds = $this->getRecipientsForLists($targetListIds, $subscribersByList);
+
+      // Alternate so that both modes are present even for low counts. Time zone
+      // batches need recipients, so fall back to website time when there are none.
+      $mode = $i % 2 === 1 && $recipientIds
+        ? TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE
+        : TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME;
+
+      $localDate = Carbon::now()->addDays(random_int(2, 14))->format('Y-m-d');
+      $localTime = sprintf('%02d:%02d:00', random_int(8, 20), 15 * random_int(0, 3));
+
+      $newsletterFactory = (new NewsletterFactory())
+        ->withSubject(sprintf('[%s scheduled %d %s] Newsletter', $this->config->getPrefix(), $i, $runSuffix))
+        ->withScheduledStatus()
+        ->withSegments($targetLists)
+        ->withCreatedAt($this->randomPastDate()->toDateTimeString());
+
+      if ($mode === TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME) {
+        $scheduledAt = Carbon::parse("{$localDate} {$localTime}");
+        $newsletterFactory
+          ->withOptions([
+            NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+            NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => $scheduledAt->format('Y-m-d H:i:s'),
+            NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_WEBSITE_TIME,
+          ])
+          ->withScheduledQueue([
+            'scheduled_at' => $scheduledAt,
+            'count_total' => 0,
+            'count_processed' => 0,
+          ])
+          ->create();
+      } else {
+        $newsletter = $newsletterFactory
+          ->withOptions([
+            NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+            NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+            NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => $localDate,
+            NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => $localTime,
+          ])
+          ->create();
+        $this->createTimeZoneCampaignQueues($newsletter, $recipientIds, $allSubscribers, $localDate, $localTime);
+      }
+
+      $counts[$mode]++;
+    }
+    return $counts;
+  }
+
+  /**
+   * Mirrors the queues created by TimeZoneCampaignScheduler::schedule() without its
+   * feature, capability, and lead-time checks so that sample data can be generated
+   * in any environment.
+   *
+   * @param int[] $recipientIds
+   * @param array<int, SubscriberEntity> $allSubscribers
+   */
+  private function createTimeZoneCampaignQueues(
+    NewsletterEntity $newsletter,
+    array $recipientIds,
+    array $allSubscribers,
+    string $localDate,
+    string $localTime
+  ): void {
+    $siteTimeZone = wp_timezone()->getName();
+    $groups = [];
+    foreach ($recipientIds as $subscriberId) {
+      $subscriber = $allSubscribers[$subscriberId] ?? null;
+      $timeZone = $subscriber ? $subscriber->getTimeZone() : null;
+      $fallbackUsed = $timeZone === null;
+      $resolvedTimeZone = $timeZone ?: $siteTimeZone;
+      $key = $resolvedTimeZone . ':' . (int)$fallbackUsed;
+      if (!isset($groups[$key])) {
+        $groups[$key] = [
+          'timeZone' => $resolvedTimeZone,
+          'fallbackUsed' => $fallbackUsed,
+          'subscriberIds' => [],
+        ];
+      }
+      $groups[$key]['subscriberIds'][] = $subscriberId;
+    }
+
+    $schedule = [];
+    foreach ($groups as $group) {
+      $scheduledAt = new \DateTimeImmutable("{$localDate} {$localTime}", new \DateTimeZone($group['timeZone']));
+      $group['scheduledAt'] = $scheduledAt->setTimezone(new \DateTimeZone('UTC'));
+      $schedule[] = $group;
+    }
+    usort($schedule, function(array $a, array $b): int {
+      return $a['scheduledAt'] <=> $b['scheduledAt'];
+    });
+
+    $campaignId = Security::generateRandomString(16);
+    $firstScheduledAt = $schedule[0]['scheduledAt']->format('Y-m-d H:i:s');
+    $lastScheduledAt = $schedule[count($schedule) - 1]['scheduledAt']->format('Y-m-d H:i:s');
+
+    foreach ($schedule as $group) {
+      $task = new ScheduledTaskEntity();
+      $task->setType(SendingQueue::TASK_TYPE);
+      $task->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
+      $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+      $task->setScheduledAt($group['scheduledAt']);
+      $this->scheduledTasksRepository->persist($task);
+
+      $queue = new SendingQueueEntity();
+      $queue->setNewsletter($newsletter);
+      $queue->setTask($task);
+      $queue->setNewsletterRenderedSubject($newsletter->getSubject());
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+        TimeZoneCampaignScheduler::META_SELECTED_LOCAL_DATE => $localDate,
+        TimeZoneCampaignScheduler::META_SELECTED_LOCAL_TIME => $localTime,
+        TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => $group['timeZone'],
+        TimeZoneCampaignScheduler::META_FALLBACK_USED => $group['fallbackUsed'],
+        TimeZoneCampaignScheduler::META_SITE_TIMEZONE => $siteTimeZone,
+        TimeZoneCampaignScheduler::META_FIRST_SCHEDULED_AT => $firstScheduledAt,
+        TimeZoneCampaignScheduler::META_LAST_SCHEDULED_AT => $lastScheduledAt,
+      ]);
+      $this->sendingQueuesRepository->persist($queue);
+      $this->entityManager->flush();
+
+      $this->scheduledTaskSubscribersRepository->addSubscribersByIds($task, $group['subscriberIds']);
+      $this->sendingQueuesRepository->updateCounts($queue);
     }
   }
 

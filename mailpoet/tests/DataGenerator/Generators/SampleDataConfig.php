@@ -11,6 +11,7 @@ class SampleDataConfig {
     'products' => null,
     'draft-newsletters' => null,
     'sent-newsletters' => null,
+    'scheduled-newsletters' => null,
     'post-notifications' => null,
     'automatic-emails' => null,
     'automations' => null,
@@ -35,6 +36,7 @@ class SampleDataConfig {
     'products' => 10,
     'draft-newsletters' => 5,
     'sent-newsletters' => 30,
+    'scheduled-newsletters' => 6,
     'post-notifications' => 6,
     'automatic-emails' => 5,
     'automations' => 3,
@@ -59,6 +61,7 @@ class SampleDataConfig {
     'products' => 5,
     'draft-newsletters' => 2,
     'sent-newsletters' => 5,
+    'scheduled-newsletters' => 2,
     'post-notifications' => 2,
     'automatic-emails' => 2,
     'automations' => 1,
@@ -72,6 +75,7 @@ class SampleDataConfig {
     'products' => 30,
     'draft-newsletters' => 10,
     'sent-newsletters' => 80,
+    'scheduled-newsletters' => 12,
     'post-notifications' => 20,
     'automatic-emails' => 8,
     'automations' => 5,
@@ -166,6 +170,10 @@ class SampleDataConfig {
     return $this->getInt('sent-newsletters');
   }
 
+  public function getScheduledNewslettersCount(): int {
+    return $this->getInt('scheduled-newsletters');
+  }
+
   public function getPostNotificationsCount(): int {
     return $this->getInt('post-notifications');
   }
@@ -234,6 +242,7 @@ class SampleDataConfig {
       'products',
       'draft-newsletters',
       'sent-newsletters',
+      'scheduled-newsletters',
       'post-notifications',
       'automatic-emails',
       'automations',
