@@ -21,6 +21,8 @@ import {
   getNewsletterStatusString,
 } from 'common';
 import { duplicateNewsletter as duplicateNewsletterRest } from 'newsletters/api';
+import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
+import { TimezoneCampaignIcon } from 'newsletters/timezone-campaign-icon';
 import { ExportButton } from './export-button';
 import { NewsletterType } from './newsletter-type';
 
@@ -279,6 +281,9 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             {' • '}
             {MailPoet.Date.time(newsletterDate)}
           </b>
+          {isTimezoneCampaignQueue(newsletter.queue) && (
+            <TimezoneCampaignIcon newsletterId={newsletter.id} />
+          )}
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
           <div>

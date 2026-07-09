@@ -8,17 +8,20 @@ import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
 import { Tabs } from 'common/tabs/tabs';
 import { Tab } from 'common/tabs/tab';
 import { ErrorBoundary } from 'common';
+import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
 import { NewsletterGeneralStats } from './newsletter-general-stats';
 import { NewsletterType } from './newsletter-type';
 import { NewsletterStatsInfo } from './newsletter-stats-info';
 import { PremiumBanner } from './premium-banner';
+import { TimezoneSchedule } from './timezone-schedule';
 
 type StatsTabKey =
   | 'clicked'
   | 'products'
   | 'engagement'
   | 'bounces'
-  | 'unsubscribe-reasons';
+  | 'unsubscribe-reasons'
+  | 'timezones';
 
 type State = {
   item?: NewsletterType;
@@ -31,6 +34,7 @@ const statsTabKeys: StatsTabKey[] = [
   'engagement',
   'bounces',
   'unsubscribe-reasons',
+  'timezones',
 ];
 
 const legacyListingParamKeys = [
@@ -125,7 +129,11 @@ export function CampaignStatsPage() {
       return;
     }
 
-    if (requestedTab === 'products' && !MailPoet.isWoocommerceActive) {
+    if (
+      (requestedTab === 'products' && !MailPoet.isWoocommerceActive) ||
+      (requestedTab === 'timezones' &&
+        !isTimezoneCampaignQueue(newsletter.queue))
+    ) {
       navigate(getStatsTabUrl(newsletter.id, 'clicked'), { replace: true });
     }
   }, [loading, navigate, newsletter, requestedTab]);
@@ -137,6 +145,9 @@ export function CampaignStatsPage() {
   }
 
   if (activeTab === 'products' && !MailPoet.isWoocommerceActive) {
+    activeTab = 'clicked';
+  }
+  if (activeTab === 'timezones' && !isTimezoneCampaignQueue(newsletter.queue)) {
     activeTab = 'clicked';
   }
 
@@ -229,6 +240,18 @@ export function CampaignStatsPage() {
               newsletter,
             )}
           </Tab>
+
+          {isTimezoneCampaignQueue(newsletter.queue) && (
+            <Tab
+              key="timezones"
+              title={__('Time zones', 'mailpoet')}
+              automationId="timezones-tab"
+            >
+              <ErrorBoundary>
+                <TimezoneSchedule newsletter={newsletter} />
+              </ErrorBoundary>
+            </Tab>
+          )}
         </Tabs>
       </div>
     </>
