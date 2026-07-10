@@ -3,10 +3,13 @@
 namespace MailPoet\Test\REST\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\REST\Test;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../Test.php';
 
@@ -110,6 +113,54 @@ class SubscribersEndpointsTest extends Test {
 
     $this->subscribersRepository->refresh($subscriber);
     $this->assertNotNull($subscriber->getDeletedAt());
+  }
+
+  public function testBulkAutomationHooksRequireExplicitOptIn(): void {
+    $segment = (new SegmentFactory())->withName('REST Bulk Automation Opt-In')->create();
+    $omitted = (new SubscriberFactory())
+      ->withEmail('rest-bulk-automation-omitted-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $disabled = (new SubscriberFactory())
+      ->withEmail('rest-bulk-automation-disabled-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $enabled = (new SubscriberFactory())
+      ->withEmail('rest-bulk-automation-enabled-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $firedFor = [];
+    $wp->addAction('mailpoet_segment_subscribed', function (SubscriberSegmentEntity $subscriberSegment) use (&$firedFor): void {
+      $subscriber = $subscriberSegment->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = (int)$subscriber->getId();
+    });
+
+    $baseRequest = [
+      'action' => 'addToList',
+      'group' => 'subscribed',
+      'segment_id' => (int)$segment->getId(),
+    ];
+    $omittedResponse = $this->post(self::BULK_ACTION_PATH, ['json' => $baseRequest + [
+      'selection' => [(int)$omitted->getId()],
+    ]]);
+    $disabledResponse = $this->post(self::BULK_ACTION_PATH, ['json' => $baseRequest + [
+      'selection' => [(int)$disabled->getId()],
+      'trigger_automations' => false,
+    ]]);
+    $enabledResponse = $this->post(self::BULK_ACTION_PATH, ['json' => $baseRequest + [
+      'selection' => [(int)$enabled->getId()],
+      'trigger_automations' => true,
+    ]]);
+
+    $this->assertSame(1, $omittedResponse['data']['count']);
+    $this->assertSame(1, $disabledResponse['data']['count']);
+    $this->assertSame(1, $enabledResponse['data']['count']);
+    $this->assertSame([(int)$enabled->getId()], $firedFor);
+    $wp->removeAllActions('mailpoet_segment_subscribed');
   }
 
   public function testBulkActionWithEmptySelectionAndNoSelectAllReturnsError(): void {

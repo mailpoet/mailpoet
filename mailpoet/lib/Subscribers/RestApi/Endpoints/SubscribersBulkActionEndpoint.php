@@ -96,7 +96,9 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       $this->validateSelectAllScope($action, $definition);
     }
 
-    $data = [];
+    $data = [
+      'trigger_automations' => $request->getParam('trigger_automations') === true,
+    ];
     $segmentIdParam = $request->getParam('segment_id');
     if (is_numeric($segmentIdParam)) {
       $data['segment_id'] = (int)$segmentIdParam;
@@ -134,6 +136,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
       'filter' => Builder::object(),
       'segment_id' => Builder::integer(),
       'tag_id' => Builder::integer(),
+      'trigger_automations' => Builder::boolean(),
     ];
   }
 

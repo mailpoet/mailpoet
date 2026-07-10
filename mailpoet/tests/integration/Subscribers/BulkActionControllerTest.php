@@ -13,6 +13,7 @@ use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Focused coverage of {@see BulkActionController}. The HTTP-layer tests in
@@ -160,6 +161,127 @@ class BulkActionControllerTest extends \MailPoetTest {
     verify($this->subscriberTagIds($subscriberId))->equals([]);
   }
 
+  public function testItSuppressesBulkAutomationHooksByDefault(): void {
+    $sourceSegment = (new SegmentFactory())->withName('Default Hook Source')->create();
+    $addedSegment = (new SegmentFactory())->withName('Default Hook Added')->create();
+    $movedSegment = (new SegmentFactory())->withName('Default Hook Moved')->create();
+    $existingTag = (new TagFactory())->withName('Default Hook Existing Tag')->create();
+    $addedTag = (new TagFactory())->withName('Default Hook Added Tag')->create();
+    $subscriber = $this->createSubscriber(
+      'default-hooks@example.com',
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      [$sourceSegment]
+    );
+    $this->createSubscriberTag($subscriber, $existingTag);
+    $definition = $this->definition([(int)$subscriber->getId()]);
+
+    $wp = new WPFunctions();
+    $hookCalls = ['segment' => 0, 'tagAdded' => 0, 'tagRemoved' => 0];
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $wp->addAction('mailpoet_segment_subscribed', function () use (&$hookCalls): void {
+      $hookCalls['segment']++;
+    });
+    $wp->addAction('mailpoet_subscriber_tag_added', function () use (&$hookCalls): void {
+      $hookCalls['tagAdded']++;
+    });
+    $wp->addAction('mailpoet_subscriber_tag_removed', function () use (&$hookCalls): void {
+      $hookCalls['tagRemoved']++;
+    });
+
+    $addResult = $this->controller->execute(
+      BulkActionController::ACTION_ADD_TO_LIST,
+      $definition,
+      ['segment_id' => (int)$addedSegment->getId()]
+    );
+    $moveResult = $this->controller->execute(
+      BulkActionController::ACTION_MOVE_TO_LIST,
+      $definition,
+      ['segment_id' => (int)$movedSegment->getId()]
+    );
+    $addTagResult = $this->controller->execute(
+      BulkActionController::ACTION_ADD_TAG,
+      $definition,
+      ['tag_id' => (int)$addedTag->getId()]
+    );
+    $removeTagResult = $this->controller->execute(
+      BulkActionController::ACTION_REMOVE_TAG,
+      $definition,
+      ['tag_id' => (int)$existingTag->getId()]
+    );
+
+    verify($addResult['count'])->equals(1);
+    verify($moveResult['count'])->equals(1);
+    verify($addTagResult['count'])->equals(1);
+    verify($removeTagResult['count'])->equals(1);
+    verify($hookCalls)->equals(['segment' => 0, 'tagAdded' => 0, 'tagRemoved' => 0]);
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
+  public function testItFiresBulkAutomationHooksWhenExplicitlyEnabled(): void {
+    $sourceSegment = (new SegmentFactory())->withName('Enabled Hook Source')->create();
+    $addedSegment = (new SegmentFactory())->withName('Enabled Hook Added')->create();
+    $movedSegment = (new SegmentFactory())->withName('Enabled Hook Moved')->create();
+    $existingTag = (new TagFactory())->withName('Enabled Hook Existing Tag')->create();
+    $addedTag = (new TagFactory())->withName('Enabled Hook Added Tag')->create();
+    $subscriber = $this->createSubscriber(
+      'enabled-hooks@example.com',
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      [$sourceSegment]
+    );
+    $this->createSubscriberTag($subscriber, $existingTag);
+    $definition = $this->definition([(int)$subscriber->getId()]);
+    $triggerAutomations = ['trigger_automations' => true];
+
+    $wp = new WPFunctions();
+    $hookCalls = ['segment' => 0, 'tagAdded' => 0, 'tagRemoved' => 0];
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $wp->addAction('mailpoet_segment_subscribed', function () use (&$hookCalls): void {
+      $hookCalls['segment']++;
+    });
+    $wp->addAction('mailpoet_subscriber_tag_added', function () use (&$hookCalls): void {
+      $hookCalls['tagAdded']++;
+    });
+    $wp->addAction('mailpoet_subscriber_tag_removed', function () use (&$hookCalls): void {
+      $hookCalls['tagRemoved']++;
+    });
+
+    $addResult = $this->controller->execute(
+      BulkActionController::ACTION_ADD_TO_LIST,
+      $definition,
+      $triggerAutomations + ['segment_id' => (int)$addedSegment->getId()]
+    );
+    $moveResult = $this->controller->execute(
+      BulkActionController::ACTION_MOVE_TO_LIST,
+      $definition,
+      $triggerAutomations + ['segment_id' => (int)$movedSegment->getId()]
+    );
+    $addTagResult = $this->controller->execute(
+      BulkActionController::ACTION_ADD_TAG,
+      $definition,
+      $triggerAutomations + ['tag_id' => (int)$addedTag->getId()]
+    );
+    $removeTagResult = $this->controller->execute(
+      BulkActionController::ACTION_REMOVE_TAG,
+      $definition,
+      $triggerAutomations + ['tag_id' => (int)$existingTag->getId()]
+    );
+
+    verify($addResult['count'])->equals(1);
+    verify($moveResult['count'])->equals(1);
+    verify($addTagResult['count'])->equals(1);
+    verify($removeTagResult['count'])->equals(1);
+    verify($hookCalls)->equals(['segment' => 2, 'tagAdded' => 1, 'tagRemoved' => 1]);
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
   public function testItRequiresSegmentForListActions(): void {
     $subscriber = $this->createSubscriber('needs-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
     $definition = $this->definition([(int)$subscriber->getId()]);
@@ -243,7 +365,7 @@ class BulkActionControllerTest extends \MailPoetTest {
   }
 
   /**
-   * @param array{segment_id?: int|string, tag_id?: int|string} $data
+   * @param array{segment_id?: int|string, tag_id?: int|string, trigger_automations?: bool} $data
    */
   private function captureException(string $action, ListingDefinition $definition, array $data = []): ?\Throwable {
     try {
@@ -287,5 +409,11 @@ class BulkActionControllerTest extends \MailPoetTest {
     }
     sort($ids);
     return $ids;
+  }
+
+  private function createSubscriberTag(SubscriberEntity $subscriber, TagEntity $tag): void {
+    $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+    $this->entityManager->persist($subscriberTag);
+    $this->entityManager->flush();
   }
 }
