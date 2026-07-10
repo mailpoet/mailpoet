@@ -807,7 +807,7 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkAddToSegment(SegmentEntity $segment, array $ids, bool $skipHooks): int {
+  public function bulkAddToSegment(SegmentEntity $segment, array $ids, bool $skipHooks = true): int {
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
     $this->changesNotifier->subscribersUpdated($ids);
     if (!$skipHooks) {
@@ -819,7 +819,7 @@ class SubscribersRepository extends Repository {
    /**
    * @return int - number of processed ids
    */
-  public function bulkMoveToSegment(SegmentEntity $segment, array $ids, bool $skipHooks): int {
+  public function bulkMoveToSegment(SegmentEntity $segment, array $ids, bool $skipHooks = true): int {
     if (empty($ids)) {
       return 0;
     }
@@ -1127,7 +1127,7 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkAddTag(TagEntity $tag, array $ids, bool $skipHooks): int {
+  public function bulkAddTag(TagEntity $tag, array $ids, bool $skipHooks = true): int {
     $count = $this->addTagToSubscribers($tag, $ids, $skipHooks);
     $this->changesNotifier->subscribersUpdated($ids);
     return $count;
@@ -1136,7 +1136,7 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkRemoveTag(TagEntity $tag, array $ids, bool $skipHooks): int {
+  public function bulkRemoveTag(TagEntity $tag, array $ids, bool $skipHooks = true): int {
     if (empty($ids)) {
       return 0;
     }
