@@ -33,6 +33,7 @@ $form-line-height: 1.4;
   }
 
   .mailpoet_submit,
+  .mailpoet_form_close_button,
   .mailpoet_paragraph,
   .mailpoet_form_paragraph,
   .mailpoet_textarea,
@@ -57,6 +58,7 @@ $form-line-height: 1.4;
   .mailpoet_textarea,
   .mailpoet_select,
   .mailpoet_submit,
+  .mailpoet_form_close_button,
   .mailpoet_paragraph label,
   .mailpoet_form_paragraph label {
     font-family: inherit;
@@ -82,7 +84,8 @@ $form-line-height: 1.4;
     line-height: $form-line-height;
   }
 
-  .mailpoet_submit {
+  .mailpoet_submit,
+  .mailpoet_form_close_button {
     white-space: normal;
     word-wrap: break-word;
   }
