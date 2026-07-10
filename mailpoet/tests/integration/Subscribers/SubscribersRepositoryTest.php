@@ -313,7 +313,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscriberTwoId = $subscriberTwo->getId();
     $segmentOneId = $segmentOne->getId();
 
-    $this->repository->bulkAddToSegment($segmentOne, [$subscriberOneId]);
+    $this->repository->bulkAddToSegment($segmentOne, [$subscriberOneId], false);
 
     $this->entityManager->clear();
 
@@ -351,10 +351,33 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       $newSubscriber->getId(),
       $existingSubscriber->getId(),
       $unsubscribedSubscriber->getId(),
-    ]);
+    ], false);
 
     verify($count)->equals(2);
     verify($firedFor)->equals(['new@bulk-add-hook.com']);
+  }
+
+  public function testItBulkAddToSegmentCanSkipSubscribedHook(): void {
+    $segment = $this->segmentRepository->createOrUpdate('Bulk Add Skip Hook');
+    $subscriber = $this->createSubscriber('skip@bulk-add-hook.com');
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $hookCalls = 0;
+    $wp->addAction('mailpoet_segment_subscribed', function () use (&$hookCalls): void {
+      $hookCalls++;
+    });
+
+    $count = $this->repository->bulkAddToSegment($segment, [$subscriber->getId()], true);
+
+    verify($count)->equals(1);
+    verify($hookCalls)->equals(0);
+    $this->entityManager->clear();
+    verify($this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriber->getId(),
+      'segment' => $segment->getId(),
+    ]))->notNull();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
   }
 
   public function testItBulMoveSubscribersToSegment(): void {
@@ -370,7 +393,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $segmentOneId = $segmentOne->getId();
     $segmentTwoId = $segmentTwo->getId();
 
-    $this->repository->bulkMoveToSegment($segmentTwo, [$subscriberOneId]);
+    $this->repository->bulkMoveToSegment($segmentTwo, [$subscriberOneId], false);
 
     $this->entityManager->clear();
 
@@ -418,10 +441,42 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $count = $this->repository->bulkMoveToSegment($targetSegment, [
       $newTargetSubscriber->getId(),
       $existingTargetSubscriber->getId(),
-    ]);
+    ], false);
 
     verify($count)->equals(2);
     verify($firedFor)->equals(['new@bulk-move-hook.com']);
+  }
+
+  public function testItBulkMoveToSegmentCanSkipSubscribedHook(): void {
+    $sourceSegment = $this->segmentRepository->createOrUpdate('Bulk Move Skip Hook Source');
+    $targetSegment = $this->segmentRepository->createOrUpdate('Bulk Move Skip Hook Target');
+    $subscriber = $this->createSubscriber('skip@bulk-move-hook.com');
+    $this->createSubscriberSegment($sourceSegment, $subscriber);
+    $subscriberId = (int)$subscriber->getId();
+    $sourceSegmentId = (int)$sourceSegment->getId();
+    $targetSegmentId = (int)$targetSegment->getId();
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $hookCalls = 0;
+    $wp->addAction('mailpoet_segment_subscribed', function () use (&$hookCalls): void {
+      $hookCalls++;
+    });
+
+    $count = $this->repository->bulkMoveToSegment($targetSegment, [$subscriberId], true);
+
+    verify($count)->equals(1);
+    verify($hookCalls)->equals(0);
+    $this->entityManager->clear();
+    verify($this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriberId,
+      'segment' => $sourceSegmentId,
+    ]))->null();
+    verify($this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriberId,
+      'segment' => $targetSegmentId,
+    ]))->notNull();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
   }
 
   public function testItBulkMoveToSegmentFiresSubscribedHookWhenDestinationMembershipWasUnsubscribed(): void {
@@ -442,7 +497,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       $firedFor[] = $subscriber->getEmail();
     });
 
-    $count = $this->repository->bulkMoveToSegment($targetSegment, [$subscriber->getId()]);
+    $count = $this->repository->bulkMoveToSegment($targetSegment, [$subscriber->getId()], false);
 
     verify($count)->equals(1);
     verify($firedFor)->equals(['reactivated@bulk-move-hook.com']);
@@ -481,7 +536,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     });
 
     try {
-      $repository->bulkMoveToSegment($targetSegment, [$subscriberId]);
+      $repository->bulkMoveToSegment($targetSegment, [$subscriberId], false);
       $this->fail('Expected subscribed hook failure');
     } catch (\RuntimeException $exception) {
       verify($exception->getMessage())->equals('Subscribed hook failed');
@@ -813,12 +868,35 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       $firedFor[] = $subscriber->getEmail();
     });
 
-    $count = $this->repository->bulkAddTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()]);
+    $count = $this->repository->bulkAddTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()], false);
 
     verify($count)->equals(1);
     verify($firedFor)->equals(['one@bulk-add-tag.com']);
     $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy(['tag' => $tag]);
     verify($subscriberTags)->arrayCount(2);
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+  }
+
+  public function testItBulkAddTagCanSkipTagAddedHook(): void {
+    $tag = $this->createTag('Bulk added tag without hook');
+    $subscriber = $this->createSubscriber('skip@bulk-add-tag.com');
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_added');
+    $hookCalls = 0;
+    $wp->addAction('mailpoet_subscriber_tag_added', function () use (&$hookCalls): void {
+      $hookCalls++;
+    });
+
+    $count = $this->repository->bulkAddTag($tag, [$subscriber->getId()], true);
+
+    verify($count)->equals(1);
+    verify($hookCalls)->equals(0);
+    $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy([
+      'subscriber' => $subscriber,
+      'tag' => $tag,
+    ]);
+    verify($subscriberTags)->arrayCount(1);
     $wp->removeAllActions('mailpoet_subscriber_tag_added');
   }
 
@@ -837,12 +915,37 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       $firedFor[] = $subscriber->getEmail();
     });
 
-    $count = $this->repository->bulkRemoveTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()]);
+    $count = $this->repository->bulkRemoveTag($tag, [$subscriberOne->getId(), $subscriberTwo->getId()], false);
 
     verify($count)->equals(1);
     verify($firedFor)->equals(['one@bulk-remove-tag.com']);
     $this->entityManager->clear();
     $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy(['tag' => $tag]);
+    verify($subscriberTags)->arrayCount(0);
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
+  public function testItBulkRemoveTagCanSkipTagRemovedHook(): void {
+    $tag = $this->createTag('Bulk removed tag without hook');
+    $subscriber = $this->createSubscriber('skip@bulk-remove-tag.com');
+    $this->createSubscriberTag($subscriber, $tag);
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+    $hookCalls = 0;
+    $wp->addAction('mailpoet_subscriber_tag_removed', function () use (&$hookCalls): void {
+      $hookCalls++;
+    });
+
+    $count = $this->repository->bulkRemoveTag($tag, [$subscriber->getId()], true);
+
+    verify($count)->equals(1);
+    verify($hookCalls)->equals(0);
+    $this->entityManager->clear();
+    $subscriberTags = $this->entityManager->getRepository(SubscriberTagEntity::class)->findBy([
+      'subscriber' => $subscriber->getId(),
+      'tag' => $tag->getId(),
+    ]);
     verify($subscriberTags)->arrayCount(0);
     $wp->removeAllActions('mailpoet_subscriber_tag_removed');
   }

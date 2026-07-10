@@ -807,41 +807,48 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkAddToSegment(SegmentEntity $segment, array $ids): int {
+  public function bulkAddToSegment(SegmentEntity $segment, array $ids, bool $skipHooks): int {
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
     $this->changesNotifier->subscribersUpdated($ids);
-    $this->fireSegmentSubscribedHooks($subscriberSegments);
+    if (!$skipHooks) {
+      $this->fireSegmentSubscribedHooks($subscriberSegments);
+    }
     return count($subscriberSegments);
   }
 
    /**
    * @return int - number of processed ids
    */
-  public function bulkMoveToSegment(SegmentEntity $segment, array $ids): int {
+  public function bulkMoveToSegment(SegmentEntity $segment, array $ids, bool $skipHooks): int {
     if (empty($ids)) {
       return 0;
     }
 
-    /** @var string[] $subscriberIdsAlreadyInSegment */
-    $subscriberIdsAlreadyInSegment = $this->entityManager
-      ->createQueryBuilder()
-      ->select('IDENTITY(ss.subscriber)')
-      ->from(SubscriberSegmentEntity::class, 'ss')
-      ->where('ss.subscriber IN (:ids)')
-      ->andWhere('ss.segment = :segment')
-      ->andWhere('ss.status = :status')
-      ->setParameter('ids', $ids)
-      ->setParameter('segment', $segment)
-      ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED)
-      ->getQuery()
-      ->getSingleColumnResult();
-    $subscriberIdsAlreadyInSegment = array_fill_keys(array_map('intval', $subscriberIdsAlreadyInSegment), true);
+    $subscriberIdsAlreadyInSegment = [];
+    if (!$skipHooks) {
+      /** @var string[] $subscriberIdsAlreadyInSegment */
+      $subscriberIdsAlreadyInSegment = $this->entityManager
+        ->createQueryBuilder()
+        ->select('IDENTITY(ss.subscriber)')
+        ->from(SubscriberSegmentEntity::class, 'ss')
+        ->where('ss.subscriber IN (:ids)')
+        ->andWhere('ss.segment = :segment')
+        ->andWhere('ss.status = :status')
+        ->setParameter('ids', $ids)
+        ->setParameter('segment', $segment)
+        ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED)
+        ->getQuery()
+        ->getSingleColumnResult();
+      $subscriberIdsAlreadyInSegment = array_fill_keys(array_map('intval', $subscriberIdsAlreadyInSegment), true);
+    }
 
     $this->removeSubscribersFromAllSegments($ids);
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
 
     $this->changesNotifier->subscribersUpdated($ids);
-    $this->fireSegmentSubscribedHooks($subscriberSegments, $subscriberIdsAlreadyInSegment);
+    if (!$skipHooks) {
+      $this->fireSegmentSubscribedHooks($subscriberSegments, $subscriberIdsAlreadyInSegment);
+    }
     return count($subscriberSegments);
   }
 
@@ -1120,8 +1127,8 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkAddTag(TagEntity $tag, array $ids): int {
-    $count = $this->addTagToSubscribers($tag, $ids);
+  public function bulkAddTag(TagEntity $tag, array $ids, bool $skipHooks): int {
+    $count = $this->addTagToSubscribers($tag, $ids, $skipHooks);
     $this->changesNotifier->subscribersUpdated($ids);
     return $count;
   }
@@ -1129,21 +1136,24 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  public function bulkRemoveTag(TagEntity $tag, array $ids): int {
+  public function bulkRemoveTag(TagEntity $tag, array $ids, bool $skipHooks): int {
     if (empty($ids)) {
       return 0;
     }
 
-    /** @var SubscriberTagEntity[] $subscriberTags */
-    $subscriberTags = $this->entityManager
-      ->createQueryBuilder()
-      ->select('st')
-      ->from(SubscriberTagEntity::class, 'st')
-      ->where('st.subscriber IN (:ids)')
-      ->andWhere('st.tag = :tag')
-      ->setParameter('ids', $ids)
-      ->setParameter('tag', $tag)
-      ->getQuery()->execute();
+    $subscriberTags = [];
+    if (!$skipHooks) {
+      /** @var SubscriberTagEntity[] $subscriberTags */
+      $subscriberTags = $this->entityManager
+        ->createQueryBuilder()
+        ->select('st')
+        ->from(SubscriberTagEntity::class, 'st')
+        ->where('st.subscriber IN (:ids)')
+        ->andWhere('st.tag = :tag')
+        ->setParameter('ids', $ids)
+        ->setParameter('tag', $tag)
+        ->getQuery()->execute();
+    }
 
     $subscriberTagsTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
     $count = (int)$this->entityManager->getConnection()->executeStatement("
@@ -1152,10 +1162,12 @@ class SubscribersRepository extends Repository {
        AND st.`tag_id` = :tag_id
     ", ['ids' => $ids, 'tag_id' => $tag->getId()], ['ids' => ArrayParameterType::INTEGER]);
 
-    // Fires the hook that triggers "Tag removed" automations (see SubscriberSaveController::updateTags()).
-    foreach ($subscriberTags as $subscriberTag) {
-      $this->entityManager->detach($subscriberTag);
-      $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
+    if (!$skipHooks) {
+      // Fires the hook that triggers "Tag removed" automations (see SubscriberSaveController::updateTags()).
+      foreach ($subscriberTags as $subscriberTag) {
+        $this->entityManager->detach($subscriberTag);
+        $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
+      }
     }
 
     $this->changesNotifier->subscribersUpdated($ids);
@@ -1464,7 +1476,7 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
-  private function addTagToSubscribers(TagEntity $tag, array $ids): int {
+  private function addTagToSubscribers(TagEntity $tag, array $ids, bool $skipHooks): int {
     if (empty($ids)) {
       return 0;
     }
@@ -1491,9 +1503,11 @@ class SubscribersRepository extends Repository {
       $entityManager->flush();
     });
 
-    // Fires the hook that triggers "Tag added" automations (see SubscriberSaveController::updateTags()).
-    foreach ($subscriberTags as $subscriberTag) {
-      $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+    if (!$skipHooks) {
+      // Fires the hook that triggers "Tag added" automations (see SubscriberSaveController::updateTags()).
+      foreach ($subscriberTags as $subscriberTag) {
+        $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+      }
     }
 
     return count($subscribers);
