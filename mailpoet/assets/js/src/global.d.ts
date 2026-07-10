@@ -223,6 +223,7 @@ interface Window {
     assets_url?: string;
     collect_subscriber_timezones?: boolean | '' | '1';
     openPopup?: (formId: number | string) => boolean;
+    closePopup?: (formId: number | string) => boolean;
   };
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];

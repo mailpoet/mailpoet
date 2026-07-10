@@ -865,6 +865,12 @@ jQuery(($) => {
     });
   };
 
+  const closeForm = (formDiv) => {
+    formDiv.removeClass('active');
+    formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
+    setFormCookieOnClose(formDiv);
+  };
+
   if (window.MailPoetForm) {
     window.MailPoetForm.openPopup = (formId) => {
       const parsedFormId = parseInt(`${formId}`, 10);
@@ -876,6 +882,18 @@ jQuery(($) => {
         return false;
       }
       return openPopupForm(formDiv);
+    };
+    window.MailPoetForm.closePopup = (formId) => {
+      const parsedFormId = parseInt(`${formId}`, 10);
+      if (Number.isNaN(parsedFormId)) {
+        return false;
+      }
+      const formDiv = $(`#mp_form_popup${parsedFormId}`);
+      if (formDiv.length === 0) {
+        return false;
+      }
+      closeForm(formDiv);
+      return true;
     };
   }
 
@@ -908,12 +926,6 @@ jQuery(($) => {
     }
   }
 
-  const closeForm = (formDiv) => {
-    formDiv.removeClass('active');
-    formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
-    setFormCookieOnClose(formDiv);
-  };
-
   $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
       $('div.mailpoet_form').each((_, element: HTMLFormElement) => {
@@ -940,12 +952,21 @@ jQuery(($) => {
       }
       initBehavioralSignals(form);
     });
-    $('.mailpoet_form_close_icon').on('click', (event) => {
-      const closeIcon = $(event.target);
-      const formDiv = closeIcon.parent();
-      if (formDiv.data('is-preview')) return; // Do not close popup in preview
-      closeForm(formDiv);
-    });
+    $(document).on(
+      'click',
+      '.mailpoet_form_close_icon, .mailpoet_form_close',
+      (event) => {
+        // The wrapper div and the inner form both carry `mailpoet_form`; the
+        // `active` visibility class lives on the wrapper div, so match that and
+        // not the inner form (which a close link inside the form resolves to
+        // first).
+        const formDiv = $(event.currentTarget).closest('div.mailpoet_form');
+        if (formDiv.length === 0) return;
+        if (formDiv.data('is-preview')) return; // Do not close popup in preview
+        event.preventDefault();
+        closeForm(formDiv);
+      },
+    );
 
     $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each(
       (_, element) => {
