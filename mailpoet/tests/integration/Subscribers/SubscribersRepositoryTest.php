@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
@@ -328,6 +329,34 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberTwoId]))->arrayCount(0);
   }
 
+  public function testItBulkAddToSegmentFiresSubscribedHookOnlyForNewGloballySubscribedSubscribers(): void {
+    $segment = $this->segmentRepository->createOrUpdate('Bulk Add Hook');
+    $newSubscriber = $this->createSubscriber('new@bulk-add-hook.com');
+    $existingSubscriber = $this->createSubscriber('existing@bulk-add-hook.com');
+    $unsubscribedSubscriber = $this->createSubscriber('unsubscribed@bulk-add-hook.com');
+    $unsubscribedSubscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->createSubscriberSegment($segment, $existingSubscriber);
+    $this->entityManager->flush();
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $firedFor = [];
+    $wp->addAction('mailpoet_segment_subscribed', function (SubscriberSegmentEntity $subscriberSegment) use (&$firedFor) {
+      $subscriber = $subscriberSegment->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = $subscriber->getEmail();
+    });
+
+    $count = $this->repository->bulkAddToSegment($segment, [
+      $newSubscriber->getId(),
+      $existingSubscriber->getId(),
+      $unsubscribedSubscriber->getId(),
+    ]);
+
+    verify($count)->equals(2);
+    verify($firedFor)->equals(['new@bulk-add-hook.com']);
+  }
+
   public function testItBulMoveSubscribersToSegment(): void {
     $subscriberOne = $this->createSubscriber('one@move.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@move.com', new DateTimeImmutable());
@@ -366,6 +395,104 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentTwoId,
     ]))->notNull();
+  }
+
+  public function testItBulkMoveToSegmentFiresSubscribedHookOnlyForNewDestinationMemberships(): void {
+    $sourceSegment = $this->segmentRepository->createOrUpdate('Bulk Move Hook Source');
+    $targetSegment = $this->segmentRepository->createOrUpdate('Bulk Move Hook Target');
+    $newTargetSubscriber = $this->createSubscriber('new@bulk-move-hook.com');
+    $existingTargetSubscriber = $this->createSubscriber('existing@bulk-move-hook.com');
+    $this->createSubscriberSegment($sourceSegment, $newTargetSubscriber);
+    $this->createSubscriberSegment($sourceSegment, $existingTargetSubscriber);
+    $this->createSubscriberSegment($targetSegment, $existingTargetSubscriber);
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $firedFor = [];
+    $wp->addAction('mailpoet_segment_subscribed', function (SubscriberSegmentEntity $subscriberSegment) use (&$firedFor) {
+      $subscriber = $subscriberSegment->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = $subscriber->getEmail();
+    });
+
+    $count = $this->repository->bulkMoveToSegment($targetSegment, [
+      $newTargetSubscriber->getId(),
+      $existingTargetSubscriber->getId(),
+    ]);
+
+    verify($count)->equals(2);
+    verify($firedFor)->equals(['new@bulk-move-hook.com']);
+  }
+
+  public function testItBulkMoveToSegmentFiresSubscribedHookWhenDestinationMembershipWasUnsubscribed(): void {
+    $sourceSegment = $this->segmentRepository->createOrUpdate('Bulk Move Reactivation Source');
+    $targetSegment = $this->segmentRepository->createOrUpdate('Bulk Move Reactivation Target');
+    $subscriber = $this->createSubscriber('reactivated@bulk-move-hook.com');
+    $this->createSubscriberSegment($sourceSegment, $subscriber);
+    $targetMembership = $this->createSubscriberSegment($targetSegment, $subscriber);
+    $targetMembership->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $firedFor = [];
+    $wp->addAction('mailpoet_segment_subscribed', function (SubscriberSegmentEntity $subscriberSegment) use (&$firedFor) {
+      $subscriber = $subscriberSegment->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      $firedFor[] = $subscriber->getEmail();
+    });
+
+    $count = $this->repository->bulkMoveToSegment($targetSegment, [$subscriber->getId()]);
+
+    verify($count)->equals(1);
+    verify($firedFor)->equals(['reactivated@bulk-move-hook.com']);
+    $this->entityManager->clear();
+    $targetMembership = $this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriber->getId(),
+      'segment' => $targetSegment->getId(),
+    ]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $targetMembership);
+    verify($targetMembership->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testItRecalculatesCountsAndNotifiesChangesBeforeFailingSubscribedHook(): void {
+    $sourceSegment = $this->segmentRepository->createOrUpdate('Bulk Move Hook Failure Source');
+    $targetSegment = $this->segmentRepository->createOrUpdate('Bulk Move Hook Failure Target');
+    $subscriber = $this->createSubscriber('failure@bulk-move-hook.com');
+    $this->createSubscriberSegment($sourceSegment, $subscriber);
+    $subscriberId = (int)$subscriber->getId();
+    $events = [];
+    $notifiedIds = [];
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'subscribersUpdated' => function (array $subscriberIds) use (&$events, &$notifiedIds): void {
+        $events[] = 'notified';
+        $notifiedIds = $subscriberIds;
+      },
+    ]);
+    $repository = $this->getServiceWithOverrides(SubscribersRepository::class, [
+      'changesNotifier' => $changesNotifier,
+    ]);
+
+    $wp = new WPFunctions();
+    $wp->removeAllActions('mailpoet_segment_subscribed');
+    $wp->addAction('mailpoet_segment_subscribed', function () use (&$events): void {
+      $events[] = 'hook';
+      throw new \RuntimeException('Subscribed hook failed');
+    });
+
+    try {
+      $repository->bulkMoveToSegment($targetSegment, [$subscriberId]);
+      $this->fail('Expected subscribed hook failure');
+    } catch (\RuntimeException $exception) {
+      verify($exception->getMessage())->equals('Subscribed hook failed');
+    }
+
+    $this->entityManager->clear();
+    $subscriber = $repository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getSegmentsCount())->equals(1);
+    verify($notifiedIds)->equals([$subscriberId]);
+    verify($events)->equals(['notified', 'hook']);
   }
 
   public function testItDoesntRemovePermanentlyWordpressSubscriber(): void {
