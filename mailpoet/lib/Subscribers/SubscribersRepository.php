@@ -808,9 +808,10 @@ class SubscribersRepository extends Repository {
    * @return int - number of processed ids
    */
   public function bulkAddToSegment(SegmentEntity $segment, array $ids): int {
-    $count = $this->addSubscribersToSegment($segment, $ids);
+    $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
     $this->changesNotifier->subscribersUpdated($ids);
-    return $count;
+    $this->fireSegmentSubscribedHooks($subscriberSegments);
+    return count($subscriberSegments);
   }
 
    /**
@@ -821,11 +822,27 @@ class SubscribersRepository extends Repository {
       return 0;
     }
 
+    /** @var string[] $subscriberIdsAlreadyInSegment */
+    $subscriberIdsAlreadyInSegment = $this->entityManager
+      ->createQueryBuilder()
+      ->select('IDENTITY(ss.subscriber)')
+      ->from(SubscriberSegmentEntity::class, 'ss')
+      ->where('ss.subscriber IN (:ids)')
+      ->andWhere('ss.segment = :segment')
+      ->andWhere('ss.status = :status')
+      ->setParameter('ids', $ids)
+      ->setParameter('segment', $segment)
+      ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->getQuery()
+      ->getSingleColumnResult();
+    $subscriberIdsAlreadyInSegment = array_fill_keys(array_map('intval', $subscriberIdsAlreadyInSegment), true);
+
     $this->removeSubscribersFromAllSegments($ids);
-    $count = $this->addSubscribersToSegment($segment, $ids);
+    $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
 
     $this->changesNotifier->subscribersUpdated($ids);
-    return $count;
+    $this->fireSegmentSubscribedHooks($subscriberSegments, $subscriberIdsAlreadyInSegment);
+    return count($subscriberSegments);
   }
 
   public function bulkUnsubscribe(array $ids): int {
@@ -1381,11 +1398,12 @@ class SubscribersRepository extends Repository {
   }
 
   /**
-   * @return int - number of processed ids
+   * @param int[] $ids
+   * @return SubscriberSegmentEntity[]
    */
-  private function addSubscribersToSegment(SegmentEntity $segment, array $ids): int {
+  private function addSubscribersToSegment(SegmentEntity $segment, array $ids): array {
     if (empty($ids)) {
-      return 0;
+      return [];
     }
 
     $subscribers = $this->entityManager
@@ -1403,12 +1421,14 @@ class SubscribersRepository extends Repository {
       return $s instanceof SubscriberEntity;
     })) : [];
 
-    $this->entityManager->transactional(function (EntityManager $entityManager) use ($subscribers, $segment) {
+    $subscriberSegments = [];
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($subscribers, $segment, &$subscriberSegments) {
       foreach ($subscribers as $subscriber) {
         $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
-        $this->entityManager->persist($subscriberSegment);
+        $entityManager->persist($subscriberSegment);
+        $subscriberSegments[] = $subscriberSegment;
       }
-      $this->entityManager->flush();
+      $entityManager->flush();
     });
 
     if ($subscribers !== []) {
@@ -1417,7 +1437,28 @@ class SubscribersRepository extends Repository {
       }, $subscribers));
     }
 
-    return count($subscribers);
+    return $subscriberSegments;
+  }
+
+  /**
+   * @param SubscriberSegmentEntity[] $subscriberSegments
+   * @param array<int, true> $subscriberIdsToSkip
+   */
+  private function fireSegmentSubscribedHooks(
+    array $subscriberSegments,
+    array $subscriberIdsToSkip = []
+  ): void {
+    foreach ($subscriberSegments as $subscriberSegment) {
+      $subscriber = $subscriberSegment->getSubscriber();
+      if (
+        !$subscriber instanceof SubscriberEntity
+        || $subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED
+        || isset($subscriberIdsToSkip[(int)$subscriber->getId()])
+      ) {
+        continue;
+      }
+      $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+    }
   }
 
   /**
