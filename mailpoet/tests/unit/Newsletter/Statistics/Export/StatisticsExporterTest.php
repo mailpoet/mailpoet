@@ -187,6 +187,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $body = substr((string)file_get_contents($files[0]), 3);
     $exportedRows = $this->parseCsvRows($body);
     verify($exportedRows)->arrayCount(2);
+    verify($exportedRows[0])->arrayCount(13);
+    verify($exportedRows[1])->arrayCount(13);
     verify($exportedRows[1][1])->equals('a@example.test');
     verify($exportedRows[1][2])->equals('Alice');
   }
@@ -290,6 +292,37 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify($exportedRows[1][15])->equals('2026-02-01 01:00:00');
   }
 
+  public function testItPadsLegacyRecipientFilterRowsForTimeZoneCampaigns() {
+    $newsletter = $this->createNewsletter(79, 'Legacy timezone rows', null, '2026-02-01 00:00:00', $this->createTimeZoneQueue());
+    $legacyRows = [
+      [1, 'legacy@example.test', 'Legacy', 'Subscriber', 'subscribed', 'Y', '', 0, 'N', 'N', 0, 'N', 'N'],
+    ];
+
+    $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'wpMkdirP' => function (string $dir) {
+        return mkdir($dir, 0777, true);
+      },
+      'applyFilters' => function (string $hook, $value) use ($legacyRows) {
+        if ($hook === StatisticsExporter::FILTER_RECIPIENT_ROWS) {
+          return $legacyRows;
+        }
+        return $value;
+      },
+      'homeUrl' => 'https://example.test',
+    ]);
+    $exporter = new StatisticsExporter($repository, $this->make(TimeZoneCampaignScheduler::class), $wp);
+
+    $exporter->exportRecipients($newsletter, StatisticsExporter::FORMAT_CSV);
+
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
+    verify($files)->arrayCount(1);
+    $exportedRows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
+    verify($exportedRows[0])->arrayCount(16);
+    verify($exportedRows[1])->arrayCount(16);
+    verify(array_slice($exportedRows[1], 13))->equals(['', '', '']);
+  }
+
   public function testItExportsTimezoneRecipientsAsXlsx() {
     $newsletter = $this->createNewsletter(78, 'Timezone xlsx', null, '2026-02-01 00:00:00', $this->createTimeZoneQueue());
     $repository = $this->makeEmpty(NewsletterStatisticsRepository::class);
@@ -314,7 +347,20 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify($result['totalExported'])->equals(1);
     $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
     verify($files)->arrayCount(1);
-    verify(filesize($files[0]))->greaterThan(0);
+    $exportedRows = $this->parseXlsxRows($files[0]);
+    verify($exportedRows)->arrayCount(2);
+    verify($exportedRows[0])->arrayCount(16);
+    verify(array_slice($exportedRows[0], 13))->equals([
+      'Delivery timezone',
+      'Timezone fallback used',
+      'Local send time',
+    ]);
+    verify($exportedRows[1])->arrayCount(16);
+    verify(array_slice($exportedRows[1], 13))->equals([
+      'Europe/Prague',
+      'No',
+      '2026-02-01 01:00:00',
+    ]);
   }
 
   private function createExporter(NewsletterStatistics $stats): StatisticsExporter {
@@ -357,6 +403,63 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
       glob(ExportDownload::getExportDirectory() . '/*') ?: [],
       glob(ExportDownload::getExportDirectory() . '/.htaccess') ?: []
     );
+  }
+
+  /**
+   * @return array<array<string>>
+   */
+  private function parseXlsxRows(string $file): array {
+    $archive = new \ZipArchive();
+    if ($archive->open($file) !== true) {
+      throw new \RuntimeException('Unable to open exported XLSX file.');
+    }
+    try {
+      $sharedStringsXml = $archive->getFromName('xl/sharedStrings.xml');
+      $worksheetXml = $archive->getFromName('xl/worksheets/sheet1.xml');
+    } finally {
+      $archive->close();
+    }
+    if (!is_string($sharedStringsXml) || !is_string($worksheetXml)) {
+      throw new \RuntimeException('Exported XLSX file is missing worksheet data.');
+    }
+
+    $sharedStringsDocument = new \DOMDocument();
+    $worksheetDocument = new \DOMDocument();
+    if (!$sharedStringsDocument->loadXML($sharedStringsXml) || !$worksheetDocument->loadXML($worksheetXml)) {
+      throw new \RuntimeException('Exported XLSX file contains invalid XML.');
+    }
+
+    $namespace = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+    $sharedStrings = [];
+    foreach ($sharedStringsDocument->getElementsByTagNameNS($namespace, 'si') as $sharedStringNode) {
+      if (!$sharedStringNode instanceof \DOMElement) {
+        throw new \RuntimeException('Unable to read exported XLSX shared string node.');
+      }
+      $sharedStrings[] = $sharedStringNode->textContent;
+    }
+
+    $rows = [];
+    foreach ($worksheetDocument->getElementsByTagNameNS($namespace, 'row') as $rowNode) {
+      if (!$rowNode instanceof \DOMElement) {
+        throw new \RuntimeException('Unable to read exported XLSX row node.');
+      }
+      $row = [];
+      foreach ($rowNode->childNodes as $cellNode) {
+        if (!$cellNode instanceof \DOMElement || $cellNode->localName !== 'c') {
+          continue;
+        }
+        $valueNode = $cellNode->getElementsByTagNameNS($namespace, 'v')->item(0);
+        if ($valueNode !== null && !$valueNode instanceof \DOMElement) {
+          throw new \RuntimeException('Unable to read exported XLSX cell value node.');
+        }
+        $value = $valueNode ? $valueNode->textContent : '';
+        $row[] = $cellNode->getAttribute('t') === 's'
+          ? ($sharedStrings[(int)$value] ?? '')
+          : $value;
+      }
+      $rows[] = $row;
+    }
+    return $rows;
   }
 
   /**

@@ -182,6 +182,34 @@ class TimeZoneCampaignScheduler {
     return $this->getCampaignQueuesById($newsletter, $campaignId);
   }
 
+  /** Resolves replay sources directly so newsletters with many replays stay cheap to inspect. */
+  public function resolveTimeZoneCampaignQueue(NewsletterEntity $newsletter): ?SendingQueueEntity {
+    $latestQueue = $newsletter->getLatestQueue();
+    if ($latestQueue === null) {
+      return null;
+    }
+    if ($this->isTimeZoneQueue($latestQueue)) {
+      return $latestQueue;
+    }
+
+    $meta = $latestQueue->getMeta() ?? [];
+    if (!NewsletterReplayMetadata::isLatestNewsletterReplayMeta($meta)) {
+      return null;
+    }
+    $sourceQueueId = (int)($meta[NewsletterReplayMetadata::REPLAY_SOURCE_QUEUE_ID] ?? 0);
+    if ($sourceQueueId <= 0) {
+      return null;
+    }
+
+    $sourceQueue = $this->sendingQueuesRepository->findOneBy([
+      'id' => $sourceQueueId,
+      'newsletter' => $newsletter,
+    ]);
+    return $sourceQueue instanceof SendingQueueEntity && $this->isTimeZoneQueue($sourceQueue)
+      ? $sourceQueue
+      : null;
+  }
+
   public function hasIncompleteCampaignQueues(SendingQueueEntity $queue): bool {
     foreach ($this->getCampaignQueues($queue) as $campaignQueue) {
       $task = $campaignQueue->getTask();

@@ -108,6 +108,12 @@ class StatisticsExporter {
 
     /** @var array<array<int|string|float|null>> $rows */
     $rows = (array)$this->wp->applyFilters(self::FILTER_RECIPIENT_ROWS, [], $newsletter);
+    if (count($headers) > count($this->getRecipientHeaders())) {
+      $headerCount = count($headers);
+      foreach ($rows as $index => $row) {
+        $rows[$index] = array_pad($row, $headerCount, '');
+      }
+    }
 
     $this->ensureExportDirectory();
     $file = ExportDownload::createExportFile(self::FILE_PREFIX, $format);
@@ -122,9 +128,8 @@ class StatisticsExporter {
   /**
    * Recipient export headers. For subscriber-timezone campaigns three extra
    * delivery columns are appended; the premium plugin appends the matching
-   * row cells in `RecipientsExporter::getRows()` using the same
-   * `TimeZoneCampaignScheduler::isTimeZoneQueue()` predicate, so the two
-   * MUST stay in sync.
+   * row cells in `RecipientsExporter::getRows()` using the same resolver, so
+   * the two MUST stay in sync.
    *
    * @return string[]
    */
@@ -153,8 +158,7 @@ class StatisticsExporter {
   }
 
   private function isTimeZoneCampaign(NewsletterEntity $newsletter): bool {
-    $queue = $newsletter->getLatestQueue();
-    return $queue !== null && $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue);
+    return $this->timeZoneCampaignScheduler->resolveTimeZoneCampaignQueue($newsletter) !== null;
   }
 
   /**
