@@ -62,6 +62,7 @@ class CloseTest extends \MailPoetUnitTest {
     $style = $this->htmlParser->getAttribute($button, 'style');
     verify($type->value)->equals('button');
     verify($class->value)->stringContainsString('mailpoet_form_close');
+    verify($class->value)->stringContainsString('mailpoet_form_close_button');
     verify($style->value)->equals('border-radius: 10px;');
     verify($button->textContent)->equals('No thanks');
   }

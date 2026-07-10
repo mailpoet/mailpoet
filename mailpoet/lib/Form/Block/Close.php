@@ -33,7 +33,7 @@ class Close {
   }
 
   public function render(array $block, array $formSettings): string {
-    $html = '<button type="button" class="mailpoet_form_close" ';
+    $html = '<button type="button" class="mailpoet_form_close mailpoet_form_close_button" ';
 
     $html .= 'data-automation-id="form_close_button" ';
 

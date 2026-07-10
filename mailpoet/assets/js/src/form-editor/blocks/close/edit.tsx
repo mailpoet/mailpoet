@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { Panel, PanelBody, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
@@ -10,16 +10,18 @@ import { StylesSettings } from '../submit/styles-settings';
 import { InputBlockStyles } from '../../store/form-data-types';
 import { storeName } from '../../store/constants';
 
-type Props = {
-  attributes: {
-    label: string;
-    styles: InputBlockStyles;
-    className: string | null;
-  };
-  setAttributes: (attribute) => void;
+type Attributes = {
+  label: string;
+  styles: InputBlockStyles;
+  className: string | null;
 };
 
-function CloseEdit({ attributes, setAttributes }: Props): JSX.Element {
+type Props = {
+  attributes: Attributes;
+  setAttributes: (attributes: Partial<Attributes>) => void;
+};
+
+function CloseEdit({ attributes, setAttributes }: Props): ReactNode {
   const settings = useSelect(
     (select) => select(storeName).getFormSettings(),
     [],
@@ -98,9 +100,13 @@ function CloseEdit({ attributes, setAttributes }: Props): JSX.Element {
     styles.fontFamily = attributes.styles.fontFamily;
   }
 
-  const className = classnames('mailpoet_form_close', {
-    button: attributes.styles.inheritFromTheme,
-  });
+  const className = classnames(
+    'mailpoet_form_close',
+    'mailpoet_form_close_button',
+    {
+      button: attributes.styles.inheritFromTheme,
+    },
+  );
 
   return (
     <ParagraphEdit className={attributes.className}>
