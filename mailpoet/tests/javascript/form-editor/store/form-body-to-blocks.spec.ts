@@ -7,6 +7,7 @@ import {
   lastNameInput,
   segmentsInput,
   submitInput,
+  closeInput,
   customTextInput,
   customTextareaInput,
   customRadioInput,
@@ -309,6 +310,14 @@ describe('Form Body To Blocks', () => {
     expect(block.clientId).to.be.include('submit_');
     expect(block.name).to.be.equal('mailpoet-form/submit-button');
     expect(block.attributes.label).to.be.equal('Subscribe!');
+  });
+
+  it('Should map close button to block', () => {
+    const [block] = formBodyToBlocks([closeInput]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.include('close_');
+    expect(block.name).to.be.equal('mailpoet-form/close-button');
+    expect(block.attributes.label).to.be.equal('No thanks');
   });
 
   it('Should map divider to block', () => {

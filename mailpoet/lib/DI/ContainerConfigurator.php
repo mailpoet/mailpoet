@@ -444,6 +444,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Block\Radio::class);
     $container->autowire(\MailPoet\Form\Block\Segment::class);
     $container->autowire(\MailPoet\Form\Block\Select::class);
+    $container->autowire(\MailPoet\Form\Block\Close::class);
     $container->autowire(\MailPoet\Form\Block\Submit::class);
     $container->autowire(\MailPoet\Form\Block\Text::class);
     $container->autowire(\MailPoet\Form\Block\Textarea::class);

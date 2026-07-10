@@ -8,6 +8,7 @@ import { withFormBlockApiVersion } from './form-block-api-version';
 import * as divider from './divider/divider';
 import * as email from './email/email.jsx';
 import * as submit from './submit/submit.jsx';
+import * as close from './close/close';
 import * as firstName from './first-name/first-name.jsx';
 import * as lastName from './last-name/last-name.jsx';
 import * as segmentSelect from './segment-select/segment-select.jsx';
@@ -63,6 +64,7 @@ export const initBlocks = () => {
   registerBlockType(divider.name, withFormBlockApiVersion(divider.settings));
   registerBlockType(email.name, withFormBlockApiVersion(email.settings));
   registerBlockType(submit.name, withFormBlockApiVersion(submit.settings));
+  registerBlockType(close.name, withFormBlockApiVersion(close.settings));
   registerBlockType(
     firstName.name,
     withFormBlockApiVersion(firstName.settings),

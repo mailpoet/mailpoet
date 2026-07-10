@@ -40,6 +40,7 @@ class FormEntity {
   const TEXT_BLOCK_TYPE = 'text';
   const TEXTAREA_BLOCK_TYPE = 'textarea';
   const SUBMIT_BLOCK_TYPE = 'submit';
+  const CLOSE_BLOCK_TYPE = 'close';
   const COLUMNS_BLOCK_TYPE = 'columns';
   const COLUMN_BLOCK_TYPE = 'column';
 

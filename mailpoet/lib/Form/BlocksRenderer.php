@@ -4,6 +4,7 @@ namespace MailPoet\Form;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Block\Checkbox;
+use MailPoet\Form\Block\Close;
 use MailPoet\Form\Block\Column;
 use MailPoet\Form\Block\Columns;
 use MailPoet\Form\Block\Date;
@@ -23,6 +24,9 @@ use MailPoet\Util\Security;
 class BlocksRenderer {
   /** @var Checkbox */
   private $checkbox;
+
+  /** @var Close */
+  private $close;
 
   /** @var Date */
   private $date;
@@ -68,6 +72,7 @@ class BlocksRenderer {
 
   public function __construct(
     Checkbox $checkbox,
+    Close $close,
     Column $column,
     Columns $columns,
     Date $date,
@@ -84,6 +89,7 @@ class BlocksRenderer {
     Textarea $textarea
   ) {
     $this->checkbox = $checkbox;
+    $this->close = $close;
     $this->column = $column;
     $this->columns = $columns;
     $this->date = $date;
@@ -159,6 +165,10 @@ class BlocksRenderer {
 
       case FormEntity::SUBMIT_BLOCK_TYPE:
         $html .= $this->submit->render($block, $formSettings);
+        break;
+
+      case FormEntity::CLOSE_BLOCK_TYPE:
+        $html .= $this->close->render($block, $formSettings);
         break;
     }
     return $html;

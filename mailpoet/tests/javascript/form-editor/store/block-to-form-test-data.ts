@@ -27,6 +27,20 @@ export const submitBlock = {
   },
 };
 
+export const closeBlock = {
+  clientId: 'close',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/close-button',
+  attributes: {
+    label: 'No thanks',
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
+  },
+};
+
 export const segmentsBlock = {
   clientId: 'segments',
   isValid: true,
