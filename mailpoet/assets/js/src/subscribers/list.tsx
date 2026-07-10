@@ -41,6 +41,7 @@ import { getInitialPickerValue, type PickerConfig } from './picker-value';
 import { SelectAllBanner } from './select-all-banner';
 import { selectAllBannerState, shouldWarnLargeOperation } from './select-all';
 import { pruneUnavailableFilters } from './filter-sync';
+import { canTriggerAutomations } from './bulk-action-payload';
 import {
   bulkAction,
   getSubscribers,
@@ -533,6 +534,7 @@ function PickerModal({
   caveat,
   selectionNotice,
   requireChoice,
+  showAutomationOptIn,
   onApply,
   onClose,
 }: {
@@ -541,7 +543,8 @@ function PickerModal({
   caveat?: JSX.Element | null;
   selectionNotice?: JSX.Element | null;
   requireChoice?: boolean;
-  onApply: (value: number) => void;
+  showAutomationOptIn?: boolean;
+  onApply: (value: number, triggerAutomations: boolean) => void;
   onClose: () => void;
 }) {
   // The legacy `Selection` form widget wraps Select2 + jQuery. We treat it as
@@ -550,6 +553,7 @@ function PickerModal({
   const [value, setValue] = useState<number>(() =>
     requireChoice ? 0 : getInitialPickerValue(config),
   );
+  const [triggerAutomations, setTriggerAutomations] = useState(false);
   const fieldConfig = useMemo(
     () => ({
       id: config.fieldId,
@@ -571,7 +575,7 @@ function PickerModal({
 
   const handleApply = (): void => {
     if (!value) return;
-    onApply(value);
+    onApply(value, triggerAutomations);
   };
 
   return (
@@ -591,6 +595,19 @@ function PickerModal({
           setValue(Number.isFinite(next) ? next : 0);
         }}
       />
+      {showAutomationOptIn && (
+        <div data-automation-id="bulk-trigger-automations-checkbox">
+          <CheckboxControl
+            label={__('Trigger automations', 'mailpoet')}
+            help={__(
+              'Matching automations may send emails to these subscribers.',
+              'mailpoet',
+            )}
+            checked={triggerAutomations}
+            onChange={setTriggerAutomations}
+          />
+        </div>
+      )}
       <div className="mailpoet-subscribers-bulk-confirm-actions">
         <Button onClick={handleApply} isDisabled={!value}>
           {__('Apply', 'mailpoet')}
@@ -1425,6 +1442,7 @@ function SubscriberList() {
       return null;
     }
     const config = PICKERS[action];
+    const showAutomationOptIn = canTriggerAutomations(action);
     const selectAllScopeNotice = pendingSelectAll ? (
       <p>
         {__(
@@ -1440,13 +1458,19 @@ function SubscriberList() {
         caveat={largeOpCaveat}
         selectionNotice={selectAllScopeNotice}
         requireChoice={pendingSelectAll}
-        onApply={(value) =>
-          handlePendingActionSubmit(
+        showAutomationOptIn={showAutomationOptIn}
+        onApply={(value, triggerAutomations) => {
+          const target =
             config.kind === 'segment'
               ? { segment_id: value }
-              : { tag_id: value },
-          )
-        }
+              : { tag_id: value };
+          // `buildBulkActionPayload` drops `trigger_automations` for actions
+          // that cannot trigger automations, so it is safe to always pass it.
+          void handlePendingActionSubmit({
+            ...target,
+            trigger_automations: triggerAutomations,
+          });
+        }}
         onClose={closePendingAction}
       />
     );
