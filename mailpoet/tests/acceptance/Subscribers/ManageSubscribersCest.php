@@ -204,6 +204,13 @@ class ManageSubscribersCest {
     $i->wantTo('Add a subscriber to a list from the listing page');
     $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
     $i->selectListingBulkAction('Add to list...');
+    $triggerAutomationsCheckbox = '[data-automation-id="bulk-trigger-automations-checkbox"]';
+    $i->waitForElement($triggerAutomationsCheckbox);
+    $i->see('Trigger automations', $triggerAutomationsCheckbox);
+    $i->see('Matching automations may send emails', $triggerAutomationsCheckbox);
+    $i->dontSeeCheckboxIsChecked($triggerAutomationsCheckbox . ' input');
+    $i->checkOption($triggerAutomationsCheckbox . ' input');
+    $i->seeCheckboxIsChecked($triggerAutomationsCheckbox . ' input');
     // The picker modal wraps a Select2 widget. Selenium's `selectOption` works
     // by clicking the option, but Select2 hides the underlying <select> and
     // the click on the hidden option doesn't reliably propagate the change up
@@ -258,6 +265,8 @@ class ManageSubscribersCest {
     $i->waitForText($newSubscriberEmail);
     $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
     $i->selectListingBulkAction('Remove from list...');
+    $i->waitForElement('#remove_from_segment');
+    $i->dontSeeElement('[data-automation-id="bulk-trigger-automations-checkbox"]');
     $this->setPickerModalSegment($i, 'remove_from_segment', self::SINGLE_SEGMENT_NAME);
     $i->waitForNoticeAndClose('1 subscribers were removed from list ' . self::SINGLE_SEGMENT_NAME);
     $i->waitForListingItemsToLoad();
