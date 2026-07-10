@@ -65,6 +65,17 @@ export const submitInput = {
   },
   position: null,
 };
+export const closeInput = {
+  type: 'close',
+  name: 'Close',
+  id: 'close',
+  unique: '0',
+  static: '0',
+  params: {
+    label: 'No thanks',
+  },
+  position: null,
+};
 export const customTextInput = {
   type: 'text',
   name: 'Street name',

@@ -5,6 +5,7 @@ import {
   lastNameBlock,
   firstNameBlock,
   submitBlock,
+  closeBlock,
   segmentsBlock,
   customTextBlock,
   customRadioBlock,
@@ -232,6 +233,18 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Submit');
     expect(input.type).to.be.equal('submit');
     expect(input.params.label).to.be.equal('Subscribe!');
+    expect(input.styles).to.deep.equal({
+      full_width: '0',
+    });
+  });
+
+  it('Should map close block to close data', () => {
+    const [input] = formBlocksToBody([closeBlock]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('close');
+    expect(input.name).to.be.equal('Close');
+    expect(input.type).to.be.equal('close');
+    expect(input.params.label).to.be.equal('No thanks');
     expect(input.styles).to.deep.equal({
       full_width: '0',
     });

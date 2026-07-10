@@ -359,6 +359,16 @@ export const blocksToFormBodyFactory = (
                 block.attributes.styles as unknown as InputBlockStyles,
               ),
             };
+          case 'mailpoet-form/close-button':
+            return {
+              ...mapped,
+              id: 'close',
+              type: 'close',
+              name: 'Close',
+              styles: mapInputBlockStyles(
+                block.attributes.styles as unknown as InputBlockStyles,
+              ),
+            };
           case 'mailpoet-form/divider':
             return {
               ...mapped,

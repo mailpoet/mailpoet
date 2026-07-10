@@ -446,6 +446,15 @@ export const formBodyToBlocksFactory = (
                 styles: mapInputBlockStyles(item.styles),
               },
             };
+          case 'close':
+            return {
+              ...mapped,
+              name: 'mailpoet-form/close-button',
+              attributes: {
+                ...mapped.attributes,
+                styles: mapInputBlockStyles(item.styles),
+              },
+            };
           case 'divider':
             delete mapped.attributes.label;
             return {
