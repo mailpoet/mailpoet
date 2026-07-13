@@ -23,6 +23,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Util\Headers;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -515,6 +516,15 @@ class Pages {
       $formStatus = ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS;
     } else {
       $formStatus = ManageSubscriptionFormRenderer::FORM_STATE_NOT_SUBMITTED;
+    }
+
+    // The manage form embeds the subscriber's email and link token in the page
+    // body. On an ordinary post/page (block or [mailpoet_manage_subscription]
+    // shortcode) that markup is otherwise cacheable, so a full-page cache could
+    // serve one subscriber's token to another visitor. Preview renders only
+    // demo data, so they don't need this.
+    if (!$this->isPreview()) {
+      Headers::preventPageCaching();
     }
 
     return $this->wp->applyFilters(

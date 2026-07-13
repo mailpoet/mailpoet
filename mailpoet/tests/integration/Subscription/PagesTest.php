@@ -428,6 +428,16 @@ class PagesTest extends \MailPoetTest {
     verify($content)->stringNotContainsString('Your subscription settings have been saved.');
   }
 
+  public function testItPreventsCachingOfManageSubscriptionPageForRealSubscriber(): void {
+    // The manage form embeds the subscriber's email and link token in the page
+    // body, so the response must not be stored by a full-page cache. Rendering
+    // it for a real subscriber signals that by defining DONOTCACHEPAGE.
+    // Smoke check: the constant is process-global, so this asserts the wire-up
+    // rather than isolating this single call.
+    $this->getPages()->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+    verify(defined('DONOTCACHEPAGE'))->true();
+  }
+
   public function testItDoesNotSaveUnsubscribeReasonForPreview() {
     SettingsController::getInstance()->set('subscription.unsubscribe_survey.enabled', '1');
     $this->testData['preview'] = 1;
