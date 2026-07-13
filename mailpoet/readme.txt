@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.33.1
+Stable tag: 5.34.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,26 +227,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.33.1 - 2026-07-06 =
-* Added: Personalization tags for subscriber display name, subscriber count, custom fields, newsletter subject, and date in the email editor;
-* Added: Data inconsistencies tool can now clean up orphaned subscriber custom field and subscriber tag rows;
-* Added: Add action hook after signup confirmation;
-* Added: Public action hooks `mailpoet_segment_unsubscribed` and `mailpoet_subscription_after_subscribe` for third-party integrations;
-* Improved: Sped up the Subscribers without a list count and its status tabs on large lists;
-* Improved: Speed up the subscribers list status tab counts on large installs;
-* Improved: Clarify SMTP secure connection labels;
-* Improved: Sender controls and warnings in the block editor Review & Send panel;
-* Improved: Reactivate inactive subscribers immediately when they open, click, or otherwise engage instead of waiting for the maintenance cron;
-* Changed: Reduced the form editor script size by loading WordPress editor packages from WordPress core;
-* Changed: MailPoet WP-CLI commands to space-separated subcommands (e.g. `wp mailpoet migrations run`); the old colon-separated names still work but are deprecated;
-* Fixed: Newsletter statistics now include emails sent by the Send latest newsletter automation action;
-* Fixed: CLI subscriber import now skips and warns about CSV rows whose column count does not match the header instead of silently misaligning data;
-* Fixed: Text alignment controls for blocks in the form editor;
-* Fixed: Padding settings for paragraphs in the form editor;
-* Fixed: Remove orphaned subscriber_segment, subscriber_custom_field and subscriber_tag rows when deleting subscribers linked to invalid WordPress users;
-* Fixed: Post notification activation and deactivation on hosts that strip method override headers;
-* Fixed: Fix SMTP sending when secure connection is disabled;
-* Fixed: Fix subscriber import column auto-mapping for CSV headers;
-* Fixed: Form width in the editor for popup and slide-in forms to match the displayed form.
+= 5.34.0 - 2026-07-13 =
+* Added: Add a Manage Subscription block that renders the manage-subscription form (modern style) without requiring the shortcode or URL parameters;
+* Added: Timezone field in the subscriber edit form for viewing and editing a subscriber's timezone;
+* Added: Support for closing pop-up, slide-in and fixed bar forms from a custom link with the mailpoet_form_close CSS class, plus a Close button block in the form editor to add one easily;
+* Added: Option to trigger automations when bulk adding or moving subscribers to lists or adding or removing tags;
+* Improved: Use active theme colors in the form editor palette;
+* Fixed: Homepage, store, and account links in email editor emails becoming dead tracked links;
+* Fixed: Restored auto-mapping of first and last name CSV headers that use underscores, hyphens, dots or common abbreviations during subscriber import;
+* Fixed: Fatal error on some sites when the email editor loaded custom fields before a database migration finished during a plugin update.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

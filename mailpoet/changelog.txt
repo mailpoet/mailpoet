@@ -1,5 +1,15 @@
 == Changelog ==
 
+= 5.34.0 - 2026-07-13 =
+* Added: Add a Manage Subscription block that renders the manage-subscription form (modern style) without requiring the shortcode or URL parameters;
+* Added: Timezone field in the subscriber edit form for viewing and editing a subscriber's timezone;
+* Added: Support for closing pop-up, slide-in and fixed bar forms from a custom link with the mailpoet_form_close CSS class, plus a Close button block in the form editor to add one easily;
+* Added: Option to trigger automations when bulk adding or moving subscribers to lists or adding or removing tags;
+* Improved: Use active theme colors in the form editor palette;
+* Fixed: Homepage, store, and account links in email editor emails becoming dead tracked links;
+* Fixed: Restored auto-mapping of first and last name CSV headers that use underscores, hyphens, dots or common abbreviations during subscriber import;
+* Fixed: Fatal error on some sites when the email editor loaded custom fields before a database migration finished during a plugin update.
+
 = 5.33.1 - 2026-07-06 =
 * Added: Personalization tags for subscriber display name, subscriber count, custom fields, newsletter subject, and date in the email editor;
 * Added: Data inconsistencies tool can now clean up orphaned subscriber custom field and subscriber tag rows;
