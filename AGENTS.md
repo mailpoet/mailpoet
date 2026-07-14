@@ -383,23 +383,23 @@ Write descriptions so they start with a capital letter and read naturally after 
 
 ## Backward Compatibility
 
-Any change to a **public or externally exposed** class, interface, function, method, hook, or REST endpoint signature is **high-risk** and **must state its backward-compatibility impact in the PR description**. A location that looks internal is not a guarantee that a symbol is safe to change: third-party code — other plugins, themes, or custom site code, plus MailPoet Premium — implements and consumes some of these contracts in practice.
+Any change to a **public or externally exposed** class, interface, function, method, hook, or REST endpoint signature is **high-risk** and **must state its backward-compatibility impact in the PR description**. An internal-looking name or location is no guarantee a symbol is safe to change: other plugins, themes, and custom site code — plus MailPoet Premium — implement and consume these contracts in practice. When in doubt, assume it is exposed and state the BC impact.
 
-Treat a symbol as **externally exposed** when it is implemented or consumed outside this plugin, even if it looks internal. For MailPoet that includes:
+For MailPoet, externally exposed includes:
 
-- **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API::MP('v1')`. This is the documented contract third parties build on (subscribe/unsubscribe, subscribers, lists, tags, custom fields); its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
-- **Custom hooks** — the actions and filters MailPoet fires or registers (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing its arguments, or dropping it breaks whatever is hooked into it.
+- **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API::MP('v1')`. This is the documented contract third parties build on; its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
+- **Custom hooks** — the actions and filters MailPoet fires (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing its arguments, or dropping it breaks whatever is hooked in.
 - **WordPress REST API** — the `MailPoet\API\REST\` routes, their request/response shapes, and their auth expectations.
 - **Public PHP** — any `public` class, method, or function another plugin (including MailPoet Premium) or theme can autoload and call.
 - **Front-end globals** — the `window.MailPoet` JS object and any properties page scripts may read.
 
-When in doubt, assume it is exposed and state the BC impact.
+Rules:
 
-**Adding a method to an interface that external code can implement must be flagged explicitly.** It is a backward-incompatible change: existing implementers fatal on load because they no longer satisfy the contract. **Removing a required method from an interface is likewise breaking.** Prefer a non-breaking alternative — add the method to the concrete class rather than the interface, introduce a separate new interface, or supply a default implementation via an abstract base class.
+- **Never add or remove a required method on an interface that external code can implement** — existing implementers fatal on load. Prefer adding the method to the concrete class, introducing a new interface, or supplying a default implementation in an abstract base class. If an interface change is unavoidable, flag it explicitly.
+- **Deprecate, don't rename.** Never rename or remove an existing public symbol in place: mark it `@deprecated`, introduce the replacement alongside it, and keep both working through a deprecation window.
+- **Don't implement or type-hint WooCommerce core `Internal\` classes or interfaces** — core treats them as changeable in any release. If unavoidable, guard the dependency with `interface_exists()` / `method_exists()` checks so a core change doesn't fatal this plugin.
 
-**Deprecate, don't rename.** For existing public symbols (classes, interfaces, methods, constants, hooks), never rename or remove them in place. Mark the old symbol `@deprecated`, introduce the replacement alongside it, and keep both working through a deprecation window so external consumers have time to migrate.
-
-> Why this matters: a signature change to a shared contract can take down live sites. WooCommerce 10.9.0 was reverted on WP Cloud after a PR added a required `get_entry_count(): int` method to `FeedInterface`, fataling older WooCommerce Stripe Gateway versions that implemented it. The same failure mode applies to any published WooCommerce extension.
+> Why: WooCommerce 10.9.0 was reverted on WP Cloud after woocommerce/woocommerce#64394 added a required method to core's internal `FeedInterface`, fataling older WooCommerce Stripe Gateway versions that implemented it (fixed in woocommerce/woocommerce#65965). The same failure mode applies to any published WooCommerce extension.
 
 ## Available Skills
 
