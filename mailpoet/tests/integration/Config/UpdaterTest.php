@@ -188,11 +188,11 @@ class UpdaterTest extends \MailPoetTest {
     verify(isset($result->no_update[$this->pluginName]))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
-  public function testItChecksForUpdatesWithFreeVersionInTransient() {
+  public function testItSkipsUpdateWhenFreeUpdateIsPendingButNotInstalled() {
     $updateTransient = new \stdClass;
     $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    // Mock free plugin update in transient
+    // A compatible free update is available in the transient, but not yet installed
     $updateTransient->response = [];
     $updateTransient->response[Env::$pluginPath] = (object)[
       'id' => 'w.org/plugins/mailpoet',
@@ -225,8 +225,10 @@ class UpdaterTest extends \MailPoetTest {
     $updater->currentFreeVersion = '5.16.0';
     $result = $updater->checkForUpdate($updateTransient);
 
-    // Should process the update since versions are compatible
-    verify($result->response[$this->pluginName]->new_version)->equals('5.17.0'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    // Premium must not be offered while the installed free version is incompatible,
+    // even though a compatible free update is pending in the transient.
+    verify(isset($result->response[$this->pluginName]))->false();
+    verify(isset($result->no_update[$this->pluginName]))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testIsVersionCompatibleReturnsTrueForCompatibleVersions() {
@@ -269,7 +271,7 @@ class UpdaterTest extends \MailPoetTest {
     verify($this->updater->isVersionCompatible('5.17.0', '5.17.0-alpha'))->true();
   }
 
-  public function testShouldShowUpdateNoticeReturnsTrueWhenFreeVersionInTransientIsCompatible() {
+  public function testShouldShowUpdateNoticeReturnsTrueWhenInstalledFreeVersionIsCompatible() {
     $updater = Stub::construct(
       $this->updater,
       [
@@ -278,36 +280,17 @@ class UpdaterTest extends \MailPoetTest {
         $this->version,
       ],
       [
-        'isVersionCompatible' => Expected::exactly(1, true), // Should only call once and return true
-      ],
-      $this
-    );
-
-    $result = $updater->shouldShowUpdateNotice('5.17.0', '5.17.0');
-    verify($result)->true();
-  }
-
-  public function testShouldShowUpdateNoticeReturnsTrueWhenCurrentFreeVersionIsCompatible() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-
+        'isVersionCompatible' => Expected::once(true), // Should only check the installed free version
       ],
       $this
     );
     $updater->currentFreeVersion = '5.17.0';
 
-    // Latest free version in transient is lower than required, but the currently installed free version is compatible.
-    $result = $updater->shouldShowUpdateNotice('5.17.0', '5.16.0');
+    $result = $updater->shouldShowUpdateNotice('5.17.0');
     verify($result)->true();
   }
 
-  public function testShouldShowUpdateNoticeReturnsFalseWhenCurrentFreeVersionIsIncompatible() {
+  public function testShouldShowUpdateNoticeReturnsFalseWhenInstalledFreeVersionIsIncompatible() {
     $updater = Stub::construct(
       $this->updater,
       [
@@ -316,66 +299,13 @@ class UpdaterTest extends \MailPoetTest {
         $this->version,
       ],
       [
+        'isVersionCompatible' => Expected::once(false),
       ],
       $this
     );
     $updater->currentFreeVersion = '5.16.0';
 
-    $result = $updater->shouldShowUpdateNotice('5.17.0', null); // no free version in transient and current free version is incompatible
+    $result = $updater->shouldShowUpdateNotice('5.17.0');
     verify($result)->false();
-  }
-
-  public function testShouldShowUpdateNoticeReturnsFalseWhenNoVersionsAreCompatible() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'isVersionCompatible' => Expected::exactly(2, false), // Both calls should return false
-      ],
-      $this
-    );
-
-    $result = $updater->shouldShowUpdateNotice('6.0.0', '5.18.0'); // Both incompatible
-    verify($result)->false();
-  }
-
-  public function testShouldShowUpdateNoticeHandlesNullLatestFreeVersion() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'isVersionCompatible' => Expected::once(true), // Should only call once with MAILPOET_VERSION
-      ],
-      $this
-    );
-
-    $result = $updater->shouldShowUpdateNotice('5.17.0', null);
-    verify($result)->true();
-  }
-
-  public function testShouldShowUpdateNoticeHandlesEmptyLatestFreeVersion() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'isVersionCompatible' => Expected::once(true), // Should only call once with MAILPOET_VERSION
-      ],
-      $this
-    );
-
-    $result = $updater->shouldShowUpdateNotice('5.17.0', '');
-    verify($result)->true();
   }
 }
