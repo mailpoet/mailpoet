@@ -99,6 +99,12 @@ class DefaultsExtension extends Extension {
     update_option('woocommerce_task_list_hidden', 'yes');
     delete_transient('_wc_activation_redirect');
 
+    // Fill WooCommerce analytics tables right after each order instead of via a
+    // background batch. Tests place an order and drain Action Scheduler expecting
+    // the data to be there immediately, but Action Scheduler 4.0 (WC 11.0) no
+    // longer runs that batch during the drain. Immediate import keeps tests stable.
+    update_option('woocommerce_analytics_scheduled_import', 'no', false);
+
     // mark all WC cron actions complete
     update_option('wc_pending_batch_processes', []);
     $tableName = !empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
