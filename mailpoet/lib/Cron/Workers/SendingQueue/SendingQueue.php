@@ -301,6 +301,21 @@ class SendingQueue {
         }, $foundSubscribers);
       }
 
+      // Allow extensions to exclude subscribers from this specific send (e.g. custom
+      // frequency capping or cross-newsletter suppression). Excluded subscribers are
+      // dropped below via the same path used for "not found" subscribers, so queue
+      // counts and the scheduled task stay consistent.
+      /** @var array<SubscriberEntity> $foundSubscribers */
+      $foundSubscribers = (array)$this->wp->applyFilters(
+        'mailpoet_sending_queue_subscribers_to_process',
+        $foundSubscribers,
+        $newsletter,
+        $task
+      );
+      $foundSubscribersIds = array_map(function(SubscriberEntity $subscriber) {
+        return $subscriber->getId();
+      }, $foundSubscribers);
+
       // if some subscribers weren't found, remove them from the processing list
       if (count($foundSubscribersIds) !== count($subscribersToProcessIds)) {
         $subscribersToRemove = array_diff(

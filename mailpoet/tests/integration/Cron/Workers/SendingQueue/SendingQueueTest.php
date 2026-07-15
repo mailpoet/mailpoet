@@ -982,6 +982,51 @@ class SendingQueueTest extends \MailPoetTest {
     verify(count($statistics))->equals(1);
   }
 
+  public function testItAllowsExtensionsToExcludeSubscribersFromSending() {
+    $excludedSubscriber = $this->createSubscriber('subscriber1@mailpoet.com', 'Subscriber', 'One');
+
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      [$this->subscriber->getId(), $excludedSubscriber->getId()]
+    );
+
+    $excludedSubscriberId = $excludedSubscriber->getId();
+    $filter = function(array $subscribers) use ($excludedSubscriberId) {
+      return array_values(array_filter($subscribers, function(SubscriberEntity $subscriber) use ($excludedSubscriberId) {
+        return $subscriber->getId() !== $excludedSubscriberId;
+      }));
+    };
+    $wp = new WPFunctions;
+    $wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+
+    $sendingQueueWorker = $this->sendingQueueWorker;
+    $sendingQueueWorker->mailerTask = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      [
+        'send' => Expected::exactly(1, function() {
+          return $this->mailerTaskDummyResponse;
+        }),
+      ]
+    );
+    $sendingQueueWorker->process();
+
+    $wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+
+    // the filtered-out subscriber is dropped from the task, same as a "not found" subscriber
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+      ->equals([]);
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+      ->equals([$this->subscriber]);
+    verify($this->sendingQueue->getCountTotal())->equals(1);
+    verify($this->sendingQueue->getCountProcessed())->equals(1);
+    verify($this->sendingQueue->getCountToProcess())->equals(0);
+
+    // statistics entry should be created only for the non-excluded subscriber
+    $statistics = $this->statisticsNewslettersRepository->findAll();
+    verify(count($statistics))->equals(1);
+  }
+
   public function testItDoesNotCallMailerWithEmptyBatch() {
     $subscribers = [];
     while (count($subscribers) < 2 * SendingThrottlingHandler::BATCH_SIZE) {
