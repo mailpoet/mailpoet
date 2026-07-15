@@ -996,22 +996,23 @@ class SendingQueueTest extends \MailPoetTest {
         return $subscriber->getId() !== $excludedSubscriberId;
       }));
     };
-    $wp = new WPFunctions;
-    $wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    $this->wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
 
-    $sendingQueueWorker = $this->sendingQueueWorker;
-    $sendingQueueWorker->mailerTask = $this->construct(
-      MailerTask::class,
-      [$this->diContainer->get(MailerFactory::class)],
-      [
-        'send' => Expected::exactly(1, function() {
-          return $this->mailerTaskDummyResponse;
-        }),
-      ]
-    );
-    $sendingQueueWorker->process();
-
-    $wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    try {
+      $sendingQueueWorker = $this->sendingQueueWorker;
+      $sendingQueueWorker->mailerTask = $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function() {
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      );
+      $sendingQueueWorker->process();
+    } finally {
+      $this->wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    }
 
     // the filtered-out subscriber is dropped from the task, same as a "not found" subscriber
     verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
@@ -1025,6 +1026,49 @@ class SendingQueueTest extends \MailPoetTest {
     // statistics entry should be created only for the non-excluded subscriber
     $statistics = $this->statisticsNewslettersRepository->findAll();
     verify(count($statistics))->equals(1);
+  }
+
+  public function testItIgnoresSubscribersInjectedByExtensionsThatWereNotInTheResolvedBatch() {
+    $strangerSubscriber = $this->createSubscriber('stranger@mailpoet.com', 'Stranger', 'Danger');
+
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      [$this->subscriber->getId()]
+    );
+
+    // A misbehaving callback returns a subscriber that was never part of this
+    // task's resolved batch, plus a non-SubscriberEntity value and a duplicate.
+    // None of this should reach mailer/processQueue.
+    $filter = function(array $subscribers) use ($strangerSubscriber) {
+      return array_merge($subscribers, $subscribers, [$strangerSubscriber, 'not-a-subscriber', null]);
+    };
+    $this->wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+
+    try {
+      $sendingQueueWorker = $this->sendingQueueWorker;
+      $sendingQueueWorker->mailerTask = $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function() {
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      );
+      $sendingQueueWorker->process();
+    } finally {
+      $this->wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    }
+
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+      ->equals([$this->subscriber]);
+    verify($this->sendingQueue->getCountTotal())->equals(1);
+    verify($this->sendingQueue->getCountProcessed())->equals(1);
+
+    // only the originally resolved subscriber should have received the email
+    $statistics = $this->statisticsNewslettersRepository->findAll();
+    verify(count($statistics))->equals(1);
+    verify($statistics[0]->getSubscriber())->equals($this->subscriber);
   }
 
   public function testItDoesNotCallMailerWithEmptyBatch() {
