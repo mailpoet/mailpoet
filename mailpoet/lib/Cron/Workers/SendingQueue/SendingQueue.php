@@ -302,34 +302,33 @@ class SendingQueue {
       // frequency capping or cross-newsletter suppression). Excluded subscribers are
       // dropped below via the same path used for "not found" subscribers, so queue
       // counts and the scheduled task stay consistent.
-      // The filter result is normalized defensively: a misbehaving callback could
-      // return non-SubscriberEntity values, duplicates, or subscribers that were
-      // never part of the resolved batch (e.g. not in this segment/task), any of
-      // which would otherwise reach processQueue() and either fatal or send to an
-      // unintended recipient.
       $resolvedSubscribersById = [];
       foreach ($foundSubscribers as $subscriber) {
         $resolvedSubscribersById[$subscriber->getId()] = $subscriber;
       }
-      $filteredSubscribers = (array)$this->wp->applyFilters(
+      $filteredSubscribers = $this->wp->applyFilters(
         'mailpoet_sending_queue_subscribers_to_process',
         $foundSubscribers,
         $newsletter,
         $task
       );
-      $foundSubscribers = [];
-      foreach ($filteredSubscribers as $filteredSubscriber) {
-        if (!$filteredSubscriber instanceof SubscriberEntity) {
-          continue;
+
+      if (is_array($filteredSubscribers)) {
+        $foundSubscribers = [];
+        foreach ($filteredSubscribers as $filteredSubscriber) {
+          if (!$filteredSubscriber instanceof SubscriberEntity) {
+            continue;
+          }
+          $subscriberId = $filteredSubscriber->getId();
+          // Keep only subscribers that were already in the resolved batch (by id), and
+          // use the original entity instance rather than trusting whatever the filter returned.
+          if (isset($resolvedSubscribersById[$subscriberId])) {
+            $foundSubscribers[$subscriberId] = $resolvedSubscribersById[$subscriberId];
+          }
         }
-        $subscriberId = $filteredSubscriber->getId();
-        // Keep only subscribers that were already in the resolved batch (by id), and
-        // use the original entity instance rather than trusting whatever the filter returned.
-        if (isset($resolvedSubscribersById[$subscriberId])) {
-          $foundSubscribers[$subscriberId] = $resolvedSubscribersById[$subscriberId];
-        }
+        $foundSubscribers = array_values($foundSubscribers);
       }
-      $foundSubscribers = array_values($foundSubscribers);
+
       $foundSubscribersIds = array_map(function(SubscriberEntity $subscriber) {
         return $subscriber->getId();
       }, $foundSubscribers);
