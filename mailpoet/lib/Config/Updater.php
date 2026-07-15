@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Config\Env;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
@@ -48,12 +47,7 @@ class Updater {
       unset($updateTransient->response[$this->plugin]); // remove the cached version from the transient.
     }
 
-    $latestFreeVersion = null;
-    if (property_exists($updateTransient, 'response') && isset($updateTransient->response[Env::$pluginPath]->new_version)) {
-      $latestFreeVersion = $updateTransient->response[Env::$pluginPath]->new_version;
-    }
-
-    if (!$this->shouldShowUpdateNotice($latestVersion->new_version, $latestFreeVersion)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!$this->shouldShowUpdateNotice($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return $updateTransient; // skip update notice.
     }
 
@@ -96,13 +90,12 @@ class Updater {
     return version_compare($currentMainVersion, $requiredMainVersion, '>=');
   }
 
-  public function shouldShowUpdateNotice($premiumLatestVersion, $latestFreeVersion = null): bool {
-    // first check if the free version in the update transient is compatible with the premium latest version
-    if (!empty($latestFreeVersion) && $this->isVersionCompatible($premiumLatestVersion, $latestFreeVersion)) {
-      return true;
-    }
-
-    // then check if the current free version is compatible with the premium latest version
+  public function shouldShowUpdateNotice($premiumLatestVersion): bool {
+    // Compare against the free version that's actually installed, not one that's
+    // merely available. Since wordpress.org now holds new releases for up to 24h
+    // before distributing them (https://wordpress.org/news/2026/06/pts/), the free
+    // update can lag behind Premium. Gating on the installed version keeps Premium
+    // from jumping ahead and disabling itself.
     return $this->isVersionCompatible($premiumLatestVersion, $this->currentFreeVersion);
   }
 }
