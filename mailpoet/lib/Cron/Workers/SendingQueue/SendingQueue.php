@@ -296,22 +296,40 @@ class SendingQueue {
         }
 
         $foundSubscribers = $queryBuilder->getQuery()->getResult();
-        $foundSubscribersIds = array_map(function(SubscriberEntity $subscriber) {
-          return $subscriber->getId();
-        }, $foundSubscribers);
       }
 
       // Allow extensions to exclude subscribers from this specific send (e.g. custom
       // frequency capping or cross-newsletter suppression). Excluded subscribers are
       // dropped below via the same path used for "not found" subscribers, so queue
       // counts and the scheduled task stay consistent.
-      /** @var array<SubscriberEntity> $foundSubscribers */
-      $foundSubscribers = (array)$this->wp->applyFilters(
+      // The filter result is normalized defensively: a misbehaving callback could
+      // return non-SubscriberEntity values, duplicates, or subscribers that were
+      // never part of the resolved batch (e.g. not in this segment/task), any of
+      // which would otherwise reach processQueue() and either fatal or send to an
+      // unintended recipient.
+      $resolvedSubscribersById = [];
+      foreach ($foundSubscribers as $subscriber) {
+        $resolvedSubscribersById[$subscriber->getId()] = $subscriber;
+      }
+      $filteredSubscribers = (array)$this->wp->applyFilters(
         'mailpoet_sending_queue_subscribers_to_process',
         $foundSubscribers,
         $newsletter,
         $task
       );
+      $foundSubscribers = [];
+      foreach ($filteredSubscribers as $filteredSubscriber) {
+        if (!$filteredSubscriber instanceof SubscriberEntity) {
+          continue;
+        }
+        $subscriberId = $filteredSubscriber->getId();
+        // Keep only subscribers that were already in the resolved batch (by id), and
+        // use the original entity instance rather than trusting whatever the filter returned.
+        if (isset($resolvedSubscribersById[$subscriberId])) {
+          $foundSubscribers[$subscriberId] = $resolvedSubscribersById[$subscriberId];
+        }
+      }
+      $foundSubscribers = array_values($foundSubscribers);
       $foundSubscribersIds = array_map(function(SubscriberEntity $subscriber) {
         return $subscriber->getId();
       }, $foundSubscribers);
