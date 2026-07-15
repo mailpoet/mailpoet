@@ -983,7 +983,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItAllowsExtensionsToExcludeSubscribersFromSending() {
-    $excludedSubscriber = $this->createSubscriber('subscriber1@mailpoet.com', 'Subscriber', 'One');
+    // Must be in the newsletter's segment so it reaches the filter instead of being
+    // dropped earlier by segment resolution (which would make this test a no-op).
+    $excludedSubscriber = $this->createSubscriber('subscriber1@mailpoet.com', 'Subscriber', 'One', [$this->segment]);
 
     $this->scheduledTaskSubscribersRepository->setSubscribers(
       $this->scheduledTask,
@@ -1028,6 +1030,47 @@ class SendingQueueTest extends \MailPoetTest {
     verify(count($statistics))->equals(1);
   }
 
+  public function testItAllowsExtensionsToExcludeTheEntireBatch() {
+    // A legitimate callback can exclude every subscriber in the batch (e.g. a
+    // frequency cap that applies to all of them). This must be respected as-is,
+    // not treated as if the filter had misbehaved and the original batch restored.
+    $filter = function() {
+      return [];
+    };
+    $this->wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+
+    try {
+      $sendingQueueWorker = $this->sendingQueueWorker;
+      $sendingQueueWorker->mailerTask = $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(0),
+        ]
+      );
+      $sendingQueueWorker->process();
+    } finally {
+      $this->wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    }
+
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->sendingQueuesRepository->refresh($sendingQueue);
+    $this->scheduledTasksRepository->refresh($scheduledTask);
+
+    // the whole batch is dropped, same as if none of the subscribers were found
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+      ->equals([]);
+    verify($sendingQueue->getCountTotal())->equals(0);
+    verify($sendingQueue->getCountProcessed())->equals(0);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
+
+    $statistics = $this->statisticsNewslettersRepository->findAll();
+    verify(count($statistics))->equals(0);
+  }
+
   public function testItIgnoresSubscribersInjectedByExtensionsThatWereNotInTheResolvedBatch() {
     $strangerSubscriber = $this->createSubscriber('stranger@mailpoet.com', 'Stranger', 'Danger');
 
@@ -1066,6 +1109,43 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountProcessed())->equals(1);
 
     // only the originally resolved subscriber should have received the email
+    $statistics = $this->statisticsNewslettersRepository->findAll();
+    verify(count($statistics))->equals(1);
+    verify($statistics[0]->getSubscriber())->equals($this->subscriber);
+  }
+
+  public function testItDoesNotDropTheBatchWhenFilterCallbackReturnsNonArray() {
+    // A misbehaving callback (e.g. a forgotten `return`) returns null instead of
+    // an array. Casting that to an array used to silently empty the whole batch,
+    // which made the "not found" logic remove every subscriber from the task.
+    $filter = function() {
+      return null;
+    };
+    $this->wp->addFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+
+    try {
+      $sendingQueueWorker = $this->sendingQueueWorker;
+      $sendingQueueWorker->mailerTask = $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function() {
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      );
+      $sendingQueueWorker->process();
+    } finally {
+      $this->wp->removeFilter('mailpoet_sending_queue_subscribers_to_process', $filter);
+    }
+
+    // the batch is processed as if no filter had run, instead of being dropped
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+      ->equals([$this->subscriber]);
+    verify($this->sendingQueue->getCountTotal())->equals(1);
+    verify($this->sendingQueue->getCountProcessed())->equals(1);
+    verify($this->sendingQueue->getCountToProcess())->equals(0);
+
     $statistics = $this->statisticsNewslettersRepository->findAll();
     verify(count($statistics))->equals(1);
     verify($statistics[0]->getSubscriber())->equals($this->subscriber);
