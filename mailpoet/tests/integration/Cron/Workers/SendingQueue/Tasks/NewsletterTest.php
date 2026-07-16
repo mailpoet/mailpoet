@@ -20,6 +20,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
@@ -391,6 +392,46 @@ class NewsletterTest extends \MailPoetTest {
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     verify($result['body']['text'])
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
+  }
+
+  public function testItRemovesOpenTrackingPixelForSubscriberWithoutConsent() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    // The pixel must not ship: neither the placeholder data tag, a
+    // stripped-to-empty-src <img>, nor a resolved open-tracking URL (which
+    // is what the client would actually request on open) may remain.
+    $this->assertStringNotContainsString(Links::DATA_TAG_OPEN, $result['body']['html']);
+    $this->assertStringNotContainsString('<img alt="" class="" src=""', $result['body']['html']);
+    $this->assertStringNotContainsString('endpoint=track&action=open', $result['body']['html']);
+  }
+
+  public function testItKeepsOpenTrackingPixelForConsentingSubscriber() {
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    // Placeholder is gone because it was replaced with a real tracked URL.
+    $this->assertStringNotContainsString(Links::DATA_TAG_OPEN, $result['body']['html']);
+    $this->assertStringContainsString('endpoint=track&action=open', $result['body']['html']);
   }
 
   public function testItPausesSendingWhenOrderReviewUrlCannotBeResolved(): void {
