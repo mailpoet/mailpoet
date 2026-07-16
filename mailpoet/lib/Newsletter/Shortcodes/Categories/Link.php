@@ -73,6 +73,14 @@ class Link implements CategoryInterface {
           $wpUserPreview
         );
 
+      case 'subscription_tracking_opt_out_url':
+        return self::processUrl(
+          $shortcodeDetails['action'],
+          $subscriptionUrlFactory->getTrackingOptOutUrl($wpUserPreview ? null : $subscriber),
+          $queue,
+          $wpUserPreview
+        );
+
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
@@ -139,6 +147,9 @@ class Link implements CategoryInterface {
         break;
       case 'subscription_manage_url':
         $url = $subscriptionUrlFactory->getManageUrl($subscriber);
+        break;
+      case 'subscription_tracking_opt_out_url':
+        $url = $subscriptionUrlFactory->getTrackingOptOutUrl($subscriber);
         break;
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
