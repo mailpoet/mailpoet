@@ -540,6 +540,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscribersCountsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailCustomizer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ConfirmationEmailResolver::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\TrackingConsentController::class)->setPublic(true);
     // Segments
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\WP::class)->setPublic(true);
