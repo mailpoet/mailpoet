@@ -64,6 +64,11 @@ class SubscriptionUrlFactory {
     return $this->getSubscriptionUrl($post, 'unsubscribe_reason', $subscriber, $data);
   }
 
+  public function getTrackingOptOutUrl(?SubscriberEntity $subscriber = null) {
+    $post = $this->getPost($this->settings->get('subscription.pages.manage'));
+    return $this->getSubscriptionUrl($post, 'tracking_opt_out', $subscriber);
+  }
+
   public function getReEngagementUrl(?SubscriberEntity $subscriber = null) {
     $reEngagementSetting = $this->settings->get('reEngagement');
     $postId = $reEngagementSetting['page'] ?? null;
