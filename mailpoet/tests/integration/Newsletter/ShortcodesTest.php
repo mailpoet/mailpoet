@@ -418,6 +418,12 @@ class ShortcodesTest extends \MailPoetTest {
     verify($linkData['token'])->equals($this->subscriber->getLinkToken());
   }
 
+  public function testItReplacesTrackingOptOutLinkShortcode() {
+    $result = $this->shortcodesObject->replace('[link:subscription_tracking_opt_out_url]');
+    $this->assertStringContainsString('action=tracking_opt_out', (string)$result);
+    $this->assertStringContainsString('endpoint=subscription', (string)$result);
+  }
+
   private function getLinkData(string $link): array {
     $parsedUrlQuery = parse_url($link, PHP_URL_QUERY);
     $queryData = [];
