@@ -302,6 +302,13 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('data-link-href=', $html);
   }
 
+  public function testItConvertsTrackingOptOutTagToShortcode(): void {
+    $convertor = new LinksToShortcodesConvertor();
+    $html = '<a data-link-href="[mailpoet/subscription-tracking-opt-out-url]" href="#">Stop tracking me</a>';
+    $result = $convertor->convertLinkTagsToShortcodes($html);
+    $this->assertStringContainsString('[link:subscription_tracking_opt_out_url]', $result);
+  }
+
   public function testItResolvesOrderReviewUrlDataAttributeAfterPersonalization(): void {
     $convertor = new LinksToShortcodesConvertor();
 

@@ -303,6 +303,15 @@ class PersonalizationTagManager {
         null,
         [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
       ));
+      $registry->register(new Personalization_Tag(
+        __('Tracking opt-out URL', 'mailpoet'),
+        'mailpoet/subscription-tracking-opt-out-url',
+        __('Link', 'mailpoet'),
+        [$this->link, 'getSubscriptionTrackingOptOutUrl'],
+        [],
+        null,
+        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      ));
       return $registry;
     });
 
