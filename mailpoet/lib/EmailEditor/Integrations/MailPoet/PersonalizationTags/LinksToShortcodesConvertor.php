@@ -16,6 +16,7 @@ class LinksToShortcodesConvertor {
     '[mailpoet/subscription-unsubscribe-url]' => '[link:subscription_unsubscribe_url]',
     '[mailpoet/subscription-manage-url]' => '[link:subscription_manage_url]',
     '[mailpoet/newsletter-view-in-browser-url]' => '[link:newsletter_view_in_browser_url]',
+    '[mailpoet/subscription-tracking-opt-out-url]' => '[link:subscription_tracking_opt_out_url]',
   ];
 
   private const PERSONALIZED_URL_TOKENS = [

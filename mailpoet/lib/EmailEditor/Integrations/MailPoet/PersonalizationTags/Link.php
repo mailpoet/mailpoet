@@ -67,6 +67,13 @@ class Link {
     );
   }
 
+  public function getSubscriptionTrackingOptOutUrl(array $context, array $args = []): string {
+    $isPreview = $context['is_preview'] ?? false;
+    $subscriber = !$isPreview ? $this->getSubscriber($context) : null;
+
+    return (string)$this->subscriptionUrlFactory->getTrackingOptOutUrl($subscriber);
+  }
+
   private function getNewsletter(array $context): ?NewsletterEntity {
     $newsletterId = $context['newsletter_id'] ?? null;
     return $newsletterId ? $this->newslettersRepository->findOneById($newsletterId) : null;
