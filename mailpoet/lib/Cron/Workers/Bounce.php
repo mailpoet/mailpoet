@@ -86,6 +86,14 @@ class Bounce extends SimpleWorker {
     // instead of requesting one on every cron tick. SendingServiceKeyCheck owns
     // this state and flips it back once the key works again, which re-enables
     // the worker without any bounce-specific recovery path.
+    //
+    // Returning false makes CronWorkerRunner delete the due and running tasks
+    // rather than pause them, so the in-progress range and page cursor on the
+    // task meta are lost. That costs nothing: LAST_REPORT_TO_SETTING_KEY only
+    // advances once a range is fully consumed, so the next task re-derives the
+    // same `from` and replays the range. The real cost is time — a key left
+    // rejected for longer than MAX_LOOKBACK_DAYS pushes `from` past what the
+    // service will report on, and the bounces in that gap are never recovered.
     return $this->bridge->isMailpoetSendingServiceEnabled()
       && $this->servicesChecker->isMailPoetAPIKeyValid(false) === true;
   }
