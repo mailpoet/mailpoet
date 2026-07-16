@@ -95,6 +95,15 @@ class Manage {
     if (!is_array($subscriberData)) {
       $subscriberData = [];
     }
+    // Never trust posted method/copy: stamp them server-side from the actual checkbox state.
+    unset($subscriberData['tracking_consent_method'], $subscriberData['tracking_consent_copy']);
+    if (array_key_exists('tracking_consent', $subscriberData)) {
+      $subscriberData['tracking_consent'] = $subscriberData['tracking_consent']
+        ? SubscriberEntity::TRACKING_CONSENT_GRANTED
+        : SubscriberEntity::TRACKING_CONSENT_DENIED;
+      $subscriberData['tracking_consent_method'] = SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE;
+      $subscriberData['tracking_consent_copy'] = ManageSubscriptionFormRenderer::getTrackingConsentCopy();
+    }
     if ($this->hasInvalidStatus($subscriberData) || $this->hasMalformedLegacySegmentIds($subscriberData)) {
       $this->urlHelper->redirectBack(['error' => true]);
       return;
@@ -260,16 +269,17 @@ class Manage {
   }
 
   /**
-   * The manage-subscription form only edits the subscriber's name, email and
-   * global status. Subscription choices and custom fields are handled
-   * separately. Keep only those fields when saving the subscriber so any other
-   * submitted key is ignored. `status` is already validated by
-   * hasInvalidStatus().
+   * The manage-subscription form only edits the subscriber's name, email,
+   * global status, and tracking consent. Subscription choices and custom
+   * fields are handled separately. Keep only those fields when saving the
+   * subscriber so any other submitted key is ignored. `status` is already
+   * validated by hasInvalidStatus(); `tracking_consent`/`_method`/`_copy`
+   * are already stamped server-side in onSave().
    */
   private function filterToEditableFields(array $subscriberData): array {
     return array_intersect_key(
       $subscriberData,
-      array_flip(['email', 'first_name', 'last_name', 'status'])
+      array_flip(['email', 'first_name', 'last_name', 'status', 'tracking_consent', 'tracking_consent_method', 'tracking_consent_copy'])
     );
   }
 

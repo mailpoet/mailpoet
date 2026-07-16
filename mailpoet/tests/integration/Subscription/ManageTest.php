@@ -33,6 +33,9 @@ class ManageTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var Manage */
+  private $manage;
+
   public function _before() {
     parent::_before();
     $this->_after();
@@ -560,6 +563,28 @@ class ManageTest extends \MailPoetTest {
     verify($createdAt->format('Y-m-d'))->notEquals('2004-05-06');
   }
 
+  public function testOnSaveGrantsTrackingConsentWhenChecked() {
+    $this->setUpSavePost(['tracking_consent' => '1']);
+    $this->manage->onSave();
+
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_GRANTED, $subscriber->getTrackingConsent());
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE, $subscriber->getTrackingConsentMethod());
+    $this->assertNotNull($subscriber->getTrackingConsentCopy());
+  }
+
+  public function testOnSaveDeniesTrackingConsentWhenUnchecked() {
+    $this->setUpSavePost(['tracking_consent' => '0']);
+    $this->manage->onSave();
+
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_DENIED, $subscriber->getTrackingConsent());
+  }
+
   public function testItRedirectsWithErrorAndDoesNotSaveWhenTokenVerificationFails(): void {
     $redirectParams = null;
     $manage = $this->getManageService([
@@ -625,6 +650,18 @@ class ManageTest extends \MailPoetTest {
 
     verify($redirectParams)->equals(['error' => true]);
     verify($this->subscribersRepository->findOneBy(['email' => 'unknown@example.com']))->null();
+  }
+
+  private function setUpSavePost(array $data = [], array $overrides = []): void {
+    $this->manage = $this->getManageService($overrides);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = array_merge([
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ], $data);
   }
 
   private function getManageService(array $overrides = []): Manage {
