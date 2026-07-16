@@ -150,7 +150,7 @@ class API {
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     remove_action('requests-curl.before_request', [$this, 'setCurlHandle']);
-    if (is_wp_error($result)) {
+    if ($this->wp->isWpError($result)) {
       $this->logCurlError($result);
       return [
         'status' => self::SENDING_STATUS_CONNECTION_ERROR,
@@ -199,7 +199,7 @@ class API {
     $result = $this->request($url, null, 'GET');
     $responseCode = (int)$this->wp->wpRemoteRetrieveResponseCode($result);
     if ($responseCode !== 200) {
-      $isWpError = is_wp_error($result);
+      $isWpError = $this->wp->isWpError($result);
       $logData = [
         'code' => $responseCode,
         'error' => $isWpError ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
@@ -267,7 +267,7 @@ class API {
     if (!$isSuccess) {
       $logData = [
         'code' => $code,
-        'error' => is_wp_error($result) ? $result->get_error_message() : null,
+        'error' => $this->wp->isWpError($result) ? $result->get_error_message() : null,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('Stats API call failed.', $logData);
     }
@@ -306,7 +306,7 @@ class API {
       $errorBody = $this->wp->wpRemoteRetrieveBody($result);
       $logData = [
         'code' => $responseCode,
-        'error' => is_wp_error($result) ? $result->get_error_message() : $errorBody,
+        'error' => $this->wp->isWpError($result) ? $result->get_error_message() : $errorBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
 
@@ -415,7 +415,7 @@ class API {
       }
       $logData = [
         'code' => $responseCode,
-        'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
+        'error' => $this->wp->isWpError($result) ? $result->get_error_message() : $rawResponseBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyAuthorizedSenderDomain API call failed.', $logData);
 
