@@ -62,6 +62,22 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     verify($taskSubscribers)->equals(6);
   }
 
+  public function testItDoesNotResendToSubscribersWhoDeniedTrackingConsent() {
+    [$newsletter, $subscriber] = $this->arrangeSentButNotOpened();
+    $subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $resent = $this->controller->resendToNonOpeners($newsletter, 'Second try');
+    verify($resent->getSubject())->equals('Second try');
+
+    $taskSubscribers = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)
+      ->findBy(['subscriber' => $subscriber]);
+    $this->assertCount(0, $taskSubscribers);
+  }
+
   public function testMachineOpensCountAsOpens() {
     $newsletter = $this->createSentNewsletter('Test Subject');
     $subscribers = $this->createSubscribers(10);
@@ -291,6 +307,14 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $newsletter->setSentAt($sentAt ?? Carbon::now()->subHours(36));
     $this->entityManager->flush();
     return $newsletter;
+  }
+
+  /** @return array{0: NewsletterEntity, 1: SubscriberEntity} */
+  private function arrangeSentButNotOpened(): array {
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(2);
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+    return [$newsletter, $subscribers[0]];
   }
 
   /** @return SubscriberEntity[] */
