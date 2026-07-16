@@ -442,6 +442,19 @@ class PagesTest extends \MailPoetTest {
     verify($this->statisticsUnsubscribesRepository->findAll())->arrayCount(0);
   }
 
+  public function testTrackingOptOutActionDeniesConsentAndRecordsCopy() {
+    $copy = 'We will no longer track when you open our emails.';
+    $pages = $this->getPages()->init(Pages::ACTION_TRACKING_OPT_OUT, $this->testData, false, false);
+    $pages->trackingOptOut(SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK, $copy);
+
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_DENIED, $subscriber->getTrackingConsent());
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK, $subscriber->getTrackingConsentMethod());
+    $this->assertSame($copy, $subscriber->getTrackingConsentCopy());
+  }
+
   public function testWindowTitleCanBeCalledWithSingleArgument() {
     $pages = $this->getPages();
 
