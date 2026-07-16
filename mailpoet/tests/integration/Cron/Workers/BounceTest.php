@@ -83,9 +83,11 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
-    $this->setKeyState(Bridge::KEY_VALID);
     verify($this->worker->checkProcessingRequirements())->false();
+    // The sending method lives in the same `mta` settings tree as the key state,
+    // so it has to be written before the state or it wipes it.
     $this->setMailPoetSendingMethod();
+    $this->setKeyState(Bridge::KEY_VALID);
     verify($this->worker->checkProcessingRequirements())->true();
   }
 
@@ -107,7 +109,9 @@ class BounceTest extends \MailPoetTest {
 
   public function testItRunsForAnExpiringKey() {
     $this->setMailPoetSendingMethod();
-    $this->setKeyState(Bridge::KEY_EXPIRING);
+    // An expiring key still sends, so it must still report bounces. It only
+    // counts as usable while it carries the expiry date the service returned.
+    $this->setKeyState(Bridge::KEY_EXPIRING, ['expire_at' => Carbon::now()->addMonth()->toDateTimeString()]);
     verify($this->worker->checkProcessingRequirements())->true();
   }
 
@@ -383,9 +387,17 @@ class BounceTest extends \MailPoetTest {
     );
   }
 
-  private function setKeyState(string $state) {
+  /**
+   * Must be called after setMailPoetSendingMethod(): both write under the `mta`
+   * settings tree, and setting the mailer config replaces the whole tree.
+   */
+  private function setKeyState(string $state, array $data = []) {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'some_key');
-    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => $state]);
+    $keyState = ['state' => $state];
+    if ($data) {
+      $keyState['data'] = $data;
+    }
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, $keyState);
   }
 
   private function findKeyCheckTask(): ?ScheduledTaskEntity {
