@@ -222,6 +222,10 @@ class ManageSubscriptionFormRenderer {
     }, $this->customFieldsRepository->findAllActive());
   }
 
+  public static function getTrackingConsentCopy(): string {
+    return __('Allow us to track when I open emails and which links I click', 'mailpoet');
+  }
+
   private function getBasicFields(SubscriberEntity $subscriber, bool $isModernStyle): array {
     $statusParams = [
       'required' => true,
@@ -297,6 +301,19 @@ class ManageSubscriptionFormRenderer {
         'id' => 'status',
         'type' => 'select',
         'params' => $statusParams,
+      ],
+      [
+        'id' => 'tracking_consent',
+        'type' => 'checkbox',
+        'params' => [
+          'label' => __('Email activity tracking', 'mailpoet'),
+          'values' => [
+            [
+              'value' => self::getTrackingConsentCopy(),
+              'is_checked' => $subscriber->getTrackingConsent() === SubscriberEntity::TRACKING_CONSENT_GRANTED,
+            ],
+          ],
+        ],
       ],
     ];
   }
