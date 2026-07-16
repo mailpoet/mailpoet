@@ -43,12 +43,12 @@ class TrackingConsentCest {
     $i->wantTo('Open the opt-out confirmation page from the footer link');
     $i->amOnUrl($optOutUrl);
     $i->waitForText('Opt out of email activity tracking');
-    $i->see('you will keep receiving our emails');
+    $i->see('you will keep receiving emails');
 
     $i->wantTo('Confirm the opt-out and see the done state');
     $i->click('Stop tracking my activity');
     $i->waitForText('You have opted out of email activity tracking.');
-    $i->see('We will no longer track when you open our emails');
+    $i->see('Tracking of email opens and link clicks is now off');
     $i->seeNoJSErrors();
 
     $i->wantTo('Verify the subscriber consent is recorded as denied via the footer link');
@@ -82,7 +82,7 @@ class TrackingConsentCest {
     $i->wantTo('See the tracking-consent checkbox rendered unchecked for an unknown subscriber');
     $i->amOnUrl($manageUrl);
     $i->waitForText('Email activity tracking');
-    $i->see('Allow us to track when I open emails and which links I click');
+    $i->see('Allow tracking of email opens and link clicks');
     $i->dontSeeCheckboxIsChecked($checkbox);
 
     $i->wantTo('Save without touching the checkbox and verify consent stays unknown (not silently denied)');

@@ -223,7 +223,7 @@ class ManageSubscriptionFormRenderer {
   }
 
   public static function getTrackingConsentCopy(): string {
-    return __('Allow us to track when I open emails and which links I click', 'mailpoet');
+    return __('Allow tracking of email opens and link clicks', 'mailpoet');
   }
 
   private function getBasicFields(SubscriberEntity $subscriber, bool $isModernStyle): array {
