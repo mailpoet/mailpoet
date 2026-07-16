@@ -324,7 +324,7 @@ class Pages {
    * the copy we store as proof is exactly the copy we rendered.
    */
   public static function getTrackingOptOutConsentCopy(): string {
-    return __('If you confirm, we will stop tracking when you open our emails and which links you click. This is separate from unsubscribing: you will keep receiving our emails.', 'mailpoet');
+    return __('If you confirm, tracking of email opens and link clicks will stop. This is separate from unsubscribing: you will keep receiving emails.', 'mailpoet');
   }
 
   public function isSubscriberUnsubscribed(): bool {
@@ -621,7 +621,7 @@ class Pages {
     }
     if ($this->subscriber !== null && $this->subscriber->getTrackingConsent() === SubscriberEntity::TRACKING_CONSENT_DENIED) {
       return '<p class="mailpoet_tracking_opt_out_content">'
-        . __('We will no longer track when you open our emails or which links you click. You will keep receiving our emails as usual.', 'mailpoet')
+        . __('Tracking of email opens and link clicks is now off. You will keep receiving emails as usual.', 'mailpoet')
         . ' <strong>[mailpoet_manage]</strong></p>';
     }
     $optOutUrl = $this->subscriptionUrlFactory->getTrackingOptOutUrl($this->subscriber);
