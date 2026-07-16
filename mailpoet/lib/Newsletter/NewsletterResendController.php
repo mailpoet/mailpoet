@@ -254,17 +254,21 @@ class NewsletterResendController {
   private function getNonOpenerIds(NewsletterEntity $newsletter): array {
     $statisticsNewsletterTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $statisticsOpenTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
     $connection = $this->entityManager->getConnection();
 
     $result = $connection->executeQuery(
       "SELECT DISTINCT sn.subscriber_id
        FROM $statisticsNewsletterTable sn
+       INNER JOIN $subscribersTable s
+         ON s.id = sn.subscriber_id
        LEFT JOIN $statisticsOpenTable so
          ON so.newsletter_id = sn.newsletter_id
          AND so.subscriber_id = sn.subscriber_id
        WHERE sn.newsletter_id = ?
-         AND so.id IS NULL",
+         AND so.id IS NULL
+         AND s.tracking_consent != 'denied'",
       [
         $newsletter->getId(),
       ],
