@@ -143,6 +143,7 @@ class ReEngagementScheduler {
         ns.subscriber_id = s.id
         AND s.deleted_at is NULL
         AND s.status = :subscribed
+        AND s.tracking_consent != 'denied'
         AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
       JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id
         AND ss.segment_id = :segmentId

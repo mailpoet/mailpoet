@@ -133,6 +133,26 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     verify($sendingQueue->getCountProcessed())->equals(0);
   }
 
+  public function testItDoesNotScheduleSubscriberWhoDeniedTrackingConsent() {
+    $beforeCheckInterval = Carbon::now();
+    $beforeCheckInterval->subMonths(10);
+    $withinCheckInterval = Carbon::now();
+    $withinCheckInterval->subMonth();
+    $this->createReEngagementEmail(5);
+
+    // Disengaged subscriber who would normally be scheduled, but denied tracking consent
+    $subscriberWhoDeniedTracking = $this->createSubscriber('denied_tracking@example.com', $beforeCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberWhoDeniedTracking, $withinCheckInterval);
+    $subscriberWhoDeniedTracking->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $scheduled = $this->scheduler->scheduleAll();
+    verify($scheduled)->arrayCount(0);
+  }
+
   public function testItSchedulesOneSubscriberInTwoSegmentsOnlyOnce() {
     $beforeCheckInterval = Carbon::now();
     $beforeCheckInterval->subMonths(10);
