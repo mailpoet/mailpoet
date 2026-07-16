@@ -44,8 +44,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDeactivatesOldSubscribersOnlyWhenUnopenedEmailsReachThreshold(): void {
-    $subscriber1 = $this->createSubscriber('s1@email.com', 10);
-    $this->createCompletedSendingTasksForSubscriber($subscriber1, self::UNOPENED_EMAILS_THRESHOLD, 3);
+    [, $subscriber1] = $this->arrangeInactiveScenario();
 
     $subscriber2 = $this->createSubscriber('s2@email.com', 10);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, self::UNOPENED_EMAILS_THRESHOLD - 1, 3);
@@ -59,6 +58,22 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     verify($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
     verify($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testItDoesNotDeactivateSubscribersWhoDeniedTrackingConsent(): void {
+    [$controller, $subscriber] = $this->arrangeInactiveScenario();
+    $subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE
+    );
+    $this->entityManager->flush();
+
+    $controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, 0, self::PROCESS_END_ID);
+
+    $this->entityManager->clear();
+    $reloaded = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    verify($reloaded->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDeactivatesLimitedAmountOfSubscribers(): void {
@@ -225,6 +240,15 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  /**
+   * @return array{0: InactiveSubscribersController, 1: SubscriberEntity}
+   */
+  private function arrangeInactiveScenario(): array {
+    $subscriber = $this->createSubscriber('s1@email.com', 10);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
+    return [$this->controller, $subscriber];
   }
 
   private function createSubscriber(

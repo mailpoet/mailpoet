@@ -97,6 +97,7 @@ class InactiveSubscribersController {
         JOIN {$processedTaskIdsTable} task_ids ON task_ids.id = sts.task_id
       WHERE s.last_subscribed_at < :thresholdDate
         AND s.status = :status
+        AND s.tracking_consent != 'denied'
         AND s.id >= :startId
         AND s.id <= :endId
         AND s.email_count >= {$lifetimeEmailsThreshold}
