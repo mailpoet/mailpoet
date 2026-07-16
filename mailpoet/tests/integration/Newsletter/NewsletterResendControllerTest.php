@@ -8,6 +8,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
@@ -76,6 +77,31 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     $taskSubscribers = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)
       ->findBy(['subscriber' => $subscriber]);
     $this->assertCount(0, $taskSubscribers);
+  }
+
+  public function testItDoesNotResendToUnknownConsentSubscribersInStrictMode() {
+    // Strict opt-in mode: unknown-consent subscribers are not tracked, so they
+    // must not be treated as non-openers. A second, consenting subscriber keeps
+    // the resend non-empty.
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    $newsletter = $this->createSentNewsletter('Test Subject');
+    $subscribers = $this->createSubscribers(2); // both unknown consent by default
+    $subscribers[1]->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE
+    );
+    $this->entityManager->flush();
+    $this->createStatisticsNewsletters($newsletter, $subscribers);
+
+    $resent = $this->controller->resendToNonOpeners($newsletter, 'Second try');
+    verify($resent->getSubject())->equals('Second try');
+
+    $unknownTaskSubscribers = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)
+      ->findBy(['subscriber' => $subscribers[0]]);
+    $this->assertCount(0, $unknownTaskSubscribers);
+    $grantedTaskSubscribers = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)
+      ->findBy(['subscriber' => $subscribers[1]]);
+    $this->assertCount(1, $grantedTaskSubscribers);
   }
 
   public function testMachineOpensCountAsOpens() {
