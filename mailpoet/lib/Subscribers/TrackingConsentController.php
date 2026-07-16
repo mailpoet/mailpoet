@@ -43,7 +43,21 @@ class TrackingConsentController {
         // 'unknown' = we never asked. Sites under the opt-in regime (new FR
         // and IT contacts) set this to false; everyone else keeps today's
         // behaviour.
-        return (bool)$this->settings->get(self::SETTING_TRACK_UNKNOWN, true);
+        return $this->shouldTrackUnknownConsent();
     }
+  }
+
+  /**
+   * Whether subscribers who have never been asked ('unknown' consent) may be
+   * treated as trackable. Default true (existing behaviour). When false (strict
+   * opt-in mode), only subscribers who explicitly granted consent are tracked.
+   *
+   * Background jobs that infer intent from missing engagement (inactive sweep,
+   * resend to non-openers, re-engagement) use this so that, in strict mode,
+   * untracked 'unknown' subscribers are excluded the same way 'denied' ones
+   * are — otherwise their frozen engagement would wrongly mark them disengaged.
+   */
+  public function shouldTrackUnknownConsent(): bool {
+    return (bool)$this->settings->get(self::SETTING_TRACK_UNKNOWN, true);
   }
 }

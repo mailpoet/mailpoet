@@ -9,6 +9,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -30,7 +31,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
   public function _before() {
     $this->controller = new InactiveSubscribersController(
-      $this->diContainer->get(EntityManager::class)
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->entityManager->getConnection()->executeQuery('DROP TABLE IF EXISTS inactive_task_ids');
@@ -67,6 +69,21 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
       SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE
     );
     $this->entityManager->flush();
+
+    $controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, 0, self::PROCESS_END_ID);
+
+    $this->entityManager->clear();
+    $reloaded = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
+    verify($reloaded->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testItDoesNotDeactivateUnknownConsentSubscribersInStrictMode(): void {
+    // Strict opt-in mode: unknown-consent subscribers are not tracked, so their
+    // frozen engagement must not get them deactivated.
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    [$controller, $subscriber] = $this->arrangeInactiveScenario();
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
 
     $controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, 0, self::PROCESS_END_ID);
 

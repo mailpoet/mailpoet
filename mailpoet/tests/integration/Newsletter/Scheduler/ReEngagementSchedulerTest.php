@@ -13,6 +13,8 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\Segment;
@@ -147,6 +149,25 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
       SubscriberEntity::TRACKING_CONSENT_DENIED,
       SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
     );
+    $this->entityManager->flush();
+
+    $scheduled = $this->scheduler->scheduleAll();
+    verify($scheduled)->arrayCount(0);
+  }
+
+  public function testItDoesNotScheduleUnknownConsentSubscriberInStrictMode() {
+    // Strict opt-in mode: an unknown-consent subscriber is not tracked, so their
+    // frozen engagement must not make them eligible for re-engagement.
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    $beforeCheckInterval = Carbon::now();
+    $beforeCheckInterval->subMonths(10);
+    $withinCheckInterval = Carbon::now();
+    $withinCheckInterval->subMonth();
+    $this->createReEngagementEmail(5);
+
+    $subscriber = $this->createSubscriber('unknown_tracking@example.com', $beforeCheckInterval, $this->segment);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriber, $withinCheckInterval);
     $this->entityManager->flush();
 
     $scheduled = $this->scheduler->scheduleAll();

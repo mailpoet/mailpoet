@@ -13,6 +13,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -28,14 +29,19 @@ class ReEngagementScheduler {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->entityManager = $entityManager;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   /**
@@ -144,6 +150,7 @@ class ReEngagementScheduler {
         AND s.deleted_at is NULL
         AND s.status = :subscribed
         AND s.tracking_consent != 'denied'
+        AND (:trackUnknown = 1 OR s.tracking_consent != 'unknown')
         AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
       JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id
         AND ss.segment_id = :segmentId
@@ -163,6 +170,7 @@ class ReEngagementScheduler {
     $statement->bindValue('upperThresholdDate', $upperThresholdDate, ParameterType::STRING);
     $statement->bindValue('newsletterId', $newsletterId, ParameterType::INTEGER);
     $statement->bindValue('segmentId', $segmentId, ParameterType::INTEGER);
+    $statement->bindValue('trackUnknown', $this->trackingConsentController->shouldTrackUnknownConsent() ? 1 : 0, ParameterType::INTEGER);
 
     $result = $statement->executeQuery();
     return $result->rowCount();
