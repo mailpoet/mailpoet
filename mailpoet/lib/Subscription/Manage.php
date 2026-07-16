@@ -97,13 +97,6 @@ class Manage {
     }
     // Never trust posted method/copy: stamp them server-side from the actual checkbox state.
     unset($subscriberData['tracking_consent_method'], $subscriberData['tracking_consent_copy']);
-    if (array_key_exists('tracking_consent', $subscriberData)) {
-      $subscriberData['tracking_consent'] = $subscriberData['tracking_consent']
-        ? SubscriberEntity::TRACKING_CONSENT_GRANTED
-        : SubscriberEntity::TRACKING_CONSENT_DENIED;
-      $subscriberData['tracking_consent_method'] = SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE;
-      $subscriberData['tracking_consent_copy'] = ManageSubscriptionFormRenderer::getTrackingConsentCopy();
-    }
     if ($this->hasInvalidStatus($subscriberData) || $this->hasMalformedLegacySegmentIds($subscriberData)) {
       $this->urlHelper->redirectBack(['error' => true]);
       return;
@@ -121,6 +114,22 @@ class Manage {
             && $subscriber instanceof SubscriberEntity
             && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
           );
+          if (array_key_exists('tracking_consent', $subscriberData)) {
+            $postedConsent = (bool)$subscriberData['tracking_consent'];
+            $currentlyGranted = $subscriber->getTrackingConsent() === SubscriberEntity::TRACKING_CONSENT_GRANTED;
+            if ($postedConsent === $currentlyGranted) {
+              // Checkbox state unchanged from what was rendered — don't rewrite consent.
+              // An untouched 'unknown' subscriber must stay 'unknown', not be flipped to
+              // 'denied' just because they saved the manage page for another reason.
+              unset($subscriberData['tracking_consent']);
+            } else {
+              $subscriberData['tracking_consent'] = $postedConsent
+                ? SubscriberEntity::TRACKING_CONSENT_GRANTED
+                : SubscriberEntity::TRACKING_CONSENT_DENIED;
+              $subscriberData['tracking_consent_method'] = SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE;
+              $subscriberData['tracking_consent_copy'] = ManageSubscriptionFormRenderer::getTrackingConsentCopy();
+            }
+          }
           $subscriber = $this->subscriberSaveController->createOrUpdate($this->filterToEditableFields($subscriberData), $subscriber);
           if ($shouldTrackUnsubscribe) {
             $this->unsubscribesTracker->track(
