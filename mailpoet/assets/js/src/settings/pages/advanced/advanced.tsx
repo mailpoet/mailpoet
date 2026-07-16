@@ -3,6 +3,7 @@ import { useSetting } from 'settings/store/hooks';
 import { TaskScheduler } from './task-scheduler';
 import { Roles } from './roles';
 import { EngagementTracking } from './engagement-tracking';
+import { TrackUnknownConsent } from './track-unknown-consent';
 import { HumanAndMachineOpens } from './human-and-machine-opens';
 import { Transactional } from './transactional';
 import { InactiveSubscribers } from './inactive-subscribers';
@@ -29,6 +30,7 @@ export function Advanced() {
       <TaskScheduler />
       <Roles />
       <EngagementTracking />
+      <TrackUnknownConsent />
       <HumanAndMachineOpens />
       <Transactional />
       <RecalculateSubscriberScore />

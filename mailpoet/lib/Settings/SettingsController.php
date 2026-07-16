@@ -79,6 +79,9 @@ class SettingsController {
         ],
         'tracking' => [
           'level' => TrackingConfig::LEVEL_FULL,
+          'consent' => [
+            'track_unknown' => true,
+          ],
         ],
         'subscription' => [
           'manage_subscription_page_style' => self::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN,

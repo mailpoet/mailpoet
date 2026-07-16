@@ -55,6 +55,9 @@ export type Settings = {
   tracking: {
     level: 'full' | 'basic' | 'partial';
     opens: 'merged' | 'separated';
+    consent: {
+      track_unknown: '' | '1';
+    };
   };
   '3rd_party_libs': {
     enabled: '' | '1';

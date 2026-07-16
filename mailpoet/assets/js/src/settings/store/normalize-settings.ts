@@ -124,6 +124,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     tracking: asObject({
       level: asEnum(['full', 'partial', 'basic'], 'full'),
       opens: asEnum(['merged', 'separated'], 'merged'),
+      consent: asObject({ track_unknown: enabledRadio }),
     }),
     send_transactional_emails: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(
