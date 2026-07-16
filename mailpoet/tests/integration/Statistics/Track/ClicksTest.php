@@ -9,6 +9,8 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
@@ -22,6 +24,7 @@ use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Cookies;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -103,7 +106,8 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(Request::class)
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $this->statisticsClicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
@@ -123,6 +127,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'abort' => Expected::exactly(2),
     ], $this);
@@ -150,6 +155,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -172,6 +178,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -196,6 +203,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -223,6 +231,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -256,6 +265,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -299,6 +309,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -342,6 +353,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -378,6 +390,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -416,10 +429,38 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
     $clicks->track($this->trackData);
+  }
+
+  public function testItDoesNotTrackClickWithoutConsentButStillRedirects() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    $clicks = Stub::construct($this->clicks, [
+      $this->diContainer->get(Cookies::class),
+      $this->diContainer->get(SubscriberCookie::class),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
+    ], [
+      'redirectToUrl' => Expected::exactly(1),
+    ], $this);
+    $clicks->track($this->trackData);
+    $this->assertCount(0, $this->entityManager->getRepository(StatisticsClickEntity::class)->findAll());
+    $this->assertCount(0, $this->entityManager->getRepository(StatisticsOpenEntity::class)->findAll());
+    $this->assertNull($this->subscriber->getLastClickAt());
   }
 
   public function testItIncrementsClickEventCount() {
@@ -434,6 +475,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -481,6 +523,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'abort' => Expected::exactly(1),
     ], $this);
@@ -582,7 +625,8 @@ class ClicksTest extends \MailPoetTest {
     $opens = new Opens(
       $statisticsOpensRepository,
       $this->diContainer->get(UserAgentsRepository::class),
-      $subscribersRepository
+      $subscribersRepository,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
@@ -595,6 +639,7 @@ class ClicksTest extends \MailPoetTest {
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -627,7 +672,8 @@ class ClicksTest extends \MailPoetTest {
     $opens = new Opens(
       $statisticsOpensRepository,
       $this->diContainer->get(UserAgentsRepository::class),
-      $subscribersRepository
+      $subscribersRepository,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
@@ -640,6 +686,7 @@ class ClicksTest extends \MailPoetTest {
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -672,7 +719,8 @@ class ClicksTest extends \MailPoetTest {
     $opens = new Opens(
       $statisticsOpensRepository,
       $this->diContainer->get(UserAgentsRepository::class),
-      $subscribersRepository
+      $subscribersRepository,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
@@ -685,6 +733,7 @@ class ClicksTest extends \MailPoetTest {
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -714,6 +763,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
