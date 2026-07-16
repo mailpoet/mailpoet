@@ -2,14 +2,17 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -80,9 +83,87 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
+    $this->setKeyState(Bridge::KEY_VALID);
     verify($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
     verify($this->worker->checkProcessingRequirements())->true();
+  }
+
+  public function testItDoesNotRunWhenTheKeyIsNotUsable() {
+    $this->setMailPoetSendingMethod();
+
+    // A deleted key: nothing the worker does can make the report succeed, so the
+    // runner must drop the tasks rather than keep them retrying.
+    $this->setKeyState(Bridge::KEY_INVALID);
+    verify($this->worker->checkProcessingRequirements())->false();
+
+    // The key authenticates but the plan does not cover the feature.
+    $this->setKeyState(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($this->worker->checkProcessingRequirements())->false();
+
+    $this->setKeyState(Bridge::KEY_VALID);
+    verify($this->worker->checkProcessingRequirements())->true();
+  }
+
+  public function testItRunsForAnExpiringKey() {
+    $this->setMailPoetSendingMethod();
+    $this->setKeyState(Bridge::KEY_EXPIRING);
+    verify($this->worker->checkProcessingRequirements())->true();
+  }
+
+  public function testItTriggersAKeyCheckAndBacksOffWhenTheKeyIsRejected() {
+    $this->setKeyState(Bridge::KEY_VALID);
+    $this->api->failResponse = true;
+    $this->api->failResponseCode = API::RESPONSE_CODE_KEY_INVALID;
+    $task = $this->createRunningTask();
+
+    verify($this->worker->processTaskStrategy($task, microtime(true)))->false();
+
+    // The report endpoint is not the authority on key state, so the worker asks
+    // the bridge to re-check instead of writing the state itself.
+    $keyCheckTask = $this->findKeyCheckTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $keyCheckTask);
+    verify($keyCheckTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $this->assertKeyStateUntouched();
+    $this->assertBackedOff($task);
+  }
+
+  public function testItTriggersAKeyCheckAndBacksOffWhenTheReportIsForbidden() {
+    $this->setKeyState(Bridge::KEY_VALID);
+    $this->api->failResponse = true;
+    $this->api->failResponseCode = API::RESPONSE_CODE_CAN_NOT_SEND;
+    $task = $this->createRunningTask();
+
+    verify($this->worker->processTaskStrategy($task, microtime(true)))->false();
+
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $this->findKeyCheckTask());
+    $this->assertKeyStateUntouched();
+    $this->assertBackedOff($task);
+  }
+
+  public function testItBacksOffWithoutAKeyCheckOnATransientFailure() {
+    $this->api->failResponse = true;
+    $this->api->failResponseCode = API::RESPONSE_CODE_INTERNAL_SERVER_ERROR;
+    $task = $this->createRunningTask();
+
+    verify($this->worker->processTaskStrategy($task, microtime(true)))->false();
+
+    // A 500 says nothing about the key, so it must not provoke a key check.
+    verify($this->findKeyCheckTask())->null();
+    $this->assertBackedOff($task);
+  }
+
+  public function testItBacksOffProgressivelyAcrossRepeatedFailures() {
+    $this->api->failResponse = true;
+    $task = $this->createRunningTask();
+
+    $this->worker->processTaskStrategy($task, microtime(true));
+    $firstDelay = $this->getRescheduleDelayInMinutes($task);
+    $this->worker->processTaskStrategy($task, microtime(true));
+    $secondDelay = $this->getRescheduleDelayInMinutes($task);
+
+    verify($secondDelay > $firstDelay)->true();
   }
 
   public function testItMarksReturnedRecipientsAsBounced() {
@@ -297,8 +378,40 @@ class BounceTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(StatisticsBouncesRepository::class),
-      $this->diContainer->get(Bridge::class)
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(ServicesChecker::class)
     );
+  }
+
+  private function setKeyState(string $state) {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'some_key');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => $state]);
+  }
+
+  private function findKeyCheckTask(): ?ScheduledTaskEntity {
+    return $this->diContainer->get(ScheduledTasksRepository::class)
+      ->findOneBy(['type' => SendingServiceKeyCheck::TASK_TYPE]);
+  }
+
+  /**
+   * The bounces report endpoint runs on WPCOM while keys are issued and
+   * validated by the bridge, so a rejection there must not rewrite the key state
+   * directly; only SendingServiceKeyCheck may.
+   */
+  private function assertKeyStateUntouched() {
+    verify($this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME))->equals(['state' => Bridge::KEY_VALID]);
+  }
+
+  private function assertBackedOff(ScheduledTaskEntity $task) {
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getRescheduleCount())->equals(1);
+    verify($this->getRescheduleDelayInMinutes($task) > 0)->true();
+  }
+
+  private function getRescheduleDelayInMinutes(ScheduledTaskEntity $task): int {
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    return (int)round(($scheduledAt->getTimestamp() - Carbon::now()->getTimestamp()) / 60);
   }
 
   private function getSubscriberStatus(string $email): string {

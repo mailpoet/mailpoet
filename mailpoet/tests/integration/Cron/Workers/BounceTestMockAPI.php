@@ -2,6 +2,8 @@
 
 namespace MailPoet\Cron\Workers\Bounce;
 
+use MailPoet\Services\Bridge\BouncesReportException;
+
 class BounceTestMockAPI {
   /** @var array<int, array{from: \DateTimeInterface, to: \DateTimeInterface, page: int}> */
   public $getBouncesReportCalls = [];
@@ -19,11 +21,22 @@ class BounceTestMockAPI {
   /** @var bool When true, getBouncesReport() simulates a failed request. */
   public $failResponse = false;
 
-  /** @return array{recipients: string[], page: int, has_more: bool}|null */
-  public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): ?array {
+  /**
+   * Status the simulated failure carries; 0 stands for a failure with no
+   * response to read a status from, matching the real API.
+   *
+   * @var int
+   */
+  public $failResponseCode = 0;
+
+  /**
+   * @return array{recipients: string[], page: int, has_more: bool}
+   * @throws BouncesReportException
+   */
+  public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): array {
     $this->getBouncesReportCalls[] = ['from' => $from, 'to' => $to, 'page' => $page];
     if ($this->failResponse) {
-      return null;
+      throw BouncesReportException::create()->withCode($this->failResponseCode);
     }
     $recipients = $this->reportPages[$page] ?? [];
     return [
