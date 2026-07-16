@@ -175,12 +175,14 @@ class API {
    * `from`/`to` datetime range, 1-based `p` pagination, and a response of the
    * shape `{ recipients: array<{email: string, type: string}>, page: int,
    * has_more: bool }`. The returned `recipients` are flattened to their email
-   * addresses so callers receive a plain list of strings. Returns null on a
-   * failed request.
+   * addresses so callers receive a plain list of strings.
    *
-   * @return array{recipients: string[], page: int, has_more: bool}|null
+   * @return array{recipients: string[], page: int, has_more: bool}
+   * @throws BouncesReportException The response status is carried on the
+   *   exception code so callers can distinguish a rejected key (401/403), which
+   *   no amount of retrying will fix, from a transient failure.
    */
-  public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): ?array {
+  public function getBouncesReport(\DateTimeInterface $from, \DateTimeInterface $to, int $page = 1): array {
     $utc = new \DateTimeZone('UTC');
     $fromUtc = (new \DateTimeImmutable('@' . $from->getTimestamp()))->setTimezone($utc);
     $toUtc = (new \DateTimeImmutable('@' . $to->getTimestamp()))->setTimezone($utc);
@@ -195,8 +197,17 @@ class API {
     );
 
     $result = $this->request($url, null, 'GET');
-    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
-      return null;
+    $responseCode = (int)$this->wp->wpRemoteRetrieveResponseCode($result);
+    if ($responseCode !== 200) {
+      $logData = [
+        'code' => $responseCode,
+        'error' => is_wp_error($result) ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('getBouncesReport API call failed.', $logData);
+      throw BouncesReportException::create()
+        ->withCode($responseCode)
+        // translators: %d is the HTTP response code.
+        ->withMessage(sprintf(__('The bounces report request failed with response code %d', 'mailpoet'), $responseCode));
     }
     $body = $this->wp->wpRemoteRetrieveBody($result);
     $data = json_decode($body, true);
@@ -204,7 +215,8 @@ class API {
       // A 200 with a malformed payload must not be treated as a successful empty
       // page: that would advance the report window and silently skip bounces.
       $this->logInvalidDataFormat('getBouncesReport', is_string($body) ? $body : null);
-      return null;
+      throw BouncesReportException::create()
+        ->withMessage(__('The bounces report response was not in the expected format', 'mailpoet'));
     }
     $data['recipients'] = array_map(
       function (array $recipient): string {

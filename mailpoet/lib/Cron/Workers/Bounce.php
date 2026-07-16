@@ -2,6 +2,8 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Config\ServicesChecker;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatisticsBounceEntity;
@@ -10,6 +12,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Services\Bridge\BouncesReportException;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -52,12 +55,16 @@ class Bounce extends SimpleWorker {
   /** @var StatisticsBouncesRepository */
   private $statisticsBouncesRepository;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsBouncesRepository $statisticsBouncesRepository,
-    Bridge $bridge
+    Bridge $bridge,
+    ServicesChecker $servicesChecker
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -65,6 +72,7 @@ class Bounce extends SimpleWorker {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsBouncesRepository = $statisticsBouncesRepository;
+    $this->servicesChecker = $servicesChecker;
   }
 
   public function init() {
@@ -74,7 +82,12 @@ class Bounce extends SimpleWorker {
   }
 
   public function checkProcessingRequirements() {
-    return $this->bridge->isMailpoetSendingServiceEnabled();
+    // A key the service rejects can never produce a report, so stop the worker
+    // instead of requesting one on every cron tick. SendingServiceKeyCheck owns
+    // this state and flips it back once the key works again, which re-enables
+    // the worker without any bounce-specific recovery path.
+    return $this->bridge->isMailpoetSendingServiceEnabled()
+      && $this->servicesChecker->isMailPoetAPIKeyValid(false) === true;
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
@@ -85,11 +98,10 @@ class Bounce extends SimpleWorker {
       // abort if execution limit is reached
       $this->cronHelper->enforceExecutionLimit($timer);
 
-      $report = $this->api->getBouncesReport($from, $to, $page);
-      if (!is_array($report)) {
-        // Transient failure: leave the task running so it retries with the
-        // same range and page on the next cron tick.
-        return false;
+      try {
+        $report = $this->api->getBouncesReport($from, $to, $page);
+      } catch (BouncesReportException $e) {
+        return $this->handleReportFailure($task, $e);
       }
 
       $recipients = isset($report['recipients']) && is_array($report['recipients']) ? $report['recipients'] : [];
@@ -117,6 +129,27 @@ class Bounce extends SimpleWorker {
       $this->settings->set(self::LAST_REPORT_TO_SETTING_KEY, $to->format(\DateTimeInterface::ATOM));
     }
     return true;
+  }
+
+  /**
+   * Backs the task off instead of letting it retry on the very next cron tick.
+   * The report range is frozen on the task meta, so the delayed retry still
+   * covers exactly the same window.
+   */
+  private function handleReportFailure(ScheduledTaskEntity $task, BouncesReportException $e): bool {
+    $code = $e->getCode();
+    if ($code === API::RESPONSE_CODE_KEY_INVALID || $code === API::RESPONSE_CODE_CAN_NOT_SEND) {
+      // The report endpoint rejected the key, but it is not the authority on key
+      // state: it is registered on WPCOM, while keys are issued and validated by
+      // bridge.mailpoet.com. So ask the authority to re-check now rather than
+      // waiting up to a day for the scheduled check, and let the key state it
+      // stores decide (via checkProcessingRequirements) whether this worker keeps
+      // running. Writing the state from here instead would let a WPCOM-side fault
+      // pause all sending on evidence from a service that does not issue keys.
+      $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning(SendingServiceKeyCheck::TASK_TYPE);
+    }
+    $this->cronWorkerScheduler->rescheduleProgressively($task);
+    return false;
   }
 
   /**

@@ -254,7 +254,7 @@ class BridgeApiTest extends \MailPoetTest {
     $this->api->getBouncesReport($from, $to);
   }
 
-  public function testItReturnsNullWhenBouncesReportRequestFails() {
+  public function testItThrowsWithTheResponseCodeWhenBouncesReportRequestFails() {
     $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
     $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
     $this->wpMock
@@ -264,10 +264,43 @@ class BridgeApiTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('wpRemoteRetrieveResponseCode')
       ->willReturn(500);
-    verify($this->api->getBouncesReport($from, $to))->null();
+
+    $this->expectException(BouncesReportException::class);
+    $this->expectExceptionCode(500);
+    $this->api->getBouncesReport($from, $to);
   }
 
-  public function testItReturnsNullAndLogsWhenBouncesReportPayloadIsMalformed() {
+  public function testItCarriesTheKeyRejectionCodeOnTheBouncesReportException() {
+    $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
+    $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
+    $this->wpMock
+      ->method('addQueryArg')
+      ->willReturn('https://bridge.example/report');
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(API::RESPONSE_CODE_KEY_INVALID);
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn('No valid API key provided');
+
+    // The caller can only tell a dead key from a transient outage if the status
+    // survives; a deleted key must not read as a retryable failure.
+    try {
+      $this->api->getBouncesReport($from, $to);
+      $this->fail('Expected a BouncesReportException.');
+    } catch (BouncesReportException $e) {
+      verify($e->getCode())->equals(API::RESPONSE_CODE_KEY_INVALID);
+    }
+
+    $logs = $this->logRepository->findAll();
+    verify($logs)->arrayCount(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API call failed.');
+  }
+
+  public function testItThrowsWithoutACodeWhenBouncesReportPayloadIsMalformed() {
     $from = new \DateTimeImmutable('2026-06-15 23:59:59', new \DateTimeZone('UTC'));
     $to = new \DateTimeImmutable('2026-06-16 23:59:59', new \DateTimeZone('UTC'));
     $this->wpMock
@@ -282,7 +315,14 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn((string)json_encode(['recipients' => [['email' => 'bob@example.com', 'type' => 'hard']], 'page' => 1]));
 
-    verify($this->api->getBouncesReport($from, $to))->null();
+    // A malformed body is not a key problem, so it carries no status: the caller
+    // must treat it as transient and retry the same window.
+    try {
+      $this->api->getBouncesReport($from, $to);
+      $this->fail('Expected a BouncesReportException.');
+    } catch (BouncesReportException $e) {
+      verify($e->getCode())->equals(0);
+    }
 
     $logs = $this->logRepository->findAll();
     verify($logs)->arrayCount(1);
@@ -307,7 +347,8 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn((string)json_encode(['recipients' => ['bob@example.com'], 'page' => 1, 'has_more' => false]));
 
-    verify($this->api->getBouncesReport($from, $to))->null();
+    $this->expectException(BouncesReportException::class);
+    $this->api->getBouncesReport($from, $to);
   }
 
   public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
