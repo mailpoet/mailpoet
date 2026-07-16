@@ -16,6 +16,7 @@ use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoetVendor\Carbon\Carbon;
 
 class OpensTest extends \MailPoetTest {
@@ -81,7 +82,8 @@ class OpensTest extends \MailPoetTest {
     $this->opens = new Opens(
       $this->statisticsOpensRepository,
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
   }
 
@@ -90,6 +92,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
@@ -105,6 +108,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -121,6 +125,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -133,6 +138,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -147,6 +153,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
@@ -159,6 +166,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -178,6 +186,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -197,6 +206,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -218,6 +228,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -256,6 +267,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -294,6 +306,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -325,6 +338,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -361,6 +375,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -378,6 +393,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -400,6 +416,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -422,6 +439,7 @@ class OpensTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -456,5 +474,24 @@ class OpensTest extends \MailPoetTest {
   public function testTrackingConsentDefaultsToUnknown() {
     $subscriber = new SubscriberEntity();
     $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $subscriber->getTrackingConsent());
+  }
+
+  public function testItDoesNotTrackOpenForSubscriberWhoDeniedConsent() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
+    ], [
+      'returnResponse' => Expected::exactly(1),
+    ], $this);
+    $opens->track($this->trackData);
+    $this->assertCount(0, $this->statisticsOpensRepository->findAll());
+    $this->assertNull($this->subscriber->getLastOpenAt());
   }
 }

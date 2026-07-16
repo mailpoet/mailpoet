@@ -10,6 +10,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 
 class Opens {
   /** @var StatisticsOpensRepository */
@@ -21,14 +22,19 @@ class Opens {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     StatisticsOpensRepository $statisticsOpensRepository,
     UserAgentsRepository $userAgentsRepository,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->userAgentsRepository = $userAgentsRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function track($data, $displayImage = true) {
@@ -37,6 +43,13 @@ class Opens {
     }
     /** @var SubscriberEntity $subscriber */
     $subscriber = $data->subscriber;
+    // No tracking consent (CNIL/Garante): serve the image but record nothing —
+    // no statistics, no engagement update. This is the backstop for emails
+    // already sent; future sends have the pixel removed entirely (see
+    // Newsletter::prepareNewsletterForSending).
+    if (!$this->trackingConsentController->isTrackingAllowed($subscriber)) {
+      return $this->returnResponse($displayImage);
+    }
     /** @var SendingQueueEntity $queue */
     $queue = $data->queue;
     /** @var NewsletterEntity $newsletter */
