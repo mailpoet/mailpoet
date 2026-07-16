@@ -435,4 +435,26 @@ class OpensTest extends \MailPoetTest {
     verify($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
     Carbon::setTestNow();
   }
+
+  public function testTrackingConsentIsPersistedWithMethodTimestampAndCopy() {
+    $copy = 'Do not track my email activity';
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK,
+      $copy
+    );
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_DENIED, $subscriber->getTrackingConsent());
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK, $subscriber->getTrackingConsentMethod());
+    $this->assertSame($copy, $subscriber->getTrackingConsentCopy());
+    $this->assertNotNull($subscriber->getTrackingConsentUpdatedAt());
+  }
+
+  public function testTrackingConsentDefaultsToUnknown() {
+    $subscriber = new SubscriberEntity();
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $subscriber->getTrackingConsent());
+  }
 }

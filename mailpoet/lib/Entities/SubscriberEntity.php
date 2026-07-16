@@ -38,6 +38,17 @@ class SubscriberEntity {
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
 
+  // tracking consent
+  const TRACKING_CONSENT_UNKNOWN = 'unknown';
+  const TRACKING_CONSENT_GRANTED = 'granted';
+  const TRACKING_CONSENT_DENIED = 'denied';
+
+  const TRACKING_CONSENT_METHOD_FOOTER_LINK = 'footer_link';
+  const TRACKING_CONSENT_METHOD_MANAGE_PAGE = 'manage_page';
+  const TRACKING_CONSENT_METHOD_FORM = 'form';
+  const TRACKING_CONSENT_METHOD_ADMIN = 'admin';
+  const TRACKING_CONSENT_METHOD_IMPORT = 'import';
+
   public const OBSOLETE_LINK_TOKEN_LENGTH = 6;
   public const LINK_TOKEN_LENGTH = 32;
   public const TIME_ZONE_FIELD_NAME = 'mailpoet_subscriber_timezone';
@@ -67,6 +78,39 @@ class SubscriberEntity {
    * @var bool
    */
   private $isWoocommerceUser = false;
+
+  /**
+   * CNIL/Garante: three states are legally distinct. `unknown` means we never
+   * asked — it is NOT consent, and under the opt-in regime it must not be
+   * treated as consent. How `unknown` is handled is a site setting; see
+   * TrackingConsentController.
+   *
+   * @ORM\Column(type="string", length=20)
+   * @var string
+   */
+  private $trackingConsent = self::TRACKING_CONSENT_UNKNOWN;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $trackingConsentUpdatedAt;
+
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $trackingConsentMethod;
+
+  /**
+   * The exact wording shown when the choice was made. Required for proof of
+   * consent (CNIL §6: a record of each person's consent "as well as the
+   * conditions under which that consent was obtained").
+   *
+   * @ORM\Column(type="text", nullable=true)
+   * @var string|null
+   */
+  private $trackingConsentCopy;
 
   /**
    * @ORM\Column(type="string")
@@ -308,6 +352,36 @@ class SubscriberEntity {
    */
   public function setIsWoocommerceUser($isWoocommerceUser) {
     $this->isWoocommerceUser = $isWoocommerceUser;
+  }
+
+  public function getTrackingConsent(): string {
+    return $this->trackingConsent;
+  }
+
+  /**
+   * Setting the state also stamps when, how, and against what wording it
+   * changed (CNIL/Garante record-keeping).
+   */
+  public function setTrackingConsent(string $consent, ?string $method = null, ?string $copy = null): void {
+    if ($this->trackingConsent === $consent) {
+      return;
+    }
+    $this->trackingConsent = $consent;
+    $this->trackingConsentUpdatedAt = new \DateTimeImmutable();
+    $this->trackingConsentMethod = $method;
+    $this->trackingConsentCopy = $copy;
+  }
+
+  public function getTrackingConsentUpdatedAt(): ?DateTimeInterface {
+    return $this->trackingConsentUpdatedAt;
+  }
+
+  public function getTrackingConsentMethod(): ?string {
+    return $this->trackingConsentMethod;
+  }
+
+  public function getTrackingConsentCopy(): ?string {
+    return $this->trackingConsentCopy;
   }
 
   /**
