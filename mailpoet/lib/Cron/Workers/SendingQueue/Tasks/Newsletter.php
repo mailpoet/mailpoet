@@ -31,6 +31,7 @@ use MailPoet\RuntimeException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Emoji;
@@ -89,6 +90,8 @@ class Newsletter {
   private CouponBlockDetector $couponBlockDetector;
   private OrderReviewUrl $orderReviewUrl;
 
+  private TrackingConsentController $trackingConsentController;
+
   public function __construct(
     ?WPFunctions $wp = null,
     ?PostsTask $postsTask = null,
@@ -126,6 +129,7 @@ class Newsletter {
     $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
     $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
     $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
+    $this->trackingConsentController = ContainerWrapper::getInstance()->get(TrackingConsentController::class);
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
@@ -372,6 +376,13 @@ class Newsletter {
       $queue
     );
     if ($this->trackingEnabled) {
+      if (!$this->trackingConsentController->isTrackingAllowed($subscriber)) {
+        // CNIL/Garante: withdrawal must stop the reading operation on future
+        // emails, not merely the recording. Remove the pixel before it is
+        // given a real tracking URL below. Click links are still rewritten —
+        // Clicks::track suppresses their recording (see follow-up note).
+        $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
+      }
       $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
         $subscriber->getId(),
         $queue->getId(),
