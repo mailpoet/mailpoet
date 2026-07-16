@@ -576,6 +576,13 @@ class ManageTest extends \MailPoetTest {
   }
 
   public function testOnSaveDeniesTrackingConsentWhenUnchecked() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'copy'
+    );
+    $this->entityManager->flush();
+
     $this->setUpSavePost(['tracking_consent' => '0']);
     $this->manage->onSave();
 
@@ -583,6 +590,36 @@ class ManageTest extends \MailPoetTest {
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->assertSame(SubscriberEntity::TRACKING_CONSENT_DENIED, $subscriber->getTrackingConsent());
+  }
+
+  public function testOnSaveLeavesUnknownConsentUntouchedWhenBoxUnticked() {
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $this->subscriber->getTrackingConsent());
+
+    $this->setUpSavePost(['tracking_consent' => '0']);
+    $this->manage->onSave();
+
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $subscriber->getTrackingConsent());
+    $this->assertNull($subscriber->getTrackingConsentMethod());
+  }
+
+  public function testOnSaveLeavesGrantedConsentUntouchedWhenBoxStaysChecked() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'copy'
+    );
+    $this->entityManager->flush();
+
+    $this->setUpSavePost(['tracking_consent' => '1']);
+    $this->manage->onSave();
+
+    $this->entityManager->clear();
+    $subscriber = $this->entityManager->find(SubscriberEntity::class, $this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_GRANTED, $subscriber->getTrackingConsent());
   }
 
   public function testItRedirectsWithErrorAndDoesNotSaveWhenTokenVerificationFails(): void {
