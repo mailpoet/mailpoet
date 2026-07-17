@@ -37,13 +37,18 @@ class TrackingConsentController {
     switch ($subscriber->getTrackingConsent()) {
       case SubscriberEntity::TRACKING_CONSENT_GRANTED:
         return true;
-      case SubscriberEntity::TRACKING_CONSENT_DENIED:
-        return false;
-      default:
+      case SubscriberEntity::TRACKING_CONSENT_UNKNOWN:
         // 'unknown' = we never asked. Sites under the opt-in regime (new FR
         // and IT contacts) set this to false; everyone else keeps today's
         // behaviour.
         return $this->shouldTrackUnknownConsent();
+      case SubscriberEntity::TRACKING_CONSENT_DENIED:
+      default:
+        // Denied — and, defensively, any unrecognised value — is never tracked.
+        // Storage is constrained to the three states (Assert\Choice on the
+        // entity), so 'default' should be unreachable; deny rather than fall
+        // back to the permissive unknown path for a compliance-critical flag.
+        return false;
     }
   }
 
