@@ -98,7 +98,7 @@ class SubscriberEntity {
   private $trackingConsentUpdatedAt;
 
   /**
-   * @ORM\Column(type="string", nullable=true)
+   * @ORM\Column(type="string", length=40, nullable=true)
    * @var string|null
    */
   private $trackingConsentMethod;
