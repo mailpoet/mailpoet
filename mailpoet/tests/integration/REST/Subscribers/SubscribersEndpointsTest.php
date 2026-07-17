@@ -276,6 +276,42 @@ class SubscribersEndpointsTest extends Test {
     $this->assertNull($this->subscribersRepository->findOneById($trashedId));
   }
 
+  public function testBulkDeleteReturnsKeptCountForLinkedSubscribers(): void {
+    $deletable = (new SubscriberFactory())
+      ->withEmail('rest-empty-trash-plain-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+    $wpUser = (new SubscriberFactory())
+      ->withEmail('rest-empty-trash-wp-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withWpUserId(1)
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+    $deletableId = (int)$deletable->getId();
+    $wpUserId = (int)$wpUser->getId();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'delete',
+      'group' => 'trash',
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertArrayHasKey('kept', $payload);
+    $this->assertGreaterThanOrEqual(1, $payload['count']);
+    $this->assertGreaterThanOrEqual(1, $payload['kept']);
+    $this->entityManager->clear();
+    $this->assertNull($this->subscribersRepository->findOneById($deletableId));
+    $this->assertInstanceOf(
+      SubscriberEntity::class,
+      $this->subscribersRepository->findOneById($wpUserId)
+    );
+  }
+
   public function testBulkTrashWithSelectAllIsRejectedFromTrash(): void {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'trash',

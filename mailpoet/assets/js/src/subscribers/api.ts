@@ -81,6 +81,7 @@ export type { SubscriberBulkActionScope } from './bulk-action-payload';
 export type SubscriberBulkActionResult = {
   action: SubscriberBulkAction;
   count: number;
+  kept?: number;
   segment: { id: number; name: string } | null;
   tag: { id: number; name: string } | null;
   queue?: {

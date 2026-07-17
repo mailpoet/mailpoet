@@ -36,6 +36,17 @@
   }
 }
 
+.mailpoet-listing-title-row {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+
+  .mailpoet-tooltip {
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
 .mailpoet-listing-title {
   color: $color-text;
   font-size: $font-size;
