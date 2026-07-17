@@ -55,7 +55,10 @@ export type Settings = {
   tracking: {
     level: 'full' | 'basic' | 'partial';
     opens: 'merged' | 'separated';
-    consent: {
+    // Always present once settings are loaded (normalize-settings fills the
+    // default); optional only so callers that write level/opens need not
+    // re-supply it. The default lives in SettingsController::getAllDefaults().
+    consent?: {
       track_unknown: '' | '1';
     };
   };
