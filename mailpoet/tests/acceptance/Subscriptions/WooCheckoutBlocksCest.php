@@ -68,6 +68,7 @@ class WooCheckoutBlocksCest {
     $i->wantTo('Check a message when opt-in is disabled');
     $i->login();
     $i->amOnAdminPage("post.php?post={$this->checkoutPostId}&action=edit");
+    $i->waitForElement('iframe[name="editor-canvas"]', 30);
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->canSee('MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.');
     $i->switchToIframe();
@@ -230,6 +231,7 @@ class WooCheckoutBlocksCest {
       $i->wantTo('Choose a pattern was not present, skipping action.');
     }
     $this->closeDialog($i);
+    $i->waitForElement('iframe[name="editor-canvas"]', 30);
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Add title"]'); // For block inserter to show up
     $i->click('[aria-label="Add block"]');

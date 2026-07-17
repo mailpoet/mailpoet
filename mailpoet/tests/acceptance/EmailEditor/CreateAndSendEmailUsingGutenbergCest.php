@@ -118,9 +118,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Save draft', '.edit-post-header');
     $i->waitForText('Saved');
     $i->click('.editor-preview-dropdown__toggle');
-    $i->waitForElementVisible('//a[text()="Preview in new tab"]');
-    $i->waitForElementClickable('//a[text()="Preview in new tab"]');
-    $i->click('//a[text()="Preview in new tab"]');
+    $i->waitForElementVisible('//a[contains(., "Preview in new tab")]');
+    $i->waitForElementClickable('//a[contains(., "Preview in new tab")]');
+    $i->click('//a[contains(., "Preview in new tab")]');
     $i->switchToNextTab();
     $i->canSeeInCurrentUrl('post_type=mailpoet_email');
     $i->canSee('Sample text');
