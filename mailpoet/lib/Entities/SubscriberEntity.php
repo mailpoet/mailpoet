@@ -86,6 +86,7 @@ class SubscriberEntity {
    * TrackingConsentController.
    *
    * @ORM\Column(type="string", length=20)
+   * @Assert\Choice({"unknown", "granted", "denied"})
    * @var string
    */
   private $trackingConsent = self::TRACKING_CONSENT_UNKNOWN;
