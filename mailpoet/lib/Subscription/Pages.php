@@ -627,6 +627,7 @@ class Pages {
     $optOutUrl = $this->subscriptionUrlFactory->getTrackingOptOutUrl($this->subscriber);
     return '<p>' . self::getTrackingOptOutConsentCopy() . '</p>'
       . '<form method="post" action="' . esc_attr((string)$optOutUrl) . '" class="mailpoet_tracking_opt_out_form">'
+      . '<input type="hidden" name="_wpnonce" value="' . esc_attr($this->wp->wpCreateNonce('mailpoet_tracking_opt_out')) . '" />'
       . '<input type="submit" value="' . esc_attr__('Stop tracking my activity', 'mailpoet') . '" />'
       . '</form>';
   }

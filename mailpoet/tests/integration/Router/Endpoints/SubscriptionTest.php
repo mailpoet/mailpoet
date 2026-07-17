@@ -172,6 +172,56 @@ class SubscriptionTest extends \MailPoetTest {
     }
   }
 
+  public function testItOptsOutOfTrackingWithValidNonce() {
+    $wp = $this->createMock(WPFunctions::class);
+    $optedOut = false;
+    $pages = Stub::make(Pages::class, [
+      'wp' => $wp,
+      'trackingOptOut' => Expected::once(function($method, $copy) use (&$optedOut) {
+        $optedOut = true;
+      }),
+    ], $this);
+
+    $request = $this->createMock(Request::class);
+    $request->method('isPost')->willReturn(true);
+    $request->method('getStringParam')->willReturnMap([
+      ['_wpnonce', 'valid_nonce'],
+    ]);
+    $wp->method('wpVerifyNonce')->with('valid_nonce', 'mailpoet_tracking_opt_out')->willReturn(true);
+
+    $subscription = new Subscription($pages, $wp, $request);
+    $subscription->trackingOptOut($this->data);
+
+    verify($optedOut)->true();
+  }
+
+  public function testItRejectsTrackingOptOutWithInvalidNonce() {
+    $wp = $this->createMock(WPFunctions::class);
+    $pages = Stub::make(Pages::class, [
+      'wp' => $wp,
+      'trackingOptOut' => Expected::never(),
+    ], $this);
+
+    $request = $this->createMock(Request::class);
+    $request->method('isPost')->willReturn(true);
+    $request->method('getStringParam')->willReturnMap([
+      ['_wpnonce', 'invalid_nonce'],
+    ]);
+    $wp->method('wpVerifyNonce')->with('invalid_nonce', 'mailpoet_tracking_opt_out')->willReturn(false);
+    $wp->expects($this->once())
+      ->method('wpDie')
+      ->with($this->anything(), '', ['response' => 403])
+      ->willThrowException(new \RuntimeException('exit_die'));
+
+    $subscription = new Subscription($pages, $wp, $request);
+    try {
+      $subscription->trackingOptOut($this->data);
+      $this->fail('Expected wpDie to interrupt execution');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('exit_die');
+    }
+  }
+
   public function testItRedirectsGetRequestToHomeUrl() {
     $wp = $this->createMock(WPFunctions::class);
     $pages = Stub::make(Pages::class, [

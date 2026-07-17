@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\ConflictException;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -74,6 +75,31 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getSegments())->arrayCount(2);
     verify($subscriber->getSubscriberSegments())->arrayCount(2);
     verify($subscriber->getSubscriberTags())->arrayCount(2);
+  }
+
+  public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
+    // A client (admin/API) can change the consent state but must not be able to
+    // forge the proof-of-consent method/copy; those are stamped server-side only.
+    $subscriber = $this->saveController->save([
+      'email' => 'consent-forge@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      'tracking_consent_method' => SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'tracking_consent_copy' => 'Forged copy the subscriber never saw',
+    ]);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    // Forged method/copy dropped: method falls back to the server-side ADMIN default, copy stays null.
+    verify($subscriber->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_ADMIN);
+    verify($subscriber->getTrackingConsentCopy())->null();
+  }
+
+  public function testItRejectsInvalidTrackingConsentValue(): void {
+    $this->expectException(ValidationException::class);
+    $this->saveController->save([
+      'email' => 'consent-bogus@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'tracking_consent' => 'bogus',
+    ]);
   }
 
   public function testItSavesSubscriberTimeZoneWhenCollectionIsEnabled(): void {

@@ -126,6 +126,11 @@ class Subscription {
   public function trackingOptOut($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_TRACKING_OPT_OUT, $data);
     if ($this->isPostRequest()) {
+      $nonce = $this->request->getStringParam('_wpnonce');
+      if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet_tracking_opt_out')) {
+        $this->wp->wpDie(__('Security check failed.', 'mailpoet'), '', ['response' => 403]);
+        exit;
+      }
       $subscription->trackingOptOut(
         SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK,
         UserSubscription\Pages::getTrackingOptOutConsentCopy()
