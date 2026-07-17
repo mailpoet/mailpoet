@@ -121,8 +121,9 @@ class GutenbergFormBlockCest {
     $i->wantTo('Add Gutenberg form block to the post manually');
     $i->login();
     $i->amEditingPostWithId($postId);
-    $this->closeDialog($i);
     $i->waitForText('My Gutenberg form');
+    $this->closeDialog($i);
+    $i->waitForElement('iframe[name="editor-canvas"]', 30);
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Add title"]');
     $i->click('[aria-label="Add block"]');
