@@ -121,6 +121,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
     return new Response([
       'action' => $action,
       'count' => $result['count'],
+      'kept' => $result['kept'] ?? 0,
       'segment' => $result['segment'] ?? null,
       'tag' => $result['tag'] ?? null,
     ]);

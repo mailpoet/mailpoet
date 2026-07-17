@@ -69,6 +69,36 @@ class BulkActionControllerTest extends \MailPoetTest {
     verify($this->subscribersRepository->findOneById($subscriberId))->null();
   }
 
+  public function testItReportsKeptSubscribersOnEmptyTrashDelete(): void {
+    $deletable = (new SubscriberFactory())
+      ->withEmail('plain@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+    $wpUser = (new SubscriberFactory())
+      ->withEmail('wpuser@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withWpUserId(1)
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+    $wooUser = (new SubscriberFactory())
+      ->withEmail('woo@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withIsWooCommerceUser()
+      ->withDeletedAt(new \DateTimeImmutable())
+      ->create();
+
+    // Empty Trash targets the whole trash group (no explicit selection).
+    $result = $this->controller->execute(BulkActionController::ACTION_DELETE, $this->definition([], 'trash'));
+
+    verify($result['count'])->equals(1);
+    verify($result['kept'] ?? null)->equals(2);
+    $this->entityManager->clear();
+    verify($this->subscribersRepository->findOneById((int)$deletable->getId()))->null();
+    verify($this->subscribersRepository->findOneById((int)$wpUser->getId()))->notNull();
+    verify($this->subscribersRepository->findOneById((int)$wooUser->getId()))->notNull();
+  }
+
   public function testItUnsubscribesAndTracksAdministrativeSourceOnce(): void {
     $segment = (new SegmentFactory())->withName('Segment')->create();
     $active = $this->createSubscriber('active@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);

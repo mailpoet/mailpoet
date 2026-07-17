@@ -314,14 +314,30 @@ function actionSuccessMessage(
           ),
     );
   } else if (action === 'delete') {
-    MailPoet.Notice.success(
-      count === 1
-        ? __('1 subscriber was permanently deleted.', 'mailpoet')
-        : __('%1$d subscribers were permanently deleted.', 'mailpoet').replace(
-            '%1$d',
-            formatCount(count),
-          ),
+    const kept = Number(result.kept ?? 0);
+    const deletedMessage = sprintf(
+      _n(
+        '%s subscriber was permanently deleted.',
+        '%s subscribers were permanently deleted.',
+        count,
+        'mailpoet',
+      ),
+      formatCount(count),
     );
+    if (kept > 0) {
+      const keptMessage = sprintf(
+        _n(
+          '%s subscriber was kept because it is linked to a WordPress user or WooCommerce customer.',
+          '%s subscribers were kept because they are linked to a WordPress user or WooCommerce customer.',
+          kept,
+          'mailpoet',
+        ),
+        formatCount(kept),
+      );
+      MailPoet.Notice.success(`${deletedMessage} ${keptMessage}`);
+    } else {
+      MailPoet.Notice.success(deletedMessage);
+    }
   } else if (action === 'restore') {
     MailPoet.Notice.success(
       count === 1
@@ -1324,7 +1340,10 @@ function SubscriberList() {
     [group, groupCounts, groups],
   );
 
-  const fields = useMemo(() => getSubscriberFields(getBackUrl), [getBackUrl]);
+  const fields = useMemo(
+    () => getSubscriberFields(getBackUrl, group),
+    [getBackUrl, group],
+  );
 
   const paginationInfo = useMemo(
     () => ({ totalItems: meta.count, totalPages: meta.pages }),

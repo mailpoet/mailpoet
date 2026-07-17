@@ -84,7 +84,7 @@ class BulkActionController {
 
   /**
    * @param array{segment_id?: int|string, tag_id?: int|string, trigger_automations?: bool} $data
-   * @return array{count: int, segment?: array{id: int, name: string}, tag?: array{id: int, name: string}}
+   * @return array{count: int, kept?: int, segment?: array{id: int, name: string}, tag?: array{id: int, name: string}}
    * @throws BulkActionException
    */
   public function execute(string $action, ListingDefinition $definition, array $data = []): array {
@@ -109,6 +109,11 @@ class BulkActionController {
     $count = $this->dispatch($action, $ids, $segment, $tag, $skipHooks);
 
     $result = ['count' => $count];
+    if ($action === self::ACTION_DELETE) {
+      // bulkDelete keeps subscribers linked to a WordPress user or WooCommerce
+      // customer, so the remainder of the actionable set is what was kept.
+      $result['kept'] = max(0, count($ids) - $count);
+    }
     if ($segment instanceof SegmentEntity) {
       $result['segment'] = ['id' => (int)$segment->getId(), 'name' => (string)$segment->getName()];
     }

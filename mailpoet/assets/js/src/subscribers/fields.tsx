@@ -3,10 +3,20 @@ import { __ } from '@wordpress/i18n';
 import type { Field } from '@wordpress/dataviews';
 import { MailPoet } from 'mailpoet';
 import { SegmentTags, SubscriberTags } from 'common';
+import { Badge } from 'common/listings/newsletter-stats/badge';
 import { ListingsEngagementScore } from './listings-engagement-score';
 import type { Segment, Subscriber } from './api';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+
+// Mirrors SubscribersRepository::bulkDelete: subscribers linked to a WordPress
+// user or WooCommerce customer are never permanently deleted.
+function isDeletable(subscriber: Subscriber): boolean {
+  return (
+    Number(subscriber.wp_user_id) === 0 &&
+    Number(subscriber.is_woocommerce_user) === 0
+  );
+}
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -60,6 +70,7 @@ function dateTime(value: string | null): JSX.Element | null {
 
 export function getSubscriberFields(
   getBackUrl: () => string,
+  group?: string,
 ): Field<Subscriber>[] {
   const statisticsFields: Field<Subscriber>[] = mailpoetTrackingEnabled
     ? [
@@ -95,14 +106,28 @@ export function getSubscriberFields(
       enableGlobalSearch: true,
       render: ({ item }) => (
         <div>
-          <Link
-            className="mailpoet-listing-title"
-            data-automation-id={`listing_item_${item.id}`}
-            to={`/edit/${item.id}`}
-            state={{ backUrl: getBackUrl() }}
-          >
-            {item.email}
-          </Link>
+          <span className="mailpoet-listing-title-row">
+            <Link
+              className="mailpoet-listing-title"
+              data-automation-id={`listing_item_${item.id}`}
+              to={`/edit/${item.id}`}
+              state={{ backUrl: getBackUrl() }}
+            >
+              {item.email}
+            </Link>
+            {group === 'trash' && !isDeletable(item) && (
+              <Badge
+                type="unknown"
+                isInverted={false}
+                name={__('Not deletable', 'mailpoet')}
+                tooltipId={`not-deletable-${item.id}`}
+                tooltip={__(
+                  'This subscriber is linked to a WordPress user or WooCommerce customer, so it is kept and will not be permanently deleted.',
+                  'mailpoet',
+                )}
+              />
+            )}
+          </span>
           <div className="mailpoet-listing-subtitle">
             {item.first_name} {item.last_name}
           </div>
