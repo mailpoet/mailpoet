@@ -65,7 +65,6 @@ function WooCommerceController({
     const trackingData: Settings['tracking'] = {
       level: allowed ? 'full' : trackingLevelForDisabledCookies,
       opens: 'merged',
-      consent: { track_unknown: '1' },
     };
     const subscribeOldCustomersData: Settings['mailpoet_subscribe_old_woocommerce_customers'] =
       {
