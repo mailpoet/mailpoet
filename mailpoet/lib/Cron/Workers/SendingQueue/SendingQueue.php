@@ -29,6 +29,8 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
+use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use Throwable;
 
@@ -163,6 +165,13 @@ class SendingQueue {
       try {
         $this->scheduledTasksRepository->touchAllByIds([$task->getId()]);
         $this->processSending($task, (int)$timer);
+      } catch (InvalidFieldNameException | TableNotFoundException $e) {
+        // The subscribers schema may be mid-migration during a plugin update (e.g. the
+        // tracking_consent column added in STOMAIL-8268). Leave this task for the next
+        // cron run rather than crashing the sending worker; it resumes once the migration
+        // completes.
+        $this->stopProgress($task);
+        continue;
       } catch (\Exception $e) {
         $this->stopProgress($task);
         throw $e;

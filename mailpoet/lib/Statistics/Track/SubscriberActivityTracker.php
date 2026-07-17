@@ -7,6 +7,8 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
+use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class SubscriberActivityTracker {
 
@@ -111,6 +113,19 @@ class SubscriberActivityTracker {
   }
 
   private function getSubscriber(): ?SubscriberEntity {
+    try {
+      return $this->findSubscriber();
+    } catch (InvalidFieldNameException | TableNotFoundException $e) {
+      // The subscribers schema may be mid-migration during a plugin update (e.g. the
+      // tracking_consent column added in STOMAIL-8268). Skip activity tracking for this
+      // request rather than aborting Initializer::initialize(), which would take the whole
+      // mailpoet/v1 REST namespace down with it. Tracking resumes on the next request once
+      // the migration completes.
+      return null;
+    }
+  }
+
+  private function findSubscriber(): ?SubscriberEntity {
     $wpUser = $this->wp->wpGetCurrentUser();
     if ($wpUser->exists()) {
       return $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);

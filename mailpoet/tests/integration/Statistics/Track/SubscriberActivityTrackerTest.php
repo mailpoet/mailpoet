@@ -149,6 +149,36 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     verify($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
+  public function testItSkipsTrackingWhenTrackingConsentColumnIsMissing() {
+    // Reproduce the plugin-update window: SubscriberEntity maps tracking_consent, but the
+    // migration that adds it has not run yet on this request. The read in getSubscriber()
+    // must degrade to "skip tracking" rather than throw, which would abort
+    // Initializer::initialize() and take the whole mailpoet/v1 REST namespace down.
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $wpUserEmail = 'tracking_consent_missing@test.com';
+    $this->tester->deleteWordPressUser($wpUserEmail);
+    $user = (new User())->createUser('consent_missing', 'editor', $wpUserEmail);
+    wp_set_current_user($user->ID);
+    $this->setPageViewCookieTimestamp(null);
+    $this->setSubscriberCookieSubscriber(null);
+
+    $table = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $dropped = false;
+    try {
+      $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `tracking_consent`");
+      $dropped = true;
+
+      // Must not throw an uncaught QueryException; the guard returns null and trackActivity bails.
+      $result = $this->tracker->trackActivity();
+      verify($result)->false();
+    } finally {
+      if ($dropped) {
+        $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `tracking_consent` VARCHAR(20) NOT NULL DEFAULT 'unknown'");
+      }
+    }
+  }
+
   public function testItUpdatesSubscriberEngagementForWpUserEvenWithDisabledCookieTracking() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $wpUserEmail = 'pageview_track_user@test.com';
