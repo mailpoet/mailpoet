@@ -42,7 +42,7 @@ class TemplatePersonalizer {
           continue;
         }
 
-        $contentProcessor->replace_token($this->addValue($collector, (string)$tag->execute_callback($this->context, $token['arguments']), $contentContext));
+        $contentProcessor->replace_token($this->addValue($collector, (string)$tag->execute_callback($this->context, $token['arguments']), $contentContext, trim($modifiableText)));
       } elseif ($contentProcessor->get_token_type() === '#tag' && $contentProcessor->get_tag() === 'TITLE') {
         $modifiableText = $contentProcessor->get_modifiable_text();
         $title = $this->personalizeContentWithPlaceholders($modifiableText, $collector, $contentContext);
@@ -56,7 +56,7 @@ class TemplatePersonalizer {
         }
 
         $resolvedHref = $this->replaceLinkHref($href, $tag->get_token(), (string)$tag->execute_callback($this->context, $token['arguments']));
-        $placeholder = $collector->addHtmlUrl($resolvedHref);
+        $placeholder = $collector->addHtmlUrl($resolvedHref, $href);
         $value = $this->replaceLinkHref($href, $tag->get_token(), $placeholder);
         if ($value) {
           $contentProcessor->set_attribute('href', $value);
@@ -82,7 +82,9 @@ class TemplatePersonalizer {
         }
 
         $resolvedHref = $this->replaceLinkHref($decodedHref, $tag->get_token(), (string)$tag->execute_callback($this->context, $token['arguments']));
-        $placeholder = $collector->addHtmlUrl($resolvedHref);
+        // The dedupe key must be the whole href, not just the embedded tag —
+        // the same tag can be a component of two different link URLs.
+        $placeholder = $collector->addHtmlUrl($resolvedHref, $href);
         if ($placeholder) {
           $contentProcessor->set_attribute('href', $placeholder);
           $hrefPlaceholders[$this->getNormalizedHrefPlaceholder($placeholder)] = $placeholder;
@@ -134,14 +136,14 @@ class TemplatePersonalizer {
     return trim((string)preg_replace($pattern, $replacement, $content));
   }
 
-  private function addValue(PlaceholderCollector $collector, string $value, string $contentContext): string {
+  private function addValue(PlaceholderCollector $collector, string $value, string $contentContext, string $token): string {
     if ($contentContext === self::CONTEXT_HTML) {
-      return $collector->addHtmlText($value);
+      return $collector->addHtmlText($value, $token);
     }
     if ($contentContext === self::CONTEXT_SUBJECT) {
-      return $collector->addSubjectText($value);
+      return $collector->addSubjectText($value, $token);
     }
-    return $collector->addTextFromHtml($value);
+    return $collector->addTextFromHtml($value, $token);
   }
 
   private function getNormalizedHrefPlaceholder(string $placeholder): string {

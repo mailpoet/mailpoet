@@ -25,6 +25,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
@@ -554,6 +555,51 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame(
       'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
       strtr($template['body']['text'], $substitutions['text'])
+    );
+  }
+
+  public function testItGeneratesIdenticalTemplateWhenTagsResolveToTheSameValueForSomeSubscribers(): void {
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Hi [subscriber:firstname] [subscriber:lastname]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Hi [subscriber:firstname] [subscriber:lastname],</p>',
+      'text' => 'Hi [subscriber:firstname] [subscriber:lastname],',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $withFirstName = (new SubscriberFactory())->withFirstName('Rosta')->withLastName('')->create();
+    $withoutName = (new SubscriberFactory())->withFirstName('')->withLastName('')->create();
+
+    // The batch generates one template shared by every subscriber, so the same
+    // namespace is passed to each subscriber's preparation (see SendingQueue).
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templatedForFirst = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $withFirstName,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+    $templatedForNone = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $withoutName,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+
+    // firstname and lastname both resolve to an empty string for the second
+    // subscriber, but must stay separate placeholders, otherwise the templates
+    // diverge and SendingQueue throws "different templates for subscribers".
+    $this->assertSame($templatedForFirst['newsletter'], $templatedForNone['newsletter']);
+
+    preg_match_all('/\{\{mailpoet_mss_[^}]+\}\}/', $templatedForFirst['newsletter']['body']['html'], $matches);
+    $this->assertCount(2, array_unique($matches[0]));
+
+    $this->assertSame(
+      '<p>Hi Rosta ,</p>',
+      strtr($templatedForFirst['newsletter']['body']['html'], $templatedForFirst['substitutions']['html'])
+    );
+    $this->assertSame(
+      '<p>Hi  ,</p>',
+      strtr($templatedForNone['newsletter']['body']['html'], $templatedForNone['substitutions']['html'])
     );
   }
 

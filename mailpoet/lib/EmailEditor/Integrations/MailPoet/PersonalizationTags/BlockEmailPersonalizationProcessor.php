@@ -67,10 +67,10 @@ class BlockEmailPersonalizationProcessor {
     $textUrlTokens = [];
     foreach ($this->getPersonalizedUrlTokens($context) as $token => $url) {
       if (isset($content[1]) && $this->containsPersonalizedUrlToken($content[1], $token)) {
-        $htmlUrlTokens[$token] = $collector->addHtmlUrl($url);
+        $htmlUrlTokens[$token] = $collector->addHtmlUrl($url, $token);
       }
       if (isset($content[2]) && $this->containsPersonalizedUrlToken($content[2], $token)) {
-        $textUrlTokens[$token] = $collector->addText($url);
+        $textUrlTokens[$token] = $collector->addText($url, $token);
       }
     }
 

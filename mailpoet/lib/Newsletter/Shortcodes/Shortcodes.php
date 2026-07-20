@@ -234,14 +234,15 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     $placeholders = [];
-    foreach ($processedShortcodes as $processedShortcode) {
+    foreach ($processedShortcodes as $index => $processedShortcode) {
       $processedShortcode = (string)$processedShortcode;
+      $token = $shortcodes[$index];
       if ($contentPart === PlaceholderCollector::PART_SUBJECT) {
-        $placeholders[] = $collector->addSubjectText($processedShortcode);
+        $placeholders[] = $collector->addSubjectText($processedShortcode, $token);
       } elseif ($contentPart === PlaceholderCollector::PART_HTML) {
-        $placeholders[] = $collector->addHtmlText($processedShortcode);
+        $placeholders[] = $collector->addHtmlText($processedShortcode, $token);
       } else {
-        $placeholders[] = $collector->addTextFromHtml($processedShortcode);
+        $placeholders[] = $collector->addTextFromHtml($processedShortcode, $token);
       }
     }
     return str_replace($shortcodes, $placeholders, $content);

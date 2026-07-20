@@ -194,11 +194,11 @@ class Links {
         $data
       );
       if ($contentPart === PlaceholderCollector::PART_HTML) {
-        $placeholder = $collector->addHtmlUrl($link);
+        $placeholder = $collector->addHtmlUrl($link, $match);
       } elseif ($contentPart === PlaceholderCollector::PART_SUBJECT) {
-        $placeholder = $collector->addSubjectText($link);
+        $placeholder = $collector->addSubjectText($link, $match);
       } else {
-        $placeholder = $collector->addText($link);
+        $placeholder = $collector->addText($link, $match);
       }
       $content = str_replace($match, $placeholder, $content);
     }

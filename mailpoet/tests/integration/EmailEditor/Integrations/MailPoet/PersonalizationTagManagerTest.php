@@ -44,6 +44,16 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->sendingQueueEntity = (new SendingQueueFactory())->create($this->scheduledTaskEntity, $this->newsletter);
   }
 
+  public function _after() {
+    // Tests here register throwaway tags on the shared registry; drop them so
+    // they don't leak into later tests depending on execution order.
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    foreach (['[mailpoet/test-name]', '[mailpoet/test-url]', '[mailpoet/test-link]'] as $token) {
+      $registry->unregister($token);
+    }
+    parent::_after();
+  }
+
   public function testItHooksToPostRenderToReplaceLinksInHrefByShortcodes() {
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     // @phpstan-ignore-next-line The structure is hardcoded in the fixture
@@ -447,5 +457,69 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
         '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
       ],
     ], $values);
+  }
+
+  public function testBlockEmailKeepsTemplateIdenticalWhenOneTokenIsUsedAsTextAndLink(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Link',
+      'mailpoet/test-link',
+      'Test',
+      function(array $context): string {
+        return (string)($context['url'] ?? '');
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $source = [
+      'Subject',
+      '<p><!--[mailpoet/test-link]--></p><a data-link-href="[mailpoet/test-link]">Open</a>',
+      '',
+    ];
+
+    // Plain URL: esc_url (href) and HTML escaping (visible text) produce the same string.
+    $plain = $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/plain'], new PlaceholderCollector('ns'));
+    // URL with '&': esc_url encodes it as &#038; while the visible text keeps the raw '&'.
+    $ampersand = $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/?a=1&b=2'], new PlaceholderCollector('ns'));
+
+    // The same token used as visible text and as a link href must keep two
+    // separate placeholders regardless of whether the two escapings coincide,
+    // so the generated template is identical across subscribers.
+    $this->assertSame($plain[1], $ampersand[1]);
+    $this->assertSame(2, substr_count($plain[1], '{{mailpoet_mss_ns_'));
+
+    // The two placeholders carry context-specific escaping: raw '&' for the
+    // visible text, esc_url's &#038; for the href.
+    $collectorForValues = new PlaceholderCollector('ns');
+    $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/?a=1&b=2'], $collectorForValues);
+    $htmlValues = $collectorForValues->getValues()['html'];
+    $this->assertContains('https://example.com/?a=1&b=2', $htmlValues);
+    $this->assertContains('https://example.com/?a=1&#038;b=2', $htmlValues);
+  }
+
+  public function testBlockEmailResolvesTheSameTagEmbeddedInDifferentLinkUrls(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Link',
+      'mailpoet/test-link',
+      'Test',
+      function(): string {
+        return 'john@example.com';
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $collector = new PlaceholderCollector('ns');
+    // The same tag is a component of two different link URLs, so each link
+    // must keep its own resolved URL.
+    $content = $processor->personalizeWithPlaceholders([
+      'Subject',
+      '<a href="https://example.com/a?e=[mailpoet/test-link]">A</a><a href="https://example.com/b?e=[mailpoet/test-link]">B</a>',
+      '',
+    ], [], $collector);
+
+    $resolvedHtml = strtr($content[1], $collector->getValues()['html']);
+    $this->assertStringContainsString('href="https://example.com/a?e=john@example.com"', $resolvedHtml);
+    $this->assertStringContainsString('href="https://example.com/b?e=john@example.com"', $resolvedHtml);
   }
 }
