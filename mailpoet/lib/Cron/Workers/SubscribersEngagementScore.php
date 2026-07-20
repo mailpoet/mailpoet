@@ -12,6 +12,7 @@ class SubscribersEngagementScore extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = true;
   const SUPPORT_MULTIPLE_INSTANCES = false;
   const BATCH_SIZE = 1000;
+  const SEGMENTS_BATCH_SIZE = 100;
   const TASK_TYPE = 'subscribers_engagement_score';
 
   /** @var SegmentsRepository */
@@ -38,7 +39,7 @@ class SubscribersEngagementScore extends SimpleWorker {
     while ($this->recalculateSubscribers() > 0) {
       $this->cronHelper->enforceExecutionLimit($timer); // Throws exception and interrupts process if over execution limit
     }
-    while ($this->recalculateSegments() > 0) {
+    while ($this->recalculateSegments($timer) > 0) {
       $this->cronHelper->enforceExecutionLimit($timer);
     }
     $this->schedule();
@@ -51,10 +52,16 @@ class SubscribersEngagementScore extends SimpleWorker {
     return count($subscriberIds);
   }
 
-  private function recalculateSegments(): int {
-    $segments = $this->segmentsRepository->findByUpdatedScoreNotInLastDay(self::BATCH_SIZE);
+  /**
+   * @param float $timer
+   */
+  private function recalculateSegments($timer): int {
+    $segments = $this->segmentsRepository->findByUpdatedScoreNotInLastDay(self::SEGMENTS_BATCH_SIZE);
     foreach ($segments as $segment) {
       $this->statisticsOpensRepository->recalculateSegmentScore($segment);
+      // A single segment recalculation can be slow on large lists, so check the limit per segment,
+      // not only per batch. Each processed segment is flushed immediately, so progress survives.
+      $this->cronHelper->enforceExecutionLimit($timer);
     }
     return count($segments);
   }
