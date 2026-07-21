@@ -383,15 +383,17 @@ Write descriptions so they start with a capital letter and read naturally after 
 
 ## Backward Compatibility
 
-Any change to a **public or externally exposed** class, interface, function, method, hook, or REST endpoint signature is **high-risk** and **must state its backward-compatibility impact in the PR description**. An internal-looking name or location is no guarantee a symbol is safe to change: other plugins, themes, and custom site code — plus MailPoet Premium — implement and consume these contracts in practice. When in doubt, assume it is exposed and state the BC impact.
+Any change to a **public or externally exposed** class, interface, function, method, hook, or REST endpoint signature is **high-risk** and **must state its backward-compatibility impact in the PR description**. An internal-looking name or location is not by itself a guarantee that a symbol is safe to change: other plugins, themes, and custom site code implement and consume some of these contracts in practice. See the exposed-surface list for what counts and the **Scope** note for what does not; when a symbol is genuinely reachable and useful to outside code, err toward treating it as exposed.
 
-For MailPoet, externally exposed includes:
+For MailPoet, the externally exposed surface is:
 
 - **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API::MP('v1')`. This is the documented contract third parties build on; its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
-- **Custom hooks** — the actions and filters MailPoet fires (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing its arguments, or dropping it breaks whatever is hooked in.
+- **Custom hooks** — the actions and filters MailPoet fires (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing or reordering its arguments, or dropping it breaks whatever is hooked in; to retire one, fire it through `do_action_deprecated()` / `apply_filters_deprecated()` for a deprecation window.
 - **WordPress REST API** — the `MailPoet\API\REST\` routes, their request/response shapes, and their auth expectations.
-- **Public PHP** — any `public` class, method, or function another plugin (including MailPoet Premium) or theme can autoload and call.
+- **Public PHP documented for integrators** — beyond the `MP\v1` API above, any class or function MailPoet documents as an extension point. A symbol being `public` is not by itself enough to make it a third-party contract (see Scope below).
 - **Front-end globals** — the `window.MailPoet` JS object and any properties page scripts may read.
+
+**Scope — what is *not* a third-party contract:** MailPoet's internal service and infrastructure classes are declared `public` so MailPoet's own code can call across package boundaries, but they are not an API third parties build on. The clearest example is the MailPoet Sending Service bridge — `MailPoet\Services\Bridge` and `MailPoet\Services\Bridge\API` (`lib/Services/Bridge/API.php`), the client for MailPoet's own backend (e.g. `getBouncesReport()`). An ordinary signature or return-type change to classes like these does **not** require a *third-party* BC statement. One internal contract does remain: **MailPoet Premium** consumes some of these classes, so a change to a symbol Premium calls must be kept in lockstep with Premium in the same release — note that in the PR, but it is a free↔Premium coordination concern, not a public-API break. When unsure whether a symbol is a third-party contract, check the exposed-surface list above rather than assuming every `public` method is one.
 
 Rules:
 
@@ -400,6 +402,22 @@ Rules:
 - **Don't implement or type-hint WooCommerce core `Internal\` classes or interfaces** — core treats them as changeable in any release. If unavoidable, guard the dependency with `interface_exists()` / `method_exists()` checks so a core change doesn't fatal this plugin.
 
 > Why: WooCommerce 10.9.0 was reverted on WP Cloud after woocommerce/woocommerce#64394 added a required method to core's internal `FeedInterface`, fataling older WooCommerce Stripe Gateway versions that implemented it (fixed in woocommerce/woocommerce#65965). The same failure mode applies to any published WooCommerce extension.
+
+### The compatibility surface is wider than PHP signatures
+
+WordPress exposes more contracts than class and function signatures. A change to any of the following is equally high-risk and needs the same backward-compatibility impact statement in the PR.
+
+- **Global state.** Code runs in admin, REST, CLI, cron, webhook, and front-end contexts, and not all set the globals a front-end request does (`$post`, `$wp_query`, an initialized session or cart). A new read of a global — or of `WC()->…` state — in a path reachable outside a standard request fatals or silently misbehaves where it isn't set. Guard the exact dependency (`function_exists`/`class_exists` for symbols, `isset` for variables, `did_action` for lifecycle) and verify the component is initialized before dereferencing.
+- **Multisite.** Site-scoped vs network-scoped options (`get_option` vs `get_site_option`), per-site tables, capabilities, and upload paths all differ under multisite. A change that reads or writes site state must state whether it behaves correctly under multisite, or say it wasn't tested there.
+- **Install layout.** WordPress can run in a subdirectory, with relocated `wp-content`, and behind reverse proxies. Never build paths or URLs by concatenation from the domain root; derive them (`plugins_url()`, `plugin_dir_path()`, `wp_upload_dir()`, and mind `home_url()` vs `site_url()`).
+
+### Before changing any public or externally exposed surface (agent checklist)
+
+1. Identify the contract you are touching: signature, hook, global/scope expectation, site topology, or install layout.
+2. Assume unseen consumers — you cannot enumerate third-party code; if the surface is reachable from outside this plugin, someone may consume it.
+3. Prefer the additive path (new optional method, appended hook argument, new symbol + deprecation) over changing what exists.
+4. State the impact in the PR description: what changed, who could consume it, and why it is safe or what the deprecation path is.
+5. If you cannot establish the impact, stop and flag it for review.
 
 ## Available Skills
 
