@@ -49,7 +49,7 @@ class CircleCiController {
     $circleCiProject = $this->getCircleCiProject($project);
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = $httpClient ?? new Client([
-      'auth' => [$token, null],
+      'auth' => [$token, ''],
       'headers' => [
         'Accept' => 'application/json',
       ],
