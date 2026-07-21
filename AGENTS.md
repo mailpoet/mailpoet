@@ -399,9 +399,9 @@ Rules:
 
 - **Never add or remove a required method on an interface that external code can implement** — existing implementers fatal on load. Prefer adding the method to the concrete class, introducing a new interface, or supplying a default implementation in an abstract base class. If an interface change is unavoidable, flag it explicitly.
 - **Deprecate, don't rename.** Never rename or remove an existing public symbol in place: mark it `@deprecated`, introduce the replacement alongside it, and keep both working through a deprecation window.
-- **Don't implement or type-hint WooCommerce core `Internal\` classes or interfaces** — core treats them as changeable in any release. If unavoidable, guard the dependency with `interface_exists()` / `method_exists()` checks so a core change doesn't fatal this plugin.
+- **Don't implement or type-hint WooCommerce core `Internal\` classes or interfaces** — core treats them as changeable in any release. If unavoidable, guard the dependency with `class_exists()` / `interface_exists()` / `method_exists()` checks so a core change doesn't cause a fatal error in this plugin.
 
-> Why: WooCommerce 10.9.0 was reverted on WP Cloud after woocommerce/woocommerce#64394 added a required method to core's internal `FeedInterface`, fataling older WooCommerce Stripe Gateway versions that implemented it (fixed in woocommerce/woocommerce#65965). The same failure mode applies to any published WooCommerce extension.
+> Why: WooCommerce 10.9.0 was reverted on WP Cloud after woocommerce/woocommerce#64394 added a required method to core's internal `FeedInterface`, causing fatal errors in older WooCommerce Stripe Gateway versions that implemented it (fixed in woocommerce/woocommerce#65965). The same failure mode applies to any published WooCommerce extension.
 
 ### The compatibility surface is wider than PHP signatures
 
