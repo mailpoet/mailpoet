@@ -387,7 +387,7 @@ Any change to a **public or externally exposed** class, interface, function, met
 
 For MailPoet, the externally exposed surface is:
 
-- **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API::MP('v1')`. This is the documented contract third parties build on; its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
+- **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API\API::MP('v1')`. This is the documented contract third parties build on; its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
 - **Custom hooks** — the actions and filters MailPoet fires (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing or reordering its arguments, or dropping it breaks whatever is hooked in; to retire one, fire it through `do_action_deprecated()` / `apply_filters_deprecated()` for a deprecation window.
 - **WordPress REST API** — the `MailPoet\API\REST\` routes, their request/response shapes, and their auth expectations.
 - **Public PHP documented for integrators** — beyond the `MP\v1` API above, any class or function MailPoet documents as an extension point. A symbol being `public` is not by itself enough to make it a third-party contract (see Scope below).
