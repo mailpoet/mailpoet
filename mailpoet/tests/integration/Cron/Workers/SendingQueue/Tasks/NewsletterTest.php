@@ -667,13 +667,13 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame([
       [
         'mailpoet_automation_email_personalize_html_after',
-        '5.32.0',
+        '5.35.0',
         '',
         $deprecationMessage,
       ],
       [
         'mailpoet_automation_email_personalize_text_after',
-        '5.32.0',
+        '5.35.0',
         '',
         $deprecationMessage,
       ],

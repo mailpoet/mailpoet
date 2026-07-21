@@ -41,7 +41,7 @@ use MailPoetVendor\Carbon\Carbon;
 class Newsletter {
   private const AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER = 'mailpoet_automation_email_personalize_html_after';
   private const AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER = 'mailpoet_automation_email_personalize_text_after';
-  private const DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION = '5.32.0';
+  private const DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION = '5.35.0';
 
   public $trackingEnabled;
   public $trackingImageInserted;
