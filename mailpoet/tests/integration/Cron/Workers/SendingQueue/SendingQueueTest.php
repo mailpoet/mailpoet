@@ -28,6 +28,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeaturesController;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -649,6 +650,49 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     verify($this->sendingThrottlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE);
+  }
+
+  public function testItPausesTaskWhenTemplatedBatchTemplatesDiverge(): void {
+    $this->enableMssTemplatedSending();
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::never(),
+          'prepareSubscriberForSending' => function($subscriber) {
+            return $subscriber->getEmail();
+          },
+        ]
+      )
+    );
+    // Each subscriber produces a different template, which must abort the batch.
+    $sendingQueueWorker->newsletterTask = $this->make(NewsletterTask::class, [
+      'prepareNewsletterForTemplatedSending' => function($newsletter, $subscriber) {
+        return [
+          'newsletter' => ['id' => $newsletter->getId(), 'subject' => 'Subject for ' . $subscriber->getId(), 'body' => ['html' => '', 'text' => '']],
+          'substitutions' => ['subject' => [], 'html' => [], 'text' => []],
+        ];
+      },
+    ]);
+
+    try {
+      $sendingQueueWorker->processQueue($this->scheduledTask, $this->newsletter, [$this->subscriber, $subscriber2], 1000000000000000000, 'bulk');
+      $this->fail('Templated batch mismatch did not throw.');
+    } catch (InvalidStateException $exception) {
+      verify($exception->getMessage())->equals('Templated batch generated different templates for subscribers.');
+    }
+
+    // The task must be paused so the mismatch is not retried by every cron run.
+    $this->entityManager->refresh($this->scheduledTask);
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
   public function testItCanProcessAutomationSubscribersInTemplatedBulkWithoutDeprecatedFilters(): void {

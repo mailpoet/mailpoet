@@ -472,6 +472,9 @@ class SendingQueue {
         if (!$templateBatch instanceof TemplateBatch) {
           $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
         } elseif ($templateBatch->getTemplate() !== $templatedNewsletter['newsletter']) {
+          // A mismatch is deterministic, so pause the task to prevent every cron run from retrying it.
+          $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+          $this->scheduledTasksRepository->flush();
           throw new InvalidStateException('Templated batch generated different templates for subscribers.');
         }
         $templateBatch->addSubstitutions($templatedNewsletter['substitutions']);
