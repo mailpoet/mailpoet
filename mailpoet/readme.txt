@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.34.0
+Stable tag: 5.34.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,14 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.34.0 - 2026-07-13 =
-* Added: Add a Manage Subscription block that renders the manage-subscription form (modern style) without requiring the shortcode or URL parameters;
-* Added: Timezone field in the subscriber edit form for viewing and editing a subscriber's timezone;
-* Added: Support for closing pop-up, slide-in and fixed bar forms from a custom link with the mailpoet_form_close CSS class, plus a Close button block in the form editor to add one easily;
-* Added: Option to trigger automations when bulk adding or moving subscribers to lists or adding or removing tags;
-* Improved: Use active theme colors in the form editor palette;
-* Fixed: Homepage, store, and account links in email editor emails becoming dead tracked links;
-* Fixed: Restored auto-mapping of first and last name CSV headers that use underscores, hyphens, dots or common abbreviations during subscriber import;
-* Fixed: Fatal error on some sites when the email editor loaded custom fields before a database migration finished during a plugin update.
+= 5.34.1 - 2026-07-21 =
+* Added: A filter to exclude subscribers from a specific newsletter send;
+* Added: Ability for subscribers to opt out of email open and click tracking;
+* Fixed: Prevent the Premium plugin from auto-updating ahead of the free plugin, which could disable Premium features when the free update was delayed;
+* Fixed: Repeated bounce report requests when the MailPoet API key is no longer valid.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
