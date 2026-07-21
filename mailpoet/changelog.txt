@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.34.1 - 2026-07-21 =
+* Added: A filter to exclude subscribers from a specific newsletter send;
+* Added: Ability for subscribers to opt out of email open and click tracking;
+* Fixed: Prevent the Premium plugin from auto-updating ahead of the free plugin, which could disable Premium features when the free update was delayed;
+* Fixed: Repeated bounce report requests when the MailPoet API key is no longer valid.
+
 = 5.34.0 - 2026-07-13 =
 * Added: Add a Manage Subscription block that renders the manage-subscription form (modern style) without requiring the shortcode or URL parameters;
 * Added: Timezone field in the subscriber edit form for viewing and editing a subscriber's timezone;
