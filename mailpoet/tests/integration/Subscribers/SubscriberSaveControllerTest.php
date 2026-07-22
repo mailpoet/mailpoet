@@ -334,6 +334,28 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $this->assertSame(2, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
   }
 
+  public function testItSanitizesFirstAndLastNameOnCreate(): void {
+    $subscriber = $this->saveController->createOrUpdate([
+      'email' => 'sanitize-name@example.com',
+      'first_name' => '<script>alert(1)</script>John',
+      'last_name' => '  Doe<img src=x>  ',
+    ], null);
+
+    verify($subscriber->getFirstName())->equals('John');
+    verify($subscriber->getLastName())->equals('Doe');
+  }
+
+  public function testItPreservesLegitimateNameCharacters(): void {
+    $subscriber = $this->saveController->createOrUpdate([
+      'email' => 'legit-name@example.com',
+      'first_name' => 'Tom & Jerry',
+      'last_name' => "O'Brien-José",
+    ], null);
+
+    verify($subscriber->getFirstName())->equals('Tom & Jerry');
+    verify($subscriber->getLastName())->equals("O'Brien-José");
+  }
+
   private function createSubscriber(string $email, string $status): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

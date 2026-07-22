@@ -233,8 +233,8 @@ class SubscriberSaveController {
     }
 
     if (isset($data['email'])) $subscriber->setEmail($data['email']);
-    if (isset($data['first_name'])) $subscriber->setFirstName($data['first_name']);
-    if (isset($data['last_name'])) $subscriber->setLastName($data['last_name']);
+    if (isset($data['first_name'])) $subscriber->setFirstName(sanitize_text_field($data['first_name']));
+    if (isset($data['last_name'])) $subscriber->setLastName(sanitize_text_field($data['last_name']));
     if (isset($data['status'])) $subscriber->setStatus($data['status']);
     if (isset($data['tracking_consent'])) {
       $subscriber->setTrackingConsent(
