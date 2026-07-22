@@ -527,6 +527,52 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame(2, substr_count($template['body']['html'], $placeholder));
   }
 
+  public function testItNeutralizesOpenTrackingPixelForNonConsentingSubscriberInTemplatedBatch(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Newsletter');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<img src="' . Links::DATA_TAG_OPEN . '" alt="" /><p><a href="' . Links::DATA_TAG_CLICK . '-abcdef123456">Visit</a></p>',
+      'text' => 'Visit',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $consenting = $this->subscriber;
+    $consenting->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $nonConsenting = (new SubscriberFactory())->create();
+    $nonConsenting->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templatedForConsenting = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $consenting,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+    $templatedForNonConsenting = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $nonConsenting,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+
+    // Consent handling must not break the shared-template invariant.
+    $this->assertSame($templatedForConsenting['newsletter'], $templatedForNonConsenting['newsletter']);
+
+    $consentingValues = implode(' ', $templatedForConsenting['substitutions']['html']);
+    $nonConsentingValues = implode(' ', $templatedForNonConsenting['substitutions']['html']);
+
+    // The consenting subscriber gets a live open-tracking URL.
+    $this->assertStringContainsString('action=open', $consentingValues);
+    // The non-consenting subscriber gets the inert data: pixel instead, so no
+    // reading operation can happen when the email is opened.
+    $this->assertStringNotContainsString('action=open', $nonConsentingValues);
+    $this->assertContains(Links::TRACKING_OPT_OUT_PIXEL, $templatedForNonConsenting['substitutions']['html']);
+    // Click links stay rewritten for both; their recording is suppressed server-side.
+    $this->assertStringContainsString('action=click', $consentingValues);
+    $this->assertStringContainsString('action=click', $nonConsentingValues);
+  }
+
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
     $this->sendingQueueEntity->setNewsletterRenderedSubject('Literal {{mailpoet_mss_1}} for [subscriber:firstname]');
     $this->sendingQueueEntity->setNewsletterRenderedBody([

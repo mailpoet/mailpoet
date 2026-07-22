@@ -17,6 +17,7 @@ use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\pQuery\pQuery as DomParser;
 use MailPoet\Util\Security;
@@ -26,6 +27,9 @@ class Links {
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_URL = 'link';
+  // Smallest widely-supported transparent 1x1 GIF as a data: URI. Used in place
+  // of the open-tracking URL for subscribers who withdrew tracking consent.
+  const TRACKING_OPT_OUT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAAIBAEAOw==';
 
   /** @var LinkTokens */
   private $linkTokens;
@@ -42,18 +46,23 @@ class Links {
   /** @var SendingQueuesRepository */
   private $sendingQueueRepository;
 
+  /** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     LinkTokens $linkTokens,
     SubscribersRepository $subscribersRepository,
     NewsletterLinkRepository $newsletterLinkRepository,
     NewslettersRepository $newslettersRepository,
-    SendingQueuesRepository $sendingQueuesRepository
+    SendingQueuesRepository $sendingQueuesRepository,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->linkTokens = $linkTokens;
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->sendingQueueRepository = $sendingQueuesRepository;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function process($content, $newsletterId, $queueId) {
@@ -172,8 +181,28 @@ class Links {
     if (!$subscriber) {
       throw new InvalidStateException('Subscriber not found for link replacement');
     }
+    $emailOpenTrackingAllowed = $this->trackingConsentController->isTrackingAllowed($subscriber);
     preg_match_all($this->getLinkRegex(), $content, $matches);
     foreach ($matches[1] as $index => $match) {
+      $routerAction = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+        TrackEndpoint::ACTION_CLICK :
+        TrackEndpoint::ACTION_OPEN;
+
+      // CNIL/Garante: consent withdrawal must stop the reading operation, not
+      // merely its recording, so the open pixel must not fire at all. The
+      // batch shares one template, so the img tag cannot be removed per
+      // subscriber like in the rendered path — instead the pixel resolves to
+      // an inert data: URI (no request, unlike "" or "#", which resolve
+      // against the base URL). addHtmlText because esc_url in addHtmlUrl
+      // would strip the data: scheme. HTML only — the pixel is only ever an
+      // HTML img. Click links stay rewritten; Clicks::track suppresses their
+      // recording server-side.
+      if ($routerAction === TrackEndpoint::ACTION_OPEN && !$emailOpenTrackingAllowed && $contentPart === PlaceholderCollector::PART_HTML) {
+        $placeholder = $collector->addHtmlText(self::TRACKING_OPT_OUT_PIXEL, $match);
+        $content = str_replace($match, $placeholder, $content);
+        continue;
+      }
+
       $hash = null;
       if (preg_match('/-/', $match)) {
         [, $hash] = explode('-', $match);
@@ -185,9 +214,6 @@ class Links {
         $hash,
         $preview
       );
-      $routerAction = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
-        TrackEndpoint::ACTION_CLICK :
-        TrackEndpoint::ACTION_OPEN;
       $link = Router::buildRequest(
         TrackEndpoint::ENDPOINT,
         $routerAction,
