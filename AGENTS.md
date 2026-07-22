@@ -352,6 +352,12 @@ Write descriptions so they start with a capital letter and read naturally after 
 - When adding PHP dependencies, be aware of vendor prefixing. New dependencies may need prefixer configuration.
 - Integration tests run in `tests_env/` (a separate compose stack). Shell in with `pnpm shell:test` to debug.
 
+## Dependency Management (pnpm overrides and audit)
+
+- All workspace pnpm `overrides` live in `pnpm-workspace.yaml`. **NEVER add a `pnpm` field to the root `package.json`**: pnpm silently prefers that field, and the entire workspace `overrides:` block stops applying. This happened once and the two lists drifted for months before being reconciled.
+- When fixing `pnpm audit` findings, prefer a plain lockfile bump (`pnpm -r update <pkg>` works for transitive dependencies) whenever every parent's declared range admits the patched version. Add an override only when the patched release falls outside some parent's range, and drop overrides that newer resolutions make unnecessary. Removing an override alone does not move a locked version that still satisfies its parents; pair the removal with the update command.
+- `tools/mcp-server` is not a workspace package and has its own standalone `pnpm-lock.yaml`; its overrides live in its own `package.json` `pnpm` field. Run pnpm commands there with `--ignore-workspace`; without it, pnpm silently walks up and operates on the root workspace instead (audit paths starting with `mailpoet>` are the tell-tale sign).
+
 ## Boundaries
 
 ### Always Do
