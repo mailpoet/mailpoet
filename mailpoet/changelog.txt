@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.34.2 - 2026-07-22 =
+* Improved: Performance of subscriber engagement score updates on large sites;
+* Fixed: Show how many trashed subscribers were kept when emptying the trash, since subscribers linked to WordPress or WooCommerce accounts are not permanently deleted.
+
 = 5.34.1 - 2026-07-21 =
 * Added: A filter to exclude subscribers from a specific newsletter send;
 * Added: Ability for subscribers to opt out of email open and click tracking;
