@@ -152,8 +152,8 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
   }
 
   public function testGetSubscribersCountBySegmentIds(): void {
-    $segmentOne = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
-    $segmentTwo = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
+    $segmentOne = $this->segmentRepository->createOrUpdate('Segment' . bin2hex(random_bytes(7)));
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Segment' . bin2hex(random_bytes(7)));
 
     $subscriberOne = $this->createSubscriberEntity();
     $subscriberTwo = $this->createSubscriberEntity();
@@ -209,6 +209,50 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       $dynamicSegmentTwo->getId(),
     ]);
     verify($count)->equals(6);
+  }
+
+  public function testGetSubscribersCountDeduplicatesSubscribersInMultipleSegments(): void {
+    $segmentOne = $this->segmentRepository->createOrUpdate('Segment' . bin2hex(random_bytes(7)));
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Segment' . bin2hex(random_bytes(7)));
+
+    $sharedSubscriber = $this->createSubscriberEntity();
+    $onlyInSegmentOne = $this->createSubscriberEntity();
+
+    // The shared subscriber belongs to both selected lists.
+    $this->createSubscriberSegmentEntity($segmentOne, $sharedSubscriber);
+    $this->createSubscriberSegmentEntity($segmentTwo, $sharedSubscriber);
+    $this->createSubscriberSegmentEntity($segmentOne, $onlyInSegmentOne);
+    $this->entityManager->flush();
+
+    // The shared subscriber must be counted once, not once per list.
+    $count = $this->repository->getSubscribersCountBySegmentIds([$segmentOne->getId(), $segmentTwo->getId()]);
+    verify($count)->equals(2);
+  }
+
+  public function testGetSubscribersCountReturnsZeroForNonexistentSegments(): void {
+    // No resolvable segments must yield 0, not an invalid empty-UNION query.
+    $count = $this->repository->getSubscribersCountBySegmentIds([999999]);
+    verify($count)->equals(0);
+  }
+
+  public function testGetSubscribersCountDeduplicatesAcrossStaticAndDynamicSegments(): void {
+    $staticSegment = (new SegmentFactory())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    $dynamicSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $this->assertIsInt($staticSegment->getId());
+    $this->assertIsInt($dynamicSegment->getId());
+
+    // Shared subscriber: matches the dynamic segment (engagement > 40) and is a
+    // member of the static list.
+    (new SubscriberFactory())->withEngagementScore(50)->withSegments([$staticSegment])->create();
+    // Only matches the dynamic segment.
+    (new SubscriberFactory())->withEngagementScore(60)->create();
+
+    // The static list's only member already matches the dynamic segment, so
+    // selecting both must count it once, not twice.
+    $dynamicOnly = $this->repository->getSubscribersCountBySegmentIds([$dynamicSegment->getId()]);
+    $combined = $this->repository->getSubscribersCountBySegmentIds([$staticSegment->getId(), $dynamicSegment->getId()]);
+    verify($dynamicOnly)->equals(2);
+    verify($combined)->equals(2);
   }
 
   public function testSubscriberCountCanBeFilteredByDynamicSegment(): void {

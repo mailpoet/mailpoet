@@ -21,6 +21,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscribersRepository;
+use Throwable;
 
 class Segments extends APIEndpoint {
   public $permissions = [
@@ -258,9 +259,26 @@ class Segments extends APIEndpoint {
         APIError::BAD_REQUEST => __('No segment IDs provided.', 'mailpoet'),
       ]);
     }
-    $filterSegmentId = $data['filterSegmentId'] ?? null;
+    // filterSegmentId arrives as a string (it can come straight from a URL query
+    // param). Empty and 0 mean "no filter segment"; anything else must be a valid
+    // positive segment id, otherwise the count would be silently wrong.
+    $filterSegmentId = null;
+    if (!empty($data['filterSegmentId'])) {
+      $filterSegmentId = filter_var($data['filterSegmentId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+      if ($filterSegmentId === false) {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => __('Invalid filter segment.', 'mailpoet'),
+        ]);
+      }
+    }
     $status = $data['status'] ?? SubscriberEntity::STATUS_SUBSCRIBED;
-    $response['count'] = $this->segmentSubscribersRepository->getSubscribersCountBySegmentIds($segmentIds, $status, $filterSegmentId);
+    try {
+      $response['count'] = $this->segmentSubscribersRepository->getSubscribersCountBySegmentIds($segmentIds, $status, $filterSegmentId);
+    } catch (Throwable $e) {
+      return $this->errorResponse([
+        APIError::UNKNOWN => __('The recipient count could not be calculated.', 'mailpoet'),
+      ], [], Response::STATUS_UNKNOWN);
+    }
 
     return $this->successResponse($response);
   }
