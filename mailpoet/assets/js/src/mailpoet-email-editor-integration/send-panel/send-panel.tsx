@@ -12,6 +12,7 @@ import { useRecipients } from '../shared/use-recipients';
 import { ScheduledDatePicker } from '../shared/scheduled-date-picker';
 import { ScheduleModeControls } from '../shared/schedule-mode-controls';
 import { RecipientsSelector } from '../shared/recipients-selector';
+import { hasNoRecipients } from '../shared/recipients-gating';
 import { store as emailEditorIntegrationStore } from '../store';
 import { useSendEmail } from './use-send-email';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
@@ -40,13 +41,18 @@ export function SendPanel() {
     totalRecipientCount,
     isLoadingSegments,
     isLoadingRecipientCount,
+    recipientCountFailed,
   } = recipients;
   const { sendEmail, isSending, error, clearError } = useSendEmail();
   const senderFields = useSenderFields();
   const { hasValidationErrors, validateSenderFields } = senderFields;
 
-  const hasNoRecipients =
-    !isLoadingSegments && !isLoadingRecipientCount && totalRecipientCount === 0;
+  const noRecipients = hasNoRecipients({
+    isLoadingSegments,
+    isLoadingRecipientCount,
+    recipientCountFailed,
+    totalRecipientCount,
+  });
 
   const handleSendTestEmail = useCallback(() => {
     if (postId) {
@@ -102,7 +108,7 @@ export function SendPanel() {
             variant="primary"
             size="compact"
             isBusy={isSending}
-            disabled={isSending || hasNoRecipients || hasValidationErrors}
+            disabled={isSending || noRecipients || hasValidationErrors}
             onClick={() => void handleSend()}
             data-automation-id="email_send_panel_send_button"
           >
@@ -171,7 +177,7 @@ export function SendPanel() {
             >
               {__('Send a test email', 'mailpoet')}
             </UiButton>
-            {hasNoRecipients && (
+            {noRecipients && (
               <Text
                 variant="body-sm"
                 className="mailpoet-send-panel__no-recipients"

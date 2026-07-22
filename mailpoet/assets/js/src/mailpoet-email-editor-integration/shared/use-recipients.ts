@@ -87,6 +87,7 @@ export type UseRecipients = {
   setSelectedSegments: (segmentNames: string[]) => void;
   recipientCount: number | null;
   isLoadingRecipientCount: boolean;
+  recipientCountFailed: boolean;
   allCustomersSegmentCount: number;
   recipientLabel: string;
   totalRecipientCount: number;
@@ -113,6 +114,7 @@ export function useRecipients(): UseRecipients {
   const [recipientType, setRecipientType] = useState<RecipientType>('segment');
   const [recipientCount, setRecipientCount] = useState<number | null>(null);
   const [isLoadingRecipientCount, setIsLoadingRecipientCount] = useState(false);
+  const [recipientCountFailed, setRecipientCountFailed] = useState(false);
 
   // Fetch segments on mount.
   useEffect(() => {
@@ -189,12 +191,14 @@ export function useRecipients(): UseRecipients {
   useEffect(() => {
     if (recipientType !== 'segment' || selectedSegmentIds.length === 0) {
       setRecipientCount(null);
+      setRecipientCountFailed(false);
       setIsLoadingRecipientCount(false);
       return undefined;
     }
 
     let mounted = true;
     setIsLoadingRecipientCount(true);
+    setRecipientCountFailed(false);
 
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -211,7 +215,10 @@ export function useRecipients(): UseRecipients {
       })
       .catch(() => {
         if (mounted) {
+          // Keep the send flow usable: a failed/timed-out exact count must not
+          // read as "zero recipients".
           setRecipientCount(null);
+          setRecipientCountFailed(true);
         }
       })
       .always(() => {
@@ -317,6 +324,7 @@ export function useRecipients(): UseRecipients {
     setSelectedSegments,
     recipientCount,
     isLoadingRecipientCount,
+    recipientCountFailed,
     allCustomersSegmentCount,
     recipientLabel,
     totalRecipientCount,
