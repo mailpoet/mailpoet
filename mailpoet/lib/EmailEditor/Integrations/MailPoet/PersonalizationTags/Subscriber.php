@@ -59,15 +59,16 @@ class Subscriber {
   }
 
   public function getDisplayName(array $context, array $args = []): string {
-    $default = $args['default'] ?? '';
+    $value = $args['default'] ?? '';
     $subscriber = $this->getSubscriber($context);
-    if (!$subscriber || !$subscriber->getWpUserId()) {
-      return htmlspecialchars($default, self::HTML_ENTITY_FLAGS);
+    if ($subscriber && $subscriber->getWpUserId()) {
+      $wpUser = $this->wp->getUserdata($subscriber->getWpUserId());
+      if ($wpUser instanceof \WP_User) {
+        $value = (string)$wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
     }
 
-    $wpUser = $this->wp->getUserdata($subscriber->getWpUserId());
-
-    return ($wpUser instanceof \WP_User) ? (string)$wpUser->display_name : htmlspecialchars($default, self::HTML_ENTITY_FLAGS); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return htmlspecialchars($value, self::HTML_ENTITY_FLAGS, 'UTF-8', false);
   }
 
   public function getCount(array $context, array $args = []): string {

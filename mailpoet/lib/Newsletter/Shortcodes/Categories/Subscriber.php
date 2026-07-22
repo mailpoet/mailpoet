@@ -56,7 +56,9 @@ class Subscriber implements CategoryInterface {
       case 'displayname':
         if ($subscriber->getWpUserId()) {
           $wpUser = WPFunctions::get()->getUserdata($subscriber->getWpUserId());
-          return (string)$wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          if ($wpUser instanceof \WP_User) {
+            return htmlspecialchars((string)$wpUser->display_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8', false); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          }
         }
         return htmlspecialchars($defaultValue, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
       case 'count':
