@@ -522,4 +522,28 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringContainsString('href="https://example.com/a?e=john@example.com"', $resolvedHtml);
     $this->assertStringContainsString('href="https://example.com/b?e=john@example.com"', $resolvedHtml);
   }
+
+  public function testBlockEmailKeepsDollarSignsInResolvedLinkValues(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test URL',
+      'mailpoet/test-url',
+      'Test',
+      function(): string {
+        // "$10" must not be interpreted as a regex backreference during replacement.
+        return 'https://example.com/deal?price=$10';
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $collector = new PlaceholderCollector('ns');
+    $content = $processor->personalizeWithPlaceholders([
+      'Subject',
+      '<a data-link-href="[mailpoet/test-url]">Deal</a>',
+      '',
+    ], [], $collector);
+
+    $resolvedHtml = strtr($content[1], $collector->getValues()['html']);
+    $this->assertStringContainsString('price=$10', $resolvedHtml);
+  }
 }

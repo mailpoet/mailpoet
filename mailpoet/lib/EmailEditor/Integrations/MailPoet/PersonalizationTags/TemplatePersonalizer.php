@@ -133,7 +133,9 @@ class TemplatePersonalizer {
   private function replaceLinkHref(string $content, string $token, string $replacement): string {
     $escapedShortcode = preg_quote(substr($token, 1, strlen($token) - 2), '/');
     $pattern = '/\[' . $escapedShortcode . '(?:\s+[^\]]+)?\]/';
-    return trim((string)preg_replace($pattern, $replacement, $content));
+    // Escape backslashes and dollar signs so a resolved value like "price=$10"
+    // is inserted literally instead of being parsed as a regex backreference.
+    return trim((string)preg_replace($pattern, addcslashes($replacement, '\\$'), $content));
   }
 
   private function addValue(PlaceholderCollector $collector, string $value, string $contentContext, string $token): string {
