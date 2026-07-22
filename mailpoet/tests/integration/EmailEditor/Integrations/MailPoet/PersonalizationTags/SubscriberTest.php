@@ -118,4 +118,69 @@ class SubscriberTest extends \MailPoetTest {
     $expected = $this->wp->dateI18n('F j', (int)strtotime('2010-04-20 00:00:00'));
     $this->assertSame($expected, $result);
   }
+
+  public function testItEncodesFirstNameSpecialCharacters(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('encode-first@example.com')
+      ->withFirstName('<script>alert(1)</script>')
+      ->create();
+
+    $result = $this->subscriber->getFirstName(
+      ['recipient_email' => $subscriber->getEmail()],
+      ['default' => 'member']
+    );
+
+    $this->assertSame('&lt;script&gt;alert(1)&lt;/script&gt;', $result);
+  }
+
+  public function testItEncodesLastNameSpecialCharacters(): void {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('encode-last@example.com')
+      ->withLastName('"><b>x</b>')
+      ->create();
+
+    $result = $this->subscriber->getLastName(
+      ['recipient_email' => $subscriber->getEmail()],
+      ['default' => 'member']
+    );
+
+    $this->assertSame('&quot;&gt;&lt;b&gt;x&lt;/b&gt;', $result);
+  }
+
+  public function testItEncodesEmailSpecialCharacters(): void {
+    $result = $this->subscriber->getEmail(
+      ['recipient_email' => '"><b>@example.com'],
+      []
+    );
+
+    $this->assertSame('&quot;&gt;&lt;b&gt;@example.com', $result);
+  }
+
+  public function testItEncodesDisplayNameSpecialCharacters(): void {
+    wp_create_user('mailpoet_encode_display', 'pass', 'encode-display@example.com');
+    $wpUser = get_user_by('login', 'mailpoet_encode_display');
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+    wp_update_user(['ID' => $wpUser->ID, 'display_name' => 'Boss & Co']);
+
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('sub-encode-display@example.com')
+      ->withWpUserId((int)$wpUser->ID)
+      ->create();
+
+    $result = $this->subscriber->getDisplayName(
+      ['recipient_email' => $subscriber->getEmail()],
+      ['default' => 'member']
+    );
+
+    $this->assertSame('Boss &amp; Co', $result);
+  }
+
+  public function testItEncodesTheDefaultFallbackValue(): void {
+    $result = $this->subscriber->getFirstName(
+      ['recipient_email' => 'no-such-subscriber@example.com'],
+      ['default' => 'Tom & Jerry']
+    );
+
+    $this->assertSame('Tom &amp; Jerry', $result);
+  }
 }
