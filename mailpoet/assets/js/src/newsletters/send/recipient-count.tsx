@@ -16,6 +16,7 @@ function configString(segmentIds: string[], filterSegmentId?: string) {
 export function RecipientCount(props: RecipientCountProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [recipientCount, setRecipientCount] = useState(0);
+  const [hasError, setHasError] = useState(false);
 
   const segmentIds = useMemo(
     () => (props.item.segments || []).map((segment) => segment.id),
@@ -36,6 +37,7 @@ export function RecipientCount(props: RecipientCountProps) {
 
     if (segmentIds.length < 1) {
       setRecipientCount(0);
+      setHasError(false);
       setIsLoading(false);
       return;
     }
@@ -44,11 +46,13 @@ export function RecipientCount(props: RecipientCountProps) {
       setRecipientCount(
         apiResponseCache.current[currentConfigString] as number,
       );
+      setHasError(false);
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
+    setHasError(false);
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'segments',
@@ -67,6 +71,14 @@ export function RecipientCount(props: RecipientCountProps) {
           setRecipientCount(calculatedCount as number);
         }
       })
+      .fail(() => {
+        // Show an "Unavailable" label instead of dropping to zero, and don't
+        // cache the failure so a later selection change retries.
+        const configAfter = configString(segmentIds, filterSegmentId);
+        if (configBeforeRef.current === configAfter) {
+          setHasError(true);
+        }
+      })
       .always(() => setIsLoading(false));
   }, [segmentIds, filterSegmentId]);
 
@@ -80,7 +92,7 @@ export function RecipientCount(props: RecipientCountProps) {
           className="mailpoet-recipient-count-spinner"
         />
       )}
-      {!isLoading && (
+      {!isLoading && !hasError && (
         <>
           <Tooltip place="right" id="estimated-count-tooltip">
             {__('This count may change at the time of sending.', 'mailpoet')}
@@ -91,6 +103,23 @@ export function RecipientCount(props: RecipientCountProps) {
             className="estimated-recipient-count"
           >
             {recipientCount.toLocaleString()}
+          </span>
+        </>
+      )}
+      {!isLoading && hasError && (
+        <>
+          <Tooltip place="right" id="estimated-count-tooltip">
+            {__(
+              "We couldn't calculate the number of recipients. You can still send this email.",
+              'mailpoet',
+            )}
+          </Tooltip>
+          <span
+            data-tip
+            data-tooltip-id="estimated-count-tooltip"
+            className="estimated-recipient-count"
+          >
+            {__('Unavailable', 'mailpoet')}
           </span>
         </>
       )}
