@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.34.1
+Stable tag: 5.34.2
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.34.1 - 2026-07-21 =
-* Added: A filter to exclude subscribers from a specific newsletter send;
-* Added: Ability for subscribers to opt out of email open and click tracking;
-* Fixed: Prevent the Premium plugin from auto-updating ahead of the free plugin, which could disable Premium features when the free update was delayed;
-* Fixed: Repeated bounce report requests when the MailPoet API key is no longer valid.
+= 5.34.2 - 2026-07-22 =
+* Improved: Performance of subscriber engagement score updates on large sites;
+* Fixed: Show how many trashed subscribers were kept when emptying the trash, since subscribers linked to WordPress or WooCommerce accounts are not permanently deleted.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
