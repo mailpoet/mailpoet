@@ -65,7 +65,7 @@ class SegmentSubscribersRepository {
   public function getSubscribersCountBySegmentIds(array $segmentIds, ?string $status = null, ?int $filterSegmentId = null): int {
     $segments = $this->segmentsRepository->findByIds($segmentIds);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $queryBuilder = $this->createCountQueryBuilder();
+    $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
 
     $subQueries = [];
     foreach ($segments as $segment) {
@@ -89,12 +89,13 @@ class SegmentSubscribersRepository {
       $subQueries[] = $segmentQb->getSQL();
     }
 
-    $queryBuilder->innerJoin(
-      $subscribersTable,
-      sprintf('(%s)', join(' UNION ', $subQueries)),
-      'inner_subscribers',
-      "inner_subscribers.inner_id = {$subscribersTable}.id"
-    );
+    // No resolvable segments (e.g. all ids stale/deleted) means no recipients;
+    // bail before building an empty `FROM ()` that would be invalid SQL.
+    if (empty($subQueries)) {
+      return 0;
+    }
+
+    $unionSubquery = sprintf('(%s)', join(' UNION ', $subQueries));
 
     try {
       if (is_int($filterSegmentId)) {
@@ -103,12 +104,21 @@ class SegmentSubscribersRepository {
         $filterSegmentQb->select("{$subscribersTable}.id AS filter_segment_subscriber_id");
         $filterSegmentQb = $this->filterSubscribersInDynamicSegment($filterSegmentQb, $filterSegment, $status);
         $queryBuilder->setParameters(array_merge($filterSegmentQb->getParameters(), $queryBuilder->getParameters()), array_merge($filterSegmentQb->getParameterTypes(), $queryBuilder->getParameterTypes()));
-        $queryBuilder->innerJoin(
-          $subscribersTable,
-          sprintf('(%s)', $filterSegmentQb->getSQL()),
-          'filter_segment',
-          "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id"
-        );
+        // COUNT(DISTINCT) to stay correct even if the filter-segment subquery
+        // ever yields the same subscriber id more than once.
+        $queryBuilder
+          ->select('COUNT(DISTINCT inner_subscribers.inner_id)')
+          ->from($unionSubquery, 'inner_subscribers')
+          ->innerJoin(
+            'inner_subscribers',
+            sprintf('(%s)', $filterSegmentQb->getSQL()),
+            'filter_segment',
+            'filter_segment.filter_segment_subscriber_id = inner_subscribers.inner_id'
+          );
+      } else {
+        $queryBuilder
+          ->select('COUNT(*)')
+          ->from($unionSubquery, 'inner_subscribers');
       }
     } catch (InvalidStateException $exception) {
       return 0;
@@ -121,7 +131,7 @@ class SegmentSubscribersRepository {
       return (int)$result;
     } catch (Throwable $e) {
       $this->logQueryException(null, $e);
-      return 0;
+      throw $e;
     }
   }
 

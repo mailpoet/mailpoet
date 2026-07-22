@@ -12,6 +12,10 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Test\DataFactories\DynamicSegment;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SegmentsTest extends \MailPoetTest {
   /** @var SegmentEntity */
@@ -249,6 +253,56 @@ class SegmentsTest extends \MailPoetTest {
       $this->responseBuilder->build($segment)
     );
     verify($response->meta['count'])->equals(1);
+  }
+
+  public function testSubscriberCountReturnsErrorWhenTheCountFails(): void {
+    $throwingRepository = $this->createMock(SegmentSubscribersRepository::class);
+    $throwingRepository
+      ->method('getSubscribersCountBySegmentIds')
+      ->willThrowException(new \RuntimeException('Query failed'));
+    $endpoint = $this->getServiceWithOverrides(Segments::class, [
+      'segmentSubscribersRepository' => $throwingRepository,
+    ]);
+
+    $response = $endpoint->subscriberCount(['segmentIds' => [$this->segment1->getId()]]);
+
+    // The frontend relies on this 500 to show "Unavailable" instead of gating
+    // the send on a misleading zero.
+    verify($response->status)->equals(APIResponse::STATUS_UNKNOWN);
+  }
+
+  public function testSubscriberCountAppliesFilterSegmentPassedAsString(): void {
+    $segment = (new SegmentFactory())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    (new SubscriberFactory())->withEngagementScore(50)->withSegments([$segment])->create();
+    (new SubscriberFactory())->withEngagementScore(30)->withSegments([$segment])->create();
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $this->assertIsInt($segment->getId());
+    $this->assertIsInt($filterSegment->getId());
+
+    // The frontend sends ids as strings (filterSegmentId can come from a URL
+    // param); the endpoint must still apply the filter, not silently ignore it.
+    $response = $this->endpoint->subscriberCount([
+      'segmentIds' => [(string)$segment->getId()],
+      'filterSegmentId' => (string)$filterSegment->getId(),
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    // Only the engagement-50 subscriber is in the list AND the filter segment.
+    verify($response->data['count'])->equals(1);
+  }
+
+  public function testSubscriberCountRejectsInvalidFilterSegmentId(): void {
+    $segment = (new SegmentFactory())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    $this->assertIsInt($segment->getId());
+
+    // A non-integer filter segment must be rejected, not silently coerced to a
+    // wrong count.
+    $response = $this->endpoint->subscriberCount([
+      'segmentIds' => [(string)$segment->getId()],
+      'filterSegmentId' => 'not-a-number',
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   private function createForm(string $formName, array $settings) {
