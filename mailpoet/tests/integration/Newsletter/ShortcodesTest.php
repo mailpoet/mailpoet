@@ -229,6 +229,18 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(2)&gt;');
   }
 
+  public function testSanitizeEmailAndDisplayName() {
+    $subscriber = $this->subscriber;
+    $subscriber->setEmail('"><img src=x>@example.com');
+    $result = $this->shortcodesObject->process(['[subscriber:email]']);
+    verify($result[0])->equals('&quot;&gt;&lt;img src=x&gt;@example.com');
+
+    wp_update_user(['ID' => $this->wPUser->ID, 'display_name' => 'x & y']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $subscriber->setWpUserId((int)$this->wPUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $result = $this->shortcodesObject->process(['[subscriber:displayname | default:test]']);
+    verify($result[0])->equals('x &amp; y');
+  }
+
   public function testItCanProcessSubscriberShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $result =

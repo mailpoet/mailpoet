@@ -48,17 +48,17 @@ class Subscriber implements CategoryInterface {
       '';
     switch ($shortcodeDetails['action']) {
       case 'firstname':
-        return (!empty($subscriber->getFirstName())) ? htmlspecialchars($subscriber->getFirstName(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
+        return htmlspecialchars((!empty($subscriber->getFirstName())) ? $subscriber->getFirstName() : $defaultValue, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
       case 'lastname':
-        return !empty($subscriber->getLastName()) ? htmlspecialchars($subscriber->getLastName(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
+        return htmlspecialchars(!empty($subscriber->getLastName()) ? $subscriber->getLastName() : $defaultValue, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
       case 'email':
-        return $subscriber->getEmail();
+        return htmlspecialchars((string)$subscriber->getEmail(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
       case 'displayname':
         if ($subscriber->getWpUserId()) {
           $wpUser = WPFunctions::get()->getUserdata($subscriber->getWpUserId());
-          return $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          return (string)$wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
-        return $defaultValue;
+        return htmlspecialchars($defaultValue, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
       case 'count':
         return (string)$this->getSubscribersCountWithSubscribedStatus();
       default:
