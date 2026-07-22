@@ -1,4 +1,9 @@
-import { FormTokenField, RadioControl, Spinner } from '@wordpress/components';
+import {
+  FormTokenField,
+  RadioControl,
+  Spinner,
+  Tooltip,
+} from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { RecipientType, UseRecipients } from './use-recipients';
 
@@ -17,6 +22,7 @@ export function RecipientsSelector({
     setSelectedSegments,
     recipientCount,
     isLoadingRecipientCount,
+    recipientCountFailed,
     allCustomersSegmentCount,
   } = recipients;
 
@@ -25,6 +31,26 @@ export function RecipientsSelector({
   }
 
   const showSegmentField = !isWooActive || recipientType === 'segment';
+
+  let recipientCountContent: JSX.Element | string;
+  if (isLoadingRecipientCount) {
+    recipientCountContent = (
+      <Spinner className="mailpoet-status-panel__recipients-loader" />
+    );
+  } else if (recipientCountFailed) {
+    recipientCountContent = (
+      <Tooltip
+        text={__(
+          "We couldn't calculate the number of recipients. You can still send this email.",
+          'mailpoet',
+        )}
+      >
+        <span>{__('Unavailable', 'mailpoet')}</span>
+      </Tooltip>
+    );
+  } else {
+    recipientCountContent = (recipientCount ?? 0).toLocaleString();
+  }
 
   return (
     <>
@@ -72,12 +98,7 @@ export function RecipientsSelector({
             __experimentalShowHowTo={false}
           />
           <div className="mailpoet-status-panel__recipients-total-count">
-            {__('Total recipients: ', 'mailpoet')}{' '}
-            {isLoadingRecipientCount ? (
-              <Spinner className="mailpoet-status-panel__recipients-loader" />
-            ) : (
-              (recipientCount ?? 0).toLocaleString()
-            )}
+            {__('Total recipients: ', 'mailpoet')} {recipientCountContent}
           </div>
         </div>
       )}
