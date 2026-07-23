@@ -12,7 +12,7 @@ class Analytics extends APIEndpoint {
   private $reporter;
 
   public $permissions = [
-    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+    'global' => AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
   ];
 
   public function __construct(
