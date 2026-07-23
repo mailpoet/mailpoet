@@ -12,8 +12,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Subscriber {
 
-  private const HTML_ENTITY_FLAGS = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401;
-
   private SubscribersRepository $subscribersRepository;
   private SubscriberCustomFieldRepository $subscriberCustomFieldRepository;
   private WPFunctions $wp;
@@ -32,20 +30,18 @@ class Subscriber {
 
   public function getFirstName(array $context, array $args = []): string {
     $subscriber = $this->getSubscriber($context);
-    $value = ($subscriber && $subscriber->getFirstName()) ? $subscriber->getFirstName() : ($args['default'] ?? '');
 
-    return htmlspecialchars($value, self::HTML_ENTITY_FLAGS);
+    return ($subscriber && $subscriber->getFirstName()) ? $subscriber->getFirstName() : ($args['default'] ?? '');
   }
 
   public function getLastName(array $context, array $args = []): string {
     $subscriber = $this->getSubscriber($context);
-    $value = ($subscriber && $subscriber->getLastName()) ? $subscriber->getLastName() : ($args['default'] ?? '');
 
-    return htmlspecialchars($value, self::HTML_ENTITY_FLAGS);
+    return ($subscriber && $subscriber->getLastName()) ? $subscriber->getLastName() : ($args['default'] ?? '');
   }
 
   public function getEmail(array $context, array $args = []): string {
-    return htmlspecialchars($context['recipient_email'] ?? '', self::HTML_ENTITY_FLAGS);
+    return $context['recipient_email'] ?? '';
   }
 
   public function getActivationLink(array $context, array $args = []): string {
@@ -64,11 +60,15 @@ class Subscriber {
     if ($subscriber && $subscriber->getWpUserId()) {
       $wpUser = $this->wp->getUserdata($subscriber->getWpUserId());
       if ($wpUser instanceof \WP_User) {
-        $value = (string)$wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        // WordPress stores display_name HTML-entity-encoded; decode to return plain text.
+        $value = htmlspecialchars_decode(
+          (string)$wpUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401
+        );
       }
     }
 
-    return htmlspecialchars($value, self::HTML_ENTITY_FLAGS, 'UTF-8', false);
+    return $value;
   }
 
   public function getCount(array $context, array $args = []): string {
@@ -107,10 +107,10 @@ class Subscriber {
       $params = $definition->getParams();
       $label = (is_array($params) && isset($params['values'][0]['value'])) ? (string)$params['values'][0]['value'] : '';
 
-      return $label !== '' ? htmlspecialchars($label, self::HTML_ENTITY_FLAGS) : $default;
+      return $label !== '' ? $label : $default;
     }
 
-    return htmlspecialchars($value, self::HTML_ENTITY_FLAGS);
+    return $value;
   }
 
   private function getSubscriber(array $context): ?SubscriberEntity {

@@ -119,7 +119,7 @@ class SubscriberTest extends \MailPoetTest {
     $this->assertSame($expected, $result);
   }
 
-  public function testItEncodesFirstNameSpecialCharacters(): void {
+  public function testItReturnsRawFirstNameSpecialCharacters(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('encode-first@example.com')
       ->withFirstName('<script>alert(1)</script>')
@@ -130,10 +130,11 @@ class SubscriberTest extends \MailPoetTest {
       ['default' => 'member']
     );
 
-    $this->assertSame('&lt;script&gt;alert(1)&lt;/script&gt;', $result);
+    // The tag is registered as text-only; HTML escaping is applied by the Personalizer.
+    $this->assertSame('<script>alert(1)</script>', $result);
   }
 
-  public function testItEncodesLastNameSpecialCharacters(): void {
+  public function testItReturnsRawLastNameSpecialCharacters(): void {
     $subscriber = (new SubscriberFactory())
       ->withEmail('encode-last@example.com')
       ->withLastName('"><b>x</b>')
@@ -144,23 +145,26 @@ class SubscriberTest extends \MailPoetTest {
       ['default' => 'member']
     );
 
-    $this->assertSame('&quot;&gt;&lt;b&gt;x&lt;/b&gt;', $result);
+    $this->assertSame('"><b>x</b>', $result);
   }
 
-  public function testItEncodesEmailSpecialCharacters(): void {
+  public function testItReturnsRawEmailSpecialCharacters(): void {
     $result = $this->subscriber->getEmail(
       ['recipient_email' => '"><b>@example.com'],
       []
     );
 
-    $this->assertSame('&quot;&gt;&lt;b&gt;@example.com', $result);
+    $this->assertSame('"><b>@example.com', $result);
   }
 
-  public function testItEncodesDisplayNameSpecialCharacters(): void {
+  public function testItDecodesEntityEncodedDisplayName(): void {
     wp_create_user('mailpoet_encode_display', 'pass', 'encode-display@example.com');
     $wpUser = get_user_by('login', 'mailpoet_encode_display');
     $this->assertInstanceOf(\WP_User::class, $wpUser);
     wp_update_user(['ID' => $wpUser->ID, 'display_name' => 'Boss & Co']);
+    $storedUser = get_userdata($wpUser->ID);
+    $this->assertInstanceOf(\WP_User::class, $storedUser);
+    $this->assertSame('Boss &amp; Co', $storedUser->display_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $subscriber = (new SubscriberFactory())
       ->withEmail('sub-encode-display@example.com')
@@ -172,15 +176,15 @@ class SubscriberTest extends \MailPoetTest {
       ['default' => 'member']
     );
 
-    $this->assertSame('Boss &amp; Co', $result);
+    $this->assertSame('Boss & Co', $result);
   }
 
-  public function testItEncodesTheDefaultFallbackValue(): void {
+  public function testItReturnsRawDefaultFallbackValue(): void {
     $result = $this->subscriber->getFirstName(
       ['recipient_email' => 'no-such-subscriber@example.com'],
       ['default' => 'Tom & Jerry']
     );
 
-    $this->assertSame('Tom &amp; Jerry', $result);
+    $this->assertSame('Tom & Jerry', $result);
   }
 }

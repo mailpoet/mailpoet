@@ -109,9 +109,9 @@ class SendPreviewController {
       }
 
       $this->personalizer->set_context($context);
-      $renderedNewsletter['subject'] = $this->personalizer->personalize_content($renderedNewsletter['subject']);
-      $renderedNewsletter['body']['html'] = $this->personalizer->personalize_content($renderedNewsletter['body']['html']);
-      $renderedNewsletter['body']['text'] = $this->personalizer->personalize_content($renderedNewsletter['body']['text']);
+      $renderedNewsletter['subject'] = $this->personalizer->personalize_content($renderedNewsletter['subject'], Personalizer::RENDERING_CONTEXT_TEXT);
+      $renderedNewsletter['body']['html'] = $this->personalizer->personalize_content($renderedNewsletter['body']['html'], Personalizer::RENDERING_CONTEXT_HTML);
+      $renderedNewsletter['body']['text'] = $this->personalizer->personalize_content($renderedNewsletter['body']['text'], Personalizer::RENDERING_CONTEXT_TEXT);
       $renderedNewsletter['body']['text'] = $this->personalizationTagLinkResolver->resolveMarkdownLinks($renderedNewsletter['body']['text'], $context);
     }
 
