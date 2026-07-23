@@ -71,8 +71,14 @@ class ViewInBrowserController {
       return '';
     }
 
-    // if queue and subscriber exist, subscriber must have received the newsletter
+    // the queue must belong to the validated newsletter; otherwise its stored
+    // body is content the requester's newsletter/hash pair does not authorise
     $queue = isset($data['queue_id']) ? $this->sendingQueuesRepository->findOneById($data['queue_id']) : null;
+    if ($queue && (!$queue->getNewsletter() || $queue->getNewsletter()->getId() !== $newsletter->getId())) {
+      throw new \InvalidArgumentException("Invalid 'queue_id'");
+    }
+
+    // if queue and subscriber exist, subscriber must have received the newsletter
     if (!$isPreview && $queue && $subscriber->getId() && !$this->sendingQueuesRepository->isSubscriberProcessed($queue, $subscriber)) {
       throw new \InvalidArgumentException("Subscriber did not receive the newsletter yet");
     }
