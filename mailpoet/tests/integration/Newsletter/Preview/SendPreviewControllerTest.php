@@ -8,6 +8,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -90,6 +91,59 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $mailerFactory,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
+      new WPFunctions(),
+      $this->diContainer->get(SubscribersRepository::class),
+      $shortcodes,
+      $this->diContainer->get(PersonalizationTagManager::class),
+      $this->diContainer->get(WooCommerceDummyData::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
+    );
+    $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
+  }
+
+  public function testItPersonalizesSubjectHtmlAndTextWithProperEncoding() {
+    $postId = wp_insert_post([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Preview personalization',
+      'post_content' => '',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+    $this->newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
+    $this->newsletter->setSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->');
+
+    $subscriber = $this->diContainer->get(SubscribersRepository::class)->findOneBy(['email' => 'test@subscriber.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriber->setFirstName('Tom & <b>Jerry</b>');
+    $this->entityManager->flush();
+
+    $renderer = $this->makeEmpty(Renderer::class, [
+      'renderAsPreview' => [
+        'html' => '<p>Hi <!--[mailpoet/subscriber-firstname default="subscriber"]--></p>',
+        'text' => 'Hi <!--[mailpoet/subscriber-firstname default="subscriber"]-->',
+      ],
+    ]);
+
+    $mailer = $this->makeEmpty(Mailer::class, [
+      'send' => Expected::once(
+        function ($newsletter) {
+          verify($newsletter['subject'])->equals('Hello Tom & <b>Jerry</b>');
+          verify($newsletter['body']['text'])->equals('Hi Tom & <b>Jerry</b>');
+          verify($newsletter['body']['html'])->equals('<p>Hi Tom &amp; &lt;b&gt;Jerry&lt;/b&gt;</p>');
+          return ['response' => true];
+        }
+      ),
+    ]);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $shortcodes = $this->diContainer->get(Shortcodes::class);
+    $shortcodes->setQueue(null);
+    $sendPreviewController = new SendPreviewController(
+      $mailerFactory,
+      new MetaInfo(),
+      $renderer,
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
       $shortcodes,

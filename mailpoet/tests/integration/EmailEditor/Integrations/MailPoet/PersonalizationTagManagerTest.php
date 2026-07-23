@@ -114,6 +114,76 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     }
   }
 
+  public function testItDeclaresTextTagsAsTextAndUrlTagsAsHtml(): void {
+    $customField = (new CustomFieldFactory())->create();
+
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+    $personalizationManager->initialize();
+
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
+
+    $expectedValueTypes = [
+      '[mailpoet/subscriber-firstname]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/subscriber-lastname]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/subscriber-email]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/subscriber-displayname]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/subscriber-count]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/subscriber-cf-' . $customField->getId() . ']' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/newsletter-subject]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-day]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-day-ordinal]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-day-name]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-month]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-month-name]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/date-year]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/site-title]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      '[mailpoet/site-description]' => Personalization_Tag::VALUE_TYPE_TEXT,
+      // URL tags are inserted unescaped into hrefs and plain text
+      '[mailpoet/subscriber-activation-link]' => Personalization_Tag::VALUE_TYPE_HTML,
+      '[mailpoet/site-homepage-url]' => Personalization_Tag::VALUE_TYPE_HTML,
+      '[mailpoet/subscription-unsubscribe-url]' => Personalization_Tag::VALUE_TYPE_HTML,
+      '[mailpoet/subscription-manage-url]' => Personalization_Tag::VALUE_TYPE_HTML,
+      '[mailpoet/newsletter-view-in-browser-url]' => Personalization_Tag::VALUE_TYPE_HTML,
+    ];
+
+    foreach ($expectedValueTypes as $token => $valueType) {
+      $tag = $registry->get_by_token($token);
+      $this->assertNotNull($tag, "Expected personalization tag {$token} to be registered.");
+      $this->assertSame($valueType, $tag->get_value_type(), "Unexpected value type for {$token}.");
+    }
+  }
+
+  public function testItKeepsValueTypeWhenExtendingWooCommerceTags(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $token = '[test/order-text-tag]';
+    $registry->unregister($token);
+    $registry->register(new Personalization_Tag(
+      'Order text tag',
+      $token,
+      'Order',
+      function (): string {
+        return 'value';
+      },
+      [],
+      null,
+      ['woo_email'],
+      Personalization_Tag::VALUE_TYPE_TEXT
+    ));
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+      $personalizationManager->extendWooCommerceTagsForMailPoet($registry, [OrderSubject::KEY]);
+
+      $tag = $registry->get_by_token($token);
+      $this->assertNotNull($tag);
+      $this->assertContains(EmailEditor::MAILPOET_EMAIL_POST_TYPE, $tag->get_post_types());
+      $this->assertSame(Personalization_Tag::VALUE_TYPE_TEXT, $tag->get_value_type());
+    } finally {
+      $registry->unregister($token);
+    }
+  }
+
   public function testItRegistersOrderReviewUrlTagForOrderAutomations(): void {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $registry->unregister('[woocommerce/order-review-url]');

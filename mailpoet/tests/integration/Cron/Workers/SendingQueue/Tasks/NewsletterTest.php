@@ -803,6 +803,96 @@ class NewsletterTest extends \MailPoetTest {
     return [$newsletter, $scheduledTask, $sendingQueue];
   }
 
+  public function testItPersonalizesSubjectHtmlAndTextWithProperEncoding(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Personalized email',
+      'post_content' => '',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('personalized-encoding@example.com')
+      ->withFirstName('Tom & <b>Jerry</b>')
+      ->create();
+
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hi <!--[mailpoet/subscriber-firstname default="subscriber"]--></p>',
+      'text' => 'Hi <!--[mailpoet/subscriber-firstname default="subscriber"]-->',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletter,
+      $subscriber,
+      $sendingQueue
+    );
+
+    // Subject and plain-text body are text contexts: the raw value must not be HTML-escaped.
+    $this->assertSame('Hello Tom & <b>Jerry</b>', $result['subject']);
+    $this->assertSame('Hi Tom & <b>Jerry</b>', $result['body']['text']);
+    // The HTML body is an HTML context: text-only tag values must be escaped by the Personalizer.
+    $this->assertSame('<p>Hi Tom &amp; &lt;b&gt;Jerry&lt;/b&gt;</p>', $result['body']['html']);
+  }
+
+  public function testItNeutralizesMaliciousTagValuesInHtmlOutput(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Malicious values email',
+      'post_content' => '',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('malicious-encoding@example.com')
+      ->withFirstName('<script>alert(1);</script>')
+      ->withLastName('</title><script>alert(2);</script>')
+      ->create();
+
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<html><head><title>Hi <!--[mailpoet/subscriber-firstname default="subscriber"]--> <!--[mailpoet/subscriber-lastname default="subscriber"]--></title></head>'
+        . '<body><p>Hi <!--[mailpoet/subscriber-firstname default="subscriber"]--> <!--[mailpoet/subscriber-lastname default="subscriber"]--></p></body></html>',
+      'text' => 'Hi <!--[mailpoet/subscriber-firstname default="subscriber"]--> <!--[mailpoet/subscriber-lastname default="subscriber"]-->',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletter,
+      $subscriber,
+      $sendingQueue
+    );
+
+    // Subject and plain-text body are never parsed as HTML by mail clients; values stay raw.
+    $this->assertSame('Hello <script>alert(1);</script>', $result['subject']);
+    $this->assertSame('Hi <script>alert(1);</script> </title><script>alert(2);</script>', $result['body']['text']);
+
+    $html = $result['body']['html'];
+    // In the HTML body the values must be fully escaped — no executable script element.
+    $this->assertStringContainsString('<p>Hi &lt;script&gt;alert(1);&lt;/script&gt; &lt;/title&gt;&lt;script&gt;alert(2);&lt;/script&gt;</p>', $html);
+    // The title must not be closed early by the value; a "</title><script>" sequence would
+    // escape the RCDATA context and make the script element executable (e.g. in view in browser).
+    $this->assertStringNotContainsString('</title><script>', $html);
+    $this->assertSame(1, substr_count($html, '</title>'));
+  }
+
   public function testItLogsErrorWhenQueueWithCannotBeSaved() {
     $sendingQueuesRepositoryStub = $this->createStub(SendingQueuesRepository::class);
     $sendingQueuesRepositoryStub->method('flush')

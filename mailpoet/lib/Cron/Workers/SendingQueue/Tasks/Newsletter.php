@@ -488,9 +488,9 @@ class Newsletter {
       $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
 
       $this->personalizer->set_context($context);
-      foreach ($preparedNewsletter as $key => $content) {
-        $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
-      }
+      $preparedNewsletter[0] = $this->personalizer->personalize_content($preparedNewsletter[0], Personalizer::RENDERING_CONTEXT_TEXT);
+      $preparedNewsletter[1] = $this->personalizer->personalize_content($preparedNewsletter[1], Personalizer::RENDERING_CONTEXT_HTML);
+      $preparedNewsletter[2] = $this->personalizer->personalize_content($preparedNewsletter[2], Personalizer::RENDERING_CONTEXT_TEXT);
       // Token links that were not hashed (tracking disabled) are still literal in the text body.
       $preparedNewsletter[2] = $this->personalizationTagLinkResolver->resolveMarkdownLinks($preparedNewsletter[2], $context);
       $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
