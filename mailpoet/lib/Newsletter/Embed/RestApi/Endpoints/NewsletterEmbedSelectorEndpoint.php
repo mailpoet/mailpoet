@@ -4,8 +4,10 @@ namespace MailPoet\Newsletter\Embed\RestApi\Endpoints;
 
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
+use MailPoet\Config\AccessControl;
 use MailPoet\Newsletter\Embed\NewsletterEmbedService;
 use MailPoet\Validator\Builder;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterEmbedSelectorEndpoint extends NewsletterEmbedEndpoint {
   /** @var NewsletterEmbedService */
@@ -15,6 +17,10 @@ class NewsletterEmbedSelectorEndpoint extends NewsletterEmbedEndpoint {
     NewsletterEmbedService $newsletterEmbedService
   ) {
     $this->newsletterEmbedService = $newsletterEmbedService;
+  }
+
+  public function checkPermissions(): bool {
+    return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS);
   }
 
   public function handle(Request $request): Response {

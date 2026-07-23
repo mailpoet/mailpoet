@@ -95,4 +95,35 @@ class NewsletterEmbedSelectorEndpointTest extends Test {
 
     $this->assertSame('rest_forbidden', $data['code']);
   }
+
+  public function testItRejectsContributors(): void {
+    $userId = wp_create_user('newsletter_embed_contributor_' . uniqid(), 'password', 'newsletter-embed-contributor-' . uniqid() . '@localhost.test');
+    $this->assertIsInt($userId);
+    $user = new \WP_User($userId);
+    $user->set_role('contributor');
+    wp_set_current_user($userId);
+
+    $data = $this->get(self::BASE_PATH);
+
+    $this->assertSame('rest_forbidden', $data['code']);
+  }
+
+  public function testItAllowsEditors(): void {
+    (new NewsletterFactory())
+      ->withSubject('Editor embed')
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->create();
+
+    $userId = wp_create_user('newsletter_embed_editor_' . uniqid(), 'password', 'newsletter-embed-editor-' . uniqid() . '@localhost.test');
+    $this->assertIsInt($userId);
+    $user = new \WP_User($userId);
+    $user->set_role('editor');
+    wp_set_current_user($userId);
+
+    $data = $this->get(self::BASE_PATH, ['query' => ['limit' => 10]]);
+
+    $this->assertArrayNotHasKey('code', $data);
+    $this->assertArrayHasKey('items', $data['data']);
+  }
 }
