@@ -69,12 +69,14 @@ class WooCommercePurchasedWithAttribute implements Filter {
   }
 
   private function applyTaxonomyAttributeJoin(QueryBuilder $queryBuilder, string $productAlias, $taxonomySlug, string $alias = 'attribute'): string {
+    $taxonomyParam = $this->filterHelper->getUniqueParameterName('attribute_taxonomy');
     $queryBuilder->innerJoin(
       $productAlias,
       $this->filterHelper->getPrefixedTable('wc_product_attributes_lookup'),
       $alias,
-      "product.product_id = attribute.product_id AND attribute.taxonomy = '$taxonomySlug'"
+      "product.product_id = attribute.product_id AND attribute.taxonomy = :$taxonomyParam"
     );
+    $queryBuilder->setParameter($taxonomyParam, $taxonomySlug);
 
     return $alias;
   }
