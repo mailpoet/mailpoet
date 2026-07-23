@@ -139,6 +139,52 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
+  public function testItThrowsWhenQueueDoesNotBelongToNewsletter() {
+    // A second newsletter with its own sending queue (a different campaign).
+    $otherNewsletter = (new Newsletter())->create();
+    $otherNewsletter->setHash(Security::generateHash());
+    $otherTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $otherQueue = (new SendingQueueFactory())->create($otherTask, $otherNewsletter);
+    $this->entityManager->flush();
+
+    // Data carries the first newsletter's id+hash but points queue_id at the
+    // other campaign's queue; preview=true would otherwise skip the recipient guard.
+    $data = $this->browserPreviewData;
+    $data['queue_id'] = $otherQueue->getId();
+    $data['preview'] = true;
+
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Invalid 'queue_id'");
+  }
+
+  public function testItAllowsQueueBelongingToNotificationHistoryNewsletter() {
+    // Post-notification newsletters use a parent/child relationship; the sent
+    // "history" child owns its own queue. Its view-in-browser link must still work.
+    $parent = (new Newsletter())->create();
+    $history = (new Newsletter())->withPostNotificationHistoryType()->withParent($parent)->create();
+    $history->setHash(Security::generateHash());
+    $historyTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $historyQueue = (new SendingQueueFactory())->create($historyTask, $history);
+    $this->entityManager->flush();
+
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function () {
+        return 'rendered';
+      }),
+    ]);
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
+
+    $data = [
+      'queue_id' => $historyQueue->getId(),
+      'subscriber_id' => 0,
+      'newsletter_id' => $history->getId(),
+      'newsletter_hash' => $history->getHash(),
+      'subscriber_token' => 0,
+      'preview' => true,
+    ];
+
+    $this->assertSame('rendered', $viewInBrowserController->view($data));
+  }
+
   public function testUsesEmptySubscriberWhenNotLoggedIn() {
 
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
