@@ -147,6 +147,14 @@ class TagsEndpointsTest extends Test {
     $this->assertSame(400, $data['data']['status']);
   }
 
+  public function testGetRejectsOutOfRangePage(): void {
+    // A page far beyond MAX_PAGE must be rejected with a 400, not overflow the
+    // SQL offset into a negative value and surface as an uncaught 500.
+    $data = $this->get(self::BASE_PATH, ['query' => ['page' => '232017383506012688140070609349509120']]);
+    $this->assertSame('mailpoet_tags_invalid_page', $data['code']);
+    $this->assertSame(400, $data['data']['status']);
+  }
+
   public function testGetRejectsGuest(): void {
     wp_set_current_user(0);
     $data = $this->get(self::BASE_PATH);

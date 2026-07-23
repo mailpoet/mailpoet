@@ -27,6 +27,10 @@ class TagsGetEndpoint extends TagsEndpoint {
   }
 
   public function handle(Request $request): Response {
+    // Reject out-of-range pagination up front (e.g. a page beyond MAX_PAGE),
+    // otherwise a huge page overflows the SQL offset and surfaces as a 500.
+    $this->validatePagination($request);
+
     $search = is_string($request->getParam('search')) ? (string)$request->getParam('search') : '';
     $orderby = is_string($request->getParam('orderby')) ? (string)$request->getParam('orderby') : 'name';
     $order = is_string($request->getParam('order')) ? (string)$request->getParam('order') : 'asc';
