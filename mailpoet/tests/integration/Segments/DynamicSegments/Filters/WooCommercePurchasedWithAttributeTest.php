@@ -96,6 +96,24 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
     $this->assertFilterReturnsEmailsForTaxonomyAttributes('all', 'pa_color', [$blueTermId, $redTermId], ['customer1@example.com']);
   }
 
+  public function testItTreatsTaxonomySlugWithSpecialCharactersAsLiteral(): void {
+    $product = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'attributes' => [
+        $this->tester->getWooCommerceProductAttribute('color', ['blue']),
+      ],
+    ]);
+
+    $blueTermId = $this->tester->getWooCommerceProductAttributeTermId('color', 'blue');
+
+    $customer = $this->tester->createCustomer('customer1@example.com');
+    $this->createOrder($customer, [$product]);
+
+    // A slug that contains quote characters must be matched as a literal
+    // taxonomy name, so it never resolves to the real "pa_color" taxonomy.
+    $this->assertFilterReturnsEmailsForTaxonomyAttributes('any', "pa_color' OR '1'='1", [$blueTermId], []);
+  }
+
   public function testItWorksWithAnyOperatorForLocalAttributes(): void {
     $product1 = $this->tester->createWooCommerceProduct([
       'price' => 20,
