@@ -26,9 +26,18 @@ class Localizer {
   }
 
   public function locale() {
+    // Reading the user locale resolves the current user. Before 'plugins_loaded'
+    // (e.g. when network activated on multisite) the auth cookie constants may
+    // not be defined yet, and resolving the user fatals on PHP 8 if pluggable.php
+    // was already loaded by another early component. Fall back to the site
+    // locale; Initializer::setupUserLocale() switches to the user locale on
+    // 'wp_loaded'.
+    $defaultLocale = WPFunctions::get()->didAction('plugins_loaded')
+      ? WPFunctions::get()->getUserLocale()
+      : WPFunctions::get()->getLocale();
     $locale = WPFunctions::get()->applyFilters(
       'plugin_locale',
-      WPFunctions::get()->getUserLocale(),
+      $defaultLocale,
       Env::$pluginName
     );
     return $locale;
