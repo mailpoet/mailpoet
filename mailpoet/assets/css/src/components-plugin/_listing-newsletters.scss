@@ -94,6 +94,16 @@ h1.title.mailpoet-newsletter-listing-heading {
   }
 }
 
+.mailpoet-listing-queue-status {
+  align-items: center;
+  display: flex;
+  gap: $grid-gap-half;
+
+  .mailpoet-listing-stats-too-early {
+    margin-top: 0;
+  }
+}
+
 .mailpoet-listing-status-column {
   .mailpoet-button {
     margin-top: $grid-gap-half;
