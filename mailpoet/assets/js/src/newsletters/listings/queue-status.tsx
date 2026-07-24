@@ -131,7 +131,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
   const isMtaPaused = mailerLog.status === 'paused';
 
   const renderSentNewsletter = (
-    <>
+    <div className="mailpoet-listing-queue-status">
       <Link
         to={`/sending-status/${newsletter.id}`}
         data-automation-id={`sending_status_${newsletter.id}`}
@@ -149,7 +149,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
       {newsletter.queue.status !== 'completed' &&
         !isNewsletterCancelled &&
         !isMtaPaused && <QueueSending newsletter={newsletter} />}
-    </>
+    </div>
   );
 
   const renderDraftOrScheduledNewsletter = (
