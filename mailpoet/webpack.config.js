@@ -351,6 +351,17 @@ const formEditorConfig = {
 const publicConfig = {
   name: 'public',
   entry: {
+    // The bundle ships under a .min.js name so optimizer plugins skip
+    // re-minifying it. SiteGround Speed Optimizer in particular pipes
+    // non-.min.js scripts through the host's tdewolff/minify binary on
+    // SiteGround servers, which reorders var declaration lists and breaks
+    // this bundle at load time, killing subscription forms.
+    'public.min': 'webpack-public-index.jsx',
+    // Kept only for backward compatibility: HTML embed snippets generated
+    // by the legacy form editor hardcode dist/js/public.js on third-party
+    // sites. Such snippets can no longer be generated since MailPoet 3.45.0
+    // (Feb 2020), when the legacy form editor was removed, but old copies
+    // may still be live. Nothing in the plugin itself loads this file.
     public: 'webpack-public-index.jsx',
   },
   plugins: [
