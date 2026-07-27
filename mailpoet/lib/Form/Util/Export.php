@@ -79,7 +79,7 @@ class Export {
           Env::$assetsUrl . '/dist/js/vendor.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
         $output[] = '<script type="text/javascript" src="' .
-          Env::$assetsUrl . '/dist/js/public.js?mp_ver=' . MAILPOET_VERSION .
+          Env::$assetsUrl . '/dist/js/public.min.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
 
         $collectSubscriberTimeZones = SettingsController::getInstance()->isSettingEnabled(

@@ -97,7 +97,7 @@ class AssetsController {
 
     $this->wp->wpEnqueueScript(
       'mailpoet_public',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.min.js'),
       ['jquery'],
       Env::$version,
       $enqueuePlacementParams

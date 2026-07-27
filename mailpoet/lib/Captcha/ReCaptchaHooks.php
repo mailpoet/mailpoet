@@ -66,7 +66,7 @@ class ReCaptchaHooks {
 
     $this->wp->wpEnqueueScript(
       'mailpoet_public',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.min.js'),
       ['jquery'],
       Env::$version,
       [
@@ -75,7 +75,7 @@ class ReCaptchaHooks {
       ]
     );
 
-    // necessary for public.js script
+    // necessary for the public form script
     $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
