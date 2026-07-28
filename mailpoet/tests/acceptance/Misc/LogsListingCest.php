@@ -112,7 +112,7 @@ class LogsListingCest {
       const debugAt = text.indexOf('debug-message-{$suffix}');
       return errorAt !== -1 && debugAt !== -1 && errorAt < debugAt;
     JS, 10);
-    $orderedMessages = $i->executeJS(<<<JS
+    $orderedMessages = $i->executeJS(<<<'JS'
       return Array.from(document.querySelectorAll('.mailpoet-logs-dataviews tbody tr'))
         .map((row) => row.textContent)
         .join('||');

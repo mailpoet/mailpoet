@@ -180,7 +180,7 @@ class Template1BelowPages extends FormTemplate {
   }
 
   public function getStyles(): string {
-    return <<<EOL
+    return <<<'EOL'
 /* form */
 form.mailpoet_form {
   margin-bottom: 0;
