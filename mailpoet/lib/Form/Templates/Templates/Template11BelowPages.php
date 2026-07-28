@@ -282,7 +282,7 @@ class Template11BelowPages extends FormTemplate {
   }
 
   public function getStyles(): string {
-    return <<<EOL
+    return <<<'EOL'
 /* form */
 .mailpoet_form {
 }

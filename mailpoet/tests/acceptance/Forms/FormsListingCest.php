@@ -85,7 +85,7 @@ class FormsListingCest {
       const disabledAt = text.indexOf('{$disabledName}');
       return enabledAt !== -1 && disabledAt !== -1 && enabledAt < disabledAt;
     JS, 10);
-    $orderedNames = $i->executeJS(<<<JS
+    $orderedNames = $i->executeJS(<<<'JS'
       return Array.from(document.querySelectorAll('.mailpoet-forms-dataviews tbody tr'))
         .map((row) => row.textContent)
         .join('||');

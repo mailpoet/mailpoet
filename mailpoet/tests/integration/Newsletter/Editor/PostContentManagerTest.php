@@ -184,7 +184,7 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
   public function testItRemovesImageCaptionsFromGutenbergPosts() {
-    $content = <<<EOT
+    $content = <<<'EOT'
       <!-- wp:paragraph -->
       <p>Text</p>
       <!-- /wp:paragraph -->

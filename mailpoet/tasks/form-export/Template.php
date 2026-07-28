@@ -27,7 +27,7 @@ class Template extends FormTemplate {
   }
 
   public function getStyles(): string {
-    return <<<EOL
+    return <<<'EOL'
 TEMPLATE_STYLES
 EOL;
   }

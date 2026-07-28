@@ -170,7 +170,7 @@ class Template7Widget extends FormTemplate {
   }
 
   public function getStyles(): string {
-    return <<<EOL
+    return <<<'EOL'
 /* form */
 .mailpoet_form {
 }

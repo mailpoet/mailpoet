@@ -8,7 +8,7 @@ set_error_handler(function ($severity, $message, $file, $line) {
 // Remove all locales except default english
 // We don't use Carbon translate capabilities so we keep only default english locale to reduce size of the library
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon/src/Carbon/Lang -type f -not -name 'en.php' -delete");
-$langList = <<<LANGUGES
+$langList = <<<'LANGUGES'
 <?php
 return [
   'en' => [
