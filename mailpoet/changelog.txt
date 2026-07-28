@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.34.3 - 2026-07-28 =
+* Updated: Bump the minimum required WooCommerce version to 10.9 and tested up to version to 11.0;
+* Improved: Speed up the recipient count on the send screens and keep sending available when the exact count can't be calculated;
+* Fixed: Fatal error that could occur on PHP 8 when MailPoet is network activated on a WordPress multisite;
+* Fixed: Missing gap between sending progress and the pause button in the email listing;
+* Fixed: Subscription form scripts breaking when SiteGround Speed Optimizer JavaScript minification is enabled.
+
 = 5.34.2 - 2026-07-22 =
 * Improved: Performance of subscriber engagement score updates on large sites;
 * Fixed: Show how many trashed subscribers were kept when emptying the trash, since subscribers linked to WordPress or WooCommerce accounts are not permanently deleted.

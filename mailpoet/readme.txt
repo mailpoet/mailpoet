@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.34.2
+Stable tag: 5.34.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,8 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.34.2 - 2026-07-22 =
-* Improved: Performance of subscriber engagement score updates on large sites;
-* Fixed: Show how many trashed subscribers were kept when emptying the trash, since subscribers linked to WordPress or WooCommerce accounts are not permanently deleted.
+= 5.34.3 - 2026-07-28 =
+* Updated: Bump the minimum required WooCommerce version to 10.9 and tested up to version to 11.0;
+* Improved: Speed up the recipient count on the send screens and keep sending available when the exact count can't be calculated;
+* Fixed: Fatal error that could occur on PHP 8 when MailPoet is network activated on a WordPress multisite;
+* Fixed: Missing gap between sending progress and the pause button in the email listing;
+* Fixed: Subscription form scripts breaking when SiteGround Speed Optimizer JavaScript minification is enabled.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
