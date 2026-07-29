@@ -3,6 +3,7 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -50,6 +51,14 @@ class StatisticsOpensRepository extends Repository {
    * @param int[] $subscriberIds
    */
   public function recalculateSubscribersScore(array $subscriberIds): void {
+    // The UPDATE ... LEFT JOIN below is not supported by the SQLite integration used in
+    // WordPress Playground. Scores stay unset there and the listing reports them as
+    // unknown; the sweep worker no-ops for the same reason (see SubscribersEngagementScore).
+    // Without this guard the tracking endpoint throws, which also breaks the click redirect.
+    if (Connection::isSQLite()) {
+      return;
+    }
+
     if (!$subscriberIds) {
       return;
     }
