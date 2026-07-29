@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
@@ -36,6 +37,15 @@ class SubscribersEngagementScore extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
+    // The recalculator relies on UPDATE ... LEFT JOIN, which the SQLite integration in
+    // WordPress Playground does not support. Make the task a no-op there: it never writes
+    // engagementScoreUpdatedAt, so the loop below would keep re-reading the same batch
+    // until the execution limit throws. Segment averages are skipped too because they
+    // average subscriber scores that stay unset.
+    if (Connection::isSQLite()) {
+      return true;
+    }
+
     while ($this->recalculateSubscribers() > 0) {
       $this->cronHelper->enforceExecutionLimit($timer); // Throws exception and interrupts process if over execution limit
     }
