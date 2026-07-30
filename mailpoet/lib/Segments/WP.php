@@ -207,10 +207,10 @@ class WP {
     }
 
     // get first name & last name
-    $firstName = html_entity_decode($wpUser->first_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $lastName = html_entity_decode($wpUser->last_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $firstName = $this->decodeUserName($wpUser->first_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $lastName = $this->decodeUserName($wpUser->last_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $firstName = html_entity_decode($wpUser->display_name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $firstName = $this->decodeUserName($wpUser->display_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
     $status = $signupConfirmationEnabled ? SubscriberEntity::STATUS_UNCONFIRMED : SubscriberEntity::STATUS_SUBSCRIBED;
@@ -362,6 +362,21 @@ class WP {
         (array)$oldWpUserData
       );
     }
+  }
+
+  /**
+   * WordPress stores user names entity-encoded (see the `pre_user_first_name`,
+   * `pre_user_last_name` and `pre_user_display_name` filters). We decode them so a
+   * name such as "Family & friends" is stored the way it was written, then run the
+   * same text sanitizer the other subscriber write paths use, so decoding can never
+   * turn encoded markup back into markup.
+   *
+   * @param mixed $name
+   */
+  private function decodeUserName($name): string {
+    $decoded = html_entity_decode(is_string($name) ? $name : '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+
+    return sanitize_text_field($decoded);
   }
 
   private function createOrUpdateSubscriber(array $data, ?SubscriberEntity $subscriber = null): SubscriberEntity {

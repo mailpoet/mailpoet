@@ -966,6 +966,46 @@ class WPTest extends \MailPoetTest {
     wp_delete_user($userId);
   }
 
+  public function testItDoesNotStoreMarkupDecodedFromWpUserNames(): void {
+    $args = [
+      'user_login' => 'encoded-markup-name',
+      'user_email' => 'user-sync-test-encoded-markup@example.com',
+      'first_name' => '&lt;img src=x onerror=alert(1)&gt;',
+      'last_name' => '&lt;script&gt;alert(1)&lt;/script&gt;',
+      'role' => 'subscriber',
+      'user_pass' => 'password',
+    ];
+    $userId = wp_insert_user($args);
+    $this->assertIsNumeric($userId);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $args['user_email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertStringNotContainsString('<img', (string)$subscriber->getFirstName());
+    $this->assertStringNotContainsString('<script', (string)$subscriber->getLastName());
+
+    wp_delete_user((int)$userId);
+  }
+
+  public function testItDoesNotStoreMarkupDecodedFromWpUserDisplayName(): void {
+    $args = [
+      'user_login' => 'encoded-markup-display-name',
+      'user_email' => 'user-sync-test-encoded-markup-display@example.com',
+      'first_name' => '',
+      'last_name' => '',
+      'display_name' => '&lt;img src=x onerror=alert(1)&gt;',
+      'role' => 'subscriber',
+      'user_pass' => 'password',
+    ];
+    $userId = wp_insert_user($args);
+    $this->assertIsNumeric($userId);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $args['user_email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertStringNotContainsString('<img', (string)$subscriber->getFirstName());
+
+    wp_delete_user((int)$userId);
+  }
+
   public function testItDoesNotTrashNewUsersWhoHaveSomeSegmentsToDisabledWPSegment(): void {
     $this->disableWpSegment();
     $randomNumber = rand();
