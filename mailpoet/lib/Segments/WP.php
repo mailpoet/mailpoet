@@ -376,7 +376,7 @@ class WP {
   private function decodeUserName($name): string {
     $decoded = html_entity_decode(is_string($name) ? $name : '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 
-    return sanitize_text_field($decoded);
+    return $this->wp->sanitizeTextField($decoded);
   }
 
   private function createOrUpdateSubscriber(array $data, ?SubscriberEntity $subscriber = null): SubscriberEntity {
