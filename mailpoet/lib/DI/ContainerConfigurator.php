@@ -544,6 +544,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Segments
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\WP::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\WPUserDeleteNotice::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SubscribersFinder::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentsFinder::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentsRepository::class)->setPublic(true);

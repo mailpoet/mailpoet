@@ -12,6 +12,7 @@ use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Segments\WP;
+use MailPoet\Segments\WPUserDeleteNotice;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscribers\SubscriberLimitNotificationScheduler;
@@ -73,6 +74,9 @@ class Hooks {
   /** @var WP */
   private $wpSegment;
 
+  /** @var WPUserDeleteNotice */
+  private $wpUserDeleteNotice;
+
   /** @var SubscriberHandler */
   private $subscriberHandler;
 
@@ -127,6 +131,7 @@ class Hooks {
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
     WP $wpSegment,
+    WPUserDeleteNotice $wpUserDeleteNotice,
     SubscriberHandler $subscriberHandler,
     HooksWooCommerce $hooksWooCommerce,
     SubscriberChangesNotifier $subscriberChangesNotifier,
@@ -153,6 +158,7 @@ class Hooks {
     $this->wordpressMailerReplacer = $wordpressMailerReplacer;
     $this->displayFormInWPContent = $displayFormInWPContent;
     $this->wpSegment = $wpSegment;
+    $this->wpUserDeleteNotice = $wpUserDeleteNotice;
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->captchaHooks = $captchaHooks;
@@ -421,6 +427,9 @@ class Hooks {
       [$this->wpSegment, 'synchronizeUser'],
       1
     );
+
+    // Warn on the delete-user confirmation screen that the subscriber is kept.
+    $this->wpUserDeleteNotice->setupHooks();
 
     // login
     $this->wp->addAction(
