@@ -108,8 +108,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(lodash@4.18.1)
       '@woocommerce/email-editor':
-        specifier: 2.1.0
-        version: 2.1.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))
+        specifier: 2.2.1
+        version: 2.2.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))
       '@wordpress/a11y':
         specifier: ^4.43.0
         version: 4.44.0
@@ -4366,8 +4366,8 @@ packages:
     peerDependencies:
       lodash: ^4.17.0
 
-  '@woocommerce/email-editor@2.1.0':
-    resolution: {integrity: sha512-Zf0jyszKPP+E53OMMfowcjzuV2RZ0XpzETvPioqG7GJ8EaSo7M3ejcNSLcG1FM6I2pJmm0K7GSUTQ2fBUsS0Xg==}
+  '@woocommerce/email-editor@2.2.1':
+    resolution: {integrity: sha512-JNStqAIhASVN3w69/adR+hpjQU1Mheu80dQ8ntHhWfvk//PS9gFj/Z9ZZJUhQh0yDEYa3nqCrf19UftIxtur9Q==}
 
   '@woocommerce/navigation@8.2.0':
     resolution: {integrity: sha512-joAbrzdhrnWf91kEwuNO3hzT0IiUuh8SNOs0Qbth/heZaN+SixA5yJ98UqEHNa2Mitjm5BTC4M0Qk7X+I8uUvQ==}
@@ -17664,7 +17664,7 @@ snapshots:
       moment-timezone: 0.5.45
       qs: 6.15.2
 
-  '@woocommerce/email-editor@2.1.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))':
+  '@woocommerce/email-editor@2.2.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))':
     dependencies:
       '@wordpress/api-fetch': 7.44.0
       '@wordpress/base-styles': 6.20.0
