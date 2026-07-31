@@ -17,6 +17,12 @@ use MailPoet\WP\Functions as WPFunctions;
  * often deleted for privacy reasons, so the change is worth surfacing at the moment of
  * deletion rather than only in the documentation.
  *
+ * The notice names the Trash on purpose. A subscriber who was only on the WP Users list
+ * and is not a WooCommerce customer is trashed rather than left on a list, and the
+ * subscribers listing hides trashed rows from every group except "trash". Without that
+ * pointer an admin checks the listing, finds nothing, and concludes the subscriber was
+ * deleted after all - which is the opposite of what this notice is for.
+ *
  * Sites that opted back into the old hard-delete behaviour with the
  * `mailpoet_delete_subscriber_on_wp_user_delete` filter get what they expect already, so
  * they are not counted and the notice stays hidden.
@@ -134,14 +140,14 @@ class WPUserDeleteNotice {
       // WordPress already says "You have specified this user for deletion", so a count
       // here would only read as noise.
       $message = __(
-        '<strong>MailPoet:</strong> This user is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the "WordPress Users" list and kept in MailPoet.',
+        '<strong>MailPoet:</strong> This user is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the "WordPress Users" list but kept in MailPoet, so look for them on their other lists or in the Trash.',
         'mailpoet'
       );
     } else {
       // translators: %d is the number of users being deleted who are also MailPoet subscribers.
       $notice = _n(
-        '<strong>MailPoet:</strong> %d of the users you are deleting is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the "WordPress Users" list and kept in MailPoet.',
-        '<strong>MailPoet:</strong> %d of the users you are deleting are also MailPoet subscribers. Deleting a WordPress user does not delete their MailPoet subscriber. The subscribers are removed from the "WordPress Users" list and kept in MailPoet.',
+        '<strong>MailPoet:</strong> %d of the users you are deleting is also a MailPoet subscriber. Deleting a WordPress user does not delete their MailPoet subscriber. The subscriber is removed from the "WordPress Users" list but kept in MailPoet, so look for them on their other lists or in the Trash.',
+        '<strong>MailPoet:</strong> %d of the users you are deleting are also MailPoet subscribers. Deleting a WordPress user does not delete their MailPoet subscriber. The subscribers are removed from the "WordPress Users" list but kept in MailPoet, so look for them on their other lists or in the Trash.',
         $count,
         'mailpoet'
       );
