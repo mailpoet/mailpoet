@@ -61,6 +61,7 @@ declare global {
     mailpoet_custom_fields: CustomField[];
     mailpoet_api_version: string;
     mailpoet_timezone_list: string[];
+    mailpoet_collect_subscriber_timezones: boolean;
   }
 }
 
@@ -111,6 +112,20 @@ type FormField =
   | TokenField
   | CustomFieldFormField;
 
+const timeZoneField: SelectField = {
+  name: 'timezone',
+  label: __('Timezone', 'mailpoet'),
+  type: 'select',
+  automationId: 'subscriber-timezone',
+  placeholder: __('Not set', 'mailpoet'),
+  values: Object.fromEntries(
+    (window.mailpoet_timezone_list || []).map((timezone) => [
+      timezone,
+      timezone.replaceAll('_', ' '),
+    ]),
+  ),
+};
+
 const fields: FormField[] = [
   {
     name: 'email',
@@ -158,19 +173,7 @@ const fields: FormField[] = [
       bounced: MailPoet.I18n.t('bounced'),
     },
   },
-  {
-    name: 'timezone',
-    label: __('Timezone', 'mailpoet'),
-    type: 'select',
-    automationId: 'subscriber-timezone',
-    placeholder: __('Not set', 'mailpoet'),
-    values: Object.fromEntries(
-      (window.mailpoet_timezone_list || []).map((timezone) => [
-        timezone,
-        timezone.replaceAll('_', ' '),
-      ]),
-    ),
-  },
+  ...(window.mailpoet_collect_subscriber_timezones ? [timeZoneField] : []),
   {
     name: 'segments',
     label: MailPoet.I18n.t('lists'),

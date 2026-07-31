@@ -95,10 +95,12 @@ class Subscribers {
       'signup_confirmation.enabled'
     );
     $data['bulk_confirmation_resend_limit'] = BulkConfirmationEmailResender::BULK_CONFIRMATION_RESEND_LIMIT;
+    $collectSubscriberTimeZones = $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled');
+    $data['collect_subscriber_timezones'] = $collectSubscriberTimeZones;
     // Same identifier list SubscriberEntity::isValidTimeZone() accepts when
     // storing browser-detected timezones, so the selector can offer exactly
     // the values that can be saved.
-    $data['timezone_list'] = \DateTimeZone::listIdentifiers();
+    $data['timezone_list'] = $collectSubscriberTimeZones ? \DateTimeZone::listIdentifiers() : [];
     $this->assetsController->setupDataViewsDependencies();
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
