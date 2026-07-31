@@ -104,6 +104,23 @@ class WPUserDeleteNoticeTest extends \MailPoetTest {
     $this->assertStringContainsString('This user is also a MailPoet subscriber', $output);
   }
 
+  /**
+   * A subscriber who was only on the WP Users list gets trashed, and the subscribers
+   * listing hides trashed rows outside the "trash" group. Without this pointer the notice
+   * sends admins to a screen where they will not find the subscriber.
+   */
+  public function testItTellsTheAdminWhereToLookForTheSubscriber(): void {
+    $firstUserId = $this->insertUser();
+    $secondUserId = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+
+    $single = $this->renderNotice([$firstUserId]);
+    $plural = $this->renderNotice([$firstUserId, $secondUserId]);
+
+    $this->assertStringContainsString('look for them on their other lists or in the Trash', $single);
+    $this->assertStringContainsString('look for them on their other lists or in the Trash', $plural);
+  }
+
   public function testItDropsTheCountOnlyWhenASingleUserIsSelected(): void {
     $firstUserId = $this->insertUser();
     $secondUserId = $this->insertUser();
