@@ -115,15 +115,6 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     ];
   }
 
-  public function testItFallsBackToTheQueuesWhenARepeatedlySentEmailHasNoSendingStatistics() {
-    $newsletter = (new Newsletter())
-      ->withAutomationType()
-      ->withSendingQueue(['count_processed' => 10, 'count_total' => 10])
-      ->create();
-
-    verify($this->testee->getTotalSentCount($newsletter))->equals(10);
-  }
-
   public function testItStillCountsRepeatedlySentEmailsWhenTheScheduledTaskIsGone() {
     $newsletter = (new Newsletter())
       ->withAutomationType()

@@ -221,19 +221,9 @@ class NewsletterStatisticsRepository extends Repository {
       }
     }
 
-    $counts = $this->getQueuedSentCounts($sentAsCampaign, $from, $to);
-
-    // The queues and the sending statistics are two records of the same sends and either can
-    // lose rows, so the higher of the two is the closest reading available. It also means the
-    // count can never come out below what the queue chain reported on its own.
-    $queued = $this->getQueuedSentCounts($sentRepeatedly, $from, $to);
-    $recorded = $this->getRecordedSentCounts($sentRepeatedly, $from, $to);
-    foreach ($sentRepeatedly as $newsletter) {
-      $id = (int)$newsletter->getId();
-      $counts[$id] = max($queued[$id] ?? 0, $recorded[$id] ?? 0);
-    }
-
-    return $counts;
+    // no key collisions, a newsletter belongs to exactly one group
+    return $this->getQueuedSentCounts($sentAsCampaign, $from, $to)
+      + $this->getRecordedSentCounts($sentRepeatedly, $from, $to);
   }
 
   /**
@@ -280,11 +270,11 @@ class NewsletterStatisticsRepository extends Repository {
   /**
    * Counts sends from the sending statistics, which hold one row per email actually sent.
    *
-   * Counting a repeatedly sent email through its queues alone would make the total depend on
-   * a chain of rows that grows for the lifetime of the email, while the opens and clicks
+   * Counting a repeatedly sent email through its queues instead would make the total depend
+   * on a chain of rows that grows for the lifetime of the email, while the opens and clicks
    * measured against that total are only ever removed along with the newsletter itself. The
-   * sending statistics share that same lifecycle, so reading them keeps both sides of a rate
-   * consistent even where the queue chain has lost rows.
+   * sending statistics share that same lifecycle, so both sides of a rate stay consistent
+   * even where the queue chain has lost rows.
    */
   private function getRecordedSentCounts(array $newsletters, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to): array {
     if (!$newsletters) {

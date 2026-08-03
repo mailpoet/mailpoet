@@ -214,6 +214,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ->withWelcomeTypeForSegment(1)
       ->withActiveStatus()
       ->withSendingQueue(['count_processed' => 10])
+      ->withRecordedSends(10)
       ->create();
 
     $this->createClicks($newsletter, 5);
@@ -226,6 +227,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ->withAutomationType()
       ->withActiveStatus()
       ->withSendingQueue(['count_processed' => 10])
+      ->withRecordedSends(10)
       ->create();
 
     (new AutomationFactory())

@@ -92,6 +92,7 @@ class AutomationListingCest {
       ->withScheduledQueue(['count_to_process' => 2])
       ->withScheduledQueue()
       ->withScheduledQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED, 'count_processed' => 1])
+      ->withRecordedSends(1)
       ->create();
 
     (new DataFactories\Newsletter())
