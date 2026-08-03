@@ -56,6 +56,24 @@ class DataInconsistencyRepository {
     return intval($count);
   }
 
+  /**
+   * The mirror image of getOrphanedSendingTasksCount(): sending queues whose scheduled task
+   * is gone. Such a queue is the only remaining record of how many emails it sent, so there
+   * is no safe cleanup for it — it is reported so support can recognise a damaged sending
+   * history behind statistics that no longer add up.
+   */
+  public function getSendingQueuesWithoutTaskCount(): int {
+    $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    /** @var string $count */
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(*) FROM $sqTable sq
+      LEFT JOIN $stTable st ON st.`id` = sq.`task_id`
+      WHERE st.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
   public function getSendingQueuesWithoutNewsletterCount(): int {
     $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();

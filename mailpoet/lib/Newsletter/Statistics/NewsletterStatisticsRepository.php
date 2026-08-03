@@ -26,6 +26,18 @@ use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
  * @extends Repository<NewsletterEntity>
  */
 class NewsletterStatisticsRepository extends Repository {
+  /**
+   * Emails that are sent again for every trigger instead of once as a campaign, so they
+   * keep adding sending queues and scheduled tasks for as long as they stay active.
+   */
+  private const TYPES_SENT_REPEATEDLY = [
+    NewsletterEntity::TYPE_WELCOME,
+    NewsletterEntity::TYPE_AUTOMATIC,
+    NewsletterEntity::TYPE_AUTOMATION,
+    NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    NewsletterEntity::TYPE_AUTOMATION_NOTIFICATION,
+    NewsletterEntity::TYPE_RE_ENGAGEMENT,
+  ];
 
   /** @var WCHelper */
   private $wcHelper;
@@ -199,6 +211,29 @@ class NewsletterStatisticsRepository extends Repository {
   }
 
   private function getTotalSentCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
+    $sentRepeatedly = [];
+    $sentAsCampaign = [];
+    foreach ($newsletters as $newsletter) {
+      if (in_array($newsletter->getType(), self::TYPES_SENT_REPEATEDLY, true)) {
+        $sentRepeatedly[] = $newsletter;
+      } else {
+        $sentAsCampaign[] = $newsletter;
+      }
+    }
+
+    // no key collisions, a newsletter belongs to exactly one group
+    return $this->getQueuedSentCounts($sentAsCampaign, $from, $to)
+      + $this->getRecordedSentCounts($sentRepeatedly, $from, $to);
+  }
+
+  /**
+   * Counts sends from the sending queues, which hold one row per sending run.
+   */
+  private function getQueuedSentCounts(array $newsletters, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to): array {
+    if (!$newsletters) {
+      return [];
+    }
+
     $query = $this->doctrineRepository
       ->createQueryBuilder('n')
       ->select('n.id, SUM(q.countProcessed) AS cnt')
@@ -219,6 +254,49 @@ class NewsletterStatisticsRepository extends Repository {
         ->setParameter('from', $from);
     } elseif ($from === null && $to) {
       $query->andWhere('q.createdAt <= :to')
+        ->setParameter('to', $to);
+    }
+
+    $results = $query->getQuery()
+      ->getResult();
+
+    $counts = [];
+    foreach ($results ?: [] as $result) {
+      $counts[(int)$result['id']] = (int)$result['cnt'];
+    }
+    return $counts;
+  }
+
+  /**
+   * Counts sends from the sending statistics, which hold one row per email actually sent.
+   *
+   * Counting a repeatedly sent email through its queues instead would make the total depend
+   * on a chain of rows that grows for the lifetime of the email, while the opens and clicks
+   * measured against that total are only ever removed along with the newsletter itself. The
+   * sending statistics share that same lifecycle, so both sides of a rate stay consistent
+   * even where the queue chain has lost rows.
+   */
+  private function getRecordedSentCounts(array $newsletters, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to): array {
+    if (!$newsletters) {
+      return [];
+    }
+
+    $query = $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(stats.newsletter) AS id, COUNT(stats.id) AS cnt')
+      ->from(StatisticsNewsletterEntity::class, 'stats')
+      ->where('stats.newsletter IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
+      ->groupBy('stats.newsletter');
+
+    if ($from && $to) {
+      $query->andWhere('stats.sentAt BETWEEN :from AND :to')
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    } elseif ($from && $to === null) {
+      $query->andWhere('stats.sentAt >= :from')
+        ->setParameter('from', $from);
+    } elseif ($from === null && $to) {
+      $query->andWhere('stats.sentAt <= :to')
         ->setParameter('to', $to);
     }
 

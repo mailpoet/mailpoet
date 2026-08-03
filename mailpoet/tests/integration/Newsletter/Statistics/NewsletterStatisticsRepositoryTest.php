@@ -3,6 +3,7 @@
 namespace integration\Newsletter\Statistics;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
@@ -15,6 +16,7 @@ use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -79,6 +81,116 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     SettingsController::getInstance()->set('tracking.opens', TrackingConfig::OPENS_SEPARATED);
     $count = $this->testee->getStatisticsOpenCount($this->newsletter);
     verify($count)->equals(1);
+  }
+
+  public function testItCountsCampaignSendsFromTheSendingQueues() {
+    $newsletter = (new Newsletter())
+      ->withSendingQueue(['count_processed' => 5, 'count_total' => 5])
+      ->create();
+
+    verify($this->testee->getTotalSentCount($newsletter))->equals(5);
+  }
+
+  /** @dataProvider repeatedlySentTypeProvider */
+  public function testItCountsRepeatedlySentEmailsFromTheSendingStatistics(string $type) {
+    $newsletter = (new Newsletter())
+      ->withType($type)
+      ->withSendingQueue()
+      ->create();
+
+    // the queue only accounts for the single most recent send
+    $this->recordSends($newsletter, 3);
+
+    verify($this->testee->getTotalSentCount($newsletter))->equals(3);
+  }
+
+  public function repeatedlySentTypeProvider(): array {
+    return [
+      'welcome' => [NewsletterEntity::TYPE_WELCOME],
+      'automatic' => [NewsletterEntity::TYPE_AUTOMATIC],
+      'automation' => [NewsletterEntity::TYPE_AUTOMATION],
+      'automation transactional' => [NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL],
+      'automation notification' => [NewsletterEntity::TYPE_AUTOMATION_NOTIFICATION],
+      're-engagement' => [NewsletterEntity::TYPE_RE_ENGAGEMENT],
+    ];
+  }
+
+  public function testItStillCountsRepeatedlySentEmailsWhenTheScheduledTaskIsGone() {
+    $newsletter = (new Newsletter())
+      ->withAutomationType()
+      ->withSendingQueue()
+      ->create();
+    $this->recordSends($newsletter, 3);
+
+    $this->deleteScheduledTask($newsletter);
+
+    verify($this->testee->getTotalSentCount($newsletter))->equals(3);
+  }
+
+  public function testItKeepsTheOpenRateWithinOneHundredPercentWhenTheQueueChainIsBroken() {
+    $newsletter = (new Newsletter())
+      ->withAutomationType()
+      ->withSendingQueue()
+      ->create();
+    $subscribers = $this->recordSends($newsletter, 3);
+    foreach ($subscribers as $subscriber) {
+      (new StatisticsOpens($newsletter, $subscriber))->create();
+    }
+
+    $this->deleteScheduledTask($newsletter);
+
+    $statistics = $this->testee->getStatistics($newsletter);
+    verify($statistics->getOpenCount())->equals(3);
+    verify($statistics->getTotalSentCount())->equals(3);
+    $this->assertLessThanOrEqual($statistics->getTotalSentCount(), $statistics->getOpenCount());
+  }
+
+  public function testItCountsEachNewsletterTypeFromItsOwnSourceInABatch() {
+    $campaign = (new Newsletter())
+      ->withSendingQueue(['count_processed' => 5, 'count_total' => 5])
+      ->create();
+    $automation = (new Newsletter())
+      ->withAutomationType()
+      ->withSendingQueue()
+      ->create();
+    $this->recordSends($automation, 3);
+
+    $statistics = $this->testee->getBatchStatistics([$campaign, $automation]);
+
+    verify($statistics[$campaign->getId()]->getTotalSentCount())->equals(5);
+    verify($statistics[$automation->getId()]->getTotalSentCount())->equals(3);
+  }
+
+  public function testItCountsRepeatedlySentEmailsWithinTheGivenTimeSpan() {
+    $newsletter = (new Newsletter())
+      ->withAutomationType()
+      ->withSendingQueue()
+      ->create();
+    $subscribers = $this->recordSends($newsletter, 3);
+
+    (new StatisticsNewsletters($newsletter, $subscribers[0]))
+      ->withSentAt(new \DateTimeImmutable('-6 months'))
+      ->create();
+
+    $statistics = $this->testee->getBatchStatistics(
+      [$newsletter],
+      new \DateTimeImmutable('-1 month'),
+      new \DateTimeImmutable('+1 day'),
+      ['totals']
+    );
+
+    verify($statistics[$newsletter->getId()]->getTotalSentCount())->equals(3);
+  }
+
+  public function testItLeavesCampaignsCountedFromTheQueueChain() {
+    $newsletter = (new Newsletter())
+      ->withSendingQueue(['count_processed' => 5, 'count_total' => 5])
+      ->create();
+
+    $this->deleteScheduledTask($newsletter);
+
+    // campaigns keep using the queue chain, so a missing task still hides the send
+    verify($this->testee->getTotalSentCount($newsletter))->equals(0);
   }
 
   public function testItGetsOnlyStatisticsWithTheCorrectStatus() {
@@ -188,6 +300,33 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(WooCommerceRevenue::class, $revenue);
     $this->assertEquals(1, $revenue->getOrdersCount());
     $this->assertEquals(12, $revenue->getValue());
+  }
+
+  /**
+   * @return \MailPoet\Entities\SubscriberEntity[]
+   */
+  private function recordSends(NewsletterEntity $newsletter, int $count): array {
+    $subscribers = [];
+    for ($i = 0; $i < $count; $i++) {
+      $subscriber = (new Subscriber())->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->create();
+      $subscribers[] = $subscriber;
+    }
+    return $subscribers;
+  }
+
+  private function deleteScheduledTask(NewsletterEntity $newsletter): void {
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskEntity::class, 't')
+      ->where('t.id = :id')
+      ->setParameter('id', $task->getId())
+      ->getQuery()
+      ->execute();
   }
 
   private function enableWooBackedRevenueReadModel(): void {
