@@ -1,5 +1,5 @@
 diff --git a/dist/parsley.js b/dist/parsley.js
-index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..d2bef986c5fdafb86713651b871d995e83e13cc3 100644
+index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..fe1f7808c98cb0899f31ea02a7f98baf94b5ef93 100644
 --- a/dist/parsley.js
 +++ b/dist/parsley.js
 @@ -942,7 +942,7 @@
@@ -11,6 +11,57 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..d2bef986c5fdafb86713651b871d995e
      },
      _destroyUI: function _destroyUI() {
        // Reset all event listeners
+@@ -1049,7 +1049,7 @@
+ 
+           this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
+ 
+-          return this._ui.$errorsWrapper.addClass('filled').attr('aria-hidden', 'false').find('.parsley-custom-error-message').html(this.options.errorMessage);
++          return this._ui.$errorsWrapper.addClass('filled').attr('aria-hidden', 'false').find('.parsley-custom-error-message').text(this.options.errorMessage);
+         }
+ 
+         this._ui.$errorClassHandler.removeAttr('aria-describedby');
+@@ -1084,13 +1084,13 @@
+ 
+       this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
+ 
+-      this._ui.$errorsWrapper.addClass('filled').attr('aria-hidden', 'false').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
++      this._ui.$errorsWrapper.addClass('filled').attr('aria-hidden', 'false').append($(this.options.errorTemplate).addClass('parsley-' + name).text(message || this._getErrorMessage(assert)));
+     },
+     _updateError: function _updateError(name, _ref5) {
+       var message = _ref5.message,
+           assert = _ref5.assert;
+ 
+-      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
++      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).text(message || this._getErrorMessage(assert));
+     },
+     _removeError: function _removeError(name) {
+       this._ui.$errorClassHandler.removeAttr('aria-describedby');
+@@ -1124,11 +1124,11 @@
+     // Determine which element will have `parsley-error` and `parsley-success` classes
+     _manageClassHandler: function _manageClassHandler() {
+       // Class handled could also be determined by function given in Parsley options
+-      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler); // Class handled could also be determined by function given in Parsley options
++      if ('string' === typeof this.options.classHandler && '<' !== this.options.classHandler.charAt(0) && $(this.options.classHandler).length) return $(this.options.classHandler); // Class handled could also be determined by function given in Parsley options
+ 
+       var $handlerFunction = this.options.classHandler; // It might also be the function name of a global function
+ 
+-      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
++      // Looking the handler up as a global by name lets a DOM attribute choose which function runs. Removed.
+ 
+       if ('function' === typeof $handlerFunction) {
+         var $handler = $handlerFunction.call(this, this); // If this function returned a valid existing DOM element, go for it
+@@ -1153,8 +1153,10 @@
+ 
+       if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
+ 
++      if ('string' === typeof $errorsContainer && '<' === $errorsContainer.charAt(0)) $errorsContainer = '';
++
+       if ('string' === typeof $errorsContainer) {
+-        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
++        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM');
+       }
+ 
+       if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
 diff --git a/dist/parsley.js.map b/dist/parsley.js.map
 index e6b1578d1308c6b1ed1b6ba0ffdeb3c08d65337b..f7078d9c88250d38b7a8c12a1b15bbda3016ad34 100644
 --- a/dist/parsley.js.map

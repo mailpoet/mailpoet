@@ -1,3 +1,4 @@
+import 'parsley-config'; // must precede 'parsleyjs' — it sets options the library reads as it loads
 import jQuery from 'jquery';
 import Parsley from 'parsleyjs';
 

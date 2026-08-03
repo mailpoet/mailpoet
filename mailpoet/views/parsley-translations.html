@@ -1,27 +1,34 @@
 
+<#
+  Each message is emitted with json_encode(), which supplies its own quotes and escapes
+  anything that would otherwise end the JavaScript string. Interpolating a translation
+  straight into '...' breaks on the first apostrophe: the script then fails to parse and
+  every message here is silently lost, so Parsley falls back to its built-in English.
+  Most languages need an apostrophe somewhere, so this has to stay json_encode().
+#>
 Parsley.addMessages('mailpoet', {
-  defaultMessage: '<%= __("This value seems to be invalid.") %>',
+  defaultMessage: <%= json_encode(__("This value seems to be invalid.")) %>,
   type: {
-    email: '<%= __("This value should be a valid email.") %>',
-    url: '<%= __("This value should be a valid url.") %>',
-    number: '<%= __("This value should be a valid number.") %>',
-    integer: '<%= __("This value should be a valid integer.") %>',
-    digits: '<%= __("This value should be digits.") %>',
-    alphanum: '<%= __("This value should be alphanumeric.") %>'
+    email: <%= json_encode(__("This value should be a valid email.")) %>,
+    url: <%= json_encode(__("This value should be a valid url.")) %>,
+    number: <%= json_encode(__("This value should be a valid number.")) %>,
+    integer: <%= json_encode(__("This value should be a valid integer.")) %>,
+    digits: <%= json_encode(__("This value should be digits.")) %>,
+    alphanum: <%= json_encode(__("This value should be alphanumeric.")) %>
   },
-  notblank: '<%= __("This value should not be blank.") %>',
-  required: '<%= __("This value is required.") %>',
-  pattern: '<%= __("This value seems to be invalid.") %>',
-  min: '<%= __("This value should be greater than or equal to %s.") %>',
-  max: '<%= __("This value should be lower than or equal to %s.") %>',
-  range: '<%= __("This value should be between %s and %s.") %>',
-  minlength: '<%= __("This value is too short. It should have %s characters or more.") %>',
-  maxlength: '<%= __("This value is too long. It should have %s characters or fewer.") %>',
-  length: '<%= __("This value length is invalid. It should be between %s and %s characters long.") %>',
-  mincheck: '<%= __("You must select at least %s choices.") %>',
-  maxcheck: '<%= __("You must select %s choices or fewer.") %>',
-  check: '<%= __("You must select between %s and %s choices.") %>',
-  equalto: '<%= __("This value should be the same.") %>'
+  notblank: <%= json_encode(__("This value should not be blank.")) %>,
+  required: <%= json_encode(__("This value is required.")) %>,
+  pattern: <%= json_encode(__("This value seems to be invalid.")) %>,
+  min: <%= json_encode(__("This value should be greater than or equal to %s.")) %>,
+  max: <%= json_encode(__("This value should be lower than or equal to %s.")) %>,
+  range: <%= json_encode(__("This value should be between %s and %s.")) %>,
+  minlength: <%= json_encode(__("This value is too short. It should have %s characters or more.")) %>,
+  maxlength: <%= json_encode(__("This value is too long. It should have %s characters or fewer.")) %>,
+  length: <%= json_encode(__("This value length is invalid. It should be between %s and %s characters long.")) %>,
+  mincheck: <%= json_encode(__("You must select at least %s choices.")) %>,
+  maxcheck: <%= json_encode(__("You must select %s choices or fewer.")) %>,
+  check: <%= json_encode(__("You must select between %s and %s choices.")) %>,
+  equalto: <%= json_encode(__("This value should be the same.")) %>
 });
 
 Parsley.setLocale('mailpoet');
