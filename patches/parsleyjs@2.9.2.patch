@@ -1,5 +1,5 @@
 diff --git a/dist/parsley.js b/dist/parsley.js
-index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..fe1f7808c98cb0899f31ea02a7f98baf94b5ef93 100644
+index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545aefeda6fb0 100644
 --- a/dist/parsley.js
 +++ b/dist/parsley.js
 @@ -942,7 +942,7 @@
@@ -41,7 +41,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..fe1f7808c98cb0899f31ea02a7f98baf
      _manageClassHandler: function _manageClassHandler() {
        // Class handled could also be determined by function given in Parsley options
 -      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler); // Class handled could also be determined by function given in Parsley options
-+      if ('string' === typeof this.options.classHandler && '<' !== this.options.classHandler.charAt(0) && $(this.options.classHandler).length) return $(this.options.classHandler); // Class handled could also be determined by function given in Parsley options
++      if ('string' === typeof this.options.classHandler && !/^\s*</.test(this.options.classHandler) && $(this.options.classHandler).length) return $(this.options.classHandler); // Class handled could also be determined by function given in Parsley options
  
        var $handlerFunction = this.options.classHandler; // It might also be the function name of a global function
  
@@ -54,7 +54,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..fe1f7808c98cb0899f31ea02a7f98baf
  
        if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
  
-+      if ('string' === typeof $errorsContainer && '<' === $errorsContainer.charAt(0)) $errorsContainer = '';
++      if ('string' === typeof $errorsContainer && /^\s*</.test($errorsContainer)) $errorsContainer = '';
 +
        if ('string' === typeof $errorsContainer) {
 -        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
