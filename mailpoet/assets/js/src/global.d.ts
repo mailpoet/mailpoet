@@ -209,6 +209,7 @@ interface Window {
   mailpoet_date_storage_format?: string;
   mailpoet_current_date_time?: string;
   mailpoet_urls: Record<string, string>;
+  ParsleyConfig?: { autoBind?: boolean };
   recaptcha?: unknown;
   grecaptcha?: any;
   turnstile?: any;
