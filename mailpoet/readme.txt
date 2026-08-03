@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.34.3
+Stable tag: 5.35.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,11 +227,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.34.3 - 2026-07-28 =
-* Updated: Bump the minimum required WooCommerce version to 10.9 and tested up to version to 11.0;
-* Improved: Speed up the recipient count on the send screens and keep sending available when the exact count can't be calculated;
-* Fixed: Fatal error that could occur on PHP 8 when MailPoet is network activated on a WordPress multisite;
-* Fixed: Missing gap between sending progress and the pause button in the email listing;
-* Fixed: Subscription form scripts breaking when SiteGround Speed Optimizer JavaScript minification is enabled.
+= 5.35.0 - 2026-08-03 =
+* Added: Notice on the WordPress delete user screen explaining that the linked MailPoet subscriber is kept;
+* Added: Video embeds from YouTube, Vimeo, TikTok, Dailymotion and VideoPress in the new email editor;
+* Updated: Email editor packages to the latest versions;
+* Improved: Typing responsiveness in the new email editor canvas;
+* Fixed: Restore link tracking and open tracking on WordPress Playground preview sites;
+* Fixed: Rows of buttons that do not fit on one line now wrap instead of stretching the email past its content width;
+* Fixed: Full-width blocks now display full width in the new email editor canvas, matching the sent email;
+* Fixed: Crash when opening the typography styles panel for an element without typography styles.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
