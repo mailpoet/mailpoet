@@ -1,3 +1,5 @@
+// Must stay above the `parsleyjs` import — it sets options the library reads as it loads.
+import './parsley-config';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 import Cookies from 'js-cookie';
