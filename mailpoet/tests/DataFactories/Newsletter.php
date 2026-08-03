@@ -11,6 +11,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\Util\Security;
@@ -31,6 +32,9 @@ class Newsletter {
 
   /** @var array */
   private $queues = [];
+
+  /** @var int */
+  private $recordedSends = 0;
 
   /** @var array */
   private $taskSubscribers;
@@ -387,6 +391,16 @@ class Newsletter {
     return $this;
   }
 
+  /**
+   * Records sends against the last queue, one row per email sent, the way the sending worker
+   * does. Emails that are sent repeatedly read their sent count from there rather than from
+   * the queue counts, so a fixture that only sets count_processed reads as never sent.
+   */
+  public function withRecordedSends(int $count) {
+    $this->recordedSends = $count;
+    return $this;
+  }
+
   public function withScheduledQueue(array $options = []) {
     $queue = [
       'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
@@ -443,8 +457,26 @@ class Newsletter {
       $this->createQueues($newsletter);
     }
 
+    if ($this->recordedSends) {
+      $this->createRecordedSends($newsletter);
+    }
+
     $entityManager->flush();
     return $newsletter;
+  }
+
+  private function createRecordedSends(NewsletterEntity $newsletter): void {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $queue = $newsletter->getQueues()->last();
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
+
+    for ($i = 0; $i < $this->recordedSends; $i++) {
+      $subscriber = new SubscriberEntity();
+      $subscriber->setEmail(sprintf('recorded-send-%s@example.com', Security::generateHash(12)));
+      $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+      $entityManager->persist($subscriber);
+      $entityManager->persist(new StatisticsNewsletterEntity($newsletter, $queue, $subscriber));
+    }
   }
 
   private function createNewsletter(): NewsletterEntity {
