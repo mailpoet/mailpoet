@@ -4,6 +4,7 @@
 // This is to avoid undefined import order & messy WebPack config.
 // Code can be gradually refactored to avoid side effects completely.
 
+import 'parsley-config'; // side effect - sets Parsley options; must precede 'parsleyjs'
 import 'mailpoet'; // side effect - assigns MailPoet to window
 import 'dismissible-notice.jsx'; // side effect - adds jQuery event
 import 'jquery.serialize-object'; // side effect - extends jQuery
