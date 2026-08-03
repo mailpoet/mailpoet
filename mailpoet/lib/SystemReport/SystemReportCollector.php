@@ -99,6 +99,7 @@ class SystemReportCollector {
 
     $inconsistencyStatus = $this->dataInconsistencyController->getInconsistentDataStatus();
     unset($inconsistencyStatus['total']);
+    $inconsistencyStatus += $this->dataInconsistencyController->getUnfixableDataStatus();
 
     $pingBridgeResponse = $this->getBridgePingResponse();
     $pingResponse = $this->wp->isWpError($pingBridgeResponse)

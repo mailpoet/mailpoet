@@ -7,6 +7,7 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberTagEntity;
@@ -44,6 +45,27 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, null);
     $orphanedSendingTasksCount = $this->repository->getOrphanedSendingTasksCount();
     verify($orphanedSendingTasksCount)->equals(2);
+  }
+
+  public function testItFetchesSendingQueuesWithoutTaskCount(): void {
+    verify($this->repository->getSendingQueuesWithoutTaskCount())->equals(0);
+
+    $okTask = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    (new SendingQueue())->create($okTask);
+    verify($this->repository->getSendingQueuesWithoutTaskCount())->equals(0);
+
+    $taskToDelete = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    $queue = (new SendingQueue())->create($taskToDelete);
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskEntity::class, 't')
+      ->where('t.id = :id')
+      ->setParameter('id', $taskToDelete->getId())
+      ->getQuery()
+      ->execute();
+
+    verify($this->repository->getSendingQueuesWithoutTaskCount())->equals(1);
+    // the queue itself is left alone, it holds the only record of the send
+    $this->assertNotNull($this->entityManager->find(SendingQueueEntity::class, $queue->getId()));
   }
 
   public function testItCleansUpOrphanedSendingTasks(): void {

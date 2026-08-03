@@ -13,6 +13,7 @@ class DataInconsistencyController {
   const ORPHANED_SUBSCRIBER_TAGS = 'orphaned_subscriber_tags';
   const ORPHANED_LINKS = 'orphaned_links';
   const ORPHANED_NEWSLETTER_POSTS = 'orphaned_newsletter_posts';
+  const SENDING_QUEUE_WITHOUT_TASK = 'sending_queue_without_task';
 
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
@@ -46,6 +47,16 @@ class DataInconsistencyController {
     ];
     $result['total'] = array_sum($result);
     return $result;
+  }
+
+  /**
+   * Damage that is worth reporting but has no safe automatic fix, so it is kept out of
+   * getInconsistentDataStatus() and the "Fix" actions built from it.
+   */
+  public function getUnfixableDataStatus(): array {
+    return [
+      self::SENDING_QUEUE_WITHOUT_TASK => $this->repository->getSendingQueuesWithoutTaskCount(),
+    ];
   }
 
   public function fixInconsistentData(string $inconsistency): void {
