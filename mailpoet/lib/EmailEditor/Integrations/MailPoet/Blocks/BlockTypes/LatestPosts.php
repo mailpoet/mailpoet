@@ -31,6 +31,7 @@ class LatestPosts extends AbstractBlock {
   protected $blockName = 'latest-posts';
 
   private const TEMPLATE_BLOCK = 'mailpoet/latest-posts-template';
+  private const POST_CONTENT_BLOCK = 'mailpoet/post-content';
   private const DEFAULT_COLUMNS = 1;
   private const MAX_COLUMNS = 2;
   private const DEFAULT_POSTS = 3;
@@ -62,8 +63,52 @@ class LatestPosts extends AbstractBlock {
     'core/avatar',
   ];
 
+  /**
+   * HTML kept when rendering classic (non-block) post content.
+   * Text-level markup email clients handle well.
+   * Everything else (scripts, embeds, forms, ...) is stripped.
+   */
+  private const CLASSIC_CONTENT_ALLOWED_HTML = [
+    'a' => ['href' => true, 'title' => true],
+    'b' => [],
+    'blockquote' => ['cite' => true],
+    'br' => [],
+    'cite' => [],
+    'code' => [],
+    'em' => [],
+    'figcaption' => [],
+    'figure' => [],
+    'h1' => [],
+    'h2' => [],
+    'h3' => [],
+    'h4' => [],
+    'h5' => [],
+    'h6' => [],
+    'hr' => [],
+    'i' => [],
+    'img' => ['src' => true, 'alt' => true, 'width' => true, 'height' => true],
+    'li' => [],
+    'ol' => ['start' => true],
+    'p' => [],
+    'pre' => [],
+    's' => [],
+    'span' => [],
+    'strong' => [],
+    'table' => [],
+    'tbody' => [],
+    'td' => ['colspan' => true, 'rowspan' => true],
+    'tfoot' => [],
+    'th' => ['colspan' => true, 'rowspan' => true],
+    'thead' => [],
+    'tr' => [],
+    'u' => [],
+    'ul' => [],
+  ];
+
   /** @var array<int, int[]> */
   private $renderedPostsByRequest = [];
+
+  private bool $isRenderingPostContent = false;
 
   private AutomatedLatestContent $automatedLatestContent;
   private NewsletterPostsRepository $newsletterPostsRepository;
@@ -85,6 +130,7 @@ class LatestPosts extends AbstractBlock {
   public function initialize() {
     parent::initialize();
     $this->registerTemplateBlock();
+    $this->registerPostContentBlock();
     $this->wp->addFilter('block_categories_all', [$this, 'addBlockCategory']);
     $this->wp->addFilter('allowed_block_types_all', [$this, 'restrictBlocksToEmailEditor'], 10, 2);
     $this->wp->addFilter('block_type_metadata_settings', [$this, 'enableEmailSupportForCoreBlocks']);
@@ -147,7 +193,7 @@ class LatestPosts extends AbstractBlock {
       $allowedBlocks = array_keys(\WP_Block_Type_Registry::get_instance()->get_all_registered());
     }
 
-    $ownBlocks = [$this->getBlockType(), self::TEMPLATE_BLOCK];
+    $ownBlocks = [$this->getBlockType(), self::TEMPLATE_BLOCK, self::POST_CONTENT_BLOCK];
     return array_values(array_filter($allowedBlocks, static function ($blockName) use ($ownBlocks) {
       return !in_array($blockName, $ownBlocks, true);
     }));
@@ -273,6 +319,157 @@ class LatestPosts extends AbstractBlock {
     return $width > 0 ? $width : null;
   }
 
+  /**
+   * Renders the full content of the post provided by the template loop.
+   * Block-based content keeps only blocks the email engine can render;
+   * classic content is reduced to an email-safe subset of HTML.
+   *
+   * @param array<string, mixed>|\WP_Block $attributes
+   * @param string $content
+   * @param \WP_Block|null $block
+   */
+  public function renderPostContent($attributes, $content, $block): string {
+    if ($this->isRenderingPostContent || !$block instanceof \WP_Block) {
+      return '';
+    }
+    $postId = (int)($block->context['postId'] ?? 0);
+    if ($postId <= 0) {
+      return '';
+    }
+    $post = $this->wp->getPost($postId);
+    if (!$post instanceof \WP_Post || $this->wp->postPasswordRequired($post)) {
+      return '';
+    }
+
+    $this->isRenderingPostContent = true;
+    try {
+      if ($this->wp->hasBlocks($post->post_content)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        return $this->renderPostContentBlocks($post, $block);
+      }
+      return $this->renderClassicPostContent($post);
+    } finally {
+      $this->isRenderingPostContent = false;
+    }
+  }
+
+  private function renderPostContentBlocks(\WP_Post $post, \WP_Block $block): string {
+    // The plain core parser, so the engine's email parser does not preprocess
+    // these blocks with the email root padding.
+    $blocks = (new \WP_Block_Parser())->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $blocks = $this->filterEmailRenderableBlocks($blocks);
+    if (!$blocks) {
+      return '';
+    }
+
+    $renderingContext = $this->resolveRenderingContext(null);
+    $availableWidth = $this->getAvailableWidth($block->parsed_block, $renderingContext); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $blocks = $this->preprocessBlocks($this->normalizeInnerBlocks($blocks), $availableWidth, $renderingContext);
+
+    $html = '';
+    foreach ($blocks as $contentBlock) {
+      if (is_array($contentBlock)) {
+        $html .= render_block($this->normalizeBlock($contentBlock));
+      }
+    }
+    return $html;
+  }
+
+  private function renderClassicPostContent(\WP_Post $post): string {
+    $content = $this->wp->stripShortcodes($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $content = $this->wp->wpautop($content);
+    $content = trim($this->wp->wpKses($content, self::CLASSIC_CONTENT_ALLOWED_HTML));
+    if ($content === '') {
+      return '';
+    }
+    return '<div class="mailpoet-post-content">' . $content . '</div>';
+  }
+
+  /**
+   * Keeps only blocks the email engine can render: those opted into email
+   * support or given an email render callback (render-only blocks such as
+   * core/embed). Our own blocks and core/post-content are excluded so post
+   * content cannot render recursively.
+   *
+   * @param array<mixed> $blocks
+   * @return array<int, array<string, mixed>>
+   */
+  private function filterEmailRenderableBlocks(array $blocks): array {
+    $kept = [];
+    foreach ($blocks as $block) {
+      if ($this->isEmailRenderableBlock($block)) {
+        $kept[] = $this->filterInnerEmailRenderableBlocks($block);
+      }
+    }
+    return $kept;
+  }
+
+  /**
+   * @param mixed $block
+   * @phpstan-assert-if-true array<string, mixed> $block
+   */
+  private function isEmailRenderableBlock($block): bool {
+    if (!is_array($block)) {
+      return false;
+    }
+    $name = $block['blockName'] ?? null;
+    if (!is_string($name) || $name === '') {
+      return false;
+    }
+    if (in_array($name, [$this->getBlockType(), self::TEMPLATE_BLOCK, self::POST_CONTENT_BLOCK, 'core/post-content'], true)) {
+      return false;
+    }
+    $blockType = \WP_Block_Type_Registry::get_instance()->get_registered($name);
+    if (!$blockType instanceof \WP_Block_Type) {
+      return false;
+    }
+    $supports = is_array($blockType->supports) ? $blockType->supports : [];
+    if (($supports['email'] ?? false) === true) {
+      return true;
+    }
+    return isset($blockType->render_email_callback) && is_callable($blockType->render_email_callback); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  /**
+   * @param array<string, mixed> $block
+   * @return array<string, mixed>
+   */
+  private function filterInnerEmailRenderableBlocks(array $block): array {
+    $innerBlocks = isset($block['innerBlocks']) && is_array($block['innerBlocks']) ? $block['innerBlocks'] : [];
+    if (!$innerBlocks) {
+      return $block;
+    }
+
+    $keptFlags = [];
+    $kept = [];
+    foreach ($innerBlocks as $innerBlock) {
+      $keep = $this->isEmailRenderableBlock($innerBlock);
+      $keptFlags[] = $keep;
+      if ($keep) {
+        $kept[] = $this->filterInnerEmailRenderableBlocks($innerBlock);
+      }
+    }
+
+    // innerContent holds one null placeholder per inner block; drop the
+    // placeholders of removed blocks so markers and blocks stay aligned.
+    $rawInnerContent = isset($block['innerContent']) && is_array($block['innerContent']) ? $block['innerContent'] : [];
+    $innerContent = [];
+    $innerBlockIndex = 0;
+    foreach ($rawInnerContent as $chunk) {
+      if ($chunk !== null) {
+        $innerContent[] = $chunk;
+        continue;
+      }
+      if ($keptFlags[$innerBlockIndex] ?? false) {
+        $innerContent[] = null;
+      }
+      $innerBlockIndex++;
+    }
+
+    $block['innerBlocks'] = $kept;
+    $block['innerContent'] = $innerContent;
+    return $block;
+  }
+
   private function registerTemplateBlock(): void {
     if (\WP_Block_Type_Registry::get_instance()->is_registered(self::TEMPLATE_BLOCK)) {
       return;
@@ -288,6 +485,29 @@ class LatestPosts extends AbstractBlock {
       'editor_script' => $this->getEditorScript('handle'),
       'editor_style' => $this->getEditorStyle('handle'),
     ]);
+  }
+
+  private function registerPostContentBlock(): void {
+    if (\WP_Block_Type_Registry::get_instance()->is_registered(self::POST_CONTENT_BLOCK)) {
+      return;
+    }
+    $metadataPath = Env::$assetsPath . '/dist/js/email-editor-blocks/latest-posts-post-content/block.json';
+    if (!file_exists($metadataPath)) {
+      return;
+    }
+    $blockType = register_block_type_from_metadata($metadataPath, [
+      'render_callback' => [$this, 'renderPostContent'],
+      'editor_script' => $this->getEditorScript('handle'),
+      'editor_style' => $this->getEditorStyle('handle'),
+    ]);
+    if ($blockType instanceof \WP_Block_Type) {
+      // The render callback already produces email-ready markup; without an
+      // identity callback the engine would wrap it in the fallback text renderer.
+      // @phpstan-ignore-next-line -- WooCommerce email editor reads this dynamic block setting.
+      $blockType->render_email_callback = static function (string $blockContent): string { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        return $blockContent;
+      };
+    }
   }
 
   private function registerEmailRenderCallback(): void {
