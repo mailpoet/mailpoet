@@ -1,0 +1,18 @@
+{
+  "name": "mailpoet/post-content",
+  "version": "1.0.0",
+  "title": "Post Content",
+  "description": "Displays the full content of each post. Blocks that cannot be rendered in emails are left out when the email is sent.",
+  "category": "mailpoet",
+  "parent": ["mailpoet/latest-posts-template"],
+  "textdomain": "mailpoet",
+  "icon": "align-left",
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "email": true
+  },
+  "usesContext": ["postId", "postType"],
+  "apiVersion": 3,
+  "$schema": "https://schemas.wp.org/trunk/block.json"
+}

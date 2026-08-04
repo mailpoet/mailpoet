@@ -759,6 +759,24 @@ class Functions {
     return wpautop($pee, $br);
   }
 
+  /**
+   * @param int|string|\WP_Post|null $post
+   */
+  public function hasBlocks($post = null): bool {
+    return has_blocks($post);
+  }
+
+  /**
+   * @param int|\WP_Post|null $post
+   */
+  public function postPasswordRequired($post = null): bool {
+    return post_password_required($post);
+  }
+
+  public function stripShortcodes(string $content): string {
+    return strip_shortcodes($content);
+  }
+
   public function inTheLoop(): bool {
     return in_the_loop();
   }

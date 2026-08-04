@@ -480,6 +480,7 @@ class LatestPostsTest extends \MailPoetTest {
     $this->assertIsArray($allowed);
     verify(in_array('mailpoet/latest-posts', $allowed, true))->false();
     verify(in_array('mailpoet/latest-posts-template', $allowed, true))->false();
+    verify(in_array('mailpoet/post-content', $allowed, true))->false();
     // Other blocks remain available.
     verify(in_array('core/paragraph', $allowed, true))->true();
   }
@@ -525,6 +526,114 @@ class LatestPostsTest extends \MailPoetTest {
 
     verify($result)->stringContainsString('a:not(.wp-element-button)');
     verify($result)->stringNotContainsString(':where(');
+  }
+
+  public function testItRendersFullContentOfBlockPosts(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts full content',
+      '<!-- wp:paragraph --><p>Full block paragraph</p><!-- /wp:paragraph -->'
+      . '<!-- wp:verse --><pre class="wp-block-verse">Verse text here</pre><!-- /wp:verse -->'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Full block paragraph');
+    // core/verse has no email support, so it is left out.
+    verify($html)->stringNotContainsString('Verse text here');
+  }
+
+  public function testItDropsUnsupportedBlocksNestedInSupportedOnes(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts nested content',
+      '<!-- wp:group --><div class="wp-block-group">'
+      . '<!-- wp:paragraph --><p>Nested safe paragraph</p><!-- /wp:paragraph -->'
+      . '<!-- wp:verse --><pre class="wp-block-verse">Nested verse</pre><!-- /wp:verse -->'
+      . '</div><!-- /wp:group -->'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Nested safe paragraph');
+    verify($html)->stringNotContainsString('Nested verse');
+  }
+
+  public function testItRendersClassicContentAsEmailSafeHtml(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts classic content',
+      "Classic intro text\n\n<iframe src=\"https://example.com/embed\"></iframe>More classic text [gallery]"
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('<p>Classic intro text</p>');
+    verify($html)->stringContainsString('More classic text');
+    verify($html)->stringNotContainsString('<iframe');
+    verify($html)->stringNotContainsString('[gallery]');
+  }
+
+  public function testItSkipsContentOfPasswordProtectedPosts(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected content',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringNotContainsString('Hidden protected content');
+  }
+
+  public function testItDoesNotRenderItsOwnBlocksInsidePostContent(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts recursive content',
+      '<!-- wp:paragraph --><p>Recursive safe paragraph</p><!-- /wp:paragraph -->'
+      . '<!-- wp:mailpoet/post-content /-->'
+      . '<!-- wp:mailpoet/latest-posts /-->'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Recursive safe paragraph');
+    // Rendering exactly one post means the nested blocks did not run the loop again.
+    verify(substr_count($html, 'Recursive safe paragraph'))->equals(1);
+  }
+
+  public function testItDoesNotWrapPostContentInnerBlocksWithRootPadding(): void {
+    // The whole block already sits inside the email root padding; inner blocks
+    // with their own wrapper would be indented twice.
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts padding post',
+      '<!-- wp:paragraph --><p>Padding check paragraph</p><!-- /wp:paragraph -->'
+      . '<!-- wp:heading --><h2 class="wp-block-heading">Padding check heading</h2><!-- /wp:heading -->'
+    );
+    $content = '<!-- wp:mailpoet/latest-posts {"query":{"perPage":1},"displayLayout":{"columns":1}} -->'
+      . '<!-- wp:mailpoet/latest-posts-template --><!-- wp:post-title /--><!-- wp:mailpoet/post-content /--><!-- /wp:mailpoet/latest-posts-template -->'
+      . '<!-- /wp:mailpoet/latest-posts -->';
+    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD, null, $content);
+
+    $rendered = $this->diContainer->get(Renderer::class)->renderAsPreview($newsletter);
+    $this->assertIsArray($rendered);
+    $html = $rendered['html'] ?? '';
+    $this->assertIsString($html);
+
+    $start = strpos($html, 'data-post-id');
+    $end = strpos($html, 'Padding check heading');
+    $this->assertIsInt($start);
+    $this->assertIsInt($end);
+    $this->assertGreaterThan($start, $end);
+
+    verify(substr($html, $start, $end - $start))->stringNotContainsString('email-root-padding');
   }
 
   /**
@@ -582,6 +691,31 @@ class LatestPostsTest extends \MailPoetTest {
     }
     $this->assertIsArray($term);
     return (int)$term['term_id'];
+  }
+
+  private function ensurePostContentBlockRegistered(): void {
+    if (!\WP_Block_Type_Registry::get_instance()->is_registered('mailpoet/post-content')) {
+      $this->block->initialize();
+    }
+    $this->assertTrue(
+      \WP_Block_Type_Registry::get_instance()->is_registered('mailpoet/post-content'),
+      'mailpoet/post-content is not registered; run `pnpm compile:js` to generate its dist block.json first.'
+    );
+  }
+
+  /**
+   * @param array<string, mixed> $extra
+   */
+  private function createPostWithContent(string $title, string $content, array $extra = []): int {
+    $publishDate = '2020-05-01 01:01:01';
+    return $this->wp->wpInsertPost(array_merge([
+      'post_title' => $title,
+      'post_content' => $content,
+      'post_status' => 'publish',
+      'post_date' => $publishDate,
+      'post_date_gmt' => $this->wp->getGmtFromDate($publishDate),
+      'post_type' => 'post',
+    ], $extra));
   }
 
   private function createPost(string $title, string $publishDate, string $postType = 'post'): int {
