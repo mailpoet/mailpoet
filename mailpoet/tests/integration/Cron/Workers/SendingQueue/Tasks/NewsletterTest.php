@@ -547,6 +547,65 @@ class NewsletterTest extends \MailPoetTest {
     ];
   }
 
+  public function testItResolvesUrlEmbeddedShortcodesForSubscriberWithoutConsent() {
+    // A link URL may itself contain a personalisation shortcode. The tracked
+    // path resolves those at click time in Clicks::processUrl(); the untracked
+    // path has to do it at send time or the recipient gets a literal
+    // placeholder in the address (STOMAIL-8340).
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $result = $this->prepareWithBody(
+      '<a href="http://example.com/?email=[subscriber:email]">Personalised link</a>'
+    );
+
+    $this->assertStringNotContainsString('[subscriber:email]', $result['body']['html']);
+    $this->assertStringContainsString(
+      'http://example.com/?email=' . $this->subscriber->getEmail(),
+      $result['body']['html']
+    );
+  }
+
+  public function testItResolvesUppercaseLinkShortcodesForSubscriberWithoutConsent() {
+    // The extractor that stores these is case-insensitive (Shortcodes::extract),
+    // so an uppercased shortcode reaches the untracked path too.
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $result = $this->prepareWithBody(
+      '<a href="[LINK:subscription_unsubscribe_url]">Unsubscribe</a>'
+    );
+
+    $this->assertStringNotContainsString('[LINK:', $result['body']['html']);
+    $this->assertStringContainsString('action=confirm_unsubscribe', $result['body']['html']);
+  }
+
+  private function prepareWithBody(string $linkHtml): array {
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject('Untracking shortcodes in URLs')
+      ->withBody($this->bodyWithLink($linkHtml))
+      ->create();
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+
+    return $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $queue
+    );
+  }
+
   public function testItKeepsOpenTrackingPixelForConsentingSubscriber() {
     $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
     $this->entityManager->flush();
