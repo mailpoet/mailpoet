@@ -81,7 +81,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   public function testItDoesNotDeactivateUnknownConsentSubscribersInStrictMode(): void {
     // Strict opt-in mode: unknown-consent subscribers are not tracked, so their
     // frozen engagement must not get them deactivated.
-    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
     [$controller, $subscriber] = $this->arrangeInactiveScenario();
     verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
 

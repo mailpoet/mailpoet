@@ -6,6 +6,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -28,6 +29,36 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
       SettingsController::MANAGE_SUBSCRIPTION_PAGE_STYLE_MODERN
     );
     parent::_before();
+  }
+
+  public function testItHidesTheTrackingConsentCheckboxByDefault() {
+    $form = $this->formRenderer->renderForm($this->subscriber);
+
+    verify($form)->stringNotContainsString(ManageSubscriptionFormRenderer::getTrackingConsentCopy());
+    verify($form)->stringNotContainsString('tracking_consent');
+  }
+
+  public function testItShowsTheTrackingConsentCheckboxWhenAskingNewSubscribers() {
+    $this->setSubscriberChoice(TrackingConsentController::CHOICE_ASK_NEW);
+
+    $form = $this->formRenderer->renderForm($this->subscriber);
+
+    verify($form)->stringContainsString(ManageSubscriptionFormRenderer::getTrackingConsentCopy());
+  }
+
+  public function testItShowsTheTrackingConsentCheckboxWhenAskingEveryone() {
+    $this->setSubscriberChoice(TrackingConsentController::CHOICE_ASK_ALL);
+
+    $form = $this->formRenderer->renderForm($this->subscriber);
+
+    verify($form)->stringContainsString(ManageSubscriptionFormRenderer::getTrackingConsentCopy());
+  }
+
+  private function setSubscriberChoice(string $choice): void {
+    $this->diContainer->get(SettingsController::class)->set(
+      TrackingConsentController::SETTING_SUBSCRIBER_CHOICE,
+      $choice
+    );
   }
 
   public function testItGeneratesForm() {

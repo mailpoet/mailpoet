@@ -59,7 +59,7 @@ export type Settings = {
     // default); optional only so callers that write level/opens need not
     // re-supply it. The default lives in SettingsController::getAllDefaults().
     consent?: {
-      track_unknown: '' | '1';
+      subscriber_choice: 'track_all' | 'ask_new' | 'ask_all';
     };
   };
   '3rd_party_libs': {
