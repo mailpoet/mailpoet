@@ -417,6 +417,52 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringNotContainsString('endpoint=track&action=open', $result['body']['html']);
   }
 
+  public function testItDoesNotRewriteClickLinksForSubscriberWithoutConsent() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    // No tracked click URL may ship: following one tells our server they
+    // clicked, whether or not we record it.
+    $this->assertStringNotContainsString('endpoint=track&action=click', $result['body']['html']);
+    $this->assertStringNotContainsString('endpoint=track&action=click', $result['body']['text']);
+    // And no placeholder may leak into the delivered email either.
+    $this->assertStringNotContainsString(Links::DATA_TAG_CLICK, $result['body']['html']);
+  }
+
+  public function testItStillDeliversWorkingLinksToSubscriberWithoutConsent() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    // Untracking must not break the email: the real destination still ships,
+    // and link shortcodes (unsubscribe, manage subscription) are still
+    // resolved to real URLs rather than left as raw shortcode text.
+    $this->assertStringContainsString('http://example.com', $result['body']['html']);
+    $this->assertStringNotContainsString('[link:', $result['body']['html']);
+    $this->assertStringNotContainsString('[link:', $result['body']['text']);
+  }
+
   public function testItKeepsOpenTrackingPixelForConsentingSubscriber() {
     $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
     $this->entityManager->flush();
