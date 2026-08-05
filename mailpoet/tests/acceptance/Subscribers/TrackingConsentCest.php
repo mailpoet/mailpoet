@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
@@ -57,8 +58,46 @@ class TrackingConsentCest {
     Assert::assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK, $reloaded->getTrackingConsentMethod());
   }
 
+  public function subscriberChoiceSettingGatesTheManagePageCheckbox(\AcceptanceTester $i) {
+    $i->wantTo('Verify the manage-subscription tracking checkbox is hidden until the site asks subscribers to choose');
+
+    $segment = (new Segment())
+      ->withName('Tracking consent gating list')
+      ->create();
+    $subscriber = (new Subscriber())
+      ->withEmail('tracking-gating@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+
+    $manageUrl = SubscriptionUrlFactory::getInstance()->getManageUrl($subscriber);
+    Assert::assertIsString($manageUrl);
+
+    $i->wantTo('See no tracking control at all on a site that tracks everyone without asking');
+    $this->settings->withSubscriberChoice(TrackingConsentController::CHOICE_TRACK_ALL);
+    $i->amOnUrl($manageUrl);
+    // Wait for a field that is always present, so the absence check below runs
+    // against a fully rendered form rather than an empty page.
+    $i->waitForText('Email subscription status');
+    $i->dontSee('Email activity tracking');
+    $i->dontSee('Allow tracking of email opens and link clicks');
+    $i->seeNoJSErrors();
+
+    $i->wantTo('See the control appear once the site asks everyone');
+    $this->settings->withSubscriberChoice(TrackingConsentController::CHOICE_ASK_ALL);
+    $i->amOnUrl($manageUrl);
+    $i->waitForText('Email activity tracking');
+    $i->see('Allow tracking of email opens and link clicks');
+    // Never pre-ticked: a pre-ticked consent box is not valid consent.
+    $i->dontSeeCheckboxIsChecked('input[data-parsley-group="custom_field_tracking_consent"]');
+    $i->seeNoJSErrors();
+  }
+
   public function managePageCheckboxControlsTrackingConsent(\AcceptanceTester $i) {
     $i->wantTo('Verify the manage-subscription checkbox grants tracking consent, while an untouched save leaves an unknown subscriber unchanged');
+
+    // The checkbox only renders once the site asks subscribers to choose.
+    $this->settings->withSubscriberChoice(TrackingConsentController::CHOICE_ASK_ALL);
 
     $segment = (new Segment())
       ->withName('Tracking consent list')
