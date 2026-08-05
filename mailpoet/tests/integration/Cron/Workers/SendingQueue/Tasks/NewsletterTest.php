@@ -463,6 +463,90 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringNotContainsString('[link:', $result['body']['text']);
   }
 
+  public function testItResolvesLinkShortcodesWithArgumentsForSubscriberWithoutConsent() {
+    // Link shortcodes may carry an argument ([link:action | name:value]); the
+    // stored link keeps the whole thing, so untracking has to resolve it rather
+    // than shipping the raw shortcode as an href.
+    $shortcode = '[link:mailpoet_test_custom_url | token:abc123]';
+    $resolvedUrl = 'http://example.com/resolved-custom-url';
+    $receivedArguments = null;
+    $wp = new WPFunctions();
+    $wp->addFilter(
+      'mailpoet_newsletter_shortcode_link',
+      function ($url, $newsletter, $subscriber, $queue, $arguments) use ($resolvedUrl, &$receivedArguments) {
+        $receivedArguments = $arguments;
+        return $resolvedUrl;
+      },
+      10,
+      6
+    );
+
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject('Parameterised link shortcode')
+      ->withBody($this->bodyWithLink('<a href="' . $shortcode . '">Custom link</a>'))
+      ->create();
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $queue
+    );
+
+    $wp->removeAllFilters('mailpoet_newsletter_shortcode_link');
+
+    $this->assertStringNotContainsString('[link:', $result['body']['html']);
+    $this->assertStringContainsString($resolvedUrl, $result['body']['html']);
+    // The argument has to survive too. Passing only the inner text of the
+    // shortcode resolves the action but silently loses the arguments, which
+    // would still satisfy the two assertions above.
+    $this->assertSame(['token' => 'abc123'], $receivedArguments);
+  }
+
+  /**
+   * @return array<string, mixed>
+   */
+  private function bodyWithLink(string $html): array {
+    return [
+      'content' => [
+        'type' => 'container',
+        'orientation' => 'vertical',
+        'styles' => ['block' => []],
+        'blocks' => [
+          [
+            'type' => 'container',
+            'orientation' => 'horizontal',
+            'styles' => ['block' => []],
+            'blocks' => [
+              [
+                'type' => 'container',
+                'orientation' => 'vertical',
+                'styles' => ['block' => []],
+                'blocks' => [
+                  [
+                    'type' => 'text',
+                    'text' => $html,
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
+  }
+
   public function testItKeepsOpenTrackingPixelForConsentingSubscriber() {
     $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
     $this->entityManager->flush();
