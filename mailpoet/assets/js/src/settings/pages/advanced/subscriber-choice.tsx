@@ -28,7 +28,7 @@ export function SubscriberChoice(): ReactElement {
             </a>
           </>
         }
-        htmlFor="subscriber_choice"
+        htmlFor=""
       />
       <Inputs>
         <div className="mailpoet-settings-inputs-row">
