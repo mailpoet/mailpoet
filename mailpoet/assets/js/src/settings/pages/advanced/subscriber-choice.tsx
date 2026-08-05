@@ -15,7 +15,19 @@ export function SubscriberChoice(): ReactElement {
     <>
       <Label
         title={t('subscriberChoiceTitle')}
-        description={t('subscriberChoiceDescription')}
+        description={
+          <>
+            {t('subscriberChoiceDescription')}{' '}
+            <a
+              className="mailpoet-link"
+              href="https://kb.mailpoet.com/article/how-to-let-subscribers-opt-out-of-email-open-and-click-tracking"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t('readMore')}
+            </a>
+          </>
+        }
         htmlFor="subscriber_choice"
       />
       <Inputs>
