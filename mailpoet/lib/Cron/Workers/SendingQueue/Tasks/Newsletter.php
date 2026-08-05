@@ -145,6 +145,11 @@ class Newsletter {
    * normally what resolves them. Since these recipients get no redirect, we
    * resolve the shortcodes here with the same call the redirect would have
    * made, so they land on exactly the same page.
+   *
+   * A restored URL may also carry a non-link shortcode of its own, such as
+   * `http://example.com/?email=[subscriber:email]`. Clicks::processUrl() runs a
+   * full shortcode pass over those at click time, so this does the same at send
+   * time (STOMAIL-8340).
    */
   private function untrackLinks(
     string $content,
@@ -162,9 +167,10 @@ class Newsletter {
     // Matches the whole shortcode, arguments included, because a link shortcode
     // may carry one: [link:action | name:value]. The (?!\/\/) guard mirrors the
     // extractor in Shortcodes::extract() so text like [link://example.com] is
-    // left alone rather than resolved to nothing and dropped.
-    return (string)preg_replace_callback(
-      '/\[link:(?!\/\/)(?<action>[^\]]+)\]/',
+    // left alone rather than resolved to nothing and dropped. Case-insensitive
+    // for the same reason: that extractor is too, so [LINK:...] gets stored.
+    $content = (string)preg_replace_callback(
+      '/\[link:(?!\/\/)(?<action>[^\]]+)\]/i',
       function (array $matches) use ($newsletter, $subscriber, $queue): string {
         // Pass the full shortcode, as Statistics\Track\Clicks::processUrl() does:
         // processShortcodeAction() parses the brackets itself, and only sees the
@@ -179,6 +185,18 @@ class Newsletter {
         return $url ?? '';
       },
       $content
+    );
+
+    // Anything still unresolved was reintroduced by the restore above: the pass
+    // in prepareNewsletterForSending() already ran, and at that point every link
+    // was a hashed tag, so URL-embedded shortcodes were not in the content to be
+    // seen. Running it again therefore only touches the restored URLs.
+    return ShortcodesTask::process(
+      $content,
+      null,
+      $newsletter,
+      $subscriber,
+      $queue
     );
   }
 
