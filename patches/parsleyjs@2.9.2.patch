@@ -1,8 +1,45 @@
+What MailPoet changes in parsleyjs 2.9.2, and why.
+
+1. `.focus()` becomes `.trigger('focus')`. The shorthand is deprecated in jQuery 3.
+
+2. Error messages are written with `.text()` instead of `.html()`. Nothing we render
+   puts intentional HTML in a message, so treating them as text costs us nothing and
+   stops a translated or server-supplied string from being parsed as markup.
+
+3. Four options can be set from a `data-parsley-*` attribute and end up handed to
+   jQuery, which builds markup out of any string starting with `<`. They are closed
+   two different ways, because they are not the same kind of value:
+
+   - `classHandler` and `errorsContainer` hold selectors. A selector can never start
+     with `<`, so a value that does is rejected and Parsley falls back to its default.
+     Resolving these to a global function by name was also dropped: it let a DOM
+     attribute pick which function runs.
+
+   - `errorTemplate` and `errorsWrapper` hold markup by design. Their defaults are
+     `<li></li>` and `<ul class="parsley-errors-list"></ul>`, so the `<` check above
+     is not available to them. Instead they are removed from the attribute layer in
+     `actualizeOptions`, so an attribute cannot choose what gets built into the page.
+     Both stay settable from JavaScript, and both fall back to the defaults.
+
 diff --git a/dist/parsley.js b/dist/parsley.js
-index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545aefeda6fb0 100644
+index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..a26a0d5fbbdfae6b9e6640b7be7dd274eb1afdca 100644
 --- a/dist/parsley.js
 +++ b/dist/parsley.js
-@@ -942,7 +942,7 @@
+@@ -358,6 +358,13 @@
+     },
+     actualizeOptions: function actualizeOptions() {
+       Utils.attr(this.element, this.options.namespace, this.domOptions);
++      // errorTemplate and errorsWrapper are passed to jQuery as markup by design, so the
++      // `<`-guard used on classHandler and errorsContainer is not available to them. Drop
++      // them from the attribute layer instead: a DOM attribute must not choose what gets
++      // built into the page. Deleting the own property lets lookup fall through to the
++      // value set in JS, or to the default, so both remain configurable from code.
++      delete this.domOptions.errorTemplate;
++      delete this.domOptions.errorsWrapper;
+       if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
+       return this;
+     },
+@@ -942,7 +949,7 @@
        }
  
        if (null === this._focusedField) return null;
@@ -11,7 +48,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545ae
      },
      _destroyUI: function _destroyUI() {
        // Reset all event listeners
-@@ -1049,7 +1049,7 @@
+@@ -1049,7 +1056,7 @@
  
            this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
  
@@ -20,7 +57,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545ae
          }
  
          this._ui.$errorClassHandler.removeAttr('aria-describedby');
-@@ -1084,13 +1084,13 @@
+@@ -1084,13 +1091,13 @@
  
        this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
  
@@ -36,7 +73,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545ae
      },
      _removeError: function _removeError(name) {
        this._ui.$errorClassHandler.removeAttr('aria-describedby');
-@@ -1124,11 +1124,11 @@
+@@ -1124,11 +1131,11 @@
      // Determine which element will have `parsley-error` and `parsley-success` classes
      _manageClassHandler: function _manageClassHandler() {
        // Class handled could also be determined by function given in Parsley options
@@ -50,7 +87,7 @@ index 0f5718d83c8e465984a22c345b0c50ff4a65ff5b..e9ecdec34ffcb2fe75b6a4d30b6545ae
  
        if ('function' === typeof $handlerFunction) {
          var $handler = $handlerFunction.call(this, this); // If this function returned a valid existing DOM element, go for it
-@@ -1153,8 +1153,10 @@
+@@ -1153,8 +1160,10 @@
  
        if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
  
