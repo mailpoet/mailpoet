@@ -9,6 +9,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WooCommerce\TransactionalEmails;
 
@@ -94,6 +95,11 @@ class Settings {
 
   public function withTrackingEnabled() {
     $this->settings->set('tracking.level', 'partial');
+    return $this;
+  }
+
+  public function withSubscriberChoice(string $choice) {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, $choice);
     return $this;
   }
 
