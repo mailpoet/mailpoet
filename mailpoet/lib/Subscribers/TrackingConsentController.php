@@ -13,7 +13,22 @@ use MailPoet\Settings\TrackingConfig;
  * recording suppression — so they can never drift apart.
  */
 class TrackingConsentController {
-  const SETTING_TRACK_UNKNOWN = 'tracking.consent.track_unknown';
+  const SETTING_SUBSCRIBER_CHOICE = 'tracking.consent.subscriber_choice';
+
+  /** Track everyone, don't ask. Default: no recipient-facing controls anywhere. */
+  const CHOICE_TRACK_ALL = 'track_all';
+
+  /** Ask new subscribers. Everyone already on the list keeps being tracked. */
+  const CHOICE_ASK_NEW = 'ask_new';
+
+  /** Ask everyone. Nobody is tracked until they allow it. */
+  const CHOICE_ASK_ALL = 'ask_all';
+
+  const CHOICES = [
+    self::CHOICE_TRACK_ALL,
+    self::CHOICE_ASK_NEW,
+    self::CHOICE_ASK_ALL,
+  ];
 
   private SettingsController $settings;
 
@@ -53,16 +68,40 @@ class TrackingConsentController {
   }
 
   /**
+   * The site's "Subscriber choice" state. Anything unrecognised falls back to
+   * the default rather than to a stricter or looser state, so a corrupt value
+   * cannot silently change what recipients are shown.
+   */
+  public function getSubscriberChoice(): string {
+    $choice = (string)$this->settings->get(self::SETTING_SUBSCRIBER_CHOICE, self::CHOICE_TRACK_ALL);
+    return in_array($choice, self::CHOICES, true) ? $choice : self::CHOICE_TRACK_ALL;
+  }
+
+  /**
+   * Whether recipient-facing consent controls may be shown at all: the
+   * manage-subscription checkbox, and the auto-added form/checkout checkbox and
+   * footer opt-out link once those exist.
+   *
+   * Internal handling is deliberately NOT gated on this. Subscribers who are
+   * already denied stay untracked, and import/export and stats keep honouring
+   * consent, whatever the site has chosen here.
+   */
+  public function areSubscriberControlsVisible(): bool {
+    return $this->getSubscriberChoice() !== self::CHOICE_TRACK_ALL;
+  }
+
+  /**
    * Whether subscribers who have never been asked ('unknown' consent) may be
-   * treated as trackable. Default true (existing behaviour). When false (strict
-   * opt-in mode), only subscribers who explicitly granted consent are tracked.
+   * treated as trackable. True unless the site asks everyone, so existing lists
+   * keep today's behaviour until the site deliberately opts into strict consent.
    *
    * Background jobs that infer intent from missing engagement (inactive sweep,
-   * resend to non-openers, re-engagement) use this so that, in strict mode,
-   * untracked 'unknown' subscribers are excluded the same way 'denied' ones
-   * are — otherwise their frozen engagement would wrongly mark them disengaged.
+   * resend to non-openers, re-engagement) use this so that, when asking
+   * everyone, untracked 'unknown' subscribers are excluded the same way
+   * 'denied' ones are — otherwise their frozen engagement would wrongly mark
+   * them disengaged.
    */
   public function shouldTrackUnknownConsent(): bool {
-    return (bool)$this->settings->get(self::SETTING_TRACK_UNKNOWN, true);
+    return $this->getSubscriberChoice() !== self::CHOICE_ASK_ALL;
   }
 }

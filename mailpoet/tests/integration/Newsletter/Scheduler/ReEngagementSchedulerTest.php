@@ -158,7 +158,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
   public function testItDoesNotScheduleUnknownConsentSubscriberInStrictMode() {
     // Strict opt-in mode: an unknown-consent subscriber is not tracked, so their
     // frozen engagement must not make them eligible for re-engagement.
-    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
     $beforeCheckInterval = Carbon::now();
     $beforeCheckInterval->subMonths(10);
     $withinCheckInterval = Carbon::now();

@@ -26,8 +26,59 @@ class TrackingConsentControllerTest extends \MailPoetTest {
     // Default: existing sites keep tracking exactly as they do today.
     $this->assertTrue($controller->isTrackingAllowed($subscriber));
 
-    $settings->set('tracking.consent.track_unknown', false);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
     $this->assertFalse($controller->isTrackingAllowed($subscriber));
+  }
+
+  public function testItHidesSubscriberControlsByDefault() {
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+
+    verify($controller->getSubscriberChoice())->equals(TrackingConsentController::CHOICE_TRACK_ALL);
+    verify($controller->areSubscriberControlsVisible())->false();
+    verify($controller->shouldTrackUnknownConsent())->true();
+  }
+
+  public function testAskNewSubscribersShowsControlsButKeepsTrackingUnknown() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+    $subscriber = new SubscriberEntity(); // defaults to unknown
+
+    verify($controller->areSubscriberControlsVisible())->true();
+    verify($controller->shouldTrackUnknownConsent())->true();
+    verify($controller->isTrackingAllowed($subscriber))->true();
+  }
+
+  public function testAskEveryoneShowsControlsAndStopsTrackingUnknown() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+    $subscriber = new SubscriberEntity(); // defaults to unknown
+
+    verify($controller->areSubscriberControlsVisible())->true();
+    verify($controller->shouldTrackUnknownConsent())->false();
+    verify($controller->isTrackingAllowed($subscriber))->false();
+  }
+
+  public function testDeniedStaysUntrackedEvenWhenControlsAreHidden() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_TRACK_ALL);
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+
+    verify($controller->areSubscriberControlsVisible())->false();
+    verify($controller->isTrackingAllowed($subscriber))->false();
+  }
+
+  public function testAnUnrecognisedChoiceFallsBackToTrackingEveryone() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, 'nonsense');
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+
+    verify($controller->getSubscriberChoice())->equals(TrackingConsentController::CHOICE_TRACK_ALL);
+    verify($controller->areSubscriberControlsVisible())->false();
+    verify($controller->shouldTrackUnknownConsent())->true();
   }
 
   public function testGlobalTrackingOffWinsOverIndividualConsent() {

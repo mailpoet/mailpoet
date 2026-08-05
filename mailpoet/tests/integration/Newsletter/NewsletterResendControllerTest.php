@@ -83,7 +83,7 @@ class NewsletterResendControllerTest extends \MailPoetTest {
     // Strict opt-in mode: unknown-consent subscribers are not tracked, so they
     // must not be treated as non-openers. A second, consenting subscriber keeps
     // the resend non-empty.
-    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_TRACK_UNKNOWN, false);
+    $this->diContainer->get(SettingsController::class)->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
     $newsletter = $this->createSentNewsletter('Test Subject');
     $subscribers = $this->createSubscribers(2); // both unknown consent by default
     $subscribers[1]->setTrackingConsent(

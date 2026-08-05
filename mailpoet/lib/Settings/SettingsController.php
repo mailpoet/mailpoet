@@ -4,6 +4,7 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Subscribers\TrackingConsentController;
 
 class SettingsController {
 
@@ -80,7 +81,7 @@ class SettingsController {
         'tracking' => [
           'level' => TrackingConfig::LEVEL_FULL,
           'consent' => [
-            'track_unknown' => true,
+            'subscriber_choice' => TrackingConsentController::CHOICE_TRACK_ALL,
           ],
         ],
         'subscription' => [
