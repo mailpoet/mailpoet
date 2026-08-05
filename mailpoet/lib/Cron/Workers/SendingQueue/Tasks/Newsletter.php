@@ -152,17 +152,25 @@ class Newsletter {
     SubscriberEntity $subscriber,
     SendingQueueEntity $queue
   ): string {
+    // true = convert every hashed link, not only the shortcode ones.
     $content = $this->newsletterLinks->convertHashedLinksToShortcodesAndUrls(
       $content,
       $queue->getId(),
-      $convertAll = true
+      true
     );
 
+    // Matches the whole shortcode, arguments included, because a link shortcode
+    // may carry one: [link:action | name:value]. The (?!\/\/) guard mirrors the
+    // extractor in Shortcodes::extract() so text like [link://example.com] is
+    // left alone rather than resolved to nothing and dropped.
     return (string)preg_replace_callback(
-      '/\[link:(\w+)\]/',
+      '/\[link:(?!\/\/)(?<action>[^\]]+)\]/',
       function (array $matches) use ($newsletter, $subscriber, $queue): string {
+        // Pass the full shortcode, as Statistics\Track\Clicks::processUrl() does:
+        // processShortcodeAction() parses the brackets itself, and only sees the
+        // arguments when they are still attached.
         $url = $this->linkShortcodeCategory->processShortcodeAction(
-          $matches[1],
+          $matches[0],
           $newsletter,
           $subscriber,
           $queue
