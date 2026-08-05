@@ -26,6 +26,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\RuntimeException;
 use MailPoet\Segments\SegmentsRepository;
@@ -92,6 +93,8 @@ class Newsletter {
 
   private TrackingConsentController $trackingConsentController;
 
+  private LinkShortcodeCategory $linkShortcodeCategory;
+
   public function __construct(
     ?WPFunctions $wp = null,
     ?PostsTask $postsTask = null,
@@ -130,6 +133,45 @@ class Newsletter {
     $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
     $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
     $this->trackingConsentController = ContainerWrapper::getInstance()->get(TrackingConsentController::class);
+    $this->linkShortcodeCategory = ContainerWrapper::getInstance()->get(LinkShortcodeCategory::class);
+  }
+
+  /**
+   * Put real destinations back for a recipient we may not track.
+   *
+   * Restoring the saved link turns a plain URL back into itself, but a link
+   * shortcode back into raw `[link:...]` text: the shortcode pass deliberately
+   * leaves those alone while site tracking is on, because the click redirect is
+   * normally what resolves them. Since these recipients get no redirect, we
+   * resolve the shortcodes here with the same call the redirect would have
+   * made, so they land on exactly the same page.
+   */
+  private function untrackLinks(
+    string $content,
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue
+  ): string {
+    $content = $this->newsletterLinks->convertHashedLinksToShortcodesAndUrls(
+      $content,
+      $queue->getId(),
+      $convertAll = true
+    );
+
+    return (string)preg_replace_callback(
+      '/\[link:(\w+)\]/',
+      function (array $matches) use ($newsletter, $subscriber, $queue): string {
+        $url = $this->linkShortcodeCategory->processShortcodeAction(
+          $matches[1],
+          $newsletter,
+          $subscriber,
+          $queue
+        );
+        // An unresolvable shortcode would otherwise ship as literal text.
+        return $url ?? '';
+      },
+      $content
+    );
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
@@ -376,18 +418,20 @@ class Newsletter {
       $queue
     );
     if ($this->trackingEnabled) {
-      if (!$this->trackingConsentController->isTrackingAllowed($subscriber)) {
-        // CNIL/Garante: withdrawal must stop the reading operation on future
-        // emails, not merely the recording. Remove the pixel before it is
-        // given a real tracking URL below. Click links are still rewritten —
-        // Clicks::track suppresses their recording (see follow-up note).
+      if ($this->trackingConsentController->isTrackingAllowed($subscriber)) {
+        $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
+          $subscriber->getId(),
+          $queue->getId(),
+          $preparedNewsletter
+        );
+      } else {
+        // CNIL/Garante: withdrawal must stop the reading operation itself, not
+        // merely the recording of it. A tracked link still tells our server the
+        // recipient clicked, so these recipients get the plain destination
+        // instead of a redirect through us.
+        $preparedNewsletter = $this->untrackLinks($preparedNewsletter, $newsletter, $subscriber, $queue);
         $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
       }
-      $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
-        $subscriber->getId(),
-        $queue->getId(),
-        $preparedNewsletter
-      );
     }
     $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
     if ($newsletter->getWpPostId() !== null) {
