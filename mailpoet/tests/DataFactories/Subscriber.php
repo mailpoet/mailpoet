@@ -272,6 +272,15 @@ class Subscriber {
   }
 
   /**
+   * @param string $consent One of the SubscriberEntity::TRACKING_CONSENT_* values.
+   * @return $this
+   */
+  public function withTrackingConsent($consent) {
+    $this->data['tracking_consent'] = $consent;
+    return $this;
+  }
+
+  /**
    * @throws \Exception
    */
   public function create(): SubscriberEntity {
@@ -279,6 +288,7 @@ class Subscriber {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus($this->data['status']);
     $subscriber->setEmail($this->data['email']);
+    if (isset($this->data['tracking_consent'])) $subscriber->setTrackingConsent($this->data['tracking_consent']);
     if (isset($this->data['count_confirmations'])) $subscriber->setConfirmationsCount($this->data['count_confirmations']);
     if (isset($this->data['engagement_score'])) $subscriber->setEngagementScore($this->data['engagement_score']);
     if (isset($this->data['last_name'])) $subscriber->setLastName($this->data['last_name']);
