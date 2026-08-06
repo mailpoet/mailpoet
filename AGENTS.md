@@ -4,10 +4,14 @@
 
 MailPoet is a WordPress email marketing plugin that lets users create, send, and manage newsletters and automated emails from the WordPress dashboard. It integrates deeply with WordPress and WooCommerce.
 
-This is a **monorepo** containing:
+This repository (`mailpoet/mailpoet`) holds the free plugin in `mailpoet/`, plus the shared JS
+packages, build tooling, and dev environment used by both plugins.
 
-- `mailpoet/` -- The free plugin (main codebase)
-- `mailpoet-premium/` -- The premium plugin (extends the free version)
+The premium plugin lives in a **separate repository**. During setup
+it is cloned into `mailpoet-premium/` here, so both plugins share one working copy and one dev
+environment — but they remain two repositories with independent branches, commits, and PRs.
+`mailpoet-premium/` is gitignored by this repo, so premium changes never appear in its
+`git status`.
 
 **Tech Stack:** PHP 7.4+, WordPress, Doctrine ORM, React 18, TypeScript, SCSS, Webpack, `@wordpress/env` (dev), Docker + Codeception (tests), Mailpit (SMTP catcher), pnpm, Action Scheduler
 
@@ -26,7 +30,7 @@ This is a **monorepo** containing:
 │   ├── vendor-prefixed/         # Prefixed third-party deps (DO NOT EDIT)
 │   ├── RoboFile.php             # Plugin-level task runner
 │   └── do                       # Plugin-level CLI script
-├── mailpoet-premium/            # Premium plugin
+├── mailpoet-premium/            # Premium plugin (separate git repo — see its AGENTS.md)
 ├── packages/js/                 # Shared JS packages (pnpm workspaces)
 │   ├── components/              # @mailpoet/components
 │   └── eslint-config/           # @mailpoet/eslint-config
@@ -119,8 +123,7 @@ pnpm test:unit [--file=...]
 pnpm test:integration [--file=...]
 pnpm test:acceptance [--file=...]
 pnpm test:javascript
-pnpm test:unit:premium               # Premium variants
-pnpm test:integration:premium
+pnpm test:integration:premium        # Premium variants
 pnpm test:acceptance:premium
 pnpm test:install-deps               # Fresh composer install before testing
 ```
@@ -212,7 +215,7 @@ Tests use **Codeception** and run inside the `tests_env/` docker-compose stack (
 | Acceptance  | `*Cest.php`  | `tests/acceptance/`  | `pnpm test:acceptance --file=<path>`  |
 | JavaScript  | `*.spec.ts`  | `tests/javascript/`  | `pnpm test:javascript`                |
 
-All `pnpm test:*` scripts default to `--skip-deps` (matches the standard dev workflow). Use `pnpm test:install-deps` when deps actually need refreshing.
+The `pnpm test:*` scripts default to `--skip-deps` (matches the standard dev workflow); only `pnpm test:unit` omits the flag. Use `pnpm test:install-deps` when deps actually need refreshing.
 
 **Running tests from the repo root:**
 
@@ -221,11 +224,10 @@ pnpm test:integration --file=tests/integration/WP/EmojiTest.php
 pnpm test:acceptance --file=tests/acceptance/Misc/MailpoetMenuCest.php
 ```
 
-**Running premium tests** — use the premium aliases:
+**Running premium tests** — use the premium aliases. Premium has no unit suite; put isolated logic tests in the free plugin.
 
 ```bash
-pnpm test:unit:premium --file=tests/unit/Config/EnvTest.php
-pnpm test:integration:premium
+pnpm test:integration:premium --file=tests/integration/Config/EnvTest.php
 pnpm test:acceptance:premium
 ```
 
@@ -234,7 +236,7 @@ Or shell in and run the plugin-level `./do` directly:
 ```bash
 pnpm shell:test
 cd /wp-core/wp-content/plugins/mailpoet-premium
-./do test:unit --file=tests/unit/Config/EnvTest.php
+./do test:integration --file=tests/integration/Config/EnvTest.php
 ```
 
 When writing tests:
@@ -303,6 +305,7 @@ New features can be gated behind feature flags:
 - Create short-lived feature branches
 - Include the Linear issue ID in commit messages
 - Run `pnpm qa` and `pnpm qa:fix` before pushing
+- `mailpoet-premium/` is a **separate git repository** checked out inside this working copy. A change spanning both plugins needs its own branch and PR in each repo, released together. Run `git` from the directory you mean to commit in.
 
 ### Commit Message Format
 
@@ -429,18 +432,19 @@ WordPress exposes more contracts than class and function signatures. A change to
 
 Skills are progressively-revealed instructions loaded on demand.
 
-### `.claude/skills/`
+### `.ai/skills/` (also exposed as `.claude/skills/`, a symlink)
 
 - **`creating-pull-requests`** -- MUST use when creating PRs. Enforces draft PR creation and template compliance. Never run `gh pr create` directly.
-
-### `.ai/skills/`
-
-- `mailpoet-dev-cycle` -- Linting and code quality workflows. Use when fixing code style or following the development workflow.
-- `code-quality.md` -- ESLint, Stylelint, Prettier commands and conventions
-- `php-coding-standards.md` -- PHP lint, PHPCS, PHPStan commands, ruleset details, naming conventions
 - **`starting-branch`** -- MUST use when creating any new branch. Handles branch naming, Linear lookup, and branch creation. Never run `git switch -c` or `git checkout -b` directly.
-- `reviewing-code.md` -- Reviewing pull requests or local code changes. Use when asked to review a PR, review code, test changes, verify implementation quality, or do a code review.
-- `writing-changelog` -- Use when adding a changelog entry for user-facing changes. Guides through analyzing branch changes, picking the right type, and writing a user-friendly description.
+- `mailpoet-dev-cycle` -- Linting and code quality workflows. Contains `code-quality.md` (ESLint, Stylelint, Prettier) and `php-coding-standards.md` (PHP lint, PHPCS, PHPStan).
+- `reviewing-code` -- Reviewing pull requests or local code changes.
+- `writing-tests` -- Authoring tests: picking the type, naming, structure.
+- `running-tests` -- Invoking the test runner: single files, suites, premium variants, debug mode.
+- `debugging-failed-tests` -- Investigating a failing test (CI job URL or local output).
+- `writing-changelog` -- Adding a changelog entry for user-facing changes.
+- `mailpoet-beta-compat-test` -- Testing compatibility against a new WooCommerce or WordPress beta/RC.
+- `sql-collation-safety` -- Joins/comparisons of text columns across WP, WooCommerce, and MailPoet tables.
+- `sql-performance` -- Queries whose cost grows with subscribers, sent emails, or stats tables.
 
 ## Experimental: MCP Server for AI Agents
 
