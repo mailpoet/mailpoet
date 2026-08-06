@@ -30,7 +30,6 @@
     "test:integration": "cd mailpoet && ./do test:integration --skip-deps",
     "test:acceptance": "cd mailpoet && ./do test:acceptance --skip-deps",
     "test:javascript": "cd mailpoet && ./do test:javascript",
-    "test:unit:premium": "cd mailpoet-premium && ./do test:unit --skip-deps",
     "test:integration:premium": "cd mailpoet-premium && ./do test:integration --skip-deps",
     "test:acceptance:premium": "cd mailpoet-premium && ./do test:acceptance --skip-deps",
     "test:install-deps": "cd mailpoet && ./do test:integration",
