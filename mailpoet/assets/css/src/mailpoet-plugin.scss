@@ -22,8 +22,8 @@
 
 @import '../../../node_modules/select2/dist/css/select2';
 
-// @wordpress/components styles live in mailpoet-wp-components.css and are enqueued
-// as a dependency of mailpoet-plugin (see AssetsLoader) so they still load first.
+// @wordpress/components styles come from the core `wp-components` handle, which is a
+// dependency of mailpoet-plugin (see AssetsLoader) so they still load first.
 
 // WordPress Admin Theme Color Variables
 // Needed for the WordPress Admin color scheme support for @wordpress/components.
