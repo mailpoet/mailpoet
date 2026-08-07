@@ -78,6 +78,22 @@ h2 {
   box-sizing: border-box;
 }
 
+// Canvas elements (inputs, submit button, appender) get inline width: 100%
+// plus padding and border, so without border-box sizing they overflow the
+// form. WordPress's editor styles set box-sizing: inherit on canvas content
+// but no longer anchor border-box at the root, and the chain must start below
+// .mailpoet-form-background, whose inline content-box for popup and slide-in
+// forms is intentional (see FormStylingBackground).
+.block-editor-block-list__layout {
+  box-sizing: border-box;
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: inherit;
+  }
+}
+
 // Remove min-height so that lower values of input padding have visible effect in form editor
 .block-editor-block-list__layout .mailpoet_text,
 .block-editor-block-list__layout .mailpoet_textarea {
