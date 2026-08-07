@@ -34,7 +34,7 @@ That covers ~90% of typical traffic. The rest of this skill handles the long tai
 
 Times are rough; first run on a cold Docker stack pays an extra 1–2min for container build/pull.
 
-**Premium variants:** replace `test:unit` / `test:integration` / `test:acceptance` with `test:unit:premium` / `test:integration:premium` / `test:acceptance:premium`. Paths are relative to whichever plugin is being tested.
+**Premium variants:** replace `test:integration` / `test:acceptance` with `test:integration:premium` / `test:acceptance:premium`. Premium has no unit suite. Paths are relative to whichever plugin is being tested.
 
 **Single test method** (unit, integration, acceptance): append `:methodName` to the file path.
 
