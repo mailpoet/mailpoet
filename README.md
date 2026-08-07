@@ -116,7 +116,6 @@ pnpm test:integration          # Integration tests (tests_env)
 pnpm test:acceptance           # Acceptance tests with Selenium (tests_env)
 pnpm test:javascript           # Mocha JS tests
 
-pnpm test:unit:premium         # Premium unit tests
 pnpm test:integration:premium  # Premium integration tests
 pnpm test:acceptance:premium   # Premium acceptance tests
 
