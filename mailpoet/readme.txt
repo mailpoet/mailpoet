@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 5.35.0
+Stable tag: 5.35.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,14 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.35.0 - 2026-08-03 =
-* Added: Notice on the WordPress delete user screen explaining that the linked MailPoet subscriber is kept;
-* Added: Video embeds from YouTube, Vimeo, TikTok, Dailymotion and VideoPress in the new email editor;
-* Updated: Email editor packages to the latest versions;
-* Improved: Typing responsiveness in the new email editor canvas;
-* Fixed: Restore link tracking and open tracking on WordPress Playground preview sites;
-* Fixed: Rows of buttons that do not fit on one line now wrap instead of stretching the email past its content width;
-* Fixed: Full-width blocks now display full width in the new email editor canvas, matching the sent email;
-* Fixed: Crash when opening the typography styles panel for an element without typography styles.
+= 5.35.1 - 2026-08-10 =
+* Changed: The option for subscribers to opt out of email open and click tracking is now hidden unless you turn on the new Subscriber choice setting in Settings > Advanced;
+* Fixed: Links sent to subscribers who opted out of tracking are no longer rewritten to redirect through click tracking;
+* Fixed: Links whose address contains a personalisation shortcode now work for subscribers who opted out of open and click tracking;
+* Fixed: Visual issues in the MailPoet admin with WordPress 7.1.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

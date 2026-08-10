@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.35.1 - 2026-08-10 =
+* Changed: The option for subscribers to opt out of email open and click tracking is now hidden unless you turn on the new Subscriber choice setting in Settings > Advanced;
+* Fixed: Links sent to subscribers who opted out of tracking are no longer rewritten to redirect through click tracking;
+* Fixed: Links whose address contains a personalisation shortcode now work for subscribers who opted out of open and click tracking;
+* Fixed: Visual issues in the MailPoet admin with WordPress 7.1.
+
 = 5.35.0 - 2026-08-03 =
 * Added: Notice on the WordPress delete user screen explaining that the linked MailPoet subscriber is kept;
 * Added: Video embeds from YouTube, Vimeo, TikTok, Dailymotion and VideoPress in the new email editor;
