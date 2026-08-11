@@ -85,7 +85,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::makeEmpty(BehavioralSignals::class)
+      Stub::makeEmpty(BehavioralSignals::class),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -177,7 +178,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this)
+      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -265,7 +267,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this)
+      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -390,7 +393,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::makeEmpty(BehavioralSignals::class)
+      Stub::makeEmpty(BehavioralSignals::class),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -528,7 +532,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::makeEmpty(BehavioralSignals::class)
+      Stub::makeEmpty(BehavioralSignals::class),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -586,7 +591,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      Stub::makeEmpty(BehavioralSignals::class)
+      Stub::makeEmpty(BehavioralSignals::class),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -641,7 +647,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      Stub::makeEmpty(BehavioralSignals::class)
+      Stub::makeEmpty(BehavioralSignals::class),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -781,7 +788,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       $recaptchaValidator,
       $turnstileValidator,
-      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this)
+      Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -865,7 +873,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(['form_id' => 1, 'segments' => [1]]);
@@ -954,7 +963,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe(['form_id' => 1]);
@@ -1050,7 +1060,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1151,7 +1162,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1248,7 +1260,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1354,7 +1367,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1456,7 +1470,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1554,7 +1569,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([
@@ -1662,7 +1678,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $builtInCaptchaValidator,
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
-      $behavioralSignals
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
     );
 
     $result = $testee->subscribe([

@@ -335,6 +335,21 @@ export const blocksToFormBodyFactory = (
                 block.attributes.styles as unknown as InputBlockStyles,
               ),
             };
+          case 'mailpoet-form/tracking-consent':
+            // Maps onto the same checkbox shape the manage-subscription page
+            // uses, so the existing renderer and sanitiser apply unchanged.
+            // Never emit is_checked: consent has to be collected unticked.
+            return {
+              ...mapped,
+              type: 'checkbox',
+              id: 'tracking_consent',
+              name: 'Tracking consent',
+              params: {
+                ...mapped.params,
+                required: undefined,
+                values: [{ value: block.attributes.consentText }],
+              },
+            };
           case 'mailpoet-form/segment-select':
             return {
               ...mapped,

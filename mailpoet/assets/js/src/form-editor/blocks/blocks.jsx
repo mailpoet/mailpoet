@@ -12,6 +12,7 @@ import * as close from './close/close';
 import * as firstName from './first-name/first-name.jsx';
 import * as lastName from './last-name/last-name.jsx';
 import * as segmentSelect from './segment-select/segment-select.jsx';
+import * as trackingConsent from './tracking-consent/tracking-consent.jsx';
 import * as html from './html/html.jsx';
 import * as addCustomField from './add-custom-field/add-custom-field.jsx';
 import * as columns from './columns/columns.jsx';
@@ -70,6 +71,10 @@ export const initBlocks = () => {
     withFormBlockApiVersion(firstName.settings),
   );
   registerBlockType(lastName.name, withFormBlockApiVersion(lastName.settings));
+  registerBlockType(
+    trackingConsent.name,
+    withFormBlockApiVersion(trackingConsent.settings),
+  );
   registerBlockType(
     segmentSelect.name,
     withFormBlockApiVersion(segmentSelect.settings),
