@@ -48,6 +48,9 @@ class SubscriberEntity {
   const TRACKING_CONSENT_METHOD_FORM = 'form';
   const TRACKING_CONSENT_METHOD_ADMIN = 'admin';
   const TRACKING_CONSENT_METHOD_IMPORT = 'import';
+  const TRACKING_CONSENT_METHOD_WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
+  const TRACKING_CONSENT_METHOD_REGISTRATION = 'registration';
+  const TRACKING_CONSENT_METHOD_COMMENT = 'comment';
 
   public const OBSOLETE_LINK_TOKEN_LENGTH = 6;
   public const LINK_TOKEN_LENGTH = 32;
