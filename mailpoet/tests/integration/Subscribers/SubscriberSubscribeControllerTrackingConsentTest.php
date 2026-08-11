@@ -138,6 +138,74 @@ class SubscriberSubscribeControllerTrackingConsentTest extends \MailPoetTest {
     verify($subscriber->getTrackingConsent())->notEquals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
   }
 
+  /**
+   * Documents pre-existing MailPoet behaviour rather than asserting something
+   * desirable. With signup confirmation on (the default), SubscriberActions
+   * discards the whole submission for someone who is already subscribed, so a
+   * consent tick on a form never reaches them. Their route is the manage page.
+   * Not changed here: it affects every form field, not just consent.
+   */
+  public function testAnAlreadySubscribedPersonsFormConsentIsDroppedUnderConfirmation() {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $this->askEveryone();
+    $email = 'consent-already-subscribed' . rand(0, 100000) . '@example.com';
+    $existing = (new SubscriberFactory())->withEmail($email)->create();
+    $existing->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscribersRepository->flush();
+
+    $this->submit($email, '1');
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber($email)->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+  }
+
+  /**
+   * The deferred branch: confirmation on and the subscriber exists but is not
+   * subscribed yet, so the submission is stashed as unconfirmed_data and
+   * replayed at confirmation. A grant has to survive that gap.
+   */
+  public function testAGrantSurvivesTheDoubleOptInGap() {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $this->askEveryone();
+    $email = 'consent-unconfirmed' . rand(0, 100000) . '@example.com';
+    $existing = (new SubscriberFactory())->withEmail($email)->create();
+    $existing->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
+
+    $this->submit($email, '1');
+
+    $this->entityManager->clear();
+    $stashed = $this->getSubscriber($email)->getUnconfirmedData();
+    $this->assertIsString($stashed);
+    $decoded = json_decode($stashed, true);
+    $this->assertIsArray($decoded);
+    verify($decoded['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($decoded['tracking_consent_method'])->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+  }
+
+  /**
+   * And the matching guard for the same deferred branch: an existing
+   * subscriber who leaves the box unticked must not have a decline stashed,
+   * because it would be applied at confirmation and revoke an earlier choice.
+   */
+  public function testNoDeclineIsStashedForAnExistingSubscriber() {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $this->askEveryone();
+    $email = 'consent-nostash' . rand(0, 100000) . '@example.com';
+    $existing = (new SubscriberFactory())->withEmail($email)->create();
+    $existing->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->flush();
+
+    $this->submit($email, '0');
+
+    $this->entityManager->clear();
+    $stashed = $this->getSubscriber($email)->getUnconfirmedData();
+    $decoded = is_string($stashed) ? json_decode($stashed, true) : [];
+    $this->assertIsArray($decoded);
+    verify(isset($decoded['tracking_consent']))->false();
+  }
+
   private function submit(string $email, string $consent, array $extra = []): void {
     $segment = $this->segmentsRepository->createOrUpdate('Consent segment ' . rand(0, 100000));
     $form = $this->createForm($segment, true);
