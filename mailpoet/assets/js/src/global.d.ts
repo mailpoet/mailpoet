@@ -65,6 +65,8 @@ declare module '@woocommerce/settings' {
   interface MailPoetSettings {
     optinEnabled: boolean;
     defaultText: string;
+    trackingConsentEnabled: boolean;
+    trackingConsentText: string;
   }
 
   function getSetting(name: 'mailpoet_data'): MailPoetSettings;
