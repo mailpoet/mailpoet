@@ -2,9 +2,11 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Registration {
@@ -21,16 +23,21 @@ class Registration {
   /** @var SubscriberHandler */
   private $subscriberHandler;
 
+  /** @var TrackingConsentCapture */
+  private $trackingConsentCapture;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     SubscriberActions $subscriberActions,
-    SubscriberHandler $subscriberHandler
+    SubscriberHandler $subscriberHandler,
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->settings = $settings;
     $this->subscriberActions = $subscriberActions;
     $this->wp = $wp;
     $this->subscriberHandler = $subscriberHandler;
+    $this->trackingConsentCapture = $trackingConsentCapture;
   }
 
   public function extendForm() {
@@ -54,7 +61,7 @@ class Registration {
           name="mailpoet[subscribe_on_register]"
         />&nbsp;' . esc_html($label) . '
       </label>
-    </p>';
+    </p>' . $this->getTrackingConsentField();
 
     $filtered = $this->wp->applyFilters('mailpoet_register_form_extend', $form);
     $form = is_string($filtered) ? $filtered : $form;
@@ -75,7 +82,8 @@ class Registration {
       ) {
         $this->subscribeNewUser(
           $result['user_name'],
-          $result['user_email']
+          $result['user_email'],
+          !empty($mailpoetPost['tracking_consent'])
         );
       }
     }
@@ -97,22 +105,57 @@ class Registration {
     ) {
       $this->subscribeNewUser(
         $userLogin,
-        $userEmail
+        $userEmail,
+        !empty($mailpoetPost['tracking_consent'])
       );
     }
     return $errors;
   }
 
-  private function subscribeNewUser($name, $email) {
+  /**
+   * A second, independent checkbox. Consent to open and click tracking is never
+   * inferred from the "add me to your mailing list" box above it, and it is
+   * only shown on sites that chose to ask. Never pre-ticked: a pre-ticked
+   * consent box is not valid consent (CJEU Planet49).
+   */
+  private function getTrackingConsentField(): string {
+    if (!$this->trackingConsentCapture->isCaptureEnabled()) {
+      return '';
+    }
+    $copy = $this->trackingConsentCapture->getCopy(
+      SubscriberEntity::TRACKING_CONSENT_METHOD_REGISTRATION
+    );
+
+    return '<p class="registration-form-mailpoet-tracking-consent">
+      <label for="mailpoet_tracking_consent">
+        <input
+          type="checkbox"
+          id="mailpoet_tracking_consent"
+          value="1"
+          name="mailpoet[tracking_consent]"
+        />&nbsp;' . esc_html($copy) . '
+      </label>
+    </p>';
+  }
+
+  private function subscribeNewUser($name, $email, bool $trackingConsent = false) {
     $segmentIds = $this->settings->get(
       'subscribe.on_register.segments',
       []
     );
+    $method = SubscriberEntity::TRACKING_CONSENT_METHOD_REGISTRATION;
+    $consentData = $this->trackingConsentCapture->getConsentData(
+      $trackingConsent,
+      $method,
+      $this->trackingConsentCapture->getCopy($method),
+      $this->trackingConsentCapture->isNewSubscriber($email)
+    );
+
     $this->subscriberActions->subscribe(
-      [
+      array_merge([
         'email' => $email,
         'first_name' => $name,
-      ],
+      ], $consentData),
       $segmentIds
     );
 
