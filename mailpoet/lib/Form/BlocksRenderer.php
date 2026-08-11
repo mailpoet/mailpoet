@@ -19,6 +19,7 @@ use MailPoet\Form\Block\Select;
 use MailPoet\Form\Block\Submit;
 use MailPoet\Form\Block\Text;
 use MailPoet\Form\Block\Textarea;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\Util\Security;
 
 class BlocksRenderer {
@@ -70,6 +71,9 @@ class BlocksRenderer {
   /** @var Paragraph */
   private $paragraph;
 
+  /** @var TrackingConsentCapture */
+  private $trackingConsentCapture;
+
   public function __construct(
     Checkbox $checkbox,
     Close $close,
@@ -86,7 +90,8 @@ class BlocksRenderer {
     Select $select,
     Submit $submit,
     Text $text,
-    Textarea $textarea
+    Textarea $textarea,
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->checkbox = $checkbox;
     $this->close = $close;
@@ -104,10 +109,20 @@ class BlocksRenderer {
     $this->textarea = $textarea;
     $this->heading = $heading;
     $this->paragraph = $paragraph;
+    $this->trackingConsentCapture = $trackingConsentCapture;
   }
 
   public function renderBlock(array $block, array $formSettings, ?int $formId): string {
     $html = '';
+    // A tracking-consent checkbox is recipient-facing, so it only appears on
+    // sites that chose to ask. On a site that tracks everyone without asking,
+    // a block a merchant placed deliberately still renders nothing.
+    if (
+      ($block['id'] ?? null) === TrackingConsentCapture::FIELD_ID
+      && !$this->trackingConsentCapture->isCaptureEnabled()
+    ) {
+      return $html;
+    }
     if ($formId) {
       $formSettings['id'] = $formId;
     }
