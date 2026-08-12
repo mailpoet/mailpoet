@@ -37,6 +37,20 @@ export enum SubscriberActionTypes {
   SUBSCRIBER_LAST_SENDING_DATE = 'lastSendingDate',
   SUBSCRIBER_TAG = 'subscriberTag',
   SUBSCRIBED_VIA_FORM = 'subscribedViaForm',
+  TRACKING_CONSENT = 'trackingConsent',
+}
+
+/** Mirrors SubscriberEntity::TRACKING_CONSENT_* in the PHP side. */
+export enum TrackingConsentValues {
+  GRANTED = 'granted',
+  DENIED = 'denied',
+  UNKNOWN = 'unknown',
+}
+
+/** Mirrors DynamicSegmentFilterData::OPERATOR_IS / OPERATOR_IS_NOT. */
+export enum TrackingConsentOperators {
+  IS = 'is',
+  IS_NOT = 'isNot',
 }
 
 export enum SegmentConnectTypes {
