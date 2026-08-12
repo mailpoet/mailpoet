@@ -39,12 +39,17 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
         'unsubscribed' => 2,
         'bounced' => 1,
         'machineOpened' => 9,
+        // 2 of the 10 recipients could not be tracked, so open and click rates
+        // are based on the remaining 8.
+        'notTracked' => 2,
+        'trackedSent' => 8,
         'revenue' => null,
         'unsubscribeReasons' => [],
       ],
     ];
     $statistics = new NewsletterStatistics(4, 6, 2, 1, 10, null);
     $statistics->setMachineOpenCount(9);
+    $statistics->setNotTrackedCount(2);
     $newsletterStatsRepository = Stub::make(NewsletterStatisticsRepository::class, [
       'getTotalSentCount' => $stats['total_sent'],
       'getChildrenCount' => $stats['children_count'],
