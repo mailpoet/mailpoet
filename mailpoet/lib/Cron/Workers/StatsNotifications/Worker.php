@@ -153,9 +153,14 @@ class Worker {
   private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null, array $settings = []) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $totalSentCount = $statistics->getTotalSentCount() ?: 1;
-    $clicked = ($statistics->getClickCount() * 100) / $totalSentCount;
-    $opened = ($statistics->getOpenCount() * 100) / $totalSentCount;
-    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $totalSentCount;
+    // Opens and clicks are divided by the recipients we were allowed to
+    // measure; an opted-out subscriber can never register either. Unsubscribes
+    // and bounces keep the whole count, because those are recorded for
+    // opted-out people too. The ?: 1 guard is pre-existing.
+    $trackedSentCount = $statistics->getTrackedSentCount() ?: 1;
+    $clicked = ($statistics->getClickCount() * 100) / $trackedSentCount;
+    $opened = ($statistics->getOpenCount() * 100) / $trackedSentCount;
+    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $trackedSentCount;
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
     $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
     $subject = $sendingQueue->getNewsletterRenderedSubject();
@@ -189,6 +194,13 @@ class Worker {
       'machineOpened' => $machineOpened,
       'unsubscribed' => $unsubscribed,
       'bounced' => $bounced,
+      // The digest is a push, not a pull, so for many merchants this is the
+      // first place they will see the jumped open rate. The coverage line
+      // matters more here than anywhere else.
+      'notTracked' => $statistics->getNotTrackedCount(),
+      'trackingCoverage' => $statistics->getTotalSentCount() > 0
+        ? ($statistics->getTrackedSentCount() * 100) / $statistics->getTotalSentCount()
+        : 100,
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),
