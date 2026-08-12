@@ -22,6 +22,15 @@ class NewsletterStatistics {
   /** @var int */
   private $totalSentCount;
 
+  /**
+   * Recipients whose tracking consent, as it stood when we sent, did not let us
+   * measure them. Zero unless the site captures consent, which keeps every
+   * screen looking exactly as it does today for sites with no opt-outs.
+   *
+   * @var int
+   */
+  private $notTrackedCount = 0;
+
   /** @var WooCommerceRevenue|null */
   private $wooCommerceRevenue;
 
@@ -61,6 +70,27 @@ class NewsletterStatistics {
     return $this->totalSentCount;
   }
 
+  public function setNotTrackedCount(int $notTrackedCount): void {
+    $this->notTrackedCount = $notTrackedCount;
+  }
+
+  public function getNotTrackedCount(): int {
+    return $this->notTrackedCount;
+  }
+
+  /**
+   * The denominator for open and click rates: the recipients we were allowed
+   * to measure.
+   *
+   * Clamped at zero because the two counters have different writers —
+   * count_processed is recomputed from the database on every batch, while
+   * statistics_newsletters rows are written even for a failed send — so they
+   * can genuinely drift apart.
+   */
+  public function getTrackedSentCount(): int {
+    return max(0, $this->totalSentCount - $this->notTrackedCount);
+  }
+
   public function getWooCommerceRevenue(): ?WooCommerceRevenue {
     return $this->wooCommerceRevenue;
   }
@@ -80,6 +110,11 @@ class NewsletterStatistics {
       'machineOpened' => $this->machineOpenCount,
       'unsubscribed' => $this->unsubscribeCount,
       'bounced' => $this->bounceCount,
+      // Deliberately inside asArray() rather than beside it: MailPoet Premium
+      // re-emits this array verbatim, so keeping the new keys here is what
+      // makes tracked-only rates a free-plugin-only change.
+      'notTracked' => $this->notTrackedCount,
+      'trackedSent' => $this->getTrackedSentCount(),
       'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
     ];
   }
