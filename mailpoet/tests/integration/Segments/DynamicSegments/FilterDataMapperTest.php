@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
@@ -16,6 +17,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTrackingConsent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
@@ -871,6 +873,88 @@ class FilterDataMapperTest extends \MailPoetTest {
       'action' => SubscriberSubscribedViaForm::TYPE,
       'form_ids' => ['1'],
       'operator' => 'not a valid operator',
+    ]]]);
+  }
+
+  public function testItMapsSubscriberTrackingConsent(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTrackingConsent::TYPE,
+      'value' => SubscriberEntity::TRACKING_CONSENT_DENIED,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS,
+    ]]]);
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($filter->getAction())->equals(SubscriberTrackingConsent::TYPE);
+    verify($filter->getData())->equals([
+      'value' => SubscriberEntity::TRACKING_CONSENT_DENIED,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItMapsSubscriberTrackingConsentWithIsNotOperator(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTrackingConsent::TYPE,
+      'value' => SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS_NOT,
+    ]]]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getData())->equals([
+      'value' => SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS_NOT,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksTrackingConsentValueIsPresent(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing valid tracking consent value');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTrackingConsent::TYPE,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS,
+    ]]]);
+  }
+
+  /**
+   * @dataProvider dataForTestItRejectsTrackingConsentValuesOutsideTheThreeStates
+   */
+  public function testItRejectsTrackingConsentValuesOutsideTheThreeStates($value): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTrackingConsent::TYPE,
+      'value' => $value,
+      'operator' => DynamicSegmentFilterData::OPERATOR_IS,
+    ]]]);
+  }
+
+  public function dataForTestItRejectsTrackingConsentValuesOutsideTheThreeStates(): array {
+    return [
+      'uppercase' => ['GRANTED'],
+      'sql injection attempt' => ["granted'; DROP TABLE mp_subscribers; --"],
+      'empty string' => [''],
+      'unrelated word' => ['maybe'],
+      'not a string' => [1],
+    ];
+  }
+
+  public function testItChecksTrackingConsentOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->expectExceptionMessage('Missing valid operator');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTrackingConsent::TYPE,
+      'value' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
     ]]]);
   }
 
