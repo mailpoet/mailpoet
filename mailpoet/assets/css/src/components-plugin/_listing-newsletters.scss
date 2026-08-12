@@ -330,6 +330,13 @@ h1.title.mailpoet-newsletter-listing-heading {
   white-space: nowrap;
 }
 
+// The explanation is two sentences, and .mailpoet-tooltip sets nowrap for the
+// short one-liners it was built for, so opt back into wrapping here.
+.mailpoet-listing-stats-coverage-tooltip {
+  max-width: 260px;
+  white-space: normal;
+}
+
 .mailpoet-share-email-modal.components-modal__frame {
   max-width: 640px;
   width: calc(100vw - 64px);

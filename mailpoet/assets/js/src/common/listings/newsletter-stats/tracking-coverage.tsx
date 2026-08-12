@@ -77,7 +77,7 @@ export function TrackingCoverage({
         )}
       </span>
       <Tooltip place="top" id={tooltipId}>
-        <div className="mailpoet-listing-stats-tooltip-content">
+        <div className="mailpoet-listing-stats-tooltip-content mailpoet-listing-stats-coverage-tooltip">
           {getTrackingCoverageTooltipText(totalSent, notTracked)}
         </div>
       </Tooltip>
