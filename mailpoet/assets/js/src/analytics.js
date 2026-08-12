@@ -84,6 +84,8 @@ export function mapFilterType(filter) {
         return 'email';
       case 'subscribedViaForm':
         return 'subscribed via form';
+      case 'trackingConsent':
+        return 'tracking consent';
       default:
         return '';
     }

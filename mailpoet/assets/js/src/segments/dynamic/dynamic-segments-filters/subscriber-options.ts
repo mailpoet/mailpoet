@@ -79,6 +79,11 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.TRACKING_CONSENT,
+    label: MailPoet.I18n.t('trackingConsent'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.WORDPRESS_ROLE,
     label: MailPoet.I18n.t('segmentsSubscriber'),
     group: SegmentTypes.WordPressRole,
