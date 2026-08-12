@@ -41,6 +41,11 @@ class OverviewStatisticsController {
     $previousEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore(), $query->getVersionId());
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
+      // Recipients we were allowed to measure, and the ones we were not.
+      // Open and click rates divide by trackedSent; sent stays whole so the
+      // "emails sent" figure keeps meaning what it says.
+      'trackedSent' => ['current' => 0, 'previous' => 0],
+      'notTracked' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
       'clicked' => ['current' => 0, 'previous' => 0],
       'orders' => ['current' => 0, 'previous' => 0],
@@ -67,6 +72,8 @@ class OverviewStatisticsController {
     );
     foreach ($currentStatistics as $newsletterId => $statistic) {
       $data['sent']['current'] += $statistic->getTotalSentCount();
+      $data['trackedSent']['current'] += $statistic->getTrackedSentCount();
+      $data['notTracked']['current'] += $statistic->getNotTrackedCount();
       $data['opened']['current'] += $statistic->getOpenCount();
       $data['clicked']['current'] += $statistic->getClickCount();
       $data['unsubscribed']['current'] += $statistic->getUnsubscribeCount();
@@ -77,6 +84,8 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['name'] = $newsletter ? $newsletter->getSubject() : '';
       $data['emails'][$newsletterId]['sent']['current'] = $statistic->getTotalSentCount();
       $data['emails'][$newsletterId]['sent']['previous'] = 0;
+      $data['emails'][$newsletterId]['trackedSent'] = $statistic->getTrackedSentCount();
+      $data['emails'][$newsletterId]['notTracked'] = $statistic->getNotTrackedCount();
       $data['emails'][$newsletterId]['opened'] = $statistic->getOpenCount();
       $data['emails'][$newsletterId]['clicked'] = $statistic->getClickCount();
       $data['emails'][$newsletterId]['unsubscribed'] = $statistic->getUnsubscribeCount();
@@ -96,6 +105,8 @@ class OverviewStatisticsController {
 
     foreach ($previousStatistics as $newsletterId => $statistic) {
       $data['sent']['previous'] += $statistic->getTotalSentCount();
+      $data['trackedSent']['previous'] += $statistic->getTrackedSentCount();
+      $data['notTracked']['previous'] += $statistic->getNotTrackedCount();
       $data['opened']['previous'] += $statistic->getOpenCount();
       $data['clicked']['previous'] += $statistic->getClickCount();
       $data['unsubscribed']['previous'] += $statistic->getUnsubscribeCount();

@@ -18,11 +18,11 @@ const percentageFormatter = Intl.NumberFormat(locale.toString(), {
 
 export function transformEmailsToRows(emails: EmailStats[]) {
   return emails.map((email) => {
-    // Shows the percentage of clicked emails compared to the number of sent emails
-    const clickedPercentage = calculatePercentage(
-      email.clicked,
-      email.sent.current,
-    );
+    // Open and click rates are based on the recipients we were allowed to
+    // measure, not on everyone we sent to. Older payloads carry no
+    // trackedSent, so fall back to the full count.
+    const trackedSent = email.trackedSent ?? email.sent.current;
+    const clickedPercentage = calculatePercentage(email.clicked, trackedSent);
 
     const rows = [
       {
@@ -67,9 +67,9 @@ export function transformEmailsToRows(emails: EmailStats[]) {
           <Cell
             value={email.opened}
             subValue={
-              // Shows the percentage of opened emails compared to the number of sent emails
+              // Percentage of the recipients we could measure who opened.
               percentageFormatter.format(
-                calculatePercentage(email.opened, email.sent.current) / 100,
+                calculatePercentage(email.opened, trackedSent) / 100,
               )
             }
           />

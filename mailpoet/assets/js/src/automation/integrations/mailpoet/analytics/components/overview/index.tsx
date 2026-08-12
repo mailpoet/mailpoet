@@ -26,12 +26,38 @@ function getEmailPercentage(
   }
 
   const data = overview.data[type] ?? null;
-  const sent = overview.data?.sent ?? null;
-  if (!data || !sent || !data[period] || !sent[period]) {
+  // Divide by the recipients we were allowed to measure. An opted-out
+  // subscriber can never register an open or a click, so counting them only
+  // drags the rate down. Older payloads have no trackedSent, so fall back.
+  const base = overview.data?.trackedSent ?? overview.data?.sent ?? null;
+  if (!data || !base || !data[period] || !base[period]) {
     return 0;
   }
 
-  return (data[period] * 100) / sent[period] / 100;
+  return (data[period] * 100) / base[period] / 100;
+}
+
+/**
+ * How much of the audience the rates above rest on. Clamped to 0-100 because
+ * the sent counter and the per-recipient rows have different writers and can
+ * drift apart.
+ */
+function getTrackingCoverage(): number | undefined {
+  const overview = select(storeName).getSection('overview') as OverviewSection;
+  if (overview.data === undefined) {
+    return undefined;
+  }
+  const sent = overview.data.sent?.current ?? 0;
+  const tracked = overview.data.trackedSent?.current ?? sent;
+  if (sent <= 0) {
+    return 0;
+  }
+  return Math.min(1, tracked / sent);
+}
+
+function getNotTrackedCount(): number {
+  const overview = select(storeName).getSection('overview') as OverviewSection;
+  return overview.data?.notTracked?.current ?? 0;
 }
 
 function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
@@ -109,6 +135,17 @@ export function Overview(): JSX.Element | null {
         delta={Number(getEmailDelta('clicked').toFixed(2))}
       />,
     );
+    // Only when something is untracked, so an automation with no opted-out
+    // recipients looks exactly as it does today.
+    if (getNotTrackedCount() > 0) {
+      items.push(
+        <SummaryNumber
+          key="overview-tracking-coverage"
+          label={__('Tracking coverage', 'mailpoet')}
+          value={percentageFormatter.format(getTrackingCoverage())}
+        />,
+      );
+    }
   }
   if (overview.data !== undefined && MailPoet.isWoocommerceActive) {
     items.push(

@@ -16,6 +16,10 @@ export type EmailStats = {
   name: string;
   previewUrl: string;
   sent: CurrentAndPrevious;
+  // Recipients we were allowed to measure, and the ones we were not. Open and
+  // click rates divide by trackedSent; sent stays whole.
+  trackedSent?: number;
+  notTracked?: number;
   opened: number;
   clicked: number;
   orders: number;
@@ -25,6 +29,8 @@ export type EmailStats = {
 };
 
 type OverviewSectionData = SectionData & {
+  trackedSent?: CurrentAndPrevious;
+  notTracked?: CurrentAndPrevious;
   opened: CurrentAndPrevious;
   clicked: CurrentAndPrevious;
   orders: CurrentAndPrevious;
