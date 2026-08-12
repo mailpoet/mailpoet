@@ -24,6 +24,10 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       $output = $this->renderer->render($template, $this->campaignContext(37, 92.6));
       verify($output)->stringContainsString('37');
       verify($output)->stringContainsString('not tracked');
+      // The coverage line is built with Twig's |replace, not sprintf, so a
+      // doubled %% would print literally. Caught exactly that once.
+      verify($output)->stringContainsString('92.6%');
+      verify($output)->stringNotContainsString('%%');
     }
   }
 
@@ -44,6 +48,8 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       $output = $this->renderer->render($template, $this->automatedContext(12, 88.0));
       verify($output)->stringContainsString('12');
       verify($output)->stringContainsString('not tracked');
+      verify($output)->stringContainsString('88.0%');
+      verify($output)->stringNotContainsString('%%');
     }
   }
 
