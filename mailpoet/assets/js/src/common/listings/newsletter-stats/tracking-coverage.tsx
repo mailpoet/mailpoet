@@ -3,12 +3,17 @@ import { MailPoet } from 'mailpoet';
 import { Tooltip } from '../../tooltip/tooltip';
 
 /**
- * How much of a campaign's audience the open and click rates actually rest on.
- *
- * Clamped to 0-100: count_processed and the per-recipient statistics rows have
- * different writers, so on a site where they have drifted the raw ratio can
- * land outside that range.
+ * count_processed and the per-recipient statistics rows have different writers
+ * — a failed send writes a statistics row without bumping count_processed — so
+ * the two can genuinely drift. Bound the untracked count to the audience it is
+ * describing, so the percentage and the tooltip stay consistent instead of
+ * reading "3 of 1 recipients are not tracked" next to "0% tracked".
  */
+function getBoundedNotTracked(totalSent: number, notTracked: number): number {
+  return Math.min(Math.max(0, totalSent), Math.max(0, notTracked));
+}
+
+/** How much of a campaign's audience the open and click rates rest on. */
 export function getTrackingCoveragePercentage(
   totalSent: number,
   notTracked: number,
@@ -16,8 +21,8 @@ export function getTrackingCoveragePercentage(
   if (totalSent <= 0) {
     return 0;
   }
-  const tracked = Math.max(0, totalSent - notTracked);
-  return Math.min(100, (tracked * 100) / totalSent);
+  const tracked = totalSent - getBoundedNotTracked(totalSent, notTracked);
+  return (tracked * 100) / totalSent;
 }
 
 /**
@@ -29,14 +34,15 @@ export function getTrackingCoverageTooltipText(
   totalSent: number,
   notTracked: number,
 ): string {
-  const tracked = Math.max(0, totalSent - notTracked);
+  const boundedNotTracked = getBoundedNotTracked(totalSent, notTracked);
+  const tracked = Math.max(0, totalSent - boundedNotTracked);
   return sprintf(
     /* translators: %1$s is the number of recipients not tracked, %2$s the total number of recipients, %3$s the number of recipients that were tracked. */
     __(
       '%1$s of %2$s recipients are not tracked, because of their email tracking consent. Open and click rates are based on the %3$s recipients we were able to measure.',
       'mailpoet',
     ),
-    notTracked.toLocaleString(),
+    boundedNotTracked.toLocaleString(),
     totalSent.toLocaleString(),
     tracked.toLocaleString(),
   );
