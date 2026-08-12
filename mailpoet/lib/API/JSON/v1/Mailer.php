@@ -31,6 +31,13 @@ class Mailer extends APIEndpoint {
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'methods' => [
+      // `send` is the backend of the Settings "test this sending method" flow: it takes a full
+      // sending-method configuration and connects out with it. That is a Settings operation, so it
+      // uses the same capability as the Settings screen. The read-only and resume methods stay on
+      // the global capability.
+      'send' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+    ],
   ];
 
   public function __construct(
