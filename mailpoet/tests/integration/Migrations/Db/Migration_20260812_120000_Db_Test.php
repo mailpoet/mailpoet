@@ -46,6 +46,7 @@ class Migration_20260812_120000_Db_Test extends \MailPoetTest {
       "SELECT tracking_allowed FROM `{$this->statisticsTable}` WHERE id = ?",
       [$rowId]
     );
+    $this->assertIsNumeric($trackingAllowed);
     verify((int)$trackingAllowed)->equals(1);
   }
 

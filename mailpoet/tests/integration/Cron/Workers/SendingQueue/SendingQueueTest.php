@@ -1827,6 +1827,7 @@ class SendingQueueTest extends \MailPoetTest {
       [$this->newsletter->getId(), $subscriber->getId()]
     );
     $this->assertNotFalse($value, 'No statistics_newsletters row was written for this recipient.');
+    $this->assertIsNumeric($value);
     return (int)$value;
   }
 

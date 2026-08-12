@@ -38,14 +38,32 @@ class StatisticsNewsletters {
     return $this;
   }
 
+  /** @return $this */
+  public function withTrackingAllowed(bool $trackingAllowed) {
+    $this->data['trackingAllowed'] = $trackingAllowed;
+    return $this;
+  }
+
+  /**
+   * Attach the row to a specific queue rather than the newsletter's latest one.
+   *
+   * @return $this
+   */
+  public function withQueue(SendingQueueEntity $queue) {
+    $this->data['queue'] = $queue;
+    return $this;
+  }
+
   public function create(): StatisticsNewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $queue = $this->newsletter->getLatestQueue();
+    $queue = $this->data['queue'] ?? $this->newsletter->getLatestQueue();
     Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsNewsletterEntity(
       $this->newsletter,
       $queue,
-      $this->subscriber
+      $this->subscriber,
+      null,
+      $this->data['trackingAllowed'] ?? true
     );
     if (isset($this->data['sentAt'])) {
       $entity->setSentAt($this->data['sentAt']);

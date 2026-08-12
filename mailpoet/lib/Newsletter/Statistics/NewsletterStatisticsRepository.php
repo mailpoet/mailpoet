@@ -62,6 +62,7 @@ class NewsletterStatisticsRepository extends Repository {
       $this->getWooCommerceRevenue($newsletter)
     );
     $stats->setMachineOpenCount($this->getStatisticsMachineOpenCount($newsletter));
+    $stats->setNotTrackedCount($this->getNotTrackedCount($newsletter));
     return $stats;
   }
 
@@ -83,7 +84,13 @@ class NewsletterStatisticsRepository extends Repository {
     ]
   ): array {
 
-    $totalSentCounts = in_array('totals', $include, true) ? $this->getTotalSentCounts($newsletters, $from, $to) : [];
+    $includeTotals = in_array('totals', $include, true);
+    $totalSentCounts = $includeTotals ? $this->getTotalSentCounts($newsletters, $from, $to) : [];
+    // Tied to 'totals' rather than being its own include member on purpose:
+    // getTrackedSentCount() subtracts one from the other, so a caller that got
+    // the sent count without the untracked count would silently be told every
+    // recipient was tracked.
+    $notTrackedCounts = $includeTotals ? $this->getNotTrackedCounts($newsletters, $from, $to) : [];
     $clickCounts = in_array(StatisticsClickEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsClickEntity::class, $newsletters, $from, $to) : [];
     $openCounts = in_array(StatisticsOpenEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsOpenEntity::class, $newsletters, $from, $to) : [];
     $unsubscribeCounts = in_array(StatisticsUnsubscribeEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, $newsletters, $from, $to) : [];
@@ -101,12 +108,18 @@ class NewsletterStatisticsRepository extends Repository {
         $totalSentCounts[$id] ?? 0,
         $wooCommerceRevenues[$id] ?? null
       );
+      $statistics[$id]->setNotTrackedCount($notTrackedCounts[$id] ?? 0);
     }
     return $statistics;
   }
 
   public function getTotalSentCount(NewsletterEntity $newsletter): int {
     $counts = $this->getTotalSentCounts([$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
+  }
+
+  public function getNotTrackedCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getNotTrackedCounts([$newsletter]);
     return $counts[$newsletter->getId()] ?? 0;
   }
 
@@ -224,6 +237,50 @@ class NewsletterStatisticsRepository extends Repository {
 
     $results = $query->getQuery()
       ->getResult();
+
+    $counts = [];
+    foreach ($results ?: [] as $result) {
+      $counts[(int)$result['id']] = (int)$result['cnt'];
+    }
+    return $counts;
+  }
+
+  /**
+   * Recipients we were not allowed to measure, per newsletter.
+   *
+   * Filtered over exactly the same queues getTotalSentCounts() sums — completed
+   * tasks only, same created-at window — because the two numbers are subtracted
+   * from one another. Counting rows from a queue outside that set would make
+   * the subtraction meaningless and could drive the result negative.
+   */
+  private function getNotTrackedCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
+    $query = $this->entityManager
+      ->createQueryBuilder()
+      ->select('IDENTITY(stats.newsletter) AS id, COUNT(stats.id) AS cnt')
+      ->from(StatisticsNewsletterEntity::class, 'stats')
+      ->join('stats.queue', 'q')
+      ->join('q.task', 't')
+      ->where('t.status = :status')
+      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->andWhere('stats.newsletter IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
+      ->andWhere('stats.trackingAllowed = :trackingAllowed')
+      ->setParameter('trackingAllowed', false)
+      ->groupBy('stats.newsletter');
+
+    if ($from && $to) {
+      $query->andWhere('q.createdAt BETWEEN :from AND :to')
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    } elseif ($from && $to === null) {
+      $query->andWhere('q.createdAt >= :from')
+        ->setParameter('from', $from);
+    } elseif ($from === null && $to) {
+      $query->andWhere('q.createdAt <= :to')
+        ->setParameter('to', $to);
+    }
+
+    $results = $query->getQuery()->getResult();
 
     $counts = [];
     foreach ($results ?: [] as $result) {
