@@ -25,6 +25,7 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -99,6 +100,9 @@ class SendingQueue {
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
 
+  /** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -117,6 +121,7 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
+    TrackingConsentController $trackingConsentController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false
   ) {
@@ -139,6 +144,7 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->trackingConsentController = $trackingConsentController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
   }
 
@@ -465,6 +471,11 @@ class SendingQueue {
         'newsletter_id' => $newsletter->getId(),
         'subscriber_id' => $subscriber->getId(),
         'queue_id' => $sendingQueueEntity->getId(),
+        // Snapshot of "were we allowed to measure this person" at send time, so
+        // open and click rates can be divided by the recipients we could
+        // actually track. Consent only — the site-wide tracking switch is
+        // deliberately excluded, see TrackingConsentController.
+        'tracking_allowed' => $this->trackingConsentController->isConsentGivenForTracking($subscriber),
       ];
       if ($processingMethod === 'individual') {
         $this->sendNewsletter(

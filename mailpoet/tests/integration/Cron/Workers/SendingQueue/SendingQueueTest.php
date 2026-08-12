@@ -24,6 +24,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -47,6 +48,7 @@ use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -225,7 +227,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     try {
       $sendingQueueWorker->process();
@@ -264,7 +267,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -315,7 +319,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -359,7 +364,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     $sendingQueueWorker->process();
   }
@@ -667,7 +673,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1383,7 +1390,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class)
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1748,6 +1756,80 @@ class SendingQueueTest extends \MailPoetTest {
     return $subscriber;
   }
 
+  /**
+   * The guard against risk 7 in the plan: if the worker is never wired to write
+   * the flag, everything still compiles, the column stays all-1s, and the
+   * feature does nothing while looking done. These assert on the persisted row,
+   * not on a mock call.
+   */
+  public function testItStampsTrackingAllowedOnTheSentRowFromConsent() {
+    $granted = $this->createSubscriber('granted@example.com', 'Granted', 'Person', [$this->segment]);
+    $granted->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $denied = $this->createSubscriber('denied@example.com', 'Denied', 'Person', [$this->segment]);
+    $denied->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      [(int)$granted->getId(), (int)$denied->getId()]
+    );
+
+    $this->sendingQueueWorker->process();
+
+    verify($this->getStoredTrackingAllowed($granted))->equals(1);
+    verify($this->getStoredTrackingAllowed($denied))->equals(0);
+  }
+
+  public function testItStampsUnknownConsentAccordingToTheSubscriberChoiceSetting() {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $unknown = $this->createSubscriber('unknown@example.com', 'Unknown', 'Person', [$this->segment]);
+    $unknown->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    $this->entityManager->flush();
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [(int)$unknown->getId()]);
+
+    $this->sendingQueueWorker->process();
+
+    verify($this->getStoredTrackingAllowed($unknown))->equals(0);
+  }
+
+  public function testItStampsUnknownConsentAsTrackedWhenOnlyNewSubscribersAreAsked() {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    $unknown = $this->createSubscriber('unknown-asknew@example.com', 'Unknown', 'Person', [$this->segment]);
+    $unknown->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    $this->entityManager->flush();
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [(int)$unknown->getId()]);
+
+    $this->sendingQueueWorker->process();
+
+    verify($this->getStoredTrackingAllowed($unknown))->equals(1);
+  }
+
+  /**
+   * The global switch must NOT be baked into the stored row — otherwise every
+   * campaign sent while site-wide tracking was off would be frozen at 0%
+   * coverage for good, even after the merchant turns tracking back on.
+   */
+  public function testItStampsConsentEvenWhenSiteWideTrackingIsOff() {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+    $granted = $this->createSubscriber('granted-notracking@example.com', 'Granted', 'Person', [$this->segment]);
+    $granted->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [(int)$granted->getId()]);
+
+    $this->sendingQueueWorker->process();
+
+    verify($this->getStoredTrackingAllowed($granted))->equals(1);
+  }
+
+  private function getStoredTrackingAllowed(SubscriberEntity $subscriber): int {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $value = $this->entityManager->getConnection()->fetchOne(
+      "SELECT tracking_allowed FROM `{$table}` WHERE newsletter_id = ? AND subscriber_id = ?",
+      [$this->newsletter->getId(), $subscriber->getId()]
+    );
+    $this->assertNotFalse($value, 'No statistics_newsletters row was written for this recipient.');
+    return (int)$value;
+  }
+
   private function createSegment(string $name, string $type): SegmentEntity {
     $segment = new SegmentEntity($name, $type, 'Description');
     $this->entityManager->persist($segment);
@@ -1801,6 +1883,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
+      $this->diContainer->get(TrackingConsentController::class),
     );
   }
 

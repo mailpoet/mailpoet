@@ -31,7 +31,10 @@ class StatisticsNewslettersRepository extends Repository {
         }
 
         $sentAt = Carbon::now()->millisecond(0);
-        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt);
+        // A missing key means "tracked", matching the column default, so any
+        // caller that does not know about consent keeps writing rows as before.
+        $trackingAllowed = !array_key_exists('tracking_allowed', $value) || (bool)$value['tracking_allowed'];
+        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt, $trackingAllowed);
 
         $this->entityManager->persist($entity);
         $entities[] = $entity;
