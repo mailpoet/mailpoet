@@ -90,4 +90,41 @@ class TrackingConsentControllerTest extends \MailPoetTest {
 
     $this->assertFalse($controller->isTrackingAllowed($subscriber));
   }
+
+  /**
+   * The deliberate split between the two methods. isConsentGivenForTracking()
+   * answers "did this person allow it?", which is what we stamp on a sent row;
+   * isTrackingAllowed() folds in the site-wide switch, which must never be
+   * baked into stored history — a site that turns tracking off for a month and
+   * back on would otherwise freeze that month's campaigns at 0% coverage.
+   */
+  public function testConsentOnlyCheckIgnoresTheGlobalTrackingSwitch() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+
+    verify($controller->isTrackingAllowed($subscriber))->false();
+    verify($controller->isConsentGivenForTracking($subscriber))->true();
+  }
+
+  public function testConsentOnlyCheckFollowsTheSubscriberChoiceForUnknown() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $controller = $this->diContainer->get(TrackingConsentController::class);
+    $unknown = new SubscriberEntity(); // defaults to unknown
+    $denied = new SubscriberEntity();
+    $denied->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_TRACK_ALL);
+    verify($controller->isConsentGivenForTracking($unknown))->true();
+    verify($controller->isConsentGivenForTracking($denied))->false();
+
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    verify($controller->isConsentGivenForTracking($unknown))->true();
+
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    verify($controller->isConsentGivenForTracking($unknown))->false();
+    verify($controller->isConsentGivenForTracking($denied))->false();
+  }
 }

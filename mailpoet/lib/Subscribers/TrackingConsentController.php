@@ -49,6 +49,22 @@ class TrackingConsentController {
       return false;
     }
 
+    return $this->isConsentGivenForTracking($subscriber);
+  }
+
+  /**
+   * The consent half of isTrackingAllowed(), without the site-wide switch.
+   *
+   * Stats stamp this on every sent row, so a campaign's tracking coverage is
+   * fixed the moment it is sent. The global switch is deliberately left out:
+   * it is a current site setting, not a fact about the send, so folding it in
+   * would freeze every campaign sent while tracking was off at 0% coverage for
+   * good, even after the merchant turns tracking back on.
+   *
+   * Callers deciding whether to track someone *right now* want
+   * isTrackingAllowed() instead.
+   */
+  public function isConsentGivenForTracking(SubscriberEntity $subscriber): bool {
     switch ($subscriber->getTrackingConsent()) {
       case SubscriberEntity::TRACKING_CONSENT_GRANTED:
         return true;
