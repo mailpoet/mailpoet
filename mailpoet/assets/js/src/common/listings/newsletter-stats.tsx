@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { StatsBadge } from './newsletter-stats/stats';
+import { TrackingCoverage } from './newsletter-stats/tracking-coverage';
 import { Tooltip } from '../tooltip/tooltip';
 import { Tag } from '../tag/tag';
 
@@ -12,6 +13,9 @@ type NewsletterStatsProps = {
   hideBadges?: boolean;
   newsletterId?: number; // used for tooltip IDs
   wrapContentInLink?: (content: ReactNode, idPrefix: string) => JSX.Element;
+  /** Recipients whose tracking consent kept them out of the rates above. */
+  notTracked?: number;
+  totalSent?: number;
 };
 
 export function NewsletterStats({
@@ -21,6 +25,8 @@ export function NewsletterStats({
   hideBadges,
   newsletterId,
   wrapContentInLink,
+  notTracked,
+  totalSent,
 }: NewsletterStatsProps) {
   // format to 1 decimal place
   const openedDisplay = MailPoet.Num.toLocaleFixed(opened, 1);
@@ -35,6 +41,11 @@ export function NewsletterStats({
         <span className="mailpoet-listing-stats-percentages-opens">
           {openedDisplay}%
         </span>
+        <TrackingCoverage
+          totalSent={totalSent ?? 0}
+          notTracked={notTracked ?? 0}
+          tooltipId={`tracking-coverage-${newsletterId || '0'}`}
+        />
       </div>
       {!hideBadges && (
         <div>

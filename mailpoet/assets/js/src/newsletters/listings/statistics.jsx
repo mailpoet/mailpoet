@@ -66,13 +66,23 @@ function Statistics({
     return null;
   }
 
+  const notTracked = newsletter.statistics.notTracked ?? 0;
+  // Recipients we were allowed to measure. Read off the statistics object
+  // rather than derived here, so numerator and denominator come from the same
+  // read. Older cached payloads carry no trackedSent, so fall back.
+  const trackedSent = newsletter.statistics.trackedSent ?? totalSent;
+
   let percentageClicked = 0;
   let percentageOpened = 0;
   let revenue = null;
 
+  // Opted-out recipients can never register an open or a click, so counting
+  // them in the denominator only drags the rate down.
+  if (trackedSent > 0) {
+    percentageClicked = (newsletter.statistics.clicked * 100) / trackedSent;
+    percentageOpened = (newsletter.statistics.opened * 100) / trackedSent;
+  }
   if (totalSent > 0) {
-    percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
-    percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
     revenue = newsletter.statistics.revenue;
   }
 
@@ -124,6 +134,8 @@ function Statistics({
       hideBadges={!showBadges}
       newsletterId={newsletter.id}
       wrapContentInLink={wrapContentInLink}
+      notTracked={notTracked}
+      totalSent={totalSent}
     />
   );
 
@@ -187,6 +199,8 @@ const StatisticsPropType = PropTypes.shape({
   clicked: PropTypes.number,
   opened: PropTypes.number,
   unsubscribed: PropTypes.number,
+  notTracked: PropTypes.number,
+  trackedSent: PropTypes.number,
   revenue: PropTypes.shape({
     count: PropTypes.number,
     currency: PropTypes.string,

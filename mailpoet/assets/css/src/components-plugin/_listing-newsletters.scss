@@ -321,6 +321,15 @@ h1.title.mailpoet-newsletter-listing-heading {
   font-weight: normal;
 }
 
+// Only rendered when some recipients were not tracked, so the row keeps its
+// current density on the large majority of sites.
+.mailpoet-listing-stats-coverage {
+  color: $color-primary-inactive;
+  font-size: $font-size-extra-small;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
 .mailpoet-share-email-modal.components-modal__frame {
   max-width: 640px;
   width: calc(100vw - 64px);

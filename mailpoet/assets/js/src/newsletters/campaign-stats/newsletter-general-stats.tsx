@@ -1,5 +1,5 @@
 import ReactStringReplace from 'react-string-replace';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import { Grid } from 'common/grid';
@@ -7,6 +7,10 @@ import {
   getBadgeType,
   StatsBadge,
 } from 'common/listings/newsletter-stats/stats';
+import {
+  getTrackingCoveragePercentage,
+  getTrackingCoverageTooltipText,
+} from 'common/listings/newsletter-stats/tracking-coverage';
 import { Tooltip } from 'help-tooltip';
 
 import { NewsletterType } from './newsletter-type';
@@ -40,17 +44,30 @@ const formatForStats = (value: number): number => {
 
 function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
   const totalSent = newsletter.total_sent || 0;
+  const notTracked = newsletter.statistics.notTracked ?? 0;
+  // Recipients we were allowed to measure. Comes off the statistics object
+  // rather than being derived here, so the numerator and the denominator always
+  // come from the same read. Older cached payloads have no trackedSent, so fall
+  // back to the full count.
+  const trackedSent = newsletter.statistics.trackedSent ?? totalSent;
 
   let percentageClicked = 0;
   let percentageOpened = 0;
   let percentageMachineOpened = 0;
   let percentageUnsubscribed = 0;
   let percentageBounced = 0;
-  if (totalSent > 0) {
-    percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
-    percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
+  // Opens and clicks are divided by the recipients we could measure: an
+  // opted-out subscriber can never register either, so counting them only drags
+  // the figure down. Unsubscribes and bounces keep the full count — those are
+  // recorded for opted-out people too, so shrinking their denominator would
+  // overstate them.
+  if (trackedSent > 0) {
+    percentageClicked = (newsletter.statistics.clicked * 100) / trackedSent;
+    percentageOpened = (newsletter.statistics.opened * 100) / trackedSent;
     percentageMachineOpened =
-      (newsletter.statistics.machineOpened * 100) / totalSent;
+      (newsletter.statistics.machineOpened * 100) / trackedSent;
+  }
+  if (totalSent > 0) {
     percentageUnsubscribed =
       (newsletter.statistics.unsubscribed * 100) / totalSent;
     percentageBounced = (newsletter.statistics.bounced * 100) / totalSent;
@@ -245,6 +262,22 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
               {totalSent.toLocaleString()}
             </span>
           </div>
+          {notTracked > 0 && totalSent > 0 && (
+            <div className="mailpoet-statistics-value-small">
+              {sprintf(
+                /* translators: %1$s is a percentage, e.g. "95", %2$s is a number of recipients. */
+                __('Tracking coverage: %1$s%% — %2$s not tracked', 'mailpoet'),
+                MailPoet.Num.toLocaleFixed(
+                  getTrackingCoveragePercentage(totalSent, notTracked),
+                  1,
+                ),
+                notTracked.toLocaleString(),
+              )}
+              <Tooltip
+                tooltip={getTrackingCoverageTooltipText(totalSent, notTracked)}
+              />
+            </div>
+          )}
         </div>
         <div className="mailpoet-statistics-with-left-separator">
           {unsubscribed}
