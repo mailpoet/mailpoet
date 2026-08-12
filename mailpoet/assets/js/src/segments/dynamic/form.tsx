@@ -16,6 +16,7 @@ import { SubscribersCounter } from './subscribers-counter';
 import { FormFilterFields } from './form-filter-fields';
 import { isFormValid } from './validator';
 import { PrivacyProtectionNotice } from './privacy-protection-notice';
+import { TrackingConsentNotice } from './tracking-consent-notice';
 import { storeName } from './store';
 
 import { FilterRow, FilterValue, Segment } from './types';
@@ -276,6 +277,7 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
           <div className="mailpoet-segments-counter-section">
             <SubscribersCounter />
             <PrivacyProtectionNotice />
+            <TrackingConsentNotice />
           </div>
           <div className="mailpoet-form-actions">
             <Button
