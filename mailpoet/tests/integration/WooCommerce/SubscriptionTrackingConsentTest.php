@@ -127,7 +127,18 @@ class SubscriptionTrackingConsentTest extends \MailPoetTest {
     $this->subscription->extendWooCommerceCheckoutForm();
     $whenAsking = (string)ob_get_clean();
     verify($whenAsking)->stringContainsString(Subscription::CHECKOUT_TRACKING_CONSENT_INPUT_NAME);
-    // A pre-ticked consent box is not valid consent (CJEU Planet49).
-    verify($whenAsking)->stringNotContainsString('checked=\'checked\'');
+    // A pre-ticked consent box is not valid consent (CJEU Planet49). Scoped to
+    // the consent input itself, and matched against any spelling of the
+    // attribute rather than one serialization, so neither the opt-in checkbox
+    // next to it nor a change in attribute quoting can retire this guard.
+    $consentInput = $this->getConsentInputTag($whenAsking);
+    verify($consentInput)->notEmpty();
+    verify((bool)preg_match('/\bchecked\b/i', $consentInput))->false();
+  }
+
+  /** The rendered consent `<input …>` tag on its own, so assertions cannot drift onto a neighbouring field. */
+  private function getConsentInputTag(string $html): string {
+    $pattern = '/<input\b[^>]*\bname=["\']' . preg_quote(Subscription::CHECKOUT_TRACKING_CONSENT_INPUT_NAME, '/') . '["\'][^>]*>/i';
+    return preg_match($pattern, $html, $matches) ? $matches[0] : '';
   }
 }

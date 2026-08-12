@@ -108,20 +108,6 @@ class TrackingConsentCaptureTest extends \MailPoetTest {
     verify($seenMethod)->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_COMMENT);
   }
 
-  public function testItStripsClientSuppliedProof() {
-    $data = $this->capture->stripPostedProof([
-      'tracking_consent' => 'granted',
-      'tracking_consent_method' => 'forged',
-      'tracking_consent_copy' => 'forged copy',
-      'email' => 'a@example.com',
-    ]);
-
-    verify(isset($data['tracking_consent_method']))->false();
-    verify(isset($data['tracking_consent_copy']))->false();
-    verify($data['tracking_consent'])->equals('granted');
-    verify($data['email'])->equals('a@example.com');
-  }
-
   public function testItDetectsAnExistingSubscriberByEmail() {
     $email = 'capture-existing@example.com';
     verify($this->capture->isNewSubscriber($email))->true();

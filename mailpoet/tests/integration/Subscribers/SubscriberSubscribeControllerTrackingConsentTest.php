@@ -10,6 +10,7 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
+use MailPoet\Subscription\Pages;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 /**
@@ -182,6 +183,30 @@ class SubscriberSubscribeControllerTrackingConsentTest extends \MailPoetTest {
     $this->assertIsArray($decoded);
     verify($decoded['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
     verify($decoded['tracking_consent_method'])->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+
+    // Stashing it is only half the journey. Confirmation is a separate request
+    // that replays unconfirmed_data, so the grant is only proven to survive
+    // once the subscriber has actually been through it.
+    $this->confirm($email);
+
+    $this->entityManager->clear();
+    $confirmed = $this->getSubscriber($email);
+    verify($confirmed->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($confirmed->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($confirmed->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($confirmed->getTrackingConsentCopy())
+      ->equals(ManageSubscriptionFormRenderer::getTrackingConsentCopy());
+  }
+
+  /** Runs the real confirmation request for this subscriber, the way clicking the emailed link does. */
+  private function confirm(string $email): void {
+    $subscriber = $this->getSubscriber($email);
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
+    $pages = $this->diContainer->get(Pages::class);
+    $pages->init(false, [
+      'email' => $subscriber->getEmail(),
+      'token' => $linkTokens->getToken($subscriber),
+    ], false, false)->confirm();
   }
 
   /**
