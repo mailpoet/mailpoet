@@ -22,6 +22,18 @@ function TrackingConsentEdit({ attributes, setAttributes }) {
             value={attributes.consentText}
             data-automation-id="settings_tracking_consent_text_input"
             onChange={(consentText) => setAttributes({ consentText })}
+            // An empty consent box is an unlabelled consent box. Blank is fine
+            // while typing, but on blur the wording returns to the default
+            // rather than leaving a checkbox with nothing next to it.
+            onBlur={() => {
+              if (attributes.consentText.trim() === '') {
+                setAttributes({
+                  consentText: MailPoet.I18n.t(
+                    'blockTrackingConsentDefaultText',
+                  ),
+                });
+              }
+            }}
           />
         </PanelBody>
       </Panel>

@@ -127,17 +127,4 @@ class TrackingConsentCapture {
     }
     return $this->subscribersRepository->findOneBy(['email' => $email]) === null;
   }
-
-  /**
-   * Strips client-supplied proof fields. The record of how consent was given
-   * and against what wording is stamped server-side only, so a crafted POST
-   * cannot forge it.
-   *
-   * @param array<string, mixed> $data
-   * @return array<string, mixed>
-   */
-  public function stripPostedProof(array $data): array {
-    unset($data['tracking_consent_method'], $data['tracking_consent_copy']);
-    return $data;
-  }
 }
