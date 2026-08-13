@@ -171,7 +171,9 @@ export function CampaignStatsPage() {
         <Tabs
           activeKey={activeTab}
           onSwitch={(tabKey) => {
-            navigate(getStatsTabUrl(newsletter.id, tabKey));
+            if (tabKey !== requestedTab) {
+              navigate(getStatsTabUrl(newsletter.id, tabKey));
+            }
           }}
         >
           <Tab key="clicked" title={__('Clicked Links', 'mailpoet')}>
