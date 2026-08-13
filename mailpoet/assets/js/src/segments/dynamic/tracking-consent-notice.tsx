@@ -29,8 +29,18 @@ const engagementActions: string[] = [
   SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE,
 ];
 
-/** Only the "none of" form of these infers disengagement from missing data. */
-const actionsAffectedWithNoneOperator: string[] = [
+/**
+ * These read the same missing data, but which way it misleads depends on the
+ * operator, so the two forms get different wording.
+ *
+ * "none of" infers disengagement: an opted-out subscriber never recorded an
+ * open or click, so they are pulled in and described as not engaged — a wrong
+ * statement about a real person.
+ *
+ * "any of" / "all of" only omits them: nobody is mislabelled, but the audience
+ * is quietly smaller than the merchant expects, which is worth saying plainly.
+ */
+const actionsAffectedByOperator: string[] = [
   EmailActionTypes.OPENED,
   EmailActionTypes.MACHINE_OPENED,
   EmailActionTypes.CLICKED,
@@ -49,14 +59,16 @@ function TrackingConsentNotice(): JSX.Element {
     [],
   );
 
-  const containsEngagementFilter = (segment.filters ?? []).some((formItem) => {
+  const filters = segment.filters ?? [];
+
+  const countsThemAsNotEngaged = filters.some((formItem) => {
     const action = formItem.action;
     const operator = 'operator' in formItem ? formItem.operator : undefined;
     if (engagementActions.includes(action)) {
       return true;
     }
     if (
-      actionsAffectedWithNoneOperator.includes(action) &&
+      actionsAffectedByOperator.includes(action) &&
       operator === AnyValueTypes.NONE
     ) {
       return true;
@@ -67,14 +79,29 @@ function TrackingConsentNotice(): JSX.Element {
     );
   });
 
-  if (!containsEngagementFilter) {
+  const leavesThemOut = filters.some((formItem) => {
+    const operator =
+      'operator' in formItem ? formItem.operator : AnyValueTypes.ANY;
+    return (
+      actionsAffectedByOperator.includes(formItem.action) &&
+      operator !== AnyValueTypes.NONE
+    );
+  });
+
+  // The stronger warning wins when a segment has both, rather than stacking two
+  // notices that say overlapping things.
+  const message = countsThemAsNotEngaged
+    ? 'trackingConsentEngagementNotice'
+    : 'trackingConsentOmittedNotice';
+
+  if (!countsThemAsNotEngaged && !leavesThemOut) {
     return <span />;
   }
 
   return (
     <div className="mailpoet-form-field">
       <span className="mailpoet-form-notice-message">
-        {MailPoet.I18n.t('trackingConsentEngagementNotice')}
+        {MailPoet.I18n.t(message)}
       </span>
     </div>
   );

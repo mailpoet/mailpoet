@@ -7,6 +7,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 
 class CreateTrackingConsentSegmentCest {
   private const ENGAGEMENT_NOTICE = 'MailPoet has no open or click data for subscribers who opted out of tracking';
+  private const OMITTED_NOTICE = 'Subscribers who opted out of tracking are not counted here';
 
   public function _before() {
     (new Subscriber())
@@ -95,6 +96,33 @@ class CreateTrackingConsentSegmentCest {
     $i->wantTo('Switch to an engagement filter and see the notice');
     $i->selectOptionInReactSelect('number of opens', '[data-automation-id="select-segment-action"]');
     $i->waitForText(self::ENGAGEMENT_NOTICE);
+    $i->seeNoJSErrors();
+  }
+
+  /**
+   * "clicked / any of" does not mislabel anyone — opted-out subscribers are
+   * simply left out — so it gets the softer wording rather than the
+   * "counts them as not engaged" one, which would be untrue here.
+   */
+  public function testAPositiveEngagementFilterShowsTheOmittedNotice(\AcceptanceTester $i) {
+    $i->wantTo('See the omitted-subscribers notice on a positive engagement filter');
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
+    $i->fillField(['name' => 'name'], 'Omitted notice segment');
+    $i->fillField(['name' => 'description'], 'description');
+
+    $i->wantTo('Choose "clicked", which defaults to the "any of" operator');
+    $i->selectOptionInReactSelect('clicked', '[data-automation-id="select-segment-action"]');
+    $i->waitForText(self::OMITTED_NOTICE);
+    $i->dontSee(self::ENGAGEMENT_NOTICE);
+
+    $i->wantTo('Switch to "none of" and see the stronger wording instead');
+    $i->selectOption('[data-automation-id="select-operator"]', 'none of');
+    $i->waitForText(self::ENGAGEMENT_NOTICE);
+    $i->dontSee(self::OMITTED_NOTICE);
     $i->seeNoJSErrors();
   }
 
