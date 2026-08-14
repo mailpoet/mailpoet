@@ -16,14 +16,6 @@ class AssetsLoader {
     'wp-format-library',
   ];
 
-  // Pages that load @wordpress/components from WordPress core, so they depend on the
-  // core `wp-components` handle instead of enqueueing our bundled copy (which would
-  // load the same styles twice with a fragile, environment-dependent order).
-  private const WORDPRESS_COMPONENTS_FROM_CORE_PAGES = [
-    'mailpoet-form-editor',
-    'mailpoet-form-editor-template-selection',
-  ];
-
   /** @var Renderer */
   private $renderer;
 
@@ -42,11 +34,13 @@ class AssetsLoader {
     // MailPoet plugin style should be loaded on all mailpoet sites
     $page = isset($_GET['page']) && is_string($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : null;
     if ($page && strpos($page, 'mailpoet-') === 0) {
-      $componentsStyle = $this->enqueueWordPressComponentsStyle($page);
       $this->enqueueStyle('mailpoet-plugin', [
         'forms', // To prevent conflict in CSS with WP forms we need to add dependency
         'buttons',
-        $componentsStyle, // @wordpress/components must load before MailPoet overrides
+        // @wordpress/components styles come from the core `wp-components` handle and must
+        // load before MailPoet overrides. WordPress 7.1+ prints them on every admin screen
+        // (command palette), so a bundled copy would apply the same styles twice.
+        'wp-components',
       ]);
     }
     if ($page === 'mailpoet-form-editor') {
@@ -63,14 +57,6 @@ class AssetsLoader {
     if ($page === 'mailpoet-newsletter-editor') {
       $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin']);
     }
-  }
-
-  private function enqueueWordPressComponentsStyle(string $page): string {
-    if (in_array($page, self::WORDPRESS_COMPONENTS_FROM_CORE_PAGES, true)) {
-      return 'wp-components';
-    }
-    $this->enqueueStyle('mailpoet-wp-components');
-    return 'mailpoet-wp-components';
   }
 
   private function enqueueStyle(string $name, array $deps = []): void {

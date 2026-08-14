@@ -5,10 +5,10 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as editorStore } from '@wordpress/editor';
 import type { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
 
-const contentLink = `<a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">${__(
+const contentLink = `<a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false" class="mailpoet-email-editor__personalization-tags-link">${__(
   'Unsubscribe',
   'mailpoet',
-)}</a> | <a data-link-href="[mailpoet/subscription-manage-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">${__(
+)}</a> | <a data-link-href="[mailpoet/subscription-manage-url]" contenteditable="false" class="mailpoet-email-editor__personalization-tags-link">${__(
   'Manage subscription',
   'mailpoet',
 )}</a>`;

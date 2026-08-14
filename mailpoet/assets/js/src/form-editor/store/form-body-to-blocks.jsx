@@ -420,6 +420,15 @@ export const formBodyToBlocksFactory = (
                 styles: mapInputBlockStyles(item.styles),
               },
             };
+          case 'tracking_consent':
+            return {
+              ...mapped,
+              name: 'mailpoet-form/tracking-consent',
+              attributes: {
+                ...mapped.attributes,
+                consentText: item.params?.values?.[0]?.value ?? '',
+              },
+            };
           case 'segments':
             if (
               item.params &&

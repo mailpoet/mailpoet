@@ -2,10 +2,4 @@
 
 See the root-level [CLAUDE.md](../CLAUDE.md) for the canonical project guidelines, conventions, commands, and architecture documentation.
 
-This directory contains Claude-specific configuration:
-
-- `skills/creating-pull-requests/SKILL.md` -- PR creation workflow (MUST use when creating PRs)
-
-Additional AI skills are available in the repo-wide `.ai/skills/` directory:
-
-- `mailpoet-dev-cycle/` -- Linting and code quality workflows (PHP, JS/TS, CSS/SCSS)
+This directory contains Claude-specific configuration. `skills/` is a symlink to the repo-wide `.ai/skills/` directory — see the "Available Skills" section in [AGENTS.md](../AGENTS.md) for the full list.

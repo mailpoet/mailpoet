@@ -6,6 +6,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Subscription;
@@ -41,7 +42,8 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
       $this->diContainer->get(Subscription::class),
       $this->wcSegmentMock,
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(WooHelper::class)
+      $this->diContainer->get(WooHelper::class),
+      $this->diContainer->get(TrackingConsentCapture::class)
     );
   }
 

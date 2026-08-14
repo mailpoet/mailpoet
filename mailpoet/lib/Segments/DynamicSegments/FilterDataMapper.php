@@ -19,6 +19,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTrackingConsent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -304,6 +305,19 @@ class FilterDataMapper {
         'form_ids' => array_map(function($formId) {
           return intval($formId);
         }, $data['form_ids']),
+        'operator' => $data['operator'],
+        'connect' => $data['connect'],
+      ]);
+    }
+    if ($data['action'] === SubscriberTrackingConsent::TYPE) {
+      if (!isset($data['value']) || !in_array($data['value'], SubscriberTrackingConsent::VALID_VALUES, true)) {
+        throw new InvalidFilterException('Missing valid tracking consent value', InvalidFilterException::MISSING_VALUE);
+      }
+      if (!isset($data['operator']) || !in_array($data['operator'], SubscriberTrackingConsent::VALID_OPERATORS, true)) {
+        throw new InvalidFilterException('Missing valid operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'value' => $data['value'],
         'operator' => $data['operator'],
         'connect' => $data['connect'],
       ]);

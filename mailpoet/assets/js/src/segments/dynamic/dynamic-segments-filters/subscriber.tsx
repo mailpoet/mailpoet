@@ -34,6 +34,10 @@ import {
   SubscribedViaForm,
   validateSubscribedViaForm,
 } from './fields/subscriber/subscribed-via-form';
+import {
+  TrackingConsentFields,
+  validateTrackingConsent,
+} from './fields/subscriber/tracking-consent';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
@@ -82,6 +86,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (formItems.action === SubscriberActionTypes.SUBSCRIBED_VIA_FORM) {
     return validateSubscribedViaForm(formItems);
   }
+  if (formItems.action === SubscriberActionTypes.TRACKING_CONSENT) {
+    return validateTrackingConsent(formItems);
+  }
   if (!formItems.operator || !formItems.value) {
     return false;
   }
@@ -104,6 +111,7 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBER_LAST_NAME]: TextField,
   [SubscriberActionTypes.SUBSCRIBER_EMAIL]: TextField,
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
+  [SubscriberActionTypes.TRACKING_CONSENT]: TrackingConsentFields,
   [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]:
     DateFieldsDefaultInTheLast,
   [SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE]:

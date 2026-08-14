@@ -81,21 +81,14 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
     ], $enqueuedStyles);
   }
 
-  public function testItLoadsBundledWordPressComponentsOnRegularPages(): void {
+  public function testItLoadsWordPressComponentsFromCoreOnRegularPages(): void {
     $enqueuedStyles = $this->loadStylesForPage('mailpoet-newsletters');
 
     $this->assertSame([
       [
-        'mailpoet-wp-components',
-        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-wp-components.css',
-        [],
-        false,
-        'all',
-      ],
-      [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons', 'mailpoet-wp-components'],
+        ['forms', 'buttons', 'wp-components'],
         false,
         'all',
       ],

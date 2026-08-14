@@ -10,6 +10,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
@@ -33,13 +34,17 @@ class WooCommerceBlocksIntegration {
   /** @var WooHelper  */
   private $wooHelper;
 
+  /** @var TrackingConsentCapture */
+  private $trackingConsentCapture;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
     WooCommerceSubscription $woocommerceSubscription,
     WooSegment $wooSegment,
     SubscribersRepository $subscribersRepository,
-    WooHelper $wooHelper
+    WooHelper $wooHelper,
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
@@ -47,6 +52,7 @@ class WooCommerceBlocksIntegration {
     $this->wooSegment = $wooSegment;
     $this->subscribersRepository = $subscribersRepository;
     $this->wooHelper = $wooHelper;
+    $this->trackingConsentCapture = $trackingConsentCapture;
   }
 
   public function init() {
@@ -96,6 +102,10 @@ class WooCommerceBlocksIntegration {
       [
       'defaultText' => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
       'optinEnabled' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
+      'trackingConsentEnabled' => $this->trackingConsentCapture->isCaptureEnabled(),
+      'trackingConsentText' => $this->trackingConsentCapture->getCopy(
+        SubscriberEntity::TRACKING_CONSENT_METHOD_WOOCOMMERCE_CHECKOUT
+      ),
       ],
       $this->wp
     ));
@@ -137,6 +147,13 @@ class WooCommerceBlocksIntegration {
               'description' => __('Subscribe to marketing opt-in.', 'mailpoet'),
               'type' => ['boolean', 'null'],
             ],
+            // Deliberately a second field rather than part of 'optin': consent
+            // to open and click tracking may never be bundled with the
+            // marketing opt-in.
+            'tracking_consent' => [
+              'description' => __('Allow tracking of email opens and link clicks.', 'mailpoet'),
+              'type' => ['boolean', 'null'],
+            ],
           ];
         },
       ]
@@ -158,6 +175,9 @@ class WooCommerceBlocksIntegration {
 
   public function processCheckoutBlockOptin(\WC_Order $order, $request) {
     $checkoutOptin = isset($request['extensions']['mailpoet']['optin']) ? (bool)$request['extensions']['mailpoet']['optin'] : false;
+    $trackingConsent = isset($request['extensions']['mailpoet']['tracking_consent'])
+      ? (bool)$request['extensions']['mailpoet']['tracking_consent']
+      : false;
 
     // Emulate checkout opt-in triggering for AutomateWoo
     if ($checkoutOptin) {
@@ -185,6 +205,6 @@ class WooCommerceBlocksIntegration {
       return null;
     }
 
-    $this->woocommerceSubscription->handleSubscriberOptin($subscriber, $checkoutOptin);
+    $this->woocommerceSubscription->handleSubscriberOptin($subscriber, $checkoutOptin, $trackingConsent);
   }
 }

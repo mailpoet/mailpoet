@@ -34,4 +34,14 @@ class NewsletterTest extends \MailPoetUnitTest {
     $this->assertStringNotContainsString('wp:site-logo', $content);
     $this->assertStringNotContainsString('your-logo-placeholder.png', $content);
   }
+
+  public function testFooterLinksDoNotForceTextDecoration() {
+    $this->wp->method('hasCustomLogo')->willReturn(false);
+
+    $content = (new Newsletter($this->wp))->getContent();
+
+    $this->assertStringContainsString('[mailpoet/subscription-unsubscribe-url]', $content);
+    $this->assertStringContainsString('[mailpoet/subscription-manage-url]', $content);
+    $this->assertStringNotContainsString('text-decoration', $content);
+  }
 }

@@ -19,6 +19,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTrackingConsent;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -104,6 +105,9 @@ class FilterFactory {
   /** @var SubscriberTextField */
   private $subscriberTextField;
 
+  /** @var SubscriberTrackingConsent */
+  private $subscriberTrackingConsent;
+
   /** @var WooCommerceUsedPaymentMethod */
   private $wooCommerceUsedPaymentMethod;
 
@@ -166,6 +170,7 @@ class FilterFactory {
     WooCommerceUsedPaymentMethod $wooCommerceUsedPaymentMethod,
     WooCommerceUsedShippingMethod $wooCommerceUsedShippingMethod,
     SubscriberTextField $subscriberTextField,
+    SubscriberTrackingConsent $subscriberTrackingConsent,
     SubscriberDateField $subscriberDateField,
     AutomationsEvents $automationsEvents,
     EmailsReceived $emailsReceived,
@@ -192,6 +197,7 @@ class FilterFactory {
     $this->emailActionClickAny = $emailActionClickAny;
     $this->wooCommerceSingleOrderValue = $wooCommerceSingleOrderValue;
     $this->subscriberTextField = $subscriberTextField;
+    $this->subscriberTrackingConsent = $subscriberTrackingConsent;
     $this->subscribedViaForm = $subscribedViaForm;
     $this->wooCommerceAverageSpent = $wooCommerceAverageSpent;
     $this->wooCommerceUsedPaymentMethod = $wooCommerceUsedPaymentMethod;
@@ -233,7 +239,7 @@ class FilterFactory {
   /**
    * @param ?string $action
    *
-   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm|SubscriberDateField
+   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm|SubscriberDateField|SubscriberTrackingConsent
    */
   private function userRole(?string $action) {
     if ($action === SubscriberScore::TYPE) {
@@ -246,6 +252,8 @@ class FilterFactory {
       return $this->subscriberTag;
     } elseif ($action === SubscriberSubscribedViaForm::TYPE) {
       return $this->subscribedViaForm;
+    } elseif ($action === SubscriberTrackingConsent::TYPE) {
+      return $this->subscriberTrackingConsent;
     } elseif (in_array($action, SubscriberTextField::TYPES)) {
       return $this->subscriberTextField;
     } elseif (in_array($action, SubscriberDateField::TYPES)) {
