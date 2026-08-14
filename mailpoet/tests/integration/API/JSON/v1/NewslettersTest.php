@@ -9,6 +9,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Doctrine\SchemaGuard;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LogRepository;
@@ -61,7 +62,8 @@ class NewslettersTest extends \MailPoetTest {
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class),
             $this->diContainer->get(TrackingConfig::class),
-            $this->diContainer->get(OrderAttributionRevenueReader::class)
+            $this->diContainer->get(OrderAttributionRevenueReader::class),
+            $this->diContainer->get(SchemaGuard::class)
           ),
           $this->diContainer->get(Url::class),
           $this->diContainer->get(SendingQueuesRepository::class),
