@@ -244,20 +244,33 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     $newsletter = $this->createSentNewsletter(4);
     $this->createRecipients($newsletter, [true, true, true, false]);
 
+    global $wpdb;
     $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $connection = $this->entityManager->getConnection();
     $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `tracking_allowed`");
+    $showErrors = $wpdb->show_errors(true);
 
     try {
       $this->entityManager->clear();
-      $statistics = $this->repository->getStatistics($this->reloadNewsletter($newsletter));
 
-      // No exception, and rates fall back to the whole audience — the exact
-      // behaviour from before this feature, rather than a 500.
+      // Catching the exception is not enough on its own: wpdb prints the failed
+      // query before Doctrine raises it, which glued a block of "WordPress
+      // database error" HTML to the front of the listing endpoint's JSON. So
+      // assert on what the request would emit, not only on the return value.
+      ob_start();
+      $statistics = $this->repository->getStatistics($this->reloadNewsletter($newsletter));
+      $printed = (string)ob_get_clean();
+
+      verify($printed)->stringNotContainsString('WordPress database error');
+      verify($printed)->equals('');
+
+      // Rates fall back to the whole audience — the exact behaviour from
+      // before this feature, rather than a 500.
       verify($statistics->getTotalSentCount())->equals(4);
       verify($statistics->getNotTrackedCount())->equals(0);
       verify($statistics->getTrackedSentCount())->equals(4);
     } finally {
+      $wpdb->show_errors($showErrors);
       $connection->executeStatement(
         "ALTER TABLE `{$table}` ADD COLUMN `tracking_allowed` tinyint(1) NOT NULL DEFAULT 1"
       );

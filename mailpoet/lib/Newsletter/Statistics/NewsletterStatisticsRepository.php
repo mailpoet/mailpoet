@@ -263,12 +263,24 @@ class NewsletterStatisticsRepository extends Repository {
    * migration lands, which is exactly the behaviour from before this feature.
    * Mirrors the guards added for tracking_consent in SubscriberActivityTracker
    * and SendingQueue.
+   *
+   * wpdb errors are suppressed for the duration, because catching the exception
+   * is not enough on its own: wpdb prints the failure before Doctrine ever
+   * raises it, so the listing endpoint returned valid JSON with a block of
+   * "WordPress database error" HTML glued to the front of it. DbMigration's own
+   * columnExists() suppresses for the same reason. Scoped to this one query and
+   * restored in finally, so nothing else loses its errors — and on the normal
+   * path there is no error to suppress, which makes it a no-op there.
    */
   private function getNotTrackedCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
+    global $wpdb;
+    $suppressErrors = $wpdb->suppress_errors();
     try {
       return $this->queryNotTrackedCounts($newsletters, $from, $to);
     } catch (InvalidFieldNameException | TableNotFoundException $e) {
       return [];
+    } finally {
+      $wpdb->suppress_errors($suppressErrors);
     }
   }
 
