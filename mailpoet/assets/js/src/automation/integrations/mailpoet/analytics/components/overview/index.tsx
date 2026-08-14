@@ -52,7 +52,7 @@ function getTrackingCoverage(): number | undefined {
   if (sent <= 0) {
     return 0;
   }
-  return Math.min(1, tracked / sent);
+  return Math.min(1, Math.max(0, tracked / sent));
 }
 
 function getNotTrackedCount(): number {
