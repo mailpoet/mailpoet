@@ -670,6 +670,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Site::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Embed\NewsletterEmbedService::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Embed\RestApi\Endpoints\NewsletterEmbedSelectorEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Doctrine\SchemaGuard::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\Export\StatisticsExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler::class)->setPublic(true);

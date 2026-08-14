@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Statistics;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Doctrine\SchemaGuard;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -17,8 +18,6 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\OrderAttributionRevenueReader;
-use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
-use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -38,16 +37,21 @@ class NewsletterStatisticsRepository extends Repository {
   /** @var OrderAttributionRevenueReader */
   private $orderAttributionRevenueReader;
 
+  /** @var SchemaGuard */
+  private $schemaGuard;
+
   public function __construct(
     EntityManager $entityManager,
     WCHelper $wcHelper,
     TrackingConfig $trackingConfig,
-    OrderAttributionRevenueReader $orderAttributionRevenueReader
+    OrderAttributionRevenueReader $orderAttributionRevenueReader,
+    SchemaGuard $schemaGuard
   ) {
     parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;
     $this->trackingConfig = $trackingConfig;
     $this->orderAttributionRevenueReader = $orderAttributionRevenueReader;
+    $this->schemaGuard = $schemaGuard;
   }
 
   protected function getEntityClassName() {
@@ -261,27 +265,18 @@ class NewsletterStatisticsRepository extends Repository {
    * analytics endpoint 500s outright. Every caller treats an absent count as
    * "nobody was untracked", so rates fall back to the whole audience until the
    * migration lands, which is exactly the behaviour from before this feature.
-   * Mirrors the guards added for tracking_consent in SubscriberActivityTracker
-   * and SendingQueue.
-   *
-   * wpdb errors are suppressed for the duration, because catching the exception
-   * is not enough on its own: wpdb prints the failure before Doctrine ever
-   * raises it, so the listing endpoint returned valid JSON with a block of
-   * "WordPress database error" HTML glued to the front of it. DbMigration's own
-   * columnExists() suppresses for the same reason. Scoped to this one query and
-   * restored in finally, so nothing else loses its errors — and on the normal
-   * path there is no error to suppress, which makes it a no-op there.
+   * SchemaGuard handles both halves of that: it catches the schema exception and
+   * suppresses wpdb's own error output, which prints the failed query before
+   * Doctrine ever raises it. See its docblock for why catching alone is not
+   * enough.
    */
   private function getNotTrackedCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
-    global $wpdb;
-    $suppressErrors = $wpdb->suppress_errors();
-    try {
-      return $this->queryNotTrackedCounts($newsletters, $from, $to);
-    } catch (InvalidFieldNameException | TableNotFoundException $e) {
-      return [];
-    } finally {
-      $wpdb->suppress_errors($suppressErrors);
-    }
+    return $this->schemaGuard->readOr(
+      function () use ($newsletters, $from, $to): array {
+        return $this->queryNotTrackedCounts($newsletters, $from, $to);
+      },
+      []
+    );
   }
 
   /**
