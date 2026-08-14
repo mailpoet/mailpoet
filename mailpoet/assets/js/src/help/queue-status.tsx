@@ -1,5 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { KeyValueTable } from 'common/key-value-table';
+import { getQueueStatusLabelKey } from './status-labels';
 import { TasksList } from './tasks-list/tasks-list';
 import { Props as TasksListDataRowProps } from './tasks-list/tasks-list-data-row';
 
@@ -35,10 +36,7 @@ function QueueStatus({ statusData }: Props): JSX.Element {
         rows={[
           {
             key: MailPoet.I18n.t('status'),
-            value:
-              status.status === 'paused'
-                ? MailPoet.I18n.t('paused')
-                : MailPoet.I18n.t('running'),
+            value: MailPoet.I18n.t(getQueueStatusLabelKey(status.status)),
           },
           {
             key: MailPoet.I18n.t('startedAt'),
@@ -51,8 +49,8 @@ function QueueStatus({ statusData }: Props): JSX.Element {
             value: status.sent || 0,
           },
           {
-            key: MailPoet.I18n.t('retryAttempt'),
-            value: status.retryAttempt || MailPoet.I18n.t('none'),
+            key: MailPoet.I18n.t('retryAttempts'),
+            value: status.retryAttempt || 0,
           },
           {
             key: MailPoet.I18n.t('retryAt'),

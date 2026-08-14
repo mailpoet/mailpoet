@@ -224,7 +224,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
 
     $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
-    verify($subjectField)->stringContainsString('Status: ' . $cronSettings['status']);
+    verify($subjectField)->stringContainsString('Status: Running');
     verify($subjectField)->stringContainsString('Is reachable: Yes');
     verify($subjectField)->stringContainsString('Ping response: pong');
     verify($subjectField)->stringContainsString('Last run start: 1970-01-01 09:00:00');
@@ -241,9 +241,9 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
 
     $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
-    verify($subjectField)->stringContainsString('Status: ' . $cronSettings['status']);
-    verify($subjectField)->stringContainsString('Last run start: Unknown');
-    verify($subjectField)->stringContainsString('Last run end: Unknown');
+    verify($subjectField)->stringContainsString('Status: Waiting for the next run');
+    verify($subjectField)->stringContainsString('Last run start: Never');
+    verify($subjectField)->stringContainsString('Last run end: Never');
     verify($subjectField)->stringContainsString('Last seen error: None');
   }
 
@@ -287,7 +287,107 @@ class SystemReportCollectorTest extends \MailPoetTest {
     MailerLog::pauseSending($mailerLog);
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
     $subjectField = $systemInfoData['Sending queue status'];
-    verify($subjectField)->stringContainsString('Status: ' . MailerLog::STATUS_PAUSED);
+    verify($subjectField)->stringContainsString('Status: Paused');
+  }
+
+  public function testItReportsSendingQueueAsRunningWhenItIsNotPaused() {
+    MailerLog::resetMailerLog();
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['Sending queue status'])->stringContainsString('Status: Running');
+  }
+
+  public function testItReportsSendingQueueAsPausedWhenItIsPaused() {
+    MailerLog::pauseSending(MailerLog::createMailerLog());
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['Sending queue status'])->stringContainsString('Status: Paused');
+  }
+
+  public function testItReportsSendingQueueRetryAtWhenARetryIsScheduled() {
+    update_option('timezone_string', 'Asia/Tokyo');
+    update_option('gmt_offset', 9);
+
+    $mailerLog = MailerLog::createMailerLog();
+    $mailerLog['retry_at'] = 60;
+    MailerLog::updateMailerLog($mailerLog);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['Sending queue status'])->stringContainsString('Retry at: 1970-01-01 09:01:00');
+  }
+
+  public function testItReportsNoSendingQueueRetryAtWhenNoRetryIsScheduled() {
+    MailerLog::resetMailerLog();
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['Sending queue status'])->stringContainsString('Retry at: None');
+  }
+
+  public function testItReportsCronDaemonAsRunningWhenItIsActive() {
+    $this->settings->set('cron_daemon', ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['MailPoet Cron / Action Scheduler'])->stringContainsString('Status: Running');
+  }
+
+  public function testItReportsCronDaemonAsWaitingWhenItIsInactive() {
+    $this->settings->set('cron_daemon', ['status' => CronHelper::DAEMON_STATUS_INACTIVE]);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['MailPoet Cron / Action Scheduler'])->stringContainsString('Status: Waiting for the next run');
+  }
+
+  public function testItReportsCronDaemonAsNeverStartedWhenThereIsNoDaemonRecord() {
+    $this->settings->delete('cron_daemon');
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    verify($systemInfoData['MailPoet Cron / Action Scheduler'])->stringContainsString('Status: Never started');
+  }
+
+  public function testItReportsCronRunTimestampsAsNeverWhenTheDaemonHasNotRun() {
+    $this->settings->set('cron_daemon', ['status' => CronHelper::DAEMON_STATUS_INACTIVE]);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
+    verify($subjectField)->stringContainsString('Last run start: Never');
+    verify($subjectField)->stringContainsString('Last run end: Never');
+    verify($subjectField)->stringContainsString('Last updated: Never');
+  }
+
+  public function testItReportsCronLastUpdatedAndLastErrorDate() {
+    update_option('timezone_string', 'Asia/Tokyo');
+    update_option('gmt_offset', 9);
+
+    $this->settings->set('cron_daemon', [
+      'status' => CronHelper::DAEMON_STATUS_ACTIVE,
+      'updated_at' => 60,
+      'last_error' => 'Some error',
+      'last_error_date' => 120,
+    ]);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
+    verify($subjectField)->stringContainsString('Last updated: 1970-01-01 09:01:00');
+    verify($subjectField)->stringContainsString('Last seen error date: 1970-01-01 09:02:00');
+  }
+
+  public function testItReportsNoCronLastErrorDateWhenThereIsNoError() {
+    $this->settings->set('cron_daemon', ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
+    verify($subjectField)->stringContainsString('Last seen error: None');
+    verify($subjectField)->stringContainsString('Last seen error date: None');
   }
 
   public function testItReturnsDataInconsistencyStatus() {
