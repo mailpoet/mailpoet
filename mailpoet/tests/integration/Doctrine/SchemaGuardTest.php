@@ -51,13 +51,14 @@ class SchemaGuardTest extends \MailPoetTest {
   public function testItPrintsNothingWhileTheSchemaIsNotReady() {
     global $wpdb;
     $showErrors = $wpdb->show_errors(true);
+    $table = $wpdb->prefix . 'mailpoet_newsletters';
 
     try {
       ob_start();
-      $this->guard->readOr(function () {
+      $this->guard->readOr(function () use ($table) {
         // A real failing query, so wpdb genuinely tries to print.
         return $this->entityManager->getConnection()
-          ->executeQuery('SELECT column_that_does_not_exist FROM ' . $wpdb->prefix . 'mailpoet_newsletters')
+          ->executeQuery("SELECT column_that_does_not_exist FROM {$table}")
           ->fetchAllAssociative();
       }, []);
       $printed = (string)ob_get_clean();
