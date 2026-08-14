@@ -9,7 +9,10 @@ import { Tooltip } from '../../tooltip/tooltip';
  * describing, so the percentage and the tooltip stay consistent instead of
  * reading "3 of 1 recipients are not tracked" next to "0% tracked".
  */
-function getBoundedNotTracked(totalSent: number, notTracked: number): number {
+export function getBoundedNotTracked(
+  totalSent: number,
+  notTracked: number,
+): number {
   return Math.min(Math.max(0, totalSent), Math.max(0, notTracked));
 }
 

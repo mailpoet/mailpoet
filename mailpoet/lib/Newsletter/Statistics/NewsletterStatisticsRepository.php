@@ -17,6 +17,8 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\OrderAttributionRevenueReader;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
+use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -252,8 +254,28 @@ class NewsletterStatisticsRepository extends Repository {
    * tasks only, same created-at window — because the two numbers are subtracted
    * from one another. Counting rows from a queue outside that set would make
    * the subtraction meaningless and could drive the result negative.
+   *
+   * Returns no counts while the tracking_allowed column is missing. During a
+   * plugin update this code can run before the migration that adds it, and
+   * these read paths are reachable from ordinary page loads — the automation
+   * analytics endpoint 500s outright. Every caller treats an absent count as
+   * "nobody was untracked", so rates fall back to the whole audience until the
+   * migration lands, which is exactly the behaviour from before this feature.
+   * Mirrors the guards added for tracking_consent in SubscriberActivityTracker
+   * and SendingQueue.
    */
   private function getNotTrackedCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
+    try {
+      return $this->queryNotTrackedCounts($newsletters, $from, $to);
+    } catch (InvalidFieldNameException | TableNotFoundException $e) {
+      return [];
+    }
+  }
+
+  /**
+   * @return array<int, int>
+   */
+  private function queryNotTrackedCounts(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
     $query = $this->entityManager
       ->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, COUNT(stats.id) AS cnt')

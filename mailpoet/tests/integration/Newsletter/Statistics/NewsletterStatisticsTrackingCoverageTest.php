@@ -4,6 +4,7 @@ namespace integration\Newsletter\Statistics;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
@@ -227,6 +228,40 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     // so keeping the new keys here is what makes the change free-plugin-only.
     verify($array['notTracked'])->equals(1);
     verify($array['trackedSent'])->equals(3);
+  }
+
+  /**
+   * The update window. A site can run this code before the migration that adds
+   * tracking_allowed, and these read paths are reachable from ordinary page
+   * loads — the automation analytics endpoint returned a 500 with
+   * "Unknown column 'tracking_allowed' in 'where clause'".
+   *
+   * Reproduced by dropping the column, which is the only faithful way to test
+   * it: every other suite runs against a fully migrated database, which is
+   * exactly why this class of bug survives CI.
+   */
+  public function testItSurvivesAMissingTrackingAllowedColumn() {
+    $newsletter = $this->createSentNewsletter(4);
+    $this->createRecipients($newsletter, [true, true, true, false]);
+
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `tracking_allowed`");
+
+    try {
+      $this->entityManager->clear();
+      $statistics = $this->repository->getStatistics($this->reloadNewsletter($newsletter));
+
+      // No exception, and rates fall back to the whole audience — the exact
+      // behaviour from before this feature, rather than a 500.
+      verify($statistics->getTotalSentCount())->equals(4);
+      verify($statistics->getNotTrackedCount())->equals(0);
+      verify($statistics->getTrackedSentCount())->equals(4);
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `tracking_allowed` tinyint(1) NOT NULL DEFAULT 1"
+      );
+    }
   }
 
   private function createSentNewsletter(int $countProcessed): NewsletterEntity {

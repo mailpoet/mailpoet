@@ -8,6 +8,7 @@ import {
   StatsBadge,
 } from 'common/listings/newsletter-stats/stats';
 import {
+  getBoundedNotTracked,
   getTrackingCoveragePercentage,
   getTrackingCoverageTooltipText,
 } from 'common/listings/newsletter-stats/tracking-coverage';
@@ -271,7 +272,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
                   getTrackingCoveragePercentage(totalSent, notTracked),
                   1,
                 ),
-                notTracked.toLocaleString(),
+                getBoundedNotTracked(totalSent, notTracked).toLocaleString(),
               )}
               <Tooltip
                 tooltip={getTrackingCoverageTooltipText(totalSent, notTracked)}
