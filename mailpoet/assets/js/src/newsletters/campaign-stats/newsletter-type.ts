@@ -27,6 +27,11 @@ export type NewsletterType = {
     machineOpened: number;
     unsubscribed: number;
     bounced: number;
+    // Recipients whose consent kept them out of the open/click rates, the
+    // denominator that leaves, and its share of the audience (0-100).
+    notTracked?: number;
+    trackedSent?: number;
+    trackingCoverage?: number;
     revenue: {
       value: number;
       formatted: string;
