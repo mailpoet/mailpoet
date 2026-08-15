@@ -154,11 +154,15 @@ class Worker {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $totalSentCount = $statistics->getTotalSentCount() ?: 1;
     // Opens and clicks over the recipients we were allowed to measure;
-    // unsubscribes and bounces over everyone. The ?: 1 guard is pre-existing.
-    $trackedSentCount = $statistics->getTrackedSentCount() ?: 1;
-    $clicked = ($statistics->getClickCount() * 100) / $trackedSentCount;
-    $opened = ($statistics->getOpenCount() * 100) / $trackedSentCount;
-    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $trackedSentCount;
+    // unsubscribes and bounces over everyone. Not the pre-existing `?: 1` idiom:
+    // a campaign can have recorded opens and still have nothing measurable now
+    // (a site switching to ask_all makes every not-yet-asked recipient
+    // untracked, on old campaigns too), and dividing those by 1 would report
+    // rates in the hundreds of percent. With nothing to measure, the rate is 0.
+    $trackedSentCount = $statistics->getTrackedSentCount();
+    $clicked = $trackedSentCount > 0 ? ($statistics->getClickCount() * 100) / $trackedSentCount : 0;
+    $opened = $trackedSentCount > 0 ? ($statistics->getOpenCount() * 100) / $trackedSentCount : 0;
+    $machineOpened = $trackedSentCount > 0 ? ($statistics->getMachineOpenCount() * 100) / $trackedSentCount : 0;
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
     $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
     $subject = $sendingQueue->getNewsletterRenderedSubject();

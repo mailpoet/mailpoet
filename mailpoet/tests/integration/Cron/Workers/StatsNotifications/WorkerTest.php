@@ -228,6 +228,36 @@ class WorkerTest extends \MailPoetTest {
     $this->statsNotifications->process();
   }
 
+  /**
+   * The case a "no division by zero" guard does not cover. When nobody could be
+   * measured the tracked denominator is 0, and the pre-existing `?: 1` idiom
+   * would quietly divide by 1 instead, turning 3 clicks on a 5-recipient
+   * campaign into 300%. It is reachable: switching Subscriber choice to ask_all
+   * makes every not-yet-asked recipient untracked, including on campaigns sent
+   * long before, whose opens and clicks are already recorded. With nothing
+   * measurable, the only honest rate is 0.
+   */
+  public function testItReportsZeroRatesWhenNoRecipientCouldBeTracked() {
+    $this->createRecipientRows([false, false, false, false, false]);
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context) {
+          verify($context['clicked'])->equals(0.0); // not 300%
+          verify($context['opened'])->equals(0.0); // not 200%
+          verify($context['machineOpened'])->equals(0.0);
+          verify(round($context['unsubscribed'], 2))->equals(20.0); // 1 of 5, unchanged
+          verify($context['notTracked'])->equals(5);
+          verify($context['trackingCoverage'])->equals(0.0);
+          return true;
+        })
+      );
+
+    $this->statsNotifications->process();
+  }
+
   public function testItLeavesTheRatesAloneWhenEveryRecipientIsTracked() {
     $this->createRecipientRows([true, true, true, true, true]);
 
