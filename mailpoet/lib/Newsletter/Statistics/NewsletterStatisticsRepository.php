@@ -501,13 +501,21 @@ class NewsletterStatisticsRepository extends Repository {
 
     $queues = [];
     foreach ($query->getQuery()->getArrayResult() as $row) {
-      $meta = $row['meta'];
+      if (!is_array($row)) {
+        continue;
+      }
+      $id = $row['id'] ?? null;
+      $newsletterId = $row['newsletterId'] ?? null;
+      if (!is_numeric($id) || !is_numeric($newsletterId)) {
+        continue;
+      }
+      $meta = $row['meta'] ?? null;
       if (is_string($meta)) { // scalar hydration may hand the JSON back undecoded
         $meta = json_decode($meta, true);
       }
       $queues[] = [
-        'id' => (int)$row['id'],
-        'newsletterId' => (int)$row['newsletterId'],
+        'id' => (int)$id,
+        'newsletterId' => (int)$newsletterId,
         'meta' => is_array($meta) ? $meta : null,
       ];
     }
