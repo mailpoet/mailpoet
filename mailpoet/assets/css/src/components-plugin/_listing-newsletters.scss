@@ -321,6 +321,13 @@ h1.title.mailpoet-newsletter-listing-heading {
   font-weight: normal;
 }
 
+// Rendered only when some recipients were not tracked.
+.mailpoet-listing-stats-coverage {
+  color: $color-primary-inactive;
+  font-size: $font-size-extra-small;
+  font-weight: normal;
+}
+
 .mailpoet-share-email-modal.components-modal__frame {
   max-width: 640px;
   width: calc(100vw - 64px);
