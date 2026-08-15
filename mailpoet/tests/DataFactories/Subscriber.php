@@ -379,11 +379,10 @@ class Subscriber {
     }
     if (isset($this->data['tracking_consent_updated_at'])) {
       $subscribersTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $entityManager->getConnection()->executeQuery("
-        UPDATE $subscribersTable
-        SET tracking_consent_updated_at = '{$this->data['tracking_consent_updated_at']->format('Y-m-d H:i:s')}'
-        WHERE id = {$subscriber->getId()}
-      ");
+      $entityManager->getConnection()->executeStatement(
+        "UPDATE $subscribersTable SET tracking_consent_updated_at = ? WHERE id = ?",
+        [$this->data['tracking_consent_updated_at']->format('Y-m-d H:i:s'), $subscriber->getId()]
+      );
       $entityManager->refresh($subscriber);
     }
 
