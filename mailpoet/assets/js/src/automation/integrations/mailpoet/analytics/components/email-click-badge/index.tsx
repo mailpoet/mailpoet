@@ -38,10 +38,10 @@ export function Badge({ email, property }: BadgeProps): JSX.Element {
     return <>{`${email[property]}`}</>;
   }
 
-  // Shows the percentage of clicked emails compared to the number of sent emails
+  // Based on the recipients we were allowed to measure, matching the rate next to it.
   const clickedPercentage = calculatePercentage(
     email[property],
-    email.sent.current,
+    email.trackedSent ?? email.sent.current,
   );
   const clickedBadge = percentageBadgeCalculation(clickedPercentage);
 

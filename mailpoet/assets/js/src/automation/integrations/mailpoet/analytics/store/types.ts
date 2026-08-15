@@ -16,6 +16,9 @@ export type EmailStats = {
   name: string;
   previewUrl: string;
   sent: CurrentAndPrevious;
+  // Recipients we were allowed to measure, and the ones we were not.
+  trackedSent?: number;
+  notTracked?: number;
   opened: number;
   clicked: number;
   orders: number;
@@ -31,6 +34,9 @@ type OverviewSectionData = SectionData & {
   unsubscribed: CurrentAndPrevious;
   revenue: CurrentAndPrevious;
   sent: CurrentAndPrevious;
+  trackedSent?: CurrentAndPrevious;
+  notTracked?: CurrentAndPrevious;
+  trackingCoverage?: CurrentAndPrevious;
   emails: Record<string, EmailStats>;
 };
 
