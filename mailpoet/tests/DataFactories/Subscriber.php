@@ -273,10 +273,16 @@ class Subscriber {
 
   /**
    * @param string $consent One of the SubscriberEntity::TRACKING_CONSENT_* values.
+   * @param DateTimeInterface|null $updatedAt When the consent changed; null = now.
+   *   Needed because the entity stamps "now" on every change and has no setter,
+   *   and tracked-only rates compare this timestamp with statistics_newsletters.sent_at.
    * @return $this
    */
-  public function withTrackingConsent($consent) {
+  public function withTrackingConsent($consent, ?DateTimeInterface $updatedAt = null) {
     $this->data['tracking_consent'] = $consent;
+    if ($updatedAt) {
+      $this->data['tracking_consent_updated_at'] = $updatedAt;
+    }
     return $this;
   }
 
@@ -367,6 +373,15 @@ class Subscriber {
       $entityManager->getConnection()->executeQuery("
         UPDATE $subscribersTable
         SET updated_at = '{$this->data['updatedAt']->format('Y-m-d H:i:s')}'
+        WHERE id = {$subscriber->getId()}
+      ");
+      $entityManager->refresh($subscriber);
+    }
+    if (isset($this->data['tracking_consent_updated_at'])) {
+      $subscribersTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $entityManager->getConnection()->executeQuery("
+        UPDATE $subscribersTable
+        SET tracking_consent_updated_at = '{$this->data['tracking_consent_updated_at']->format('Y-m-d H:i:s')}'
         WHERE id = {$subscriber->getId()}
       ");
       $entityManager->refresh($subscriber);
