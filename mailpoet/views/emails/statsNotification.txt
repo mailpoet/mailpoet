@@ -16,6 +16,9 @@
 <%= __('Machine-opened') %>: <%= stats_number_format_i18n(machineOpened) %>%
 <%= __('Unsubscribed') %>: <%= stats_number_format_i18n(unsubscribed) %>%
 <%= __('Bounced') %>: <%= stats_number_format_i18n(bounced) %>%
+<% if notTracked > 0 %>
+<%= __('Tracking coverage: %1$s%. %2$s of your recipients are not tracked, so open and click rates are based on the rest.')|replace({'%1$s': stats_number_format_i18n(trackingCoverage), '%2$s': notTracked}) %>
+<% endif %>
 
 <%= __('View full campaign report') %>
   <%= linkStats|raw %>
@@ -48,6 +51,10 @@
 <%= stats_number_format_i18n(unsubscribed) %>% <%= __('unsubscribed') %>
 
 <%= stats_number_format_i18n(bounced) %>% <%= __('bounced') %>
+
+<% if notTracked > 0 %>
+<%= __('Tracking coverage: %1$s%. %2$s of your recipients are not tracked, so open and click rates are based on the rest.')|replace({'%1$s': stats_number_format_i18n(trackingCoverage), '%2$s': notTracked}) %>
+<% endif %>
 
 <% if topLinkClicks > 0 %>
 <%= __('Most clicked link') %>

@@ -153,9 +153,12 @@ class Worker {
   private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null, array $settings = []) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $totalSentCount = $statistics->getTotalSentCount() ?: 1;
-    $clicked = ($statistics->getClickCount() * 100) / $totalSentCount;
-    $opened = ($statistics->getOpenCount() * 100) / $totalSentCount;
-    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $totalSentCount;
+    // Opens and clicks over the recipients we were allowed to measure;
+    // unsubscribes and bounces over everyone. The ?: 1 guard is pre-existing.
+    $trackedSentCount = $statistics->getTrackedSentCount() ?: 1;
+    $clicked = ($statistics->getClickCount() * 100) / $trackedSentCount;
+    $opened = ($statistics->getOpenCount() * 100) / $trackedSentCount;
+    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $trackedSentCount;
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
     $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
     $subject = $sendingQueue->getNewsletterRenderedSubject();
@@ -189,6 +192,10 @@ class Worker {
       'machineOpened' => $machineOpened,
       'unsubscribed' => $unsubscribed,
       'bounced' => $bounced,
+      // The digest is a push: for many merchants this is the first place they
+      // see the higher open rate, so the coverage line matters most here.
+      'notTracked' => $statistics->getNotTrackedCount(),
+      'trackingCoverage' => $statistics->getTrackingCoverage(),
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),
