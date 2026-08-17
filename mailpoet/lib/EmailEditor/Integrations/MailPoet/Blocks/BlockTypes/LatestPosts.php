@@ -315,9 +315,11 @@ class LatestPosts extends AbstractBlock {
   }
 
   /**
-   * Renders the full content of the post provided by the template loop.
-   * Block-based content keeps only blocks the email engine can render;
-   * classic content is reduced to an email-safe subset of HTML.
+   * Renders the post content for the current post in the template loop.
+   * Block posts keep only the blocks the email engine can render, and
+   * classic posts are reduced to email-safe HTML. Password-protected
+   * posts render nothing here, because an email would expose the
+   * protected content to anyone who receives it.
    *
    * @param array<string, mixed>|\WP_Block $attributes
    * @param string $content
