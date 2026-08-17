@@ -6,15 +6,15 @@ import { Props as TasksListDataRowProps } from './tasks-list/tasks-list-data-row
 
 type Props = {
   statusData: {
-    status?: string;
-    started?: number;
+    status?: string | null;
+    started?: number | null;
     sent?: number;
-    retryAttempt?: number;
-    retryAt?: number;
-    error: {
-      operation?: string;
-      errorMessage?: string;
-    };
+    retryAttempt?: number | null;
+    retryAt?: number | null;
+    error?: {
+      operation?: string | null;
+      errorMessage?: string | null;
+    } | null;
     tasksStatusCounts: {
       completed: number;
       running: number;

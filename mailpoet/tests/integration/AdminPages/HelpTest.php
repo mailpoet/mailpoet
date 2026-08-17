@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url;
@@ -75,6 +76,42 @@ class HelpTest extends \MailPoetTest {
     verify($data['newsletter']['queueId'])->equals(null);
     verify($data['newsletter']['subject'])->equals(null);
     verify($data['newsletter']['previewUrl'])->equals(null);
+  }
+
+  public function testItExposesQueueStatusUsingTheKeysTheFrontendReads() {
+    $mailerLog = MailerLog::createMailerLog();
+    $mailerLog['retry_attempt'] = 2;
+    $mailerLog['retry_at'] = 60;
+    $mailerLog['error'] = [
+      'error_message' => 'SMTP connect failed',
+      'operation' => 'send',
+    ];
+
+    $data = $this->helpPage->buildQueueStatusData($mailerLog);
+
+    verify($data['retryAttempt'])->equals(2);
+    verify($data['retryAt'])->equals(60);
+    verify($data['error']['errorMessage'])->equals('SMTP connect failed');
+    verify($data['error']['operation'])->equals('send');
+  }
+
+  public function testItExposesNullQueueErrorWhenThereIsNoError() {
+    $data = $this->helpPage->buildQueueStatusData(MailerLog::createMailerLog());
+
+    verify($data['error'])->equals(null);
+    verify($data['retryAttempt'])->equals(null);
+    verify($data['retryAt'])->equals(null);
+  }
+
+  public function testItKeepsQueueStatusAndStartedAtForTheFrontend() {
+    $mailerLog = MailerLog::createMailerLog();
+    $mailerLog['started'] = 60;
+    $mailerLog['status'] = MailerLog::STATUS_PAUSED;
+
+    $data = $this->helpPage->buildQueueStatusData($mailerLog);
+
+    verify($data['status'])->equals(MailerLog::STATUS_PAUSED);
+    verify($data['started'])->equals(60);
   }
 
   private function createNewSendingQueue(?ScheduledTaskEntity $task, ?NewsletterEntity $newsletter, $renderedSubject = null): SendingQueueEntity {
