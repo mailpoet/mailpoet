@@ -370,4 +370,107 @@ class BridgeApiTest extends \MailPoetTest {
     verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
+
+  public function testItSendsRenderedMessagesToTheMessagesEndpoint() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with($this->equalTo($this->api->urlMessages))
+      ->willReturn([]);
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+
+    $result = $this->api->sendMessages([
+      ['to' => ['address' => 'john@example.com', 'name' => 'John'], 'subject' => 'Hello'],
+    ]);
+    verify($result['status'])->equals(API::RESPONSE_STATUS_OK);
+  }
+
+  public function testItSendsTemplateBatchesToTheTemplateMessagesEndpoint() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with($this->equalTo($this->api->urlTemplateMessages))
+      ->willReturn([]);
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+
+    $result = $this->api->sendMessages([
+      'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
+      'template' => ['subject' => 'Hello {{mailpoet_mss_1}}'],
+      'messages' => [
+        [
+          'to' => ['address' => 'john@example.com', 'name' => 'John'],
+          'substitutions' => [
+            'subject' => ['{{mailpoet_mss_1}}' => 'John'],
+            'html' => [],
+            'text' => [],
+          ],
+        ],
+      ],
+    ]);
+    verify($result['status'])->equals(API::RESPONSE_STATUS_OK);
+  }
+
+  public function testItStoresMaxMessagesPerRequestFromSuccessResponse() {
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(201);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn((string)json_encode([
+      'message' => 'Messages queued successfully',
+      'max_messages_per_request' => 250,
+    ]));
+
+    $this->api->sendMessages(['format' => API::SENDING_FORMAT_TEMPLATE_BATCH, 'messages' => []]);
+
+    verify((int)SettingsController::getInstance()->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST))->equals(250);
+  }
+
+  public function testItStoresMaxMessagesPerRequestFromErrorResponse() {
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(400);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn((string)json_encode([
+      'code' => 'validation_error',
+      'message' => 'nope',
+      'max_messages_per_request' => 175,
+      'data' => ['status' => 400],
+    ]));
+
+    $this->api->sendMessages(['format' => API::SENDING_FORMAT_TEMPLATE_BATCH, 'messages' => []]);
+
+    verify((int)SettingsController::getInstance()->get(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST))->equals(175);
+  }
+
+  public function testItIgnoresMaxMessagesPerRequestForNonTemplatedSends() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->expects($this->never())->method('set');
+    $api = new API('test-api-key', $this->wpMock, $settings);
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(201);
+    // The limit advertised by the plain /messages endpoint must not be
+    // persisted, it would wrongly cap templated batch sizes.
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn((string)json_encode(['max_messages_per_request' => 50]));
+
+    $api->sendMessages([['to' => ['address' => 'test@example.com']]]);
+  }
+
+  public function testItDoesNotRewriteMaxMessagesPerRequestWhenUnchanged() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->with(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST)->willReturn(250);
+    $settings->expects($this->never())->method('set');
+    $api = new API('test-api-key', $this->wpMock, $settings);
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(201);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn((string)json_encode(['max_messages_per_request' => 250]));
+
+    $api->sendMessages(['format' => API::SENDING_FORMAT_TEMPLATE_BATCH, 'messages' => []]);
+  }
+
+  public function testItUpdatesMaxMessagesPerRequestWhenChanged() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->with(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST)->willReturn(250);
+    $settings->expects($this->once())->method('set')->with(API::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, 300);
+    $api = new API('test-api-key', $this->wpMock, $settings);
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(201);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn((string)json_encode(['max_messages_per_request' => 300]));
+
+    $api->sendMessages(['format' => API::SENDING_FORMAT_TEMPLATE_BATCH, 'messages' => []]);
+  }
 }

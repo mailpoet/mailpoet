@@ -3,6 +3,7 @@
 namespace MailPoet\Services\Bridge;
 
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
@@ -13,6 +14,10 @@ class API {
   const SENDING_STATUS_SEND_ERROR = 'send_error';
 
   const REQUEST_TIMEOUT = 10; // seconds
+
+  // Wire-format identifier for the templated batch payload. When present in the
+  // message body, the request is routed to the dedicated template-messages endpoint.
+  public const SENDING_FORMAT_TEMPLATE_BATCH = 'template_batch_v1';
 
   // ISO 8601 in UTC, e.g. 2026-06-15T23:59:59Z. The bounces report endpoint
   // parses the `from`/`to` parameters with `new DateTime($value, UTC)`.
@@ -55,16 +60,31 @@ class API {
   public const KEY_CHECK_TYPE_PREMIUM = 'premium';
   public const KEY_CHECK_TYPE_MSS = 'mss';
 
+  // Server-advertised ceiling on messages per request, returned by the
+  // template-messages endpoint. Persisted so the sending worker can cap batches.
+  public const SETTING_KEY_MAX_MESSAGES_PER_REQUEST = 'sending_service_max_messages_per_request';
+
   private $apiKey;
   private $wp;
+  /** @var SettingsController */
+  private $settings;
   /** @var LoggerFactory */
   private $loggerFactory;
   /** @var mixed|null It is an instance of \CurlHandle in PHP8 and above but a resource in PHP7 */
   private $curlHandle = null;
 
+  // Sender domains and authorized email management have no v0 wrapper; the v2
+  // namespace proxies the same upstream /api/v1 shapes the client already parses.
+  private const API_BASE_URL_V2 = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2';
+
   public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
   public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
   public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
+  // Templated batch sending: one shared template plus per-recipient substitution
+  // maps. Served by the wpcom v2 namespace, unlike urlMessages, which stays on
+  // bridge.mailpoet.com and still serves the transactional/test/non-bulk sends
+  // that post fully rendered messages.
+  public $urlTemplateMessages = self::API_BASE_URL_V2 . '/template-messages';
   // Registered directly on the WPCOM mailpoet-bridge plugin, not proxied through
   // bridge.mailpoet.com like the other endpoints. Authenticated with the same
   // `Basic api:<key>` header that auth() produces.
@@ -76,7 +96,8 @@ class API {
 
   public function __construct(
     $apiKey,
-    $wp = null
+    $wp = null,
+    ?SettingsController $settings = null
   ) {
     $this->setKey($apiKey);
     if (is_null($wp)) {
@@ -84,6 +105,7 @@ class API {
     } else {
       $this->wp = $wp;
     }
+    $this->settings = $settings ?? SettingsController::getInstance();
     $this->loggerFactory = LoggerFactory::getInstance();
   }
 
@@ -145,7 +167,7 @@ class API {
     add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 1);
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
-      $this->urlMessages,
+      $this->getMessagesUrl($messageBody),
       $messageBody
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
@@ -159,13 +181,58 @@ class API {
     }
 
     $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $responseBody = $this->wp->wpRemoteRetrieveBody($result);
+    // Only the template-messages endpoint advertises the templated batch
+    // ceiling; a limit from the plain messages endpoint must not cap it.
+    if ($this->isTemplateBatchBody($messageBody)) {
+      $this->storeMaxMessagesPerRequest($responseBody);
+    }
     if ($responseCode !== 201) {
-      $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
-        $this->wp->wpRemoteRetrieveBody($result) :
-        $this->wp->wpRemoteRetrieveResponseMessage($result);
+      $response = $responseBody ?: $this->wp->wpRemoteRetrieveResponseMessage($result);
       return $this->createErrorResponse((int)$responseCode, $response, self::SENDING_STATUS_SEND_ERROR);
     }
     return ['status' => self::RESPONSE_STATUS_OK];
+  }
+
+  /**
+   * @param mixed $messageBody
+   */
+  private function getMessagesUrl($messageBody): string {
+    return $this->isTemplateBatchBody($messageBody) ? $this->urlTemplateMessages : $this->urlMessages;
+  }
+
+  /**
+   * @param mixed $messageBody
+   */
+  private function isTemplateBatchBody($messageBody): bool {
+    return is_array($messageBody) && ($messageBody['format'] ?? null) === self::SENDING_FORMAT_TEMPLATE_BATCH;
+  }
+
+  /**
+   * The template-messages endpoint advertises its current per-request ceiling on
+   * (almost) every response. Persist it whenever it changes so the sending worker
+   * can stay within the server-imposed limit.
+   *
+   * @param mixed $responseBody
+   */
+  private function storeMaxMessagesPerRequest($responseBody): void {
+    if (!is_string($responseBody) || $responseBody === '') {
+      return;
+    }
+    $decoded = json_decode($responseBody, true);
+    if (!is_array($decoded) || !isset($decoded['max_messages_per_request'])) {
+      return;
+    }
+    $advertised = $decoded['max_messages_per_request'];
+    if (!is_numeric($advertised) || (int)$advertised <= 0) {
+      return;
+    }
+    $max = (int)$advertised;
+    $current = $this->settings->get(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
+    if (is_numeric($current) && (int)$current === $max) {
+      return;
+    }
+    $this->settings->set(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, $max);
   }
 
   /**

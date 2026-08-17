@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
+use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
@@ -24,6 +25,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
@@ -376,6 +378,352 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     verify($result['body']['text'])
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
+  }
+
+  public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+
+    $fullNewsletter = $this->newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+    $reconstructed = [
+      'id' => $template['id'],
+      'subject' => strtr($template['subject'], $substitutions['subject']),
+      'body' => [
+        'html' => strtr($template['body']['html'], $substitutions['html']),
+        'text' => strtr($template['body']['text'], $substitutions['text']),
+      ],
+    ];
+
+    verify($template['subject'])->stringContainsString('{{mailpoet_mss_');
+    verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+    verify($template['body']['text'])->stringContainsString('{{mailpoet_mss_');
+    $substitutionValues = implode("\n", array_merge($substitutions['subject'], $substitutions['html'], $substitutions['text']));
+    verify($substitutionValues)->stringContainsString('&endpoint=track');
+    $reconstructed['body']['html'] = str_replace('&#038;', '&', $reconstructed['body']['html']);
+    verify($reconstructed)->equals($fullNewsletter);
+  }
+
+  public function testItScopesTemplatedSubstitutionsForHtmlAndTextValues(): void {
+    $homepageUrl = home_url();
+    $homepageLink = sprintf(
+      '<a target="_blank" href="%s">%s</a>',
+      esc_url($homepageUrl),
+      esc_html(get_bloginfo('name'))
+    );
+
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Visit [site:homepage_link]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Visit [site:homepage_link]</p>',
+      'text' => 'Visit [site:homepage_link]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    $this->assertStringContainsString('<p>Visit {{mailpoet_mss_', $template['body']['html']);
+    $this->assertStringContainsString('Visit {{mailpoet_mss_', $template['body']['text']);
+    $this->assertSame(
+      '<p>Visit ' . $homepageLink . '</p>',
+      strtr($template['body']['html'], $substitutions['html'])
+    );
+    $this->assertSame(
+      'Visit ' . @Html2Text::convert($homepageLink),
+      strtr($template['body']['text'], $substitutions['text'])
+    );
+    $this->assertSame(
+      'Visit ' . @Html2Text::convert($homepageLink),
+      strtr($template['subject'], $substitutions['subject'])
+    );
+  }
+
+  public function testItResolvesContentDependentShortcodesInAllTemplatedParts(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_title' => 'Templated shortcode title',
+      'post_status' => 'publish',
+    ]);
+
+    // The post title shortcode resolves by scanning the content for data-post-id,
+    // which exists only in the HTML part. The subject and text parts must borrow
+    // the HTML as content source to match the rendered sending path.
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('News: [newsletter:post_title]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p data-post-id="' . $postId . '">Read [newsletter:post_title]</p>',
+      'text' => 'Read [newsletter:post_title]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $fullNewsletter = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+    $reconstructed = [
+      'id' => $template['id'],
+      'subject' => strtr($template['subject'], $substitutions['subject']),
+      'body' => [
+        'html' => strtr($template['body']['html'], $substitutions['html']),
+        'text' => strtr($template['body']['text'], $substitutions['text']),
+      ],
+    ];
+
+    verify($reconstructed)->equals($fullNewsletter);
+    $this->assertSame('Read Templated shortcode title', $reconstructed['body']['text']);
+  }
+
+  public function testItDeduplicatesRepeatedTrackedLinksIntoSingleHtmlPlaceholder(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $repeatedLink = Links::DATA_TAG_CLICK . '-abcdef123456';
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Newsletter');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p><a href="' . $repeatedLink . '">Manage</a> and <a href="' . $repeatedLink . '">Manage subscription</a></p>',
+      'text' => 'Manage subscription',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    // Every html substitution must exist in the html template, otherwise the MSS server rejects the batch.
+    foreach (array_keys($substitutions['html']) as $placeholder) {
+      $this->assertStringContainsString($placeholder, $template['body']['html']);
+    }
+
+    // The repeated link collapses to a single placeholder used for both occurrences.
+    $this->assertCount(1, $substitutions['html']);
+    $placeholder = (string)array_key_first($substitutions['html']);
+    $this->assertSame(2, substr_count($template['body']['html'], $placeholder));
+  }
+
+  public function testItNeutralizesOpenTrackingPixelForNonConsentingSubscriberInTemplatedBatch(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Newsletter');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<img src="' . Links::DATA_TAG_OPEN . '" alt="" /><p><a href="' . Links::DATA_TAG_CLICK . '-abcdef123456">Visit</a></p>',
+      'text' => 'Visit',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $consenting = $this->subscriber;
+    $consenting->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $nonConsenting = (new SubscriberFactory())->create();
+    $nonConsenting->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templatedForConsenting = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $consenting,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+    $templatedForNonConsenting = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $nonConsenting,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+
+    // Consent handling must not break the shared-template invariant.
+    $this->assertSame($templatedForConsenting['newsletter'], $templatedForNonConsenting['newsletter']);
+
+    $consentingValues = implode(' ', $templatedForConsenting['substitutions']['html']);
+    $nonConsentingValues = implode(' ', $templatedForNonConsenting['substitutions']['html']);
+
+    // The consenting subscriber gets a live open-tracking URL.
+    $this->assertStringContainsString('action=open', $consentingValues);
+    // The non-consenting subscriber gets the inert data: pixel instead, so no
+    // reading operation can happen when the email is opened.
+    $this->assertStringNotContainsString('action=open', $nonConsentingValues);
+    $this->assertContains(Links::TRACKING_OPT_OUT_PIXEL, $templatedForNonConsenting['substitutions']['html']);
+    // Click links stay rewritten for both; their recording is suppressed server-side.
+    $this->assertStringContainsString('action=click', $consentingValues);
+    $this->assertStringContainsString('action=click', $nonConsentingValues);
+  }
+
+  public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Literal {{mailpoet_mss_1}} for [subscriber:firstname]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Literal {{mailpoet_mss_1}} for [subscriber:firstname]</p>',
+      'text' => 'Literal {{mailpoet_mss_1}} for [subscriber:firstname]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+
+    $this->assertSame(
+      'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
+      strtr($template['subject'], $substitutions['subject'])
+    );
+    $this->assertSame(
+      '<p>Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName() . '</p>',
+      strtr($template['body']['html'], $substitutions['html'])
+    );
+    $this->assertSame(
+      'Literal {{mailpoet_mss_1}} for ' . $this->subscriber->getFirstName(),
+      strtr($template['body']['text'], $substitutions['text'])
+    );
+  }
+
+  public function testItGeneratesIdenticalTemplateWhenTagsResolveToTheSameValueForSomeSubscribers(): void {
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Hi [subscriber:firstname] [subscriber:lastname]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p>Hi [subscriber:firstname] [subscriber:lastname],</p>',
+      'text' => 'Hi [subscriber:firstname] [subscriber:lastname],',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $withFirstName = (new SubscriberFactory())->withFirstName('Rosta')->withLastName('')->create();
+    $withoutName = (new SubscriberFactory())->withFirstName('')->withLastName('')->create();
+
+    // The batch generates one template shared by every subscriber, so the same
+    // namespace is passed to each subscriber's preparation (see SendingQueue).
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templatedForFirst = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $withFirstName,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+    $templatedForNone = $this->newsletterTask->prepareNewsletterForTemplatedSending(
+      $this->newsletter,
+      $withoutName,
+      $this->sendingQueueEntity,
+      $namespace
+    );
+
+    // firstname and lastname both resolve to an empty string for the second
+    // subscriber, but must stay separate placeholders, otherwise the templates
+    // diverge and SendingQueue throws "different templates for subscribers".
+    $this->assertSame($templatedForFirst['newsletter'], $templatedForNone['newsletter']);
+
+    preg_match_all('/\{\{mailpoet_mss_[^}]+\}\}/', $templatedForFirst['newsletter']['body']['html'], $matches);
+    $this->assertCount(2, array_unique($matches[0]));
+
+    $this->assertSame(
+      '<p>Hi Rosta ,</p>',
+      strtr($templatedForFirst['newsletter']['body']['html'], $templatedForFirst['substitutions']['html'])
+    );
+    $this->assertSame(
+      '<p>Hi  ,</p>',
+      strtr($templatedForNone['newsletter']['body']['html'], $templatedForNone['substitutions']['html'])
+    );
+  }
+
+  public function testItAppliesDeprecatedAutomationPersonalizationFiltersForBlockEmails(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Subject');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello</p>',
+      'text' => 'Hello',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html . '<p>Legacy HTML for ' . $context['recipient_email'] . '</p>';
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text . "\nLegacy text for " . $context['recipient_email'];
+    };
+    $deprecatedHooks = [];
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => Expected::exactly(2, function($hookName, $version, $replacement, $message) use (&$deprecatedHooks) {
+        $deprecatedHooks[] = [$hookName, $version, $replacement, $message];
+      }),
+    ]);
+    $newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $result = $newsletterTask->prepareNewsletterForSending(
+        $newsletter,
+        $this->subscriber,
+        $sendingQueue
+      );
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
+
+    $this->assertSame(
+      '<p>Hello</p><p>Legacy HTML for ' . $this->subscriber->getEmail() . '</p>',
+      $result['body']['html']
+    );
+    $this->assertSame("Hello\nLegacy text for " . $this->subscriber->getEmail(), $result['body']['text']);
+    $deprecationMessage = 'This filter is deprecated and will be removed in a future MailPoet release. '
+      . 'Migrate custom personalization to email editor personalization tags. '
+      . 'Use mailpoet_automation_email_personalization_context if you need to extend the personalization context.';
+    $this->assertSame([
+      [
+        'mailpoet_automation_email_personalize_html_after',
+        '5.35.0',
+        '',
+        $deprecationMessage,
+      ],
+      [
+        'mailpoet_automation_email_personalize_text_after',
+        '5.35.0',
+        '',
+        $deprecationMessage,
+      ],
+    ], $deprecatedHooks);
   }
 
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {

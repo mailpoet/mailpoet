@@ -10,6 +10,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\BlockEmailPersonalizationProcessor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\CustomFieldEntity;
@@ -17,6 +18,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -40,6 +42,16 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
 
     $this->scheduledTaskEntity = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->sendingQueueEntity = (new SendingQueueFactory())->create($this->scheduledTaskEntity, $this->newsletter);
+  }
+
+  public function _after() {
+    // Tests here register throwaway tags on the shared registry; drop them so
+    // they don't leak into later tests depending on execution order.
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    foreach (['[mailpoet/test-name]', '[mailpoet/test-url]', '[mailpoet/test-link]'] as $token) {
+      $registry->unregister($token);
+    }
+    parent::_after();
   }
 
   public function testItHooksToPostRenderToReplaceLinksInHrefByShortcodes() {
@@ -372,5 +384,166 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
       }
     }
     return null;
+  }
+
+  public function testBlockEmailPersonalizationProcessorRestoresOrderReviewUrlWithoutPostPersonalizationFilters(): void {
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->method('getUrl')->willReturn('https://example.com/review-order/abc');
+    $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+
+    $content = $processor->personalize([
+      'Subject',
+      '<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>',
+      '[Leave a review](http://[woocommerce/order-review-url%5D)',
+    ], []);
+
+    $this->assertSame('Subject', $content[0]);
+    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $content[1]);
+    $this->assertStringNotContainsString('data-link-href=', $content[1]);
+    $this->assertSame('[Leave a review](https://example.com/review-order/abc)', $content[2]);
+  }
+
+  public function testBlockEmailPersonalizationProcessorCanReturnPlaceholdersAndValues(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Name',
+      'mailpoet/test-name',
+      'Test',
+      function(): string {
+        return 'Rosta & Co';
+      }
+    ));
+    $registry->register(new Personalization_Tag(
+      'Test URL',
+      'mailpoet/test-url',
+      'Test',
+      function(): string {
+        return 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss';
+      }
+    ));
+
+    $collector = new PlaceholderCollector('test');
+    $orderReviewUrl = $this->createMock(OrderReviewUrl::class);
+    $orderReviewUrl->method('getUrl')->willReturn('https://example.com/review-order/abc?email=rosta%40example.com&source=mss');
+    $processor = $this->getServiceWithOverrides(BlockEmailPersonalizationProcessor::class, [
+      'orderReviewUrl' => $orderReviewUrl,
+    ]);
+    $source = [
+      'Subject',
+      '<p><!--[mailpoet/test-name]--></p><a data-link-href="[mailpoet/test-url]">Review</a>',
+      '<!--[mailpoet/test-name]--> [Review](http://[woocommerce/order-review-url%5D)',
+    ];
+    $personalizedContent = $processor->personalize($source, []);
+    $content = $processor->personalizeWithPlaceholders($source, [], $collector);
+
+    $this->assertSame('Subject', $content[0]);
+    $this->assertStringContainsString('<p>{{mailpoet_mss_test_1}}</p>', $content[1]);
+    $this->assertStringContainsString('href="{{mailpoet_mss_test_2}}"', $content[1]);
+    $this->assertSame('{{mailpoet_mss_test_3}} [Review]({{mailpoet_mss_test_4}})', $content[2]);
+    $values = $collector->getValues();
+    $this->assertSame($personalizedContent[0], strtr($content[0], $values['subject']));
+    $this->assertSame($personalizedContent[1], strtr($content[1], $values['html']));
+    $this->assertSame($personalizedContent[2], strtr($content[2], $values['text']));
+    $this->assertSame([
+      'subject' => [],
+      'html' => [
+        '{{mailpoet_mss_test_1}}' => 'Rosta & Co',
+        '{{mailpoet_mss_test_2}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
+      ],
+      'text' => [
+        '{{mailpoet_mss_test_3}}' => 'Rosta & Co',
+        '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
+      ],
+    ], $values);
+  }
+
+  public function testBlockEmailKeepsTemplateIdenticalWhenOneTokenIsUsedAsTextAndLink(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Link',
+      'mailpoet/test-link',
+      'Test',
+      function(array $context): string {
+        return (string)($context['url'] ?? '');
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $source = [
+      'Subject',
+      '<p><!--[mailpoet/test-link]--></p><a data-link-href="[mailpoet/test-link]">Open</a>',
+      '',
+    ];
+
+    // Plain URL: esc_url (href) and HTML escaping (visible text) produce the same string.
+    $plain = $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/plain'], new PlaceholderCollector('ns'));
+    // URL with '&': esc_url encodes it as &#038; while the visible text keeps the raw '&'.
+    $ampersand = $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/?a=1&b=2'], new PlaceholderCollector('ns'));
+
+    // The same token used as visible text and as a link href must keep two
+    // separate placeholders regardless of whether the two escapings coincide,
+    // so the generated template is identical across subscribers.
+    $this->assertSame($plain[1], $ampersand[1]);
+    $this->assertSame(2, substr_count($plain[1], '{{mailpoet_mss_ns_'));
+
+    // The two placeholders carry context-specific escaping: raw '&' for the
+    // visible text, esc_url's &#038; for the href.
+    $collectorForValues = new PlaceholderCollector('ns');
+    $processor->personalizeWithPlaceholders($source, ['url' => 'https://example.com/?a=1&b=2'], $collectorForValues);
+    $htmlValues = $collectorForValues->getValues()['html'];
+    $this->assertContains('https://example.com/?a=1&b=2', $htmlValues);
+    $this->assertContains('https://example.com/?a=1&#038;b=2', $htmlValues);
+  }
+
+  public function testBlockEmailResolvesTheSameTagEmbeddedInDifferentLinkUrls(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test Link',
+      'mailpoet/test-link',
+      'Test',
+      function(): string {
+        return 'john@example.com';
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $collector = new PlaceholderCollector('ns');
+    // The same tag is a component of two different link URLs, so each link
+    // must keep its own resolved URL.
+    $content = $processor->personalizeWithPlaceholders([
+      'Subject',
+      '<a href="https://example.com/a?e=[mailpoet/test-link]">A</a><a href="https://example.com/b?e=[mailpoet/test-link]">B</a>',
+      '',
+    ], [], $collector);
+
+    $resolvedHtml = strtr($content[1], $collector->getValues()['html']);
+    $this->assertStringContainsString('href="https://example.com/a?e=john@example.com"', $resolvedHtml);
+    $this->assertStringContainsString('href="https://example.com/b?e=john@example.com"', $resolvedHtml);
+  }
+
+  public function testBlockEmailKeepsDollarSignsInResolvedLinkValues(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag(
+      'Test URL',
+      'mailpoet/test-url',
+      'Test',
+      function(): string {
+        // "$10" must not be interpreted as a regex backreference during replacement.
+        return 'https://example.com/deal?price=$10';
+      }
+    ));
+
+    $processor = $this->diContainer->get(BlockEmailPersonalizationProcessor::class);
+    $collector = new PlaceholderCollector('ns');
+    $content = $processor->personalizeWithPlaceholders([
+      'Subject',
+      '<a data-link-href="[mailpoet/test-url]">Deal</a>',
+      '',
+    ], [], $collector);
+
+    $resolvedHtml = strtr($content[1], $collector->getValues()['html']);
+    $this->assertStringContainsString('price=$10', $resolvedHtml);
   }
 }

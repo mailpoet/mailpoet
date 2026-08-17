@@ -3,9 +3,11 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Config\ServicesChecker;
+use MailPoet\InvalidStateException;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -121,6 +123,10 @@ class MailPoet implements MailerMethod {
   }
 
   public function getBody($newsletter, $subscriber, $extraParams = []) {
+    if ($newsletter instanceof TemplateBatch && is_array($subscriber)) {
+      return $this->composeTemplateBatchBody($newsletter, $subscriber, $extraParams);
+    }
+
     if (is_array($newsletter) && is_array($subscriber)) {
       $body = [];
       for ($record = 0; $record < count($newsletter); $record++) {
@@ -140,6 +146,65 @@ class MailPoet implements MailerMethod {
         (!empty($extraParams['one_click_unsubscribe'])) ? $extraParams['one_click_unsubscribe'] : false,
         (!empty($extraParams['meta'])) ? $extraParams['meta'] : false
       );
+    }
+    return $body;
+  }
+
+  private function composeTemplateBatchBody(TemplateBatch $batch, array $subscribers, array $extraParams): array {
+    $template = $batch->getTemplate();
+    $body = [
+      'format' => API::SENDING_FORMAT_TEMPLATE_BATCH,
+      'from' => ([
+        'address' => $this->sender['from_email'],
+        'name' => $this->sender['from_name'],
+      ]),
+      'reply_to' => ([
+        'address' => $this->replyTo['reply_to_email'],
+      ]),
+      'template' => [
+        'subject' => $template['subject'],
+      ],
+      'messages' => [],
+    ];
+    if (!empty($this->replyTo['reply_to_name'])) {
+      $body['reply_to']['name'] = $this->replyTo['reply_to_name'];
+    }
+    if (!empty($template['body']['html'])) {
+      $body['template']['html'] = $template['body']['html'];
+    }
+    if (!empty($template['body']['text'])) {
+      $body['template']['text'] = $template['body']['text'];
+    }
+
+    $substitutions = $batch->getSubstitutions();
+    // The template is shared, so every recipient must have its own substitution
+    // map. A mismatch would ship raw {{mailpoet_mss_*}} placeholders, so fail loudly.
+    if (count($substitutions) !== count($subscribers)) {
+      throw new InvalidStateException('Templated batch substitution count does not match the number of recipients.');
+    }
+    for ($record = 0; $record < count($subscribers); $record++) {
+      $processedSubscriber = $this->processSubscriber($subscribers[$record]);
+      $message = [
+        'to' => ([
+          'address' => $processedSubscriber['email'],
+          'name' => $processedSubscriber['name'],
+        ]),
+        // Bridge must replace these once, without recursively expanding values.
+        'substitutions' => $substitutions[$record],
+      ];
+      $unsubscribeUrl = (!empty($extraParams['unsubscribe_url'][$record])) ? $extraParams['unsubscribe_url'][$record] : false;
+      $oneClickUnsubscribeUrl = (!empty($extraParams['one_click_unsubscribe'][$record])) ? $extraParams['one_click_unsubscribe'][$record] : false;
+      if ($unsubscribeUrl) {
+        $isHttps = $this->url->isUsingHttps($unsubscribeUrl);
+        $message['unsubscribe'] = [
+          'url' => $isHttps && $oneClickUnsubscribeUrl ? $oneClickUnsubscribeUrl : $unsubscribeUrl,
+          'post' => $isHttps,
+        ];
+      }
+      if (!empty($extraParams['meta'][$record])) {
+        $message['meta'] = $extraParams['meta'][$record];
+      }
+      $body['messages'][] = $message;
     }
     return $body;
   }

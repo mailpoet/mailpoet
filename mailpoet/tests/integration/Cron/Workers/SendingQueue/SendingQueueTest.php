@@ -26,6 +26,9 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Features\FeatureFlagsController;
+use MailPoet\Features\FeaturesController;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -36,6 +39,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -114,6 +118,12 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeatureFlagsController */
+  private $featureFlagsController;
+
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -165,7 +175,14 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->statisticsNewslettersRepository = $this->diContainer->get(StatisticsNewslettersRepository::class);
+    $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);
+    $this->featuresController = $this->diContainer->get(FeaturesController::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
+  }
+
+  public function _after() {
+    $this->disableMssTemplatedSending();
+    parent::_after();
   }
 
   private function getDirectUnsubscribeURL() {
@@ -225,7 +242,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->process();
@@ -264,7 +282,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -315,7 +334,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -359,7 +379,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->process();
   }
@@ -531,8 +552,14 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            verify(!empty($newsletter[0]['body']['html']))->true();
-            verify(!empty($newsletter[0]['body']['text']))->true();
+            $this->assertIsArray($newsletter);
+            $this->assertCount(1, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            verify(!empty($firstNewsletterBody['html']))->true();
+            verify(!empty($firstNewsletterBody['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
@@ -574,6 +601,328 @@ class SendingQueueTest extends \MailPoetTest {
       'queue' => $this->sendingQueue,
     ]);
     verify($statistics)->notEquals(false);
+  }
+
+  public function testItCanProcessSubscribersInTemplatedBulk(): void {
+    $this->enableMssTemplatedSending();
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $this->sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            $template = $newsletter->getTemplate();
+            $substitutions = $newsletter->getSubstitutions();
+            verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            $this->assertCount(2, $substitutions);
+            $this->assertNotSame($substitutions[0], $substitutions[1]);
+            $this->assertSame('Newsletter for John', strtr($template['subject'], $substitutions[0]['subject']));
+            $this->assertSame('Newsletter for Jane', strtr($template['subject'], $substitutions[1]['subject']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['html'], $substitutions[0]['html']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['html'], $substitutions[1]['html']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['text'], $substitutions[0]['text']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['text'], $substitutions[1]['text']));
+            verify($subscriber)->arrayCount(2);
+            verify($extraParams['unsubscribe_url'])->notEmpty();
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+
+    $sendingQueueWorker->process();
+
+    verify($this->sendingThrottlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_BATCH_SIZE);
+  }
+
+  public function testItPausesTaskWhenTemplatedBatchTemplatesDiverge(): void {
+    $this->enableMssTemplatedSending();
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::never(),
+          'prepareSubscriberForSending' => function($subscriber) {
+            return $subscriber->getEmail();
+          },
+        ]
+      )
+    );
+    // Each subscriber produces a different template, which must abort the batch.
+    $sendingQueueWorker->newsletterTask = $this->make(NewsletterTask::class, [
+      'prepareNewsletterForTemplatedSending' => function($newsletter, $subscriber) {
+        return [
+          'newsletter' => ['id' => $newsletter->getId(), 'subject' => 'Subject for ' . $subscriber->getId(), 'body' => ['html' => '', 'text' => '']],
+          'substitutions' => ['subject' => [], 'html' => [], 'text' => []],
+        ];
+      },
+    ]);
+
+    try {
+      $sendingQueueWorker->processQueue($this->scheduledTask, $this->newsletter, [$this->subscriber, $subscriber2], 1000000000000000000, 'bulk');
+      $this->fail('Templated batch mismatch did not throw.');
+    } catch (InvalidStateException $exception) {
+      verify($exception->getMessage())->equals('Templated batch generated different templates for subscribers.');
+    }
+
+    // The task must be paused so the mismatch is not retried by every cron run.
+    $this->entityManager->refresh($this->scheduledTask);
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+  }
+
+  public function testItCanProcessAutomationSubscribersInTemplatedBulkWithoutDeprecatedFilters(): void {
+    $this->enableMssTemplatedSending();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            $template = $newsletter->getTemplate();
+            $substitutions = $newsletter->getSubstitutions();
+            verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            $this->assertCount(2, $substitutions);
+            $this->assertNotSame($substitutions[0], $substitutions[1]);
+            $this->assertSame('Newsletter for John', strtr($template['subject'], $substitutions[0]['subject']));
+            $this->assertSame('Newsletter for Jane', strtr($template['subject'], $substitutions[1]['subject']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['html'], $substitutions[0]['html']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['html'], $substitutions[1]['html']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['text'], $substitutions[0]['text']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['text'], $substitutions[1]['text']));
+            verify($subscriber)->arrayCount(2);
+            verify($extraParams['unsubscribe_url'])->notEmpty();
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+
+    $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$this->subscriber, $subscriber2], 1000000000000000000);
+  }
+
+  public function testItUsesRenderedBulkWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $this->enableMssTemplatedSending();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->entityManager->flush();
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html . '<p>Legacy HTML for ' . $context['recipient_email'] . '</p>';
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text . "\nLegacy text for " . $context['recipient_email'];
+    };
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
+            $this->assertIsArray($newsletter);
+            $this->assertCount(2, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $secondNewsletter = $newsletter[1] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $this->assertIsArray($secondNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $secondNewsletterBody = $secondNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            $this->assertIsArray($secondNewsletterBody);
+            $this->assertSame('Newsletter for John', $firstNewsletter['subject']);
+            $this->assertSame('Newsletter for Jane', $secondNewsletter['subject']);
+            $this->assertSame('<p>Hello John</p><p>Legacy HTML for john@doe.com</p>', $firstNewsletterBody['html']);
+            $this->assertSame('<p>Hello Jane</p><p>Legacy HTML for jane@doe.com</p>', $secondNewsletterBody['html']);
+            $this->assertSame("Hello John\nLegacy text for john@doe.com", $firstNewsletterBody['text']);
+            $this->assertSame("Hello Jane\nLegacy text for jane@doe.com", $secondNewsletterBody['text']);
+            verify($subscriber)->arrayCount(2);
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => Expected::exactly(4, function() {
+      }),
+    ]);
+    $sendingQueueWorker->newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$this->subscriber, $subscriber2], 1000000000000000000);
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
+  }
+
+  public function testItFallsBackToDefaultBatchSizeWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $this->enableMssTemplatedSending();
+
+    // Pause the default standard-newsletter task so process() only picks up the automation task below.
+    $this->scheduledTask->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->flush();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId()]);
+    $this->entityManager->flush();
+
+    // Spy on the batch-size decision: with deprecated filters registered, the send falls back to the
+    // old per-subscriber path, so the batch size must be told NOT to use templated (fast) sending.
+    $this->sendingThrottlingHandler = $this->construct(
+      SendingThrottlingHandler::class,
+      [$this->loggerFactory, $this->diContainer->get(SettingsController::class), $this->wp],
+      [
+        'setUseTemplatedSending' => Expected::once(function($useTemplatedSending) {
+          verify($useTemplatedSending)->false();
+        }),
+      ]
+    );
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html;
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text;
+    };
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => function() {
+            return $this->mailerTaskDummyResponse;
+          },
+          'getProcessingMethod' => function() {
+            return 'bulk';
+          },
+        ]
+      )
+    );
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => function() {
+      },
+    ]);
+    $sendingQueueWorker->newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $sendingQueueWorker->process();
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
   }
 
   public function testItProcessesStandardNewsletters() {
@@ -667,7 +1016,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1383,7 +1733,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1801,7 +2152,18 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
+      $this->featuresController,
     );
+  }
+
+  private function enableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, true);
+    $this->featuresController->resetCache();
+  }
+
+  private function disableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, false);
+    $this->featuresController->resetCache();
   }
 
   private function createListWithSubscriber(): array {
