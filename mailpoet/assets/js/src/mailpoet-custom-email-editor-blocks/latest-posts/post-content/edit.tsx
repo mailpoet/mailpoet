@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { useBlockProps } from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
@@ -19,16 +19,22 @@ export function Edit({ context }: EditProps): JSX.Element {
     className: 'mailpoet-latest-posts__post-content',
   });
 
-  const record = useSelect(
+  const { record, hasResolved } = useSelect(
     (select) => {
       if (!postId || !postType) {
-        return null;
+        return { record: null, hasResolved: false };
       }
-      return select(coreStore).getEntityRecord(
-        'postType',
-        postType,
-        postId,
-      ) as ContentRecord | null;
+      return {
+        record: select(coreStore).getEntityRecord(
+          'postType',
+          postType,
+          postId,
+        ) as ContentRecord | null,
+        hasResolved: select(coreStore).hasFinishedResolution(
+          'getEntityRecord',
+          ['postType', postType, postId],
+        ),
+      };
     },
     [postId, postType],
   );
@@ -41,10 +47,24 @@ export function Edit({ context }: EditProps): JSX.Element {
     );
   }
 
-  if (!record) {
+  if (!hasResolved) {
     return (
       <div {...blockProps}>
         <Spinner />
+      </div>
+    );
+  }
+
+  if (!record) {
+    return (
+      <div {...blockProps}>
+        <p>
+          {sprintf(
+            // translators: %d is the post ID.
+            __('Could not load the post (ID: %d). Was it deleted?', 'mailpoet'),
+            postId,
+          )}
+        </p>
       </div>
     );
   }
