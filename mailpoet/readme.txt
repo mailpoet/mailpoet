@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.35.1
+Stable tag: 5.36.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.35.1 - 2026-08-10 =
-* Changed: The option for subscribers to opt out of email open and click tracking is now hidden unless you turn on the new Subscriber choice setting in Settings > Advanced;
-* Fixed: Links sent to subscribers who opted out of tracking are no longer rewritten to redirect through click tracking;
-* Fixed: Links whose address contains a personalisation shortcode now work for subscribers who opted out of open and click tracking;
-* Fixed: Visual issues in the MailPoet admin with WordPress 7.1.
+= 5.36.0 - 2026-08-18 =
+* Added: Subscribers can now be asked for tracking consent when they sign up, with a separate checkbox on subscription forms, WooCommerce checkout, and the WordPress registration and comment forms;
+* Added: New segment filter for tracking consent, so you can find subscribers who allowed tracking, opted out, or were never asked;
+* Updated: Email editor packages to their latest versions;
+* Updated: Bump the minimum required WordPress version to 7.0 and tested up to version to 7.1;
+* Fixed: Open and click rates above 100% on automation and welcome email statistics;
+* Fixed: Footer links in the block editor now follow the underline setting from the email styles;
+* Fixed: Campaign stats no longer drop link filter deep links when switching tabs.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
