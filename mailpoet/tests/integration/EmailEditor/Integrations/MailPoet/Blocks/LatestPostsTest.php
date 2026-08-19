@@ -19,6 +19,9 @@ class LatestPostsTest extends \MailPoetTest {
   /** @var int[] */
   private $postIds = [];
 
+  /** @var int[] */
+  private $attachmentIds = [];
+
   /** @var \WP_Post|null */
   private $previousGlobalPost;
 
@@ -40,6 +43,9 @@ class LatestPostsTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    foreach ($this->attachmentIds as $attachmentId) {
+      $this->wp->wpDeletePost($attachmentId, true);
+    }
     foreach ($this->postIds as $postId) {
       $this->wp->wpDeletePost($postId, true);
     }
@@ -281,7 +287,6 @@ class LatestPostsTest extends \MailPoetTest {
     verify($image['height'])->null();
     verify((string)$image['style'])->stringNotContainsString('object-fit');
 
-    wp_delete_post($attachmentId, true);
   }
 
   public function testItRendersAvatarAsRegularImageBlockKeepingItsSize(): void {
@@ -394,7 +399,6 @@ class LatestPostsTest extends \MailPoetTest {
     // Columns + the inter-column gap must not exceed the available width.
     verify($layout['widths'][0] + $layout['widths'][1] + $layout['gap'])->lessThanOrEqual($available);
 
-    wp_delete_post($attachmentId, true);
   }
 
   public function testItRendersFeaturedImageAtFullWidthInSingleColumn(): void {
@@ -425,7 +429,6 @@ class LatestPostsTest extends \MailPoetTest {
     verify($image['width'])->greaterThan(400);
     verify($image['height'])->null();
 
-    wp_delete_post($attachmentId, true);
   }
 
   public function testItConstrainsFeaturedImageToColumnWidthInRenderedEmail(): void {
@@ -457,7 +460,6 @@ class LatestPostsTest extends \MailPoetTest {
     // No fixed height keeps the natural aspect ratio.
     verify($image['height'])->null();
 
-    wp_delete_post($attachmentId, true);
   }
 
   public function testItKeepsTheBlockAvailableInsideTheEmailEditor(): void {
@@ -482,6 +484,29 @@ class LatestPostsTest extends \MailPoetTest {
     verify(in_array('mailpoet/latest-posts-template', $allowed, true))->false();
     // Other blocks remain available.
     verify(in_array('core/paragraph', $allowed, true))->true();
+  }
+
+  public function testItKeepsAnEmptyAllowListFromAnotherIntegration(): void {
+    $regularPost = $this->wp->getPost($this->postIds[0]);
+    $context = new \WP_Block_Editor_Context(['post' => $regularPost]);
+
+    // `false` means another integration disallowed every block; we must not
+    // turn that back into the full block list.
+    verify($this->block->restrictBlocksToEmailEditor(false, $context))->equals(false);
+  }
+
+  public function testItCapsTheNumberOfManuallySelectedPosts(): void {
+    $manual = $this->postIds;
+    for ($i = 0; $i < 100; $i++) {
+      $postId = $this->createPost('Manual cap post ' . $i, '2021-01-01 01:01:01');
+      $this->postIds[] = $postId;
+      $manual[] = $postId;
+    }
+
+    $html = $this->render(['selectionMode' => 'manual', 'posts' => $manual]);
+
+    // The same limit as the latest-posts query keeps huge selections in check.
+    verify(substr_count($html, 'data-post-id'))->equals(100);
   }
 
   public function testItTagsEachPostWithADataPostIdForNotificationHistory(): void {
@@ -643,6 +668,7 @@ class LatestPostsTest extends \MailPoetTest {
       'guid' => $upload['url'],
     ], $upload['file']);
     $this->assertIsInt($attachmentId);
+    $this->attachmentIds[] = $attachmentId;
     require_once ABSPATH . 'wp-admin/includes/image.php';
     $metadata = wp_generate_attachment_metadata($attachmentId, $upload['file']);
     wp_update_attachment_metadata($attachmentId, $metadata);
