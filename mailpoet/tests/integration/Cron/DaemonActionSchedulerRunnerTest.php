@@ -72,6 +72,16 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     $this->actionSchedulerRunner->clearDeactivationFlag();
   }
 
+  public function testIsDeactivatingReturnsFalseForStaleFlag(): void {
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, time() - DaemonActionSchedulerRunner::DEACTIVATION_FLAG_TTL - 1);
+    verify($this->actionSchedulerRunner->isDeactivating())->false();
+  }
+
+  public function testIsDeactivatingReturnsFalseForLegacyBooleanFlag(): void {
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, true);
+    verify($this->actionSchedulerRunner->isDeactivating())->false();
+  }
+
   public function testClearDeactivationFlagRemovesFlag(): void {
     $this->actionSchedulerRunner->deactivate();
     verify($this->actionSchedulerRunner->isDeactivating())->true();

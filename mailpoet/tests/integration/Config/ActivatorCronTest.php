@@ -59,7 +59,7 @@ class ActivatorCronTest extends \MailPoetTest {
 
   public function testDeactivationFlagIsClearedAfterActivation(): void {
     $this->settings->set(CronTrigger::SETTING_CURRENT_METHOD, CronTrigger::METHOD_ACTION_SCHEDULER);
-    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, true);
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, time());
     verify($this->daemonActionSchedulerRunner->isDeactivating())->true();
 
     $this->activator->activate();
