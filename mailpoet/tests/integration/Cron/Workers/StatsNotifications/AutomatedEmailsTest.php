@@ -224,7 +224,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
           verify($context['newsletters'][0]['clicked'])->equals(0); // not 500%
           verify($context['newsletters'][0]['opened'])->equals(0); // not 200%
           verify($context['newsletters'][0]['notTracked'])->equals(10);
-          verify($context['newsletters'][0]['trackingCoverage'])->equals(0.0);
+          verify($context['newsletters'][0]['trackedSent'])->equals(0);
           return true;
         })
       );
