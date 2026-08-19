@@ -8,7 +8,7 @@ use MailPoet\Config\Renderer;
  * WorkerTest and AutomatedEmailsTest both mock the Renderer, so nothing else
  * actually renders these templates — a Twig error in one of them would ship
  * unnoticed. This renders all six for real, with and without untracked
- * recipients, so both branches of the coverage line are exercised.
+ * recipients, so both branches of the not-tracked line are exercised.
  */
 class StatsNotificationTemplatesTest extends \MailPoetTest {
   /** @var Renderer */
@@ -21,19 +21,19 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
 
   public function testItRendersTheCampaignDigestWithACoverageLine() {
     foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
-      $output = $this->renderer->render($template, $this->campaignContext(37, 92.6));
+      $output = $this->renderer->render($template, $this->campaignContext(37, 463));
       verify($output)->stringContainsString('37');
       verify($output)->stringContainsString('not tracked');
-      // The coverage line is built with Twig's |replace, not sprintf, so a
-      // doubled %% would print literally. Caught exactly that once.
-      verify($output)->stringContainsString('92.6%');
+      // The line names the denominator the rates actually used, so the reader
+      // is never left to infer it from a percentage.
+      verify($output)->stringContainsString('463');
       verify($output)->stringNotContainsString('%%');
     }
   }
 
   public function testItRendersTheCampaignDigestWithoutACoverageLineWhenNothingIsUntracked() {
     foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
-      $output = $this->renderer->render($template, $this->campaignContext(0, 100.0));
+      $output = $this->renderer->render($template, $this->campaignContext(0, 500));
       verify($output)->stringNotContainsString('not tracked');
     }
   }
@@ -45,10 +45,10 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       'emails/statsNotificationAutomatedEmails.txt',
     ];
     foreach ($templates as $template) {
-      $output = $this->renderer->render($template, $this->automatedContext(12, 88.0));
+      $output = $this->renderer->render($template, $this->automatedContext(12, 88));
       verify($output)->stringContainsString('12');
       verify($output)->stringContainsString('not tracked');
-      verify($output)->stringContainsString('88.0%');
+      verify($output)->stringContainsString('88');
       verify($output)->stringNotContainsString('%%');
     }
   }
@@ -60,13 +60,13 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       'emails/statsNotificationAutomatedEmails.txt',
     ];
     foreach ($templates as $template) {
-      $output = $this->renderer->render($template, $this->automatedContext(0, 100.0));
+      $output = $this->renderer->render($template, $this->automatedContext(0, 500));
       verify($output)->stringNotContainsString('not tracked');
     }
   }
 
-  private function campaignContext(int $notTracked, float $coverage): array {
-    return array_merge($this->statBlock($notTracked, $coverage), [
+  private function campaignContext(int $notTracked, int $trackedSent): array {
+    return array_merge($this->statBlock($notTracked, $trackedSent), [
       'subject' => 'Test campaign',
       'preheader' => 'preheader',
       'topLinkClicks' => 2,
@@ -82,13 +82,13 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
     ]);
   }
 
-  private function automatedContext(int $notTracked, float $coverage): array {
+  private function automatedContext(int $notTracked, int $trackedSent): array {
     return [
       'linkSettings' => 'https://example.com/settings',
       'blogName' => 'Test blog',
       'recipientFirstName' => 'Admin',
       'newsletters' => [
-        array_merge($this->statBlock($notTracked, $coverage), [
+        array_merge($this->statBlock($notTracked, $trackedSent), [
           'linkStats' => 'https://example.com/stats',
           'subject' => 'Test automation email',
         ]),
@@ -96,7 +96,7 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
     ];
   }
 
-  private function statBlock(int $notTracked, float $coverage): array {
+  private function statBlock(int $notTracked, int $trackedSent): array {
     return [
       'clicked' => 12.5,
       'opened' => 40.0,
@@ -104,7 +104,7 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       'unsubscribed' => 1.0,
       'bounced' => 0.5,
       'notTracked' => $notTracked,
-      'trackingCoverage' => $coverage,
+      'trackedSent' => $trackedSent,
     ];
   }
 }

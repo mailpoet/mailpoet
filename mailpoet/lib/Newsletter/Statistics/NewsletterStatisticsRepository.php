@@ -54,9 +54,10 @@ class NewsletterStatisticsRepository extends Repository {
 
   /**
    * sending_queues.meta key holding the untracked-recipient count for a
-   * completed queue: ['count' => int, 'unknownTracked' => bool]. Filled lazily
-   * on first read; the bool is the strict-mode flag it was computed under, so a
-   * value from the other mode is recomputed instead of reused.
+   * completed queue: ['count' => int, 'unknownUntrackedSince' => string|null].
+   * Filled lazily on first read. The second value is the rule the count was
+   * computed under — null when never-asked recipients count as tracked — so a
+   * value computed under a different rule is recomputed instead of reused.
    */
   public const META_NOT_TRACKED = 'notTracked';
 
@@ -394,7 +395,8 @@ class NewsletterStatisticsRepository extends Repository {
     if (!$queues) {
       return [];
     }
-    $unknownTracked = $this->trackingConsentController->shouldTrackUnknownConsent();
+    $unknownUntrackedSince = $this->getUnknownUntrackedSince();
+    $marker = $unknownUntrackedSince ? $unknownUntrackedSince->format('Y-m-d H:i:s') : null;
 
     $counts = [];
     $uncached = [];
@@ -403,7 +405,8 @@ class NewsletterStatisticsRepository extends Repository {
       if (
         is_array($cached)
         && array_key_exists('count', $cached)
-        && ($cached['unknownTracked'] ?? null) === $unknownTracked
+        && array_key_exists('unknownUntrackedSince', $cached)
+        && $cached['unknownUntrackedSince'] === $marker
       ) {
         $counts[$queue['newsletterId']] = ($counts[$queue['newsletterId']] ?? 0) + (int)$cached['count'];
       } else {
@@ -412,11 +415,11 @@ class NewsletterStatisticsRepository extends Repository {
     }
 
     if ($uncached) {
-      $fresh = $this->queryNotTrackedCountsPerQueue($uncached, $unknownTracked);
+      $fresh = $this->queryNotTrackedCountsPerQueue($uncached, $unknownUntrackedSince);
       foreach ($uncached as $queue) {
         $count = $fresh[$queue['id']] ?? 0;
         $counts[$queue['newsletterId']] = ($counts[$queue['newsletterId']] ?? 0) + $count;
-        $this->cacheNotTrackedCount($queue['id'], $queue['meta'], $count, $unknownTracked);
+        $this->cacheNotTrackedCount($queue['id'], $queue['meta'], $count, $marker);
       }
     }
     return $counts;
@@ -459,7 +462,7 @@ class NewsletterStatisticsRepository extends Repository {
         ->setParameter('to', $to);
     }
 
-    $query->andWhere($this->buildUntrackedPredicate($query, $this->trackingConsentController->shouldTrackUnknownConsent()));
+    $query->andWhere($this->buildUntrackedPredicate($query, $this->getUnknownUntrackedSince()));
 
     $counts = [];
     foreach ($query->getQuery()->getResult() ?: [] as $result) {
@@ -528,7 +531,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param array<int, array{id: int, newsletterId: int, meta: array|null}> $queues
    * @return array<int, int> queue id => untracked count (queues with none are absent)
    */
-  private function queryNotTrackedCountsPerQueue(array $queues, bool $unknownTracked): array {
+  private function queryNotTrackedCountsPerQueue(array $queues, ?\DateTimeImmutable $unknownUntrackedSince): array {
     $query = $this->entityManager
       ->createQueryBuilder()
       ->select('IDENTITY(stats.queue) AS id, COUNT(stats.id) AS cnt')
@@ -540,7 +543,7 @@ class NewsletterStatisticsRepository extends Repository {
       ->setParameter('queueIds', array_column($queues, 'id'))
       ->groupBy('stats.queue');
 
-    $query->andWhere($this->buildUntrackedPredicate($query, $unknownTracked));
+    $query->andWhere($this->buildUntrackedPredicate($query, $unknownUntrackedSince));
 
     $counts = [];
     foreach ($query->getQuery()->getResult() ?: [] as $result) {
@@ -554,15 +557,38 @@ class NewsletterStatisticsRepository extends Repository {
    * both counting paths so they can never drift apart. Expects the sending
    * statistics aliased as `stats` and the joined subscriber as `s`, and sets its
    * own parameters on the query it is given.
+   *
+   * Both halves are judged as at the send, never as at now:
+   * - denied, and denied before we sent;
+   * - never asked, on a send made after the site started asking everyone.
+   *
+   * The second half is what keeps strict consent from rewriting history. A
+   * recipient who was tracked when the campaign went out has their opens and
+   * clicks on record, so dropping them from the denominator later would push
+   * that campaign's rate above 100%.
    */
-  private function buildUntrackedPredicate(QueryBuilder $query, bool $unknownTracked): string {
+  private function buildUntrackedPredicate(QueryBuilder $query, ?\DateTimeImmutable $unknownUntrackedSince): string {
     $untracked = '(s.trackingConsent = :denied AND s.trackingConsentUpdatedAt <= stats.sentAt)';
     $query->setParameter('denied', SubscriberEntity::TRACKING_CONSENT_DENIED);
-    if (!$unknownTracked) {
-      $untracked .= ' OR s.trackingConsent = :unknown';
+    if ($unknownUntrackedSince) {
+      $untracked .= ' OR (s.trackingConsent = :unknown AND stats.sentAt >= :unknownUntrackedSince)';
       $query->setParameter('unknown', SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+      $query->setParameter('unknownUntrackedSince', $unknownUntrackedSince);
     }
     return "($untracked)";
+  }
+
+  /**
+   * From when do never-asked recipients count as untracked? Null means never —
+   * either the site tracks them, or it asks everyone but has no record of when
+   * that started, in which case the safe answer is to leave every existing
+   * number alone.
+   */
+  private function getUnknownUntrackedSince(): ?\DateTimeImmutable {
+    if ($this->trackingConsentController->shouldTrackUnknownConsent()) {
+      return null;
+    }
+    return $this->trackingConsentController->getStrictSince();
   }
 
   /**
@@ -578,9 +604,9 @@ class NewsletterStatisticsRepository extends Repository {
    * `ON UPDATE current_timestamp()`, so without naming it here MySQL would
    * restamp it and the listing would show every campaign as just-touched.
    */
-  private function cacheNotTrackedCount(int $queueId, ?array $meta, int $count, bool $unknownTracked): void {
+  private function cacheNotTrackedCount(int $queueId, ?array $meta, int $count, ?string $unknownUntrackedSince): void {
     $meta = $meta ?? [];
-    $meta[self::META_NOT_TRACKED] = ['count' => $count, 'unknownTracked' => $unknownTracked];
+    $meta[self::META_NOT_TRACKED] = ['count' => $count, 'unknownUntrackedSince' => $unknownUntrackedSince];
     $table = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement(
       "UPDATE `{$table}` SET meta = ?, updated_at = updated_at WHERE id = ?",

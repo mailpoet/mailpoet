@@ -21,7 +21,7 @@
 <%= __('Unsubscribed') %>: <%= stats_number_format_i18n(newsletter.unsubscribed) %>%
 <%= __('Bounced') %>: <%= stats_number_format_i18n(newsletter.bounced) %>%
 <% if newsletter.notTracked > 0 %>
-<%= __('Tracking coverage: %1$s%. %2$s of your recipients are not tracked, so open and click rates are based on the rest.')|replace({'%1$s': stats_number_format_i18n(newsletter.trackingCoverage), '%2$s': newsletter.notTracked}) %>
+<%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': newsletter.notTracked, '%2$s': newsletter.trackedSent}) %>
 <% endif %>
 
 <%= __('View automation report') %>
@@ -40,7 +40,7 @@
   <%= stats_number_format_i18n(newsletter.unsubscribed) %>% <%= __('unsubscribed') %>
   <%= stats_number_format_i18n(newsletter.bounced) %>% <%= __('bounced') %>
 <% if newsletter.notTracked > 0 %>
-  <%= __('Tracking coverage: %1$s%. %2$s of your recipients are not tracked, so open and click rates are based on the rest.')|replace({'%1$s': stats_number_format_i18n(newsletter.trackingCoverage), '%2$s': newsletter.notTracked}) %>
+  <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': newsletter.notTracked, '%2$s': newsletter.trackedSent}) %>
 <% endif %>
   <%= __('View all stats') %>
     <%= newsletter.linkStats|raw %>

@@ -220,7 +220,7 @@ class WorkerTest extends \MailPoetTest {
           verify(round($context['unsubscribed'], 2))->equals(20.0); // 1 of 5, unchanged
           verify(round($context['bounced'], 2))->equals(0.0); // unchanged
           verify($context['notTracked'])->equals(1);
-          verify(round($context['trackingCoverage'], 1))->equals(80.0);
+          verify($context['trackedSent'])->equals(4);
           return true;
         })
       );
@@ -250,7 +250,7 @@ class WorkerTest extends \MailPoetTest {
           verify($context['machineOpened'])->equals(0.0);
           verify(round($context['unsubscribed'], 2))->equals(20.0); // 1 of 5, unchanged
           verify($context['notTracked'])->equals(5);
-          verify($context['trackingCoverage'])->equals(0.0);
+          verify($context['trackedSent'])->equals(0);
           return true;
         })
       );

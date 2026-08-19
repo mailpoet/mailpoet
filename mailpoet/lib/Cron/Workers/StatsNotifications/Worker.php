@@ -199,7 +199,7 @@ class Worker {
       // The digest is a push: for many merchants this is the first place they
       // see the higher open rate, so the coverage line matters most here.
       'notTracked' => $statistics->getNotTrackedCount(),
-      'trackingCoverage' => $statistics->getTrackingCoverage(),
+      'trackedSent' => $statistics->getTrackedSentCount(),
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),

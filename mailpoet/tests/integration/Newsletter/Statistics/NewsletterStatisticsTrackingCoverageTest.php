@@ -32,6 +32,7 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     $this->repository = $this->diContainer->get(NewsletterStatisticsRepository::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    $this->settings->set(TrackingConsentController::SETTING_STRICT_SINCE, '');
   }
 
   /** Four recipients, one opted out before the send, two opens: 2/3, not 2/4. */
@@ -120,13 +121,92 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
 
     verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(1);
 
-    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $this->switchToStrictMode(new \DateTimeImmutable('-2 days'));
     $this->entityManager->clear();
     $newsletter = $this->reloadNewsletter($newsletter);
 
     $statistics = $this->repository->getStatistics($newsletter);
     verify($statistics->getNotTrackedCount())->equals(2);
     verify($statistics->getTrackedSentCount())->equals(1);
+  }
+
+  /**
+   * Seun's live case, 2026-08-19. A campaign went out while the site tracked
+   * never-asked recipients; three of them opened and clicked, and those events
+   * are on record. Switching to "ask everyone" afterwards must not reach back
+   * and re-label them, or the denominator collapses under a numerator that
+   * still counts their opens — on his site that read 300%.
+   */
+  public function testTurningOnStrictModeDoesNotChangeACampaignSentBeforeIt() {
+    $sentAt = new \DateTimeImmutable('-6 days');
+    $newsletter = $this->createSentNewsletter(5);
+
+    // One granted and two who opted out before the send.
+    $granted = (new Subscriber())->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED)->create();
+    (new StatisticsNewsletters($newsletter, $granted))->withSentAt($sentAt)->create();
+    for ($i = 0; $i < 2; $i++) {
+      $denied = (new Subscriber())
+        ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-7 days'))
+        ->create();
+      (new StatisticsNewsletters($newsletter, $denied))->withSentAt($sentAt)->create();
+    }
+
+    // Two never asked. They were tracked when this went out, and it shows:
+    // their opens are on record.
+    foreach ([0, 1] as $ignored) {
+      $subscriber = (new Subscriber())->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($sentAt)->create();
+      (new StatisticsOpens($newsletter, $subscriber))->create();
+    }
+    (new StatisticsOpens($newsletter, $granted))->create();
+
+    $before = $this->repository->getStatistics($newsletter);
+    verify($before->getNotTrackedCount())->equals(2);
+    verify($before->getTrackedSentCount())->equals(3);
+    verify($before->getOpenCount())->equals(3);
+
+    // Strict mode starts now, i.e. after this campaign was sent.
+    $this->switchToStrictMode(new \DateTimeImmutable());
+    $this->entityManager->clear();
+    $newsletter = $this->reloadNewsletter($newsletter);
+
+    $after = $this->repository->getStatistics($newsletter);
+    verify($after->getNotTrackedCount())->equals(2);
+    verify($after->getTrackedSentCount())->equals(3);
+    verify(($after->getOpenCount() * 100) / $after->getTrackedSentCount())->equals(100.0);
+  }
+
+  /** Sends made after the switch do exclude never-asked recipients. */
+  public function testStrictModeAppliesToSendsMadeAfterItWasTurnedOn() {
+    $this->switchToStrictMode(new \DateTimeImmutable('-1 day'));
+    $newsletter = $this->createSentNewsletter(2);
+    $this->createRecipients($newsletter, [true]);
+    (new StatisticsNewsletters($newsletter, (new Subscriber())->create()))->create(); // never asked
+
+    $statistics = $this->repository->getStatistics($newsletter);
+
+    verify($statistics->getNotTrackedCount())->equals(1);
+    verify($statistics->getTrackedSentCount())->equals(1);
+  }
+
+  /**
+   * A site asking everyone with no record of when it started leaves every
+   * number alone. Safer than guessing a date and moving history.
+   */
+  public function testStrictModeWithoutARecordedStartDateChangesNothing() {
+    $newsletter = $this->createSentNewsletter(2);
+    $this->createRecipients($newsletter, [true]);
+    (new StatisticsNewsletters($newsletter, (new Subscriber())->create()))->create(); // never asked
+
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $this->settings->set(TrackingConsentController::SETTING_STRICT_SINCE, '');
+    $this->entityManager->clear();
+    $newsletter = $this->reloadNewsletter($newsletter);
+
+    $statistics = $this->repository->getStatistics($newsletter);
+
+    verify($statistics->getNotTrackedCount())->equals(0);
+    verify($statistics->getTrackedSentCount())->equals(2);
   }
 
   /** Acceptance criterion 3, as exact equality. */
@@ -285,7 +365,7 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(2);
 
     $meta = $this->readQueueMetaFromDb((int)$queue->getId());
-    verify($meta[NewsletterStatisticsRepository::META_NOT_TRACKED])->equals(['count' => 2, 'unknownTracked' => true]);
+    verify($meta[NewsletterStatisticsRepository::META_NOT_TRACKED])->equals(['count' => 2, 'unknownUntrackedSince' => null]);
   }
 
   /**
@@ -312,7 +392,8 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     (new StatisticsNewsletters($newsletter, (new Subscriber())->create()))->create(); // unknown
     verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(1); // ask_new, cached
 
-    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $strictSince = new \DateTimeImmutable('-2 days');
+    $this->switchToStrictMode($strictSince);
     $this->entityManager->clear();
     $newsletter = $this->reloadNewsletter($newsletter);
     verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(2); // recomputed
@@ -320,7 +401,10 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $meta = $this->readQueueMetaFromDb((int)$queue->getId());
-    verify($meta[NewsletterStatisticsRepository::META_NOT_TRACKED])->equals(['count' => 2, 'unknownTracked' => false]);
+    verify($meta[NewsletterStatisticsRepository::META_NOT_TRACKED])->equals([
+      'count' => 2,
+      'unknownUntrackedSince' => $strictSince->format('Y-m-d H:i:s'),
+    ]);
   }
 
   /** Other keys on the queue's meta survive the write (the clobber guard). */
@@ -376,6 +460,12 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
   }
 
   // ---- helpers -----------------------------------------------------------
+
+  /** Ask everyone, from the given moment. */
+  private function switchToStrictMode(\DateTimeImmutable $since): void {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $this->settings->set(TrackingConsentController::SETTING_STRICT_SINCE, $since->format('Y-m-d H:i:s'));
+  }
 
   private function readQueueMetaFromDb(int $queueId): array {
     $table = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
