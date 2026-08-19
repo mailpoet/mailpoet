@@ -381,7 +381,7 @@
           <tbody>
           <tr>
             <td class="mailpoet_paragraph mailpoet_padded_side" style="word-break:break-word;word-wrap:break-word;text-align:center;border-collapse:collapse;color:#7f7f7f;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:13px;line-height:20px;padding-left:20px;padding-right:20px;padding-bottom:10px">
-              <%= __('Tracking coverage: %1$s%. %2$s of your recipients are not tracked, so open and click rates are based on the rest.')|replace({'%1$s': stats_number_format_i18n(trackingCoverage), '%2$s': notTracked}) %>
+              <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
             </td>
           </tr>
           </tbody>
