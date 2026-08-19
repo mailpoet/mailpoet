@@ -217,6 +217,61 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     verify(round($array['trackingCoverage'], 1))->equals(75.0);
   }
 
+  /**
+   * Repeatedly sent emails (welcome, automation, re-engagement) get their sent
+   * count from the sending statistics rows, not from completed queues — see
+   * getRecordedSentCounts(). The untracked count has to be read over those very
+   * rows, or the two sides of the subtraction describe different audiences.
+   *
+   * This fixture has a queue whose task never completed, so a queue-based count
+   * sees nothing while the total still counts both rows.
+   */
+  public function testARepeatedlySentEmailCountsUntrackedOverTheSameRowsAsItsSentCount() {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_WELCOME)
+      ->withScheduledQueue(['count_processed' => 0, 'count_total' => 2])
+      ->create();
+    $this->createRecipients($newsletter, [true, false]);
+
+    $statistics = $this->repository->getStatistics($newsletter);
+
+    verify($statistics->getTotalSentCount())->equals(2);
+    verify($statistics->getNotTrackedCount())->equals(1);
+    verify($statistics->getTrackedSentCount())->equals(1);
+    verify($statistics->getTrackingCoverage())->equals(50.0);
+  }
+
+  /**
+   * Same split, but through the window. The recorded total filters on
+   * stats.sentAt, so the untracked count must use that column too — filtering on
+   * the queue's created_at instead would count a different set of rows.
+   */
+  public function testARepeatedlySentEmailWindowsUntrackedOnSentAtLikeItsSentCount() {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_WELCOME)
+      ->withSendingQueue(['count_processed' => 2, 'count_total' => 2, 'created_at' => new \DateTimeImmutable('-40 days')])
+      ->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+
+    // Both sent recently, on a queue created well outside the window.
+    $denied = (new Subscriber())
+      ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-1 day'))
+      ->create();
+    $granted = (new Subscriber())
+      ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED)
+      ->create();
+    (new StatisticsNewsletters($newsletter, $denied))->create();
+    (new StatisticsNewsletters($newsletter, $granted))->create();
+
+    $statistics = $this->repository->getBatchStatistics([$newsletter], new \DateTimeImmutable('-7 days'), null)[$newsletter->getId()];
+
+    // The total counts both rows because their sent_at is inside the window.
+    verify($statistics->getTotalSentCount())->equals(2);
+    verify($statistics->getNotTrackedCount())->equals(1);
+    verify($statistics->getTrackedSentCount())->equals(1);
+  }
+
   // ---- cache -------------------------------------------------------------
 
   /** First read stores the number on the queue, keyed by the strict-mode flag it was computed under. */
