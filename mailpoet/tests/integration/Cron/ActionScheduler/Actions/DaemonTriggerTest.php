@@ -51,7 +51,7 @@ class DaemonTriggerTest extends \MailPoetTest {
     $actionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
 
     // Set the deactivation flag (simulating mid-deactivation)
-    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, true);
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, time());
 
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     verify($actions)->arrayCount(0);
@@ -63,6 +63,30 @@ class DaemonTriggerTest extends \MailPoetTest {
 
     // Cleanup
     $actionSchedulerRunner->clearDeactivationFlag();
+  }
+
+  public function testItSchedulesTriggerActionWhenDeactivationFlagIsStale(): void {
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, time() - DaemonActionSchedulerRunner::DEACTIVATION_FLAG_TTL - 1);
+
+    $this->daemonTrigger->init();
+
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    verify($actions)->arrayCount(1);
+    $action = reset($actions);
+    $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
+    verify($action->get_hook())->equals(DaemonTrigger::NAME);
+    verify(get_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, false))->false();
+  }
+
+  public function testItSchedulesTriggerActionWhenLegacyDeactivationFlagIsSet(): void {
+    // Boolean flag values written by older versions could get stuck and are treated as stale
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, true);
+
+    $this->daemonTrigger->init();
+
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    verify($actions)->arrayCount(1);
+    verify(get_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, false))->false();
   }
 
   public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
