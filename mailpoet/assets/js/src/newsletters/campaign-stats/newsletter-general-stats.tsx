@@ -255,13 +255,14 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           {notTracked > 0 && (
             <div className="mailpoet-statistics-value-small">
               {sprintf(
-                /* translators: %1$s is a number of recipients, %2$s is a percentage, e.g. "95.0" */
-                __('%1$s not tracked (%2$s%% tracking coverage)', 'mailpoet'),
-                notTracked.toLocaleString(),
-                MailPoet.Num.toLocaleFixed(
-                  newsletter.statistics.trackingCoverage ?? 100,
-                  1,
+                /* translators: %1$s is how many recipients were not tracked, %2$s is how many were, %3$s is the total sent. */
+                __(
+                  '%1$s not tracked (rates based on %2$s of %3$s)',
+                  'mailpoet',
                 ),
+                notTracked.toLocaleString(),
+                trackedSent.toLocaleString(),
+                totalSent.toLocaleString(),
               )}
             </div>
           )}

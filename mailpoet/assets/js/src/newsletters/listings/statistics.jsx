@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { __, sprintf } from '@wordpress/i18n';
-import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -189,13 +188,11 @@ function Statistics({
       {notTracked > 0 && (
         <div className="mailpoet-listing-stats-coverage">
           {sprintf(
-            /* translators: %1$s is a number of recipients, %2$s is a percentage, e.g. "95.0" */
-            __('%1$s not tracked (%2$s%% tracking coverage)', 'mailpoet'),
+            /* translators: %1$s is how many recipients were not tracked, %2$s is how many were, %3$s is the total sent. */
+            __('%1$s not tracked (rates based on %2$s of %3$s)', 'mailpoet'),
             notTracked.toLocaleString(),
-            MailPoet.Num.toLocaleFixed(
-              newsletter.statistics.trackingCoverage ?? 100,
-              1,
-            ),
+            trackedSent.toLocaleString(),
+            totalSent.toLocaleString(),
           )}
         </div>
       )}

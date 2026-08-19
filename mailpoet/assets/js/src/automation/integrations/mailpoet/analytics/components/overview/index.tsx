@@ -1,4 +1,4 @@
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import {
   SummaryList,
   SummaryListPlaceholder,
@@ -117,9 +117,12 @@ export function Overview(): JSX.Element | null {
       items.push(
         <SummaryNumber
           key="overview-tracking-coverage"
-          label={__('Tracking coverage', 'mailpoet')}
-          value={percentageFormatter.format(
-            (overview.data.trackingCoverage?.current ?? 100) / 100,
+          label={__('Recipients tracked', 'mailpoet')}
+          value={sprintf(
+            /* translators: %1$s is how many recipients were tracked, %2$s is the total sent. */
+            __('%1$s of %2$s', 'mailpoet'),
+            numberFormatter.format(overview.data.trackedSent?.current ?? 0),
+            numberFormatter.format(overview.data.sent?.current ?? 0),
           )}
         />,
       );

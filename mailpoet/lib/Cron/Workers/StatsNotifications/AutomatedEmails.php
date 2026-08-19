@@ -215,7 +215,7 @@ class AutomatedEmails extends SimpleWorker {
         'unsubscribed' => $unsubscribed,
         'bounced' => $bounced,
         'notTracked' => $statistics->getNotTrackedCount(),
-        'trackingCoverage' => $statistics->getTrackingCoverage(),
+        'trackedSent' => $statistics->getTrackedSentCount(),
         'subject' => $newsletter->getSubject(),
       ];
     }
