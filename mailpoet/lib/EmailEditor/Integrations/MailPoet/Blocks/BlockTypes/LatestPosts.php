@@ -136,6 +136,11 @@ class LatestPosts extends AbstractBlock {
       return $allowedBlocks;
     }
 
+    // Another integration may have disallowed every block
+    if ($allowedBlocks === false) {
+      return $allowedBlocks;
+    }
+
     // When every block is allowed the value is `true` rather than a list. Build
     // the full list of block names first so we have something to remove ours from.
     if (!is_array($allowedBlocks)) {
@@ -417,12 +422,14 @@ class LatestPosts extends AbstractBlock {
   private function getManualPostIds(array $query): array {
     $posts = isset($query['posts']) && is_array($query['posts']) ? $query['posts'] : [];
     $ids = [];
+
     foreach ($posts as $post) {
       if (is_numeric($post) && (int)$post > 0) {
         $ids[] = (int)$post;
       }
     }
-    return $ids;
+
+    return array_slice($ids, 0, self::MAX_POSTS);
   }
 
   /**
@@ -847,10 +854,14 @@ class LatestPosts extends AbstractBlock {
 
   private function parsePx(string $value): int {
     $value = trim($value);
-    if ($value === '') {
+    if (substr($value, -2) === 'px') {
+      $value = substr($value, 0, -2);
+    }
+    // Other units (rem, em, %, presets) cannot be converted here
+    if (!is_numeric($value)) {
       return 0;
     }
-    return (int)round((float)str_replace('px', '', $value));
+    return (int)round((float)$value);
   }
 
   /**

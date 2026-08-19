@@ -16,7 +16,7 @@ import {
   ToggleControl,
   FormTokenField,
 } from '@wordpress/components';
-import { TEMPLATE_BLOCK_NAME } from './constants';
+import { MAX_POSTS, TEMPLATE_BLOCK_NAME } from './constants';
 
 type Term = { id: number; taxonomy: string };
 
@@ -141,7 +141,7 @@ function ManualPostsControl({
         selectedPosts: value.length
           ? ((getEntityRecords('postType', postType, {
               include: value,
-              per_page: value.length,
+              per_page: Math.min(value.length, MAX_POSTS),
               orderby: 'include',
             }) ?? []) as unknown as PostRecord[])
           : ([] as PostRecord[]),

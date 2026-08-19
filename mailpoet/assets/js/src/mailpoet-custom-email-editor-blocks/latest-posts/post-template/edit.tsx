@@ -1,10 +1,11 @@
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import { memo, useMemo, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import * as BlockEditor from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
-import { QUERY_CONTEXT, DISPLAY_LAYOUT_CONTEXT } from '../constants';
+import { QUERY_CONTEXT, DISPLAY_LAYOUT_CONTEXT, MAX_POSTS } from '../constants';
 
 const {
   useBlockProps,
@@ -99,7 +100,7 @@ function buildRestQuery({
     return manualPosts.length
       ? {
           include: manualPosts,
-          per_page: manualPosts.length,
+          per_page: Math.min(manualPosts.length, MAX_POSTS),
           orderby: 'include',
         }
       : { include: [0], per_page: 1 };
@@ -148,14 +149,21 @@ function TemplateBlockPreview({
 
   const handleOnClick = (): void => setActiveBlockContextId(blockContextId);
 
+  const handleOnKeyDown = (event: ReactKeyboardEvent): void => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    handleOnClick();
+  };
+
   return (
     <div
       {...blockPreviewProps}
       tabIndex={0}
       role="button"
       onClick={handleOnClick}
-      onKeyDown={handleOnClick}
-      onKeyUp={handleOnClick}
+      onKeyDown={handleOnKeyDown}
       style={{ display: isHidden ? 'none' : undefined }}
     />
   );
