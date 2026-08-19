@@ -32,6 +32,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
@@ -74,7 +75,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
   }
 
@@ -118,7 +120,8 @@ class SettingsTest extends \MailPoetTest {
       $this->make(SettingsChangeHandler::class, ['updateBridge' => Expected::once()]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -155,7 +158,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -280,7 +284,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $response = $this->endpoint->set([
@@ -314,7 +319,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -492,7 +498,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);
