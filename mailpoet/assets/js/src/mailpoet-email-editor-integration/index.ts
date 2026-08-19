@@ -10,7 +10,10 @@ import { store as editorStore } from '@wordpress/editor';
 import { store as noticesStore } from '@wordpress/notices';
 import { registerPlugin } from '@wordpress/plugins';
 import { MailPoet } from 'mailpoet';
-import type { EmailContentValidationRule } from '@woocommerce/email-editor/build-types/store';
+import type {
+  EmailContentValidationRule,
+  RecentEmailsQuery,
+} from '@woocommerce/email-editor/build-types/store';
 import { registerTranslations } from 'common';
 import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
@@ -183,6 +186,18 @@ addFilter(
     const [, post] = args;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
+  },
+);
+
+// Also list draft, scheduled and sending emails. They all use the `draft` post status.
+addFilter(
+  'woocommerce_email_editor_recent_emails_query',
+  'mailpoet/email-editor-integration',
+  (query: RecentEmailsQuery, postType: string) => {
+    if (postType !== MAILPOET_EMAIL_POST_TYPE) {
+      return query;
+    }
+    return { ...query, status: 'publish,sent,draft' };
   },
 );
 
