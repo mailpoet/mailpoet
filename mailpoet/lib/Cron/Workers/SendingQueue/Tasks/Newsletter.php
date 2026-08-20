@@ -4,13 +4,15 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
-use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationContextBuilder;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -85,11 +87,14 @@ class Newsletter {
   /** @var Personalizer */
   private $personalizer;
 
-  /** @var AutomationRunStorage */
-  private $automationRunStorage;
-
   private CouponBlockDetector $couponBlockDetector;
   private OrderReviewUrl $orderReviewUrl;
+  private PersonalizationContextBuilder $personalizationContextBuilder;
+  private PersonalizationTagLinkResolver $personalizationTagLinkResolver;
+  private NewsletterLinkRepository $newsletterLinkRepository;
+
+  /** @var array<int, bool> queue id => whether the queue tracks an order review URL link */
+  private array $orderReviewUrlLinkByQueue = [];
 
   private TrackingConsentController $trackingConsentController;
 
@@ -129,7 +134,9 @@ class Newsletter {
     $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
     $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
-    $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
+    $this->personalizationContextBuilder = ContainerWrapper::getInstance()->get(PersonalizationContextBuilder::class);
+    $this->personalizationTagLinkResolver = ContainerWrapper::getInstance()->get(PersonalizationTagLinkResolver::class);
+    $this->newsletterLinkRepository = ContainerWrapper::getInstance()->get(NewsletterLinkRepository::class);
     $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
     $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
     $this->trackingConsentController = ContainerWrapper::getInstance()->get(TrackingConsentController::class);
@@ -150,18 +157,32 @@ class Newsletter {
    * `http://example.com/?email=[subscriber:email]`. Clicks::processUrl() runs a
    * full shortcode pass over those at click time, so this does the same at send
    * time (STOMAIL-8340).
+   *
+   * Links of block emails whose URL is a personalization tag token are stored
+   * symbolically too and resolved here with the same resolver the redirect uses.
+   *
+   * @param array<string, mixed>|null $personalizationContext
    */
   private function untrackLinks(
     string $content,
     NewsletterEntity $newsletter,
     SubscriberEntity $subscriber,
-    SendingQueueEntity $queue
+    SendingQueueEntity $queue,
+    ?array $personalizationContext
   ): string {
+    $resolveTokenUrl = function (string $url) use ($personalizationContext): string {
+      if ($personalizationContext === null || !$this->personalizationTagLinkResolver->isTokenUrl($url)) {
+        return $url;
+      }
+      // An unresolvable token would otherwise ship as literal text.
+      return $this->personalizationTagLinkResolver->resolveWithContext($url, $personalizationContext) ?? '';
+    };
     // true = convert every hashed link, not only the shortcode ones.
     $content = $this->newsletterLinks->convertHashedLinksToShortcodesAndUrls(
       $content,
       $queue->getId(),
-      true
+      true,
+      $resolveTokenUrl
     );
 
     // Matches the whole shortcode, arguments included, because a link shortcode
@@ -443,6 +464,9 @@ class Newsletter {
       $subscriber,
       $queue
     );
+    $context = $newsletter->getWpPostId() !== null
+      ? $this->personalizationContextBuilder->build($newsletter, $subscriber, $queue)
+      : null;
     if ($this->trackingEnabled) {
       if ($this->trackingConsentController->isTrackingAllowed($subscriber)) {
         $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
@@ -455,77 +479,20 @@ class Newsletter {
         // merely the recording of it. A tracked link still tells our server the
         // recipient clicked, so these recipients get the plain destination
         // instead of a redirect through us.
-        $preparedNewsletter = $this->untrackLinks($preparedNewsletter, $newsletter, $subscriber, $queue);
+        $preparedNewsletter = $this->untrackLinks($preparedNewsletter, $newsletter, $subscriber, $queue, $context);
         $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
       }
     }
     $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
-    if ($newsletter->getWpPostId() !== null) {
-      $context = [
-        'recipient_email' => $subscriber->getEmail(),
-        'newsletter_id' => $newsletter->getId(),
-        'queue_id' => $queue->getId(),
-      ];
-
-      $queueMeta = $queue->getMeta();
-      if (isset($queueMeta['automation']['run_id'])) {
-        $runId = (int)$queueMeta['automation']['run_id'];
-        $automationRun = $this->automationRunStorage->getAutomationRun($runId);
-
-        if ($automationRun) {
-          // Convert automation run subjects to array format for filter
-          $subjectsArray = [];
-          foreach ($automationRun->getSubjects() as $subject) {
-            $subjectsArray[$subject->getKey()] = [
-              'key' => $subject->getKey(),
-              'args' => $subject->getArgs(),
-            ];
-          }
-
-          // Load WooCommerce order if present
-          if (
-            isset($subjectsArray['woocommerce:order'])
-            && isset($subjectsArray['woocommerce:order']['args']['order_id'])
-            && function_exists('wc_get_order')
-          ) {
-            $orderId = (int)$subjectsArray['woocommerce:order']['args']['order_id'];
-            $order = wc_get_order($orderId);
-            if ($order instanceof \WC_Order) {
-              $context['order'] = $order;
-            }
-          }
-
-          // Load WooCommerce customer if present
-          if (
-            isset($subjectsArray['woocommerce:customer'])
-            && isset($subjectsArray['woocommerce:customer']['args']['customer_id'])
-            && class_exists(\WC_Customer::class)
-          ) {
-            $customerId = (int)$subjectsArray['woocommerce:customer']['args']['customer_id'];
-            $customer = new \WC_Customer($customerId);
-            if ($customer->get_id()) {
-              $context['customer'] = $customer;
-            }
-          }
-
-          // Allow extensions to add their own subject context
-          /** @var array<string, mixed> $context */
-          $context = $this->wp->applyFilters('mailpoet_automation_email_personalization_context', $context, $subjectsArray);
-
-          // Get available subject keys for extending personalization tags
-          $availableSubjects = array_keys($subjectsArray);
-
-          // Allow extensions to register additional personalization tags based on available subjects
-          $this->wp->doAction('mailpoet_automation_email_extend_personalization_tags_for_sending', $availableSubjects);
-        }
-      }
-
+    if ($context !== null) {
       $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
 
       $this->personalizer->set_context($context);
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
       }
+      // Token links that were not hashed (tracking disabled) are still literal in the text body.
+      $preparedNewsletter[2] = $this->personalizationTagLinkResolver->resolveMarkdownLinks($preparedNewsletter[2], $context);
       $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
       if (is_string($personalizedHtml)) {
         $preparedNewsletter[1] = $personalizedHtml;
@@ -555,7 +522,10 @@ class Newsletter {
     array $contentParts,
     array $context
   ): void {
-    if (!$this->contentContainsOrderReviewUrlToken($contentParts)) {
+    // The email uses no order review link when neither the content carries the token
+    // nor the queue tracks it as a stored link (for tracked recipients the content
+    // holds only a hash and the token lives in newsletter_links).
+    if (!$this->contentContainsOrderReviewUrlToken($contentParts) && !$this->queueTracksOrderReviewUrlLink($queue)) {
       return;
     }
 
@@ -585,6 +555,17 @@ class Newsletter {
 
     $normalizedContent = rawurldecode(str_replace('\\/', '/', $content));
     return strpos($normalizedContent, '[woocommerce/order-review-url]') !== false;
+  }
+
+  private function queueTracksOrderReviewUrlLink(SendingQueueEntity $queue): bool {
+    $queueId = (int)$queue->getId();
+    if (!isset($this->orderReviewUrlLinkByQueue[$queueId])) {
+      $this->orderReviewUrlLinkByQueue[$queueId] = $this->newsletterLinkRepository->findOneBy([
+        'queue' => $queueId,
+        'url' => '[woocommerce/order-review-url]',
+      ]) !== null;
+    }
+    return $this->orderReviewUrlLinkByQueue[$queueId];
   }
 
   private function failOrderReviewUrlSend(

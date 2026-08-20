@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
@@ -662,6 +665,142 @@ class NewsletterTest extends \MailPoetTest {
 
     $this->entityManager->refresh($scheduledTask);
     $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $scheduledTask->getStatus());
+  }
+
+  public function testItPausesSendingWhenTrackedOrderReviewUrlLinkCannotBeResolved(): void {
+    [$newsletter, $scheduledTask, $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[woocommerce/order-review-url]',
+      'Leave a review'
+    );
+
+    try {
+      $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+      $this->fail('Expected order review URL resolution to stop sending.');
+    } catch (NewsletterProcessingException $exception) {
+      $this->assertSame('Cannot send the email because WooCommerce cannot generate an order review link for this order.', $exception->getMessage());
+    }
+
+    $this->entityManager->refresh($scheduledTask);
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $scheduledTask->getStatus());
+  }
+
+  public function testItKeepsTagLinksTrackedForConsentingSubscriber(): void {
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[mailpoet/subscription-unsubscribe-url]',
+      'Unsubscribe'
+    );
+
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $this->assertStringContainsString('endpoint=track&action=click', $result['body']['html']);
+    $this->assertStringContainsString('endpoint=track&action=click', $result['body']['text']);
+    $this->assertStringNotContainsString('[mailpoet/subscription-unsubscribe-url]', $result['body']['html']);
+  }
+
+  public function testItResolvesTagLinksForSubscriberWithoutConsent(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[mailpoet/subscription-unsubscribe-url]',
+      'Unsubscribe'
+    );
+
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    foreach (['html', 'text'] as $part) {
+      $this->assertStringNotContainsString('endpoint=track', $result['body'][$part]);
+      $this->assertStringNotContainsString('[mailpoet/subscription-unsubscribe-url]', $result['body'][$part]);
+      $this->assertStringNotContainsString(Links::DATA_TAG_CLICK, $result['body'][$part]);
+      $this->assertStringContainsString('action=confirm_unsubscribe', $result['body'][$part]);
+    }
+  }
+
+  public function testItStripsUnresolvableTagLinksForSubscriberWithoutConsent(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[acme/dead-url]',
+      'Gone'
+    );
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+
+    try {
+      $registry->register(new Personalization_Tag('Dead URL', 'acme/dead-url', 'Test', function (): string {
+        return '';
+      }));
+      $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+    } finally {
+      $registry->unregister('[acme/dead-url]');
+    }
+
+    $this->assertStringContainsString('<a href="">Gone</a>', $result['body']['html']);
+    $this->assertStringContainsString('[Gone]()', $result['body']['text']);
+  }
+
+  public function testItResolvesTagLinksInTextBodyWhenTrackingIsDisabled(): void {
+    $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[mailpoet/subscription-unsubscribe-url]',
+      'Unsubscribe'
+    );
+    // Without tracking the normalized token stays in the body instead of a hash
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="[mailpoet/subscription-unsubscribe-url]">Unsubscribe</a>',
+      'text' => '[Unsubscribe]([mailpoet/subscription-unsubscribe-url])',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $result = $newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    foreach (['html', 'text'] as $part) {
+      $this->assertStringNotContainsString('[mailpoet/subscription-unsubscribe-url]', $result['body'][$part]);
+      $this->assertStringContainsString('action=confirm_unsubscribe', $result['body'][$part]);
+    }
+  }
+
+  /**
+   * Block email whose rendered body already went through link tracking: the link is a hashed
+   * placeholder and its URL is stored in newsletter_links.
+   *
+   * @return array{0: NewsletterEntity, 1: ScheduledTaskEntity, 2: SendingQueueEntity}
+   */
+  private function createBlockEmailQueueWithTrackedLink(string $url, string $linkText): array {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Block email',
+      'post_content' => '<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $link = new NewsletterLinkEntity($newsletter, $sendingQueue, $url, 'abcdef');
+    $this->entityManager->persist($link);
+    $hashedLink = Links::DATA_TAG_CLICK . '-' . $link->getHash();
+    $sendingQueue->setCountTotal(1);
+    $sendingQueue->setNewsletterRenderedSubject('Subject');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="' . $hashedLink . '">' . $linkText . '</a>',
+      'text' => '[' . $linkText . '](' . $hashedLink . ')',
+    ]);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    return [$newsletter, $scheduledTask, $sendingQueue];
   }
 
   public function testItLogsErrorWhenQueueWithCannotBeSaved() {
