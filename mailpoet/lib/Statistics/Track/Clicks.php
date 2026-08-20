@@ -2,6 +2,7 @@
 
 namespace MailPoet\Statistics\Track;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -57,6 +58,8 @@ class Clicks {
   /** @var TrackingConsentController */
   private $trackingConsentController;
 
+  private PersonalizationTagLinkResolver $linkResolver;
+
   public function __construct(
     Cookies $cookies,
     SubscriberCookie $subscriberCookie,
@@ -68,7 +71,8 @@ class Clicks {
     SubscribersRepository $subscribersRepository,
     TrackingConfig $trackingConfig,
     Request $request,
-    TrackingConsentController $trackingConsentController
+    TrackingConsentController $trackingConsentController,
+    PersonalizationTagLinkResolver $linkResolver
   ) {
     $this->cookies = $cookies;
     $this->subscriberCookie = $subscriberCookie;
@@ -81,6 +85,7 @@ class Clicks {
     $this->trackingConfig = $trackingConfig;
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
+    $this->linkResolver = $linkResolver;
   }
 
   /**
@@ -166,6 +171,15 @@ class Clicks {
     SendingQueueEntity $queue,
     bool $wpUserPreview
   ) {
+    if ($this->linkResolver->isTokenUrl($url)) {
+      // A link stored as a personalization tag token; its destination only exists per recipient.
+      $resolvedUrl = $this->linkResolver->resolve($url, $newsletter, $subscriber, $queue, $wpUserPreview);
+      if ($resolvedUrl === null) {
+        $this->abort();
+        return $url;
+      }
+      return $this->appendRequestMethod($resolvedUrl);
+    }
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (empty($shortcode['action'])) $this->abort();
       $processedUrl = $this->linkShortcodeCategory->processShortcodeAction(
@@ -179,17 +193,23 @@ class Clicks {
       if ($processedUrl === null) {
         return $shortcode[0];
       }
-      $url = $processedUrl;
-      // We need to know the original method for unsubscribe actions
-      if ($this->request->isPost() && $url) {
-        $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
-      }
+      $url = $this->appendRequestMethod($processedUrl);
     } else {
       $this->shortcodes->setQueue($queue);
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
       $url = $this->shortcodes->replace($url);
+    }
+    return $url;
+  }
+
+  /**
+   * The unsubscribe actions need to know the original request method.
+   */
+  private function appendRequestMethod(string $url): string {
+    if ($this->request->isPost() && $url) {
+      return $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
     }
     return $url;
   }
