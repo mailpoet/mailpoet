@@ -66,7 +66,8 @@ class DaemonTriggerTest extends \MailPoetTest {
   }
 
   public function testItSchedulesTriggerActionWhenDeactivationFlagIsStale(): void {
-    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, time() - DaemonActionSchedulerRunner::DEACTIVATION_FLAG_TTL - 1);
+    $staleValue = time() - DaemonActionSchedulerRunner::DEACTIVATION_FLAG_TTL - 1;
+    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, $staleValue);
 
     $this->daemonTrigger->init();
 
@@ -75,6 +76,8 @@ class DaemonTriggerTest extends \MailPoetTest {
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     verify($action->get_hook())->equals(DaemonTrigger::NAME);
+    // The option must not be deleted — a concurrent deactivate() may have just replaced it with a fresh value
+    verify(get_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION))->equals($staleValue);
   }
 
   public function testItSchedulesTriggerActionWhenLegacyDeactivationFlagIsSet(): void {
@@ -85,19 +88,6 @@ class DaemonTriggerTest extends \MailPoetTest {
 
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     verify($actions)->arrayCount(1);
-  }
-
-  public function testItDoesNotDeleteConcurrentlyWrittenFlagWhenScheduling(): void {
-    // A stale flag must not block rescheduling, but init() must not delete the option either —
-    // a concurrent deactivate() may have just replaced it with a fresh value
-    $staleValue = time() - DaemonActionSchedulerRunner::DEACTIVATION_FLAG_TTL - 1;
-    update_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION, $staleValue);
-
-    $this->daemonTrigger->init();
-
-    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    verify($actions)->arrayCount(1);
-    verify(get_option(DaemonActionSchedulerRunner::DEACTIVATION_FLAG_OPTION))->equals($staleValue);
   }
 
   public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
