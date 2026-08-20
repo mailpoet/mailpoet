@@ -199,7 +199,10 @@ class Links {
     return $processedLinks;
   }
 
-  public function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false) {
+  /**
+   * @param (callable(string): string)|null $urlMapper Applied to every restored URL before it is put back
+   */
+  public function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false, ?callable $urlMapper = null) {
     preg_match_all($this->getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach ($links as $link) {
@@ -217,7 +220,8 @@ class Links {
         ($newsletterLink instanceof NewsletterLinkEntity) &&
         (preg_match('/\[link:/', $newsletterLink->getUrl()) || $convertAll)
       ) {
-        $content = str_replace($link, $newsletterLink->getUrl(), $content);
+        $url = $urlMapper ? $urlMapper($newsletterLink->getUrl()) : $newsletterLink->getUrl();
+        $content = str_replace($link, $url, $content);
       }
     }
     return $content;
