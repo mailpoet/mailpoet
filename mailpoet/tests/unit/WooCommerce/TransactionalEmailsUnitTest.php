@@ -45,4 +45,37 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
       'customer_note' => 'Note added to order #0001 - ' . date('Y-m-d'),
     ]);
   }
+
+  public function testGetWCEmailSettingsResolvesStoreAddressAndOtherWooCommercePlaceholdersInFooterText() {
+    $wp = Stub::make(new WPFunctions, [
+      'getOption' => function($name) {
+        if ($name === 'woocommerce_email_footer_text') {
+          return '{site_title} - {store_address} - {store_email} - {site_url} - {woocommerce}';
+        }
+        if ($name === 'blogname') {
+          return 'Test';
+        }
+        return false;
+      },
+      'homeUrl' => 'http://test.loc',
+      'wpSpecialcharsDecode' => function($text) {
+        return $text;
+      },
+      'wpParseUrl' => function($url) {
+        return 'test.loc';
+      },
+    ]);
+    $settings = Stub::make(SettingsController::class);
+    $template = Stub::make(Template::class);
+    $woocommerceHelper = Stub::make(WooCommerceHelper::class, [
+      'wcGetStoreAddress' => '123 Main St, Springfield',
+      'wcGetStoreEmail' => 'store@example.com',
+      'wcLightOrDark' => '#202020',
+      'wcHexIsLight' => true,
+    ]);
+    $newslettersRepository = Stub::make(NewslettersRepository::class);
+    $transactionalEmails = new TransactionalEmails($wp, $settings, $template, $woocommerceHelper, $newslettersRepository);
+    $footerText = $transactionalEmails->getWCEmailSettings()['footer_text'];
+    verify($footerText)->equals('Test - 123 Main St, Springfield - store@example.com - test.loc - WooCommerce');
+  }
 }
