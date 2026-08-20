@@ -2,9 +2,15 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Config\SubscriberChangesNotifier;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -25,6 +31,7 @@ use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Test\DataFactories\AutomationRun as AutomationRunFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -107,7 +114,8 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
-      $this->diContainer->get(TrackingConsentController::class)
+      $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
     );
 
     $this->statisticsClicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
@@ -128,6 +136,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'abort' => Expected::exactly(2),
     ], $this);
@@ -156,6 +165,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -179,6 +189,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -204,6 +215,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -232,6 +244,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -266,6 +279,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -310,6 +324,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -354,6 +369,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -391,6 +407,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -430,6 +447,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -454,6 +472,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -476,6 +495,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -524,6 +544,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'abort' => Expected::exactly(1),
     ], $this);
@@ -535,6 +556,103 @@ class ClicksTest extends \MailPoetTest {
       $this->queue,
       $preview = false
     );
+  }
+
+  public function testItResolvesPersonalizationTagTokenUrls() {
+    $link = $this->clicks->processUrl(
+      '[mailpoet/subscription-unsubscribe-url]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->stringContainsString('action=confirm_unsubscribe');
+  }
+
+  /**
+   * @group woo
+   */
+  public function testItResolvesOrderContextTokenUrlsRegisteredForTheAutomationRun() {
+    $order = $this->tester->createWooCommerceOrder();
+    $run = (new AutomationRunFactory())
+      ->withSubject(new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()]))
+      ->create();
+    $this->queue->setMeta(['automation' => ['run_id' => $run->getId()]]);
+    $this->entityManager->flush();
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $wp = WPFunctions::get();
+    // Mirrors how the order review URL tag is registered: only once the run's subjects are known
+    $wp->addAction('mailpoet_automation_email_extend_personalization_tags_for_sending', function () use ($registry) {
+      $registry->register(new Personalization_Tag('Order URL', 'acme/order-url', 'Order', function (array $context): string {
+        return 'https://example.com/order/' . $context['order']->get_id();
+      }));
+    });
+
+    try {
+      $link = $this->clicks->processUrl(
+        '[acme/order-url]',
+        $this->newsletter,
+        $this->subscriber,
+        $this->queue,
+        $preview = false
+      );
+    } finally {
+      $wp->removeAllActions('mailpoet_automation_email_extend_personalization_tags_for_sending');
+      $registry->unregister('[acme/order-url]');
+      $this->tester->deleteTestWooOrder($order->get_id());
+    }
+
+    verify($link)->equals('https://example.com/order/' . $order->get_id());
+  }
+
+  public function testItAddsMethodForPostRequestsToPersonalizationTagTokenUrls() {
+    $requestMock = $this->createMock(Request::class);
+    $requestMock->method('isPost')->willReturn(true);
+    $this->clicks = $this->getServiceWithOverrides(Clicks::class, ['request' => $requestMock]);
+    $link = $this->clicks->processUrl(
+      '[mailpoet/subscription-unsubscribe-url]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->stringContainsString('&request_method=POST');
+  }
+
+  public function testItRecordsClickAndAbortsWhenPersonalizationTagTokenUrlCannotBeResolved() {
+    $link = new NewsletterLinkEntity($this->newsletter, $this->queue, '[acme/dead-url]', 'tokenhash');
+    $this->entityManager->persist($link);
+    $this->entityManager->flush();
+    $this->trackData->link = $link;
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $clicks = Stub::construct($this->clicks, [
+      $this->diContainer->get(Cookies::class),
+      $this->diContainer->get(SubscriberCookie::class),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
+    ], [
+      'abort' => Expected::exactly(1),
+      'redirectToUrl' => null,
+    ], $this);
+    try {
+      $registry->register(new Personalization_Tag('Dead URL', 'acme/dead-url', 'Test', function (): string {
+        return '';
+      }));
+      $clicks->track($this->trackData);
+    } finally {
+      $registry->unregister('[acme/dead-url]');
+    }
+
+    // the click is recorded before the redirect is attempted
+    verify($this->statisticsClicksRepository->findAll())->arrayCount(1);
   }
 
   public function testItPassesArgumentsToCustomShortcodesInUrls() {
@@ -640,6 +758,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -687,6 +806,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -734,6 +854,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -764,6 +885,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
