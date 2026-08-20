@@ -364,6 +364,28 @@ class PersonalizationTagManager {
   }
 
   /**
+   * Display names of all registered personalization tags, keyed by token.
+   *
+   * Extends the registry with the tags of every known automation subject first, so
+   * subject-dependent tags (order, customer, ...) are included on requests that have
+   * no automation run, such as admin pages. Premium uses this to label links stored
+   * as tag tokens in the campaign stats.
+   *
+   * @return array<string, string>
+   */
+  public function getTokenDisplayNames(): array {
+    $subjects = array_merge([], ...array_values($this->getCategoryToSubjectsMapping()));
+    $this->extendPersonalizationTagsBySubjects(array_unique($subjects));
+
+    $names = [];
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    foreach ($registry->get_all() as $tag) {
+      $names[$tag->get_token()] = $tag->get_name();
+    }
+    return $names;
+  }
+
+  /**
    * @return array<string, string>
    */
   private function getPreTrackingUrlTokens(Personalization_Tags_Registry $registry): array {
