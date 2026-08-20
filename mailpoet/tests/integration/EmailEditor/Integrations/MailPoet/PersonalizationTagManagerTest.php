@@ -365,6 +365,27 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('data-link-href', $result);
   }
 
+  public function testItReturnsDisplayNamesOfAllRegisteredTagsKeyedByToken(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag('Custom URL', 'acme/custom-url', 'Test', function (): string {
+      return 'https://example.com';
+    }));
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+      $personalizationManager->initialize();
+      WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
+
+      $names = $personalizationManager->getTokenDisplayNames();
+
+      $this->assertSame('Unsubscribe URL', $names['[mailpoet/subscription-unsubscribe-url]']);
+      $this->assertSame('Activation Link', $names['[mailpoet/subscriber-activation-link]']);
+      $this->assertSame('Custom URL', $names['[acme/custom-url]']);
+    } finally {
+      $registry->unregister('[acme/custom-url]');
+    }
+  }
+
   private function createTag(string $token, string $value): Personalization_Tag {
     return new Personalization_Tag(
       $token,
