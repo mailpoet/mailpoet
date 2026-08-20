@@ -106,11 +106,23 @@ class TransactionalEmails {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
     $orderDate = date('Y-m-d');
-    return str_replace(
-      ['{site_title}', '{site_address}', '{order_date}', '{order_number}'],
-      [$title, $address, $orderDate, '0001'],
-      $text
-    );
+    $replacements = [
+      '{site_title}' => $title,
+      '{site_address}' => $address,
+      '{site_url}' => $address,
+      '{woocommerce}' => 'WooCommerce',
+      '{WooCommerce}' => 'WooCommerce',
+      '{order_date}' => $orderDate,
+      '{order_number}' => '0001',
+    ];
+    // Resolved lazily: they require WooCommerce to be loaded, unlike the placeholders above.
+    if (strpos($text, '{store_address}') !== false) {
+      $replacements['{store_address}'] = $this->woocommerceHelper->wcGetStoreAddress();
+    }
+    if (strpos($text, '{store_email}') !== false) {
+      $replacements['{store_email}'] = $this->woocommerceHelper->wcGetStoreEmail();
+    }
+    return str_replace(array_keys($replacements), array_values($replacements), $text);
   }
 
   public function getWCEmailSettings() {

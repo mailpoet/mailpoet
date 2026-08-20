@@ -109,4 +109,41 @@ class TransactionalEmailsTest extends \MailPoetTest {
     verify($footerTextBlock['text'])->equals('<p style="text-align: center;">Text <a href="http://example.com">Link</a></p>');
     $this->wp->updateOption('woocommerce_email_footer_text', $optionOriginalValue);
   }
+
+  public function testInitResolvesStoreAddressPlaceholderInFooterTextUsingRealWooCommerceData() {
+    $originalFooterText = $this->wp->getOption('woocommerce_email_footer_text');
+    $originalAddress = $this->wp->getOption('woocommerce_store_address');
+    $originalCity = $this->wp->getOption('woocommerce_store_city');
+    $originalPostcode = $this->wp->getOption('woocommerce_store_postcode');
+    $originalCountry = $this->wp->getOption('woocommerce_default_country');
+
+    $this->wp->updateOption('woocommerce_email_footer_text', '{store_address}');
+    $this->wp->updateOption('woocommerce_store_address', '123 Main St');
+    $this->wp->updateOption('woocommerce_store_city', 'New York');
+    $this->wp->updateOption('woocommerce_store_postcode', '10001');
+    $this->wp->updateOption('woocommerce_default_country', 'US:NY');
+
+    $transactionalEmails = new TransactionalEmails(
+      $this->wp,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(Template::class),
+      ContainerWrapper::getInstance()->get(WooCommerceHelper::class),
+      $this->newslettersRepository
+    );
+    $transactionalEmails->init();
+    $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $this->assertInstanceOf(NewsletterEntity::class, $email);
+    $body = $email->getBody();
+    $this->assertIsArray($body);
+    $footerTextBlock = $body['content']['blocks'][5]['blocks'][0]['blocks'][1];
+    verify($footerTextBlock['text'])->stringContainsString('New York');
+    verify($footerTextBlock['text'])->stringContainsString('10001');
+    verify($footerTextBlock['text'])->stringNotContainsString('{store_address}');
+
+    $this->wp->updateOption('woocommerce_email_footer_text', $originalFooterText);
+    $this->wp->updateOption('woocommerce_store_address', $originalAddress);
+    $this->wp->updateOption('woocommerce_store_city', $originalCity);
+    $this->wp->updateOption('woocommerce_store_postcode', $originalPostcode);
+    $this->wp->updateOption('woocommerce_default_country', $originalCountry);
+  }
 }
