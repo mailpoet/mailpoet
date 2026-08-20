@@ -10,9 +10,9 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Date;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link;
-use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Newsletter;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkNormalizer;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -22,9 +22,16 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class PersonalizationTagManager {
   /**
-   * URL tokens that don't depend on subscriber or order context and can be
-   * resolved before link tracking hashes hrefs. Context-dependent URL tokens
-   * (activation link, order URLs) must not be added here.
+   * URL tokens whose value is the same for every recipient, so they can be
+   * resolved once per queue before link tracking hashes hrefs. Resolving this
+   * early gives these links UTM params and readable URLs in stats.
+   *
+   * A token that is not listed here still works: it is stored as the token
+   * and resolved per recipient by PersonalizationTagLinkResolver. A token
+   * whose value depends on the recipient or the order (activation link,
+   * order URLs) must not be listed, because its callback would run here
+   * without any recipient context and its result would be baked into the
+   * email for everyone.
    */
   private const PRE_TRACKING_URL_TOKENS = [
     '[mailpoet/site-homepage-url]',
@@ -40,7 +47,7 @@ class PersonalizationTagManager {
   private Date $date;
   private OrderReviewUrl $orderReviewUrl;
   private WPFunctions $wp;
-  private LinksToShortcodesConvertor $linksToShortcodesConvertor;
+  private PersonalizationTagLinkNormalizer $linkNormalizer;
   private AutomationStorage $automationStorage;
   private Registry $registry;
   private NewslettersRepository $newslettersRepository;
@@ -54,7 +61,7 @@ class PersonalizationTagManager {
     Date $date,
     OrderReviewUrl $orderReviewUrl,
     WPFunctions $wp,
-    LinksToShortcodesConvertor $linksToShortcodesConvertor,
+    PersonalizationTagLinkNormalizer $linkNormalizer,
     AutomationStorage $automationStorage,
     Registry $registry,
     NewslettersRepository $newslettersRepository,
@@ -67,7 +74,7 @@ class PersonalizationTagManager {
     $this->date = $date;
     $this->orderReviewUrl = $orderReviewUrl;
     $this->wp = $wp;
-    $this->linksToShortcodesConvertor = $linksToShortcodesConvertor;
+    $this->linkNormalizer = $linkNormalizer;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
     $this->newslettersRepository = $newslettersRepository;
@@ -315,24 +322,10 @@ class PersonalizationTagManager {
       return $registry;
     });
 
-    // Convert links to shortcodes before sending the email
-    // This is a temporary solution so that we are able to integrate the new personalization tags
-    // It is needed until we have a proper solution for the personalization tags in the MailPoet Link tracking system
+    // Runs after rendering and before link tracking hashes the hrefs.
     $this->wp->addFilter(
       'mailpoet_sending_newsletter_render_after_pre_process',
-      [$this, 'convertLinksToShortcodes']
-    );
-    $this->wp->addFilter(
-      'mailpoet_automation_email_personalize_html_after',
-      [$this, 'restorePersonalizedLinkHrefs'],
-      10,
-      2
-    );
-    $this->wp->addFilter(
-      'mailpoet_automation_email_personalize_text_after',
-      [$this, 'restorePersonalizedLinkUrls'],
-      10,
-      2
+      [$this, 'normalizeTrackedLinks']
     );
   }
 
@@ -361,46 +354,19 @@ class PersonalizationTagManager {
     }
   }
 
-  public function convertLinksToShortcodes(array $emailContent): array {
-    if (!isset($emailContent['html'])) {
-      return $emailContent;
-    }
-    $emailContent['html'] = $this->linksToShortcodesConvertor->convertLinkTagsToShortcodes(
-      $emailContent['html'],
-      $this->getPreTrackingUrlTokens()
-    );
-    return $emailContent;
-  }
-
   /**
-   * @param array<string, mixed> $context
-   */
-  public function restorePersonalizedLinkHrefs(string $html, array $context = []): string {
-    return $this->linksToShortcodesConvertor->restorePersonalizedLinkHrefs($html, $this->getPersonalizedUrlTokens($context));
-  }
-
-  /**
-   * @param array<string, mixed> $context
-   */
-  public function restorePersonalizedLinkUrls(string $content, array $context = []): string {
-    return $this->linksToShortcodesConvertor->restorePersonalizedLinkUrls($content, $this->getPersonalizedUrlTokens($context));
-  }
-
-  /**
-   * @param array<string, mixed> $context
+   * @param array<string, string> $emailContent rendered email parts keyed by "html" and "text"
    * @return array<string, string>
    */
-  private function getPersonalizedUrlTokens(array $context): array {
-    return [
-      '[woocommerce/order-review-url]' => $this->orderReviewUrl->getUrl($context),
-    ];
-  }
-
-  /**
-   * @return array<string, string>
-   */
-  private function getPreTrackingUrlTokens(): array {
+  public function normalizeTrackedLinks(array $emailContent): array {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    return $this->linkNormalizer->normalize($emailContent, $this->getPreTrackingUrlTokens($registry));
+  }
+
+  /**
+   * @return array<string, string>
+   */
+  private function getPreTrackingUrlTokens(Personalization_Tags_Registry $registry): array {
     $tokens = [];
     foreach (self::PRE_TRACKING_URL_TOKENS as $token) {
       $tag = $registry->get_by_token($token);
@@ -408,10 +374,15 @@ class PersonalizationTagManager {
         continue;
       }
       try {
-        $tokens[$token] = $tag->execute_callback([]);
+        $resolved = $tag->execute_callback([]);
       } catch (\Throwable $e) {
         // A broken tag callback must not block newsletter pre-processing
         continue;
+      }
+      // A tag that produced no URL is left out, so the link falls back to
+      // symbolic tracking and click-time resolution like any other token.
+      if ($resolved !== '') {
+        $tokens[$token] = $resolved;
       }
     }
     return $tokens;

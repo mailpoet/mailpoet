@@ -10,8 +10,8 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
-use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\LinksToShortcodesConvertor;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkNormalizer;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -42,7 +42,7 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->sendingQueueEntity = (new SendingQueueFactory())->create($this->scheduledTaskEntity, $this->newsletter);
   }
 
-  public function testItHooksToPostRenderToReplaceLinksInHrefByShortcodes() {
+  public function testItHooksToPostRenderToNormalizeTagLinksForTracking() {
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     // @phpstan-ignore-next-line The structure is hardcoded in the fixture
     $body['content']['blocks'][0]['blocks'][0]['blocks'][0]['text'] = '
@@ -64,16 +64,16 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     /** @var array{html: string, text: string}  $rendered */
     $rendered = $this->sendingQueueEntity->getNewsletterRenderedBody();
 
-    // Ensure link were properly extracted and replaced in email body
-    $unsubscribeLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[link:subscription_unsubscribe_url]']);
+    // Context-dependent tag links are stored symbolically and tracked
+    $unsubscribeLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[mailpoet/subscription-unsubscribe-url]']);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $unsubscribeLink);
     $this->assertStringContainsString('<a href="[mailpoet_click_data]-' . $unsubscribeLink->getHash() . '">Unsubscribe</a>', $rendered['html']);
 
-    $manageLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[link:subscription_manage_url]']);
+    $manageLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[mailpoet/subscription-manage-url]']);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $manageLink);
     $this->assertStringContainsString('<a href="[mailpoet_click_data]-' . $manageLink->getHash() . '">Manage</a>', $rendered['html']);
 
-    $viewInBrowserLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[link:newsletter_view_in_browser_url]']);
+    $viewInBrowserLink = $newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter, 'queue' => $this->sendingQueueEntity, 'url' => '[mailpoet/newsletter-view-in-browser-url]']);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $viewInBrowserLink);
     $this->assertStringContainsString('<a href="[mailpoet_click_data]-' . $viewInBrowserLink->getHash() . '">View in browser</a>', $rendered['html']);
 
@@ -141,45 +141,100 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     $this->assertNull($registry->get_by_token('[woocommerce/order-review-url]'));
   }
 
-  public function testItMovesOrderReviewUrlHrefToDataAttributeBeforeLinkTracking(): void {
+  /**
+   * The order review tag is registered only once the automation subjects are known, i.e. after
+   * link tracking ran, so normalization must not depend on the registry.
+   */
+  public function testItNormalizesOrderReviewUrlHrefToTokenBeforeLinkTracking(): void {
+    // The registry is cached across tests, so make sure the tag is not registered here
+    // no matter what ran before; normalization must not depend on it.
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->unregister('[woocommerce/order-review-url]');
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
-      'html' => '<a href="[woocommerce/order-review-url]">Leave a review</a>',
+    $emailContent = $personalizationManager->normalizeTrackedLinks([
+      'html' => '<a href="[woocommerce/order-review-url]">Leave a review</a>'
+        . '<a href="http://%5Bwoocommerce/order-review-url%5D">Encoded</a>'
+        . '<a data-link-href="[woocommerce/order-review-url]" contenteditable="false">Inserted as link</a>',
+      'text' => '[Leave a review](http://%5Bwoocommerce/order-review-url%5D) [Other](https://example.com/?a=1)',
     ]);
 
-    $this->assertStringContainsString('data-link-href="[woocommerce/order-review-url]"', $emailContent['html']);
-    $this->assertStringNotContainsString(' href="[woocommerce/order-review-url]"', $emailContent['html']);
+    $this->assertSame(3, substr_count($emailContent['html'], 'href="[woocommerce/order-review-url]"'));
+    $this->assertStringNotContainsString('%5D', $emailContent['html']);
+    $this->assertStringNotContainsString('.invalid', $emailContent['html']);
+    $this->assertStringNotContainsString('data-link-href', $emailContent['html']);
+    $this->assertStringNotContainsString('contenteditable', $emailContent['html']);
+    $this->assertSame('[Leave a review]([woocommerce/order-review-url]) [Other](https://example.com/?a=1)', $emailContent['text']);
   }
 
-  public function testItMovesEncodedOrderReviewUrlHrefToDataAttributeBeforeLinkTracking(): void {
+  public function testItNormalizesAnyTagShapedToken(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
-      'html' => '<a href="http://%5Bwoocommerce/order-review-url%5D">Leave a review</a>',
+    $emailContent = $personalizationManager->normalizeTrackedLinks([
+      'html' => '<a data-link-href="[acme/custom-url]">Custom</a><a href="http://%5Bmailpoet/subscriber-activation-link%5D">Activate</a>',
     ]);
 
-    $this->assertStringContainsString('data-link-href="[woocommerce/order-review-url]"', $emailContent['html']);
-    $this->assertStringNotContainsString('%5Bwoocommerce/order-review-url%5D', $emailContent['html']);
+    $this->assertStringContainsString('href="[acme/custom-url]"', $emailContent['html']);
+    $this->assertStringContainsString('href="[mailpoet/subscriber-activation-link]"', $emailContent['html']);
+    $this->assertStringNotContainsString('data-link-href', $emailContent['html']);
+  }
+
+  /**
+   * @dataProvider textLinkTargetProvider
+   */
+  public function testItNormalizesTextLinkTargets(string $target, string $expected): void {
+    $normalizer = new PersonalizationTagLinkNormalizer();
+    $this->assertSame(
+      '[Link](' . $expected . ')',
+      $normalizer->normalizeText('[Link](' . $target . ')', ['[acme/static-url]' => 'https://example.com/static'])
+    );
+  }
+
+  /**
+   * @return array<string, array{string, string}>
+   */
+  public function textLinkTargetProvider(): array {
+    return [
+      'bare token' => ['[acme/order-url]', '[acme/order-url]'],
+      'http prefix' => ['http://[acme/order-url]', '[acme/order-url]'],
+      'https prefix' => ['https://[acme/order-url]', '[acme/order-url]'],
+      'encoded brackets' => ['http://%5Bacme/order-url%5D', '[acme/order-url]'],
+      'closing bracket encoded' => ['http://[acme/order-url%5D', '[acme/order-url]'],
+      'html entities' => ['&#91;acme/order-url&#93;', '[acme/order-url]'],
+      'pre-tracking token' => ['http://%5Bacme/static-url%5D', 'https://example.com/static'],
+      'regular url' => ['https://example.com/?q=[a]', 'https://example.com/?q=[a]'],
+      'legacy shortcode' => ['[link:subscription_unsubscribe_url]', '[link:subscription_unsubscribe_url]'],
+    ];
+  }
+
+  public function testItLeavesNonTokenLinksUntouched(): void {
+    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+    $html = '<a href="[postLink]">Post</a><a href="https://example.com/?q=[a]">Regular</a><a href="[link:subscription_manage_url]">Legacy</a><p>http://[not-a-mailpoet-token]</p>';
+    $emailContent = $personalizationManager->normalizeTrackedLinks(['html' => $html]);
+
+    $this->assertSame($html, $emailContent['html']);
   }
 
   public function testItResolvesEncodedHomepageUrlHrefBeforeLinkTracking(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
+    $emailContent = $personalizationManager->normalizeTrackedLinks([
       'html' => '<a href="http://%5Bmailpoet/site-homepage-url%5D">Homepage</a>',
+      'text' => '[Homepage](http://%5Bmailpoet/site-homepage-url%5D)',
     ]);
 
     $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
     $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
     $this->assertStringNotContainsString('%5Bmailpoet/site-homepage-url%5D', $emailContent['html']);
     $this->assertStringNotContainsString('[mailpoet/site-homepage-url]', $emailContent['html']);
+    $this->assertSame('[Homepage](' . $homepageUrl . ')', $emailContent['text']);
   }
 
   public function testItResolvesUnencodedHomepageUrlHrefBeforeLinkTracking(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
+    $emailContent = $personalizationManager->normalizeTrackedLinks([
       'html' => '<a href="[mailpoet/site-homepage-url]">Homepage</a>',
     ]);
 
@@ -191,7 +246,7 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
   public function testItResolvesHomepageUrlDataLinkHrefBeforeLinkTracking(): void {
     $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
+    $emailContent = $personalizationManager->normalizeTrackedLinks([
       'html' => '<a data-link-href="[mailpoet/site-homepage-url]" contenteditable="false">Homepage</a>',
     ]);
 
@@ -204,19 +259,12 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
   public function testItResolvesRegisteredWooCommerceUrlTokensBeforeLinkTracking(): void {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $originalTag = $registry->unregister('[woocommerce/store-url]');
-    $registry->register(new Personalization_Tag(
-      'Store URL',
-      'woocommerce/store-url',
-      'Store',
-      function (): string {
-        return 'https://example.com/shop';
-      }
-    ));
+    $registry->register($this->createTag('woocommerce/store-url', 'https://example.com/shop'));
 
     try {
       $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-      $emailContent = $personalizationManager->convertLinksToShortcodes([
+      $emailContent = $personalizationManager->normalizeTrackedLinks([
         'html' => '<a href="http://%5Bwoocommerce/store-url%5D">Shop now</a>',
       ]);
 
@@ -230,7 +278,7 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     }
   }
 
-  public function testItSkipsPreTrackingTokensWhoseCallbackFails(): void {
+  public function testItTracksPreTrackingTokensSymbolicallyWhenTheirCallbackFails(): void {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $originalTag = $registry->unregister('[woocommerce/store-url]');
     $registry->register(new Personalization_Tag(
@@ -245,12 +293,12 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     try {
       $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-      $emailContent = $personalizationManager->convertLinksToShortcodes([
+      $emailContent = $personalizationManager->normalizeTrackedLinks([
         'html' => '<a href="http://%5Bwoocommerce/store-url%5D">Shop now</a><a href="[mailpoet/site-homepage-url]">Homepage</a>',
       ]);
 
-      // The failing tag is skipped, other tokens still resolve
-      $this->assertStringContainsString('href="http://%5Bwoocommerce/store-url%5D"', $emailContent['html']);
+      // The failing tag falls back to click-time resolution, other tokens still resolve
+      $this->assertStringContainsString('href="[woocommerce/store-url]"', $emailContent['html']);
       $homepageUrl = (string)WPFunctions::get()->getBloginfo('url');
       $this->assertStringContainsString('href="' . $homepageUrl . '"', $emailContent['html']);
     } finally {
@@ -261,18 +309,46 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     }
   }
 
-  public function testItLeavesUnregisteredPreTrackingUrlTokensUntouched(): void {
+  public function testItTracksPreTrackingTokensSymbolicallyWhenTheirCallbackReturnsNoUrl(): void {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $originalTag = $registry->unregister('[woocommerce/store-url]');
+    $registry->register(new Personalization_Tag(
+      'Store URL',
+      'woocommerce/store-url',
+      'Store',
+      function (): string {
+        return '';
+      }
+    ));
+
+    try {
+      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
+
+      $emailContent = $personalizationManager->normalizeTrackedLinks([
+        'html' => '<a href="http://%5Bwoocommerce/store-url%5D">Shop now</a>',
+      ]);
+
+      $this->assertStringContainsString('href="[woocommerce/store-url]"', $emailContent['html']);
+    } finally {
+      $registry->unregister('[woocommerce/store-url]');
+      if ($originalTag) {
+        $registry->register($originalTag);
+      }
+    }
+  }
+
+  public function testItTracksUnregisteredPreTrackingUrlTokensSymbolically(): void {
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
     $originalTag = $registry->unregister('[woocommerce/my-account-url]');
 
     try {
       $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
 
-      $emailContent = $personalizationManager->convertLinksToShortcodes([
+      $emailContent = $personalizationManager->normalizeTrackedLinks([
         'html' => '<a href="http://%5Bwoocommerce/my-account-url%5D">My account</a>',
       ]);
 
-      $this->assertStringContainsString('href="http://%5Bwoocommerce/my-account-url%5D"', $emailContent['html']);
+      $this->assertStringContainsString('href="[woocommerce/my-account-url]"', $emailContent['html']);
     } finally {
       if ($originalTag) {
         $registry->register($originalTag);
@@ -280,56 +356,24 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
     }
   }
 
-  public function testItOnlyRemovesTemporaryHttpPrefixForKnownLinkTokens(): void {
-    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
-
-    $emailContent = $personalizationManager->convertLinksToShortcodes([
-      'html' => '<a data-link-href="[mailpoet/subscription-unsubscribe-url]">Unsubscribe</a><p>http://[not-a-mailpoet-token]</p>',
-    ]);
-
-    $this->assertStringContainsString('href="[link:subscription_unsubscribe_url]"', $emailContent['html']);
-    $this->assertStringContainsString('http://[not-a-mailpoet-token]', $emailContent['html']);
-  }
-
-  public function testItRestoresPersonalizedLinkHrefsAfterPersonalization(): void {
-    $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
-
-    $html = $personalizationManager->restorePersonalizedLinkHrefs(
-      '<a data-link-href="https://example.com/review-order/abc">Leave a review</a>'
-    );
-
-    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $html);
-    $this->assertStringNotContainsString('data-link-href=', $html);
-  }
-
-  public function testItConvertsTrackingOptOutTagToShortcode(): void {
-    $convertor = new LinksToShortcodesConvertor();
+  public function testItNormalizesTrackingOptOutTagLink(): void {
+    $normalizer = new PersonalizationTagLinkNormalizer();
     $html = '<a data-link-href="[mailpoet/subscription-tracking-opt-out-url]" href="#">Stop tracking me</a>';
-    $result = $convertor->convertLinkTagsToShortcodes($html);
-    $this->assertStringContainsString('[link:subscription_tracking_opt_out_url]', $result);
+    $result = $normalizer->normalizeHtml($html, []);
+    $this->assertStringContainsString('href="[mailpoet/subscription-tracking-opt-out-url]"', $result);
+    $this->assertStringNotContainsString('href="#"', $result);
+    $this->assertStringNotContainsString('data-link-href', $result);
   }
 
-  public function testItResolvesOrderReviewUrlDataAttributeAfterPersonalization(): void {
-    $convertor = new LinksToShortcodesConvertor();
-
-    $html = $convertor->restorePersonalizedLinkHrefs(
-      '<a data-link-href="[woocommerce/order-review-url]">Leave a review</a>',
-      ['[woocommerce/order-review-url]' => 'https://example.com/review-order/abc']
+  private function createTag(string $token, string $value): Personalization_Tag {
+    return new Personalization_Tag(
+      $token,
+      $token,
+      'Test',
+      function () use ($value): string {
+        return $value;
+      }
     );
-
-    $this->assertStringContainsString('href="https://example.com/review-order/abc"', $html);
-    $this->assertStringNotContainsString('data-link-href=', $html);
-  }
-
-  public function testItResolvesOrderReviewUrlInPlainTextAfterPersonalization(): void {
-    $convertor = new LinksToShortcodesConvertor();
-
-    $text = $convertor->restorePersonalizedLinkUrls(
-      '[Leave a review](http://[woocommerce/order-review-url%5D)',
-      ['[woocommerce/order-review-url]' => 'https://example.com/review-order/abc']
-    );
-
-    $this->assertSame('[Leave a review](https://example.com/review-order/abc)', $text);
   }
 
   public function testItSkipsCustomFieldTagsWhenDeletedAtColumnIsMissing(): void {
