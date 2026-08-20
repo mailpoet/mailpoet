@@ -379,9 +379,14 @@ class Settings extends APIEndpoint {
     // Stamp when the site started asking everyone, so stats can tell "untracked
     // now" from "untracked when we sent". Without it, switching to ask_all
     // would re-label recipients who were tracked on earlier sends.
+    // Settings are persisted before this runs and nothing constrains their
+    // shape, so a request can leave a non-string here. Ignore anything that is
+    // not one of the three choices rather than fataling on the way out.
+    $oldChoice = $oldSettings['tracking']['consent']['subscriber_choice'] ?? null;
+    $newChoice = $newSettings['tracking']['consent']['subscriber_choice'] ?? null;
     $this->trackingConsentController->onSubscriberChoiceChange(
-      $oldSettings['tracking']['consent']['subscriber_choice'] ?? null,
-      $newSettings['tracking']['consent']['subscriber_choice'] ?? null
+      is_string($oldChoice) ? $oldChoice : null,
+      is_string($newChoice) ? $newChoice : null
     );
 
     // Recalculate inactive subscribers
