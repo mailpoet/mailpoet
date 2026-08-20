@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -102,7 +103,8 @@ class WorkerTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersFeature::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(ServicesChecker::class),
-      $this->diContainer->get(DotcomHelperFunctions::class)
+      $this->diContainer->get(DotcomHelperFunctions::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
     );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
@@ -246,6 +248,31 @@ class WorkerTest extends \MailPoetTest {
         $this->anything(),
         $this->callback(function($context){
           return ($context['topLink'] === 'Manage subscription link');
+        })
+      );
+
+    $this->statsNotifications->process();
+  }
+
+  public function testLabelsPersonalizationTagTokenLinks() {
+    $link = $this->newsletterLinkFactory
+      ->withUrl('[mailpoet/subscriber-activation-link]')
+      ->withHash('xyze')
+      ->create();
+
+    foreach (range(1, 3) as $i) {
+      $subscriber = (new SubscriberFactory())->create();
+      (new StatisticsClicksFactory($link, $subscriber))->withCount(1)->create();
+    }
+
+    $this->entityManager->refresh($link);
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+    ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context){
+          return $context['topLink'] === 'Activation Link';
         })
       );
 

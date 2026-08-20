@@ -5,7 +5,10 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\Links\Links as NewsletterLinksService;
 use MailPoet\Newsletter\NewslettersRepository;
 
@@ -29,14 +32,21 @@ class NewsletterLinks extends APIEndpoint {
   /** @var NewsletterLinksService */
   private $newsletterLinks;
 
+  private PersonalizationTagLinkResolver $linkResolver;
+  private PersonalizationTagManager $personalizationTagManager;
+
   public function __construct(
     NewsletterLinkRepository $newsletterLinkRepository,
     NewslettersRepository $newslettersRepository,
-    NewsletterLinksService $newsletterLinks
+    NewsletterLinksService $newsletterLinks,
+    PersonalizationTagLinkResolver $linkResolver,
+    PersonalizationTagManager $personalizationTagManager
   ) {
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterLinks = $newsletterLinks;
+    $this->linkResolver = $linkResolver;
+    $this->personalizationTagManager = $personalizationTagManager;
   }
 
   public function get($data = []) {
@@ -55,7 +65,7 @@ class NewsletterLinks extends APIEndpoint {
     foreach ($links as $link) {
       $response[] = [
         'id' => $link->getId(),
-        'url' => $link->getUrl(),
+        'url' => $this->getLabel($link->getUrl()),
       ];
     }
     return $this->successResponse($response);
@@ -65,6 +75,12 @@ class NewsletterLinks extends APIEndpoint {
     $newsletterId = $newsletter->getId();
     if (!$newsletterId) {
       return [];
+    }
+
+    // Subject-dependent tags (e.g. order tags) are registered per automation; needed for their labels
+    $automationId = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AUTOMATION_ID);
+    if (is_numeric($automationId)) {
+      $this->personalizationTagManager->extendPersonalizationTagsByAutomationSubjects((int)$automationId);
     }
 
     $urls = [];
@@ -78,9 +94,16 @@ class NewsletterLinks extends APIEndpoint {
     return array_map(function(string $url): array {
       return [
         'id' => $url,
-        'url' => $url,
+        'url' => $this->getLabel($url),
       ];
     }, array_values($urls));
+  }
+
+  /**
+   * Links stored as personalization tag tokens are shown under the tag's name.
+   */
+  private function getLabel(string $url): string {
+    return $this->linkResolver->getDisplayName($url) ?? $url;
   }
 
   /**
@@ -142,7 +165,8 @@ class NewsletterLinks extends APIEndpoint {
       return false;
     }
     // strpos returns false when '[' is absent and 0 when it's the first char; !== 0 covers both
-    // "no leading bracket" cases. Allow [link:…] shortcodes through; reject other tokens like [postLink].
-    return strpos($url, '[') !== 0 || strpos($url, '[link:') === 0;
+    // "no leading bracket" cases. Allow [link:…] shortcodes and personalization tag tokens through;
+    // reject other tokens like [postLink].
+    return strpos($url, '[') !== 0 || strpos($url, '[link:') === 0 || $this->linkResolver->isTokenUrl($url);
   }
 }

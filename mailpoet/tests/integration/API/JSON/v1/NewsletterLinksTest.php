@@ -118,6 +118,35 @@ class NewsletterLinksTest extends \MailPoetTest {
     verify($ids)->equals($urls);
   }
 
+  public function testItLabelsPersonalizationTagTokenLinksWithTagName(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $queue = $this->createQueue($newsletter);
+    $link = $this->createLink($newsletter, $queue, '[mailpoet/subscriber-activation-link]');
+
+    $response = $this->endpoint->get(['newsletterId' => $newsletter->getId()]);
+
+    verify($response->data)->arrayCount(1);
+    verify($response->data[0]['id'])->equals($link->getId());
+    verify($response->data[0]['url'])->equals('Activation Link');
+  }
+
+  public function testItReturnsPersonalizationTagTokenLinksForAutomationEmails(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $queue = $this->createQueue($newsletter);
+    $this->createLink($newsletter, $queue, '[mailpoet/subscriber-activation-link]');
+    $this->createLink($newsletter, $queue, '[acme/unregistered-token]');
+    $this->createLink($newsletter, $queue, '[postLink]');
+
+    $response = $this->endpoint->get(['newsletterId' => $newsletter->getId()]);
+    $ids = array_column($response->data, 'id');
+
+    // ids stay raw so that clicks can be matched by stored URL; labels come from the tag registry
+    $this->assertEqualsCanonicalizing(['[mailpoet/subscriber-activation-link]', '[acme/unregistered-token]'], $ids);
+    $labels = array_column($response->data, 'url', 'id');
+    $this->assertSame('Activation Link', $labels['[mailpoet/subscriber-activation-link]']);
+    $this->assertSame('[acme/unregistered-token]', $labels['[acme/unregistered-token]']);
+  }
+
   private function createNewsletter(string $type, string $status, array $body = []): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
