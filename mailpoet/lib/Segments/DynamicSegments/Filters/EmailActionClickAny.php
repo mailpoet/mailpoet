@@ -28,11 +28,17 @@ class EmailActionClickAny implements Filter {
 
     $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
 
+    // System links: legacy shortcodes and the personalization tag tokens of block emails
     $excludedLinks = [
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_instant_unsubscribe_url]',
       '[link:newsletter_view_in_browser_url]',
       '[link:subscription_manage_url]',
+      '[link:subscription_tracking_opt_out_url]',
+      '[mailpoet/subscription-unsubscribe-url]',
+      '[mailpoet/newsletter-view-in-browser-url]',
+      '[mailpoet/subscription-manage-url]',
+      '[mailpoet/subscription-tracking-opt-out-url]',
     ];
     $queryBuilder = $queryBuilder->innerJoin(
       $subscribersTable,

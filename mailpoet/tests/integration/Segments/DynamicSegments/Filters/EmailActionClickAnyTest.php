@@ -66,6 +66,11 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $this->addClickedToLink('[link:subscription_instant_unsubscribe_url]', $this->newsletter, $subscriberClickedExcludedLinks);
     $this->addClickedToLink('[link:newsletter_view_in_browser_url]', $this->newsletter, $subscriberClickedExcludedLinks);
     $this->addClickedToLink('[link:subscription_manage_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[link:subscription_tracking_opt_out_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[mailpoet/subscription-unsubscribe-url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[mailpoet/newsletter-view-in-browser-url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[mailpoet/subscription-manage-url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[mailpoet/subscription-tracking-opt-out-url]', $this->newsletter, $subscriberClickedExcludedLinks);
 
     $data = $this->getSegmentFilterData(EmailActionClickAny::TYPE);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->emailAction);
