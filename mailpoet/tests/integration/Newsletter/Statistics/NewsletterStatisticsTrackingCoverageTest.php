@@ -352,6 +352,63 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
     verify($statistics->getTrackedSentCount())->equals(1);
   }
 
+  /**
+   * The documented limit of reading consent at display time, pinned so nobody
+   * "fixes" it by accident.
+   *
+   * Someone denied before a send, who later allows tracking, looks `granted`
+   * now, and the row carries only their LAST change — there is no history to
+   * say what they were on the day. So they come back into the denominator for
+   * that old campaign even though no open could ever have been recorded for
+   * them, and the rate reads slightly low.
+   *
+   * Accepted on purpose. The error is always in this direction — it can only
+   * put someone back in, never take an engaged recipient out — so it can never
+   * push a rate over 100%, and it lands on the number trunk shows today. The
+   * alternative is storing eligibility per recipient at send time, which is the
+   * column-on-the-largest-table design this PR replaced.
+   */
+  public function testARecipientWhoAllowsTrackingAfterASendReturnsToThatSendsDenominator() {
+    $newsletter = $this->createSentNewsletter(2);
+    $subscriber = (new Subscriber())
+      ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-2 days'))
+      ->create();
+    (new StatisticsNewsletters($newsletter, $subscriber))->create();
+    $this->createRecipients($newsletter, [true]);
+
+    verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(1);
+
+    // They change their mind after the campaign went out.
+    $subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+    $this->clearCachedCounts();
+    $this->entityManager->clear();
+    $newsletter = $this->reloadNewsletter($newsletter);
+
+    $statistics = $this->repository->getStatistics($newsletter);
+    verify($statistics->getNotTrackedCount())->equals(0);
+    verify($statistics->getTrackedSentCount())->equals(2);
+  }
+
+  /** Same limit on the strict-mode side: never asked at the send, allowed afterwards. */
+  public function testANeverAskedRecipientWhoAllowsTrackingAfterAStrictSendReturnsToTheDenominator() {
+    $this->switchToStrictMode(new \DateTimeImmutable('-1 day'));
+    $newsletter = $this->createSentNewsletter(2);
+    $this->createRecipients($newsletter, [true]);
+    $neverAsked = (new Subscriber())->create();
+    (new StatisticsNewsletters($newsletter, $neverAsked))->create();
+
+    verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(1);
+
+    $neverAsked->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+    $this->clearCachedCounts();
+    $this->entityManager->clear();
+    $newsletter = $this->reloadNewsletter($newsletter);
+
+    verify($this->repository->getStatistics($newsletter)->getNotTrackedCount())->equals(0);
+  }
+
   // ---- cache -------------------------------------------------------------
 
   /** First read stores the number on the queue, keyed by the strict-mode flag it was computed under. */
@@ -460,6 +517,12 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
   }
 
   // ---- helpers -----------------------------------------------------------
+
+  /** Drop every cached count so the next read runs the live query. */
+  private function clearCachedCounts(): void {
+    $table = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE `{$table}` SET meta = NULL, updated_at = updated_at");
+  }
 
   /** Ask everyone, from the given moment. */
   private function switchToStrictMode(\DateTimeImmutable $since): void {
