@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Preview;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
@@ -93,7 +94,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $shortcodes,
       $this->diContainer->get(PersonalizationTagManager::class),
-      $this->diContainer->get(WooCommerceDummyData::class)
+      $this->diContainer->get(WooCommerceDummyData::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -126,7 +128,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(PersonalizationTagManager::class),
-      $this->diContainer->get(WooCommerceDummyData::class)
+      $this->diContainer->get(WooCommerceDummyData::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
