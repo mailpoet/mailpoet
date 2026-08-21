@@ -53,7 +53,7 @@
     "@woocommerce/components": "^13.1.0",
     "@woocommerce/currency": "^4.3.0",
     "@woocommerce/date": "^4.3.0",
-    "@woocommerce/email-editor": "2.3.0",
+    "@woocommerce/email-editor": "2.4.0",
     "@wordpress/a11y": "^4.43.0",
     "@wordpress/api-fetch": "^7.43.0",
     "@wordpress/block-editor": "^15.16.0",
