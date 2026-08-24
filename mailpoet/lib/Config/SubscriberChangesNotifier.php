@@ -23,6 +23,15 @@ class SubscriberChangesNotifier {
   /** @var array<int, int> */
   private $countChangedSubscriberIds = [];
 
+  /**
+   * Consent changes, keyed by subscriber id. Deliberately not collapsed into a batch the
+   * way updates are: a consent change is a per-person legal record, so every one is
+   * delivered on its own.
+   *
+   * @var array<int, array{0: string, 1: string}>
+   */
+  private $trackingConsentChanges = [];
+
   /** @var array<int, int> */
   private $createdSubscriberBatches = [];
 
@@ -43,6 +52,17 @@ class SubscriberChangesNotifier {
     $this->notifyUpdates();
     $this->notifyDeletes();
     $this->notifyCountChanges();
+    $this->notifyTrackingConsentChanges();
+  }
+
+  public function subscriberTrackingConsentChanged(int $subscriberId, string $oldConsent, string $newConsent): void {
+    $this->trackingConsentChanges[$subscriberId] = [$oldConsent, $newConsent];
+  }
+
+  private function notifyTrackingConsentChanges(): void {
+    foreach ($this->trackingConsentChanges as $subscriberId => list($oldConsent, $newConsent)) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED, $subscriberId, $oldConsent, $newConsent);
+    }
   }
 
   private function notifyCreations(): void {
