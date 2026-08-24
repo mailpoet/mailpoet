@@ -269,6 +269,10 @@ class ImportExportRepository {
         {$subscriberTable}.confirmed_ip,
         {$subscriberTable}.created_at,
         {$subscriberTable}.last_subscribed_at,
+        {$subscriberTable}.tracking_consent,
+        {$subscriberTable}.tracking_consent_updated_at,
+        {$subscriberTable}.tracking_consent_method,
+        {$subscriberTable}.tracking_consent_copy,
         {$subscriberTable}.status AS global_status,
         {$subscriberSegmentTable}.status AS list_status
       ")

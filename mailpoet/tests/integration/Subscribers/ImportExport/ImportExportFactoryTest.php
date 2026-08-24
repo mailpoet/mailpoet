@@ -141,10 +141,15 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'email',
       'first_name',
       'last_name',
+      'tracking_consent',
+      'tracking_consent_method',
+      'tracking_consent_copy',
     ];
     foreach ($fields as $field) {
       verify(in_array($field, array_keys($subsriberFields)))->true();
     }
+    // tracking_consent_updated_at is export-only: it is always stamped by the plugin, never imported
+    verify(in_array('tracking_consent_updated_at', array_keys($subsriberFields)))->false();
     // export fields contain extra data
     $this->importFactory->action = 'export';
     $subsriberFields = $this->importFactory->getSubscriberFields();
@@ -156,6 +161,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'global_status',
       'subscribed_ip',
       'last_subscribed_at',
+      'tracking_consent',
+      'tracking_consent_updated_at',
+      'tracking_consent_method',
+      'tracking_consent_copy',
     ];
     foreach ($exportFields as $field) {
       verify(in_array($field, array_keys($subsriberFields)))->true();
@@ -182,13 +191,17 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $formattedSubscriberFields = $this->importFactory->formatSubscriberFields(
       $this->importFactory->getSubscriberFields()
     );
+    $dateFields = ['last_subscribed_at', 'tracking_consent_updated_at'];
+    $foundDateFields = [];
     foreach ($formattedSubscriberFields as $field) {
-      if ($field['id'] === 'last_subscribed_at') {
+      if (in_array($field['id'], $dateFields, true)) {
         verify($field['type'])->equals('date');
-        return;
+        $foundDateFields[] = $field['id'];
       }
     }
-    $this->fail('Last subscribed field not found.');
+    sort($foundDateFields);
+    sort($dateFields);
+    verify($foundDateFields)->equals($dateFields);
   }
 
   public function testItCanGetSubscriberCustomFields() {
@@ -324,9 +337,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $importMenu = $import->bootstrap();
     verify(count((array)json_decode($importMenu['segments'], true)))
       ->equals(2);
-    // email, first_name, last_name, subscribed_ip, created_at, confirmed_ip, confirmed_at + 1 custom field
+    // email, first_name, last_name, subscribed_ip, created_at, confirmed_ip, confirmed_at,
+    // tracking_consent, tracking_consent_method, tracking_consent_copy + 1 custom field
     verify(count((array)json_decode($importMenu['subscriberFields'], true)))
-      ->equals(8);
+      ->equals(11);
     // action, system fields, user fields
     verify(count((array)json_decode($importMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);

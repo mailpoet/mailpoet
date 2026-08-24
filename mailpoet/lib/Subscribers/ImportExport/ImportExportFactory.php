@@ -64,11 +64,16 @@ class ImportExportFactory {
       'created_at' => __('Subscription time', 'mailpoet'),
       'confirmed_at' => __('Confirmation time', 'mailpoet'),
       'confirmed_ip' => __('Confirmation IP', 'mailpoet'),
+      'tracking_consent' => __('Tracking consent', 'mailpoet'),
+      'tracking_consent_method' => __('Tracking consent method', 'mailpoet'),
+      'tracking_consent_copy' => __('Tracking consent wording', 'mailpoet'),
     ];
     if ($this->action === 'export') {
       $fields = array_merge(
         $fields,
         [
+          // Export only: the plugin always stamps this itself, it is never taken from an import.
+          'tracking_consent_updated_at' => __('Tracking consent updated', 'mailpoet'),
           'last_subscribed_at' => __('Last subscribed on', 'mailpoet'),
           'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
           'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
@@ -84,7 +89,7 @@ class ImportExportFactory {
         'id' => $fieldId,
         'name' => $fieldName,
         'text' => $fieldName, // Required for select2 default functionality
-        'type' => in_array($fieldId, ['confirmed_at', 'created_at', 'last_subscribed_at'], true) ? 'date' : null,
+        'type' => in_array($fieldId, ['confirmed_at', 'created_at', 'last_subscribed_at', 'tracking_consent_updated_at'], true) ? 'date' : null,
         'custom' => false,
       ];
     }, array_keys($subscriberFields), $subscriberFields);
