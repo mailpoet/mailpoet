@@ -1082,18 +1082,6 @@ workflows:
           blockbased_theme: 1
           requires:
             - build
-      # TEMPORARY: mirrors the nightly acceptance_gutenberg_latest job so the
-      # Gutenberg 23.8 fix can be verified on CI. Revert before merging.
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_gutenberg_latest
-          group: gutenberg-latest
-          gutenberg_version: latest
-          parallelism: 5
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
       - js_tests:
           <<: *slack-fail-post-step
           requires:
