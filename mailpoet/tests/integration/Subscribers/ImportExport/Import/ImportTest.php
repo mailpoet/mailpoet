@@ -768,6 +768,83 @@ class ImportTest extends \MailPoetTest {
     verify($updatedSubscriber->getLastSubscribedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00'));
   }
 
+  public function testItLeavesTrackingConsentUntouchedWhenTheImportedCellIsBlank(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = ''; // blank: must not overwrite the stored grant below
+    $data['subscribers'][1][] = 'denied';
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+    $storedUpdatedAt = $existing->getTrackingConsentUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $storedUpdatedAt);
+
+    $import = $this->createImportInstance($data);
+    $import->process();
+    $this->entityManager->clear();
+
+    $updated = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($updated->getTrackingConsentCopy())->equals('Original wording');
+    $currentUpdatedAt = $updated->getTrackingConsentUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $currentUpdatedAt);
+    verify($currentUpdatedAt->getTimestamp())->equals($storedUpdatedAt->getTimestamp());
+  }
+
+  public function testItLeavesTrackingConsentUntouchedWhenTheCsvHasNoConsentColumn(): void {
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'Manage page wording'
+    );
+    $this->subscriberRepository->flush();
+
+    $import = $this->createImportInstance($this->testData);
+    $import->process();
+    $this->entityManager->clear();
+
+    $updated = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE);
+    verify($updated->getTrackingConsentCopy())->equals('Manage page wording');
+  }
+
+  public function testItAppliesTrackingConsentWhenTheImportedCellIsNonBlank(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'denied';
+    $data['subscribers'][1][] = '';
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+
+    $import = $this->createImportInstance($data);
+    $import->process();
+    $this->entityManager->clear();
+
+    $updated = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT);
+    // the previous wording belongs to the previous answer, so it is cleared with it
+    verify($updated->getTrackingConsentCopy())->null();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated->getTrackingConsentUpdatedAt());
+  }
+
   public function testItSynchronizesWpUsers(): void {
     $this->tester->createWordPressUser('mary@jane.com', 'editor');
     $beforeImport = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);

@@ -199,9 +199,10 @@ class Import {
           $updatedSubscribers =
             $this->createOrUpdateSubscribers(
               self::ACTION_UPDATE,
-              $existingSubscribers,
+              $this->stripTrackingConsentColumns($existingSubscribers),
               $this->subscribersCustomFields
             );
+          $this->updateTrackingConsent($existingSubscribers);
           if ($wpUsers) {
             $this->synchronizeWPUsers($wpUsers);
           }
@@ -556,6 +557,62 @@ class Import {
       $subscribersData['data'][$field] = $values;
     }
     return $subscribersData;
+  }
+
+  /**
+   * Removes the consent columns from the standard update write. updateMultiple()
+   * writes one uniform set of columns per call, so leaving them in would let a
+   * blank CSV cell overwrite a stored value. updateTrackingConsent() below does
+   * the real write, scoped to the rows that actually supplied a state.
+   */
+  private function stripTrackingConsentColumns(array $subscribersData): array {
+    $consentFields = ['tracking_consent', 'tracking_consent_method', 'tracking_consent_copy'];
+    foreach ($consentFields as $field) {
+      unset($subscribersData['data'][$field]);
+    }
+    $subscribersData['fields'] = array_values(array_diff($subscribersData['fields'], $consentFields));
+    return $subscribersData;
+  }
+
+  /**
+   * Writes consent for existing subscribers, skipping every row whose CSV cell
+   * was blank so their stored value is left alone.
+   */
+  private function updateTrackingConsent(array $subscribersData): void {
+    if (!in_array('tracking_consent', $subscribersData['fields'], true)) {
+      return;
+    }
+    $emails = $subscribersData['data']['email'];
+    $states = $subscribersData['data']['tracking_consent'];
+    $methods = $subscribersData['data']['tracking_consent_method'] ?? [];
+    $copies = $subscribersData['data']['tracking_consent_copy'] ?? [];
+
+    $rows = [];
+    foreach ($states as $index => $state) {
+      $state = trim((string)$state);
+      if ($state === '') {
+        continue;
+      }
+      $method = trim((string)($methods[$index] ?? ''));
+      $copy = trim((string)($copies[$index] ?? ''));
+      $rows[] = [
+        $emails[$index],
+        $state,
+        $this->updatedAt,
+        $method !== '' ? mb_substr($method, 0, self::TRACKING_CONSENT_METHOD_MAX_LENGTH) : SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT,
+        $copy !== '' ? $copy : null,
+      ];
+    }
+    if (!$rows) {
+      return;
+    }
+    foreach (array_chunk($rows, self::DB_QUERY_CHUNK_SIZE) as $chunk) {
+      $this->importExportRepository->updateMultiple(
+        SubscriberEntity::class,
+        ['email', 'tracking_consent', 'tracking_consent_updated_at', 'tracking_consent_method', 'tracking_consent_copy'],
+        $chunk
+      );
+    }
   }
 
   public function getSubscribersFields(array $subscribersFields): array {
