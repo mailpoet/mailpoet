@@ -104,6 +104,17 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItLetsAnAdminSetAnyOfTheThreeValidTrackingConsentValues(): void {
+    foreach (SubscriberEntity::TRACKING_CONSENT_VALUES as $index => $value) {
+      $subscriber = $this->saveController->save([
+        'email' => "consent-valid-{$index}@test.com",
+        'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+        'tracking_consent' => $value,
+      ]);
+      verify($subscriber->getTrackingConsent())->equals($value);
+    }
+  }
+
   public function testItSavesSubscriberTimeZoneWhenCollectionIsEnabled(): void {
     $subscriber = $this->saveController->save([
       'email' => 'timezone-enabled@test.com',

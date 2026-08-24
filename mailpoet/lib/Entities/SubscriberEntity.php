@@ -43,6 +43,12 @@ class SubscriberEntity {
   const TRACKING_CONSENT_GRANTED = 'granted';
   const TRACKING_CONSENT_DENIED = 'denied';
 
+  const TRACKING_CONSENT_VALUES = [
+    self::TRACKING_CONSENT_UNKNOWN,
+    self::TRACKING_CONSENT_GRANTED,
+    self::TRACKING_CONSENT_DENIED,
+  ];
+
   const TRACKING_CONSENT_METHOD_FOOTER_LINK = 'footer_link';
   const TRACKING_CONSENT_METHOD_MANAGE_PAGE = 'manage_page';
   const TRACKING_CONSENT_METHOD_FORM = 'form';
