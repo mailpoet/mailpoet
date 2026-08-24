@@ -619,6 +619,30 @@ class ClicksTest extends \MailPoetTest {
     verify($link)->stringContainsString('&request_method=POST');
   }
 
+  public function testItAppendsMethodForPostRequestsBeforeTheFragment() {
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag('Anchor URL', 'acme/anchor-url', 'Test', function (): string {
+      return 'https://example.com/page?a=1#section';
+    }));
+    $requestMock = $this->createMock(Request::class);
+    $requestMock->method('isPost')->willReturn(true);
+    $this->clicks = $this->getServiceWithOverrides(Clicks::class, ['request' => $requestMock]);
+
+    try {
+      $link = $this->clicks->processUrl(
+        '[acme/anchor-url]',
+        $this->newsletter,
+        $this->subscriber,
+        $this->queue,
+        $preview = false
+      );
+    } finally {
+      $registry->unregister('[acme/anchor-url]');
+    }
+
+    verify($link)->equals('https://example.com/page?a=1&request_method=POST#section');
+  }
+
   public function testItRecordsClickAndAbortsWhenPersonalizationTagTokenUrlCannotBeResolved() {
     $link = new NewsletterLinkEntity($this->newsletter, $this->queue, '[acme/dead-url]', 'tokenhash');
     $this->entityManager->persist($link);
