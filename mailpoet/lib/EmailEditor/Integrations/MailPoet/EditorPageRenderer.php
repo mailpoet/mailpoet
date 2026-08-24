@@ -299,6 +299,9 @@ JS;
     if (is_string($templateSlug) && $templateSlug !== '') {
       $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
     } else {
+      // Keep the query in sync with the woocommerce_email_editor_recent_emails_query filter
+      // in assets/js/src/mailpoet-email-editor-integration/index.ts. If the two differ,
+      // the editor asks for a different path and the preloaded data is not used.
       $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent,draft';
     }
 
