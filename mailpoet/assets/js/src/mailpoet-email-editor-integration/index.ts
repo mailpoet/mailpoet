@@ -190,6 +190,8 @@ addFilter(
 );
 
 // Also list draft, scheduled and sending emails. They all use the `draft` post status.
+// Keep the query in sync with the preloaded route in EditorPageRenderer.php. If the two
+// differ, the preloaded data is not used and the editor makes an extra request.
 addFilter(
   'woocommerce_email_editor_recent_emails_query',
   'mailpoet/email-editor-integration',
