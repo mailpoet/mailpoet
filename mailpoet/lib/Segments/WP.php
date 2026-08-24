@@ -34,6 +34,14 @@ class WP {
   /** @var WooCommerceHelper */
   private $wooHelper;
 
+  /**
+   * Per-request, keyed by WP user id: whether this sync created the subscriber
+   * row or found one already there. See wasSubscriberCreatedBySync().
+   *
+   * @var array<int, bool>
+   */
+  private $syncCreatedSubscriber = [];
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -96,11 +104,32 @@ class WP {
    * @param int $wpUserId
    * @param array|false $oldWpUserData
    */
+
+  /**
+   * Whether this request's sync created the subscriber row for the given WP
+   * user, rather than finding one that was already there. Defaults to false,
+   * meaning "treat as pre-existing", for a user this sync never saw: a missing
+   * signal must never cause an unearned overwrite of an earlier consent choice.
+   *
+   * Needed because wp_insert_user() calls set_user_role() before it fires
+   * user_register, and set_user_role is itself hooked to synchronizeUser. So by
+   * the time anything runs on user_register — at any priority — the row already
+   * exists, and a later lookup cannot tell a brand new registrant from someone
+   * who was already on the list.
+   */
+  public function wasSubscriberCreatedBySync(int $wpUserId): bool {
+    return $this->syncCreatedSubscriber[$wpUserId] ?? false;
+  }
+
   public function synchronizeUser(int $wpUserId, $oldWpUserData = false): void {
     $wpUser = \get_userdata($wpUserId);
     if ($wpUser === false) return;
 
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
+    if (!isset($this->syncCreatedSubscriber[$wpUserId])) {
+      $this->syncCreatedSubscriber[$wpUserId] = !$subscriber instanceof SubscriberEntity
+        && $this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]) === null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
 
     $currentFilter = $this->wp->currentFilter();
     // Delete
