@@ -32,6 +32,40 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
     $notifier->notify();
   }
 
+  public function testItNotifiesTrackingConsentChange(): void {
+    $this->wpFunctions->method('currentTime')->willReturn(1234);
+    $this->wpFunctions->expects($this->once())
+      ->method('doAction')
+      ->with(
+        SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED,
+        6,
+        SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+        SubscriberEntity::TRACKING_CONSENT_DENIED
+      )
+      ->willReturn(true);
+
+    $notifier = new SubscriberChangesNotifier($this->wpFunctions);
+    $notifier->subscriberTrackingConsentChanged(6, SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $notifier->notify();
+  }
+
+  public function testItNotifiesEveryTrackingConsentChangeSeparately(): void {
+    // Deliberately not batched: a consent change is a per-person legal record.
+    $this->wpFunctions->method('currentTime')->willReturn(1234);
+    $this->wpFunctions->expects($this->exactly(2))
+      ->method('doAction')
+      ->withConsecutive(
+        [SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED, 6, SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_DENIED],
+        [SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED, 7, SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_GRANTED]
+      )
+      ->willReturn(true);
+
+    $notifier = new SubscriberChangesNotifier($this->wpFunctions);
+    $notifier->subscriberTrackingConsentChanged(6, SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $notifier->subscriberTrackingConsentChanged(7, SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $notifier->notify();
+  }
+
   public function testItNotifyMultipleSubscribersCreated(): void {
     $this->wpFunctions->expects($this->any())
       ->method('currentTime')
