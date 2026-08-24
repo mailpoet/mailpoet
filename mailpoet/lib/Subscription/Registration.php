@@ -3,9 +3,11 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\WP as WPSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -26,18 +28,28 @@ class Registration {
   /** @var TrackingConsentCapture */
   private $trackingConsentCapture;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var WPSegment */
+  private $wpSegment;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     SubscriberActions $subscriberActions,
     SubscriberHandler $subscriberHandler,
-    TrackingConsentCapture $trackingConsentCapture
+    TrackingConsentCapture $trackingConsentCapture,
+    SubscribersRepository $subscribersRepository,
+    WPSegment $wpSegment
   ) {
     $this->settings = $settings;
     $this->subscriberActions = $subscriberActions;
     $this->wp = $wp;
     $this->subscriberHandler = $subscriberHandler;
     $this->trackingConsentCapture = $trackingConsentCapture;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->wpSegment = $wpSegment;
   }
 
   public function extendForm() {
@@ -118,6 +130,43 @@ class Registration {
    * only shown on sites that chose to ask. Never pre-ticked: a pre-ticked
    * consent box is not valid consent (CJEU Planet49).
    */
+
+  /**
+   * Hooked on user_register, after the WP-user sync has created or updated the
+   * subscriber row for every new WP user, whether or not "add me to your
+   * mailing list" was ticked. That is the gap this closes:
+   * onRegister()/onMultiSiteRegister() only read tracking_consent inside the
+   * subscribe branch, so someone who allowed tracking without subscribing had
+   * their answer thrown away. Covers single-site, multisite and WooCommerce
+   * registration alike, since all three create the WP user and fire this hook.
+   */
+  public function applyTrackingConsentOnUserRegister(int $userId): void {
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- type narrowing only, the value is read as a bool
+    $mailpoetPost = isset($_POST['mailpoet']) && is_array($_POST['mailpoet']) ? $_POST['mailpoet'] : [];
+    if (!isset($mailpoetPost['tracking_consent'])) {
+      return;
+    }
+    $wpUser = $this->wp->getUserdata($userId);
+    if (!$wpUser || empty($wpUser->user_email)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return;
+    }
+    $subscriber = $this->subscribersRepository->findOneBy(
+      ['email' => $wpUser->user_email] // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    );
+    if (!$subscriber instanceof SubscriberEntity) {
+      return;
+    }
+    $method = SubscriberEntity::TRACKING_CONSENT_METHOD_REGISTRATION;
+    $this->trackingConsentCapture->applyToSubscriber(
+      $subscriber,
+      !empty($mailpoetPost['tracking_consent']),
+      $method,
+      $this->trackingConsentCapture->getCopy($method),
+      $this->wpSegment->wasSubscriberCreatedBySync($userId)
+    );
+    $this->subscribersRepository->flush();
+  }
+
   private function getTrackingConsentField(): string {
     if (!$this->trackingConsentCapture->isCaptureEnabled()) {
       return '';

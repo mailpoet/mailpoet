@@ -98,6 +98,84 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
       ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
   }
 
+  public function testAConsentOnlyRegistrantIsRecordedEvenWithoutSubscribing() {
+    // The gap this fixes: onRegister() only reads tracking_consent inside the
+    // subscribe branch, so someone who allowed tracking without ticking
+    // "add me to your mailing list" had their answer thrown away. These tests
+    // go through wp_insert_user(), so the real user_register chain runs:
+    // capture at priority 5, WP-user sync at 6, consent at 7.
+    $this->askEveryone();
+    $email = 'reg-consent-only@example.com';
+    $_POST['mailpoet'] = ['tracking_consent' => true];
+
+    $this->registerWpUser($email);
+
+    $this->entityManager->clear();
+    $subscriber = $this->getSubscriber($email);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($subscriber->getTrackingConsentMethod())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_REGISTRATION);
+  }
+
+  public function testAConsentOnlyRegistrantCanDecline() {
+    $this->askEveryone();
+    $email = 'reg-consent-only-declined@example.com';
+    $_POST['mailpoet'] = ['tracking_consent' => false];
+
+    $this->registerWpUser($email);
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber($email)->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testAConsentOnlyRegistrationDoesNotDowngradeAnExistingSubscriber() {
+    // Same unticked box, different history: this address was already on the
+    // list with a grant, so registering again must not revoke it.
+    $this->askEveryone();
+    $email = 'reg-consent-only-existing@example.com';
+    $existing = (new SubscriberFactory())->withEmail($email)->create();
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'given on the manage page'
+    );
+    $this->subscribersRepository->flush();
+
+    $_POST['mailpoet'] = ['tracking_consent' => false];
+    $this->registerWpUser($email);
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber($email)->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
+  public function testItRecordsNothingWhenNoConsentFieldWasPosted() {
+    $this->askEveryone();
+    $email = 'reg-no-field@example.com';
+    $_POST['mailpoet'] = ['subscribe_on_register' => true];
+
+    $this->registerWpUser($email);
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber($email)->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+  }
+
+  /**
+   * Creates a real WP user, which fires user_register and therefore the whole
+   * chain this change hooks into.
+   */
+  private function registerWpUser(string $email): int {
+    $userId = wp_insert_user([
+      'user_login' => substr(md5($email), 0, 20),
+      'user_email' => $email,
+      'user_pass' => 'password',
+    ]);
+    $this->assertIsInt($userId);
+    return $userId;
+  }
+
   public function testTheFieldIsHiddenUntilTheSiteAsks() {
     ob_start();
     $this->registration->extendForm();
