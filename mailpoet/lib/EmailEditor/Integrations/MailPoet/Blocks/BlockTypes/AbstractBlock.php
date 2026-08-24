@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use WP_Style_Engine;
 
 abstract class AbstractBlock {
@@ -12,6 +13,25 @@ abstract class AbstractBlock {
   public function initialize() {
     $this->registerAssets();
     $this->registerBlockType();
+    add_action('enqueue_block_editor_assets', [$this, 'enqueueEditorAssets']);
+  }
+
+  /**
+   * The blocks stay registered everywhere so emails can render. Their editor
+   * script is what adds them to an inserter, and WordPress loads it in every
+   * editor, so we load it here instead - only on the email editor page.
+   */
+  public function enqueueEditorAssets(): void {
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    if (!$screen || $screen->post_type !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return;
+    }
+    if (null !== $this->getEditorScript()) {
+      wp_enqueue_script($this->getEditorScript('handle'));
+    }
+    if (null !== $this->getEditorStyle()) {
+      wp_enqueue_style($this->getEditorStyle('handle'));
+    }
   }
 
   protected function getBlockType(): string {
@@ -51,8 +71,6 @@ abstract class AbstractBlock {
     $metadata_path = Env::$assetsPath . '/dist/js/email-editor-blocks/' . $this->blockName . '/block.json';
     $block_settings = [
         'render_callback' => [$this, 'render'],
-        'editor_script' => $this->getEditorScript('handle'),
-        'editor_style' => $this->getEditorStyle('handle'),
     ];
     register_block_type_from_metadata(
       $metadata_path,

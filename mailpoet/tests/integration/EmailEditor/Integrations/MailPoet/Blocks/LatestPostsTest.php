@@ -12,6 +12,12 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class LatestPostsTest extends \MailPoetTest {
+  private const OWN_BLOCKS = [
+    'mailpoet/latest-posts',
+    'mailpoet/latest-posts-template',
+    'mailpoet/post-content',
+  ];
+
   private LatestPosts $block;
   private WPFunctions $wp;
   private NewsletterPostsRepository $newsletterPostsRepository;
@@ -462,38 +468,35 @@ class LatestPostsTest extends \MailPoetTest {
 
   }
 
-  public function testItKeepsTheBlockAvailableInsideTheEmailEditor(): void {
-    $newsletter = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD);
-    $wpPostId = $newsletter->getWpPostId();
-    $this->assertIsInt($wpPostId);
-    $emailPost = $this->wp->getPost($wpPostId);
-    $context = new \WP_Block_Editor_Context(['post' => $emailPost]);
+  public function testItKeepsItsEditorScriptsOffTheGlobalBlockEditorEnqueue(): void {
+    // WordPress loads the editor script of every registered block in every
+    // editor. If ours were on that list, the blocks would show up in the post,
+    // page, site and widget inserters too.
+    $this->ensurePostContentBlockRegistered();
+    $registry = \WP_Block_Type_Registry::get_instance();
 
-    // The email editor leaves the allow-list untouched (blocks stay available).
-    verify($this->block->restrictBlocksToEmailEditor(true, $context))->equals(true);
+    foreach (self::OWN_BLOCKS as $blockName) {
+      $blockType = $registry->get_registered($blockName);
+      $this->assertInstanceOf(\WP_Block_Type::class, $blockType);
+      verify($blockType->editor_script_handles)->equals([]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      verify($blockType->editor_style_handles)->equals([]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
   }
 
-  public function testItHidesTheBlockOutsideTheEmailEditor(): void {
-    $regularPost = $this->wp->getPost($this->postIds[0]);
-    $context = new \WP_Block_Editor_Context(['post' => $regularPost]);
+  public function testItEnqueuesItsEditorAssetsOnlyOnTheEmailEditorPage(): void {
+    $this->ensurePostContentBlockRegistered();
+    $scriptHandle = 'mailpoet-latest-posts-block';
 
-    $allowed = $this->block->restrictBlocksToEmailEditor(true, $context);
+    $this->setCurrentScreen('post');
+    $this->block->enqueueEditorAssets();
+    verify(wp_script_is($scriptHandle, 'enqueued'))->false();
 
-    $this->assertIsArray($allowed);
-    verify(in_array('mailpoet/latest-posts', $allowed, true))->false();
-    verify(in_array('mailpoet/latest-posts-template', $allowed, true))->false();
-    verify(in_array('mailpoet/post-content', $allowed, true))->false();
-    // Other blocks remain available.
-    verify(in_array('core/paragraph', $allowed, true))->true();
-  }
+    $this->setCurrentScreen(EmailEditor::MAILPOET_EMAIL_POST_TYPE);
+    $this->block->enqueueEditorAssets();
+    verify(wp_script_is($scriptHandle, 'enqueued'))->true();
 
-  public function testItKeepsAnEmptyAllowListFromAnotherIntegration(): void {
-    $regularPost = $this->wp->getPost($this->postIds[0]);
-    $context = new \WP_Block_Editor_Context(['post' => $regularPost]);
-
-    // `false` means another integration disallowed every block; we must not
-    // turn that back into the full block list.
-    verify($this->block->restrictBlocksToEmailEditor(false, $context))->equals(false);
+    wp_dequeue_script($scriptHandle);
+    $this->setCurrentScreen('front');
   }
 
   public function testItCapsTheNumberOfManuallySelectedPosts(): void {
@@ -716,6 +719,14 @@ class LatestPostsTest extends \MailPoetTest {
     }
     $this->assertIsArray($term);
     return (int)$term['term_id'];
+  }
+
+  private function setCurrentScreen(string $hookName): void {
+    if (!function_exists('set_current_screen')) {
+      require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+      require_once ABSPATH . 'wp-admin/includes/screen.php';
+    }
+    set_current_screen($hookName);
   }
 
   private function ensurePostContentBlockRegistered(): void {
