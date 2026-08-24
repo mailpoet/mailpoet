@@ -51,6 +51,13 @@ class SubscriberEntity {
   const TRACKING_CONSENT_METHOD_WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
   const TRACKING_CONSENT_METHOD_REGISTRATION = 'registration';
   const TRACKING_CONSENT_METHOD_COMMENT = 'comment';
+  /**
+   * A caller of the public PHP API is itself the collection point: it rendered
+   * its own consent control, so only it knows what the subscriber was shown.
+   * Kept separate from METHOD_ADMIN so a consent record can tell "recorded by
+   * an integration" apart from "changed by a person in wp-admin".
+   */
+  const TRACKING_CONSENT_METHOD_API = 'api';
 
   public const OBSOLETE_LINK_TOKEN_LENGTH = 6;
   public const LINK_TOKEN_LENGTH = 32;
