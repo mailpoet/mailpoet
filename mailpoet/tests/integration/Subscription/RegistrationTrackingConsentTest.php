@@ -19,6 +19,9 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
 
   private SettingsController $settings;
 
+  /** @var int[] */
+  private $createdWpUserIds = [];
+
   public function _before() {
     parent::_before();
     $this->registration = $this->diContainer->get(Registration::class);
@@ -30,6 +33,13 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
 
   public function _after() {
     unset($_POST['mailpoet']);
+    // These tests create real WP users so the whole user_register chain runs. WP users
+    // are not truncated between tests, so leaving them behind would skew any later test
+    // that counts or syncs WP users.
+    foreach ($this->createdWpUserIds as $userId) {
+      wp_delete_user($userId);
+    }
+    $this->createdWpUserIds = [];
     parent::_after();
   }
 
@@ -173,6 +183,7 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
       'user_pass' => 'password',
     ]);
     $this->assertIsInt($userId);
+    $this->createdWpUserIds[] = $userId;
     return $userId;
   }
 
