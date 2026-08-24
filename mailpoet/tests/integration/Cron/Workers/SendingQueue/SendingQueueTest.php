@@ -1578,6 +1578,33 @@ class SendingQueueTest extends \MailPoetTest {
     verify($mailerTaskExtraParams['meta']['campaign_id'])->equals($campaignId);
   }
 
+  public function testItPassesTrackingConsentToMailerViaExtraParamsMeta() {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK,
+      'By clicking here you opt out of open and click tracking.'
+    );
+    $this->entityManager->flush();
+
+    $mailerTaskExtraParams = [];
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskExtraParams) {
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
+            $mailerTaskExtraParams = $extraParams;
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    verify($mailerTaskExtraParams['meta']['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
     $mailerTaskCampaignIds = [];
     $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two', [$this->segment]);
