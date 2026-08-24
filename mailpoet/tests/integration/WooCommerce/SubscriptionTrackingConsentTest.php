@@ -104,6 +104,38 @@ class SubscriptionTrackingConsentTest extends \MailPoetTest {
       ->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE);
   }
 
+  public function testANewGuestWhoDeclinesEndsDenied() {
+    // The case the bug report measured: a first-time guest who is shown the box
+    // and leaves it unticked must end denied, not unknown-and-therefore-tracked.
+    $this->askEveryone();
+    $newGuest = new SubscriberEntity();
+    $newGuest->setEmail('new-guest@example.com');
+    $newGuest->setIsWoocommerceUser(true);
+    $newGuest->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->persist($newGuest);
+    $this->subscribersRepository->flush();
+
+    $this->subscription->handleSubscriberOptin($newGuest, false, false, true);
+
+    verify($newGuest->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testAnExistingSubscriberUntickingStaysGranted() {
+    // Same input as the test above, different history: this row already held a
+    // grant. An unticked checkout box is never read as a withdrawal (STOMAIL-8305).
+    $this->askEveryone();
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'given on the manage page'
+    );
+    $this->subscribersRepository->flush();
+
+    $this->subscription->handleSubscriberOptin($this->subscriber, false, false, false);
+
+    verify($this->subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
   public function testItPersistsConsentEvenWhenTheCustomerDoesNotSubscribe() {
     $this->askEveryone();
     $this->subscription->handleSubscriberOptin($this->subscriber, false, true);
