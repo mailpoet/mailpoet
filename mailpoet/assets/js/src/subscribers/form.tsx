@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Form } from 'form/form.jsx';
 import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
@@ -54,6 +54,9 @@ interface Unsubscribe {
 
 interface FormValues {
   unsubscribes?: Unsubscribe[];
+  tracking_consent?: string;
+  tracking_consent_updated_at?: string;
+  tracking_consent_method?: string;
 }
 
 declare global {
@@ -80,6 +83,7 @@ interface SelectField extends BaseField {
   type: 'select';
   automationId?: string;
   placeholder?: string;
+  tip?: string;
   values: Record<string, string>;
 }
 
@@ -171,6 +175,22 @@ const fields: FormField[] = [
       unsubscribed: MailPoet.I18n.t('unsubscribed'),
       inactive: MailPoet.I18n.t('inactive'),
       bounced: MailPoet.I18n.t('bounced'),
+    },
+  },
+  {
+    name: 'tracking_consent',
+    label: __('Tracking consent', 'mailpoet'),
+    type: 'select',
+    automationId: 'subscriber-tracking-consent',
+    tip: __(
+      'Use this only to record consent you received outside MailPoet, for example by email or phone. It does not contact the subscriber.',
+      'mailpoet',
+    ),
+    values: {
+      // Keys must match SubscriberEntity::TRACKING_CONSENT_*.
+      unknown: __('Not asked', 'mailpoet'),
+      granted: __('Granted', 'mailpoet'),
+      denied: __('Denied', 'mailpoet'),
     },
   },
   ...(window.mailpoet_collect_subscriber_timezones ? [timeZoneField] : []),
@@ -312,6 +332,53 @@ function beforeFormContent(subscriber: Subscriber) {
   return undefined;
 }
 
+// Keys must match SubscriberEntity::TRACKING_CONSENT_*.
+const TRACKING_CONSENT_STATE_LABELS: Record<string, string> = {
+  unknown: __('Not asked yet', 'mailpoet'),
+  granted: __('Opted in', 'mailpoet'),
+  denied: __('Opted out', 'mailpoet'),
+};
+
+// Keys must match SubscriberEntity::TRACKING_CONSENT_METHOD_*.
+const TRACKING_CONSENT_METHOD_LABELS: Record<string, string> = {
+  footer_link: __('via the email footer link', 'mailpoet'),
+  manage_page: __('via the manage-subscription page', 'mailpoet'),
+  form: __('via the subscription form', 'mailpoet'),
+  admin: __('set by an admin', 'mailpoet'),
+  import: __('via CSV import', 'mailpoet'),
+  woocommerce_checkout: __('via the WooCommerce checkout', 'mailpoet'),
+  registration: __('via WordPress registration', 'mailpoet'),
+  comment: __('via a comment', 'mailpoet'),
+};
+
+// "State, when, how" only. The stored wording (tracking_consent_copy) is never
+// shown here: it is evidence, and it stays in the database and the export.
+function trackingConsentSummary(values: FormValues) {
+  const state = values.tracking_consent;
+  if (!state) {
+    return null;
+  }
+  const stateLabel = TRACKING_CONSENT_STATE_LABELS[state] || state;
+  const updatedAt = values.tracking_consent_updated_at;
+  const method = values.tracking_consent_method;
+  if (!updatedAt || !method) {
+    // Never explicitly set, so there is nothing to date or attribute yet.
+    return <p className="description">{stateLabel}</p>;
+  }
+  const methodLabel = TRACKING_CONSENT_METHOD_LABELS[method] || method;
+  return (
+    <p className="description">
+      {sprintf(
+        /* translators: %1$s is the consent state (e.g. "Opted out"), %2$s is a date, %3$s is how it was set (e.g. "via the email footer link") */
+        __('%1$s, %2$s, %3$s', 'mailpoet'),
+        stateLabel,
+        MailPoet.Date.format(updatedAt),
+        methodLabel,
+      )}
+    </p>
+  );
+}
+
 function afterFormContent(values: FormValues) {
   return (
     <>
@@ -370,6 +437,7 @@ function afterFormContent(values: FormValues) {
           </div>
         );
       })}
+      {trackingConsentSummary(values)}
       <p className="description">
         <strong>{MailPoet.I18n.t('tip')}</strong>{' '}
         {MailPoet.I18n.t('customFieldsTip')}
