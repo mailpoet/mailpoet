@@ -233,12 +233,15 @@ class WooCheckoutBlocksCest {
     $this->closeDialog($i);
     $i->waitForElement('iframe[name="editor-canvas"]', 30);
     $i->switchToIframe('iframe[name="editor-canvas"]');
-    $i->click('[aria-label="Add title"]'); // For block inserter to show up
-    $i->click('[aria-label="Add block"]');
+    $i->click('[aria-label="Add title"]');
     $i->switchToIframe();
-    $i->fillField('[placeholder="Search"]', 'Checkout');
-    $i->waitForElement(Locator::contains('button > span > span', 'Checkout'));
-    $i->click(Locator::contains('button > span > span', 'Checkout')); // Select Checkout block
+    $i->click('[aria-label="Block Inserter"]');
+    $i->waitForElementVisible('.block-editor-inserter__search [placeholder="Search"]');
+    $i->fillField('.block-editor-inserter__search [placeholder="Search"]', 'Checkout');
+    // Match the block title exactly, a substring match also hits the "Classic Checkout" block.
+    $checkoutBlockTitle = '//*[contains(@class, "block-editor-block-types-list__item-title")][normalize-space() = "Checkout"]';
+    $i->waitForElement($checkoutBlockTitle);
+    $i->click($checkoutBlockTitle);
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->waitForElement('[aria-label="Block: Checkout"]');
 
