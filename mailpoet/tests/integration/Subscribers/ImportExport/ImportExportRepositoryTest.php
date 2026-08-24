@@ -279,6 +279,34 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     verify($exported[1]['segment_name'])->equals('First');
   }
 
+  public function testItExportsTrackingConsentColumns(): void {
+    $user1 = $this->createSubscriber('user1@consent-export-test.com', 'One', 'User');
+    $user1->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Allow tracking of email opens and link clicks'
+    );
+    $user2 = $this->createSubscriber('user2@consent-export-test.com', 'Two', 'User');
+    $this->subscribersRepository->flush();
+    $segment1 = $this->createSegment('Export Consent', SegmentEntity::TYPE_DEFAULT);
+    $this->createSubscriberSegment($user1, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegment($user2, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $exported = $this->repository->getSubscribersBatchBySegment($segment1, 100);
+    verify($exported)->arrayCount(2);
+    verify($exported[0]['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($exported[0]['tracking_consent_method'])->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($exported[0]['tracking_consent_copy'])->equals('Allow tracking of email opens and link clicks');
+    $consentUpdatedAt = $user1->getTrackingConsentUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $consentUpdatedAt);
+    verify($exported[0]['tracking_consent_updated_at'])->equals($consentUpdatedAt->format(DateTime::DEFAULT_DATE_TIME_FORMAT));
+    // a subscriber who never answered still exports the four columns, at their defaults
+    verify($exported[1]['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($exported[1]['tracking_consent_method'])->null();
+    verify($exported[1]['tracking_consent_copy'])->null();
+    verify($exported[1]['tracking_consent_updated_at'])->null();
+  }
+
   public function testItGetOnlyNodDeletedSubscribersByDefaultSegment(): void {
     $user1 = $this->createSubscriber('user1@export-test.com', 'One', 'User');
     $user2 = $this->createSubscriber('user2@export-test.com', 'Two', 'User');
