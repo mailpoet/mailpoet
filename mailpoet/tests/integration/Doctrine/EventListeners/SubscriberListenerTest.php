@@ -62,6 +62,32 @@ class SubscriberListenerTest extends EventListenersBaseTest {
     $this->entityManager->flush();
   }
 
+  public function testItNotifiesAboutChangedTrackingConsent(): void {
+    $subscriber = (new SubscriberFactory())->create();
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'wp' => $this->wp,
+      'subscriberTrackingConsentChanged' => Expected::once(),
+    ]);
+    $this->subscriberListener = new SubscriberListener($changesNotifier);
+    $this->replaceEntityListener($this->subscriberListener);
+
+    $subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+  }
+
+  public function testItDoesNotNotifyTrackingConsentOnAnUnrelatedChange(): void {
+    $subscriber = (new SubscriberFactory())->create();
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'wp' => $this->wp,
+      'subscriberTrackingConsentChanged' => Expected::never(),
+    ]);
+    $this->subscriberListener = new SubscriberListener($changesNotifier);
+    $this->replaceEntityListener($this->subscriberListener);
+
+    $subscriber->setFirstName('Unrelated');
+    $this->entityManager->flush();
+  }
+
   public function testItNotifiesAboutDeletedSubscriber(): void {
     $subscriber = (new SubscriberFactory())->create();
     $changesNotifier = $this->make(SubscriberChangesNotifier::class, [

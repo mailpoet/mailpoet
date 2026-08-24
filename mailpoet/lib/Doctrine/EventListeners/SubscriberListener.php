@@ -27,6 +27,23 @@ class SubscriberListener {
     }
   }
 
+  private function maybeNotifyTrackingConsentChanged(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
+    $changeset = $event->getEntityManager()->getUnitOfWork()->getEntityChangeSet($subscriber);
+
+    if (!array_key_exists('trackingConsent', $changeset) || $changeset['trackingConsent'][0] === $changeset['trackingConsent'][1]) {
+      return;
+    }
+
+    $oldConsent = $changeset['trackingConsent'][0];
+    $newConsent = $changeset['trackingConsent'][1];
+
+    $this->subscriberChangesNotifier->subscriberTrackingConsentChanged(
+      (int)$subscriber->getId(),
+      is_string($oldConsent) ? $oldConsent : SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+      is_string($newConsent) ? $newConsent : SubscriberEntity::TRACKING_CONSENT_UNKNOWN
+    );
+  }
+
   private function maybeNotifyDeletedAtChanged(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
     $entityManager = $event->getEntityManager();
     $unitOfWork = $entityManager->getUnitOfWork();
@@ -53,11 +70,22 @@ class SubscriberListener {
 
   public function postPersist(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
     $this->subscriberChangesNotifier->subscriberCreated((int)$subscriber->getId());
+
+    // postPersist has no changeset, and the column defaults to unknown, so a subscriber
+    // created straight into granted or denied would otherwise never be announced.
+    if ($subscriber->getTrackingConsent() !== SubscriberEntity::TRACKING_CONSENT_UNKNOWN) {
+      $this->subscriberChangesNotifier->subscriberTrackingConsentChanged(
+        (int)$subscriber->getId(),
+        SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+        $subscriber->getTrackingConsent()
+      );
+    }
   }
 
   public function postUpdate(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
     $this->subscriberChangesNotifier->subscriberUpdated((int)$subscriber->getId());
     $this->maybeNotifyStatusChanged($subscriber, $event);
+    $this->maybeNotifyTrackingConsentChanged($subscriber, $event);
     $this->maybeNotifyDeletedAtChanged($subscriber, $event);
   }
 
