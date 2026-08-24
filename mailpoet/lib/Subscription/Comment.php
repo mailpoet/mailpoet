@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,14 +31,19 @@ class Comment {
   /** @var TrackingConsentCapture */
   private $trackingConsentCapture;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     SettingsController $settings,
     SubscriberActions $subscriberActions,
-    TrackingConsentCapture $trackingConsentCapture
+    TrackingConsentCapture $trackingConsentCapture,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->settings = $settings;
     $this->subscriberActions = $subscriberActions;
     $this->trackingConsentCapture = $trackingConsentCapture;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function extendLoggedInForm($field) {
@@ -105,6 +111,13 @@ class Comment {
 
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- type narrowing only, value is read as bool
     $mailpoetPost = isset($_POST['mailpoet']) && is_array($_POST['mailpoet']) ? $_POST['mailpoet'] : [];
+
+    // Independent of the subscribe checkbox, and only for a row that already
+    // exists: never creates one. Runs whatever the moderation status, because
+    // updating an existing row's consent does not depend on the comment being
+    // approved, unlike subscribing, which does.
+    $this->applyTrackingConsentToExistingSubscriber($mailpoetPost, $commentId);
+
     if (
       isset($mailpoetPost['subscribe_on_comment'])
       && (bool)$mailpoetPost['subscribe_on_comment'] === true
@@ -131,6 +144,42 @@ class Comment {
         $this->subscribeAuthorOfComment($commentId, $trackingConsent);
       }
     }
+  }
+
+  /**
+   * Records the comment form's tracking-consent choice for a commenter who is
+   * already a subscriber, whether or not they also ticked "add me to your
+   * mailing list". Deliberately never creates a subscriber: a comment is not a
+   * signup, and someone answering a tracking question should not thereby end
+   * up on a list they did not ask to join.
+   *
+   * isNewSubscriber is always false by construction here, since this only ever
+   * reaches the apply call when findOneBy just found an existing row. That
+   * means an unticked box on an existing row is dropped by getConsentData()'s
+   * own rule, with no extra logic needed.
+   */
+  private function applyTrackingConsentToExistingSubscriber(array $mailpoetPost, $commentId): void {
+    if (!isset($mailpoetPost['tracking_consent'])) {
+      return;
+    }
+    $comment = WPFunctions::get()->getComment($commentId);
+    $email = $comment ? $comment->comment_author_email : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (empty($email)) {
+      return;
+    }
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    if (!$subscriber instanceof SubscriberEntity) {
+      return;
+    }
+    $method = SubscriberEntity::TRACKING_CONSENT_METHOD_COMMENT;
+    $this->trackingConsentCapture->applyToSubscriber(
+      $subscriber,
+      !empty($mailpoetPost['tracking_consent']),
+      $method,
+      $this->trackingConsentCapture->getCopy($method),
+      false
+    );
+    $this->subscribersRepository->flush();
   }
 
   public function onStatusUpdate($commentId, $action) {

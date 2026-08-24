@@ -6,6 +6,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 /**
  * Tracking consent captured on the WordPress comment form (CNIL/Garante).
@@ -110,6 +111,67 @@ class CommentTrackingConsentTest extends \MailPoetTest {
 
     verify($this->getSubscriber()->getTrackingConsent())
       ->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+  }
+
+  public function testAConsentOnlyCommenterWithAnExistingSubscriberRowIsRecorded() {
+    // The gap this fixes: onSubmit() only read tracking_consent inside the
+    // subscribe_on_comment branch, so somebody already on the list who answered
+    // the tracking question without re-subscribing had their answer dropped.
+    $this->askEveryone();
+    (new SubscriberFactory())->withEmail('commenter-consent@example.com')->create();
+
+    $_POST['mailpoet'] = ['tracking_consent' => true];
+    $this->comment->onSubmit($this->commentId, Comment::APPROVED);
+
+    $this->entityManager->clear();
+    $subscriber = $this->getSubscriber();
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($subscriber->getTrackingConsentMethod())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_COMMENT);
+  }
+
+  public function testAConsentOnlyCommenterIsRecordedWhileAwaitingModeration() {
+    // Updating an existing row's consent does not depend on the comment being
+    // approved, unlike subscribing, which does.
+    $this->askEveryone();
+    (new SubscriberFactory())->withEmail('commenter-consent@example.com')->create();
+
+    $_POST['mailpoet'] = ['tracking_consent' => true];
+    $this->comment->onSubmit($this->commentId, Comment::PENDING_APPROVAL);
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber()->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
+  public function testAConsentOnlyCommenterWithNoExistingRowCreatesNothing() {
+    // A comment is not a signup. Answering a tracking question must never put
+    // somebody on a list they did not ask to join.
+    $this->askEveryone();
+
+    $_POST['mailpoet'] = ['tracking_consent' => true];
+    $this->comment->onSubmit($this->commentId, Comment::APPROVED);
+
+    $this->entityManager->clear();
+    verify($this->subscribersRepository->findOneBy(['email' => 'commenter-consent@example.com']))->null();
+  }
+
+  public function testAConsentOnlyCommenterDoesNotDowngradeAnExistingGrant() {
+    $this->askEveryone();
+    $existing = (new SubscriberFactory())->withEmail('commenter-consent@example.com')->create();
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'given on the manage page'
+    );
+    $this->subscribersRepository->flush();
+
+    $_POST['mailpoet'] = ['tracking_consent' => false];
+    $this->comment->onSubmit($this->commentId, Comment::APPROVED);
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber()->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
   }
 
   public function testTheFieldIsHiddenUntilTheSiteAsks() {
