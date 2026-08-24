@@ -23,6 +23,18 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerce {
+  /**
+   * Per-email record of whether synchronizeGuestCustomer() inserted a brand new
+   * subscriber row this request, or found one that already existed.
+   * insertSubscribers() uses INSERT IGNORE, so a caller looking at the row
+   * afterwards cannot tell "just created" from "already there" — that is
+   * captured at insert time instead. Read by WooCommerce\Subscription, which
+   * runs on the same hook at a later priority and has no other way to know.
+   *
+   * @var array<string, bool>
+   */
+  private $guestSyncCreatedSubscriber = [];
+
   /** @var SettingsController */
   private $settings;
 
@@ -166,6 +178,17 @@ class WooCommerce {
     return !$this->woocommerceHelper->isCheckoutRequest() || ($checkoutOptinEnabled && $checkoutOptinChecked);
   }
 
+  /**
+   * Whether the given email's subscriber row did not exist before the most
+   * recent synchronizeGuestCustomer() call in this request. Defaults to false,
+   * meaning "treat as pre-existing", for any email that call never saw: a
+   * missing signal must never cause an unearned overwrite of an earlier
+   * consent choice.
+   */
+  public function wasNewlyCreatedByGuestSync(string $email): bool {
+    return $this->guestSyncCreatedSubscriber[$email] ?? false;
+  }
+
   public function synchronizeGuestCustomer(int $orderId): void {
     $wcOrder = $this->woocommerceHelper->wcGetOrder($orderId);
 
@@ -176,11 +199,13 @@ class WooCommerce {
       $status = SubscriberEntity::STATUS_SUBSCRIBED;
     }
 
-    $email = $this->insertSubscriberFromOrder($wcOrder, $status);
+    $wasNewlyCreated = false;
+    $email = $this->insertSubscriberFromOrder($wcOrder, $status, $wasNewlyCreated);
 
     if (empty($email)) {
       return;
     }
+    $this->guestSyncCreatedSubscriber[$email] = $wasNewlyCreated;
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
 
     if ($subscriber) {
@@ -276,7 +301,7 @@ class WooCommerce {
     ", ['capabilities' => $wpdb->prefix . 'capabilities', 'source' => Source::WOOCOMMERCE_USER]);
   }
 
-  private function insertSubscriberFromOrder(\WC_Order $wcOrder, string $status): ?string {
+  private function insertSubscriberFromOrder(\WC_Order $wcOrder, string $status, bool &$wasNewlyCreated = false): ?string {
     $email = $wcOrder->get_billing_email();
 
     if (!$email || !$this->validator->validateEmail($email)) {
@@ -359,12 +384,14 @@ class WooCommerce {
     // Save timestamp about new subscribers before insert
     $this->subscriberChangesNotifier->subscribersBatchCreate();
     // Insert new subscribers
-    $this->connection->executeQuery('
+    // executeStatement, not executeQuery: the affected-row count is what tells
+    // a caller whether INSERT IGNORE actually inserted or silently discarded.
+    $insertedCount = $this->connection->executeStatement('
       INSERT IGNORE INTO ' . $subscribersTable . ' (`is_woocommerce_user`, `email`, `status`, `created_at`, `last_subscribed_at`, `source`) VALUES
       ' . implode(',', $subscribersValues) . '
     ');
 
-    return count($emails);
+    return (int)$insertedCount;
   }
 
   /**

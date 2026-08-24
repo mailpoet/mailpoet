@@ -195,7 +195,11 @@ class WooCommerceBlocksIntegration {
     // Fetch existing woo subscriber and in case there is not any sync as guest
     $email = $order->get_billing_email();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $email, 'isWoocommerceUser' => true]);
+    // This lookup happens before the sync, so it doubles as the is-new signal:
+    // nothing found here means the row below was created by this request.
+    $isNewSubscriber = false;
     if (!$subscriber instanceof SubscriberEntity) {
+      $isNewSubscriber = true;
       $this->wooSegment->synchronizeGuestCustomer($order->get_id());
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $email, 'isWoocommerceUser' => true]);
     }
@@ -205,6 +209,6 @@ class WooCommerceBlocksIntegration {
       return null;
     }
 
-    $this->woocommerceSubscription->handleSubscriberOptin($subscriber, $checkoutOptin, $trackingConsent);
+    $this->woocommerceSubscription->handleSubscriberOptin($subscriber, $checkoutOptin, $trackingConsent, $isNewSubscriber);
   }
 }
