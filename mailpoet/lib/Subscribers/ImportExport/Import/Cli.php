@@ -26,6 +26,9 @@ class Cli {
     'created_at',
     'confirmed_at',
     'confirmed_ip',
+    'tracking_consent',
+    'tracking_consent_method',
+    'tracking_consent_copy',
   ];
 
   private const NEW_SUBSCRIBER_STATUSES = [
@@ -104,7 +107,7 @@ class Cli {
         [
           'type' => 'positional',
           'name' => 'file',
-          'description' => 'Path to the CSV file. The header row must use MailPoet field names (email, first_name, last_name, subscribed_ip, created_at, confirmed_at, confirmed_ip) or existing custom field names. An "email" column is required.',
+          'description' => 'Path to the CSV file. The header row must use MailPoet field names (email, first_name, last_name, subscribed_ip, created_at, confirmed_at, confirmed_ip, tracking_consent, tracking_consent_method, tracking_consent_copy) or existing custom field names. An "email" column is required. tracking_consent accepts granted, denied or unknown; a blank cell leaves the stored value alone.',
           'optional' => false,
         ],
         [

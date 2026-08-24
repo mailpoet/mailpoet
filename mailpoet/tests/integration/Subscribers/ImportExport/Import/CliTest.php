@@ -129,6 +129,56 @@ class CliTest extends \MailPoetTest {
     $this->assertSame('Updated', $subscriber->getFirstName());
   }
 
+  public function testItImportsTrackingConsentColumns(): void {
+    $file = $this->writeCsv([
+      ['email', 'tracking_consent', 'tracking_consent_method', 'tracking_consent_copy'],
+      ['granted@example.com', 'granted', 'legacy_crm', 'Allow open and click tracking'],
+      ['bogus@example.com', 'maybe', '', ''],
+      ['silent@example.com', '', '', ''],
+    ]);
+
+    $totals = $this->cli->run($file, self::DEFAULT_OPTIONS);
+    $this->assertSame(3, $totals['created']);
+
+    $granted = $this->subscribersRepository->findOneBy(['email' => 'granted@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $granted);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_GRANTED, $granted->getTrackingConsent());
+    $this->assertSame('legacy_crm', $granted->getTrackingConsentMethod());
+    $this->assertSame('Allow open and click tracking', $granted->getTrackingConsentCopy());
+    $this->assertInstanceOf(\DateTimeInterface::class, $granted->getTrackingConsentUpdatedAt());
+
+    // an unrecognised state still means "they answered", we just cannot honour the answer
+    $bogus = $this->subscribersRepository->findOneBy(['email' => 'bogus@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $bogus);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $bogus->getTrackingConsent());
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT, $bogus->getTrackingConsentMethod());
+
+    $silent = $this->subscribersRepository->findOneBy(['email' => 'silent@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $silent);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $silent->getTrackingConsent());
+    $this->assertNull($silent->getTrackingConsentMethod());
+    $this->assertNull($silent->getTrackingConsentUpdatedAt());
+  }
+
+  public function testItDoesNotEraseStoredTrackingConsentOnUpdate(): void {
+    $this->cli->run($this->writeCsv([
+      ['email', 'tracking_consent', 'tracking_consent_copy'],
+      ['keep@example.com', 'granted', 'Original wording'],
+    ]), self::DEFAULT_OPTIONS);
+
+    $this->cli->run($this->writeCsv([
+      ['email', 'first_name', 'tracking_consent'],
+      ['keep@example.com', 'Renamed', ''],
+    ]), ['update_existing' => true] + self::DEFAULT_OPTIONS);
+
+    $this->subscribersRepository->refreshAll();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'keep@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame('Renamed', $subscriber->getFirstName());
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_GRANTED, $subscriber->getTrackingConsent());
+    $this->assertSame('Original wording', $subscriber->getTrackingConsentCopy());
+  }
+
   public function testDryRunDoesNotWriteAnything(): void {
     $file = $this->writeCsv([
       ['email'],
