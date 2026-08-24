@@ -17,7 +17,10 @@ import type {
 import { registerTranslations } from 'common';
 import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
-import { emailValidationRule } from './validate-email-content';
+import {
+  emailValidationRule,
+  trackingOptOutValidationRule,
+} from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 import { store as emailEditorIntegrationStore } from './store';
@@ -53,6 +56,11 @@ addFilter(
   (rules: EmailContentValidationRule[]) => [
     ...(rules || []),
     emailValidationRule,
+    // Only sites that ask every subscriber need the opt-out link, so the rule is
+    // added rather than always registered and conditionally skipped.
+    ...(window?.mailpoet_tracking_consent_ask_all
+      ? [trackingOptOutValidationRule]
+      : []),
   ],
 );
 
