@@ -208,10 +208,16 @@ class Clicks {
    * The unsubscribe actions need to know the original request method.
    */
   private function appendRequestMethod(string $url): string {
-    if ($this->request->isPost() && $url) {
-      return $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
+    if (!$this->request->isPost() || !$url) {
+      return $url;
     }
-    return $url;
+    $fragment = '';
+    $hashPosition = strpos($url, '#');
+    if ($hashPosition !== false) {
+      $fragment = substr($url, $hashPosition);
+      $url = substr($url, 0, $hashPosition);
+    }
+    return $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST' . $fragment;
   }
 
   public function abort() {
