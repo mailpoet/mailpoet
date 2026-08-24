@@ -162,6 +162,7 @@ Module.SaveView = Marionette.View.extend({
     'click .mailpoet_save_button': 'save',
     'click .mailpoet_save_show_options': 'toggleSaveOptions',
     'click .mailpoet_save_next': 'next',
+    'click .mailpoet_add_tracking_opt_out_link': 'addTrackingOptOutLink',
     /* Save as template */
     'click .mailpoet_save_template': 'showSaveAsTemplate',
     'click .mailpoet_save_as_template': 'saveAsTemplate',
@@ -394,6 +395,35 @@ Module.SaveView = Marionette.View.extend({
       window.location.href = goToUrl;
     });
   },
+  addTrackingOptOutLink: function () {
+    var linkHtml;
+    var footers;
+    var footer;
+    var FooterModel;
+    var footerBlock;
+    linkHtml =
+      '<a href="[link:subscription_tracking_opt_out_url]">' +
+      __('Opt out of tracking', 'mailpoet') +
+      '</a>';
+    // Prefer an existing footer block, so the link lands next to the
+    // unsubscribe link. findModels walks the whole container tree.
+    footers = App.findModels(function (model) {
+      return model.get('type') === 'footer';
+    });
+    if (footers.length > 0) {
+      footer = footers[footers.length - 1];
+      footer.set('text', footer.get('text') + '<br />' + linkHtml);
+    } else {
+      // No footer block at all: add one at the end of the content container.
+      // Its defaults already carry the unsubscribe and manage links.
+      FooterModel = App.getBlockTypeModel('footer');
+      footerBlock = new FooterModel({ type: 'footer' });
+      footerBlock.set('text', footerBlock.get('text') + '<br />' + linkHtml);
+      App._contentContainer.get('blocks').add(footerBlock);
+    }
+    this.validateNewsletter(App.toJSON());
+  },
+
   validateNewsletter: function (jsonObject) {
     var body = '';
     var newsletter = App.getNewsletter();
@@ -438,6 +468,27 @@ Module.SaveView = Marionette.View.extend({
           'All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.',
           'mailpoet',
         ),
+      );
+      return;
+    }
+
+    if (
+      App.getConfig().get('validation.validateTrackingOptOutLinkPresent') &&
+      body.indexOf('[link:subscription_tracking_opt_out_url]') < 0 &&
+      newsletter.get('status') !== 'sent'
+    ) {
+      this.showValidationError(
+        __(
+          'Your tracking settings ask every subscriber for consent, so this email needs a tracking opt-out link.',
+          'mailpoet',
+        ) +
+          ' <a href="javascript:;" class="mailpoet_add_tracking_opt_out_link">' +
+          _x(
+            'Click here to add it',
+            'Link inside an error message that adds the tracking opt-out link to the email',
+            'mailpoet',
+          ) +
+          '</a>',
       );
       return;
     }

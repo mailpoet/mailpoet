@@ -137,6 +137,9 @@ describe('Save', function () {
       var hideValidationErrorStub;
       var view;
       var model;
+      var errorCountFor;
+      var optOutFooter =
+        '<a href="[link:subscription_tracking_opt_out_url]">x</a>';
       beforeEach(function () {
         model = new Backbone.SuperModel({});
         model.isWoocommerceTransactional = function () {
@@ -180,6 +183,46 @@ describe('Save', function () {
         App.getNewsletter = sinon.stub().returns(newsletter);
         view.validateNewsletter(validNewsletter);
         expect(showValidationErrorStub.callCount).to.be.equal(1);
+      });
+
+      errorCountFor = function (settingOn, footerText) {
+        var stub;
+        global.stubConfig(App, {
+          validation: { validateTrackingOptOutLinkPresent: settingOn },
+        });
+        App.getNewsletter = sinon.stub().returns({
+          get: sinon.stub().withArgs('type').returns('standard'),
+        });
+        stub = sinon.stub(view, 'showValidationError');
+        view.validateNewsletter({
+          body: { content: { blocks: [{ type: 'footer', text: footerText }] } },
+        });
+        return stub.callCount;
+      };
+
+      it('shows an error when the tracking opt-out link is missing', function () {
+        expect(errorCountFor(true, 'bye')).to.be.equal(1);
+      });
+
+      it('accepts the tracking opt-out shortcode in the body', function () {
+        expect(errorCountFor(true, optOutFooter)).to.be.equal(0);
+      });
+
+      it('does not ask for the opt-out link when the setting is off', function () {
+        expect(errorCountFor(false, 'bye')).to.be.equal(0);
+      });
+
+      it('adds the opt-out link to an existing footer block', function () {
+        var footer;
+        footer = { get: sinon.stub().returns('bye'), set: sinon.spy() };
+        App.findModels = sinon.stub().returns([footer]);
+        sinon.stub(view, 'validateNewsletter');
+        view.addTrackingOptOutLink();
+        expect(footer.set.calledOnce).to.be.equal(true);
+        expect(footer.set.firstCall.args[0]).to.be.equal('text');
+        expect(footer.set.firstCall.args[1]).to.contain(
+          '[link:subscription_tracking_opt_out_url]',
+        );
       });
     });
 
