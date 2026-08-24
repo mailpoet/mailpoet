@@ -37,6 +37,20 @@ class AutomateWooHooks {
       class_exists('AutomateWoo\Customer') && method_exists('AutomateWoo\Customer', 'opt_out');
   }
 
+  /**
+   * Separate from areMethodsAvailable() on purpose: that one gates the existing status
+   * sync, and tightening it would silently switch off working behaviour on an older
+   * AutomateWoo. An AutomateWoo without the companion change simply does not get consent
+   * forwarding, while its status sync keeps working.
+   */
+  public function areTrackingMethodsAvailable(): bool {
+    // method_exists checks guard older AutomateWoo versions that may not ship these methods, even though current stubs declare them.
+    // @phpstan-ignore-next-line function.alreadyNarrowedType
+    return class_exists('AutomateWoo\Customer') && method_exists('AutomateWoo\Customer', 'opt_out_of_tracking') &&
+      // @phpstan-ignore-next-line function.alreadyNarrowedType
+      method_exists('AutomateWoo\Customer', 'opt_in_to_tracking');
+  }
+
   public function isAutomateWooReady(): bool {
     return $this->isAutomateWooActive() && $this->areMethodsAvailable();
   }
@@ -56,6 +70,41 @@ class AutomateWooHooks {
     }
     $this->wp->addAction(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, [$this, 'syncSubscriber'], 10, 1);
     $this->wp->addAction('mailpoet_segment_subscribed', [$this, 'maybeOptInSubscriber'], 10, 1);
+    $this->wp->addAction(SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED, [$this, 'syncTrackingConsent'], 10, 3);
+  }
+
+  /**
+   * Mirror a MailPoet tracking-consent change onto the AutomateWoo customer.
+   *
+   * Denied stops AutomateWoo tracking. Granted clears the flag, the way optInSubscriber()
+   * reverses optOutSubscriber(); without that, somebody who changed their mind would be
+   * permanently untracked in AutomateWoo with no way back from MailPoet. `unknown` is
+   * left alone: nobody was asked, and that is not an answer.
+   */
+  public function syncTrackingConsent(int $subscriberId, string $oldConsent, string $newConsent): void {
+    if (!$this->isAutomateWooReady() || !$this->areTrackingMethodsAvailable()) {
+      return;
+    }
+
+    if ($newConsent === SubscriberEntity::TRACKING_CONSENT_UNKNOWN || $newConsent === $oldConsent) {
+      return;
+    }
+
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!$subscriber || !$subscriber->getEmail()) {
+      return;
+    }
+
+    $automateWooCustomer = $this->getAutomateWooCustomer($subscriber->getEmail());
+    if (!$automateWooCustomer) {
+      return;
+    }
+
+    if ($newConsent === SubscriberEntity::TRACKING_CONSENT_DENIED) {
+      $automateWooCustomer->opt_out_of_tracking();
+    } else {
+      $automateWooCustomer->opt_in_to_tracking();
+    }
   }
 
   public function optOutSubscriber($subscriber): void {
