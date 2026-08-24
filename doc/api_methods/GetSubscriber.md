@@ -16,31 +16,35 @@ This method throws an `\Exception` in the event no subscriber matches the given 
 
 ### Subscriber
 
-| Property                 | Type         | Limits    | Description                                                                                                                    |
-| ------------------------ | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| id                       | string       | 11 chars  | Id of the subscriber                                                                                                           |
-| wp_user_id               | string\|null | 20 chars  | Id of a WordPress user associated with the subscriber                                                                          |
-| is_woocommerce_user      | string       | -         | A flag telling whether the user is also a WooCommerce customer. Possible values are: `1`, `0`                                  |
-| first_name               | string       | 255 chars | Fist name of the subscriber.                                                                                                   |
-| last_name                | string       | 255 chars | Last name of the subscriber.                                                                                                   |
-| email                    | string       | 150 chars | Email address of the subscriber.                                                                                               |
-| status                   | string       | -         | Status of the subscriber. Possible values are: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive`              |
-| subscribed_ip            | string\|null | 45 chars  | An IP address used for subscription.                                                                                           |
-| confirmed_ip             | string\|null | 45 chars  | An IP address used for confirmation.                                                                                           |
-| confirmed_at             | string\|null | -         | UTC time of subscription confirmation in 'Y-m-d H:i:s' format                                                                  |
-| created_at               | string\|null | -         | UTC time of creation in 'Y-m-d H:i:s' format                                                                                   |
-| updated_at               | string       | -         | UTC time of last update in 'Y-m-d H:i:s' format                                                                                |
-| deleted_at               | string\|null | -         | This property in not null in case that list is in trash and contains UTC time in 'Y-m-d H:i:s' format.                         |
-| last_subscribed_at       | string\|null | -         | UTC time of last confirmed subscription in 'Y-m-d H:i:s' format.                                                               |
-| unconfirmed_data         | string\|null | 65K chars | May contain serialized subscriber data in case when there are pending changes waiting for a confirmation from a subscriber     |
-| source                   | string\|null | -         | Possible values: `form`,`imported`,`administrator`,`api`,`wordpress_user`,`woocommerce_user`,`woocommerce_checkout`,`unknown`) |
-| count_confirmations      | string       | 11 chars  | Counter for confirmation emails                                                                                                |
-| unsubscribe_token        | string\|null | 15 chars  | Token used in unsubscribe links sent to the subscriber                                                                         |
-| link_token               | string\|null | 32 chars  | Token used to authenticate manage-subscription links sent to the subscriber                                                    |
-| subscriptions            | array        | -         | List of subscriber subscriptions                                                                                               |
-| unsubscribes             | array        | -         | History of unsubscribe events for the subscriber, ordered by `createdAt` desc                                                  |
-| tags                     | array        | -         | List of subscriber tags                                                                                                        |
-| cf\_{custom_field['id']} | string       | 65K chars | A custom subscriber field value (see [Get Subscriber Fields](GetSubscriberFields.md)                                           |
+| Property                    | Type         | Limits    | Description                                                                                                                    |
+| --------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| id                          | string       | 11 chars  | Id of the subscriber                                                                                                           |
+| wp_user_id                  | string\|null | 20 chars  | Id of a WordPress user associated with the subscriber                                                                          |
+| is_woocommerce_user         | string       | -         | A flag telling whether the user is also a WooCommerce customer. Possible values are: `1`, `0`                                  |
+| first_name                  | string       | 255 chars | Fist name of the subscriber.                                                                                                   |
+| last_name                   | string       | 255 chars | Last name of the subscriber.                                                                                                   |
+| email                       | string       | 150 chars | Email address of the subscriber.                                                                                               |
+| status                      | string       | -         | Status of the subscriber. Possible values are: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive`              |
+| subscribed_ip               | string\|null | 45 chars  | An IP address used for subscription.                                                                                           |
+| confirmed_ip                | string\|null | 45 chars  | An IP address used for confirmation.                                                                                           |
+| confirmed_at                | string\|null | -         | UTC time of subscription confirmation in 'Y-m-d H:i:s' format                                                                  |
+| created_at                  | string\|null | -         | UTC time of creation in 'Y-m-d H:i:s' format                                                                                   |
+| updated_at                  | string       | -         | UTC time of last update in 'Y-m-d H:i:s' format                                                                                |
+| deleted_at                  | string\|null | -         | This property in not null in case that list is in trash and contains UTC time in 'Y-m-d H:i:s' format.                         |
+| last_subscribed_at          | string\|null | -         | UTC time of last confirmed subscription in 'Y-m-d H:i:s' format.                                                               |
+| unconfirmed_data            | string\|null | 65K chars | May contain serialized subscriber data in case when there are pending changes waiting for a confirmation from a subscriber     |
+| source                      | string\|null | -         | Possible values: `form`,`imported`,`administrator`,`api`,`wordpress_user`,`woocommerce_user`,`woocommerce_checkout`,`unknown`) |
+| count_confirmations         | string       | 11 chars  | Counter for confirmation emails                                                                                                |
+| unsubscribe_token           | string\|null | 15 chars  | Token used in unsubscribe links sent to the subscriber                                                                         |
+| link_token                  | string\|null | 32 chars  | Token used to authenticate manage-subscription links sent to the subscriber                                                    |
+| subscriptions               | array        | -         | List of subscriber subscriptions                                                                                               |
+| unsubscribes                | array        | -         | History of unsubscribe events for the subscriber, ordered by `createdAt` desc                                                  |
+| tags                        | array        | -         | List of subscriber tags                                                                                                        |
+| tracking_consent            | string       | 20 chars  | Whether the subscriber agreed to email open and click tracking. Possible values: `unknown`, `granted`, `denied`                |
+| tracking_consent_updated_at | string\|null | -         | UTC time the consent state last changed, in 'Y-m-d H:i:s' format. Null when it was never set                                   |
+| tracking_consent_method     | string\|null | 40 chars  | How the consent was recorded, e.g. `form`, `footer_link`, `manage_page`, `admin`, `import`, `api`. Null when it was never set  |
+| tracking_consent_copy       | string\|null | 65K chars | The exact wording the subscriber was shown when they answered, kept as proof. Null when it was never set                       |
+| cf\_{custom_field['id']}    | string       | 65K chars | A custom subscriber field value (see [Get Subscriber Fields](GetSubscriberFields.md)                                           |
 
 ### Subscriber's subscription
 
@@ -103,6 +107,10 @@ Each entry in `unsubscribes` describes a single unsubscribe event. `newsletterId
   'count_confirmations' => '0',
   'unsubscribe_token' => 'a1b2c3d4e5f6g7h',
   'link_token' => '0123456789abcdef0123456789abcdef',
+  'tracking_consent' => 'denied',
+  'tracking_consent_updated_at' => '2026-08-20 09:12:44',
+  'tracking_consent_method' => 'footer_link',
+  'tracking_consent_copy' => 'Allow tracking of email opens and link clicks',
   'subscriptions' => [
     0 => [
       'id' => '3',
