@@ -169,7 +169,7 @@ class ViewInBrowserRenderer {
         'newsletter_id' => $newsletter->getId(),
         'queue_id' => $queue ? $queue->getId() : null,
       ]);
-      $renderedNewsletter = $this->personalizer->personalize_content($renderedNewsletter);
+      $renderedNewsletter = $this->personalizer->personalize_content($renderedNewsletter, Personalizer::RENDERING_CONTEXT_HTML);
     }
     return $renderedNewsletter;
   }

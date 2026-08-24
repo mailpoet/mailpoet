@@ -33,6 +33,21 @@ class TemplateEmailPreviewRendererTest extends MailPoetTest {
     verify($html)->stringNotContainsString('<!--[mailpoet/');
   }
 
+  public function testItEscapesTextTagValuesInHtmlOutput(): void {
+    $previousBlogname = get_option('blogname');
+    $this->assertIsString($previousBlogname);
+    update_option('blogname', 'Tom & <b>Jerry</b>');
+    try {
+      $html = (string)$this->renderer->render('welcome-email-content', 'Welcome subject', 'Preheader');
+    } finally {
+      update_option('blogname', $previousBlogname);
+    }
+    // The site title tag is text-valued; the preview renders in the HTML context,
+    // so the Personalizer must escape the value exactly once.
+    verify($html)->stringContainsString('Tom &amp; &lt;b&gt;Jerry&lt;/b&gt;');
+    verify($html)->stringNotContainsString('<b>Jerry</b>');
+  }
+
   public function testItDoesNotPersistAnyPost(): void {
     $countBefore = $this->countPreviewPosts();
     $this->renderer->render('welcome-email-content', 'Welcome subject', 'Preheader');
