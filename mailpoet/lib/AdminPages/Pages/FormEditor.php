@@ -81,6 +81,7 @@ use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -197,6 +198,9 @@ class FormEditor {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var TrackingConsentCapture */
+  private $trackingConsentCapture;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
@@ -210,7 +214,8 @@ class FormEditor {
     WPPostListLoader $wpPostListLoader,
     TemplateRepository $templateRepository,
     FormsRepository $formsRepository,
-    SegmentsSimpleListRepository $segmentsListRepository
+    SegmentsSimpleListRepository $segmentsListRepository,
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
@@ -225,6 +230,7 @@ class FormEditor {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->formsRepository = $formsRepository;
+    $this->trackingConsentCapture = $trackingConsentCapture;
   }
 
   public function render() {
@@ -276,6 +282,7 @@ class FormEditor {
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'product_tags' => $this->wpPostListLoader->getWooCommerceTags(),
       'is_administrator' => $this->wp->currentUserCan('administrator'),
+      'tracking_consent_capture_enabled' => $this->trackingConsentCapture->isCaptureEnabled(),
       'theme_support_widgets' => $this->wp->wpGetThemeSupport('widgets'),
       'theme_support_fse' => $this->wp->wpGetTheme()->is_block_theme(),
     ];
