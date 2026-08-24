@@ -22,6 +22,9 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Clicks {
 
+  /** The link whose whole purpose is to switch tracking off. Its own click is never recorded. */
+  const TRACKING_OPT_OUT_SHORTCODE = '[link:subscription_tracking_opt_out_url]';
+
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
@@ -105,11 +108,15 @@ class Clicks {
     $link = $data->link;
     $wpUserPreview = ($data->preview && ($subscriber->isWPUser()));
     $trackingAllowed = $this->trackingConsentController->isTrackingAllowed($subscriber);
+    // The opt-out link exists to stop tracking, so clicking it is never itself
+    // recorded, even for a subscriber we are otherwise allowed to track. Only
+    // the recording is skipped; the redirect below still runs.
+    $isTrackingOptOutLink = $link->getUrl() === self::TRACKING_OPT_OUT_SHORTCODE;
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     // No tracking consent (CNIL/Garante): skip all recording (stats, cookies,
     // engagement) but keep the redirect below.
-    if (!$wpUserPreview && $trackingAllowed) {
+    if (!$wpUserPreview && $trackingAllowed && !$isTrackingOptOutLink) {
       $userAgent = !empty($data->userAgent) ? $this->userAgentsRepository->findOrCreate($data->userAgent) : null;
       $statisticsClicks = $this->statisticsClicksRepository->createOrUpdateClickCount(
         $link,

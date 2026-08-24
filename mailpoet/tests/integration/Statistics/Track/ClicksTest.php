@@ -482,6 +482,42 @@ class ClicksTest extends \MailPoetTest {
     $this->assertNull($this->subscriber->getLastClickAt());
   }
 
+  public function testClickingTheOptOutLinkIsNotRecordedButStillRedirects() {
+    // The one link whose whole purpose is to stop tracking must never be the
+    // thing that records a click. The subscriber here is fully trackable, so
+    // the only reason nothing is recorded is the link itself.
+    $optOutLink = new NewsletterLinkEntity(
+      $this->newsletter,
+      $this->queue,
+      Clicks::TRACKING_OPT_OUT_SHORTCODE,
+      'opt-out-hash'
+    );
+    $this->entityManager->persist($optOutLink);
+    $this->entityManager->flush();
+    $trackData = clone $this->trackData;
+    $trackData->link = $optOutLink;
+    $clicks = Stub::construct($this->clicks, [
+      $this->diContainer->get(Cookies::class),
+      $this->diContainer->get(SubscriberCookie::class),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
+    ], [
+      // The redirect still happens: this is about not recording, not about
+      // breaking the link.
+      'redirectToUrl' => Expected::exactly(1),
+    ], $this);
+    $clicks->track($trackData);
+    $this->assertCount(0, $this->entityManager->getRepository(StatisticsClickEntity::class)->findAll());
+    $this->assertNull($this->subscriber->getLastClickAt());
+  }
+
   public function testItIncrementsClickEventCount() {
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
