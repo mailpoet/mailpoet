@@ -1,6 +1,10 @@
 import { findBlock } from './find-block';
 
-export const validateForm = (formData, formBlocks) => {
+export const validateForm = (
+  formData,
+  formBlocks,
+  isTrackingConsentCaptureEnabled = false,
+) => {
   if (
     !formData ||
     !formData.settings ||
@@ -36,6 +40,17 @@ export const validateForm = (formData, formBlocks) => {
   }
   if (!submit) {
     errors.push('missing-submit');
+  }
+  // "Required" here means the checkbox is on the form, not that the subscriber
+  // has to tick it. The block is still rendered unticked and optional.
+  if (isTrackingConsentCaptureEnabled) {
+    const trackingConsent = findBlock(
+      formBlocks,
+      'mailpoet-form/tracking-consent',
+    );
+    if (!trackingConsent) {
+      errors.push('missing-tracking-consent');
+    }
   }
   return errors;
 };

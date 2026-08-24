@@ -234,6 +234,29 @@ export const controls = {
    * We want to ensure that email input and submit are always present.
    * @param actionData {{type: string, blocks: Block[]}} blocks property contains editor blocks
    */
+  /**
+   * Adds the tracking consent checkbox in front of the submit button, which is
+   * where the renderer already puts the captcha and the honeypot. The block is
+   * created with its defaults on purpose: unticked, optional, and with copy the
+   * merchant can edit.
+   */
+  INSERT_TRACKING_CONSENT_BLOCK() {
+    const blocks = select(blockEditorStore).getBlocks() as Array<Block>;
+    if (findBlock(blocks, 'mailpoet-form/tracking-consent')) {
+      return;
+    }
+    const submitIndex = blocks.findIndex(
+      (block) => block.name === 'mailpoet-form/submit-button',
+    );
+    const newBlocks = [...blocks];
+    newBlocks.splice(
+      submitIndex >= 0 ? submitIndex : newBlocks.length,
+      0,
+      createBlock('mailpoet-form/tracking-consent'),
+    );
+    void dispatch(blockEditorStore).resetBlocks(newBlocks);
+  },
+
   BLOCKS_CHANGED_IN_BLOCK_EDITOR(actionData) {
     const newBlocks = actionData.blocks as Array<Block>;
     // Check if both required inputs are present

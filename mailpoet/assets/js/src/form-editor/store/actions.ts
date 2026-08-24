@@ -354,3 +354,9 @@ export function* tutorialDismissed() {
     type: 'TUTORIAL_DISMISSED',
   };
 }
+
+export function* insertTrackingConsentBlock() {
+  yield {
+    type: 'INSERT_TRACKING_CONSENT_BLOCK',
+  };
+}

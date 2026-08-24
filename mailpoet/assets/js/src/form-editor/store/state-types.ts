@@ -52,6 +52,7 @@ export interface FormEditorWindow extends Window {
   mailpoet_tutorial_seen: '0' | '1';
   mailpoet_tutorial_url: string;
   mailpoet_is_administrator: boolean;
+  mailpoet_tracking_consent_capture_enabled: boolean;
   mailpoet_theme_support_widgets: boolean;
   mailpoet_theme_support_fse: boolean;
 }
@@ -71,6 +72,7 @@ export type State = {
   sidebarOpened: boolean;
   formExports: typeof window.mailpoet_form_exports;
   formErrors: string[];
+  trackingConsentCaptureEnabled: boolean;
   segments: typeof window.mailpoet_form_segments;
   customFields: typeof window.mailpoet_custom_fields;
   isFormSaving: boolean;
@@ -86,6 +88,7 @@ export type State = {
     content: string;
     isDismissible: boolean;
     status: string;
+    actions?: { label: string; onClick: () => void }[];
   }[];
   hasUnsavedChanges: boolean;
   sidebar: {

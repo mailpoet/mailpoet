@@ -164,3 +164,53 @@ describe('Form validator', () => {
     expect(() => validate(formData, 'string')).to.throw(blocksError);
   });
 });
+
+const trackingConsentBlock = {
+  clientId: 'tracking-consent',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/tracking-consent',
+  attributes: {
+    label: 'Email activity tracking',
+    consentText: 'Allow tracking of email opens and link clicks',
+  },
+};
+
+describe('Form validator - tracking consent', () => {
+  const formData = { settings: { segments: [1] } };
+
+  it('Should return error when capture is on and the block is missing', () => {
+    const result = validate(formData, [emailBlock, submitBlock], true);
+    expect(result).to.contain('missing-tracking-consent');
+  });
+
+  it('Should return no error when the block is present', () => {
+    const blocks = [emailBlock, trackingConsentBlock, submitBlock];
+    const result = validate(formData, blocks, true);
+    expect(isEmpty(result)).to.be.equal(true);
+  });
+
+  it('Should return no error when capture is off', () => {
+    const result = validate(formData, [emailBlock, submitBlock], false);
+    expect(isEmpty(result)).to.be.equal(true);
+  });
+
+  it('Should default to no error when the flag is not passed at all', () => {
+    const result = validate(formData, [emailBlock, submitBlock]);
+    expect(isEmpty(result)).to.be.equal(true);
+  });
+
+  it('Should find the block nested in columns', () => {
+    const nested = {
+      ...columns,
+      innerBlocks: [
+        {
+          ...columns.innerBlocks[0],
+          innerBlocks: [emailBlock, trackingConsentBlock, submitBlock],
+        },
+      ],
+    };
+    const result = validate(formData, [nested], true);
+    expect(isEmpty(result)).to.be.equal(true);
+  });
+});

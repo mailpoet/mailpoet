@@ -83,7 +83,13 @@ export const initStore = () => {
     dateSettingData,
     sidebarOpened: true,
     formExports: window.mailpoet_form_exports,
-    formErrors: validateForm(formData, formBlocks),
+    trackingConsentCaptureEnabled:
+      window.mailpoet_tracking_consent_capture_enabled === true,
+    formErrors: validateForm(
+      formData,
+      formBlocks,
+      window.mailpoet_tracking_consent_capture_enabled === true,
+    ),
     segments: window.mailpoet_form_segments,
     customFields,
     isFormSaving: false,

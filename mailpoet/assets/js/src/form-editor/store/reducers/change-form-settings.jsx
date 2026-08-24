@@ -11,6 +11,10 @@ export const changeFormSettings = (state, action) => {
   return {
     ...newState,
     hasUnsavedChanges: true,
-    formErrors: validateForm(newState.formData, newState.formBlocks),
+    formErrors: validateForm(
+      newState.formData,
+      newState.formBlocks,
+      newState.trackingConsentCaptureEnabled,
+    ),
   };
 };
