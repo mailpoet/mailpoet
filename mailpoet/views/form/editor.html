@@ -33,6 +33,7 @@
   var mailpoet_tutorial_seen = '<%= editor_tutorial_seen %>';
   var mailpoet_tutorial_url = '<%= cdn_url('form-editor/tutorial.mp4') %>';
   var mailpoet_is_administrator = <%= is_administrator ? 'true' : 'false' %>;
+  var mailpoet_tracking_consent_capture_enabled = <%= tracking_consent_capture_enabled ? 'true' : 'false' %>;
   var mailpoet_form_edit_url = "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
   var mailpoet_theme_support_widgets = <%= theme_support_widgets ? 'true' : 'false' %>;
   var mailpoet_theme_support_fse = <%= theme_support_fse ? 'true' : 'false' %>;
@@ -179,6 +180,8 @@
   'blockCloseDescription': __('Link or button used to dismiss a pop-up, slide-in or fixed bar form.'),
   'blockCloseLabel': _x('No thanks', 'a default value for a form close link'),
   'missingObligatoryBlock': __('Email input or submit is missing. Try reloading the form editor.'),
+  'missingTrackingConsentBlock': __('This form asks subscribers about email tracking, so it needs the "Email activity tracking" checkbox.'),
+  'addTrackingConsentBlock': _x('Add the checkbox', 'Button that inserts the tracking consent checkbox into the form'),
   'label': _x('Label', 'settings for a label of an input'),
   'displayLabelWithinInput': __('Display label within input'),
   'displayLabel': _x('Display label', 'Settings - if label should be displayed'),

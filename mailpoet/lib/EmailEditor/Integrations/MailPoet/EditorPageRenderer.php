@@ -19,6 +19,7 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\FreeDomains;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -60,6 +61,8 @@ class EditorPageRenderer {
 
   private CapabilitiesManager $capabilitiesManager;
 
+  private TrackingConsentController $trackingConsentController;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -74,7 +77,8 @@ class EditorPageRenderer {
     AuthorizedEmailsController $authorizedEmailsController,
     AuthorizedSenderDomainController $senderDomainController,
     FeaturesController $featuresController,
-    CapabilitiesManager $capabilitiesManager
+    CapabilitiesManager $capabilitiesManager,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -93,6 +97,7 @@ class EditorPageRenderer {
     $this->senderDomainController = $senderDomainController;
     $this->featuresController = $featuresController;
     $this->capabilitiesManager = $capabilitiesManager;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function render() {
@@ -234,6 +239,9 @@ class EditorPageRenderer {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
+      // Only a site that asks EVERY subscriber for consent needs an opt-out
+      // link in its emails, so only then does content validation ask for one.
+      'mailpoet_tracking_consent_ask_all' => $this->trackingConsentController->getSubscriberChoice() === TrackingConsentController::CHOICE_ASK_ALL,
       'mailpoet_automation_id' => $automationId,
       'mailpoet_feature_flags' => $this->featuresController->getAllFlags(),
       'mailpoet_capabilities' => $this->capabilitiesManager->getCapabilities(),

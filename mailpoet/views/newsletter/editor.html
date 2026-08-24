@@ -1887,6 +1887,8 @@
         validateUnsubscribeLinkPresent: <%= mss_active and is_wc_transactional_email != true and is_confirmation_email_type != true ? 'true' : 'false' %>,
         validateReEngageLinkPresent: <%= mss_active and is_wc_transactional_email != true and is_confirmation_email_type != true ? 'true' : 'false' %>,
         validateActivationLinkIsPresent: <%= is_confirmation_email_type ? 'true' : 'false' %>,
+        {# Deliberately not gated on mss_active: the opt-out link has nothing to do with the sending service. #}
+        validateTrackingOptOutLinkPresent: <%= is_tracking_consent_ask_all and is_wc_transactional_email != true and is_confirmation_email_type != true ? 'true' : 'false' %>,
       },
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ (params('id') | intval)) %>',
