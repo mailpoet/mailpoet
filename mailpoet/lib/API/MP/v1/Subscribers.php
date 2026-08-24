@@ -23,6 +23,7 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberTagRepository;
+use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -80,6 +81,9 @@ class Subscribers {
   /** @var ConfirmationEmailResolver */
   private $confirmationEmailResolver;
 
+  /** @var TrackingConsentCapture */
+  private $trackingConsentCapture;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -96,7 +100,8 @@ class Subscribers {
     Unsubscribes $unsubscribesTracker,
     TagRepository $tagRepository,
     SubscriberTagRepository $subscriberTagRepository,
-    ConfirmationEmailResolver $confirmationEmailResolver
+    ConfirmationEmailResolver $confirmationEmailResolver,
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -114,6 +119,7 @@ class Subscribers {
     $this->tagRepository = $tagRepository;
     $this->subscriberTagRepository = $subscriberTagRepository;
     $this->confirmationEmailResolver = $confirmationEmailResolver;
+    $this->trackingConsentCapture = $trackingConsentCapture;
   }
 
   public function getSubscriber($subscriberIdOrEmail): array {
@@ -147,7 +153,8 @@ class Subscribers {
     $this->requiredCustomFieldsValidator->validate($customFields);
 
     // filter out all incoming data that we don't want to change, like status ...
-    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
+    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
+    $defaultFields = $this->resolveTrackingConsentFields($defaultFields);
 
     if (empty($defaultFields['subscribed_ip'])) {
       $defaultFields['subscribed_ip'] = Helpers::getIP();
@@ -211,7 +218,8 @@ class Subscribers {
     $this->requiredCustomFieldsValidator->validate($customFields);
 
     // filter out all incoming data that we don't want to change, like status ...
-    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
+    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
+    $defaultFields = $this->resolveTrackingConsentFields($defaultFields);
 
     if ($subscriber->getWpUserId() !== null) {
       unset($defaultFields['email']);
@@ -700,6 +708,49 @@ class Subscribers {
       throw new APIException(__('Tag name is required.', 'mailpoet'), APIException::TAG_NAME_REQUIRED);
     }
     return $sanitized;
+  }
+
+  /**
+   * Validates and resolves the tracking-consent fields a public-API caller sent.
+   *
+   * Only the three known states can be stored. Anything else is dropped rather
+   * than stored or thrown on, so the subscriber keeps whatever consent they
+   * already had (or the unknown default, for one being created now) — the same
+   * shape as the rest of this whitelist, which silently drops fields it does
+   * not accept.
+   *
+   * The method is always stamped 'api': the caller rendered its own consent
+   * control, so it IS the collection point and never gets to name a different
+   * one. The wording is the caller's own when it sends one, otherwise the
+   * application default, read through TrackingConsentCapture::getCopy() so a
+   * site's mailpoet_tracking_consent_copy filter still applies. getCopy() is
+   * used deliberately instead of getConsentData()/applyToSubscriber(): those
+   * two gate on isCaptureEnabled(), which would silently drop a decline on a
+   * site whose own consent controls are switched off, and a decline has to be
+   * honoured either way.
+   */
+  private function resolveTrackingConsentFields(array $fields): array {
+    if (!isset($fields['tracking_consent'])) {
+      unset($fields['tracking_consent_copy']);
+      return $fields;
+    }
+    $validStates = [
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+    ];
+    $consent = (string)$fields['tracking_consent'];
+    if (!in_array($consent, $validStates, true)) {
+      unset($fields['tracking_consent'], $fields['tracking_consent_copy']);
+      return $fields;
+    }
+    $fields['tracking_consent'] = $consent;
+    $fields['tracking_consent_method'] = SubscriberEntity::TRACKING_CONSENT_METHOD_API;
+    $fields['tracking_consent_copy'] = $this->trackingConsentCapture->getCopy(
+      SubscriberEntity::TRACKING_CONSENT_METHOD_API,
+      isset($fields['tracking_consent_copy']) ? (string)$fields['tracking_consent_copy'] : null
+    );
+    return $fields;
   }
 
   /**

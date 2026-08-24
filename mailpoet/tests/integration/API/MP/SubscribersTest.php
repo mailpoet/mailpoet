@@ -43,6 +43,9 @@ class SubscribersTest extends \MailPoetTest {
   /** @var CustomFieldsRepository */
   private $customFieldRepository;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function _before() {
     parent::_before();
     $settings = SettingsController::getInstance();
@@ -50,6 +53,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->subscriberFactory = new SubscriberFactory();
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->customFieldRepository = $this->diContainer->get(CustomFieldsRepository::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
   }
 
   private function getSubscribers() {
@@ -1251,6 +1255,120 @@ class SubscribersTest extends \MailPoetTest {
     verify($result['tags'])->arrayCount(0);
     verify($firedTimes)->equals(0);
     $wp->removeAllActions('mailpoet_subscriber_tag_removed');
+  }
+
+  public function testItRecordsTrackingConsentOnAddSubscriberWithTheApplicationDefaultCopy() {
+    $subscriber = [
+      'email' => 'consent-default@example.com',
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_DENIED,
+    ];
+    $this->getApi()->addSubscriber($subscriber);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => $subscriber['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($saved->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_API);
+    verify($saved->getTrackingConsentCopy())->equals('Allow tracking of email opens and link clicks');
+    $this->assertInstanceOf(\DateTimeInterface::class, $saved->getTrackingConsentUpdatedAt());
+  }
+
+  public function testItStoresTheCallersOwnCopyWhenSupplied() {
+    $subscriber = [
+      'email' => 'consent-own-copy@example.com',
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      'tracking_consent_copy' => 'Our own checkout consent wording',
+    ];
+    $this->getApi()->addSubscriber($subscriber);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => $subscriber['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($saved->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_API);
+    verify($saved->getTrackingConsentCopy())->equals('Our own checkout consent wording');
+  }
+
+  public function testItIgnoresACallerSuppliedTrackingConsentMethod() {
+    // The API is itself the collection point, so the method is never the caller's to choose.
+    $subscriber = [
+      'email' => 'consent-forged-method@example.com',
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      'tracking_consent_method' => SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+    ];
+    $this->getApi()->addSubscriber($subscriber);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => $subscriber['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_API);
+  }
+
+  public function testItIgnoresAnInvalidTrackingConsentValueOnAdd() {
+    $subscriber = [
+      'email' => 'consent-invalid@example.com',
+      'tracking_consent' => 'not-a-real-state',
+      'tracking_consent_copy' => 'Wording that must not be stored on its own',
+    ];
+    $this->getApi()->addSubscriber($subscriber);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => $subscriber['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($saved->getTrackingConsentMethod())->null();
+    verify($saved->getTrackingConsentCopy())->null();
+  }
+
+  public function testItDoesNotTouchConsentWhenTheCallSendsNoConsentField() {
+    $subscriber = [
+      'email' => 'consent-absent@example.com',
+      'tracking_consent_copy' => 'Wording with no state alongside it',
+    ];
+    $this->getApi()->addSubscriber($subscriber);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => $subscriber['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($saved->getTrackingConsentCopy())->null();
+  }
+
+  public function testItLetsTheCallerGrantOrDeclineOnUpdateSubscriber() {
+    $subscriber = $this->subscriberFactory->create();
+
+    $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+    ]);
+    $this->subscribersRepository->refreshAll();
+    $granted = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $granted);
+    verify($granted->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($granted->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_API);
+
+    $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_DENIED,
+    ]);
+    $this->subscribersRepository->refreshAll();
+    $denied = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $denied);
+    verify($denied->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testItLeavesStoredConsentUntouchedWhenAnUpdateSendsAnInvalidValue() {
+    $subscriber = $this->subscriberFactory->create();
+    $subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->entityManager->flush();
+
+    $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tracking_consent' => 'not-a-real-state',
+    ]);
+
+    $this->subscribersRepository->refreshAll();
+    $updated = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($updated->getTrackingConsentCopy())->equals('Original wording');
   }
 
   public function testItThrowsWhenUntaggingByMissingName(): void {
