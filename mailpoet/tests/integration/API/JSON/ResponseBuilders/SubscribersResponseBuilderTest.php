@@ -108,6 +108,31 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertSame(__('No reason provided', 'mailpoet'), $row['reasonLabel']);
   }
 
+  public function testItExposesTrackingConsentFields(): void {
+    $this->subscriber1->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK,
+      'By clicking here you opt out of email open and click tracking.'
+    );
+    $this->entityManager->flush();
+
+    $response = $this->responseBuilder->build($this->subscriber1);
+
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_DENIED, $response['tracking_consent']);
+    $this->assertNotNull($response['tracking_consent_updated_at']);
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK, $response['tracking_consent_method']);
+    $this->assertSame('By clicking here you opt out of email open and click tracking.', $response['tracking_consent_copy']);
+  }
+
+  public function testItExposesUnsetTrackingConsentAsTheDefaultWithNoEvidence(): void {
+    $response = $this->responseBuilder->build($this->subscriber2);
+
+    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $response['tracking_consent']);
+    $this->assertNull($response['tracking_consent_updated_at']);
+    $this->assertNull($response['tracking_consent_method']);
+    $this->assertNull($response['tracking_consent_copy']);
+  }
+
   public function testItBuildsListingResponse(): void {
     $subscribers = [
       $this->subscriber1,
@@ -126,6 +151,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       $this->assertEquals($subscriber->getWpUserId(), $item['wp_user_id']);
       $this->assertEquals($subscriber->getIsWoocommerceUser(), $item['is_woocommerce_user']);
       $this->assertEquals($subscriber->getStatus(), $item['status']);
+      $this->assertEquals($subscriber->getTrackingConsent(), $item['tracking_consent']);
       $this->assertArrayHasKey('created_at', $item);
       $this->assertArrayHasKey('deleted_at', $item);
       $this->assertArrayHasKey('last_subscribed_at', $item);
