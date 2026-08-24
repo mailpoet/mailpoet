@@ -109,7 +109,7 @@ class TemplateEmailPreviewRenderer {
       'newsletter_id' => 0,
       'queue_id' => null,
     ]);
-    return $personalizer->personalize_content($html);
+    return $personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
   }
 
   private function getRenderer(): GutenbergRenderer {
