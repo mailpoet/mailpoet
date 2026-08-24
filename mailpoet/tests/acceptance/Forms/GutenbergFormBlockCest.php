@@ -126,9 +126,10 @@ class GutenbergFormBlockCest {
     $i->waitForElement('iframe[name="editor-canvas"]', 30);
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->click('[aria-label="Add title"]');
-    $i->click('[aria-label="Add block"]');
     $i->switchToIFrame();
-    $i->fillField('[placeholder="Search"]', 'MailPoet Subscription Form');
+    $i->click('[aria-label="Block Inserter"]');
+    $i->waitForElementVisible('.block-editor-inserter__search [placeholder="Search"]');
+    $i->fillField('.block-editor-inserter__search [placeholder="Search"]', 'MailPoet Subscription Form');
     $i->waitForElement(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->click(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->switchToIframe('iframe[name="editor-canvas"]');
