@@ -48,6 +48,8 @@ class Import {
   /** @var array<string, mixed> */
   public $requiredSubscribersFields;
   const DB_QUERY_CHUNK_SIZE = 100;
+  // Matches the subscribers.tracking_consent_method column width.
+  const TRACKING_CONSENT_METHOD_MAX_LENGTH = 40;
   const STATUS_DONT_UPDATE = 'dont_update';
 
   public const ACTION_CREATE = 'create';
@@ -170,6 +172,7 @@ class Import {
         $newSubscribers = $this->setSubscriptionStatusToDefault($newSubscribers, $this->newSubscribersStatus);
         $newSubscribers = $this->setSource($newSubscribers);
         $newSubscribers = $this->setLinkToken($newSubscribers);
+        $newSubscribers = $this->applyTrackingConsentToNewSubscribers($newSubscribers);
         $createdSubscribers =
           $this->createOrUpdateSubscribers(
             self::ACTION_CREATE,
@@ -269,6 +272,22 @@ class Import {
           array_keys($data),
           $data
         );
+      }
+      if ($column === 'tracking_consent') {
+        $validStates = [
+          SubscriberEntity::TRACKING_CONSENT_GRANTED,
+          SubscriberEntity::TRACKING_CONSENT_DENIED,
+          SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
+        ];
+        $data = array_map(function($value) use ($validStates) {
+          $value = trim((string)$value);
+          // A blank cell is left blank on purpose: blank means "leave the stored value alone",
+          // which is a different thing from an invalid value, and only the caller can act on it.
+          if ($value === '') {
+            return '';
+          }
+          return in_array($value, $validStates, true) ? $value : SubscriberEntity::TRACKING_CONSENT_UNKNOWN;
+        }, $data);
       }
       // if this is a custom column
       if (in_array($column, $this->subscribersCustomFields)) {
@@ -487,6 +506,55 @@ class Import {
       },
       array_fill(0, $subscribersCount, null)
     );
+    return $subscribersData;
+  }
+
+  /**
+   * Stamps consent evidence for newly created subscribers. A blank cell needs no
+   * work: the column defaults (unknown/NULL/NULL/NULL) already mean "untouched"
+   * for a row that did not exist. A non-blank cell is the collection event, so
+   * the timestamp is stamped now and never read from the CSV — it drives the
+   * tracked-at-send predicate, and a backdated value could push a rate over 100%.
+   */
+  private function applyTrackingConsentToNewSubscribers(array $subscribersData): array {
+    if (!in_array('tracking_consent', $subscribersData['fields'], true)) {
+      return $subscribersData;
+    }
+    $states = $subscribersData['data']['tracking_consent'];
+    $methods = $subscribersData['data']['tracking_consent_method'] ?? [];
+    $copies = $subscribersData['data']['tracking_consent_copy'] ?? [];
+
+    $stateValues = $updatedAtValues = $methodValues = $copyValues = [];
+    foreach ($states as $index => $state) {
+      if (trim((string)$state) === '') {
+        // The column is NOT NULL, so a blank cell has to be written as the default
+        // rather than as an empty string.
+        $stateValues[] = SubscriberEntity::TRACKING_CONSENT_UNKNOWN;
+        $updatedAtValues[] = null;
+        $methodValues[] = null;
+        $copyValues[] = null;
+        continue;
+      }
+      $stateValues[] = trim((string)$state);
+      $updatedAtValues[] = $this->createdAt;
+      $method = trim((string)($methods[$index] ?? ''));
+      $methodValues[] = $method !== '' ? mb_substr($method, 0, self::TRACKING_CONSENT_METHOD_MAX_LENGTH) : SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT;
+      $copy = trim((string)($copies[$index] ?? ''));
+      $copyValues[] = $copy !== '' ? $copy : null;
+    }
+
+    $evidence = [
+      'tracking_consent' => $stateValues,
+      'tracking_consent_updated_at' => $updatedAtValues,
+      'tracking_consent_method' => $methodValues,
+      'tracking_consent_copy' => $copyValues,
+    ];
+    foreach ($evidence as $field => $values) {
+      if (!in_array($field, $subscribersData['fields'], true)) {
+        $subscribersData['fields'][] = $field;
+      }
+      $subscribersData['data'][$field] = $values;
+    }
     return $subscribersData;
   }
 

@@ -287,6 +287,19 @@ class ImportTest extends \MailPoetTest {
     verify($result['confirmed_ip'])->equals($data['confirmed_ip']);
   }
 
+  public function testItClampsTrackingConsent(): void {
+    $data['email'] = ['adam@smith.com', 'jane@doe.com', 'blank@example.com', 'spaced@example.com'];
+    $data['tracking_consent'] = ['granted', 'not-a-real-value', '', '  denied  '];
+    $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
+    verify($result['tracking_consent'][0])->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    // invalid but non-blank: we know something was meant, we just cannot honour it
+    verify($result['tracking_consent'][1])->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    // blank stays blank so the import paths can leave the stored value alone
+    verify($result['tracking_consent'][2])->equals('');
+    verify($result['tracking_consent'][3])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
   public function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport(): void {
     $data = [
       'subscribers' => [
@@ -682,6 +695,55 @@ class ImportTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed2);
     verify($lastSubscribed1->getTimestamp())->equalsWithDelta($this->testData['timestamp'], 1);
     verify($lastSubscribed2->getTimestamp())->equalsWithDelta($this->testData['timestamp'], 1);
+  }
+
+  public function testItStampsTrackingConsentEvidenceOnNewSubscribersWhenTheCellIsNonBlank(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['columns']['tracking_consent_copy'] = ['index' => 9];
+    $data['subscribers'][0][] = 'granted';
+    $data['subscribers'][0][] = 'Allow tracking of email opens and link clicks';
+    // blank cell: this subscriber stays at the column defaults
+    $data['subscribers'][1][] = '';
+    $data['subscribers'][1][] = '';
+    $import = $this->createImportInstance($data);
+    $import->process();
+
+    $withConsent = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $withConsent);
+    verify($withConsent->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($withConsent->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT);
+    verify($withConsent->getTrackingConsentCopy())->equals('Allow tracking of email opens and link clicks');
+    $this->assertInstanceOf(\DateTimeInterface::class, $withConsent->getTrackingConsentUpdatedAt());
+
+    $blankCell = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $blankCell);
+    verify($blankCell->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($blankCell->getTrackingConsentMethod())->null();
+    verify($blankCell->getTrackingConsentCopy())->null();
+    verify($blankCell->getTrackingConsentUpdatedAt())->null();
+  }
+
+  public function testItImportsTheSuppliedTrackingConsentMethodForNewSubscribers(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['columns']['tracking_consent_method'] = ['index' => 9];
+    $data['subscribers'][0][] = 'denied';
+    $data['subscribers'][0][] = 'legacy_crm_export';
+    $data['subscribers'][1][] = 'granted';
+    $data['subscribers'][1][] = '';
+    $import = $this->createImportInstance($data);
+    $import->process();
+
+    $withMethod = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $withMethod);
+    verify($withMethod->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($withMethod->getTrackingConsentMethod())->equals('legacy_crm_export');
+
+    $withoutMethod = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $withoutMethod);
+    verify($withoutMethod->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($withoutMethod->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT);
   }
 
   public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent(): void {
