@@ -81,6 +81,7 @@ class SubscribersResponseBuilder {
       'engagement_score' => $subscriber->getEngagementScore(),
       'engagement_score_type' => $engagementScoreType,
       'tags' => $this->buildTags($subscriber),
+      'tracking_consent' => $subscriber->getTrackingConsent(),
     ];
   }
 
@@ -109,6 +110,11 @@ class SubscribersResponseBuilder {
       'link_token' => $subscriberEntity->getLinkToken(),
       'tags' => $this->buildTags($subscriberEntity),
       'timezone' => $subscriberEntity->getTimeZone(),
+      'tracking_consent' => $subscriberEntity->getTrackingConsent(),
+      'tracking_consent_updated_at' => ($trackingConsentUpdatedAt = $subscriberEntity->getTrackingConsentUpdatedAt())
+        ? $trackingConsentUpdatedAt->format(self::DATE_FORMAT) : null,
+      'tracking_consent_method' => $subscriberEntity->getTrackingConsentMethod(),
+      'tracking_consent_copy' => $subscriberEntity->getTrackingConsentCopy(),
     ];
 
     return $this->buildCustomFields($subscriberEntity, $data);
