@@ -606,6 +606,38 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('[gallery]');
   }
 
+  public function testItKeepsSquareBracketsThatAreNotShortcodes(): void {
+    // Nothing strips post content by syntax, so brackets that only look like a
+    // tag must survive: an array query parameter, a footnote.
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts bracket link',
+      'Read <a href="https://example.com/?tag[]=draft">the list</a> and note [1]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('?tag[]=draft');
+    verify($html)->stringContainsString('[1]');
+  }
+
+  public function testItStripsRegisteredShortcodesFromBlockContent(): void {
+    // Block content renders as HTML, so only the registered tags are removed
+    // there. Guessing by syntax would damage attribute values and comments.
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts block shortcode',
+      '<!-- wp:paragraph --><p>Block intro text [gallery ids="1,2"]</p><!-- /wp:paragraph -->'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Block intro text');
+    verify($html)->stringNotContainsString('[gallery');
+  }
+
   public function testItSkipsContentOfPasswordProtectedPosts(): void {
     $this->ensurePostContentBlockRegistered();
     $this->postIds[] = $this->createPostWithContent(
