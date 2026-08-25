@@ -455,10 +455,16 @@ class Initializer {
         // whole namespace down for a customer, twice over: it aborted the remaining
         // calls in this block AND left INITIALIZED undefined, so postInitialize()
         // skipped restApi->init() as well.
-        $this->loggerFactory->getLogger('Subscriber Activity Tracker')->error($e->getMessage(), [
-          'file' => $e->getFile(),
-          'line' => $e->getLine(),
-        ]);
+        try {
+          $this->loggerFactory->getLogger('Subscriber Activity Tracker')->error($e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+          ]);
+        } catch (\Throwable $loggingError) {
+          // The logger writes to the database, so the very failure being reported here
+          // can be the reason it cannot write. Losing the log line is a smaller problem
+          // than re-throwing and taking down the REST namespace this catch exists to save.
+        }
       }
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
