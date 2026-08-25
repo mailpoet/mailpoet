@@ -72,10 +72,11 @@ export const saveFormStartedFactory =
 
     return {
       ...state,
-      // Without excluding the new error here the Save button would sit in its
-      // busy state forever: SAVE_FORM returns early when formErrors is
-      // non-empty, and nothing else resets isFormSaving.
-      isFormSaving: !hasMissingLists && !hasMissingTrackingConsent,
+      // SAVE_FORM returns early when formErrors is non-empty and nothing else resets
+      // this, so any error at all has to stop the spinner. Naming individual errors
+      // here left the Save button stuck forever on a form missing its email or submit
+      // block, which was already true before the tracking-consent error existed.
+      isFormSaving: state.formErrors.length === 0,
       sidebar: {
         ...state.sidebar,
         activeTab: hasMissingLists ? 'form' : state.sidebar.activeTab,
