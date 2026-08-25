@@ -205,7 +205,10 @@ class API {
       if (!$endpoint instanceof Endpoint) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
-      if (!method_exists($endpoint, $this->requestMethod)) {
+      if (
+        !method_exists($endpoint, $this->requestMethod)
+        || $this->isReservedEndpointMethod($endpoint, $this->requestMethod)
+      ) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }
 
@@ -243,6 +246,17 @@ class API {
       $errorResponse = $this->createErrorResponse(Error::BAD_REQUEST, $errorMessage, Response::STATUS_BAD_REQUEST);
       return $errorResponse;
     }
+  }
+
+  /**
+   * Only genuine endpoint actions may be dispatched. The response-builder helpers
+   * declared on the Endpoint base class (redirectResponse, successResponse, etc.)
+   * are framework plumbing, not callable actions.
+   */
+  private function isReservedEndpointMethod($endpoint, $requestMethod): bool {
+    return (new \ReflectionMethod($endpoint, $requestMethod))
+      ->getDeclaringClass()
+      ->getName() === Endpoint::class;
   }
 
   public function validatePermissions($requestMethod, $permissions) {

@@ -397,6 +397,50 @@ class APITest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
+  public function testItDoesNotDispatchInheritedBaseEndpointHelpers() {
+    // Response-builder helpers declared on the Endpoint base class must never be
+    // reachable as API actions.
+    $namespace = [
+      'name' => 'MailPoet\API\JSON\v1',
+      'version' => 'v1',
+    ];
+
+    $baseHelperMethods = [
+      'redirect_response',
+      'success_response',
+      'error_response',
+      'bad_request',
+      'is_method_allowed',
+    ];
+
+    foreach ($baseHelperMethods as $method) {
+      $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+      $this->api->setRequestData([
+        'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+        'method' => $method,
+        'api_version' => 'v1',
+        'data' => 'https://evil.example.com/phish',
+      ], Endpoint::TYPE_POST);
+      $response = $this->api->processRoute();
+
+      verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+    }
+  }
+
+  public function testRedirectResponseValidatesTargetHostAgainstSite() {
+    $endpoint = new APITestNamespacedEndpointStubV1();
+    $wp = new WPFunctions();
+
+    // An external host is rejected and falls back to the site home URL.
+    $external = $endpoint->redirectResponse('https://evil.example.com/phish');
+    verify($external->location)->equals($wp->homeUrl());
+
+    // A same-site URL is preserved.
+    $internal = $wp->homeUrl('/?mailpoet_router&endpoint=captcha');
+    verify($endpoint->redirectResponse($internal)->location)->equals($internal);
+  }
+
   public function testItLogsExceptionToLogTable() {
     $this->settings->set('logging', 'everything');
     $namespace = [

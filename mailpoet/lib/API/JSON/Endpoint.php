@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\API\JSON\v1\RedirectResponse;
 use MailPoet\Config\AccessControl;
+use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Endpoint {
   const TYPE_POST = 'POST';
@@ -43,6 +44,10 @@ abstract class Endpoint {
   }
 
   public function redirectResponse($url) {
+    $wp = WPFunctions::get();
+    // Keep redirects on-site: fall back to the home URL for any off-site target,
+    // mirroring WordPress' own wp_safe_redirect() handling.
+    $url = $wp->wpValidateRedirect($url, $wp->homeUrl());
     return new RedirectResponse($url);
   }
 
