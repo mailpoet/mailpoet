@@ -159,47 +159,9 @@
   }
 }
 
+// Size, position and slide-in come from the core `editor-post-publish-panel`
+// class the panel also uses. See send-panel.tsx.
 .mailpoet-send-panel {
-  background: #fff;
-  box-sizing: border-box;
-  inset: 46px 0 0;
-  overflow: auto;
-  position: fixed;
-  z-index: 100001;
-
-  *,
-  *:before,
-  *:after {
-    box-sizing: inherit;
-  }
-
-  @media (min-width: 782px) {
-    border-left: 1px solid #ddd;
-    left: auto;
-    top: 32px;
-    width: 281px;
-    z-index: 99998;
-  }
-
-  @media (min-width: 782px) and (not (prefers-reduced-motion)) {
-    animation: mailpoet-send-panel__slide-in 0.1s forwards;
-    transform: translateX(100%);
-  }
-
-  // Editor runs fullscreen (no admin bar), so pin to the very top.
-  body.is-fullscreen-mode & {
-    @media (min-width: 782px) {
-      top: 0;
-    }
-  }
-
-  // Keep the panel in place once its region receives focus (slide-in fallback).
-  [role='region']:focus & {
-    @media (min-width: 782px) {
-      transform: translateX(0%);
-    }
-  }
-
   .mailpoet-inbox-preview-panel__card {
     margin-top: 12px;
   }
@@ -313,11 +275,5 @@
 
   .mailpoet-inline-notice {
     margin: 0;
-  }
-}
-
-@keyframes mailpoet-send-panel__slide-in {
-  100% {
-    transform: translateX(0%);
   }
 }

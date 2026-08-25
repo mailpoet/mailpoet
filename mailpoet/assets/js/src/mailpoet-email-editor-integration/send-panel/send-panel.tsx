@@ -90,7 +90,7 @@ export function SendPanel() {
 
   return (
     <Fill name="ComplementaryArea/core">
-      <div className="mailpoet-send-panel">
+      <div className="editor-post-publish-panel mailpoet-send-panel">
         <Stack
           className="mailpoet-send-panel__header"
           direction="row"
