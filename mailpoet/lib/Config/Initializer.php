@@ -22,6 +22,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEdito
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogsDownload;
 use MailPoet\Logging\RestApi\Api as LogsRestApi;
 use MailPoet\Migrator\Cli as MigratorCli;
@@ -127,6 +128,9 @@ class Initializer {
   /** @var SubscriberActivityTracker */
   private $subscriberActivityTracker;
 
+  /** @var LoggerFactory */
+  private $loggerFactory;
+
   /** @var Engine */
   private $automationEngine;
 
@@ -207,6 +211,7 @@ class Initializer {
     Localizer $localizer,
     AutomaticEmails $automaticEmails,
     SubscriberActivityTracker $subscriberActivityTracker,
+    LoggerFactory $loggerFactory,
     WPFunctions $wpFunctions,
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
@@ -250,6 +255,7 @@ class Initializer {
     $this->localizer = $localizer;
     $this->automaticEmails = $automaticEmails;
     $this->subscriberActivityTracker = $subscriberActivityTracker;
+    $this->loggerFactory = $loggerFactory;
     $this->wpFunctions = $wpFunctions;
     $this->assetsLoader = $assetsLoader;
     $this->automationEngine = $automationEngine;
@@ -441,7 +447,19 @@ class Initializer {
       $this->setupAutomaticEmails();
       $this->setupWoocommerceBlocksIntegration();
       $this->setupDeactivationPoll();
-      $this->subscriberActivityTracker->trackActivity();
+      try {
+        $this->subscriberActivityTracker->trackActivity();
+      } catch (\Throwable $e) {
+        // Page-view tracking failing must never stop the rest of initialize(), which
+        // includes registering the mailpoet/v1 REST namespace. One throw here took the
+        // whole namespace down for a customer, twice over: it aborted the remaining
+        // calls in this block AND left INITIALIZED undefined, so postInitialize()
+        // skipped restApi->init() as well.
+        $this->loggerFactory->getLogger('Subscriber Activity Tracker')->error($e->getMessage(), [
+          'file' => $e->getFile(),
+          'line' => $e->getLine(),
+        ]);
+      }
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
       $this->tagsRestApi->initialize();
