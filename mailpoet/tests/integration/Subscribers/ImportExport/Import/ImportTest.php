@@ -724,6 +724,28 @@ class ImportTest extends \MailPoetTest {
     verify($blankCell->getTrackingConsentUpdatedAt())->null();
   }
 
+  public function testItDropsConsentEvidenceWhenTheCsvHasNoConsentColumn(): void {
+    // A CSV mapping only the method or wording column carries no answer, so storing that
+    // evidence against the default `unknown` would invent a proof record nobody gave.
+    $data = $this->testData;
+    $data['columns']['tracking_consent_method'] = ['index' => 8];
+    $data['columns']['tracking_consent_copy'] = ['index' => 9];
+    $data['subscribers'][0][] = 'legacy_crm';
+    $data['subscribers'][0][] = 'Wording with no consent behind it';
+    $data['subscribers'][1][] = 'legacy_crm';
+    $data['subscribers'][1][] = 'Wording with no consent behind it';
+
+    $import = $this->createImportInstance($data);
+    $import->process();
+
+    $subscriber = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($subscriber->getTrackingConsentMethod())->null();
+    verify($subscriber->getTrackingConsentCopy())->null();
+    verify($subscriber->getTrackingConsentUpdatedAt())->null();
+  }
+
   public function testItImportsTheSuppliedTrackingConsentMethodForNewSubscribers(): void {
     $data = $this->testData;
     $data['columns']['tracking_consent'] = ['index' => 8];
