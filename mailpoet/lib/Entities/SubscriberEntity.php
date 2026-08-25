@@ -88,8 +88,14 @@ class SubscriberEntity {
    * treated as consent. How `unknown` is handled is a site setting; see
    * TrackingConsentController.
    *
+   * Validated in setTrackingConsent(), not by a validation constraint on this
+   * property. A constraint runs at flush, so a row that already holds a bad value —
+   * hand-edited column, incomplete migration, restored backup — would throw the moment
+   * anything flushed it, even an unrelated field. That took the whole mailpoet/v1
+   * namespace down for one customer. A caller trying to WRITE a bad value still fails,
+   * immediately, in the setter.
+   *
    * @ORM\Column(type="string", length=20)
-   * @Assert\Choice({"unknown", "granted", "denied"})
    * @var string
    */
   private $trackingConsent = self::TRACKING_CONSENT_UNKNOWN;
@@ -366,7 +372,16 @@ class SubscriberEntity {
    * Setting the state also stamps when, how, and against what wording it
    * changed (CNIL/Garante record-keeping).
    */
+
+  /**
+   * @throws \InvalidArgumentException if $consent is not one of the three
+   *   TRACKING_CONSENT_* constants. This is the only place the value is validated;
+   *   see the property docblock for why it is not a flush-time constraint.
+   */
   public function setTrackingConsent(string $consent, ?string $method = null, ?string $copy = null): void {
+    if (!in_array($consent, [self::TRACKING_CONSENT_UNKNOWN, self::TRACKING_CONSENT_GRANTED, self::TRACKING_CONSENT_DENIED], true)) {
+      throw new \InvalidArgumentException("Invalid tracking consent value: {$consent}");
+    }
     if ($this->trackingConsent === $consent) {
       return;
     }

@@ -3,7 +3,6 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\ConflictException;
-use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -94,7 +93,10 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
   }
 
   public function testItRejectsInvalidTrackingConsentValue(): void {
-    $this->expectException(ValidationException::class);
+    // The rejection moved from flush-time validation to the entity setter, so the
+    // exception type changed with it. Both extend \Exception, and the public API's
+    // createOrUpdate() calls already catch broadly, so callers are unaffected.
+    $this->expectException(\InvalidArgumentException::class);
     $this->saveController->save([
       'email' => 'consent-bogus@test.com',
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
