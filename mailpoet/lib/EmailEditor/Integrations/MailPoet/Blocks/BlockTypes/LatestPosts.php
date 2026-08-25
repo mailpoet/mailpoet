@@ -338,7 +338,7 @@ class LatestPosts extends AbstractBlock {
         $html .= render_block($this->normalizeBlock($contentBlock));
       }
     }
-    return $html;
+    return $this->wp->stripShortcodes($html);
   }
 
   private function renderClassicPostContent(\WP_Post $post): string {
