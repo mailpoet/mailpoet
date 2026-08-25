@@ -1,5 +1,0 @@
-# Type: Fixed
-
-# Description
-
-Fix unique constraint violation when a WordPress user changes their email to one already used by another subscriber.
