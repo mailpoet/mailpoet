@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.36.0
+Stable tag: 5.36.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,13 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.36.0 - 2026-08-18 =
-* Added: Subscribers can now be asked for tracking consent when they sign up, with a separate checkbox on subscription forms, WooCommerce checkout, and the WordPress registration and comment forms;
-* Added: New segment filter for tracking consent, so you can find subscribers who allowed tracking, opted out, or were never asked;
-* Updated: Email editor packages to their latest versions;
-* Updated: Bump the minimum required WordPress version to 7.0 and tested up to version to 7.1;
-* Fixed: Open and click rates above 100% on automation and welcome email statistics;
-* Fixed: Footer links in the block editor now follow the underline setting from the email styles;
-* Fixed: Campaign stats no longer drop link filter deep links when switching tabs.
+= 5.36.1 - 2026-08-25 =
+* Added: Latest posts block for the email editor with a composable per-post layout, category and tag filtering, and manual post selection;
+* Improved: Recent category of the email template modal now lists draft, scheduled and sending emails;
+* Changed: Timezone field in the subscriber edit form is now hidden when subscriber time zone collection is disabled;
+* Fixed: Background sending not resuming after a plugin update.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

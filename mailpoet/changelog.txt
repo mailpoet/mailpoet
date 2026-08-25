@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.36.1 - 2026-08-25 =
+* Added: Latest posts block for the email editor with a composable per-post layout, category and tag filtering, and manual post selection;
+* Improved: Recent category of the email template modal now lists draft, scheduled and sending emails;
+* Changed: Timezone field in the subscriber edit form is now hidden when subscriber time zone collection is disabled;
+* Fixed: Background sending not resuming after a plugin update.
+
 = 5.36.0 - 2026-08-18 =
 * Added: Subscribers can now be asked for tracking consent when they sign up, with a separate checkbox on subscription forms, WooCommerce checkout, and the WordPress registration and comment forms;
 * Added: New segment filter for tracking consent, so you can find subscribers who allowed tracking, opted out, or were never asked;
