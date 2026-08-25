@@ -9,7 +9,9 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\LogEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WpFunctions;
 
@@ -28,6 +30,12 @@ class DaemonTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
     $this->logRepository = $this->diContainer->get(LogRepository::class);
     $this->wp = $this->diContainer->get(WpFunctions::class);
+  }
+
+  public function _after() {
+    parent::_after();
+    // drop logger instances cached with the DEBUG level enabled via the 'logging' setting in tests below
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
   }
 
   public function testItCanRun() {
@@ -63,6 +71,33 @@ class DaemonTest extends \MailPoetTest {
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Worker error!');
+  }
+
+  public function testItLogsSendingLimitReachedAsInfoAndKeepsLastError() {
+    $this->settings->set('logging', 'everything');
+    // loggers cache their handler's minimum level at creation, so drop instances created before the setting change
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
+    $message = 'Sending frequency limit has been reached.';
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, [
+      'run' => function () use ($message) {
+        throw new \Exception($message, MailerLog::SENDING_LIMIT_REACHED);
+      },
+    ]);
+    $data = [
+      'token' => 123,
+    ];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
+    $daemon->run($data);
+    verify($this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]))->null();
+    $infoLog = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 200]);
+    $this->assertInstanceOf(LogEntity::class, $infoLog);
+    verify($infoLog->getMessage())->stringContainsString($message);
+    $daemonSetting = $this->settings->get(CronHelper::DAEMON_SETTING);
+    verify($daemonSetting['last_error'][0]['message'])->equals($message);
   }
 
   public function testItTerminatesWhenExecutionLimitIsReached() {

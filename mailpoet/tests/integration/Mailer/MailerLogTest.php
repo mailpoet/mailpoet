@@ -346,6 +346,7 @@ class MailerLogTest extends \MailPoetTest {
       self::fail('Sending frequency exception was not thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('Sending frequency limit has been reached.');
+      verify($e->getCode())->equals(MailerLog::SENDING_LIMIT_REACHED);
     }
   }
 
