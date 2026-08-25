@@ -739,16 +739,21 @@ class Subscribers {
       SubscriberEntity::TRACKING_CONSENT_DENIED,
       SubscriberEntity::TRACKING_CONSENT_UNKNOWN,
     ];
-    $consent = (string)$fields['tracking_consent'];
-    if (!in_array($consent, $validStates, true)) {
+    // Checked with is_string() rather than cast: casting an array or object here throws
+    // an \Error, which does not extend \Exception and so escapes the try/catch this
+    // method's callers wrap createOrUpdate() in. That would turn "invalid values are
+    // ignored" into a fatal.
+    $consent = $fields['tracking_consent'];
+    if (!is_string($consent) || !in_array($consent, $validStates, true)) {
       unset($fields['tracking_consent'], $fields['tracking_consent_copy']);
       return $fields;
     }
     $fields['tracking_consent'] = $consent;
     $fields['tracking_consent_method'] = SubscriberEntity::TRACKING_CONSENT_METHOD_API;
+    $copy = $fields['tracking_consent_copy'] ?? null;
     $fields['tracking_consent_copy'] = $this->trackingConsentCapture->getCopy(
       SubscriberEntity::TRACKING_CONSENT_METHOD_API,
-      isset($fields['tracking_consent_copy']) ? (string)$fields['tracking_consent_copy'] : null
+      is_string($copy) ? $copy : null
     );
     return $fields;
   }

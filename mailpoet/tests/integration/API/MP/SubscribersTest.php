@@ -1316,6 +1316,57 @@ class SubscribersTest extends \MailPoetTest {
     verify($saved->getTrackingConsentCopy())->null();
   }
 
+  public function testItIgnoresNonStringConsentValuesWithoutThrowing() {
+    // Casting an object to string throws an \Error, which is not an \Exception and so
+    // would escape the callers' catch. The contract is that invalid input is ignored.
+    foreach ([['obj', new \stdClass()], ['arr', ['granted']]] as $index => $case) {
+      [$label, $value] = $case;
+      $email = "consent-nonstring-{$label}@example.com";
+      $this->getApi()->addSubscriber([
+        'email' => $email,
+        'tracking_consent' => $value,
+      ]);
+
+      $saved = $this->subscribersRepository->findOneBy(['email' => $email]);
+      $this->assertInstanceOf(SubscriberEntity::class, $saved);
+      verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+      verify($saved->getTrackingConsentMethod())->null();
+    }
+  }
+
+  public function testItIgnoresANonStringCopyAndFallsBackToTheDefaultWording() {
+    $this->getApi()->addSubscriber([
+      'email' => 'consent-nonstring-copy@example.com',
+      'tracking_consent' => SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      'tracking_consent_copy' => new \stdClass(),
+    ]);
+
+    $saved = $this->subscribersRepository->findOneBy(['email' => 'consent-nonstring-copy@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $saved);
+    verify($saved->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($saved->getTrackingConsentCopy())->equals('Allow tracking of email opens and link clicks');
+  }
+
+  public function testItLeavesStoredConsentUntouchedWhenAnUpdateSendsANonStringValue() {
+    $subscriber = $this->subscriberFactory->create();
+    $subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->entityManager->flush();
+
+    $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'tracking_consent' => new \stdClass(),
+    ]);
+
+    $this->subscribersRepository->refreshAll();
+    $updated = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($updated->getTrackingConsentCopy())->equals('Original wording');
+  }
+
   public function testItDoesNotTouchConsentWhenTheCallSendsNoConsentField() {
     $subscriber = [
       'email' => 'consent-absent@example.com',
