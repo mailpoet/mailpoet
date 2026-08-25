@@ -4,6 +4,7 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -67,10 +68,18 @@ class Daemon {
         $workerClass = is_object($worker) ? get_class($worker) : '';
         $workerClassNameParts = explode('\\', $workerClass);
         $workerName = end($workerClassNameParts);
+
         $errors[] = [
           'worker' => $workerName,
           'message' => $e->getMessage(),
         ];
+
+        // Expected sending state, not an error — sending resumes once the frequency interval passes.
+        // Still saved to the daemon's last error so the help page shows why sending appears stuck.
+        if ($e->getCode() === MailerLog::SENDING_LIMIT_REACHED) {
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info($e->getMessage(), ['worker' => $workerName]);
+          continue;
+        }
 
         if ($e->getCode() === CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
           break;
