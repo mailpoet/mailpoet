@@ -205,7 +205,10 @@ class API {
       if (!$endpoint instanceof Endpoint) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
-      if (!method_exists($endpoint, $this->requestMethod)) {
+      if (
+        !method_exists($endpoint, $this->requestMethod)
+        || !$this->isDispatchableEndpointMethod($endpoint, $this->requestMethod)
+      ) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }
 
@@ -230,6 +233,9 @@ class API {
         return $errorResponse;
       }
       $response = $endpoint->{$this->requestMethod}($this->requestData);
+      if (!$response instanceof Response) {
+        throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+      }
       return $response;
     } catch (Exception $e) {
       $this->logError($e);
@@ -243,6 +249,18 @@ class API {
       $errorResponse = $this->createErrorResponse(Error::BAD_REQUEST, $errorMessage, Response::STATUS_BAD_REQUEST);
       return $errorResponse;
     }
+  }
+
+  /**
+   * The response-builder helpers on the Endpoint base class are framework plumbing,
+   * blocked by name so that a subclass override cannot re-expose them. Non-public
+   * methods are never dispatchable.
+   */
+  private function isDispatchableEndpointMethod(Endpoint $endpoint, string $requestMethod): bool {
+    if (method_exists(Endpoint::class, $requestMethod)) {
+      return false;
+    }
+    return (new \ReflectionMethod($endpoint, $requestMethod))->isPublic();
   }
 
   public function validatePermissions($requestMethod, $permissions) {

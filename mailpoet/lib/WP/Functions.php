@@ -730,6 +730,10 @@ class Functions {
     return wp_safe_redirect($location, $status);
   }
 
+  public function wpValidateRedirect($location, $fallbackUrl = '') {
+    return wp_validate_redirect($location, $fallbackUrl);
+  }
+
   public function wpStaticizeEmoji($text) {
     return wp_staticize_emoji($text);
   }
