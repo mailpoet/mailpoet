@@ -79,7 +79,8 @@ class AutomateWooHooks {
    * Denied stops AutomateWoo tracking. Granted clears the flag, the way optInSubscriber()
    * reverses optOutSubscriber(); without that, somebody who changed their mind would be
    * permanently untracked in AutomateWoo with no way back from MailPoet. `unknown` is
-   * left alone: nobody was asked, and that is not an answer.
+   * left alone: nobody was asked, and that is not an answer. Anything else is a value
+   * this plugin never writes, and is left alone too.
    */
   public function syncTrackingConsent(int $subscriberId, string $oldConsent, string $newConsent): void {
     if (!$this->isAutomateWooReady() || !$this->areTrackingMethodsAvailable()) {
@@ -100,9 +101,12 @@ class AutomateWooHooks {
       return;
     }
 
+    // Explicit values only, failing closed on anything unrecognised, the same way
+    // TrackingConsentController::isTrackingAllowed() does. Clearing an opt-out is the
+    // consequential direction, so it needs a real `granted`, not just "not denied".
     if ($newConsent === SubscriberEntity::TRACKING_CONSENT_DENIED) {
       $automateWooCustomer->opt_out_of_tracking();
-    } else {
+    } elseif ($newConsent === SubscriberEntity::TRACKING_CONSENT_GRANTED) {
       $automateWooCustomer->opt_in_to_tracking();
     }
   }

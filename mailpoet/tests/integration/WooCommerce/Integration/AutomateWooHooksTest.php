@@ -140,6 +140,23 @@ class AutomateWooHooksTest extends \MailPoetTest {
     verify($calls)->equals([]);
   }
 
+  public function testAnUnrecognisedConsentValueDoesNothing() {
+    // The hook is public, so a third party can fire it with a state MailPoet never
+    // writes. Clearing an opt-out is the consequential direction, so it takes an
+    // explicit `granted` rather than merely "not denied".
+    $subscriber = $this->subscriberFactory->withEmail('odd-consent@mailpoet.com')->create();
+    $calls = [];
+    $hooks = $this->makeHooksForTrackingConsent($subscriber, $calls);
+
+    $hooks->syncTrackingConsent(
+      (int)$subscriber->getId(),
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      'not-a-consent-state'
+    );
+
+    verify($calls)->equals([]);
+  }
+
   public function testNoAutomateWooCustomerDoesNothing() {
     $subscriber = $this->subscriberFactory->withEmail('no-aw-customer@mailpoet.com')->create();
     $calls = [];

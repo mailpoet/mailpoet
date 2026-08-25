@@ -24,9 +24,11 @@ class SubscriberChangesNotifier {
   private $countChangedSubscriberIds = [];
 
   /**
-   * Consent changes, keyed by subscriber id. Deliberately not collapsed into a batch the
-   * way updates are: a consent change is a per-person legal record, so every one is
-   * delivered on its own.
+   * Net consent transition per subscriber, keyed by subscriber id: the value they had
+   * when this request started, and the value they ended on. Deliberately not collapsed
+   * across subscribers the way updates are, because a consent change is a per-person
+   * record. If one subscriber changes twice in a request the original `old` is kept, so
+   * the pair still describes the real before-and-after rather than an inner step.
    *
    * @var array<int, array{0: string, 1: string}>
    */
@@ -56,7 +58,9 @@ class SubscriberChangesNotifier {
   }
 
   public function subscriberTrackingConsentChanged(int $subscriberId, string $oldConsent, string $newConsent): void {
-    $this->trackingConsentChanges[$subscriberId] = [$oldConsent, $newConsent];
+    // Keep the first `old` seen this request so a second change does not rewrite history.
+    $originalOld = $this->trackingConsentChanges[$subscriberId][0] ?? $oldConsent;
+    $this->trackingConsentChanges[$subscriberId] = [$originalOld, $newConsent];
   }
 
   private function notifyTrackingConsentChanges(): void {
