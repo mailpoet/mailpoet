@@ -151,6 +151,45 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getSegmentsCount())->equals(0);
   }
 
+  public function testItReportsWhetherTheGuestSyncActuallyCreatedTheRow(): void {
+    // The signal WooCommerce\Subscription reads to decide whether an unticked consent
+    // box at classic checkout is a first answer or a protected earlier choice. Tested
+    // through the real sync, because passing the flag straight into handleSubscriberOptin()
+    // proves nothing about this plumbing.
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
+
+    $guest = $this->insertGuestCustomer();
+    verify($this->wooCommerceSegment->wasNewlyCreatedByGuestSync($guest['email']))->false();
+
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+    verify($this->wooCommerceSegment->wasNewlyCreatedByGuestSync($guest['email']))->true();
+
+    // A second order for the same address finds the row already there.
+    $secondOrderId = $this->createOrder(['email' => $guest['email']]);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($secondOrderId);
+    verify($this->wooCommerceSegment->wasNewlyCreatedByGuestSync($guest['email']))->false();
+  }
+
+  public function testAnAddressAlreadyOnTheListIsNotReportedAsNewlyCreated(): void {
+    // Someone who signed up through a form and later checks out as a guest: the sync
+    // only flips their is_woocommerce_user flag, so their earlier consent must stand.
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
+
+    $email = 'already-subscribed-guest@example.com';
+    $existing = new SubscriberEntity();
+    $existing->setEmail($email);
+    $existing->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscribersRepository->persist($existing);
+    $this->subscribersRepository->flush();
+
+    $orderId = $this->createOrder(['email' => $email]);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($orderId);
+
+    verify($this->wooCommerceSegment->wasNewlyCreatedByGuestSync($email))->false();
+  }
+
   public function testItSynchronizesNewGuestCustomer(): void {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);

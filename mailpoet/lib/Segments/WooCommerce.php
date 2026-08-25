@@ -308,7 +308,7 @@ class WooCommerce {
       return null;
     }
 
-    $this->insertSubscribers([$email], $status);
+    $wasNewlyCreated = $this->insertSubscribers([$email], $status) > 0;
     return $email;
   }
 
