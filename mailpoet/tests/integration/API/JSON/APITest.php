@@ -397,6 +397,98 @@ class APITest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
+  public function testItDoesNotDispatchInheritedBaseEndpointHelpers() {
+    // Response-builder helpers declared on the Endpoint base class must never be
+    // reachable as API actions.
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+
+    $baseHelperMethods = [
+      'redirect_response',
+      'success_response',
+      'error_response',
+      'bad_request',
+      'is_method_allowed',
+    ];
+
+    foreach ($baseHelperMethods as $method) {
+      $this->api->setRequestData([
+        'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+        'method' => $method,
+        'api_version' => 'v1',
+      ], Endpoint::TYPE_POST);
+      $response = $this->api->processRoute();
+
+      verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+    }
+  }
+
+  public function testItDoesNotDispatchOverriddenBaseEndpointHelpers() {
+    // The stub for v2 overrides successResponse(); the override must stay blocked.
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v2', 'v2');
+    $this->api->setRequestData([
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
+      'method' => 'success_response',
+      'api_version' => 'v2',
+    ], Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+  }
+
+  public function testItDoesNotDispatchNonPublicEndpointMethods() {
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+    $this->api->setRequestData([
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'private_helper',
+      'api_version' => 'v1',
+    ], Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+  }
+
+  public function testItRejectsDispatchedMethodsThatDoNotReturnResponse() {
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+    $this->api->setRequestData([
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'returns_array',
+      'api_version' => 'v1',
+    ], Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+  }
+
+  public function testRedirectResponseValidatesTargetHostAgainstSite() {
+    $endpoint = new APITestNamespacedEndpointStubV1();
+    $wp = new WPFunctions();
+
+    // An external host is rejected and falls back to the site home URL.
+    $external = $endpoint->redirectResponse('https://evil.example.com/phish');
+    verify($external->location)->equals($wp->homeUrl());
+
+    // A same-site URL is preserved.
+    $internal = $wp->homeUrl('/?mailpoet_router&endpoint=captcha');
+    verify($endpoint->redirectResponse($internal)->location)->equals($internal);
+
+    // A host explicitly allowed via WordPress' filter is preserved.
+    $allowExternalHost = function ($hosts) {
+      $hosts[] = 'allowed.example.com';
+      return $hosts;
+    };
+    $wp->addFilter('allowed_redirect_hosts', $allowExternalHost);
+    try {
+      $allowed = $endpoint->redirectResponse('https://allowed.example.com/page');
+      verify($allowed->location)->equals('https://allowed.example.com/page');
+    } finally {
+      $wp->removeFilter('allowed_redirect_hosts', $allowExternalHost);
+    }
+  }
+
   public function testItLogsExceptionToLogTable() {
     $this->settings->set('logging', 'everything');
     $namespace = [

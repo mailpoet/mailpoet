@@ -30,4 +30,13 @@ class APITestNamespacedEndpointStubV1 extends APIEndpoint {
   public function testError($data) {
     throw new \Exception('Some Error');
   }
+
+  public function returnsArray($data) {
+    return ['not' => 'a response'];
+  }
+
+  /** @phpstan-ignore method.unused (dispatch-rejection fixture for testItDoesNotDispatchNonPublicEndpointMethods) */
+  private function privateHelper($data) {
+    return $this->successResponse($data);
+  }
 }

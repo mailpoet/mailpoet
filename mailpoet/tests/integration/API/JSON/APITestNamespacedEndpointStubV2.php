@@ -3,6 +3,7 @@
 namespace MailPoet\API\JSON\v2;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 
 class APITestNamespacedEndpointStubV2 extends APIEndpoint {
@@ -15,5 +16,11 @@ class APITestNamespacedEndpointStubV2 extends APIEndpoint {
 
   public function testVersion() {
     return $this->successResponse('v2');
+  }
+
+  public function successResponse(
+    $data = [], $meta = [], $status = Response::STATUS_OK
+  ) {
+    return parent::successResponse($data, $meta, $status);
   }
 }
