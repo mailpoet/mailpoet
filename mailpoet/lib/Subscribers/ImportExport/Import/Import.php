@@ -519,7 +519,10 @@ class Import {
    */
   private function applyTrackingConsentToNewSubscribers(array $subscribersData): array {
     if (!in_array('tracking_consent', $subscribersData['fields'], true)) {
-      return $subscribersData;
+      // Evidence with no consent behind it is not a record of anything, so a CSV that
+      // maps only the method or wording column is dropped rather than stored against
+      // the default `unknown` with no timestamp. Same rule the public API applies.
+      return $this->stripTrackingConsentEvidenceColumns($subscribersData);
     }
     $states = $subscribersData['data']['tracking_consent'];
     $methods = $subscribersData['data']['tracking_consent_method'] ?? [];
@@ -556,6 +559,16 @@ class Import {
       }
       $subscribersData['data'][$field] = $values;
     }
+    return $subscribersData;
+  }
+
+  /** Drops the evidence columns, used when no consent state came with them. */
+  private function stripTrackingConsentEvidenceColumns(array $subscribersData): array {
+    $evidenceFields = ['tracking_consent_method', 'tracking_consent_copy'];
+    foreach ($evidenceFields as $field) {
+      unset($subscribersData['data'][$field]);
+    }
+    $subscribersData['fields'] = array_values(array_diff($subscribersData['fields'], $evidenceFields));
     return $subscribersData;
   }
 
