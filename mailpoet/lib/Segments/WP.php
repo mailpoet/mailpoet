@@ -122,7 +122,7 @@ class WP {
   }
 
   public function synchronizeUser(int $wpUserId, $oldWpUserData = false): void {
-    $wpUser = \get_userdata($wpUserId);
+    $wpUser = $this->wp->getUserdata($wpUserId);
     if ($wpUser === false) return;
 
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);

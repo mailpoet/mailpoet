@@ -177,7 +177,8 @@ class WooCommerceTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
 
-    $email = 'already-subscribed-guest@example.com';
+    // Kept under the user-sync-test prefix so cleanData() removes it between runs.
+    $email = 'user-sync-test-already-subscribed-guest' . rand() . '@example.com';
     $existing = new SubscriberEntity();
     $existing->setEmail($email);
     $existing->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
