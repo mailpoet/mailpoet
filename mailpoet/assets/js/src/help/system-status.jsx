@@ -191,6 +191,8 @@ function buildSystemStatusReport(
   let queueStatusText = MailPoet.I18n.t('unknown');
   if (queueStatus.status === 'paused')
     queueStatusText = MailPoet.I18n.t('paused');
+  else if (queueStatus.sendingLimitReached)
+    queueStatusText = MailPoet.I18n.t('sendingLimitReached');
   else if (queueStatus.status !== undefined)
     queueStatusText = MailPoet.I18n.t('running');
   const queueRetryAttempt =

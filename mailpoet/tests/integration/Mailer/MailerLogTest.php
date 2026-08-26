@@ -6,6 +6,7 @@ use MailPoet\Entities\LogEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingLimitReachedException;
 use MailPoet\Settings\SettingsController;
 
 class MailerLogTest extends \MailPoetTest {
@@ -346,7 +347,7 @@ class MailerLogTest extends \MailPoetTest {
       self::fail('Sending frequency exception was not thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('Sending frequency limit has been reached.');
-      verify($e->getCode())->equals(MailerLog::SENDING_LIMIT_REACHED);
+      $this->assertInstanceOf(SendingLimitReachedException::class, $e);
     }
   }
 
