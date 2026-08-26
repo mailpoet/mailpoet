@@ -6,6 +6,7 @@ import { Props as TasksListDataRowProps } from './tasks-list/tasks-list-data-row
 type Props = {
   statusData: {
     status?: string;
+    sendingLimitReached?: boolean;
     started?: number;
     sent?: number;
     retryAttempt?: number;
@@ -25,6 +26,16 @@ type Props = {
   };
 };
 
+function getQueueStatusText(status: Props['statusData']): string {
+  if (status.status === 'paused') {
+    return MailPoet.I18n.t('paused');
+  }
+  if (status.sendingLimitReached) {
+    return MailPoet.I18n.t('sendingLimitReached');
+  }
+  return MailPoet.I18n.t('running');
+}
+
 function QueueStatus({ statusData }: Props): JSX.Element {
   const status = statusData;
   return (
@@ -35,10 +46,7 @@ function QueueStatus({ statusData }: Props): JSX.Element {
         rows={[
           {
             key: MailPoet.I18n.t('status'),
-            value:
-              status.status === 'paused'
-                ? MailPoet.I18n.t('paused')
-                : MailPoet.I18n.t('running'),
+            value: getQueueStatusText(status),
           },
           {
             key: MailPoet.I18n.t('startedAt'),

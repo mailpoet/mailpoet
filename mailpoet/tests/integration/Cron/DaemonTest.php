@@ -11,7 +11,7 @@ use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
-use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingLimitReachedException;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WpFunctions;
 
@@ -73,14 +73,14 @@ class DaemonTest extends \MailPoetTest {
     verify($log->getMessage())->stringContainsString('Worker error!');
   }
 
-  public function testItLogsSendingLimitReachedAsInfoAndKeepsLastError() {
+  public function testItLogsSendingLimitReachedAsInfoAndNotAsError() {
     $this->settings->set('logging', 'everything');
     // loggers cache their handler's minimum level at creation, so drop instances created before the setting change
     $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
     $message = 'Sending frequency limit has been reached.';
     $cronWorkerRunner = $this->make(CronWorkerRunner::class, [
       'run' => function () use ($message) {
-        throw new \Exception($message, MailerLog::SENDING_LIMIT_REACHED);
+        throw new SendingLimitReachedException($message);
       },
     ]);
     $data = [
@@ -97,7 +97,7 @@ class DaemonTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $infoLog);
     verify($infoLog->getMessage())->stringContainsString($message);
     $daemonSetting = $this->settings->get(CronHelper::DAEMON_SETTING);
-    verify($daemonSetting['last_error'][0]['message'])->equals($message);
+    verify($daemonSetting['last_error'] ?? null)->null();
   }
 
   public function testItTerminatesWhenExecutionLimitIsReached() {

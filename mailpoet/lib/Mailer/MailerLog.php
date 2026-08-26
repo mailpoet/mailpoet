@@ -28,8 +28,6 @@ class MailerLog {
   const STATUS_PAUSED = 'paused';
   const RETRY_ATTEMPTS_LIMIT = 3;
   const RETRY_INTERVAL = 120; // seconds
-  // Exception code for an expected sending state (not an error); must not collide with CronHelper::DAEMON_EXECUTION_LIMIT_REACHED
-  const SENDING_LIMIT_REACHED = 1002;
 
   /**
    * @param MailerLogData|null $mailerLog
@@ -109,7 +107,7 @@ class MailerLog {
 
     // ensure that sending frequency has not been reached
     if (self::isSendingLimitReached($mailerLog)) {
-      throw new \Exception(__('Sending frequency limit has been reached.', 'mailpoet'), self::SENDING_LIMIT_REACHED);
+      throw new SendingLimitReachedException(__('Sending frequency limit has been reached.', 'mailpoet'));
     }
     return null;
   }
