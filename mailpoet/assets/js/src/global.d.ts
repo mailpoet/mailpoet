@@ -250,6 +250,7 @@ interface Window {
     name: string;
   }[];
   mailpoet_cdn_url: string;
+  mailpoet_is_email_editor: boolean;
   mailpoet_main_page_slug: string;
   finish_wizard_url: string;
   admin_email: string;

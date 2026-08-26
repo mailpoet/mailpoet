@@ -449,6 +449,8 @@ class LatestPosts extends AbstractBlock {
       'render_callback' => static function (): string {
         return '';
       },
+      'editor_script' => $this->getEditorScript('handle'),
+      'editor_style' => $this->getEditorStyle('handle'),
     ]);
   }
 
@@ -462,6 +464,8 @@ class LatestPosts extends AbstractBlock {
     }
     $blockType = register_block_type_from_metadata($metadataPath, [
       'render_callback' => [$this, 'renderPostContent'],
+      'editor_script' => $this->getEditorScript('handle'),
+      'editor_style' => $this->getEditorStyle('handle'),
     ]);
     if ($blockType instanceof \WP_Block_Type) {
       // The render callback already produces email-ready markup; without an

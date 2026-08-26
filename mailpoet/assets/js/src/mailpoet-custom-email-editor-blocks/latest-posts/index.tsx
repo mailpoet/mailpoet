@@ -12,12 +12,17 @@ import { Edit as PostContentEdit } from './post-content/edit';
 
 const saveInnerBlocks = (): JSX.Element => <InnerBlocks.Content />;
 
+// The script is loaded in every block editor, because WordPress loads the editor
+// script of every registered block. Only the email editor may offer the block.
+const isEmailEditor = window.mailpoet_is_email_editor === true;
+
 registerBlockType(latestPostsMetadata, {
   icon: { src: postList },
   edit: LatestPostsEdit as React.ComponentType<
     BlockEditProps<Record<string, unknown>>
   >,
   save: saveInnerBlocks,
+  supports: { ...latestPostsMetadata.supports, inserter: isEmailEditor },
 });
 
 registerBlockType(postTemplateMetadata, {
