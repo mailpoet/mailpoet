@@ -95,6 +95,8 @@ class SystemReportCollector {
     }
 
     $mailerLog = MailerLog::getMailerLog();
+    // Read the status before overwriting "sent", which replaces the per-day map with a total.
+    $isSendingPaused = MailerLog::isSendingPaused($mailerLog);
     $mailerLog['sent'] = MailerLog::sentSince();
 
     $inconsistencyStatus = $this->dataInconsistencyController->getInconsistentDataStatus();
@@ -163,22 +165,25 @@ class SystemReportCollector {
         'Bounce Email Address' => $this->settings->get('bounce.address'),
       ]),
       'MailPoet Cron / Action Scheduler' => $this->formatCompositeField([
-        'Status' => $cronDaemonStatus['status'] ?? 'Unknown',
+        'Status' => $this->formatCronDaemonStatus($cronDaemonStatus['status'] ?? null),
         'Is reachable' => $this->cronHelper->validatePingResponse($cronPingResponse) ? 'Yes' : 'No',
         'Ping URL' => $cronPingUrl,
         'Ping response' => $cronPingResponse,
-        'Last run start' => isset($cronDaemonStatus['run_started_at']) ? $this->formatTimestamp((int)$cronDaemonStatus['run_started_at']) : 'Unknown',
-        'Last run end' => isset($cronDaemonStatus['run_completed_at']) ? $this->formatTimestamp((int)$cronDaemonStatus['run_completed_at']) : 'Unknown',
+        'Last updated' => $this->formatOptionalTimestamp($cronDaemonStatus['updated_at'] ?? null, 'Never'),
+        'Last run start' => $this->formatOptionalTimestamp($cronDaemonStatus['run_started_at'] ?? null, 'Never'),
+        'Last run end' => $this->formatOptionalTimestamp($cronDaemonStatus['run_completed_at'] ?? null, 'Never'),
         'Last seen error' => $cronDaemonStatus['last_error'] ?? 'None',
+        'Last seen error date' => $this->formatOptionalTimestamp($cronDaemonStatus['last_error_date'] ?? null, 'None'),
       ]),
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
       'Installed via WooCommerce onboarding wizard' => $this->wooCommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard(),
       'Sending queue status' => $this->formatCompositeField([
-        'Status' => $mailerLog['status'] ?? 'Unknown',
-        'Started at' => isset($mailerLog['started']) ? $this->formatTimestamp((int)$mailerLog['started']) : 'Unknown',
+        'Status' => $isSendingPaused ? 'Paused' : 'Running',
+        'Started at' => $this->formatOptionalTimestamp($mailerLog['started'] ?? null, 'Unknown'),
         'Emails sent' => $mailerLog['sent'],
         'Retry attempts' => $mailerLog['retry_attempt'] ?? 0,
+        'Retry at' => $this->formatOptionalTimestamp($mailerLog['retry_at'] ?? null, 'None'),
         'Last seen error' => isset($mailerLog['error'])
           ? $mailerLog['error']['error_message'] . ' (' . $mailerLog['error']['operation'] . ')'
           : 'None',
@@ -316,6 +321,33 @@ class SystemReportCollector {
     return (new \DateTimeImmutable('@' . $timestamp))
       ->setTimezone($this->wp->wpTimezone())
       ->format('Y-m-d H:i:s');
+  }
+
+  /**
+   * @param mixed $timestamp
+   */
+  private function formatOptionalTimestamp($timestamp, string $fallback): string {
+    if (!is_numeric($timestamp)) {
+      return $fallback;
+    }
+
+    return $this->formatTimestamp((int)$timestamp);
+  }
+
+  /**
+   * The wording here must match the Sending Queue and Cron tables on the System Status
+   * tab, so that a copied report and the screen a user is looking at never disagree.
+   */
+  private function formatCronDaemonStatus(?string $status): string {
+    if ($status === CronHelper::DAEMON_STATUS_ACTIVE) {
+      return 'Running';
+    }
+
+    if ($status === CronHelper::DAEMON_STATUS_INACTIVE) {
+      return 'Waiting for the next run';
+    }
+
+    return 'Never started';
   }
 
   protected function maskApiKey($key) {

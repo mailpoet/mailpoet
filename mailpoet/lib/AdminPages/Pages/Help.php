@@ -75,7 +75,7 @@ class Help {
         'isReachable' => $this->bridge->validateBridgePingResponse($bridgePingResponse),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
-      'queueStatus' => $mailerLog,
+      'queueStatus' => $this->buildQueueStatusData($mailerLog),
       'activePlugins' => $this->systemReportCollector->getActivePluginsData(),
     ];
 
@@ -93,6 +93,29 @@ class Help {
         'actionSchedulerData' => $this->getActionSchedulerData(),
       ]
     );
+  }
+
+  /**
+   * The mailer log stores snake_case keys, while the System Status scripts read
+   * camelCase ones. Map them here so the tab cannot silently render a retry count
+   * or a sending error as empty.
+   *
+   * @param array $mailerLog
+   */
+  public function buildQueueStatusData(array $mailerLog): array {
+    $error = $mailerLog['error'] ?? null;
+
+    return [
+      'status' => $mailerLog['status'] ?? null,
+      'started' => $mailerLog['started'] ?? null,
+      'sent' => $mailerLog['sent'] ?? 0,
+      'retryAttempt' => $mailerLog['retry_attempt'] ?? null,
+      'retryAt' => $mailerLog['retry_at'] ?? null,
+      'error' => $error ? [
+        'operation' => $error['operation'] ?? null,
+        'errorMessage' => $error['error_message'] ?? null,
+      ] : null,
+    ];
   }
 
   private function getActionSchedulerData(): ?array {

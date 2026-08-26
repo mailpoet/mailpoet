@@ -6,6 +6,7 @@ import { CronStatus } from './cron-status.jsx';
 import { QueueStatus } from './queue-status';
 import { ActionSchedulerStatus } from './action-scheduler-status';
 import { DataInconsistencies } from './data-inconsistencies';
+import { getCronStatusLabelKey, getQueueStatusLabelKey } from './status-labels';
 
 function printValue(value) {
   if (value === null || value === undefined || value === '') {
@@ -31,8 +32,8 @@ function printValue(value) {
   return `${value}`;
 }
 
-function formatTimestamp(seconds) {
-  if (!seconds) return MailPoet.I18n.t('unknown');
+function formatTimestamp(seconds, fallbackKey = 'unknown') {
+  if (!seconds) return MailPoet.I18n.t(fallbackKey);
   return MailPoet.Date.full(seconds * 1000);
 }
 
@@ -180,26 +181,19 @@ function buildSystemStatusReport(
     actionSchedulerData?.storage || MailPoet.I18n.t('none');
   const actionSchedulerNextTrigger = actionSchedulerData?.latestTrigger
     ? MailPoet.Date.full(actionSchedulerData.latestTrigger)
-    : MailPoet.I18n.t('unknown');
+    : MailPoet.I18n.t('none');
   const actionSchedulerLastTrigger = actionSchedulerData?.latestCompletedTrigger
     ? MailPoet.Date.full(actionSchedulerData.latestCompletedTrigger)
-    : MailPoet.I18n.t('unknown');
+    : MailPoet.I18n.t('never');
   const actionSchedulerLastRun = actionSchedulerData?.latestCompletedRun
     ? MailPoet.Date.full(actionSchedulerData.latestCompletedRun)
-    : MailPoet.I18n.t('unknown');
+    : MailPoet.I18n.t('never');
 
-  let queueStatusText = MailPoet.I18n.t('unknown');
-  if (queueStatus.status === 'paused')
-    queueStatusText = MailPoet.I18n.t('paused');
-  else if (queueStatus.status !== undefined)
-    queueStatusText = MailPoet.I18n.t('running');
-  const queueRetryAttempt =
-    queueStatus.retryAttempt !== undefined && queueStatus.retryAttempt !== null
-      ? queueStatus.retryAttempt
-      : MailPoet.I18n.t('none');
-  const queueRetryAt = queueStatus.retryAt
-    ? formatTimestamp(queueStatus.retryAt)
-    : MailPoet.I18n.t('unknown');
+  const queueStatusText = MailPoet.I18n.t(
+    getQueueStatusLabelKey(queueStatus.status),
+  );
+  const queueRetryAttempt = queueStatus.retryAttempt || 0;
+  const queueRetryAt = formatTimestamp(queueStatus.retryAt, 'none');
   const queueError = queueStatus.error?.errorMessage || MailPoet.I18n.t('none');
   const queueCounts = queueStatus.tasksStatusCounts || {};
 
@@ -303,7 +297,11 @@ function buildSystemStatusReport(
   );
 
   addSection(lines, 'Task Scheduler / Cron');
-  addBullet(lines, 'Status', cronStatus.status || MailPoet.I18n.t('unknown'));
+  addBullet(
+    lines,
+    'Status',
+    MailPoet.I18n.t(getCronStatusLabelKey(cronStatus.status)),
+  );
   addBullet(
     lines,
     'Task Scheduler method',
@@ -312,16 +310,20 @@ function buildSystemStatusReport(
   addBullet(lines, 'Ping URL', systemStatusData.cron?.url);
   addBullet(lines, 'Accessible', formatYesNo(cronStatus.accessible));
   addBullet(lines, 'Ping response', systemStatusData.cron?.pingResponse);
-  addBullet(lines, 'Last updated', formatTimestamp(cronStatus.updated_at));
+  addBullet(
+    lines,
+    'Last updated',
+    formatTimestamp(cronStatus.updated_at, 'never'),
+  );
   addBullet(
     lines,
     'Last run started',
-    formatTimestamp(cronStatus.run_started_at),
+    formatTimestamp(cronStatus.run_started_at, 'never'),
   );
   addBullet(
     lines,
     'Last run completed',
-    formatTimestamp(cronStatus.run_completed_at),
+    formatTimestamp(cronStatus.run_completed_at, 'never'),
   );
   addBullet(lines, 'Last seen error', cronError || MailPoet.I18n.t('none'));
 
@@ -335,7 +337,7 @@ function buildSystemStatusReport(
   addBullet(lines, 'Status', queueStatusText);
   addBullet(lines, 'Started at', formatTimestamp(queueStatus.started));
   addBullet(lines, 'Sent emails', queueStatus.sent || 0);
-  addBullet(lines, 'Retry attempt', queueRetryAttempt);
+  addBullet(lines, 'Retry attempts', queueRetryAttempt);
   addBullet(lines, 'Retry at', queueRetryAt);
   addBullet(lines, 'Error', queueError);
   addBullet(lines, 'Total completed tasks', queueCounts.completed || 0);
