@@ -50,7 +50,7 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
     $wp = Stub::make(new WPFunctions, [
       'getOption' => function($name) {
         if ($name === 'woocommerce_email_footer_text') {
-          return '{site_title} - {store_address} - {store_email} - {site_url} - {woocommerce}';
+          return '{site_title} - {store_address} - {store_email} - {site_url} - {woocommerce} - {WooCommerce}';
         }
         if ($name === 'blogname') {
           return 'Test';
@@ -76,6 +76,7 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
     $newslettersRepository = Stub::make(NewslettersRepository::class);
     $transactionalEmails = new TransactionalEmails($wp, $settings, $template, $woocommerceHelper, $newslettersRepository);
     $footerText = $transactionalEmails->getWCEmailSettings()['footer_text'];
-    verify($footerText)->equals('Test - 123 Main St, Springfield - store@example.com - test.loc - WooCommerce');
+    $wooCommerceLink = '<a href="https://woocommerce.com">WooCommerce</a>';
+    verify($footerText)->equals("Test - 123 Main St, Springfield - store@example.com - test.loc - $wooCommerceLink - $wooCommerceLink");
   }
 }
