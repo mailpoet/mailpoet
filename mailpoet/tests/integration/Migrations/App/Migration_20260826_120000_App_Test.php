@@ -7,6 +7,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group woo
+ */
 //phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 class Migration_20260826_120000_App_Test extends \MailPoetTest {
   /** @var Migration_20260826_120000_App */
