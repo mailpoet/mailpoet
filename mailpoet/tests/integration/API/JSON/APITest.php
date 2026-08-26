@@ -450,6 +450,24 @@ class APITest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
+  public function testItDoesNotDispatchMagicMethods() {
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+    // Method names are camel-cased and PHP method names are case-insensitive, so
+    // e.g. `___construct` resolves to the endpoint's public `__construct`.
+    foreach (['__construct', '___construct', '__call', '__get'] as $method) {
+      $this->api->setRequestData([
+        'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+        'method' => $method,
+        'api_version' => 'v1',
+        'data' => 'x',
+      ], Endpoint::TYPE_POST);
+      $response = $this->api->processRoute();
+
+      verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+    }
+  }
+
   public function testItRejectsDispatchedMethodsThatDoNotReturnResponse() {
     $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
     $this->api->setRequestData([

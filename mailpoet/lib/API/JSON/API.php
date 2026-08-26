@@ -257,6 +257,10 @@ class API {
    * methods are never dispatchable.
    */
   private function isDispatchableEndpointMethod(Endpoint $endpoint, string $requestMethod): bool {
+    // Magic methods (__construct, __call, __get, __invoke, ...) are never actions.
+    if (strpos($requestMethod, '__') === 0) {
+      return false;
+    }
     if (method_exists(Endpoint::class, $requestMethod)) {
       return false;
     }
