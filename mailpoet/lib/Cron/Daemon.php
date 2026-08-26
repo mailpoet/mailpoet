@@ -70,7 +70,6 @@ class Daemon {
         $workerName = end($workerClassNameParts);
 
         // Expected sending state, not an error — sending resumes once the frequency interval passes.
-        // The Help page shows the state in the sending queue status, derived live from the mailer log.
         if ($e instanceof SendingLimitReachedException) {
           $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info($e->getMessage(), ['worker' => $workerName]);
           continue;
