@@ -59,7 +59,7 @@ class Migration_20260826_120000_App extends AppMigration {
       if (!$this->containsRawPlaceholder($value)) {
         continue;
       }
-      $node[$key] = $transactionalEmails->resolveFooterPlaceholders($value);
+      $node[$key] = $transactionalEmails->resolvePlaceholdersInFooterText($value);
       $changed = true;
     }
     return $node;

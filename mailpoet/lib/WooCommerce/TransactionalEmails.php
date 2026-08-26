@@ -146,23 +146,26 @@ class TransactionalEmails {
     } else {
       $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
     }
-    $result['footer_text'] = $this->resolveFooterPlaceholders($result['footer_text']);
+    $result['footer_text'] = $this->resolvePlaceholdersInFooterText($result['footer_text']);
+    // The footer text is placed inside a paragraph in a text block so we keep only tags we allow in the text block in the newsletter editor
+    $result['footer_text'] = strip_tags($result['footer_text'], '<em><strong><br><a><span><s><del>');
     return $result;
   }
 
   /**
-   * Also used by Migration_20260826_120000_App to re-resolve placeholders left raw
-   * in WC transactional templates saved before this method existed.
+   * Only replaces placeholder tokens, without strip_tags(). getWCEmailSettings() applies
+   * strip_tags() separately for newly-generated footer settings; Migration_20260826_120000_App
+   * also calls this directly on already-persisted, already-formatted footer blocks, where
+   * strip_tags() would strip surrounding markup (e.g. the wrapping <p style="...">) that was
+   * never meant to be re-sanitized.
    */
-  public function resolveFooterPlaceholders(string $text): string {
+  public function resolvePlaceholdersInFooterText(string $text): string {
     // WooCommerce's own WC_Emails::replace_placeholders() links these; matched here so footer text stays consistent with core.
     $text = str_replace(
       ['{woocommerce}', '{WooCommerce}'],
       '<a href="https://woocommerce.com">WooCommerce</a>',
       $text
     );
-    $text = $this->replacePlaceholders($text);
-    // The footer text is placed inside a paragraph in a text block so we keep only tags we allow in the text block in the newsletter editor
-    return strip_tags($text, '<em><strong><br><a><span><s><del>');
+    return $this->replacePlaceholders($text);
   }
 }

@@ -79,6 +79,36 @@ class Migration_20260826_120000_App_Test extends \MailPoetTest {
     verify($text)->stringNotContainsString('{woocommerce}');
   }
 
+  public function testItPreservesSurroundingMarkupWhenResolvingPlaceholders() {
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL)
+      ->withBody([
+        'content' => [
+          'blocks' => [
+            [
+              'type' => 'text',
+              'text' => '<p style="text-align: center;">{store_address}</p>',
+            ],
+          ],
+        ],
+      ])
+      ->create();
+
+    $this->migration->run();
+
+    $updated = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $updated);
+    $body = $updated->getBody();
+    $this->assertIsArray($body);
+    $text = $body['content']['blocks'][0]['text'];
+
+    verify($text)->stringStartsWith('<p style="text-align: center;">');
+    verify($text)->stringEndsWith('</p>');
+    verify($text)->stringContainsString('New York');
+    verify($text)->stringContainsString('10001');
+    verify($text)->stringNotContainsString('{store_address}');
+  }
+
   public function testItDoesNothingWhenNoWCTransactionalTemplateExists() {
     $this->migration->run();
     $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
