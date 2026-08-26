@@ -13,25 +13,27 @@ abstract class AbstractBlock {
   public function initialize() {
     $this->registerAssets();
     $this->registerBlockType();
-    add_action('enqueue_block_editor_assets', [$this, 'enqueueEditorAssets']);
+    add_action('enqueue_block_editor_assets', [$this, 'markEmailEditorScreen']);
   }
 
   /**
-   * The blocks stay registered everywhere so emails can render. Their editor
-   * script is what adds them to an inserter, and WordPress loads it in every
-   * editor, so we load it here instead - only on the email editor page.
+   * WordPress loads the editor script of every registered block in every editor,
+   * and the blocks must stay registered so emails can render when they are sent.
+   * The script therefore runs everywhere and decides for itself whether to offer
+   * the block in the inserter, so it needs to know which editor it is in.
    */
-  public function enqueueEditorAssets(): void {
-    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-    if (!$screen || $screen->post_type !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  public function markEmailEditorScreen(): void {
+    $handle = $this->getEditorScript('handle');
+    if ($handle === null) {
       return;
     }
-    if (null !== $this->getEditorScript()) {
-      wp_enqueue_script($this->getEditorScript('handle'));
-    }
-    if (null !== $this->getEditorStyle()) {
-      wp_enqueue_style($this->getEditorStyle('handle'));
-    }
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $isEmailEditor = $screen && $screen->post_type === EmailEditor::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    wp_add_inline_script(
+      $handle,
+      'window.mailpoet_is_email_editor = ' . ($isEmailEditor ? 'true' : 'false') . ';',
+      'before'
+    );
   }
 
   protected function getBlockType(): string {
@@ -71,6 +73,8 @@ abstract class AbstractBlock {
     $metadata_path = Env::$assetsPath . '/dist/js/email-editor-blocks/' . $this->blockName . '/block.json';
     $block_settings = [
         'render_callback' => [$this, 'render'],
+        'editor_script' => $this->getEditorScript('handle'),
+        'editor_style' => $this->getEditorStyle('handle'),
     ];
     register_block_type_from_metadata(
       $metadata_path,

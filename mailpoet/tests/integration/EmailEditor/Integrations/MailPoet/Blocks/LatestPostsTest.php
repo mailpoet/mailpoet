@@ -468,34 +468,35 @@ class LatestPostsTest extends \MailPoetTest {
 
   }
 
-  public function testItKeepsItsEditorScriptsOffTheGlobalBlockEditorEnqueue(): void {
-    // WordPress loads the editor script of every registered block in every
-    // editor. If ours were on that list, the blocks would show up in the post,
-    // page, site and widget inserters too.
+  public function testItKeepsItsEditorScriptRegisteredForEveryEditor(): void {
+    // The script must keep loading everywhere: it is what registers the blocks
+    // on the client, and dropping it from other editors breaks the site editor.
     $this->ensurePostContentBlockRegistered();
     $registry = \WP_Block_Type_Registry::get_instance();
 
     foreach (self::OWN_BLOCKS as $blockName) {
       $blockType = $registry->get_registered($blockName);
       $this->assertInstanceOf(\WP_Block_Type::class, $blockType);
-      verify($blockType->editor_script_handles)->equals([]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      verify($blockType->editor_style_handles)->equals([]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      verify($blockType->editor_script_handles)->equals(['mailpoet-latest-posts-block']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
   }
 
-  public function testItEnqueuesItsEditorAssetsOnlyOnTheEmailEditorPage(): void {
+  public function testItTellsTheEditorScriptWhichScreenItIsOn(): void {
+    // The script is loaded in every editor and hides the block from the inserter
+    // unless this flag says it is the email editor.
     $this->ensurePostContentBlockRegistered();
     $scriptHandle = 'mailpoet-latest-posts-block';
 
     $this->setCurrentScreen('post');
-    $this->block->enqueueEditorAssets();
-    verify(wp_script_is($scriptHandle, 'enqueued'))->false();
+    $this->block->markEmailEditorScreen();
+    verify($this->grabInlineScript($scriptHandle))->stringContainsString('window.mailpoet_is_email_editor = false;');
 
+    wp_scripts()->add_data($scriptHandle, 'before', []);
     $this->setCurrentScreen(EmailEditor::MAILPOET_EMAIL_POST_TYPE);
-    $this->block->enqueueEditorAssets();
-    verify(wp_script_is($scriptHandle, 'enqueued'))->true();
+    $this->block->markEmailEditorScreen();
+    verify($this->grabInlineScript($scriptHandle))->stringContainsString('window.mailpoet_is_email_editor = true;');
 
-    wp_dequeue_script($scriptHandle);
+    wp_scripts()->add_data($scriptHandle, 'before', []);
     $this->setCurrentScreen('front');
   }
 
@@ -719,6 +720,11 @@ class LatestPostsTest extends \MailPoetTest {
     }
     $this->assertIsArray($term);
     return (int)$term['term_id'];
+  }
+
+  private function grabInlineScript(string $handle): string {
+    $data = wp_scripts()->get_data($handle, 'before');
+    return is_array($data) ? implode("\n", array_filter($data, 'is_string')) : '';
   }
 
   private function setCurrentScreen(string $hookName): void {
