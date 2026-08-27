@@ -280,6 +280,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
 
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
     $subjectField = $systemInfoData['Sending queue status'];
+    verify($subjectField)->stringContainsString('Status: Unknown');
     verify($subjectField)->stringContainsString('Started at: 1970-01-01 09:00:00');
     verify($subjectField)->stringContainsString('Retry attempts: 1');
     verify($subjectField)->stringContainsString("Last seen error: $error ($operation)");
@@ -288,6 +289,19 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
     $subjectField = $systemInfoData['Sending queue status'];
     verify($subjectField)->stringContainsString('Status: ' . MailerLog::STATUS_PAUSED);
+  }
+
+  public function testItReportsSendingFrequencyLimitReachedInQueueStatus() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'SMTP',
+      'frequency' => ['emails' => 1, 'interval' => 30],
+    ]);
+    $mailerLog = MailerLog::createMailerLog();
+    $mailerLog['sent'] = [date('Y-m-d H:i:s') => 1];
+    MailerLog::updateMailerLog($mailerLog);
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    verify($systemInfoData['Sending queue status'])->stringContainsString('Status: Sending frequency limit reached');
   }
 
   public function testItReturnsDataInconsistencyStatus() {
