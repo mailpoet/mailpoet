@@ -49,6 +49,11 @@ class LatestPostsTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    // Both are process-wide, so a failing test must not leak them into the next one.
+    if (function_exists('set_current_screen')) {
+      set_current_screen('front');
+    }
+    $this->clearInlineScript('mailpoet-latest-posts-block');
     foreach ($this->attachmentIds as $attachmentId) {
       $this->wp->wpDeletePost($attachmentId, true);
     }
@@ -468,6 +473,14 @@ class LatestPostsTest extends \MailPoetTest {
 
   }
 
+  public function testItLeavesTheAllowedBlockTypesFilterAlone(): void {
+    // Turning `true` into a list makes it a hard allow-list, which hides blocks
+    // that other plugins register in JavaScript only.
+    $context = new \WP_Block_Editor_Context(['post' => $this->wp->getPost($this->postIds[0])]);
+
+    verify($this->wp->applyFilters('allowed_block_types_all', true, $context))->equals(true);
+  }
+
   public function testItKeepsItsEditorScriptRegisteredForEveryEditor(): void {
     // The script must keep loading everywhere: it is what registers the blocks
     // on the client, and dropping it from other editors breaks the site editor.
@@ -491,13 +504,10 @@ class LatestPostsTest extends \MailPoetTest {
     $this->block->markEmailEditorScreen();
     verify($this->grabInlineScript($scriptHandle))->stringContainsString('window.mailpoet_is_email_editor = false;');
 
-    wp_scripts()->add_data($scriptHandle, 'before', []);
+    $this->clearInlineScript($scriptHandle);
     $this->setCurrentScreen(EmailEditor::MAILPOET_EMAIL_POST_TYPE);
     $this->block->markEmailEditorScreen();
     verify($this->grabInlineScript($scriptHandle))->stringContainsString('window.mailpoet_is_email_editor = true;');
-
-    wp_scripts()->add_data($scriptHandle, 'before', []);
-    $this->setCurrentScreen('front');
   }
 
   public function testItCapsTheNumberOfManuallySelectedPosts(): void {
@@ -752,6 +762,10 @@ class LatestPostsTest extends \MailPoetTest {
     }
     $this->assertIsArray($term);
     return (int)$term['term_id'];
+  }
+
+  private function clearInlineScript(string $handle): void {
+    wp_scripts()->add_data($handle, 'before', []);
   }
 
   private function grabInlineScript(string $handle): string {
