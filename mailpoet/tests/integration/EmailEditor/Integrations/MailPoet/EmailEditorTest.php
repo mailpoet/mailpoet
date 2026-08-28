@@ -21,8 +21,31 @@ class EmailEditorTest extends \MailPoetTest {
     $this->assertArrayHasKey('mailpoet_email', $postTypes);
   }
 
+  public function testItRendersEditorOnlyOnceWhenReplaceEditorFilterIsReentered() {
+    $renderer = $this->createMock(EditorPageRenderer::class);
+    $renderer->expects($this->once())->method('render');
+    $emailEditor = $this->getServiceWithOverrides(EmailEditor::class, ['editorPageRenderer' => $renderer]);
+    $this->setCurrentScreen('post');
+    $post = new \WP_Post((object)['post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE]);
+
+    $this->assertTrue($emailEditor->replaceEditor(false, $post));
+    // Simulates WP_Screen::get() firing the filter again while render() is printing the admin header
+    $this->assertTrue($emailEditor->replaceEditor(false, $post));
+  }
+
+  private function setCurrentScreen(string $hookName): void {
+    if (!function_exists('set_current_screen')) {
+      require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+      require_once ABSPATH . 'wp-admin/includes/screen.php';
+    }
+    set_current_screen($hookName);
+  }
+
   public function _after() {
     parent::_after();
+    if (function_exists('set_current_screen')) {
+      set_current_screen('front');
+    }
     remove_filter('woocommerce_email_editor_post_types', [$this->emailEditor, 'addEmailPostType']);
     $this->truncateEntity(NewsletterEntity::class);
   }

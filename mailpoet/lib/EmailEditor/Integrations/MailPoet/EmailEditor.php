@@ -33,6 +33,8 @@ class EmailEditor {
 
   private NewslettersRepository $newslettersRepository;
 
+  private bool $editorAlreadyRendered = false;
+
   public function __construct(
     WPFunctions $wp,
     EmailApiController $emailApiController,
@@ -120,8 +122,16 @@ class EmailEditor {
   }
 
   public function replaceEditor($replace, $post) {
-    $currentScreen = get_current_screen();
+    $currentScreen = $this->wp->getCurrentScreen();
     if ($post->post_type === self::MAILPOET_EMAIL_POST_TYPE && $currentScreen) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      // The no-arg WP_Screen::get() re-fires this filter, and some plugins (e.g. Yoast SEO
+      // Premium) call it during admin_enqueue_scripts — while render() is still printing
+      // the admin header. Rendering again would echo a second editor container into <head>
+      // and leave the editor unresponsive, so only report that the editor was replaced.
+      if ($this->editorAlreadyRendered) {
+        return true;
+      }
+      $this->editorAlreadyRendered = true;
       $this->editorPageRenderer->render();
       return true;
     }
