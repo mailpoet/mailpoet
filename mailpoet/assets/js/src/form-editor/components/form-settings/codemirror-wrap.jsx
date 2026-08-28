@@ -46,7 +46,13 @@ function CodemirrorWrap({ value, onChange, options = defaultOptions }) {
 
     return () => {
       codeMirror.off?.('change', handleChange);
-      codeMirror.toTextArea?.();
+      // toTextArea() throws when the textarea is detached — React removes
+      // the DOM before running this cleanup on unmount
+      if (textarea.isConnected) {
+        codeMirror.toTextArea?.();
+      } else {
+        codeMirror.getWrapperElement?.()?.remove();
+      }
       codeMirrorRef.current = null;
     };
   }, [options.lineNumbers, options.matchBrackets, options.tabMode]);

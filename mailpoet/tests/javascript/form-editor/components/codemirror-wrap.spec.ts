@@ -115,6 +115,57 @@ describe('CodemirrorWrap', () => {
     await act(async () => root.unmount());
   });
 
+  it('cleans up without crashing when unmounted with the textarea detached', async () => {
+    let initializedTextarea: HTMLTextAreaElement | undefined;
+    let wrapper: HTMLDivElement | undefined;
+    const codeMirror = {
+      getValue: () => 'body { color: red; }',
+      getWrapperElement: () => wrapper,
+      off: () => undefined,
+      on: () => undefined,
+      setValue: () => undefined,
+      // mimics CodeMirror 5: throws when the textarea is no longer in the DOM
+      toTextArea: () => {
+        if (!initializedTextarea?.parentNode) {
+          throw new TypeError(
+            "Cannot read properties of null (reading 'removeChild')",
+          );
+        }
+        wrapper?.remove();
+      },
+    };
+
+    (
+      window as unknown as {
+        wp: {
+          codeEditor: {
+            defaultSettings: Record<string, unknown>;
+            initialize: (textarea: HTMLTextAreaElement) => {
+              codemirror: typeof codeMirror;
+            };
+          };
+        };
+      }
+    ).wp = {
+      codeEditor: {
+        defaultSettings: {},
+        initialize: (textarea) => {
+          initializedTextarea = textarea;
+          wrapper = document.createElement('div');
+          textarea.parentNode?.insertBefore(wrapper, textarea.nextSibling);
+          return { codemirror: codeMirror };
+        },
+      },
+    };
+
+    const root = await renderCodemirrorWrap(() => undefined);
+    expect(wrapper?.isConnected).to.equal(true);
+
+    // React detaches the DOM before running passive effect cleanups
+    await act(async () => root.unmount());
+    expect(wrapper?.isConnected).to.equal(false);
+  });
+
   it('falls back to a textarea when the WordPress code editor is unavailable', async () => {
     const changes: string[] = [];
 
