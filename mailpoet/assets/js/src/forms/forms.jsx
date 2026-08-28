@@ -4,7 +4,11 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, ErrorBoundary } from 'common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  ErrorBoundary,
+} from 'common';
 import { FormList } from './list';
 
 function App() {
@@ -32,6 +36,7 @@ function App() {
 const container = document.getElementById('forms_container');
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   const root = createRoot(container);
   root.render(<App />);

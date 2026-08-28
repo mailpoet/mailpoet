@@ -6,7 +6,11 @@ import { SegmentForm } from 'segments/static/form';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, withBoundary } from 'common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  withBoundary,
+} from 'common';
 
 const container = document.getElementById('static_segments_container');
 const FormWithBoundary = withBoundary(SegmentForm);
@@ -29,6 +33,7 @@ function App(): JSX.Element {
 }
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   const root = createRoot(container);
   root.render(<App />);

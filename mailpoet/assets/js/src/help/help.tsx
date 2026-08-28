@@ -10,7 +10,11 @@ import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices';
 import { RoutedTabs } from '../common/tabs/routed-tabs';
-import { registerTranslations, Tab } from '../common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  Tab,
+} from '../common';
 import { PageHeader } from '../common/page-header/page-header';
 import { TopBar } from '../common/top-bar/top-bar';
 
@@ -46,6 +50,7 @@ function App(): JSX.Element {
 const container = document.getElementById('help_container');
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   const root = createRoot(container);
   root.render(<App />);

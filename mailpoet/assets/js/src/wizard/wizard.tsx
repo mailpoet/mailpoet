@@ -4,7 +4,11 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { initStore as initSettingsStore } from 'settings/store';
 import { WooCommerceController } from './woocommerce-controller';
-import { registerTranslations, withBoundary } from '../common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  withBoundary,
+} from '../common';
 import { WelcomeWizardStepsController } from './welcome-wizard-controller';
 
 const WizardWithBoundary = withBoundary(WelcomeWizardStepsController);
@@ -37,6 +41,7 @@ function App(): JSX.Element {
 const container = document.getElementById('mailpoet-wizard-container');
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   initSettingsStore();
   const root = createRoot(container);

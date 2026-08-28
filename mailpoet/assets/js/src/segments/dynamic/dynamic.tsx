@@ -4,7 +4,11 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, withBoundary } from 'common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  withBoundary,
+} from 'common';
 import { Editor } from 'segments/dynamic/editor';
 import { DynamicSegmentList } from 'segments/dynamic/list';
 import { SegmentTemplates } from 'segments/dynamic/templates';
@@ -61,6 +65,7 @@ function App(): JSX.Element {
 }
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   createStore();
   const root = createRoot(container);

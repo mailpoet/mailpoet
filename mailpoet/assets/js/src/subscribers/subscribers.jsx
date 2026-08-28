@@ -7,7 +7,11 @@ import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, ErrorBoundary } from 'common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  ErrorBoundary,
+} from 'common';
 
 function App() {
   return (
@@ -57,6 +61,7 @@ function App() {
 const container = document.getElementById('subscribers_container');
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   const root = createRoot(container);
   root.render(<App />);
