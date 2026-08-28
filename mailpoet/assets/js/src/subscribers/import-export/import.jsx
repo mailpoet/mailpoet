@@ -5,7 +5,11 @@ import { ScrollToTop } from 'common/scroll-to-top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, ErrorBoundary } from 'common';
+import {
+  registerTranslations,
+  restoreStrippedLocationHash,
+  ErrorBoundary,
+} from 'common';
 import { StepMethodSelection } from './import/step-method-selection.jsx';
 import { StepInputValidation } from './import/step-input-validation';
 import { StepDataManipulation } from './import/step-data-manipulation.jsx';
@@ -92,6 +96,7 @@ function ImportSubscribers() {
 }
 
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   const root = createRoot(container);
   root.render(<ImportSubscribers />);

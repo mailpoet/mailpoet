@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { initStore } from './store';
 import { Settings } from './settings';
-import { registerTranslations } from '../common';
+import { registerTranslations, restoreStrippedLocationHash } from '../common';
 
 function Entry() {
   return (
@@ -16,6 +16,7 @@ function Entry() {
 
 const container = document.getElementById('settings_container');
 if (container) {
+  restoreStrippedLocationHash();
   registerTranslations();
   initStore();
   const root = createRoot(container);
