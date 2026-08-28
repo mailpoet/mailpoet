@@ -23,14 +23,20 @@ class EmailEditorTest extends \MailPoetTest {
 
   public function testItRendersEditorOnlyOnceWhenReplaceEditorFilterIsReentered() {
     $renderer = $this->createMock(EditorPageRenderer::class);
-    $renderer->expects($this->once())->method('render');
     $emailEditor = $this->getServiceWithOverrides(EmailEditor::class, ['editorPageRenderer' => $renderer]);
     $this->setCurrentScreen('post');
     $post = new \WP_Post((object)['post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE]);
 
-    $this->assertTrue($emailEditor->replaceEditor(false, $post));
     // Simulates WP_Screen::get() firing the filter again while render() is printing the admin header
+    $nestedResult = null;
+    $renderer->expects($this->once())->method('render')->willReturnCallback(
+      function () use (&$nestedResult, $emailEditor, $post) {
+        $nestedResult = $emailEditor->replaceEditor(false, $post);
+      }
+    );
+
     $this->assertTrue($emailEditor->replaceEditor(false, $post));
+    $this->assertTrue($nestedResult);
   }
 
   private function setCurrentScreen(string $hookName): void {
