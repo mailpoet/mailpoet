@@ -349,6 +349,7 @@ const TRACKING_CONSENT_METHOD_LABELS: Record<string, string> = {
   woocommerce_checkout: __('via the WooCommerce checkout', 'mailpoet'),
   registration: __('via WordPress registration', 'mailpoet'),
   comment: __('via a comment', 'mailpoet'),
+  api: __('via the API', 'mailpoet'),
 };
 
 // "State, when, how", labelled. It renders through afterFormContent rather than as
