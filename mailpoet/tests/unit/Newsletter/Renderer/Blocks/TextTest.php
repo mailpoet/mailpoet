@@ -226,7 +226,7 @@ class TextTest extends \MailPoetUnitTest {
     return [
       'paragraph' => ["<p>Text &lt;script&gt;alert('test');&lt;/script&gt;</p>"],
       'list' => ["<ul>Text &lt;script&gt;alert('test');&lt;/script&gt;</li></ul>"],
-      'blockquote' => ["<ul>Text &lt;script&gt;alert('test');&lt;/script&gt;</li></ul>"],
+      'blockquote' => ["<blockquote><p>Text &lt;script&gt;alert('test');&lt;/script&gt;</p></blockquote>"],
     ];
   }
 
