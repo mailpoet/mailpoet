@@ -334,9 +334,9 @@ function beforeFormContent(subscriber: Subscriber) {
 
 // Keys must match SubscriberEntity::TRACKING_CONSENT_*.
 const TRACKING_CONSENT_STATE_LABELS: Record<string, string> = {
-  unknown: __('Not asked yet', 'mailpoet'),
-  granted: __('Opted in', 'mailpoet'),
-  denied: __('Opted out', 'mailpoet'),
+  unknown: __('Not asked', 'mailpoet'),
+  granted: __('Granted', 'mailpoet'),
+  denied: __('Denied', 'mailpoet'),
 };
 
 // Keys must match SubscriberEntity::TRACKING_CONSENT_METHOD_*.
@@ -351,8 +351,13 @@ const TRACKING_CONSENT_METHOD_LABELS: Record<string, string> = {
   comment: __('via a comment', 'mailpoet'),
 };
 
-// "State, when, how" only. The stored wording (tracking_consent_copy) is never
-// shown here: it is evidence, and it stays in the database and the export.
+// "State, when, how", labelled. It renders through afterFormContent rather than as
+// the field's own `tip` because `fields` is a module-level constant with no access to
+// the loaded subscriber, and only afterFormContent is handed getValues(). The label is
+// what ties it back to the Tracking consent field further up the form.
+//
+// The stored wording (tracking_consent_copy) is never shown here: it is evidence, and
+// it stays in the database and the export.
 function trackingConsentSummary(values: FormValues) {
   const state = values.tracking_consent;
   if (!state) {
@@ -363,14 +368,22 @@ function trackingConsentSummary(values: FormValues) {
   const method = values.tracking_consent_method;
   if (!updatedAt || !method) {
     // Never explicitly set, so there is nothing to date or attribute yet.
-    return <p className="description">{stateLabel}</p>;
+    return (
+      <p className="description">
+        {sprintf(
+          /* translators: %s is the consent state, e.g. "Not asked" */
+          __('Tracking consent status: %s', 'mailpoet'),
+          stateLabel,
+        )}
+      </p>
+    );
   }
   const methodLabel = TRACKING_CONSENT_METHOD_LABELS[method] || method;
   return (
     <p className="description">
       {sprintf(
-        /* translators: %1$s is the consent state (e.g. "Opted out"), %2$s is a date, %3$s is how it was set (e.g. "via the email footer link") */
-        __('%1$s, %2$s, %3$s', 'mailpoet'),
+        /* translators: %1$s is the consent state (e.g. "Denied"), %2$s is a date, %3$s is how it was set (e.g. "via the email footer link") */
+        __('Tracking consent status: %1$s, %2$s, %3$s', 'mailpoet'),
         stateLabel,
         MailPoet.Date.format(updatedAt),
         methodLabel,
