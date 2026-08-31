@@ -214,7 +214,13 @@ describe('Save', function () {
 
       it('adds the opt-out link to an existing footer block', function () {
         var footer;
-        footer = { get: sinon.stub().returns('bye'), set: sinon.spy() };
+        // A real footer is a Backbone model, so the stub needs trigger() as well
+        // as get/set — the view asks the model to repaint after setting the text.
+        footer = {
+          get: sinon.stub().returns('bye'),
+          set: sinon.spy(),
+          trigger: sinon.spy(),
+        };
         App.findModels = sinon.stub().returns([footer]);
         sinon.stub(view, 'validateNewsletter');
         view.addTrackingOptOutLink();
@@ -223,6 +229,24 @@ describe('Save', function () {
         expect(footer.set.firstCall.args[1]).to.contain(
           '[link:subscription_tracking_opt_out_url]',
         );
+      });
+
+      it('asks the footer to repaint, since change:text does not re-render it', function () {
+        // Without this the model updates but the canvas keeps showing the old DOM
+        // until a page reload. FooterBlockView drops the base 'change' -> render
+        // binding so TinyMCE is not torn down mid-keystroke, so a programmatic
+        // set('text') has to ask for the repaint explicitly.
+        var footer;
+        footer = {
+          get: sinon.stub().returns('bye'),
+          set: sinon.spy(),
+          trigger: sinon.spy(),
+        };
+        App.findModels = sinon.stub().returns([footer]);
+        sinon.stub(view, 'validateNewsletter');
+        view.addTrackingOptOutLink();
+        expect(footer.trigger.calledOnce).to.be.equal(true);
+        expect(footer.trigger.firstCall.args[0]).to.be.equal('redraw');
       });
     });
 
