@@ -508,6 +508,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
     ], [
       // The redirect still happens: this is about not recording, not about
       // breaking the link.
