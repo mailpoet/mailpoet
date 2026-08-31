@@ -240,6 +240,28 @@ class TextTest extends \MailPoetUnitTest {
     verify($output)->stringContainsString("&lt;script&gt;alert('test');&lt;/script&gt;");
   }
 
+  public function blockquoteHeadingEntitiesStrings(): array {
+    return [
+      'h1 script' => ["<blockquote><h1>Heading &lt;script&gt;alert('test');&lt;/script&gt;</h1></blockquote>", '<script', "&lt;script&gt;alert('test');&lt;/script&gt;"],
+      'h2 img onerror' => ['<blockquote><h2>&lt;img src=x onerror=alert(document.domain)&gt;</h2></blockquote>', '<img', '&lt;img src=x onerror=alert(document.domain)&gt;'],
+      'h3 svg onload' => ['<blockquote><h3>Quote &lt;svg onload=alert(1)&gt;</h3></blockquote>', '<svg', '&lt;svg onload=alert(1)&gt;'],
+    ];
+  }
+
+  /**
+   * Headings inside a blockquote must keep HTML entities escaped. The renderer used to
+   * serialise them with getOuterText(), which html_entity_decode()s the content and turns
+   * escaped markup back into live tags re-parsed as HTML (stored XSS).
+   *
+   * @dataProvider blockquoteHeadingEntitiesStrings
+   */
+  public function testItDoesNotDecodeHtmlEntitiesInBlockquoteHeadings(string $htmlString, string $injectedTag, string $expectedEscaped): void {
+    $this->block['text'] = $htmlString;
+    $output = (new Text())->render($this->block);
+    verify($output)->stringNotContainsString($injectedTag);
+    verify($output)->stringContainsString($expectedEscaped);
+  }
+
   public function childElementStrings(): array {
     return [
       'paragraph' => ['<p><a href="https://example.com">Link</a></p>'],

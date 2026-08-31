@@ -36,7 +36,7 @@ class Text {
       $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
       foreach ($paragraphs as $index => $paragraph) {
         if (preg_match('/h\d/', $paragraph->getTag())) {
-          $contents[] = $paragraph->getOuterText();
+          $contents[] = $paragraph->toString();
         } else {
           $contents[] = $paragraph->toString(true, true, 1);
         }
