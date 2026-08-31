@@ -48,6 +48,11 @@ Module.FooterBlockView = base.BlockView.extend({
     {
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration':
         'render',
+      // Explicit repaint for text set from outside the editor. `change` stays
+      // unbound (see the omit below) because TinyMCE writes every keystroke back
+      // to the model, and re-rendering mid-keystroke would tear down the editor
+      // under the caret. Nothing in the typing path fires this event.
+      redraw: 'render',
     },
     _.omit(base.BlockView.prototype.modelEvents, 'change'),
   ),

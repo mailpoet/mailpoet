@@ -413,6 +413,10 @@ Module.SaveView = Marionette.View.extend({
     if (footers.length > 0) {
       footer = footers[footers.length - 1];
       footer.set('text', footer.get('text') + '<br />' + linkHtml);
+      // The footer view does not re-render on `change:text`, so the model update
+      // alone leaves the canvas showing the pre-edit DOM until a reload. Ask for
+      // the repaint explicitly.
+      footer.trigger('redraw');
     } else {
       // No footer block at all: add one at the end of the content container.
       // Its defaults already carry the unsubscribe and manage links.
