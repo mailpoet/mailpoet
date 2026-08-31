@@ -264,7 +264,13 @@ class API {
     if (method_exists(Endpoint::class, $requestMethod)) {
       return false;
     }
-    return (new \ReflectionMethod($endpoint, $requestMethod))->isPublic();
+    $method = new \ReflectionMethod($endpoint, $requestMethod);
+    // PHP resolves method names case-insensitively; require the exact declared casing
+    // so that every name-keyed lookup downstream matches the method that runs.
+    if ($method->getName() !== $requestMethod) {
+      return false;
+    }
+    return $method->isPublic();
   }
 
   public function validatePermissions($requestMethod, $permissions) {
