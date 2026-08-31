@@ -378,6 +378,27 @@ class APITest extends \MailPoetTest {
     verify($api->validatePermissions('test', $permissions))->true();
   }
 
+  public function testItDoesNotDispatchMethodNamesWithMismatchedCasing() {
+    // PHP resolves method names case-insensitively, so 'Restricted' would otherwise
+    // invoke the stub's restricted() action while missing its method-specific
+    // permission entry (keyed on the declared 'restricted') and falling back to the
+    // laxer global permission. The dispatch guard requires the exact declared casing.
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+
+    foreach (['Restricted', 'RESTRICTED', 'rEsTrIcTeD'] as $methodName) {
+      $this->api->setRequestData([
+        'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+        'method' => $methodName,
+        'api_version' => 'v1',
+        'data' => ['test' => 'data'],
+      ], Endpoint::TYPE_POST);
+      $response = $this->api->processRoute();
+
+      verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+    }
+  }
+
   public function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
