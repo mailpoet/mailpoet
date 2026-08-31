@@ -22,7 +22,6 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEdito
 use MailPoet\EmailEditor\Integrations\MailPoet\Logger;
 use MailPoet\Form\RestApi\Api as FormsRestApi;
 use MailPoet\InvalidStateException;
-use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogsDownload;
 use MailPoet\Logging\RestApi\Api as LogsRestApi;
 use MailPoet\Migrator\Cli as MigratorCli;
@@ -128,9 +127,6 @@ class Initializer {
   /** @var SubscriberActivityTracker */
   private $subscriberActivityTracker;
 
-  /** @var LoggerFactory */
-  private $loggerFactory;
-
   /** @var Engine */
   private $automationEngine;
 
@@ -211,7 +207,6 @@ class Initializer {
     Localizer $localizer,
     AutomaticEmails $automaticEmails,
     SubscriberActivityTracker $subscriberActivityTracker,
-    LoggerFactory $loggerFactory,
     WPFunctions $wpFunctions,
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
@@ -255,7 +250,6 @@ class Initializer {
     $this->localizer = $localizer;
     $this->automaticEmails = $automaticEmails;
     $this->subscriberActivityTracker = $subscriberActivityTracker;
-    $this->loggerFactory = $loggerFactory;
     $this->wpFunctions = $wpFunctions;
     $this->assetsLoader = $assetsLoader;
     $this->automationEngine = $automationEngine;
@@ -455,15 +449,14 @@ class Initializer {
         // whole namespace down for a customer, twice over: it aborted the remaining
         // calls in this block AND left INITIALIZED undefined, so postInitialize()
         // skipped restApi->init() as well.
-        try {
-          $this->loggerFactory->getLogger('Subscriber Activity Tracker')->error($e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-          ]);
-        } catch (\Throwable $loggingError) {
-          // The logger writes to the database, so the very failure being reported here
-          // can be the reason it cannot write. Losing the log line is a smaller problem
-          // than re-throwing and taking down the REST namespace this catch exists to save.
+        //
+        // Log to the PHP error log, not the MailPoet logger: the logger writes to the
+        // database, and a database that is missing, unmigrated or unreachable is exactly
+        // the kind of failure this catch exists to survive.
+        if (function_exists('error_log')) {
+          // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
+          error_log('[MailPoet] Subscriber activity tracking failed: ' . (string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+          // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
         }
       }
       $this->postEditorBlock->init();
