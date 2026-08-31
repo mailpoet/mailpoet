@@ -160,7 +160,20 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
       ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
   }
 
-  public function testItRecordsNothingWhenNoConsentFieldWasPosted() {
+  /**
+   * An absent key is never read as a decline, and deliberately so even with the site
+   * asking everyone. `user_register` fires for every route that creates a WP user —
+   * wp_insert_user(), the admin, WP-CLI, WooCommerce, other plugins — and the checkbox
+   * only exists on the registration form. So a missing key cannot distinguish "shown and
+   * left unticked" from "never shown at all", and treating it as a decline would stamp
+   * `denied` on users who were never asked, with the registration wording stored as
+   * evidence of a question nobody put to them.
+   *
+   * The cost is real and accepted for now: a first-time registrant who genuinely declines
+   * stays `unknown` rather than `denied`. Recording that needs a marker field posted
+   * alongside the checkbox, which is its own change.
+   */
+  public function testAnAbsentConsentKeyIsNeverTreatedAsADecline() {
     $this->askEveryone();
     $email = 'reg-no-field@example.com';
     $_POST['mailpoet'] = ['subscribe_on_register' => true];
