@@ -1,5 +1,25 @@
 == Changelog ==
 
+= 5.36.2 - 2026-09-01 =
+* Added: Admins can now see a subscriber's email-tracking-consent state on the edit-subscriber page: what it is, when it changed, and how it was recorded. They can also set it themselves, which is what you need when someone asks to opt in or out by email or by phone. To find everyone in one state, filter the Subscribers list with the tracking-consent segment. None of this changes what tracking a subscriber actually receives;
+* Improved: When you ask subscribers for tracking consent, the email editors now check that your email has a tracking opt-out link and the form editor checks that your form has the tracking consent checkbox, each with a one-click way to add what is missing. The checkbox is always added unticked and stays optional for the subscriber. Emails and forms you have already published are left alone until you next edit them;
+* Improved: The public PHP API can now record tracking consent. Integrations and headless stores that show their own consent checkbox can pass `tracking_consent` to `addSubscriber` or `updateSubscriber`, along with the exact wording they displayed; MailPoet stamps the method and the time itself. This covers the one place MailPoet's own consent checkboxes cannot reach, because a caller of the API is not a MailPoet-rendered form;
+* Improved: Personalization tag links in block editor emails now record clicks and resolve to the correct per-recipient URL;
+* Improved: Subscriber import and export now carry tracking consent: the state, when it changed, how it was collected, and the wording the subscriber saw. Exporting a list and importing it back keeps who opted in or out, and a CSV can set consent directly when you are migrating it from another system. A blank consent cell, or a CSV with no consent column, never changes what a subscriber already chose;
+* Fixed: Three places where a subscriber's tracking choice was lost or ignored. A first-time guest who leaves the tracking box unticked at checkout is now recorded as having declined, on both the classic and the block checkout. Registration and comment forms now record the tracking choice even when the "add me to your mailing list" box is left unticked, since those are two separate decisions. And clicking the tracking opt-out link in an email footer no longer records that click, which is the one link that should never track you;
+* Fixed: One invalid tracking consent value in the database no longer breaks the plugin. A subscriber row holding an out-of-range value, from a hand-edited column, an incomplete migration or a restored backup, used to make MailPoet throw the moment anything saved that subscriber, which took down the whole MailPoet REST API and every signup form on the site. Bad stored values are now harmless to read and to save around, and page-view tracking can no longer stop the rest of the plugin from starting up;
+* Fixed: Stopped logging the expected "Sending frequency limit has been reached" state as a cron error;
+* Fixed: Blocks from other plugins missing in the WordPress post editor when MailPoet is active;
+* Fixed: Shortcodes showing as raw text in emails that use the Post Content block;
+* Fixed: Harden the internal API request dispatch and redirect handling;
+* Fixed: Review & send panel position under the WordPress admin bar in the email editor;
+* Fixed: Other plugins may break navigation on MailPoet admin pages;
+* Fixed: Form editor crashing when closing the Custom CSS panel;
+* Fixed: New block email editor loading in a broken, unclickable state when Yoast SEO Premium is active;
+* Fixed: Keep HTML entities escaped in headings inside quotes when rendering post content in emails;
+* Fixed: Hardened internal JSON API dispatch to require the exact declared method name;
+* Fixed: On an email with no footer, the one-click way to add a tracking opt-out link now adds a footer the sent email actually keeps.
+
 = 5.36.1 - 2026-08-25 =
 * Added: Latest posts block for the email editor with a composable per-post layout, category and tag filtering, and manual post selection;
 * Improved: Recent category of the email template modal now lists draft, scheduled and sending emails;
