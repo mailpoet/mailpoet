@@ -1,6 +1,8 @@
 import { App } from 'newsletter-editor/app';
 import { SaveComponent } from 'newsletter-editor/components/save';
 import { CommunicationComponent } from 'newsletter-editor/components/communication';
+import { ContainerBlock } from 'newsletter-editor/blocks/container';
+import { FooterBlock } from 'newsletter-editor/blocks/footer';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 
@@ -140,6 +142,7 @@ describe('Save', function () {
       var errorCountFor;
       var optOutFooter =
         '<a href="[link:subscription_tracking_opt_out_url]">x</a>';
+      var stubEmptyContentContainer;
       beforeEach(function () {
         model = new Backbone.SuperModel({});
         model.isWoocommerceTransactional = function () {
@@ -185,6 +188,33 @@ describe('Save', function () {
         expect(showValidationErrorStub.callCount).to.be.equal(1);
       });
 
+      // The no-footer branch builds real block models, so the spec hands it the
+      // real constructors rather than stubs -- the shape they produce is the
+      // thing under test.
+      stubEmptyContentContainer = function (collector) {
+        // Building the models fires 'add'/'change', which both reach for the
+        // channel.
+        global.stubChannel(App);
+        App.getBlockTypeModel = sinon.stub();
+        App.getBlockTypeModel
+          .withArgs('footer')
+          .returns(FooterBlock.FooterBlockModel);
+        App.getBlockTypeModel
+          .withArgs('container')
+          .returns(ContainerBlock.ContainerBlockModel);
+        App._contentContainer = {
+          isValid: sinon.stub().returns(true),
+          get: sinon
+            .stub()
+            .withArgs('blocks')
+            .returns({
+              add: function (block) {
+                collector.push(block);
+              },
+            }),
+        };
+      };
+
       errorCountFor = function (settingOn, footerText) {
         var stub;
         global.stubConfig(App, {
@@ -229,6 +259,60 @@ describe('Save', function () {
         expect(footer.set.firstCall.args[1]).to.contain(
           '[link:subscription_tracking_opt_out_url]',
         );
+      });
+
+      it('adds the footer as a whole new row when the email has none', function () {
+        // The root content container only holds rows: a horizontal container
+        // per row, a vertical container per column inside it, leaf blocks
+        // inside those. A footer added straight to the root draws on the
+        // canvas and passes validation, but Columns\Renderer skips any
+        // top-level block with no `blocks` of its own, so the sent email would
+        // carry neither the opt-out link nor the unsubscribe link.
+        var added = [];
+        var row;
+        var column;
+        var footer;
+        stubEmptyContentContainer(added);
+        App.findModels = sinon.stub().returns([]);
+        sinon.stub(view, 'validateNewsletter');
+
+        view.addTrackingOptOutLink();
+
+        expect(added.length).to.be.equal(1);
+        row = added[0];
+        expect(row.get('type')).to.be.equal('container');
+        expect(row.get('orientation')).to.be.equal('horizontal');
+
+        column = row.get('blocks').at(0);
+        expect(column.get('type')).to.be.equal('container');
+        expect(column.get('orientation')).to.be.equal('vertical');
+
+        footer = column.get('blocks').at(0);
+        expect(footer.get('type')).to.be.equal('footer');
+        expect(footer.get('text')).to.contain(
+          '[link:subscription_tracking_opt_out_url]',
+        );
+      });
+
+      it('keeps the unsubscribe links the new footer comes with', function () {
+        // The footer defaults carry them, and on a footerless email this block
+        // is the only place a subscriber can unsubscribe from.
+        var added = [];
+        var footerText;
+        stubEmptyContentContainer(added);
+        App.findModels = sinon.stub().returns([]);
+        sinon.stub(view, 'validateNewsletter');
+
+        view.addTrackingOptOutLink();
+
+        footerText = added[0]
+          .get('blocks')
+          .at(0)
+          .get('blocks')
+          .at(0)
+          .get('text');
+        expect(footerText).to.contain('[link:subscription_unsubscribe_url]');
+        expect(footerText).to.contain('[link:subscription_manage_url]');
       });
 
       it('asks the footer to repaint, since change:text does not re-render it', function () {
