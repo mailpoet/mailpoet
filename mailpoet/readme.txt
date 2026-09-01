@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.36.1
+Stable tag: 5.37.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,10 +227,24 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.36.1 - 2026-08-25 =
-* Added: Latest posts block for the email editor with a composable per-post layout, category and tag filtering, and manual post selection;
-* Improved: Recent category of the email template modal now lists draft, scheduled and sending emails;
-* Changed: Timezone field in the subscriber edit form is now hidden when subscriber time zone collection is disabled;
-* Fixed: Background sending not resuming after a plugin update.
+= 5.37.0 - 2026-09-01 =
+* Added: Admins can now see and set a subscriber's email-tracking-consent state on the edit-subscriber page: what it is, when it changed, and how it was recorded;
+* Improved: When you ask subscribers for tracking consent, the email editors now check that your email has a tracking opt-out link and the form editor checks that your form has the consent checkbox, each with a one-click way to add what is missing;
+* Improved: The public PHP API can now record tracking consent, so integrations and headless stores can pass their own consent checkbox result to `addSubscriber` or `updateSubscriber`;
+* Improved: Personalization tag links in block editor emails now record clicks and resolve to the correct per-recipient URL;
+* Improved: Subscriber import and export now carry tracking consent: the state, when it changed, how it was collected, and the wording the subscriber saw;
+* Fixed: Three places where a subscriber's tracking choice was lost or ignored: guest checkout, registration and comment forms, and the opt-out link in an email footer;
+* Fixed: One invalid tracking consent value in the database no longer breaks the plugin;
+* Fixed: Stopped logging the expected "Sending frequency limit has been reached" state as a cron error;
+* Fixed: Blocks from other plugins missing in the WordPress post editor when MailPoet is active;
+* Fixed: Shortcodes showing as raw text in emails that use the Post Content block;
+* Fixed: Harden the internal API request dispatch and redirect handling;
+* Fixed: Review & send panel position under the WordPress admin bar in the email editor;
+* Fixed: Other plugins may break navigation on MailPoet admin pages;
+* Fixed: Form editor crashing when closing the Custom CSS panel;
+* Fixed: New block email editor loading in a broken, unclickable state when Yoast SEO Premium is active;
+* Fixed: Keep HTML entities escaped in headings inside quotes when rendering post content in emails;
+* Fixed: Hardened internal JSON API dispatch to require the exact declared method name;
+* Fixed: On an email with no footer, the one-click way to add a tracking opt-out link now adds a footer the sent email actually keeps.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
