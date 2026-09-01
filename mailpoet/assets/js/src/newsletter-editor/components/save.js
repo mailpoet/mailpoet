@@ -401,6 +401,7 @@ Module.SaveView = Marionette.View.extend({
     var footer;
     var FooterModel;
     var footerBlock;
+    var ContainerModel;
     linkHtml =
       '<a href="[link:subscription_tracking_opt_out_url]">' +
       __('Opt out of tracking', 'mailpoet') +
@@ -418,12 +419,30 @@ Module.SaveView = Marionette.View.extend({
       // the repaint explicitly.
       footer.trigger('redraw');
     } else {
-      // No footer block at all: add one at the end of the content container.
-      // Its defaults already carry the unsubscribe and manage links.
+      // No footer block at all: add one as a new row at the end of the content
+      // container. Its defaults already carry the unsubscribe and manage links.
+      //
+      // The row has to be built the way the layout widgets build one -- a
+      // horizontal container holding a vertical container per column -- because
+      // the root container only ever holds rows. A leaf block dropped straight
+      // into the root draws on the canvas and passes validation, but the
+      // renderer skips any top-level block with no `blocks` of its own, so the
+      // sent email would carry no footer at all.
       FooterModel = App.getBlockTypeModel('footer');
       footerBlock = new FooterModel({ type: 'footer' });
       footerBlock.set('text', footerBlock.get('text') + '<br />' + linkHtml);
-      App._contentContainer.get('blocks').add(footerBlock);
+      ContainerModel = App.getBlockTypeModel('container');
+      App._contentContainer.get('blocks').add(
+        new ContainerModel({
+          orientation: 'horizontal',
+          blocks: [
+            new ContainerModel({
+              orientation: 'vertical',
+              blocks: [footerBlock],
+            }),
+          ],
+        }),
+      );
     }
     this.validateNewsletter(App.toJSON());
   },
