@@ -13,6 +13,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { viewFiltersToRequestFilter } from './filters';
 import { Notices } from './list/notices';
@@ -621,7 +622,13 @@ export function DynamicSegmentList(): JSX.Element {
               </div>
               <DataViews.Filters />
               <DataViews.Layout />
-              <DataViews.Footer />
+              <DataViewsFooter
+                view={view}
+                onChangeView={persistedViewChange}
+                paginationInfo={paginationInfo}
+                isLoading={isLoading}
+                hasData={items.length > 0}
+              />
             </DataViews>
           </div>
         )}

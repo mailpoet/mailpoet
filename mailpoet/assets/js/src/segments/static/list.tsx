@@ -15,6 +15,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { ListHeading } from 'segments/static/heading';
 import {
@@ -675,7 +676,13 @@ function SegmentListComponent(): JSX.Element {
                 </div>
               )}
               <DataViews.Layout />
-              <DataViews.Footer />
+              <DataViewsFooter
+                view={view}
+                onChangeView={handleViewChange}
+                paginationInfo={paginationInfo}
+                isLoading={isLoading}
+                hasData={items.length > 0}
+              />
             </DataViews>
           </div>
         )}

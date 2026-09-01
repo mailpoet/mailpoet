@@ -10,6 +10,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
 import { DeleteLogsModal } from './delete-modal';
@@ -269,7 +270,13 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
         </div>
         <DataViews.Filters />
         <DataViews.Layout />
-        <DataViews.Footer />
+        <DataViewsFooter
+          view={view}
+          onChangeView={persistedViewChange}
+          paginationInfo={paginationInfo}
+          isLoading={isLoading}
+          hasData={items.length > 0}
+        />
       </DataViews>
       {isDeleteModalOpen && (
         <DeleteLogsModal

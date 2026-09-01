@@ -1,3 +1,4 @@
+export { DataViewsFooter } from './dataviews-footer';
 export {
   useDataViewsQuery,
   wasInitialUrlStateReset,

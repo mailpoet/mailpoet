@@ -6,6 +6,7 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   wasInitialUrlStateReset,
+  DataViewsFooter,
 } from 'common/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
@@ -333,7 +334,13 @@ export function TagsPage() {
             <DataViews.Filters />
           </div>
           <DataViews.Layout />
-          <DataViews.Footer />
+          <DataViewsFooter
+            view={view}
+            onChangeView={handleViewChange}
+            paginationInfo={paginationInfo}
+            isLoading={isLoading}
+            hasData={items.length > 0}
+          />
         </DataViews>
       </div>
 
