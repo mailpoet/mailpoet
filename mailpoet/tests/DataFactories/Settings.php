@@ -34,6 +34,17 @@ class Settings {
     $this->withSkippedTutorials();
     $this->withCookieRevenueTracking();
     $this->withEmailNotificationsDisabled();
+    $this->withEditorChoiceModalDisabled();
+  }
+
+  public function withEditorChoiceModalEnabled() {
+    $this->settings->set('editor_choice_modal.enabled', true);
+    return $this;
+  }
+
+  public function withEditorChoiceModalDisabled() {
+    $this->settings->set('editor_choice_modal.enabled', false);
+    return $this;
   }
 
   public function withCronTriggerMethod($method) {
