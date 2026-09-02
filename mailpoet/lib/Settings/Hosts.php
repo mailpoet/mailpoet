@@ -44,6 +44,10 @@ class Hosts {
         'South America (São Paulo)' => 'sa-east-1',
         'AWS GovCloud (US-East)' => 'us-gov-east-1',
         'AWS GovCloud (US-West)' => 'us-gov-west-1',
+        // Amazon SES never launched in these two. They stay listed because dropping
+        // them makes the mailer throw while the cron daemon is building its workers.
+        'Asia Pacific (Hong Kong) - not supported by Amazon SES' => 'ap-east-1',
+        'China (Beijing) - not supported by Amazon SES' => 'cn-north-1',
       ],
     ],
     'SendGrid' => [
