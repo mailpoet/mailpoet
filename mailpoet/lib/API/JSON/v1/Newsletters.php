@@ -9,7 +9,6 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
@@ -19,7 +18,6 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
-use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters extends APIEndpoint {
@@ -36,9 +34,6 @@ class Newsletters extends APIEndpoint {
 
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
-
-  /** @var Emoji */
-  private $emoji;
 
   /** @var SendPreviewController */
   private $sendPreviewController;
@@ -57,33 +52,26 @@ class Newsletters extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
-  /** @var ApiDataSanitizer */
-  private $dataSanitizer;
-
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
-    Emoji $emoji,
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterDeleteController $newsletterDeleteController,
     NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
-    ApiDataSanitizer $dataSanitizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
-    $this->emoji = $emoji;
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterDeleteController = $newsletterDeleteController;
     $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
-    $this->dataSanitizer = $dataSanitizer;
   }
 
   public function get($data = []) {
@@ -219,9 +207,7 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $newslettersTableName = $this->newslettersRepository->getTableName();
-    $decodedBody = json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true);
-    $newsletter->setBody($this->dataSanitizer->sanitizeBody(is_array($decodedBody) ? $decodedBody : []));
+    $newsletter->setBody($this->newsletterSaveController->decodeAndSanitizeBody($data['body']));
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);

@@ -21,6 +21,11 @@ class ApiDataSanitizer {
     $this->htmlSanitizer = $htmlSanitizer;
   }
 
+  public function decodeAndSanitizeBody(string $body): ?array {
+    $decodedBody = json_decode($body, true);
+    return is_array($decodedBody) ? $this->sanitizeBody($decodedBody) : null;
+  }
+
   public function sanitizeBody(array $body): array {
     if (isset($body['content']) && isset($body['content']['blocks']) && is_array($body['content']['blocks'])) {
       $body['content']['blocks'] = $this->sanitizeBlocks($body['content']['blocks']);

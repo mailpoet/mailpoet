@@ -68,4 +68,18 @@ class ApiDataSanitizerTest extends \MailPoetTest {
 
     verify($result)->equals($body);
   }
+
+  public function testItDecodesJsonBodyAndStripsDisallowedMarkup() {
+    $body = '{"content":{"blocks":[{"type":"text","text":"<p>Hello</p><script>alert(1)</script>"}]}}';
+
+    $result = $this->sanitizer->decodeAndSanitizeBody($body);
+
+    $this->assertIsArray($result);
+    verify($result['content']['blocks'][0]['text'])->equals('<p>Hello</p>alert(1)');
+  }
+
+  public function testItReturnsNullForUndecodableBody() {
+    verify($this->sanitizer->decodeAndSanitizeBody('not json'))->null();
+    verify($this->sanitizer->decodeAndSanitizeBody('"just a string"'))->null();
+  }
 }

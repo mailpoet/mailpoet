@@ -76,6 +76,19 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getBody())->equals(['value' => 'Updated 🙈body']);
   }
 
+  public function testItStripsDisallowedMarkupFromTextBlocks() {
+    $body = '{"content":{"blocks":[{"type":"text","text":"<p>Hello</p><script>alert(1)</script>"}]}}';
+
+    $result = $this->saveController->decodeAndSanitizeBody($body);
+
+    verify($result['content']['blocks'][0]['text'])->stringContainsString('<p>Hello</p>');
+    verify($result['content']['blocks'][0]['text'])->stringNotContainsString('<script');
+  }
+
+  public function testItDecodesUndecodableBodyToEmptyArray() {
+    verify($this->saveController->decodeAndSanitizeBody('not json'))->equals([]);
+  }
+
   public function testItDoesNotRerenderPostNotificationsUponUpdate() {
     $this->createPostNotificationOptions();
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
