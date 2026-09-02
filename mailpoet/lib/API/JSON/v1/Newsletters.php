@@ -194,7 +194,7 @@ class Newsletters extends APIEndpoint {
   }
 
   public function showPreview($data = []) {
-    if (empty($data['body'])) {
+    if (empty($data['body']) || !is_string($data['body'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('Newsletter data is missing.', 'mailpoet'),
       ]);
