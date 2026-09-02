@@ -354,6 +354,15 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->meta['preview_url'])->stringStartsWith('//');
   }
 
+  public function testItRejectsNonStringPreviewBody() {
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => ['not' => 'a string'],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
   public function testItRejectsUndecodablePreviewBodyWithoutTouchingStoredBody() {
     $storedBody = $this->newsletter->getBody();
     $this->assertIsArray($storedBody);
