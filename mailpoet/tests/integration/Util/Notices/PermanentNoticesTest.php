@@ -90,6 +90,18 @@ class PermanentNoticesTest extends \MailPoetTest {
     verify($output)->stringContainsString('data-nonce="test-nonce"');
   }
 
+  public function testDismissibleNoticeMarkupContainsNonceWithoutParagraph() {
+    $wp = Stub::make(new WPFunctions, ['wpCreateNonce' => 'test-nonce']);
+    $notice = new Notice(Notice::TYPE_WARNING, 'A message', '', 'some-notice-name', false, $wp);
+    ob_start();
+    $notice->displayWPNotice();
+    $output = ob_get_clean();
+
+    verify($output)->stringContainsString('data-notice="some-notice-name"');
+    verify($output)->stringContainsString('data-nonce="test-nonce"');
+    verify($output)->stringNotContainsString('<p>');
+  }
+
   private function createPermanentNotices(WPFunctions $wp): PermanentNotices {
     return new PermanentNotices(
       $wp,
