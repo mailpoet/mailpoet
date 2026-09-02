@@ -126,10 +126,10 @@ class NewsletterSaveController {
     $this->shareVisibility = $shareVisibility;
   }
 
-  public function decodeAndSanitizeBody(string $body): array {
+  public function decodeAndSanitizeBody(string $body): ?array {
     $newslettersTableName = $this->newslettersRepository->getTableName();
     $encodedBody = $this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $body);
-    return $this->dataSanitizer->decodeAndSanitizeBody($encodedBody) ?? [];
+    return $this->dataSanitizer->decodeAndSanitizeBody($encodedBody);
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -141,7 +141,7 @@ class NewsletterSaveController {
     }
 
     if (!empty($data['body'])) {
-      $data['body'] = $this->decodeAndSanitizeBody($data['body']);
+      $data['body'] = $this->decodeAndSanitizeBody($data['body']) ?? [];
     }
 
     $newsletter = isset($data['id']) ? $this->getNewsletter($data) : $this->createNewsletter($data);
