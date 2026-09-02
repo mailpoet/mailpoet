@@ -53,10 +53,10 @@ class AmazonSES extends PHPMailerMethod {
   ) {
     $this->awsAccessKey = $accessKey;
     $this->awsSecretKey = $secretKey;
-    $this->awsRegion = in_array($region, self::getAvailableRegions(), true) ? $region : false;
-    if (!$this->awsRegion) {
+    if (!is_string($region) || !in_array($region, self::getAvailableRegions(), true)) {
       throw new \Exception(__('Unsupported Amazon SES region', 'mailpoet'));
     }
+    $this->awsRegion = $region;
     $this->awsEndpoint = sprintf('email.%s.%s', $this->awsRegion, self::getEndpointSuffix($this->awsRegion));
     $this->awsSigningAlgorithm = 'AWS4-HMAC-SHA256';
     $this->awsService = 'ses';
