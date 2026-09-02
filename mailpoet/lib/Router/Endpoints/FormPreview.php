@@ -21,7 +21,7 @@ class FormPreview {
 
   public $allowedActions = [self::ACTION_VIEW];
   public $permissions = [
-    'global' => AccessControl::NO_ACCESS_RESTRICTION,
+    'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
 
   public function __construct(
