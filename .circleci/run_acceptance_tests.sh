@@ -29,7 +29,9 @@ args=(
   -g circleci_split_group
 )
 
-docker compose run -e SKIP_DEPS=1 \
+# -T and </dev/null because our stdin is the pipe `circleci tests run` sent the test
+# list on, and compose refuses to allocate a TTY on it.
+docker compose run -T -e SKIP_DEPS=1 \
   -e CIRCLE_BRANCH="${CIRCLE_BRANCH}" \
   -e CIRCLE_JOB="${CIRCLE_JOB}" \
   -e GH_TOKEN="${WP_GITHUB_WOOCOMMERCE_TOKEN}" \
@@ -40,4 +42,4 @@ docker compose run -e SKIP_DEPS=1 \
   -e DISABLE_HPOS="${DISABLE_HPOS}" \
   -e WORDPRESS_VERSION="${WORDPRESS_VERSION}" \
   -e GUTENBERG_VERSION="${GUTENBERG_VERSION}" \
-  codeception_acceptance "${args[@]}"
+  codeception_acceptance "${args[@]}" < /dev/null
