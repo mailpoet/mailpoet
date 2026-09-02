@@ -8,6 +8,7 @@ use MailPoet\API\REST\Endpoint;
 use MailPoet\API\REST\ErrorResponse;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
+use MailPoet\Config\AccessControl;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Validator\Builder;
@@ -240,7 +241,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
   }
 
   public function checkPermissions(): bool {
-    return current_user_can('edit_posts');
+    return $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS);
   }
 
   /** @return array<string, Schema> */
