@@ -46,13 +46,13 @@ class Daemon {
     $this->cronHelper->saveDaemon($settingsDaemonData);
 
     $errors = [];
-    foreach ($this->getWorkers() as $createWorker) {
+    foreach ($this->getWorkers() as $factoryMethod => $createWorker) {
       if (wp_is_maintenance_mode()) {
         // stop execution when in maintenance mode
         break;
       }
 
-      $workerName = 'unknown (worker could not be created)';
+      $workerName = $factoryMethod;
       try {
         // Clear the entity manager memory for every cron run.
         // This avoids using stale data and prevents memory leaks.
@@ -61,7 +61,7 @@ class Daemon {
         // Built inside the try on purpose. A worker that throws while being
         // constructed used to escape this loop and abort the whole daemon run.
         $worker = $createWorker();
-        $workerName = $this->getWorkerName($worker);
+        $workerName = $this->getWorkerName($worker) ?: $factoryMethod;
 
         if ($worker instanceof CronWorkerInterface) {
           $this->cronWorkerRunner->run($worker);
@@ -111,43 +111,45 @@ class Daemon {
 
   /**
    * Each worker is yielded as a factory rather than an instance, so that the
-   * cost and the risk of building it land inside run()'s try/catch.
+   * cost and the risk of building it land inside run()'s try/catch. The key is
+   * the factory method, which is the only name available when a worker throws
+   * before there is an instance to read a class off.
    *
-   * @return \Generator<int, callable, mixed, void>
+   * @return \Generator<string, callable, mixed, void>
    */
   private function getWorkers(): \Generator {
-    yield fn() => $this->workersFactory->createStatsNotificationsWorker(); // not CronWorkerInterface compatible
-    yield fn() => $this->workersFactory->createScheduleWorker(); // not CronWorkerInterface compatible
-    yield fn() => $this->workersFactory->createQueueWorker(); // not CronWorkerInterface compatible
-    yield fn() => $this->workersFactory->createSendingServiceKeyCheckWorker();
-    yield fn() => $this->workersFactory->createPremiumKeyCheckWorker();
-    yield fn() => $this->workersFactory->createSubscribersStatsReportWorker();
-    yield fn() => $this->workersFactory->createBounceWorker();
-    yield fn() => $this->workersFactory->createExportFilesCleanupWorker();
-    yield fn() => $this->workersFactory->createLogCleanupWorker();
-    yield fn() => $this->workersFactory->createSendingTaskSubscribersCleanupWorker();
-    yield fn() => $this->workersFactory->createBounceTaskSubscribersCleanupWorker();
-    yield fn() => $this->workersFactory->createSendingQueueBodyCleanupWorker();
-    yield fn() => $this->workersFactory->createInactiveSubscribersMaintenanceWorker();
-    yield fn() => $this->workersFactory->createUnconfirmedSubscribersCleanupWorker();
-    yield fn() => $this->workersFactory->createUnsubscribeTokensWorker();
-    yield fn() => $this->workersFactory->createWooCommerceSyncWorker();
-    yield fn() => $this->workersFactory->createAuthorizedSendingEmailsCheckWorker();
-    yield fn() => $this->workersFactory->createWooCommercePastOrdersWorker();
-    yield fn() => $this->workersFactory->createStatsNotificationsWorkerForAutomatedEmails();
-    yield fn() => $this->workersFactory->createSubscriberLinkTokensWorker();
-    yield fn() => $this->workersFactory->createSubscribersLastEngagementWorker();
-    yield fn() => $this->workersFactory->createSubscribersCountCacheRecalculationWorker();
-    yield fn() => $this->workersFactory->createReEngagementEmailsSchedulerWorker();
-    yield fn() => $this->workersFactory->createNewsletterTemplateThumbnailsWorker();
-    yield fn() => $this->workersFactory->createAbandonedCartWorker();
-    yield fn() => $this->workersFactory->createBackfillEngagementDataWorker();
-    yield fn() => $this->workersFactory->createSubscribersSegmentsCountSyncWorker();
-    yield fn() => $this->workersFactory->createMixpanelWorker();
-    yield fn() => $this->workersFactory->createTracksWorker();
-    yield fn() => $this->workersFactory->createStatisticsExportWorker();
-    yield fn() => $this->workersFactory->createBulkConfirmationEmailResendWorker();
-    yield fn() => $this->workersFactory->createSubscriberLimitNotificationWorker();
-    yield fn() => $this->workersFactory->createSubscribersEngagementScoreWorker();
+    yield 'createStatsNotificationsWorker' => fn() => $this->workersFactory->createStatsNotificationsWorker(); // not CronWorkerInterface compatible
+    yield 'createScheduleWorker' => fn() => $this->workersFactory->createScheduleWorker(); // not CronWorkerInterface compatible
+    yield 'createQueueWorker' => fn() => $this->workersFactory->createQueueWorker(); // not CronWorkerInterface compatible
+    yield 'createSendingServiceKeyCheckWorker' => fn() => $this->workersFactory->createSendingServiceKeyCheckWorker();
+    yield 'createPremiumKeyCheckWorker' => fn() => $this->workersFactory->createPremiumKeyCheckWorker();
+    yield 'createSubscribersStatsReportWorker' => fn() => $this->workersFactory->createSubscribersStatsReportWorker();
+    yield 'createBounceWorker' => fn() => $this->workersFactory->createBounceWorker();
+    yield 'createExportFilesCleanupWorker' => fn() => $this->workersFactory->createExportFilesCleanupWorker();
+    yield 'createLogCleanupWorker' => fn() => $this->workersFactory->createLogCleanupWorker();
+    yield 'createSendingTaskSubscribersCleanupWorker' => fn() => $this->workersFactory->createSendingTaskSubscribersCleanupWorker();
+    yield 'createBounceTaskSubscribersCleanupWorker' => fn() => $this->workersFactory->createBounceTaskSubscribersCleanupWorker();
+    yield 'createSendingQueueBodyCleanupWorker' => fn() => $this->workersFactory->createSendingQueueBodyCleanupWorker();
+    yield 'createInactiveSubscribersMaintenanceWorker' => fn() => $this->workersFactory->createInactiveSubscribersMaintenanceWorker();
+    yield 'createUnconfirmedSubscribersCleanupWorker' => fn() => $this->workersFactory->createUnconfirmedSubscribersCleanupWorker();
+    yield 'createUnsubscribeTokensWorker' => fn() => $this->workersFactory->createUnsubscribeTokensWorker();
+    yield 'createWooCommerceSyncWorker' => fn() => $this->workersFactory->createWooCommerceSyncWorker();
+    yield 'createAuthorizedSendingEmailsCheckWorker' => fn() => $this->workersFactory->createAuthorizedSendingEmailsCheckWorker();
+    yield 'createWooCommercePastOrdersWorker' => fn() => $this->workersFactory->createWooCommercePastOrdersWorker();
+    yield 'createStatsNotificationsWorkerForAutomatedEmails' => fn() => $this->workersFactory->createStatsNotificationsWorkerForAutomatedEmails();
+    yield 'createSubscriberLinkTokensWorker' => fn() => $this->workersFactory->createSubscriberLinkTokensWorker();
+    yield 'createSubscribersLastEngagementWorker' => fn() => $this->workersFactory->createSubscribersLastEngagementWorker();
+    yield 'createSubscribersCountCacheRecalculationWorker' => fn() => $this->workersFactory->createSubscribersCountCacheRecalculationWorker();
+    yield 'createReEngagementEmailsSchedulerWorker' => fn() => $this->workersFactory->createReEngagementEmailsSchedulerWorker();
+    yield 'createNewsletterTemplateThumbnailsWorker' => fn() => $this->workersFactory->createNewsletterTemplateThumbnailsWorker();
+    yield 'createAbandonedCartWorker' => fn() => $this->workersFactory->createAbandonedCartWorker();
+    yield 'createBackfillEngagementDataWorker' => fn() => $this->workersFactory->createBackfillEngagementDataWorker();
+    yield 'createSubscribersSegmentsCountSyncWorker' => fn() => $this->workersFactory->createSubscribersSegmentsCountSyncWorker();
+    yield 'createMixpanelWorker' => fn() => $this->workersFactory->createMixpanelWorker();
+    yield 'createTracksWorker' => fn() => $this->workersFactory->createTracksWorker();
+    yield 'createStatisticsExportWorker' => fn() => $this->workersFactory->createStatisticsExportWorker();
+    yield 'createBulkConfirmationEmailResendWorker' => fn() => $this->workersFactory->createBulkConfirmationEmailResendWorker();
+    yield 'createSubscriberLimitNotificationWorker' => fn() => $this->workersFactory->createSubscriberLimitNotificationWorker();
+    yield 'createSubscribersEngagementScoreWorker' => fn() => $this->workersFactory->createSubscribersEngagementScoreWorker();
   }
 }
