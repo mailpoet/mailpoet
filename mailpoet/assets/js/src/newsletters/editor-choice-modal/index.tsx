@@ -36,7 +36,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
       return;
     }
     setIsCreating(true);
-    void MailPoet.Ajax.post({
+    const saveLastChoice = MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'user_flags',
       action: 'set',
@@ -55,9 +55,11 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
       .done((response) => {
         window.mailpoet_last_email_editor_choice = choice;
         if (choice === 'block') {
-          window.location.href = MailPoet.getBlockEmailEditorUrl(
-            response.data.wp_post_id as string,
-          );
+          void saveLastChoice.always(() => {
+            window.location.href = MailPoet.getBlockEmailEditorUrl(
+              response.data.wp_post_id as string,
+            );
+          });
         } else {
           navigate(`/template/${response.data.id as number}`);
         }
