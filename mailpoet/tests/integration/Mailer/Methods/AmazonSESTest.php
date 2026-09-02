@@ -83,6 +83,43 @@ class AmazonSESTest extends \MailPoetTest {
     verify(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
   }
 
+  public function testItUsesTheChinaPartitionDomainForChinaRegions() {
+    $mailer = new AmazonSES(
+      'cn-northwest-1',
+      $this->settings['access_key'],
+      $this->settings['secret_key'],
+      $this->sender,
+      $this->replyTo,
+      $this->returnPath,
+      new AmazonSESMapper(),
+      new WPFunctions(),
+      $this->diContainer->get(Url::class)
+    );
+    verify($mailer->awsEndpoint)->equals('email.cn-northwest-1.amazonaws.com.cn');
+    verify($mailer->url)->equals('https://email.cn-northwest-1.amazonaws.com.cn');
+  }
+
+  public function testItRejectsRegionsWhereSesIsNotAvailable() {
+    foreach (['ap-east-1', 'cn-north-1'] as $region) {
+      try {
+        new AmazonSES(
+          $region,
+          $this->settings['access_key'],
+          $this->settings['secret_key'],
+          $this->sender,
+          $this->replyTo,
+          $this->returnPath,
+          new AmazonSESMapper(),
+          new WPFunctions(),
+          $this->diContainer->get(Url::class)
+        );
+        $this->fail(sprintf('Unsupported region exception was not thrown for %s', $region));
+      } catch (\Exception $e) {
+        verify($e->getMessage())->equals('Unsupported Amazon SES region');
+      }
+    }
+  }
+
   public function testItChecksForValidRegion() {
     try {
       $mailer = new AmazonSES(
