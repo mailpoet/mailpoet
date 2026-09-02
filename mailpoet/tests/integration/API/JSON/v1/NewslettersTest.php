@@ -12,6 +12,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
@@ -343,7 +344,9 @@ class NewslettersTest extends \MailPoetTest {
     ]);
     $this->endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'wp' => $wp,
-      'emoji' => $emoji,
+      'newsletterSaveController' => $this->getServiceWithOverrides(NewsletterSaveController::class, [
+        'emoji' => $emoji,
+      ]),
     ]);
 
     $response = $this->endpoint->showPreview($data);
