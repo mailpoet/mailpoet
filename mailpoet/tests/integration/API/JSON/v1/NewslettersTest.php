@@ -328,13 +328,13 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsBrowserPreviewUrlWithoutProtocol() {
     $data = [
       'id' => $this->newsletter->getId(),
-      'body' => 'fake body',
+      'body' => '{}',
     ];
 
     $emoji = $this->make(
       Emoji::class,
-      ['encodeForUTF8Column' => Expected::once(function ($params) {
-        return $params;
+      ['encodeForUTF8Column' => Expected::once(function ($table, $field, $value) {
+        return $value;
       })]
     );
 
@@ -351,7 +351,23 @@ class NewslettersTest extends \MailPoetTest {
 
     $response = $this->endpoint->showPreview($data);
     verify($response->meta['preview_url'])->stringNotContainsString('http');
-    verify($response->meta['preview_url'])->stringMatchesRegExp('!^\/\/!');
+    verify($response->meta['preview_url'])->stringStartsWith('//');
+  }
+
+  public function testItRejectsUndecodablePreviewBodyWithoutTouchingStoredBody() {
+    $storedBody = $this->newsletter->getBody();
+    $this->assertIsArray($storedBody);
+
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => 'not json',
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    $this->entityManager->clear();
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getBody())->equals($storedBody);
   }
 
   public function testItSanitizesBodyBeforeStoringPreview() {

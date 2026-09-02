@@ -207,7 +207,14 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $newsletter->setBody($this->newsletterSaveController->decodeAndSanitizeBody($data['body']));
+    $body = $this->newsletterSaveController->decodeAndSanitizeBody($data['body']);
+    if ($body === null) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Invalid newsletter body payload.', 'mailpoet'),
+      ]);
+    }
+
+    $newsletter->setBody($body);
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);

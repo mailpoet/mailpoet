@@ -81,12 +81,13 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     $result = $this->saveController->decodeAndSanitizeBody($body);
 
+    $this->assertIsArray($result);
     verify($result['content']['blocks'][0]['text'])->stringContainsString('<p>Hello</p>');
     verify($result['content']['blocks'][0]['text'])->stringNotContainsString('<script');
   }
 
-  public function testItDecodesUndecodableBodyToEmptyArray() {
-    verify($this->saveController->decodeAndSanitizeBody('not json'))->equals([]);
+  public function testItReturnsNullForUndecodableBody() {
+    verify($this->saveController->decodeAndSanitizeBody('not json'))->null();
   }
 
   public function testItDoesNotRerenderPostNotificationsUponUpdate() {
