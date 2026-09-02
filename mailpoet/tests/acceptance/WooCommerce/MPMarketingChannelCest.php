@@ -83,7 +83,7 @@ class MPMarketingChannelCest {
       $i->login();
 
       $i->amOnPage('/wp-admin/admin.php?page=wc-admin&path=%2Fmarketing');
-      $i->see('Create a campaign', '.woocommerce-marketing-introduction-banner-buttons');
+      $i->waitForText('Create a campaign', 10, '.woocommerce-marketing-introduction-banner-buttons');
       $i->click('Create a campaign', '.woocommerce-marketing-introduction-banner-buttons');
       $i->waitForText('Create a new campaign');
       $i->see('Where would you like to promote your products?');
