@@ -30,6 +30,21 @@ class LogEntityTest extends \MailPoetUnitTest {
     verify($context['error']['previous']['message'])->equals('the real cause');
   }
 
+  public function testItStillStoresTheContextWhenAMessageHasInvalidUtf8() {
+    $entity = new LogEntity();
+    $entity->setContext([
+      'error' => new \RuntimeException("boom \xFF\xFE invalid"),
+      'worker' => 'createQueueWorker',
+    ]);
+
+    $context = $entity->getContext();
+    $this->assertNotNull($context);
+    $this->assertArrayHasKey('error', $context);
+    verify($context['worker'])->equals('createQueueWorker');
+    verify($context['error']['message'])->stringContainsString('boom');
+    verify($context['error']['message'])->stringContainsString('invalid');
+  }
+
   public function testItLeavesOrdinaryValuesAlone() {
     $entity = new LogEntity();
     $entity->setContext(['worker' => 'createQueueWorker', 'count' => 3, 'ok' => true]);

@@ -102,7 +102,10 @@ class LogEntity {
       }
     }
 
-    $str = json_encode($context);
+    // Exception messages can carry raw bytes from a database error or a file
+    // path. Without this flag json_encode() returns false and the whole context
+    // is dropped, including the fields that encoded fine.
+    $str = json_encode($context, JSON_INVALID_UTF8_SUBSTITUTE);
     if ($str) {
       $this->context = $str;
     }
