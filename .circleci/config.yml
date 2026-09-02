@@ -506,45 +506,30 @@ jobs:
             cd ../tests_env/docker
             docker compose run wordpress php --version
       - run:
-          name: Group acceptance tests
-          command: |
-            # Convert test result filename values to be relative paths because the circleci CLI's split command requires exact matches
-            if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
-              sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
-            fi
-            # `circleci tests split` returns different values based on the container it's run on
-            # in case group is defined find only tests containing the group
-            if [[ -n '<< parameters.group >>' ]]; then
-              grep -rw 'tests/acceptance' -e '@group << parameters.group >>' | sed -e "s/:.*//" | circleci tests split --split-by=timings > tests/acceptance/_groups/circleci_split_group
-            else
-              circleci tests glob "tests/acceptance/**/*Cest.php" | circleci tests split --split-by=timings > tests/acceptance/_groups/circleci_split_group
-            fi
-            cat tests/acceptance/_groups/circleci_split_group
-      - run:
           name: Run acceptance tests
           command: |
             mkdir -m 777 -p tests/_output/exceptions
-            cd ../tests_env/docker
-            args=(
-              --steps
-              --debug
-              -vvv
-              --html
-              --xml
-              -g circleci_split_group
-            )
-            docker compose run -e SKIP_DEPS=1 \
-            -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
-            -e CIRCLE_JOB=${CIRCLE_JOB} \
-            -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} \
-            -e MULTISITE=<< parameters.multisite >> \
-            -e BLOCKBASED_THEME=<< parameters.blockbased_theme >> \
-            -e ENABLE_HPOS=<< parameters.enable_hpos >> \
-            -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
-            -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-            -e WORDPRESS_VERSION=${WORDPRESS_VERSION} \
-            -e GUTENBERG_VERSION=${GUTENBERG_VERSION} \
-            codeception_acceptance "${args[@]}"
+            # Convert test result filename values to be relative paths because the circleci CLI requires exact matches
+            if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
+              sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
+            fi
+            export MULTISITE=<< parameters.multisite >>
+            export BLOCKBASED_THEME=<< parameters.blockbased_theme >>
+            export ENABLE_HPOS=<< parameters.enable_hpos >>
+            export ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >>
+            export DISABLE_HPOS=<< parameters.disable_hpos >>
+            # `circleci tests run` splits the list and launches the tests itself, which is what
+            # lets CircleCI offer "Rerun failed tests" on this job. `circleci tests split` cannot.
+            # in case group is defined find only tests containing the group
+            if [[ -n '<< parameters.group >>' ]]; then
+              grep -rw 'tests/acceptance' -e '@group << parameters.group >>' | sed -e "s/:.*//"
+            else
+              circleci tests glob "tests/acceptance/**/*Cest.php"
+            fi | circleci tests run \
+              --command='../.circleci/run_acceptance_tests.sh' \
+              --split-by=timings \
+              --timings-type=filename \
+              --verbose
       - run:
           name: Check exceptions
           command: |
