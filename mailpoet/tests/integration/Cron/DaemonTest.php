@@ -170,6 +170,31 @@ class DaemonTest extends \MailPoetTest {
     verify($daemonData['last_error'][0]['worker'])->equals('createQueueWorker');
   }
 
+  public function testItKeepsRunningWhenAWorkerConstructionThrowsAnError() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
+    $data = ['token' => 123];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+
+    // A missing class or a type mismatch raises an Error, not an Exception.
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock([
+        'createQueueWorker' => function () {
+          throw new \TypeError('Argument #1 must be of type SubscribersRepository, null given');
+        },
+      ]),
+    ]);
+
+    $daemon->run($data);
+
+    $daemonData = $this->settings->get(CronHelper::DAEMON_SETTING);
+    verify($daemonData['run_completed_at'])->notEmpty();
+    verify($daemonData['last_error'][0]['worker'])->equals('createQueueWorker');
+    $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    verify($log->getMessage())->stringContainsString('must be of type');
+  }
+
   private function createWorkersFactoryMock(array $workers = []) {
     return $this->make(WorkersFactory::class, $workers + [
       'createScheduleWorker' => $this->createSimpleWorkerMock(),

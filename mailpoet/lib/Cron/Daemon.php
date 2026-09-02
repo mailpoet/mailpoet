@@ -68,7 +68,10 @@ class Daemon {
         } else {
           $worker->process($this->timer); // BC for workers not implementing CronWorkerInterface
         }
-      } catch (\Exception $e) {
+      } catch (\Throwable $e) {
+        // Throwable, not Exception: a worker that fails to build usually fails with
+        // an Error (a type mismatch or a missing class), which is the whole reason
+        // construction moved inside this try.
         Helpers::mySqlGoneAwayExceptionHandler($e);
 
         // Expected sending state, not an error — sending resumes once the frequency interval passes.
