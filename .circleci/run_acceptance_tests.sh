@@ -8,8 +8,10 @@ set -eo pipefail
 
 GROUP_FILE=tests/acceptance/_groups/circleci_split_group
 
-# A blank line would make Codeception run with an empty group, so drop them.
-sed '/^[[:space:]]*$/d' > "$GROUP_FILE"
+# `circleci tests run` sends the names space separated on one line, and Codeception
+# reads one path per line, so put each on its own. Blank lines would make it run with
+# an empty group.
+tr '[:space:]' '\n' | sed '/^[[:space:]]*$/d' > "$GROUP_FILE"
 
 if [ ! -s "$GROUP_FILE" ]; then
   echo "No acceptance tests were assigned to this container."
