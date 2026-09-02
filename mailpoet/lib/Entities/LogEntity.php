@@ -96,9 +96,37 @@ class LogEntity {
   }
 
   public function setContext(array $context): void {
+    foreach ($context as $key => $value) {
+      if ($value instanceof \Throwable) {
+        $context[$key] = $this->normalizeThrowable($value);
+      }
+    }
+
     $str = json_encode($context);
     if ($str) {
       $this->context = $str;
     }
+  }
+
+  /**
+   * json_encode() only serialises public properties, and every property of an
+   * exception is private, so an unconverted Throwable is stored as {}.
+   *
+   * @return array<string, mixed>
+   */
+  private function normalizeThrowable(\Throwable $throwable): array {
+    $normalized = [
+      'class' => get_class($throwable),
+      'message' => $throwable->getMessage(),
+      'code' => $throwable->getCode(),
+      'file' => $throwable->getFile() . ':' . $throwable->getLine(),
+    ];
+
+    $previous = $throwable->getPrevious();
+    if ($previous) {
+      $normalized['previous'] = $this->normalizeThrowable($previous);
+    }
+
+    return $normalized;
   }
 }
