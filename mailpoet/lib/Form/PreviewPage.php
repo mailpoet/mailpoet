@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PreviewPage {
   const PREVIEW_DATA_TRANSIENT_PREFIX = 'mailpoet_form_preview_';
-  const PREVIEW_DATA_EXPIRATION = 84600; // 1 DAY
+  const PREVIEW_DATA_EXPIRATION = DAY_IN_SECONDS;
 
   /** @var WPFunctions  */
   private $wp;
