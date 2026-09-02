@@ -128,6 +128,48 @@ class DaemonTest extends \MailPoetTest {
     $this->wp->removeFilter('mailpoet_cron_get_execution_limit', $limitCallback);
   }
 
+  public function testItKeepsRunningWhenAWorkerCannotBeCreated() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
+    $data = ['token' => 123];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+
+    // The queue worker is 3rd of 33. Every later worker must still run.
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock([
+        'createQueueWorker' => function () {
+          throw new \Exception('Unsupported Amazon SES region');
+        },
+      ]),
+    ]);
+
+    $daemon->run($data);
+
+    $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    verify($log->getMessage())->stringContainsString('Unsupported Amazon SES region');
+  }
+
+  public function testItRecordsTheRunAsCompletedWhenAWorkerCannotBeCreated() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
+    $data = ['token' => 123];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock([
+        'createQueueWorker' => function () {
+          throw new \Exception('Unsupported Amazon SES region');
+        },
+      ]),
+    ]);
+
+    $daemon->run($data);
+
+    $daemonData = $this->settings->get(CronHelper::DAEMON_SETTING);
+    verify($daemonData['run_completed_at'])->notEmpty();
+    verify($daemonData['last_error'][0]['worker'])->equals('unknown (worker could not be created)');
+  }
+
   private function createWorkersFactoryMock(array $workers = []) {
     return $this->make(WorkersFactory::class, $workers + [
       'createScheduleWorker' => $this->createSimpleWorkerMock(),
