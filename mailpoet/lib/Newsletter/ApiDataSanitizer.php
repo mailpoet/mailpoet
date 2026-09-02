@@ -47,7 +47,7 @@ class ApiDataSanitizer {
       return $block;
     }
     foreach (self::SANITIZATION_CONFIG[$block['type']] as $property) {
-      if (!isset($block[$property])) {
+      if (!isset($block[$property]) || !is_string($block[$property])) {
         continue;
       }
       $block[$property] = $this->htmlSanitizer->sanitize($block[$property]);

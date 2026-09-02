@@ -54,4 +54,18 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($image['link'])->equals('');
     verify($image['text'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
   }
+
+  public function testItLeavesNonStringTextUntouched() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => ['not', 'a', 'string']],
+        ],
+      ],
+    ];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    verify($result)->equals($body);
+  }
 }

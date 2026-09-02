@@ -350,4 +350,29 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->meta['preview_url'])->stringNotContainsString('http');
     verify($response->meta['preview_url'])->stringMatchesRegExp('!^\/\/!');
   }
+
+  public function testItSanitizesBodyBeforeStoringPreview() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => '<p>Hello</p><script>alert(1)</script><img src="x" onerror="alert(2)">'],
+        ],
+      ],
+    ];
+
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => json_encode($body),
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $storedBody = $newsletter->getBody();
+    $this->assertIsArray($storedBody);
+    $storedText = $storedBody['content']['blocks'][0]['text'];
+    verify($storedText)->stringContainsString('<p>Hello</p>');
+    verify($storedText)->stringNotContainsString('<script');
+    verify($storedText)->stringNotContainsString('onerror');
+  }
 }
