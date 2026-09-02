@@ -57,7 +57,7 @@ class AmazonSES extends PHPMailerMethod {
     if (!$this->awsRegion) {
       throw new \Exception(__('Unsupported Amazon SES region', 'mailpoet'));
     }
-    $this->awsEndpoint = sprintf('email.%s.%s', $this->awsRegion, self::getEndpointSuffix($this->awsRegion));
+    $this->awsEndpoint = sprintf('email.%s.amazonaws.com', $this->awsRegion);
     $this->awsSigningAlgorithm = 'AWS4-HMAC-SHA256';
     $this->awsService = 'ses';
     $this->awsTerminationString = 'aws4_request';
@@ -80,11 +80,6 @@ class AmazonSES extends PHPMailerMethod {
    */
   public static function getAvailableRegions(): array {
     return Hosts::getSMTPHosts()['AmazonSES']['regions'];
-  }
-
-  private static function getEndpointSuffix(string $region): string {
-    // AWS China is a separate partition and does not answer on amazonaws.com.
-    return strpos($region, 'cn-') === 0 ? 'amazonaws.com.cn' : 'amazonaws.com';
   }
 
   public function send($newsletter, $subscriber, $extraParams = []): array {

@@ -27,7 +27,6 @@ class Hosts {
         'Europe (Stockholm)' => 'eu-north-1',
         'Canada (Central)' => 'ca-central-1',
         'Canada West (Calgary)' => 'ca-west-1',
-        'China (Ningxia)' => 'cn-northwest-1',
         'Africa (Cape Town)' => 'af-south-1',
         'Asia Pacific (Hyderabad)' => 'ap-south-2',
         'Asia Pacific (Jakarta)' => 'ap-southeast-3',
