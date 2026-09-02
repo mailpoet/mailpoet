@@ -5,6 +5,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Settings\Hosts;
 use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -34,34 +35,6 @@ class AmazonSES extends PHPMailerMethod {
   public $date;
   /** @var string */
   public $dateWithoutTime;
-  /** @var string[] */
-  private $availableRegions = [
-    'US East (N. Virginia)' => 'us-east-1',
-    'US East (Ohio)' => 'us-east-2',
-    'US West (N. California)' => 'us-west-1',
-    'US West (Oregon)' => 'us-west-2',
-    'EU (Ireland)' => 'eu-west-1',
-    'EU (London)' => 'eu-west-2',
-    'EU (Paris)' => 'eu-west-3',
-    'EU (Milan)' => 'eu-south-1',
-    'EU (Frankfurt)' => 'eu-central-1',
-    'EU (Stockholm)' => 'eu-north-1',
-    'Canada (Central)' => 'ca-central-1',
-    'China (Beijing)' => 'cn-north-1',
-    'China (Ningxia)' => 'cn-northwest-1',
-    'Africa (Cape Town)' => 'af-south-1',
-    'Asia Pacific (Hong Kong)' => 'ap-east-1',
-    'Asia Pacific (Jakarta)' => 'ap-southeast-3',
-    'Asia Pacific (Mumbai)' => 'ap-south-1',
-    'Asia Pacific (Seoul)' => 'ap-northeast-2',
-    'Asia Pacific (Osaka)' => 'ap-northeast-3',
-    'Asia Pacific (Singapore)' => 'ap-southeast-1',
-    'Asia Pacific (Sydney)' => 'ap-southeast-2',
-    'Asia Pacific (Tokyo)' => 'ap-northeast-1',
-    'Middle East (Bahrain)' => 'me-south-1',
-    'South America (Sao Paulo)' => 'sa-east-1',
-    'AWS GovCloud (US)' => 'us-gov-west-1',
-  ];
   /** @var AmazonSESMapper */
   protected $errorMapper;
   /** @var WPFunctions */
@@ -80,11 +53,11 @@ class AmazonSES extends PHPMailerMethod {
   ) {
     $this->awsAccessKey = $accessKey;
     $this->awsSecretKey = $secretKey;
-    $this->awsRegion = (in_array($region, $this->availableRegions)) ? $region : false;
+    $this->awsRegion = in_array($region, self::getAvailableRegions(), true) ? $region : false;
     if (!$this->awsRegion) {
       throw new \Exception(__('Unsupported Amazon SES region', 'mailpoet'));
     }
-    $this->awsEndpoint = sprintf('email.%s.amazonaws.com', $this->awsRegion);
+    $this->awsEndpoint = sprintf('email.%s.%s', $this->awsRegion, self::getEndpointSuffix($this->awsRegion));
     $this->awsSigningAlgorithm = 'AWS4-HMAC-SHA256';
     $this->awsService = 'ses';
     $this->awsTerminationString = 'aws4_request';
@@ -100,6 +73,18 @@ class AmazonSES extends PHPMailerMethod {
     $this->urlUtils = $urlUtils;
     $this->blacklist = new BlacklistCheck();
     $this->mailer = $this->buildMailer();
+  }
+
+  /**
+   * @return string[]
+   */
+  public static function getAvailableRegions(): array {
+    return Hosts::getSMTPHosts()['AmazonSES']['regions'];
+  }
+
+  private static function getEndpointSuffix(string $region): string {
+    // AWS China is a separate partition and does not answer on amazonaws.com.
+    return strpos($region, 'cn-') === 0 ? 'amazonaws.com.cn' : 'amazonaws.com';
   }
 
   public function send($newsletter, $subscriber, $extraParams = []): array {
