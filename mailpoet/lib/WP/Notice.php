@@ -6,6 +6,8 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Notice {
 
+  const DISMISS_NONCE_ACTION = 'mailpoet-dismiss-notice';
+
   const TYPE_ERROR = 'error';
   const TYPE_WARNING = 'warning';
   const TYPE_SUCCESS = 'success';
@@ -17,18 +19,23 @@ class Notice {
   private $dataNoticeName;
   private $renderInParagraph;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     $type,
     $message,
     $classes = '',
     $dataNoticeName = '',
-    $renderInParagraph = true
+    $renderInParagraph = true,
+    ?WPFunctions $wp = null
   ) {
     $this->type = $type;
     $this->message = $message;
     $this->classes = $classes;
     $this->dataNoticeName = $dataNoticeName;
     $this->renderInParagraph = $renderInParagraph;
+    $this->wp = $wp ?? WPFunctions::get();
   }
 
   public function getMessage() {
@@ -60,7 +67,7 @@ class Notice {
 
   protected static function createNotice($type, $message, $classes, $dataNoticeName, $renderInParagraph) {
     $notice = new Notice($type, $message, $classes, $dataNoticeName, $renderInParagraph);
-    WPFunctions::get()->addAction('admin_notices', [$notice, 'displayWPNotice']);
+    $notice->wp->addAction('admin_notices', [$notice, 'displayWPNotice']);
     return $notice;
   }
 
@@ -68,20 +75,11 @@ class Notice {
     $class = sprintf('notice notice-%s mailpoet_notice_server %s', $this->type, $this->classes);
     $message = nl2br($this->message);
 
-    if ($this->renderInParagraph) {
-      printf(
-        '<div class="%1$s" %3$s><p>%2$s</p></div>',
-        esc_attr($class),
-        wp_kses_post($message),
-        !empty($this->dataNoticeName) ? sprintf('data-notice="%s"', esc_attr($this->dataNoticeName)) : ''
-      );
-    } else {
-      printf(
-        '<div class="%1$s" %3$s>%2$s</div>',
-        esc_attr($class),
-        wp_kses_post($message),
-        !empty($this->dataNoticeName) ? sprintf('data-notice="%s"', esc_attr($this->dataNoticeName)) : ''
-      );
-    }
+    printf(
+      $this->renderInParagraph ? '<div class="%1$s" %3$s><p>%2$s</p></div>' : '<div class="%1$s" %3$s>%2$s</div>',
+      esc_attr($class),
+      wp_kses_post($message),
+      !empty($this->dataNoticeName) ? sprintf('data-notice="%s" data-nonce="%s"', esc_attr($this->dataNoticeName), esc_attr($this->wp->wpCreateNonce(self::DISMISS_NONCE_ACTION))) : ''
+    );
   }
 }

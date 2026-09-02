@@ -5,14 +5,13 @@ jQuery(($) => {
     'click',
     '.mailpoet-dismissible-notice .notice-dismiss',
     function dismiss() {
-      const type = $(this)
-        .closest('.mailpoet-dismissible-notice')
-        .data('notice');
+      const notice = $(this).closest('.mailpoet-dismissible-notice');
       $.ajax(window.ajaxurl, {
         type: 'POST',
         data: {
           action: 'dismissed_notice_handler',
-          type,
+          type: notice.data('notice'),
+          nonce: notice.data('nonce'),
         },
       });
     },

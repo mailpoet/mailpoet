@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
@@ -13,6 +14,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class PermanentNotices {
@@ -197,8 +199,27 @@ class PermanentNotices {
   }
 
   public function ajaxDismissNoticeHandler() {
-    if (!isset($_POST['type'])) return;
-    switch ($_POST['type']) {
+    if (!$this->wp->currentUserCan(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) {
+      $this->wp->wpDie(
+        esc_html__('You do not have permission to perform this action.', 'mailpoet'),
+        esc_html__('Unauthorized', 'mailpoet'),
+        ['response' => 403]
+      );
+      return;
+    }
+
+    $nonce = isset($_POST['nonce']) && is_string($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$this->wp->wpVerifyNonce($nonce, Notice::DISMISS_NONCE_ACTION)) {
+      $this->wp->wpDie(
+        esc_html__('Security check failed.', 'mailpoet'),
+        esc_html__('Error', 'mailpoet'),
+        ['response' => 403]
+      );
+      return;
+    }
+
+    if (!isset($_POST['type']) || !is_string($_POST['type'])) return;
+    switch (sanitize_text_field(wp_unslash($_POST['type']))) {
       case (PHPVersionWarnings::OPTION_NAME):
         $this->phpVersionWarnings->disable();
         break;
