@@ -76,10 +76,10 @@ class AmazonSES extends PHPMailerMethod {
   }
 
   /**
-   * @return string[]
+   * @return array<string, string> Region label => region code.
    */
   public static function getAvailableRegions(): array {
-    return array_values(Hosts::getSMTPHosts()['AmazonSES']['regions']);
+    return Hosts::getSMTPHosts()['AmazonSES']['regions'];
   }
 
   /**
