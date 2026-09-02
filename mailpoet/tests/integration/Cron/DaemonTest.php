@@ -167,7 +167,7 @@ class DaemonTest extends \MailPoetTest {
 
     $daemonData = $this->settings->get(CronHelper::DAEMON_SETTING);
     verify($daemonData['run_completed_at'])->notEmpty();
-    verify($daemonData['last_error'][0]['worker'])->equals('unknown (worker could not be created)');
+    verify($daemonData['last_error'][0]['worker'])->equals('createQueueWorker');
   }
 
   private function createWorkersFactoryMock(array $workers = []) {
