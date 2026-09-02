@@ -9,6 +9,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
@@ -56,6 +57,9 @@ class Newsletters extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
+  /** @var ApiDataSanitizer */
+  private $dataSanitizer;
+
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
@@ -66,7 +70,8 @@ class Newsletters extends APIEndpoint {
     NewsletterDeleteController $newsletterDeleteController,
     NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
+    ApiDataSanitizer $dataSanitizer
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
@@ -78,6 +83,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
+    $this->dataSanitizer = $dataSanitizer;
   }
 
   public function get($data = []) {
@@ -214,9 +220,8 @@ class Newsletters extends APIEndpoint {
     }
 
     $newslettersTableName = $this->newslettersRepository->getTableName();
-    $newsletter->setBody(
-      json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true)
-    );
+    $decodedBody = json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true);
+    $newsletter->setBody($this->dataSanitizer->sanitizeBody(is_array($decodedBody) ? $decodedBody : []));
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);
