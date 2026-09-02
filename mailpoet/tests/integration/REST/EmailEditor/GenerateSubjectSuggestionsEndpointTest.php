@@ -45,6 +45,35 @@ class GenerateSubjectSuggestionsEndpointTest extends Test {
     $this->assertSame('mailpoet_ai_unavailable', $data['code']);
   }
 
+  public function testItRejectsEmailsTheUserCannotEditEvenWithTheManageEmailsCapability(): void {
+    $authorId = $this->createUserWithRole('author');
+    $otherAuthorId = $this->createUserWithRole('author');
+    (new \WP_User($authorId))->add_cap(AccessControl::PERMISSION_MANAGE_EMAILS);
+    $emailId = $this->createEmailOwnedBy($otherAuthorId);
+    wp_set_current_user($authorId);
+
+    $data = $this->post(self::ENDPOINT, ['json' => ['post_id' => $emailId]]);
+
+    $this->assertSame('mailpoet_ai_forbidden', $data['code']);
+  }
+
+  public function testItRejectsPostsThatAreNotEmails(): void {
+    $editorId = $this->createUserWithRole('editor');
+    (new \WP_User($editorId))->add_cap(AccessControl::PERMISSION_MANAGE_EMAILS);
+    $postId = $this->tester->createPost([
+      'post_type' => 'post',
+      'post_status' => 'draft',
+      'post_author' => $editorId,
+      'post_title' => 'Not an email',
+      'post_content' => '<!-- wp:paragraph --><p>Regular blog post.</p><!-- /wp:paragraph -->',
+    ])->ID;
+    wp_set_current_user($editorId);
+
+    $data = $this->post(self::ENDPOINT, ['json' => ['post_id' => $postId]]);
+
+    $this->assertSame('mailpoet_ai_email_not_found', $data['code']);
+  }
+
   private function createUserWithRole(string $role): int {
     $suffix = uniqid();
     return (int)$this->tester->createWordPressUser("subject-suggestions-{$role}-{$suffix}@localhost.test", $role);
