@@ -22,6 +22,14 @@ class MetaInformationManager {
       $text = [];
 
       if (isset($args['showAuthor']) && $args['showAuthor'] === $positionField) {
+        /**
+         * Filters the author line shown with a post in an email.
+         *
+         * @param string      $author     The author line, including the label set in the block.
+         * @param int         $postId     ID of the post being rendered.
+         * @param string|null $postAuthor ID of the post author. Null for WooCommerce products, which show no author.
+         * @return string The author line to render. A return that is not a string or a number is ignored.
+         */
         $text[] = self::applyMetaFilter(
           'mailpoet_newsletter_post_author',
           self::getPostAuthor($postAuthor, $args['authorPrecededBy']),
@@ -30,6 +38,14 @@ class MetaInformationManager {
       }
 
       if (isset($args['showCategories']) && $args['showCategories'] === $positionField) {
+        /**
+         * Filters the categories line shown with a post in an email.
+         *
+         * @param string $categories The categories line, including the label set in the block. Empty when the post has no categories.
+         * @param int    $postId     ID of the post being rendered.
+         * @param string $postType   Post type being rendered, 'product' for WooCommerce products.
+         * @return string The categories line to render. A return that is not a string or a number is ignored.
+         */
         $text[] = self::applyMetaFilter(
           'mailpoet_newsletter_post_categories',
           self::getPostCategories($postId, $postType, $args['categoriesPrecededBy']),
