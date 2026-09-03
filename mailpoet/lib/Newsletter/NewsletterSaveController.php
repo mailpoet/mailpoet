@@ -128,8 +128,8 @@ class NewsletterSaveController {
 
   public function decodeAndSanitizeBody(string $body): ?array {
     $newslettersTableName = $this->newslettersRepository->getTableName();
-    $encodedBody = $this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $body);
-    return $this->dataSanitizer->decodeAndSanitizeBody($encodedBody);
+    $decodedBody = json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $body), true);
+    return is_array($decodedBody) ? $this->dataSanitizer->sanitizeBody($decodedBody) : null;
   }
 
   public function save(array $data = []): NewsletterEntity {
