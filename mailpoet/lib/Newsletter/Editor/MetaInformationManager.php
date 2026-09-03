@@ -22,17 +22,18 @@ class MetaInformationManager {
       $text = [];
 
       if (isset($args['showAuthor']) && $args['showAuthor'] === $positionField) {
-        $text[] = self::getPostAuthor(
-          $postAuthor,
-          $args['authorPrecededBy']
+        $text[] = self::applyMetaFilter(
+          'mailpoet_newsletter_post_author',
+          self::getPostAuthor($postAuthor, $args['authorPrecededBy']),
+          [$postId, $postAuthor]
         );
       }
 
       if (isset($args['showCategories']) && $args['showCategories'] === $positionField) {
-        $text[] = self::getPostCategories(
-          $postId,
-          $postType,
-          $args['categoriesPrecededBy']
+        $text[] = self::applyMetaFilter(
+          'mailpoet_newsletter_post_categories',
+          self::getPostCategories($postId, $postType, $args['categoriesPrecededBy']),
+          [$postId, $postType]
         );
       }
 
@@ -44,6 +45,30 @@ class MetaInformationManager {
     }
 
     return $content;
+  }
+
+  /**
+   * Applies a meta information filter and keeps the unfiltered value when a
+   * callback returns something that cannot be rendered as text.
+   *
+   * @param string $filterName
+   * @param string $value
+   * @param array $args
+   * @return string
+   */
+  private static function applyMetaFilter($filterName, $value, array $args) {
+    $filtered = WPFunctions::get()->applyFilters($filterName, $value, ...$args);
+
+    if (is_string($filtered)) {
+      return $filtered;
+    }
+
+    if (is_int($filtered) || is_float($filtered)) {
+      return (string)$filtered;
+    }
+
+    // An array or object here would fatal in the implode() that joins these lines.
+    return $value;
   }
 
   private static function getPostCategories($postId, $postType, $precededBy) {
