@@ -483,31 +483,31 @@ class Newsletter {
         $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
       }
     }
-    $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
+    [$subject, $html, $text] = Helpers::splitObject($preparedNewsletter);
     if ($context !== null) {
-      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
+      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, [$subject, $html, $text], $context);
 
       $this->personalizer->set_context($context);
-      $preparedNewsletter[0] = $this->personalizer->personalize_content($preparedNewsletter[0], Personalizer::RENDERING_CONTEXT_TEXT);
-      $preparedNewsletter[1] = $this->personalizer->personalize_content($preparedNewsletter[1], Personalizer::RENDERING_CONTEXT_HTML);
-      $preparedNewsletter[2] = $this->personalizer->personalize_content($preparedNewsletter[2], Personalizer::RENDERING_CONTEXT_TEXT);
+      $subject = $this->personalizer->personalize_content($subject, Personalizer::RENDERING_CONTEXT_TEXT);
+      $html = $this->personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
+      $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
       // Token links that were not hashed (tracking disabled) are still literal in the text body.
-      $preparedNewsletter[2] = $this->personalizationTagLinkResolver->resolveMarkdownLinks($preparedNewsletter[2], $context);
-      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
+      $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
+      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $html, $context);
       if (is_string($personalizedHtml)) {
-        $preparedNewsletter[1] = $personalizedHtml;
+        $html = $personalizedHtml;
       }
-      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $preparedNewsletter[2], $context);
+      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $text, $context);
       if (is_string($personalizedText)) {
-        $preparedNewsletter[2] = $personalizedText;
+        $text = $personalizedText;
       }
     }
     return [
       'id' => $newsletter->getId(),
-      'subject' => $preparedNewsletter[0],
+      'subject' => $subject,
       'body' => [
-        'html' => $preparedNewsletter[1],
-        'text' => $preparedNewsletter[2],
+        'html' => $html,
+        'text' => $text,
       ],
     ];
   }
