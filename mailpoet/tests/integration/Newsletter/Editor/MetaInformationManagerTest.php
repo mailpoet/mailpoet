@@ -21,6 +21,9 @@ class MetaInformationManagerTest extends \MailPoetTest {
   /** @var int */
   private $postId;
 
+  /** @var int */
+  private $categoryId;
+
   /** @var array */
   private $args;
 
@@ -48,7 +51,8 @@ class MetaInformationManagerTest extends \MailPoetTest {
       'post_type' => 'post',
       'post_author' => $this->authorId,
     ]);
-    wp_set_post_terms($this->postId, ['Announcements'], 'category');
+    $this->categoryId = $this->createCategory('Announcements');
+    wp_set_post_terms($this->postId, [$this->categoryId], 'category');
 
     $this->args = [
       'showAuthor' => 'belowText',
@@ -196,8 +200,19 @@ class MetaInformationManagerTest extends \MailPoetTest {
     }
     $this->registeredFilters = [];
     $this->wp->wpDeletePost($this->postId, true);
+    wp_delete_term($this->categoryId, 'category');
     wp_delete_user($this->authorId);
     parent::_after();
+  }
+
+  private function createCategory(string $name): int {
+    $term = wp_insert_term($name, 'category');
+    if ($term instanceof \WP_Error) {
+      $existing = $term->get_error_data('term_exists');
+      $this->assertIsInt($existing);
+      return $existing;
+    }
+    return (int)$term['term_id'];
   }
 
   private function addFilter(string $name, callable $callback, int $acceptedArgs = 1): void {
