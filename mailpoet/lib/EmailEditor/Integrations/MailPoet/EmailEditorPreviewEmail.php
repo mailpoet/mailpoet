@@ -2,21 +2,27 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditorPreviewEmail {
   private NewslettersRepository $newslettersRepository;
 
   private SendPreviewController $sendPreviewController;
 
+  private WPFunctions $wp;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    SendPreviewController $sendPreviewController
+    SendPreviewController $sendPreviewController,
+    WPFunctions $wp
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->sendPreviewController = $sendPreviewController;
+    $this->wp = $wp;
   }
 
   /**
@@ -28,6 +34,10 @@ class EmailEditorPreviewEmail {
   public function sendPreviewEmail($postData) {
     if (is_bool($postData) || !isset($postData['postId']) || get_post_type((int)$postData['postId']) !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) {
       return $postData;
+    }
+
+    if (!$this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)) {
+      throw new \Exception(esc_html__('You do not have permission to perform this action.', 'mailpoet'));
     }
 
     $this->validateData($postData);
