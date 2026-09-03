@@ -163,6 +163,17 @@ class MetaInformationManagerTest extends \MailPoetTest {
     verify($content)->stringNotContainsString('Original Author');
   }
 
+  public function testItRendersAFloatAuthorReturnedByAFilter() {
+    $this->addFilter(self::AUTHOR_FILTER, function () {
+      return 4.5;
+    });
+
+    $content = $this->appendMetaInformation();
+
+    verify($content)->stringContainsString('4.5');
+    verify($content)->stringNotContainsString('Original Author');
+  }
+
   public function testItAppliesTheAuthorFilterWhenThePostHasNoAuthor() {
     $received = [];
     $this->addFilter(self::AUTHOR_FILTER, function ($author, $postId, $postAuthor) use (&$received) {
