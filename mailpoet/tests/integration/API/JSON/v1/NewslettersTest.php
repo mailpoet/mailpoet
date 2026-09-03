@@ -373,10 +373,8 @@ class NewslettersTest extends \MailPoetTest {
     ]);
 
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    $this->entityManager->clear();
-    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    verify($newsletter->getBody())->equals($storedBody);
+    $this->entityManager->refresh($this->newsletter);
+    verify($this->newsletter->getBody())->equals($storedBody);
   }
 
   public function testItSanitizesBodyBeforeStoringPreview() {
@@ -394,9 +392,8 @@ class NewslettersTest extends \MailPoetTest {
     ]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
-    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $storedBody = $newsletter->getBody();
+    $this->entityManager->refresh($this->newsletter);
+    $storedBody = $this->newsletter->getBody();
     $this->assertIsArray($storedBody);
     $storedText = $storedBody['content']['blocks'][0]['text'];
     verify($storedText)->stringContainsString('<p>Hello</p>');
