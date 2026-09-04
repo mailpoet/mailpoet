@@ -24,6 +24,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
+use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -197,6 +198,105 @@ class WorkerTest extends \MailPoetTest {
       );
 
     $this->statsNotifications->process();
+  }
+
+  /**
+   * Pins both sides. Asserting that all five rates moved would be wrong, and
+   * asserting that none moved would pass on a no-op — only open and click rates
+   * are based on the recipients we could measure. Unsubscribes and bounces are
+   * recorded for opted-out people too, so their denominator stays whole.
+   *
+   * Fixture: 5 sent, 3 clicks, 2 opens, 1 unsubscribe, 0 bounces. With one
+   * recipient untracked the tracked denominator is 4.
+   */
+  public function testItBasesOnlyOpenAndClickRatesOnTrackedRecipients() {
+    $this->createRecipientRows([true, true, true, true, false]);
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context) {
+          verify(round($context['clicked'], 2))->equals(75.0); // 3 of 4, not 3 of 5
+          verify(round($context['opened'], 2))->equals(50.0); // 2 of 4, not 2 of 5
+          verify(round($context['unsubscribed'], 2))->equals(20.0); // 1 of 5, unchanged
+          verify(round($context['bounced'], 2))->equals(0.0); // unchanged
+          verify($context['notTracked'])->equals(1);
+          verify($context['trackedSent'])->equals(4);
+          return true;
+        })
+      );
+
+    $this->statsNotifications->process();
+  }
+
+  /**
+   * The case a "no division by zero" guard does not cover. When nobody could be
+   * measured the tracked denominator is 0, and the pre-existing `?: 1` idiom
+   * would quietly divide by 1 instead, turning 3 clicks on a 5-recipient
+   * campaign into 300%. It is reachable: switching Subscriber choice to ask_all
+   * makes every not-yet-asked recipient untracked, including on campaigns sent
+   * long before, whose opens and clicks are already recorded. With nothing
+   * measurable, the only honest rate is 0.
+   */
+  public function testItReportsZeroRatesWhenNoRecipientCouldBeTracked() {
+    $this->createRecipientRows([false, false, false, false, false]);
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context) {
+          verify($context['clicked'])->equals(0.0); // not 300%
+          verify($context['opened'])->equals(0.0); // not 200%
+          verify($context['machineOpened'])->equals(0.0);
+          verify(round($context['unsubscribed'], 2))->equals(20.0); // 1 of 5, unchanged
+          verify($context['notTracked'])->equals(5);
+          verify($context['trackedSent'])->equals(0);
+          return true;
+        })
+      );
+
+    $this->statsNotifications->process();
+  }
+
+  public function testItLeavesTheRatesAloneWhenEveryRecipientIsTracked() {
+    $this->createRecipientRows([true, true, true, true, true]);
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context) {
+          verify(round($context['clicked'], 2))->equals(60.0);
+          verify(round($context['opened'], 2))->equals(40.0);
+          verify($context['notTracked'])->equals(0);
+          return true;
+        })
+      );
+
+    $this->statsNotifications->process();
+  }
+
+  /**
+   * true = granted, false = opted out yesterday, i.e. before the row's sent_at
+   * (now). Granted is set explicitly because the entity default is 'unknown',
+   * which is untracked in strict mode.
+   *
+   * @param bool[] $trackedFlags
+   */
+  private function createRecipientRows(array $trackedFlags): void {
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    foreach ($trackedFlags as $tracked) {
+      $factory = new SubscriberFactory();
+      if ($tracked) {
+        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+      } else {
+        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-1 day'));
+      }
+      (new StatisticsNewslettersFactory($newsletter, $factory->create()))->create();
+    }
   }
 
   public function testAddsWPUrlsToContext() {

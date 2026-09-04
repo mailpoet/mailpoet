@@ -22,6 +22,7 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WooCommerce\Helper as WCHelper;
@@ -61,7 +62,8 @@ class NewslettersTest extends \MailPoetTest {
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class),
             $this->diContainer->get(TrackingConfig::class),
-            $this->diContainer->get(OrderAttributionRevenueReader::class)
+            $this->diContainer->get(OrderAttributionRevenueReader::class),
+            $this->diContainer->get(TrackingConsentController::class)
           ),
           $this->diContainer->get(Url::class),
           $this->diContainer->get(SendingQueuesRepository::class),

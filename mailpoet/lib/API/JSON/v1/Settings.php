@@ -27,6 +27,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoetVendor\Carbon\Carbon;
@@ -85,6 +86,9 @@ class Settings extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
+  /** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -101,7 +105,8 @@ class Settings extends APIEndpoint {
     SettingsChangeHandler $settingsChangeHandler,
     SubscribersCountsController $subscribersCountsController,
     TrackingConfig $trackingConfig,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -119,6 +124,7 @@ class Settings extends APIEndpoint {
     $this->subscribersCountsController = $subscribersCountsController;
     $this->trackingConfig = $trackingConfig;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function get() {
@@ -370,6 +376,19 @@ class Settings extends APIEndpoint {
   }
 
   private function onSettingsChange($oldSettings, $newSettings) {
+    // Stamp when the site started asking everyone, so stats can tell "untracked
+    // now" from "untracked when we sent". Without it, switching to ask_all
+    // would re-label recipients who were tracked on earlier sends.
+    // Settings are persisted before this runs and nothing constrains their
+    // shape, so a request can leave a non-string here. Ignore anything that is
+    // not one of the three choices rather than fataling on the way out.
+    $oldChoice = $oldSettings['tracking']['consent']['subscriber_choice'] ?? null;
+    $newChoice = $newSettings['tracking']['consent']['subscriber_choice'] ?? null;
+    $this->trackingConsentController->onSubscriberChoiceChange(
+      is_string($oldChoice) ? $oldChoice : null,
+      is_string($newChoice) ? $newChoice : null
+    );
+
     // Recalculate inactive subscribers
     $oldInactivationInterval = $oldSettings['deactivate_subscriber_after_inactive_days'];
     $newInactivationInterval = $newSettings['deactivate_subscriber_after_inactive_days'];

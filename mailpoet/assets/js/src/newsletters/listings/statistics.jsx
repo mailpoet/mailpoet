@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -66,13 +66,20 @@ function Statistics({
     return null;
   }
 
+  const notTracked = newsletter.statistics.notTracked ?? 0;
+  const trackedSent = newsletter.statistics.trackedSent ?? totalSent;
+
   let percentageClicked = 0;
   let percentageOpened = 0;
   let revenue = null;
 
+  // Opens and clicks are divided by the recipients we were allowed to measure;
+  // an opted-out recipient can never register either.
+  if (trackedSent > 0) {
+    percentageClicked = (newsletter.statistics.clicked * 100) / trackedSent;
+    percentageOpened = (newsletter.statistics.opened * 100) / trackedSent;
+  }
   if (totalSent > 0) {
-    percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
-    percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
     revenue = newsletter.statistics.revenue;
   }
 
@@ -178,6 +185,17 @@ function Statistics({
   return (
     <>
       {content}
+      {notTracked > 0 && (
+        <div className="mailpoet-listing-stats-coverage">
+          {sprintf(
+            /* translators: %1$s is how many recipients were not tracked, %2$s is how many were, %3$s is the total sent. */
+            __('%1$s not tracked (rates based on %2$s of %3$s)', 'mailpoet'),
+            notTracked.toLocaleString(),
+            trackedSent.toLocaleString(),
+            totalSent.toLocaleString(),
+          )}
+        </div>
+      )}
       {afterContent}
     </>
   );
@@ -187,6 +205,9 @@ const StatisticsPropType = PropTypes.shape({
   clicked: PropTypes.number,
   opened: PropTypes.number,
   unsubscribed: PropTypes.number,
+  notTracked: PropTypes.number,
+  trackedSent: PropTypes.number,
+  trackingCoverage: PropTypes.number,
   revenue: PropTypes.shape({
     count: PropTypes.number,
     currency: PropTypes.string,
