@@ -22,8 +22,10 @@ class MetadataCache extends CacheProvider {
   ) {
     $this->isDevMode = defined('WP_DEBUG') && WP_DEBUG && !$isReadOnly;
     $this->directory = rtrim($dir, '/\\');
-    if (!file_exists($this->directory)) {
-      mkdir($this->directory);
+    // Parallel processes (e.g. PHPStan workers) can create the directory between
+    // the check and the call, so a failed mkdir is only an error if it is still missing.
+    if (!is_dir($this->directory) && !@mkdir($this->directory) && !is_dir($this->directory)) {
+      throw new \RuntimeException("Failed to create the metadata cache directory: {$this->directory}");
     }
   }
 
