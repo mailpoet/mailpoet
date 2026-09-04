@@ -18,7 +18,6 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
-use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters extends APIEndpoint {
@@ -35,9 +34,6 @@ class Newsletters extends APIEndpoint {
 
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
-
-  /** @var Emoji */
-  private $emoji;
 
   /** @var SendPreviewController */
   private $sendPreviewController;
@@ -60,7 +56,6 @@ class Newsletters extends APIEndpoint {
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
-    Emoji $emoji,
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterDeleteController $newsletterDeleteController,
@@ -71,7 +66,6 @@ class Newsletters extends APIEndpoint {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
-    $this->emoji = $emoji;
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterDeleteController = $newsletterDeleteController;
@@ -200,7 +194,7 @@ class Newsletters extends APIEndpoint {
   }
 
   public function showPreview($data = []) {
-    if (empty($data['body'])) {
+    if (empty($data['body']) || !is_string($data['body'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('Newsletter data is missing.', 'mailpoet'),
       ]);
@@ -213,10 +207,14 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $newslettersTableName = $this->newslettersRepository->getTableName();
-    $newsletter->setBody(
-      json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true)
-    );
+    $body = $this->newsletterSaveController->decodeAndSanitizeBody($data['body']);
+    if ($body === null) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Invalid newsletter body payload.', 'mailpoet'),
+      ]);
+    }
+
+    $newsletter->setBody($body);
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);

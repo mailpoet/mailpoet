@@ -12,6 +12,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
@@ -327,13 +328,13 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsBrowserPreviewUrlWithoutProtocol() {
     $data = [
       'id' => $this->newsletter->getId(),
-      'body' => 'fake body',
+      'body' => '{}',
     ];
 
     $emoji = $this->make(
       Emoji::class,
-      ['encodeForUTF8Column' => Expected::once(function ($params) {
-        return $params;
+      ['encodeForUTF8Column' => Expected::once(function ($table, $field, $value) {
+        return $value;
       })]
     );
 
@@ -343,11 +344,60 @@ class NewslettersTest extends \MailPoetTest {
     ]);
     $this->endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'wp' => $wp,
-      'emoji' => $emoji,
+      'newsletterSaveController' => $this->getServiceWithOverrides(NewsletterSaveController::class, [
+        'emoji' => $emoji,
+      ]),
     ]);
 
     $response = $this->endpoint->showPreview($data);
     verify($response->meta['preview_url'])->stringNotContainsString('http');
-    verify($response->meta['preview_url'])->stringMatchesRegExp('!^\/\/!');
+    verify($response->meta['preview_url'])->stringStartsWith('//');
+  }
+
+  public function testItRejectsNonStringPreviewBody() {
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => ['not' => 'a string'],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  public function testItRejectsUndecodablePreviewBodyWithoutTouchingStoredBody() {
+    $storedBody = $this->newsletter->getBody();
+    $this->assertIsArray($storedBody);
+
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => 'not json',
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    $this->entityManager->refresh($this->newsletter);
+    verify($this->newsletter->getBody())->equals($storedBody);
+  }
+
+  public function testItSanitizesBodyBeforeStoringPreview() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => '<p>Hello</p><script>alert(1)</script><img src="x" onerror="alert(2)">'],
+        ],
+      ],
+    ];
+
+    $response = $this->endpoint->showPreview([
+      'id' => $this->newsletter->getId(),
+      'body' => json_encode($body),
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+
+    $this->entityManager->refresh($this->newsletter);
+    $storedBody = $this->newsletter->getBody();
+    $this->assertIsArray($storedBody);
+    $storedText = $storedBody['content']['blocks'][0]['text'];
+    verify($storedText)->stringContainsString('<p>Hello</p>');
+    verify($storedText)->stringNotContainsString('<script');
+    verify($storedText)->stringNotContainsString('onerror');
   }
 }
