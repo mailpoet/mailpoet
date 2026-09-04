@@ -8,6 +8,7 @@ use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
+use MailPoet\Util\SpreadsheetCellFormatter;
 use MailPoetVendor\XLSXWriter;
 
 class Export {
@@ -113,8 +114,8 @@ class Export {
     if ($cSVFile === false) {
       throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
     }
-    $formatCSV = function($row) {
-      return '"' . str_replace('"', '\"', (string)$row) . '"';
+    $formatCSV = function($value) {
+      return '"' . str_replace('"', '\"', SpreadsheetCellFormatter::formatString((string)$value)) . '"';
     };
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding
@@ -198,7 +199,7 @@ class Export {
   }
 
   public function writeXLSX($xLSXWriter, $segment, $data) {
-    return $xLSXWriter->writeSheetRow(ucwords($segment), $data);
+    return $xLSXWriter->writeSheetRow(ucwords($segment), SpreadsheetCellFormatter::formatRow($data));
   }
 
   public function getSubscribers(): ?array {

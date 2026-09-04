@@ -462,6 +462,49 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     return $rows;
   }
 
+  public function testItGuardsCsvValuesASpreadsheetWouldEvaluate() {
+    $newsletter = $this->createNewsletter(123, '=SUM(1+1)', '@campaign', '2026-04-15 10:00:00');
+    $stats = $this->createStats(500, 200, 30, 80, 5, 10, null);
+
+    $exporter = $this->createExporter($stats);
+    $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
+
+    $files = glob(ExportDownload::getExportDirectory() . '/*.csv') ?: [];
+    verify($files)->arrayCount(1);
+    $rows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
+
+    verify($rows[1][1])->equals("'=SUM(1+1)");
+    verify($rows[1][2])->equals("'@campaign");
+    // Counts MailPoet computed itself are numbers, not text, so they stay as they are.
+    verify($rows[1][4])->equals('500');
+  }
+
+  public function testItDoesNotStoreExportedTextAsAnXlsxFormula() {
+    $newsletter = $this->createNewsletter(42, '=SUM(1+1)', null, '2026-01-01 00:00:00');
+    $stats = $this->createStats(10, 5, 0, 1, 0, 0, null);
+
+    $exporter = $this->createExporter($stats);
+    $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_XLSX);
+
+    $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
+    verify($files)->arrayCount(1);
+
+    $contents = $this->readXlsxContents($files[0]);
+    verify($contents)->stringNotContainsString('<f>');
+    verify(html_entity_decode($contents, ENT_QUOTES))->stringContainsString("'=SUM(1+1)");
+  }
+
+  private function readXlsxContents(string $path): string {
+    $zip = new \ZipArchive();
+    verify($zip->open($path))->true();
+    $contents = '';
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+      $contents .= (string)$zip->getFromIndex($i);
+    }
+    $zip->close();
+    return $contents;
+  }
+
   /**
    * @return array<array<string|null>>
    */
