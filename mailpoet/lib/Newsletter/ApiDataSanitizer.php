@@ -30,23 +30,24 @@ class ApiDataSanitizer {
 
   private function sanitizeBlocks(array $blocks): array {
     foreach ($blocks as $key => $block) {
-      if (!is_array($block) || !isset($block['type'])) {
+      if (!is_array($block)) {
         continue;
       }
+      $block = $this->sanitizeBlock($block);
       if (isset($block['blocks']) && is_array($block['blocks'])) {
-        $blocks[$key]['blocks'] = $this->sanitizeBlocks($block['blocks']);
-      } else {
-        $blocks[$key] = $this->sanitizeBlock($block);
+        $block['blocks'] = $this->sanitizeBlocks($block['blocks']);
       }
-    };
+      $blocks[$key] = $block;
+    }
     return $blocks;
   }
 
   private function sanitizeBlock(array $block): array {
-    if (!isset(self::SANITIZATION_CONFIG[$block['type']])) {
+    $type = $block['type'] ?? null;
+    if (!is_string($type) || !isset(self::SANITIZATION_CONFIG[$type])) {
       return $block;
     }
-    foreach (self::SANITIZATION_CONFIG[$block['type']] as $property) {
+    foreach (self::SANITIZATION_CONFIG[$type] as $property) {
       if (!isset($block[$property])) {
         continue;
       }
