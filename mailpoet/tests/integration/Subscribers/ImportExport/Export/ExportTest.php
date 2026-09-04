@@ -273,13 +273,95 @@ class ExportTest extends \MailPoetTest {
     $this->subscriber1->setFirstName('=SUM(1+1)');
     $this->subscribersRepository->flush();
 
+    $rows = $this->exportAndParseCsv();
+
+    verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals("'=SUM(1+1)");
+    // Ordinary values are untouched.
+    $mary = $this->findRowByEmail($rows, 'mary@jane.com');
+    verify($mary[1])->equals('Mary');
+    verify($mary[2])->equals('Brazil');
+  }
+
+  public function testItGuardsValuesThatTryToOpenTheirOwnCell() {
+    // A quote inside a value must not let it terminate its field and open a new,
+    // unguarded one.
+    $this->subscriber1->setFirstName('a",=SUM(1+1),"b');
+    $this->subscribersRepository->flush();
+
+    $rows = $this->exportAndParseCsv();
+
+    $triggers = ['=', '+', '-', '@', "\t", "\r"];
+    foreach ($rows as $rowIndex => $row) {
+      foreach ($row as $cellIndex => $cell) {
+        $cell = (string)$cell;
+        if ($cell === '') {
+          continue;
+        }
+        verify(in_array($cell[0], $triggers, true))
+          ->false("row {$rowIndex} cell {$cellIndex} is not guarded: {$cell}");
+      }
+    }
+    // The value still round-trips as a single cell.
+    verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals('a",=SUM(1+1),"b');
+  }
+
+  public function testItDoesNotStoreExportedTextAsAnXlsxFormula() {
+    $this->subscriber1->setFirstName('=SUM(1+1)');
+    $this->subscribersRepository->flush();
+
+    $this->export->exportFile = $this->export->getExportFile('xlsx');
+    $this->export->exportFormatOption = 'xlsx';
+    $this->export->process();
+
+    $archive = new \ZipArchive();
+    verify($archive->open($this->export->exportFile))->true();
+    $worksheet = (string)$archive->getFromName('xl/worksheets/sheet1.xml');
+    $sharedStrings = html_entity_decode((string)$archive->getFromName('xl/sharedStrings.xml'), ENT_QUOTES);
+    $archive->close();
+
+    verify($worksheet)->stringNotContainsString('<f>');
+    // Stored as plain text, so the reader shows the value rather than a guard character.
+    verify($sharedStrings)->stringContainsString('=SUM(1+1)');
+    verify($sharedStrings)->stringNotContainsString("'=SUM(1+1)");
+  }
+
+  /**
+   * @return array<int, array<int, string|null>>
+   */
+  private function exportAndParseCsv(): array {
     $this->export->exportFile = $this->export->getExportFile('csv');
     $this->export->exportFormatOption = 'csv';
     $this->export->process();
 
-    $contents = (string)file_get_contents($this->export->exportFile);
-    verify($contents)->stringContainsString('"\'=SUM(1+1)"');
-    verify($contents)->stringNotContainsString('"=SUM(1+1)"');
+    $body = substr((string)file_get_contents($this->export->exportFile), 3); // strip the UTF-8 BOM
+    $handle = fopen('php://memory', 'r+');
+    if ($handle === false) {
+      throw new \RuntimeException('Unable to read the exported file.');
+    }
+    fwrite($handle, $body);
+    rewind($handle);
+    $rows = [];
+    while (($fields = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+      if (!is_array($fields)) {
+        continue;
+      }
+      $rows[] = $fields;
+    }
+    fclose($handle);
+    return $rows;
+  }
+
+  /**
+   * @param array<int, array<int, string|null>> $rows
+   * @return array<int, string|null>
+   */
+  private function findRowByEmail(array $rows, string $email): array {
+    foreach ($rows as $row) {
+      if (($row[0] ?? null) === $email) {
+        return $row;
+      }
+    }
+    throw new \RuntimeException("No exported row for {$email}.");
   }
 
   private function getSubscriberDownloadFormat(string $url): string {

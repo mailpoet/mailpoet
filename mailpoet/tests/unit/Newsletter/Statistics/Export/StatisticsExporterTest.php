@@ -464,7 +464,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
 
   public function testItGuardsCsvValuesASpreadsheetWouldEvaluate() {
     $newsletter = $this->createNewsletter(123, '=SUM(1+1)', '@campaign', '2026-04-15 10:00:00');
-    $stats = $this->createStats(500, 200, 30, 80, 5, 10, null);
+    $revenue = new WooCommerceRevenue('USD', -12.5, 3, $this->makeEmpty(Helper::class));
+    $stats = $this->createStats(500, 200, 30, 80, 5, 10, $revenue);
 
     $exporter = $this->createExporter($stats);
     $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_CSV);
@@ -475,13 +476,16 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
 
     verify($rows[1][1])->equals("'=SUM(1+1)");
     verify($rows[1][2])->equals("'@campaign");
-    // Counts MailPoet computed itself are numbers, not text, so they stay as they are.
+    // Figures MailPoet computed itself stay numbers, including a negative one, which
+    // would otherwise be prefixed because it starts with a minus.
     verify($rows[1][4])->equals('500');
+    verify($rows[1][10])->equals('-12.5');
   }
 
   public function testItDoesNotStoreExportedTextAsAnXlsxFormula() {
     $newsletter = $this->createNewsletter(42, '=SUM(1+1)', null, '2026-01-01 00:00:00');
-    $stats = $this->createStats(10, 5, 0, 1, 0, 0, null);
+    $revenue = new WooCommerceRevenue('USD', -12.5, 3, $this->makeEmpty(Helper::class));
+    $stats = $this->createStats(10, 5, 0, 1, 0, 0, $revenue);
 
     $exporter = $this->createExporter($stats);
     $exporter->exportSingleAggregate($newsletter, StatisticsExporter::FORMAT_XLSX);
@@ -489,20 +493,24 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $files = glob(ExportDownload::getExportDirectory() . '/*.xlsx') ?: [];
     verify($files)->arrayCount(1);
 
-    $contents = $this->readXlsxContents($files[0]);
-    verify($contents)->stringNotContainsString('<f>');
-    verify(html_entity_decode($contents, ENT_QUOTES))->stringContainsString("'=SUM(1+1)");
+    $worksheet = $this->readXlsxWorksheet($files[0]);
+    verify($worksheet)->stringNotContainsString('<f>');
+
+    $rows = $this->parseXlsxRows($files[0]);
+    // Stored as plain text, so the reader shows the value itself rather than a guard character.
+    verify($rows[1][1])->equals('=SUM(1+1)');
+    verify($rows[0][1])->equals('Subject');
+    // A negative figure MailPoet computed stays a number instead of becoming text.
+    verify($rows[1][10])->equals('-12.5');
+    verify($worksheet)->stringNotContainsString("'-12.5");
   }
 
-  private function readXlsxContents(string $path): string {
-    $zip = new \ZipArchive();
-    verify($zip->open($path))->true();
-    $contents = '';
-    for ($i = 0; $i < $zip->numFiles; $i++) {
-      $contents .= (string)$zip->getFromIndex($i);
-    }
-    $zip->close();
-    return $contents;
+  private function readXlsxWorksheet(string $path): string {
+    $archive = new \ZipArchive();
+    verify($archive->open($path))->true();
+    $worksheet = (string)$archive->getFromName('xl/worksheets/sheet1.xml');
+    $archive->close();
+    return $worksheet;
   }
 
   /**
