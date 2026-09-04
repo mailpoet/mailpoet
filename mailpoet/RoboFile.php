@@ -331,7 +331,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testUnit(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    $command = '../tests_env/vendor/bin/codecept run unit';
+    $command = $this->codeceptCommand('run unit');
 
     if ($opts['file']) {
       $command .= ' -f ' . $opts['file'];
@@ -535,13 +535,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testFailedUnit() {
-    $this->_exec('../tests_env/vendor/bin/codecept build');
-    return $this->_exec('../tests_env/vendor/bin/codecept run unit -g failed');
+    $this->_exec($this->codeceptCommand('build'));
+    return $this->_exec($this->codeceptCommand('run unit -g failed'));
   }
 
   public function testFailedIntegration() {
-    $this->_exec('../tests_env/vendor/bin/codecept build');
-    return $this->_exec('../tests_env/vendor/bin/codecept run integration -g failed');
+    $this->_exec($this->codeceptCommand('build'));
+    return $this->_exec($this->codeceptCommand('run integration -g failed'));
   }
 
   public function containerDump() {
@@ -802,7 +802,7 @@ class RoboFile extends \Robo\Tasks {
     ]);
 
     // make sure Codeception support files are present to avoid invalid errors when running PHPStan
-    $this->_exec('../tests_env/vendor/bin/codecept build');
+    $this->_exec($this->codeceptCommand('build'));
 
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
@@ -1623,6 +1623,14 @@ class RoboFile extends \Robo\Tasks {
       throw new \Exception($message);
     }
     return $env;
+  }
+
+  /**
+   * php.ini-production, which Homebrew's PHP ships, sets register_argc_argv=Off
+   * and Codeception refuses to start without it.
+   */
+  private function codeceptCommand(string $arguments): string {
+    return 'php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept ' . $arguments;
   }
 
   private function execWithXDebug($command) {
