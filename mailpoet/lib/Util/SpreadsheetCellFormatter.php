@@ -11,22 +11,17 @@ class SpreadsheetCellFormatter {
 
   private const TEXT_PREFIX = "'";
 
-  public static function formatString(string $value): string {
-    if ($value === '') {
-      return $value;
-    }
-    return in_array($value[0], self::FORMULA_TRIGGERS, true) ? self::TEXT_PREFIX . $value : $value;
-  }
-
   /**
-   * Only strings are guarded. Other types are numbers MailPoet computed itself, and
-   * prefixing them would export a genuine negative number as text.
+   * Only strings are guarded, so a value MailPoet computed as a number stays a number.
    *
    * @param int|string|float|null $value
    * @return int|string|float|null
    */
   public static function format($value) {
-    return is_string($value) ? self::formatString($value) : $value;
+    if (!is_string($value) || $value === '' || !in_array($value[0], self::FORMULA_TRIGGERS, true)) {
+      return $value;
+    }
+    return self::TEXT_PREFIX . $value;
   }
 
   /**
@@ -35,13 +30,5 @@ class SpreadsheetCellFormatter {
    */
   public static function formatRow(array $row): array {
     return array_map([self::class, 'format'], $row);
-  }
-
-  /**
-   * @param array<int|string, string> $values
-   * @return array<int|string, string>
-   */
-  public static function formatStrings(array $values): array {
-    return array_map([self::class, 'formatString'], $values);
   }
 }

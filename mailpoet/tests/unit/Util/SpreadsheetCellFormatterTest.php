@@ -27,11 +27,6 @@ class SpreadsheetCellFormatterTest extends \MailPoetUnitTest {
     verify(SpreadsheetCellFormatter::format(null))->equals(null);
   }
 
-  public function testItFormatsAListOfStrings() {
-    verify(SpreadsheetCellFormatter::formatStrings(['=SUM(1+1)', 'Country', '-5']))
-      ->equals(["'=SUM(1+1)", 'Country', "'-5"]);
-  }
-
   public function testItFormatsAWholeRowAndKeepsKeys() {
     $row = [
       'name' => '=cmd()',

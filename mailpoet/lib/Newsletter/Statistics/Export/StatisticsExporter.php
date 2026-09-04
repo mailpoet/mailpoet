@@ -9,8 +9,8 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Util\SpreadsheetCellFormatter;
+use MailPoet\Util\TextOnlyXLSXWriter;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\XLSXWriter;
 
 class StatisticsExporter {
   public const FORMAT_CSV = 'csv';
@@ -255,11 +255,11 @@ class StatisticsExporter {
    * @param array<array<int|string|float|null>> $rows
    */
   private function writeXlsx(string $filePath, array $headers, array $rows): void {
-    $writer = new XLSXWriter();
+    $writer = new TextOnlyXLSXWriter();
     $sheetName = __('Statistics', 'mailpoet');
-    $writer->writeSheetHeader($sheetName, array_fill_keys(SpreadsheetCellFormatter::formatStrings($headers), 'string'));
+    $writer->writeSheetHeader($sheetName, array_fill_keys($headers, 'string'));
     foreach ($rows as $row) {
-      $writer->writeSheetRow($sheetName, SpreadsheetCellFormatter::formatRow($row));
+      $writer->writeSheetRow($sheetName, $row);
     }
     $writer->writeToFile($filePath);
   }

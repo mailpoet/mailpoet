@@ -9,7 +9,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Util\SpreadsheetCellFormatter;
-use MailPoetVendor\XLSXWriter;
+use MailPoet\Util\TextOnlyXLSXWriter;
 
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 1000;
@@ -114,38 +114,38 @@ class Export {
     if ($cSVFile === false) {
       throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
     }
-    $formatCSV = function($value) {
-      return '"' . str_replace('"', '\"', SpreadsheetCellFormatter::formatString((string)$value)) . '"';
-    };
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding
     fwrite($cSVFile, chr(0xEF) . chr(0xBB) . chr(0xBF));
-    fwrite(
-      $cSVFile,
-      implode(
-        ',',
-        array_map(
-          $formatCSV,
-          $formattedSubscriberFields
-        )
-      ) . PHP_EOL
-    );
+    $this->writeCSVRow($cSVFile, $formattedSubscriberFields);
 
     while (($subscribers = $this->getSubscribers()) !== null) {
       $processedSubscribers += count($subscribers);
       foreach ($subscribers as $subscriber) {
         $row = $this->formatSubscriberData($subscriber);
         $row[] = ucwords($subscriber['segment_name']);
-        fwrite($cSVFile, implode(',', array_map($formatCSV, $row)) . "\n");
+        $this->writeCSVRow($cSVFile, $row);
       }
     }
     fclose($cSVFile);
     return $processedSubscribers;
   }
 
+  /**
+   * @param resource $file
+   * @param array<int|string, mixed> $row
+   */
+  private function writeCSVRow($file, array $row): void {
+    $cells = array_map(function($value): string {
+      return is_scalar($value) ? (string)$value : '';
+    }, $row);
+    // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fputcsv -- Export files are created under MailPoet's own export directory.
+    fputcsv($file, SpreadsheetCellFormatter::formatRow($cells), ',', '"', '');
+  }
+
   public function generateXLSX(): int {
     $processedSubscribers = 0;
-    $xLSXWriter = new XLSXWriter();
+    $xLSXWriter = new TextOnlyXLSXWriter();
     $xLSXWriter->setAuthor('MailPoet (www.mailpoet.com)');
     $lastSegment = false;
     $processedSegments = [];
@@ -199,7 +199,7 @@ class Export {
   }
 
   public function writeXLSX($xLSXWriter, $segment, $data) {
-    return $xLSXWriter->writeSheetRow(ucwords($segment), SpreadsheetCellFormatter::formatRow($data));
+    return $xLSXWriter->writeSheetRow(ucwords($segment), $data);
   }
 
   public function getSubscribers(): ?array {
