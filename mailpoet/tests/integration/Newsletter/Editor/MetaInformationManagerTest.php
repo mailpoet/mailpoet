@@ -24,6 +24,9 @@ class MetaInformationManagerTest extends \MailPoetTest {
   /** @var int */
   private $categoryId;
 
+  /** @var string */
+  private $categoryName;
+
   /** @var array */
   private $args;
 
@@ -35,9 +38,10 @@ class MetaInformationManagerTest extends \MailPoetTest {
     $this->metaManager = new MetaInformationManager();
     $this->wp = new WPFunctions();
 
+    $unique = uniqid();
     $authorId = wp_insert_user([
-      'user_login' => 'stomail8385',
-      'user_email' => 'stomail8385@example.com',
+      'user_login' => "author_$unique",
+      'user_email' => "author_$unique@example.com",
       'user_pass' => 'password',
       'display_name' => 'Original Author',
     ]);
@@ -51,7 +55,8 @@ class MetaInformationManagerTest extends \MailPoetTest {
       'post_type' => 'post',
       'post_author' => $this->authorId,
     ]);
-    $this->categoryId = $this->createCategory('Announcements');
+    $this->categoryName = "Announcements $unique";
+    $this->categoryId = $this->createCategory($this->categoryName);
     wp_set_post_terms($this->postId, [$this->categoryId], 'category');
 
     $this->args = [
@@ -66,7 +71,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
     $content = $this->appendMetaInformation();
 
     verify($content)->stringContainsString('Author: Original Author');
-    verify($content)->stringContainsString('Categories: Announcements');
+    verify($content)->stringContainsString('Categories: ' . $this->categoryName);
   }
 
   public function testItLetsAFilterReplaceTheAuthor() {
@@ -78,7 +83,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
 
     verify($content)->stringContainsString('Guest Author');
     verify($content)->stringNotContainsString('Original Author');
-    verify($content)->stringContainsString('Categories: Announcements');
+    verify($content)->stringContainsString('Categories: ' . $this->categoryName);
   }
 
   public function testItLetsAFilterReplaceTheCategories() {
@@ -89,7 +94,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
     $content = $this->appendMetaInformation();
 
     verify($content)->stringContainsString('Filed under: Politics');
-    verify($content)->stringNotContainsString('Announcements');
+    verify($content)->stringNotContainsString($this->categoryName);
     verify($content)->stringContainsString('Author: Original Author');
   }
 
@@ -116,7 +121,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
 
     $this->appendMetaInformation();
 
-    verify($received[0])->equals('Categories: Announcements');
+    verify($received[0])->equals('Categories: ' . $this->categoryName);
     verify((int)$received[1])->equals($this->postId);
     verify($received[2])->equals('post');
   }
@@ -218,11 +223,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
 
   private function createCategory(string $name): int {
     $term = wp_insert_term($name, 'category');
-    if ($term instanceof \WP_Error) {
-      $existing = $term->get_error_data('term_exists');
-      $this->assertIsInt($existing);
-      return $existing;
-    }
+    $this->assertIsArray($term);
     return (int)$term['term_id'];
   }
 
