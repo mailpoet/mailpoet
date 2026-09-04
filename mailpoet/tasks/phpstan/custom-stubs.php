@@ -396,6 +396,10 @@ namespace AutomateWoo {
       }
       public function opt_in() {
       }
+      public function opt_out_of_tracking() {
+      }
+      public function opt_in_to_tracking() {
+      }
     }
   }
   if (!class_exists(\AutomateWoo\Customer_Factory::class)) {

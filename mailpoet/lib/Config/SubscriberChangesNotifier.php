@@ -23,6 +23,17 @@ class SubscriberChangesNotifier {
   /** @var array<int, int> */
   private $countChangedSubscriberIds = [];
 
+  /**
+   * Net consent transition per subscriber, keyed by subscriber id: the value they had
+   * when this request started, and the value they ended on. Deliberately not collapsed
+   * across subscribers the way updates are, because a consent change is a per-person
+   * record. If one subscriber changes twice in a request the original `old` is kept, so
+   * the pair still describes the real before-and-after rather than an inner step.
+   *
+   * @var array<int, array{0: string, 1: string}>
+   */
+  private $trackingConsentChanges = [];
+
   /** @var array<int, int> */
   private $createdSubscriberBatches = [];
 
@@ -43,6 +54,19 @@ class SubscriberChangesNotifier {
     $this->notifyUpdates();
     $this->notifyDeletes();
     $this->notifyCountChanges();
+    $this->notifyTrackingConsentChanges();
+  }
+
+  public function subscriberTrackingConsentChanged(int $subscriberId, string $oldConsent, string $newConsent): void {
+    // Keep the first `old` seen this request so a second change does not rewrite history.
+    $originalOld = $this->trackingConsentChanges[$subscriberId][0] ?? $oldConsent;
+    $this->trackingConsentChanges[$subscriberId] = [$originalOld, $newConsent];
+  }
+
+  private function notifyTrackingConsentChanges(): void {
+    foreach ($this->trackingConsentChanges as $subscriberId => list($oldConsent, $newConsent)) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED, $subscriberId, $oldConsent, $newConsent);
+    }
   }
 
   private function notifyCreations(): void {
