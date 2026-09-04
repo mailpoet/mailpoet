@@ -269,6 +269,19 @@ class ExportTest extends \MailPoetTest {
     verify($this->getSubscriberDownloadFormat($result['exportFileURL']))->equals('xlsx');
   }
 
+  public function testItGuardsExportedValuesASpreadsheetWouldEvaluate() {
+    $this->subscriber1->setFirstName('=SUM(1+1)');
+    $this->subscribersRepository->flush();
+
+    $this->export->exportFile = $this->export->getExportFile('csv');
+    $this->export->exportFormatOption = 'csv';
+    $this->export->process();
+
+    $contents = (string)file_get_contents($this->export->exportFile);
+    verify($contents)->stringContainsString('"\'=SUM(1+1)"');
+    verify($contents)->stringNotContainsString('"=SUM(1+1)"');
+  }
+
   private function getSubscriberDownloadFormat(string $url): string {
     parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
     verify($query[Router::NAME] ?? null)->equals('');
