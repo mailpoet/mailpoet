@@ -54,4 +54,67 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($image['link'])->equals('');
     verify($image['text'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
   }
+
+  public function testItSanitizesBlockTextWhenBlockHasNestedBlocks() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'text',
+        'text' => '<p>Hello<img src=x onerror=alert(1)> there</p>',
+        'blocks' => [
+          [
+            'type' => 'text',
+            'text' => '<p>Nested<img src=x onerror=alert(2)> text</p>',
+          ],
+        ],
+      ],
+    ]);
+    $block = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0];
+    verify($block['text'])->equals('<p>Hello there</p>');
+    verify($block['blocks'][0]['text'])->equals('<p>Nested text</p>');
+  }
+
+  public function testItSanitizesBlockTextWhenNestedBlocksAreEmpty() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'text',
+        'text' => '<p>Empty<img src=x onerror=alert(3)> children</p>',
+        'blocks' => [],
+      ],
+    ]);
+    $block = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0];
+    verify($block['text'])->equals('<p>Empty children</p>');
+    verify($block['blocks'])->equals([]);
+  }
+
+  public function testItSanitizesNestedBlocksOfBlockWithoutType() {
+    $body = $this->bodyWithBlocks([
+      [
+        'blocks' => [
+          [
+            'type' => 'text',
+            'text' => '<p>Nested<img src=x onerror=alert(4)> text</p>',
+          ],
+        ],
+      ],
+    ]);
+    $block = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0];
+    verify($block)->arrayHasNotKey('type');
+    verify($block['blocks'][0]['text'])->equals('<p>Nested text</p>');
+  }
+
+  public function testItLeavesBlockWithNonStringTypeUntouched() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => ['text'],
+        'text' => '<p>Some text</p>',
+      ],
+    ]);
+    $block = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0];
+    verify($block['type'])->equals(['text']);
+    verify($block['text'])->equals('<p>Some text</p>');
+  }
+
+  private function bodyWithBlocks(array $blocks): array {
+    return ['content' => ['blocks' => $blocks]];
+  }
 }
