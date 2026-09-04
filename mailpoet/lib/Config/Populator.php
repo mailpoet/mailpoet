@@ -320,6 +320,11 @@ class Populator {
     } elseif (isset($woocommerceOptinOnCheckout['message']) && $woocommerceOptinOnCheckout['message'] === $legacyLabelText) {
       $this->settings->set('woocommerce.optin_on_checkout.message', $currentLabelText);
     }
+
+    if ($this->settings->get('editor_choice_modal.enabled') === null) {
+      $this->settings->set('editor_choice_modal.enabled', empty($settingsDbVersion)); // enable on new installs only
+    }
+
     // reset mailer log
     MailerLog::resetMailerLog();
   }
