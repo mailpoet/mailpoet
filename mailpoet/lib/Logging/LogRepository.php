@@ -244,9 +244,9 @@ class LogRepository extends Repository {
   }
 
   /**
-   * Returns raw messages logged under $topic for the given newsletters, keyed by newsletter ID
-   * with the oldest message first. Newsletters without messages are not present in the result.
-   * A single query serves the whole listing page instead of one query per row.
+   * Returns distinct raw messages logged under $topic for the given newsletters, keyed by
+   * newsletter ID and ordered by first occurrence. Newsletters without messages are not present
+   * in the result. A single query serves the whole listing page instead of one query per row.
    *
    * @param NewsletterEntity[] $newsletters
    * @return array<int, string[]>
@@ -262,11 +262,14 @@ class LogRepository extends Repository {
 
     $rows = $this->entityManager->createQueryBuilder()
       ->select('logs.context context, logs.rawMessage message')
+      ->addSelect('MIN(logs.createdAt) AS HIDDEN firstCreatedAt, MIN(logs.id) AS HIDDEN firstId')
       ->from(LogEntity::class, 'logs')
       ->where('logs.name = :topic')
       ->andWhere('logs.context IN (:contexts)')
-      ->orderBy('logs.createdAt')
-      ->addOrderBy('logs.id')
+      ->groupBy('logs.context')
+      ->addGroupBy('logs.rawMessage')
+      ->orderBy('firstCreatedAt')
+      ->addOrderBy('firstId')
       ->setParameter('topic', $topic)
       ->setParameter('contexts', array_keys($newsletterIdsByContext))
       ->getQuery()
@@ -281,9 +284,6 @@ class LogRepository extends Repository {
       }
       $newsletterId = $newsletterIdsByContext[$context] ?? null;
       if ($newsletterId === null) {
-        continue;
-      }
-      if (in_array($message, $messages[$newsletterId] ?? [], true)) {
         continue;
       }
       $messages[$newsletterId][] = $message;
