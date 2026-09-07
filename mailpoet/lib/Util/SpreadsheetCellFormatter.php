@@ -25,6 +25,21 @@ class SpreadsheetCellFormatter {
   }
 
   /**
+   * Reverses format(), so reading back a file MailPoet wrote returns the original
+   * value. Only a prefix in front of a trigger is removed, leaving a value that
+   * genuinely starts with an apostrophe alone.
+   *
+   * @param int|string|float|null $value
+   * @return int|string|float|null
+   */
+  public static function unformat($value) {
+    if (!is_string($value) || strlen($value) < 2 || $value[0] !== self::TEXT_PREFIX) {
+      return $value;
+    }
+    return in_array($value[1], self::FORMULA_TRIGGERS, true) ? substr($value, 1) : $value;
+  }
+
+  /**
    * @param array<int|string, int|string|float|null> $row
    * @return array<int|string, int|string|float|null>
    */

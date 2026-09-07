@@ -46,6 +46,16 @@ const detectAndCleanupEmail = (emailString) => {
   return email;
 };
 
+// MailPoet's own export prefixes a value a spreadsheet would read as a formula with
+// an apostrophe. Take it back off so exporting and re-importing returns the original
+// value, and so a column heading still matches its custom field.
+const formulaTriggers = ['=', '+', '-', '@', '\t', '\r'];
+
+const removeSpreadsheetTextPrefix = (value) =>
+  value.length > 1 && value[0] === "'" && formulaTriggers.includes(value[1])
+    ? value.slice(1)
+    : value;
+
 export function sanitizeCSVData(csvData) {
   let processedSubscribers = [];
   const parsedEmails = [];
@@ -63,7 +73,9 @@ export function sanitizeCSVData(csvData) {
   let rowData;
   let rowColumnCount;
   Object.keys(csvData).forEach((rowCount) => {
-    rowData = csvData[rowCount].map((el) => el.trim());
+    rowData = csvData[rowCount].map((el) =>
+      removeSpreadsheetTextPrefix(el.trim()),
+    );
     rowColumnCount = rowData.length;
     // set the number of row elements based on the first non-empty row
     if (columnCount === null) {

@@ -27,6 +27,22 @@ class SpreadsheetCellFormatterTest extends \MailPoetUnitTest {
     verify(SpreadsheetCellFormatter::format(null))->equals(null);
   }
 
+  public function testItTakesThePrefixBackOff() {
+    foreach (['=SUM(1+1)', '+1234', '-5', '@user', "\t=1+1", "\r=1+1"] as $value) {
+      verify(SpreadsheetCellFormatter::unformat(SpreadsheetCellFormatter::format($value)))
+        ->equals($value);
+    }
+  }
+
+  public function testItOnlyTakesOffAPrefixItWouldHaveAdded() {
+    // A value that genuinely starts with an apostrophe keeps it.
+    verify(SpreadsheetCellFormatter::unformat("'Tis the season"))->equals("'Tis the season");
+    verify(SpreadsheetCellFormatter::unformat("'"))->equals("'");
+    verify(SpreadsheetCellFormatter::unformat('Jane'))->equals('Jane');
+    verify(SpreadsheetCellFormatter::unformat(-5))->equals(-5);
+    verify(SpreadsheetCellFormatter::unformat(null))->equals(null);
+  }
+
   public function testItFormatsAWholeRowAndKeepsKeys() {
     $row = [
       'name' => '=cmd()',

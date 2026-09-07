@@ -14,6 +14,7 @@ use MailPoet\Services\Validator;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tags\TagRepository;
+use MailPoet\Util\SpreadsheetCellFormatter;
 use WP_CLI;
 
 class Cli {
@@ -253,6 +254,7 @@ class Cli {
       if (!is_array($header)) {
         throw new \RuntimeException('The CSV file is empty or has no header row.');
       }
+      $header = array_map([$this, 'unformatCell'], $header);
       $columns = $this->buildColumns($header);
 
       $headerColumnCount = count($header);
@@ -273,6 +275,7 @@ class Cli {
           $log(sprintf('  Skipped line %d: expected %d column(s) but found %d.', $lineNumber, $headerColumnCount, count($row)));
           continue;
         }
+        $row = array_map([$this, 'unformatCell'], $row);
         $totals['rows']++;
         $batch[] = $row;
         if (count($batch) >= $options['batch_size']) {
@@ -348,6 +351,17 @@ class Cli {
    * @return array<string|int, array{index: int}>
    * @throws \RuntimeException
    */
+
+  /**
+   * MailPoet's own export prefixes a value a spreadsheet would read as a formula with
+   * an apostrophe. Take it back off so exporting and re-importing returns the original
+   * value, and so a column heading still matches its custom field.
+   */
+  private function unformatCell(?string $value): ?string {
+    $unformatted = SpreadsheetCellFormatter::unformat($value);
+    return is_string($unformatted) ? $unformatted : null;
+  }
+
   private function buildColumns(array $header): array {
     $columns = [];
     $unknown = [];
