@@ -12,7 +12,7 @@ use MailPoetVendor\XLSXWriter_BuffererWriter;
  * other text. Storing them as text this way keeps the cell readable, unlike a prefix
  * character, which the reader would display.
  */
-class TextOnlyXLSXWriter extends XLSXWriter {
+class FormulaFreeXLSXWriter extends XLSXWriter {
   /**
    * Mirrors the style map the parent uses, so a redirected cell keeps its formatting.
    */

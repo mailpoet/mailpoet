@@ -2,7 +2,7 @@
 
 namespace MailPoet\Util;
 
-class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
+class FormulaFreeXLSXWriterTest extends \MailPoetUnitTest {
   /** @var string */
   private $file;
 
@@ -17,7 +17,7 @@ class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
   }
 
   public function testItWritesALeadingEqualsAsTextInsteadOfAFormula() {
-    $writer = new TextOnlyXLSXWriter();
+    $writer = new FormulaFreeXLSXWriter();
     $writer->writeSheetRow('Sheet1', ['=SUM(1+1)']);
     $writer->writeToFile($this->file);
 
@@ -26,7 +26,7 @@ class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
   }
 
   public function testItWritesALeadingEqualsInAHeaderAsText() {
-    $writer = new TextOnlyXLSXWriter();
+    $writer = new FormulaFreeXLSXWriter();
     $writer->writeSheetHeader('Sheet1', ['=SUM(1+1)' => 'string']);
     $writer->writeToFile($this->file);
 
@@ -35,7 +35,7 @@ class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
   }
 
   public function testItKeepsNumbersAsNumbers() {
-    $writer = new TextOnlyXLSXWriter();
+    $writer = new FormulaFreeXLSXWriter();
     $writer->writeSheetHeader('Sheet1', ['a' => 'string', 'b' => 'string', 'c' => 'string']);
     $writer->writeSheetRow('Sheet1', [-5, 12.5, '-1234']);
     $writer->writeToFile($this->file);
@@ -46,7 +46,7 @@ class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
   }
 
   public function testItLeavesOrdinaryTextUntouched() {
-    $writer = new TextOnlyXLSXWriter();
+    $writer = new FormulaFreeXLSXWriter();
     $writer->writeSheetHeader('Sheet1', ['a' => 'string', 'b' => 'string', 'c' => 'string']);
     $writer->writeSheetRow('Sheet1', ['@handle', '+420777123456', "Anne-Marie O'Brien"]);
     $writer->writeToFile($this->file);
@@ -55,6 +55,7 @@ class TextOnlyXLSXWriterTest extends \MailPoetUnitTest {
     verify($worksheet)->stringNotContainsString('<f>');
     $shared = $this->readSharedStrings();
     verify($shared)->stringContainsString('@handle');
+    verify($shared)->stringNotContainsString("'@handle");
     verify($shared)->stringContainsString("Anne-Marie O'Brien");
     // The vendored writer treats a leading "+" as a number, so the phone number becomes
     // a numeric cell rather than a shared string. Existing behaviour, and not a formula.
