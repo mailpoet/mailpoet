@@ -34,6 +34,18 @@ class SpreadsheetCellFormatterTest extends \MailPoetUnitTest {
     }
   }
 
+  public function testItKeepsTheRoundTripLosslessForValuesStartingWithAnApostrophe() {
+    // "=x" and "'=x" must not export to the same thing, or importing cannot tell
+    // which one it started from.
+    verify(SpreadsheetCellFormatter::format("'=x"))->equals("''=x");
+    verify(SpreadsheetCellFormatter::format('=x'))->equals("'=x");
+
+    foreach (['=x', "'=x", "''=x", "'-5", "'@a", "'Tis", 'Jane', ''] as $value) {
+      verify(SpreadsheetCellFormatter::unformat(SpreadsheetCellFormatter::format($value)))
+        ->equals($value);
+    }
+  }
+
   public function testItOnlyTakesOffAPrefixItWouldHaveAdded() {
     // A value that genuinely starts with an apostrophe keeps it.
     verify(SpreadsheetCellFormatter::unformat("'Tis the season"))->equals("'Tis the season");
