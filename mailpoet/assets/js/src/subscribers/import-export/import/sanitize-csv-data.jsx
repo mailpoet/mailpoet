@@ -51,10 +51,18 @@ const detectAndCleanupEmail = (emailString) => {
 // value, and so a column heading still matches its custom field.
 const formulaTriggers = ['=', '+', '-', '@', '\t', '\r'];
 
-const removeSpreadsheetTextPrefix = (value) =>
-  value.length > 1 && value[0] === "'" && formulaTriggers.includes(value[1])
-    ? value.slice(1)
-    : value;
+// Counting the whole run of apostrophes is what keeps the prefix reversible: a value
+// of "'=x" is exported as "''=x", so it stays distinct from "=x" exported as "'=x".
+const removeSpreadsheetTextPrefix = (value) => {
+  if (value[0] !== "'") {
+    return value;
+  }
+  let apostrophes = 0;
+  while (value[apostrophes] === "'") {
+    apostrophes += 1;
+  }
+  return formulaTriggers.includes(value[apostrophes]) ? value.slice(1) : value;
+};
 
 export function sanitizeCSVData(csvData) {
   let processedSubscribers = [];

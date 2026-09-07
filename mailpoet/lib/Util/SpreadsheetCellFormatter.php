@@ -18,7 +18,7 @@ class SpreadsheetCellFormatter {
    * @return int|string|float|null
    */
   public static function format($value) {
-    if (!is_string($value) || $value === '' || !in_array($value[0], self::FORMULA_TRIGGERS, true)) {
+    if (!is_string($value) || !self::startsWithTrigger($value)) {
       return $value;
     }
     return self::TEXT_PREFIX . $value;
@@ -26,17 +26,26 @@ class SpreadsheetCellFormatter {
 
   /**
    * Reverses format(), so reading back a file MailPoet wrote returns the original
-   * value. Only a prefix in front of a trigger is removed, leaving a value that
-   * genuinely starts with an apostrophe alone.
+   * value, including one that starts with an apostrophe of its own.
    *
    * @param int|string|float|null $value
    * @return int|string|float|null
    */
   public static function unformat($value) {
-    if (!is_string($value) || strlen($value) < 2 || $value[0] !== self::TEXT_PREFIX) {
+    if (!is_string($value) || $value === '' || $value[0] !== self::TEXT_PREFIX || !self::startsWithTrigger($value)) {
       return $value;
     }
-    return in_array($value[1], self::FORMULA_TRIGGERS, true) ? substr($value, 1) : $value;
+    return substr($value, 1);
+  }
+
+  /**
+   * True when the value, ignoring any apostrophes already in front of it, begins with
+   * a trigger. Counting the whole run is what keeps the prefix reversible: a value of
+   * "'=x" is written as "''=x", so it stays distinct from "=x" written as "'=x".
+   */
+  private static function startsWithTrigger(string $value): bool {
+    $apostrophes = strspn($value, self::TEXT_PREFIX);
+    return isset($value[$apostrophes]) && in_array($value[$apostrophes], self::FORMULA_TRIGGERS, true);
   }
 
   /**
