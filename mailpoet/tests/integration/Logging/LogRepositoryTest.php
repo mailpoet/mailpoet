@@ -3,6 +3,7 @@
 namespace MailPoet\Logging;
 
 use MailPoet\Test\DataFactories\Log;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoetVendor\Carbon\Carbon;
 
 class LogRepositoryTest extends \MailPoetTest {
@@ -139,5 +140,30 @@ class LogRepositoryTest extends \MailPoetTest {
     }
 
     verify(count($rows))->equals(3);
+  }
+
+  public function testGetRawMessagesForNewslettersGroupsDistinctMessagesByNewsletter(): void {
+    $first = (new Newsletter())->withSubject('First')->create();
+    $second = (new Newsletter())->withSubject('Second')->create();
+    $third = (new Newsletter())->withSubject('Third')->create();
+    $couponLog = (new Log())->withName(LoggerFactory::TOPIC_COUPONS);
+
+    $couponLog->withRawMessage('later')->withContext(['newsletter_id' => $first->getId()])->withCreatedAt(Carbon::now())->create();
+    $couponLog->withRawMessage('earlier')->withContext(['newsletter_id' => $first->getId()])->withCreatedAt(Carbon::now()->subMinute())->create();
+    $couponLog->withRawMessage('earlier')->withContext(['newsletter_id' => $first->getId()])->withCreatedAt(Carbon::now()->subMinutes(2))->create();
+    $couponLog->withRawMessage('second only')->withContext(['newsletter_id' => $second->getId()])->create();
+    $couponLog->withRawMessage('unrelated topic')->withName('cron')->withContext(['newsletter_id' => $first->getId()])->create();
+    $couponLog->withRawMessage('unrelated context')->withContext(['newsletter_id' => $first->getId(), 'task_id' => 1])->create();
+
+    $messages = $this->repository->getRawMessagesForNewsletters([$first, $second, $third], LoggerFactory::TOPIC_COUPONS);
+
+    verify($messages)->equals([
+      $first->getId() => ['earlier', 'later'],
+      $second->getId() => ['second only'],
+    ]);
+  }
+
+  public function testGetRawMessagesForNewslettersReturnsEmptyArrayForNoNewsletters(): void {
+    verify($this->repository->getRawMessagesForNewsletters([], LoggerFactory::TOPIC_COUPONS))->equals([]);
   }
 }

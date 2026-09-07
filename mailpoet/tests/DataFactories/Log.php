@@ -21,6 +21,8 @@ class Log {
       'level' => 5,
       'message' => 'Message' . bin2hex(random_bytes(7)),
       'created_at' => Carbon::now(),
+      'raw_message' => null,
+      'context' => [],
     ];
   }
 
@@ -52,12 +54,30 @@ class Log {
     return $this->update('level', $level);
   }
 
+  /**
+   * @return static
+   */
+  public function withRawMessage(?string $rawMessage): Log {
+    return $this->update('raw_message', $rawMessage);
+  }
+
+  /**
+   * @return static
+   */
+  public function withContext(array $context): Log {
+    return $this->update('context', $context);
+  }
+
   public function create(): LogEntity {
     $entity = new LogEntity();
     $entity->setName($this->data['name']);
     $entity->setLevel($this->data['level']);
     $entity->setMessage($this->data['message']);
     $entity->setCreatedAt($this->data['created_at']);
+    if ($this->data['raw_message'] !== null) {
+      $entity->setRawMessage($this->data['raw_message']);
+    }
+    $entity->setContext($this->data['context']);
     $this->repository->saveLog($entity);
     return $entity;
   }
