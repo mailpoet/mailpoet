@@ -8,8 +8,8 @@ use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Router\Endpoints\ExportDownload;
+use MailPoet\Util\FormulaFreeXLSXWriter;
 use MailPoet\Util\SpreadsheetCellFormatter;
-use MailPoet\Util\TextOnlyXLSXWriter;
 use MailPoet\WP\Functions as WPFunctions;
 
 class StatisticsExporter {
@@ -255,7 +255,7 @@ class StatisticsExporter {
    * @param array<array<int|string|float|null>> $rows
    */
   private function writeXlsx(string $filePath, array $headers, array $rows): void {
-    $writer = new TextOnlyXLSXWriter();
+    $writer = new FormulaFreeXLSXWriter();
     $sheetName = __('Statistics', 'mailpoet');
     $writer->writeSheetHeader($sheetName, array_fill_keys($headers, 'string'));
     foreach ($rows as $row) {

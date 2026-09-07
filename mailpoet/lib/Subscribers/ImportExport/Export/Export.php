@@ -8,8 +8,8 @@ use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
+use MailPoet\Util\FormulaFreeXLSXWriter;
 use MailPoet\Util\SpreadsheetCellFormatter;
-use MailPoet\Util\TextOnlyXLSXWriter;
 
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 1000;
@@ -145,7 +145,7 @@ class Export {
 
   public function generateXLSX(): int {
     $processedSubscribers = 0;
-    $xLSXWriter = new TextOnlyXLSXWriter();
+    $xLSXWriter = new FormulaFreeXLSXWriter();
     $xLSXWriter->setAuthor('MailPoet (www.mailpoet.com)');
     $lastSegment = false;
     $processedSegments = [];
