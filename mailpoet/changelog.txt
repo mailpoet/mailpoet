@@ -1,5 +1,19 @@
 == Changelog ==
 
+= 5.38.0 - 2026-09-07 =
+* Added: Filters to override the author and categories shown in newsletters that include posts;
+* Improved: Validation of the admin notice dismissal request;
+* Improved: Validation of form preview requests;
+* Improved: Social icon rendering in the block email editor;
+* Fixed: Personalization tags showing HTML-encoded characters in email subjects and plain-text emails;
+* Fixed: The Amazon SES region list now matches AWS: seven regions added, China (Ningxia) now reaches the right AWS China endpoint, and Hong Kong and China (Beijing) removed because SES does not run there;
+* Fixed: One background job that fails to start no longer stops the rest of them, so bounce processing, WooCommerce sync and the other scheduled jobs keep running;
+* Fixed: Restricted AI subject line suggestions to users who can manage emails;
+* Fixed: Exceptions recorded in the MailPoet logs now keep their class, file and line instead of being stored empty, which makes a failure easier to trace;
+* Fixed: Restricted sending email previews from the email editor to users who can manage emails;
+* Fixed: Back button sizing in the block email editor on WordPress 7.1;
+* Fixed: Missing Personalization Tags toolbar button on Button blocks in the block email editor.
+
 = 5.37.0 - 2026-09-01 =
 * Added: Admins can now see and set a subscriber's email-tracking-consent state on the edit-subscriber page: what it is, when it changed, and how it was recorded;
 * Improved: When you ask subscribers for tracking consent, the email editors now check that your email has a tracking opt-out link and the form editor checks that your form has the consent checkbox, each with a one-click way to add what is missing;
