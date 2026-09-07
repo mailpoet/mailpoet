@@ -164,6 +164,7 @@ class NewslettersResponseBuilder {
     $latestQueues = $this->getBatchLatestQueuesWithTasks($newsletters);
     $this->newslettersRepository->prefetchOptions($newsletters);
     $this->newslettersRepository->prefetchSegments($newsletters);
+    $couponBlockLogs = $this->logRepository->getRawMessagesForNewsletters($newsletters, LoggerFactory::TOPIC_COUPONS);
 
     $data = [];
     foreach ($newsletters as $newsletter) {
@@ -171,7 +172,8 @@ class NewslettersResponseBuilder {
       $data[] = $this->buildListingItem(
         $newsletter,
         $statistics[$id] ?? null,
-        $latestQueues[$id] ?? null
+        $latestQueues[$id] ?? null,
+        $couponBlockLogs[$id] ?? []
       );
     }
     return $data;
@@ -181,16 +183,18 @@ class NewslettersResponseBuilder {
    * @param NewsletterEntity $newsletter
    * @param NewsletterStatistics|null $statistics
    * @param SendingQueueEntity|null $latestQueue
+   * @param string[] $couponBlockLogs
    * @return array<string, mixed>
    */
   private function buildListingItem(
     NewsletterEntity $newsletter,
     ?NewsletterStatistics $statistics = null,
-    ?SendingQueueEntity $latestQueue = null
+    ?SendingQueueEntity $latestQueue = null,
+    array $couponBlockLogs = []
   ): array {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
-    }, $this->logRepository->getRawMessagesForNewsletter($newsletter, LoggerFactory::TOPIC_COUPONS));
+    }, $couponBlockLogs);
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),

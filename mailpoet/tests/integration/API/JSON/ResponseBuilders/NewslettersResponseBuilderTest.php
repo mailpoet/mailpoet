@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -18,6 +19,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Test\DataFactories\Log;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -240,5 +242,21 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     verify($response[0]['can_share'])->false();
     verify($response[0]['is_share_supported'])->false();
     verify($response[0]['share_unavailable_reason'])->equals('Only sent emails can be shared.');
+  }
+
+  public function testItAddsCouponBlockLogsToListingItems(): void {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $withLogs = (new Newsletter())->withSubject('With coupon logs')->create();
+    $withoutLogs = (new Newsletter())->withSubject('Without coupon logs')->create();
+    (new Log())
+      ->withName(LoggerFactory::TOPIC_COUPONS)
+      ->withRawMessage('Coupon "SUMMER" was not found')
+      ->withContext(['newsletter_id' => $withLogs->getId()])
+      ->create();
+
+    $response = $responseBuilder->buildForListing([$withLogs, $withoutLogs]);
+
+    verify($response[0]['logs'])->equals(['Coupon block: Coupon "SUMMER" was not found']);
+    verify($response[1]['logs'])->equals([]);
   }
 }
