@@ -9,6 +9,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
 use MailPoet\Newsletter\NewsletterSaveController;
@@ -52,6 +53,9 @@ class Newsletters extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
+  /** @var ApiDataSanitizer */
+  private $apiDataSanitizer;
+
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
@@ -61,7 +65,8 @@ class Newsletters extends APIEndpoint {
     NewsletterDeleteController $newsletterDeleteController,
     NewsletterResendController $newsletterResendController,
     NewsletterUrl $newsletterUrl,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
+    ApiDataSanitizer $apiDataSanitizer
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
@@ -72,6 +77,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterResendController = $newsletterResendController;
     $this->newsletterUrl = $newsletterUrl;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
+    $this->apiDataSanitizer = $apiDataSanitizer;
   }
 
   public function get($data = []) {
@@ -87,6 +93,9 @@ class Newsletters extends APIEndpoint {
       NewslettersResponseBuilder::RELATION_OPTIONS,
       NewslettersResponseBuilder::RELATION_QUEUE,
     ]);
+    if (is_array($response['body'])) {
+      $response['body'] = $this->apiDataSanitizer->sanitizeBody($response['body']);
+    }
     $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
     return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
   }

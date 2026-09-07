@@ -12,6 +12,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -76,6 +77,34 @@ class NewslettersTest extends \MailPoetTest {
     $this->postNotification = (new Newsletter())->withPostNotificationsType()->withSubject('My Post Notification')->loadBodyFrom('newsletterWithALC.json')->create();
   }
 
+  public function testItSanitizesBodyBlocksWhenGettingANewsletter() {
+    $newsletter = (new Newsletter())
+      ->withSubject('Newsletter with stored markup')
+      ->withBody([
+        'content' => [
+          'blocks' => [
+            [
+              'type' => 'container',
+              'orientation' => 'vertical',
+              'blocks' => [
+                [
+                  'type' => 'text',
+                  'text' => '<p>Thanks for reading.<img src=x onerror=alert(1)> See you soon!</p>',
+                ],
+              ],
+            ],
+          ],
+        ],
+      ])
+      ->create();
+
+    $response = $this->endpoint->get(['id' => $newsletter->getId()]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['body']['content']['blocks'][0]['blocks'][0]['text'])
+      ->equals('<p>Thanks for reading. See you soon!</p>');
+  }
+
   public function testItCanGetANewsletter() {
     $response = $this->endpoint->get(); // missing id
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
@@ -98,11 +127,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter, [
+    $expected = $this->newslettersResponseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_SEGMENTS,
       NewslettersResponseBuilder::RELATION_OPTIONS,
       NewslettersResponseBuilder::RELATION_QUEUE,
-    ]));
+    ]);
+    $expected['body'] = $this->diContainer->get(ApiDataSanitizer::class)->sanitizeBody($expected['body']);
+    verify($response->data)->equals($expected);
     $hookName = 'mailpoet_api_newsletters_get_after';
     verify(WPHooksHelper::isFilterApplied($hookName))->true();
     verify(WPHooksHelper::getFilterApplied($hookName)[0])->isArray();
