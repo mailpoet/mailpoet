@@ -128,6 +128,21 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($block['text'])->equals('<p>Some text</p>');
   }
 
+  public function testItSanitizesBlockDefaults() {
+    $body = [
+      'content' => ['blocks' => []],
+      'blockDefaults' => [
+        'text' => ['text' => '<p>Default<img src=x onerror=alert(1)> text</p>', 'styles' => []],
+        'footer' => ['text' => '<p>Footer<img src=x onerror=alert(2)> text</p>'],
+        'button' => ['text' => 'Read <b>more</b>'],
+      ],
+    ];
+    $result = $this->sanitizer->sanitizeBody($body);
+    verify($result['blockDefaults']['text'])->equals(['text' => '<p>Default text</p>', 'styles' => []]);
+    verify($result['blockDefaults']['footer']['text'])->equals('<p>Footer text</p>');
+    verify($result['blockDefaults']['button']['text'])->equals('Read <b>more</b>');
+  }
+
   private function bodyWithBlocks(array $blocks): array {
     return ['content' => ['blocks' => $blocks]];
   }
