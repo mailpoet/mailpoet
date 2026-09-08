@@ -44,6 +44,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
+  private const AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER = 'mailpoet_automation_email_personalize_html_after';
+  private const AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER = 'mailpoet_automation_email_personalize_text_after';
+  private const DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION = '5.39.0';
+
   public $trackingEnabled;
   public $trackingImageInserted;
 
@@ -510,14 +514,8 @@ class Newsletter {
       $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
       // Token links that were not hashed (tracking disabled) are still literal in the text body.
       $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
-      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $html, $context);
-      if (is_string($personalizedHtml)) {
-        $html = $personalizedHtml;
-      }
-      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $text, $context);
-      if (is_string($personalizedText)) {
-        $text = $personalizedText;
-      }
+      $html = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER, $html, $context);
+      $text = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER, $text, $context);
     }
     return [
       'id' => $newsletter->getId(),
@@ -527,6 +525,11 @@ class Newsletter {
         'text' => $text,
       ],
     ];
+  }
+
+  public function hasDeprecatedAutomationPersonalizationFilters(): bool {
+    return $this->hasAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER)
+      || $this->hasAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER);
   }
 
   /**
@@ -598,6 +601,31 @@ class Newsletter {
       ],
       'substitutions' => $collector->getValues(),
     ];
+  }
+
+  /**
+   * @param array<string, mixed> $context
+   */
+  private function applyDeprecatedAutomationPersonalizationFilter(string $hookName, string $content, array $context): string {
+    if (!$this->hasAutomationPersonalizationFilter($hookName)) {
+      return $content;
+    }
+
+    $this->wp->deprecatedHook(
+      $hookName,
+      self::DEPRECATED_AUTOMATION_PERSONALIZATION_FILTERS_VERSION,
+      '',
+      'This filter is deprecated and will be removed in a future MailPoet release. '
+        . 'Migrate custom personalization to email editor personalization tags. '
+        . 'Use mailpoet_automation_email_personalization_context if you need to extend the personalization context.'
+    );
+
+    $filtered = $this->wp->applyFilters($hookName, $content, $context);
+    return is_string($filtered) ? $filtered : $content;
+  }
+
+  private function hasAutomationPersonalizationFilter(string $hookName): bool {
+    return $this->wp->hasFilter($hookName) !== false;
   }
 
   /**
