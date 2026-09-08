@@ -65,6 +65,29 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
     }
   }
 
+  public function testItSaysNothingCouldBeMeasuredWhenNoCampaignRecipientIsTracked() {
+    foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
+      $output = $this->renderer->render($template, $this->campaignContext(5, 0));
+      verify($output)->stringContainsString('None of your 5 recipients are tracked');
+      verify($output)->stringNotContainsString('the other 0');
+      verify($output)->stringNotContainsString('%%');
+    }
+  }
+
+  public function testItSaysNothingCouldBeMeasuredWhenNoAutomationRecipientIsTracked() {
+    $templates = [
+      'emails/statsNotificationAutomatedEmails.html',
+      'emails/statsNotificationAutomatedEmailsGarden.html',
+      'emails/statsNotificationAutomatedEmails.txt',
+    ];
+    foreach ($templates as $template) {
+      $output = $this->renderer->render($template, $this->automatedContext(5, 0));
+      verify($output)->stringContainsString('None of your 5 recipients are tracked');
+      verify($output)->stringNotContainsString('the other 0');
+      verify($output)->stringNotContainsString('%%');
+    }
+  }
+
   private function campaignContext(int $notTracked, int $trackedSent): array {
     return array_merge($this->statBlock($notTracked, $trackedSent), [
       'subject' => 'Test campaign',

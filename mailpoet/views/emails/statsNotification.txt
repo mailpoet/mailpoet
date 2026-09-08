@@ -17,7 +17,11 @@
 <%= __('Unsubscribed') %>: <%= stats_number_format_i18n(unsubscribed) %>%
 <%= __('Bounced') %>: <%= stats_number_format_i18n(bounced) %>%
 <% if notTracked > 0 %>
-<%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+<% if trackedSent > 0 %>
+  <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+<% else %>
+  <%= __('None of your %1$s recipients are tracked, so open and click rates cannot be measured.')|replace({'%1$s': notTracked}) %>
+<% endif %>
 <% endif %>
 
 <%= __('View full campaign report') %>
@@ -53,7 +57,11 @@
 <%= stats_number_format_i18n(bounced) %>% <%= __('bounced') %>
 
 <% if notTracked > 0 %>
-<%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+<% if trackedSent > 0 %>
+  <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+<% else %>
+  <%= __('None of your %1$s recipients are tracked, so open and click rates cannot be measured.')|replace({'%1$s': notTracked}) %>
+<% endif %>
 <% endif %>
 
 <% if topLinkClicks > 0 %>
