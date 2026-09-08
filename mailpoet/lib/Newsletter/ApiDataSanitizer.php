@@ -25,7 +25,20 @@ class ApiDataSanitizer {
     if (isset($body['content']) && isset($body['content']['blocks']) && is_array($body['content']['blocks'])) {
       $body['content']['blocks'] = $this->sanitizeBlocks($body['content']['blocks']);
     }
+    if (isset($body['blockDefaults']) && is_array($body['blockDefaults'])) {
+      $body['blockDefaults'] = $this->sanitizeBlockDefaults($body['blockDefaults']);
+    }
     return $body;
+  }
+
+  private function sanitizeBlockDefaults(array $blockDefaults): array {
+    foreach ($blockDefaults as $type => $defaults) {
+      if (!is_array($defaults)) {
+        continue;
+      }
+      $blockDefaults[$type] = $this->sanitizeBlockProperties($defaults, $type);
+    }
+    return $blockDefaults;
   }
 
   private function sanitizeBlocks(array $blocks): array {
@@ -43,7 +56,13 @@ class ApiDataSanitizer {
   }
 
   private function sanitizeBlock(array $block): array {
-    $type = $block['type'] ?? null;
+    return $this->sanitizeBlockProperties($block, $block['type'] ?? null);
+  }
+
+  /**
+   * @param mixed $type
+   */
+  private function sanitizeBlockProperties(array $block, $type): array {
     if (!is_string($type) || !isset(self::SANITIZATION_CONFIG[$type])) {
       return $block;
     }
