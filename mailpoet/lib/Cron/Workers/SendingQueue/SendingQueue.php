@@ -429,7 +429,11 @@ class SendingQueue {
 
   private function shouldUseTemplatedSending(NewsletterEntity $newsletter, ?string $processingMethod): bool {
     return $processingMethod === 'bulk'
-      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING);
+      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && !(
+        $newsletter->getWpPostId() !== null
+        && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
+      );
   }
 
   /**
