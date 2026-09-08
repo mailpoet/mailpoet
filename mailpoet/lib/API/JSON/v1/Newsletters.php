@@ -93,10 +93,10 @@ class Newsletters extends APIEndpoint {
       NewslettersResponseBuilder::RELATION_OPTIONS,
       NewslettersResponseBuilder::RELATION_QUEUE,
     ]);
-    if (is_array($response['body'])) {
-      $response['body'] = $this->apiDataSanitizer->sanitizeBody($response['body']);
-    }
     $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
+    if (is_array($response)) {
+      $response = $this->sanitizeResponseBody($response);
+    }
     return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
   }
 
@@ -119,8 +119,16 @@ class Newsletters extends APIEndpoint {
     if (!is_array($response)) {
       $response = [];
     }
+    $response = $this->sanitizeResponseBody($response);
     $response['preview_url'] = $this->getViewInBrowserUrl($newsletter);
     return $this->successResponse($response);
+  }
+
+  private function sanitizeResponseBody(array $response): array {
+    if (is_array($response['body'] ?? null)) {
+      $response['body'] = $this->apiDataSanitizer->sanitizeBody($response['body']);
+    }
+    return $response;
   }
 
   public function save($data = []) {
