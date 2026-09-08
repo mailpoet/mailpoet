@@ -21,7 +21,7 @@ if (!file_exists($vendorDir)) {
 
 // paths
 $name = "tx-$os-$arch";
-$url = "https://github.com/transifex/cli/releases/download/v1.0.3/$name.tar.gz";
+$url = "https://github.com/transifex/cli/releases/download/v1.6.17/$name.tar.gz";
 $filePath = __DIR__ . "/vendor/$name";
 $fileInfoPath = "$filePath.info";
 
