@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -221,6 +222,34 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     return str_replace($shortcodes, $processedShortcodes, $content);
+  }
+
+  /**
+   * @param string $part One of the PlaceholderCollector::PART_* constants
+   */
+  public function replaceWithPlaceholders($content, $contentSource, PlaceholderCollector $collector, string $part) {
+    $shortcodes = $this->extract($content);
+    if (!$shortcodes) {
+      return $content;
+    }
+    $processedShortcodes = $this->process(
+      $shortcodes,
+      ($contentSource) ? $contentSource : $content
+    );
+    $placeholders = [];
+    foreach ($processedShortcodes as $index => $processedShortcode) {
+      $processedShortcode = (string)$processedShortcode;
+      $token = $shortcodes[$index];
+      // A shortcode value may be markup (e.g. [site:homepage_link]), so it is converted for the plain-text parts.
+      if ($part === PlaceholderCollector::PART_SUBJECT) {
+        $placeholders[] = $collector->addSubjectTextFromHtml($processedShortcode, $token);
+      } elseif ($part === PlaceholderCollector::PART_HTML) {
+        $placeholders[] = $collector->addHtml($processedShortcode, $token);
+      } else {
+        $placeholders[] = $collector->addTextFromHtml($processedShortcode, $token);
+      }
+    }
+    return str_replace($shortcodes, $placeholders, $content);
   }
 
   private function getCategoryObject($category): ?CategoryInterface {
