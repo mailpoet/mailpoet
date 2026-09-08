@@ -12,14 +12,17 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Segments\SegmentsRepository;
@@ -98,6 +101,9 @@ class SendingQueue {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
 
@@ -122,6 +128,7 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
+    FeaturesController $featuresController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false,
     ?NewsletterUrl $newsletterUrl = null
@@ -145,6 +152,7 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->featuresController = $featuresController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
     $this->newsletterUrl = $newsletterUrl ?? ContainerWrapper::getInstance()->get(NewsletterUrl::class);
   }
@@ -217,6 +225,8 @@ class SendingQueue {
 
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
+    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $this->throttlingHandler->setUseTemplatedSending($this->shouldUseTemplatedSending($newsletter, $processingMethod));
     // get newsletter segments
     $newsletterSegmentsIds = $newsletter->getSegmentIds();
     $segmentIdsToCheck = $newsletterSegmentsIds;
@@ -389,7 +399,8 @@ class SendingQueue {
           $task,
           $newsletter,
           $foundSubscribers,
-          $timer
+          $timer,
+          $processingMethod
         );
         if (!$newsletter->isTransactional()) {
           $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
@@ -428,12 +439,18 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
+  private function shouldUseTemplatedSending(NewsletterEntity $newsletter, ?string $processingMethod): bool {
+    return $processingMethod === 'bulk'
+      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING);
+  }
+
   /**
    * @param SubscriberEntity[] $subscribers
+   * @param string|null $processingMethod The mailer's processing method when the caller already asked for it
    */
-  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer) {
+  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer, ?string $processingMethod = null) {
     // determine if processing is done in bulk or individually
-    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $processingMethod = $processingMethod ?? $this->mailerTask->getProcessingMethod();
     $preparedNewsletters = [];
     $preparedSubscribers = [];
     $preparedSubscribersIds = [];
@@ -446,6 +463,10 @@ class SendingQueue {
       return;
     }
 
+    $useTemplatedBatch = $this->shouldUseTemplatedSending($newsletter, $processingMethod);
+    /** @var TemplateBatch|null $templateBatch */
+    $templateBatch = null;
+    $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
     // Anonymous (subscriber-less) link to the sent email, identical for all recipients
@@ -453,12 +474,42 @@ class SendingQueue {
 
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
-      $preparedNewsletters[] =
-        $this->newsletterTask->prepareNewsletterForSending(
+      if ($useTemplatedBatch) {
+        $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
           $newsletter,
           $subscriber,
-          $sendingQueueEntity
+          $sendingQueueEntity,
+          $placeholderNamespace
         );
+        if ($templateBatch === null) {
+          $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
+        } elseif ($templateBatch->getTemplate() !== $templatedNewsletter['newsletter']) {
+          // Every subscriber of a batch must produce the same template; the difference comes from
+          // the email content, so retrying on the next cron run would fail again. Pause instead.
+          $differingParts = $this->getDifferingTemplateParts($templateBatch->getTemplate(), $templatedNewsletter['newsletter']);
+          $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+          $this->scheduledTasksRepository->flush();
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->error('Templated sending paused: a subscriber produced a different email template than the first subscriber of the batch', [
+            'task_id' => $task->getId(),
+            'newsletter_id' => $newsletter->getId(),
+            'subscriber_id' => $subscriber->getId(),
+            'differing_parts' => $differingParts,
+          ]);
+          throw new InvalidStateException(sprintf(
+            'Templated sending paused: subscriber %d produced a different email template (%s) than the first subscriber of the batch, so one shared template cannot be sent to all of them.',
+            (int)$subscriber->getId(),
+            implode(', ', $differingParts)
+          ));
+        }
+        $templateBatch->addSubstitutions($templatedNewsletter['substitutions']);
+      } else {
+        $preparedNewsletters[] =
+          $this->newsletterTask->prepareNewsletterForSending(
+            $newsletter,
+            $subscriber,
+            $sendingQueueEntity
+          );
+      }
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
         $subscriber
@@ -510,7 +561,7 @@ class SendingQueue {
       $this->sendNewsletters(
         $task,
         $preparedSubscribersIds,
-        $preparedNewsletters,
+        $templateBatch ?? $preparedNewsletters,
         $preparedSubscribers,
         $statistics,
         $timer,
@@ -543,6 +594,9 @@ class SendingQueue {
     );
   }
 
+  /**
+   * @param array<int, array<string, mixed>>|TemplateBatch $preparedNewsletters One rendered email per recipient, or one template for all of them
+   */
   public function sendNewsletters(
     ScheduledTaskEntity $task, $preparedSubscribersIds, $preparedNewsletters,
     $preparedSubscribers, $statistics, $timer, $extraParams = []
@@ -561,6 +615,24 @@ class SendingQueue {
       $statistics,
       $timer
     );
+  }
+
+  /**
+   * @param array{subject: string, body: array{html?: string, text?: string}} $expected
+   * @param array{subject: string, body: array{html?: string, text?: string}} $actual
+   * @return string[]
+   */
+  private function getDifferingTemplateParts(array $expected, array $actual): array {
+    $parts = [];
+    if ($expected['subject'] !== $actual['subject']) {
+      $parts[] = 'subject';
+    }
+    foreach (['html', 'text'] as $part) {
+      if (($expected['body'][$part] ?? '') !== ($actual['body'][$part] ?? '')) {
+        $parts[] = $part;
+      }
+    }
+    return $parts;
   }
 
   /**
