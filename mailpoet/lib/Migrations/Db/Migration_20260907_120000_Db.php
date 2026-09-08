@@ -13,9 +13,16 @@ use MailPoet\Migrator\DbMigration;
  * Some affected sites already added an index on `name` by hand under their own name. Any index
  * that starts with `name` serves the lookups, so the migration checks the leading column instead
  * of the index name to avoid building a redundant index on a multi-GB table.
+ *
+ * `name` is varchar(255) in utf8mb4, i.e. 1020 bytes, which exceeds the 767-byte index limit of
+ * tables still on the COMPACT or REDUNDANT row format (the default before MySQL 5.7.9 and
+ * MariaDB 10.2.2). MariaDB rejects such an index outright, which would fail the migration on
+ * every retry. A 191-character prefix (764 bytes) fits everywhere and fully covers the short
+ * topic names the lookups filter by.
  */
 class Migration_20260907_120000_Db extends DbMigration {
   private const INDEX_NAME = 'idx_log_name_created_at';
+  private const NAME_PREFIX_LENGTH = 191;
 
   public function run(): void {
     $logTable = $this->getTableName(LogEntity::class);
@@ -25,7 +32,7 @@ class Migration_20260907_120000_Db extends DbMigration {
     }
 
     $this->connection->executeStatement(
-      "CREATE INDEX `" . self::INDEX_NAME . "` ON `{$logTable}` (`name`, `created_at`)"
+      "CREATE INDEX `" . self::INDEX_NAME . "` ON `{$logTable}` (`name`(" . self::NAME_PREFIX_LENGTH . "), `created_at`)"
     );
   }
 
