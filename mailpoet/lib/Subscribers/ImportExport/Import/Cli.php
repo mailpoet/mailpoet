@@ -345,14 +345,6 @@ class Cli {
   }
 
   /**
-   * Maps each CSV header to a subscriber field or custom field id.
-   *
-   * @param array<int, string|null> $header
-   * @return array<string|int, array{index: int}>
-   * @throws \RuntimeException
-   */
-
-  /**
    * MailPoet's own export prefixes a value a spreadsheet would read as a formula with
    * an apostrophe. Take it back off so exporting and re-importing returns the original
    * value, and so a column heading still matches its custom field.
@@ -362,6 +354,13 @@ class Cli {
     return is_string($unformatted) ? $unformatted : null;
   }
 
+  /**
+   * Maps each CSV header to a subscriber field or custom field id.
+   *
+   * @param array<int, string|null> $header
+   * @return array<string|int, array{index: int}>
+   * @throws \RuntimeException
+   */
   private function buildColumns(array $header): array {
     $columns = [];
     $unknown = [];
