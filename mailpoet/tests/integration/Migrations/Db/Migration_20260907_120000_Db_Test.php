@@ -32,17 +32,17 @@ class Migration_20260907_120000_Db_Test extends \MailPoetTest {
     parent::_after();
   }
 
-  public function testItCreatesIndexOnNameAndCreatedAt(): void {
+  public function testItCreatesPrefixedIndexOnNameAndCreatedAt(): void {
     $this->migration->run();
 
-    verify($this->getIndexColumns(self::INDEX_NAME))->equals(['name', 'created_at']);
+    verify($this->getIndexColumns(self::INDEX_NAME))->equals(['name(191)', 'created_at']);
   }
 
   public function testItCanBeRerunSafely(): void {
     $this->migration->run();
     $this->migration->run();
 
-    verify($this->getIndexColumns(self::INDEX_NAME))->equals(['name', 'created_at']);
+    verify($this->getIndexColumns(self::INDEX_NAME))->equals(['name(191)', 'created_at']);
   }
 
   public function testItSkipsWhenAnotherIndexAlreadyStartsWithName(): void {
@@ -57,11 +57,13 @@ class Migration_20260907_120000_Db_Test extends \MailPoetTest {
   }
 
   /**
+   * Index columns in order, with the prefix length appended for prefixed columns, e.g. "name(191)".
+   *
    * @return string[]
    */
   private function getIndexColumns(string $index): array {
     $columns = $this->entityManager->getConnection()->fetchFirstColumn(
-      "SELECT column_name
+      "SELECT IF(sub_part IS NULL, column_name, CONCAT(column_name, '(', sub_part, ')'))
        FROM information_schema.statistics
        WHERE table_schema = DATABASE() AND table_name = :table AND index_name = :index
        ORDER BY seq_in_index",
