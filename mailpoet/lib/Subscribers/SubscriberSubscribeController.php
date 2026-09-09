@@ -251,11 +251,14 @@ class SubscriberSubscribeController {
     $email = $data['email'] ?? null;
     $method = SubscriberEntity::TRACKING_CONSENT_METHOD_FORM;
 
+    $email = is_string($email) ? $email : null;
+
     return $this->trackingConsentCapture->getConsentData(
       (bool)$data[TrackingConsentCapture::FIELD_ID],
       $method,
       $this->trackingConsentCapture->getCopy($method, $this->getFormConsentCopy($form)),
-      $this->trackingConsentCapture->isNewSubscriber(is_string($email) ? $email : null)
+      $this->trackingConsentCapture->isNewSubscriber($email),
+      $this->trackingConsentCapture->getStoredConsent($email)
     );
   }
 

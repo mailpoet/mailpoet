@@ -42,11 +42,26 @@ class SubscriptionTrackingConsentTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', false);
   }
 
+  /**
+   * A store that actually puts the question to customers at checkout. Both
+   * switches matter: the consent box is rendered by the checkout opt-in hook, so
+   * with the opt-in off no box is drawn and there is nothing to record.
+   */
   private function askEveryone(): void {
     $this->settings->set(
       TrackingConsentController::SETTING_SUBSCRIBER_CHOICE,
       TrackingConsentController::CHOICE_ASK_ALL
     );
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+  }
+
+  /** Consent asked for elsewhere, but the checkout opt-in left at its default off. */
+  private function askEveryoneButNotAtCheckout(): void {
+    $this->settings->set(
+      TrackingConsentController::SETTING_SUBSCRIBER_CHOICE,
+      TrackingConsentController::CHOICE_ASK_ALL
+    );
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
   }
 
   public function testItRecordsConsentTickedAtCheckout() {
@@ -144,6 +159,35 @@ class SubscriptionTrackingConsentTest extends \MailPoetTest {
     $reloaded = $this->subscribersRepository->findOneBy(['email' => 'checkout-consent@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $reloaded);
     verify($reloaded->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
+  public function testAGuestWhoWasNeverShownTheBoxIsNotRecordedAsDeclining() {
+    // Stores that ask for consent but leave the checkout opt-in off render no
+    // box, yet the code reading the answer still runs. An empty POST field there
+    // means "never asked", so recording a decline would invent a choice the
+    // customer never made.
+    $this->askEveryoneButNotAtCheckout();
+    $newGuest = new SubscriberEntity();
+    $newGuest->setEmail('unasked-guest@example.com');
+    $newGuest->setIsWoocommerceUser(true);
+    $newGuest->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->persist($newGuest);
+    $this->subscribersRepository->flush();
+
+    $this->subscription->handleSubscriberOptin($newGuest, false, false, true);
+
+    verify($newGuest->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($newGuest->getTrackingConsentMethod())->null();
+  }
+
+  public function testAConsentValueIsIgnoredWhenNoBoxWasRendered() {
+    // Same configuration, crafted post: no box was shown, so a ticked value did
+    // not come from the customer and must not be stored as their consent.
+    $this->askEveryoneButNotAtCheckout();
+
+    $this->subscription->handleSubscriberOptin($this->subscriber, true, true, true);
+
+    verify($this->subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
   }
 
   public function testTheCheckoutFieldIsHiddenUntilTheSiteAsks() {

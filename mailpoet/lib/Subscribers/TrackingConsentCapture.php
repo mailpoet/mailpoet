@@ -80,18 +80,15 @@ class TrackingConsentCapture {
    * Consent fields to merge into subscriber data on a signup path, or an empty
    * array when nothing should be written.
    *
-   * Granting is always recorded. Declining is recorded only for a subscriber
-   * being created now: someone already on the list who submits a form again
-   * keeps whatever they chose before, because an unticked box on a signup form
-   * is not a withdrawal of consent given somewhere else.
-   *
+   * @param string|null $storedConsent What the subscriber already has on record,
+   *                                   or null when there is no row yet.
    * @return array<string, string>
    */
-  public function getConsentData(bool $granted, string $method, string $copy, bool $isNewSubscriber): array {
+  public function getConsentData(bool $granted, string $method, string $copy, bool $isNewSubscriber, ?string $storedConsent = null): array {
     if (!$this->isCaptureEnabled()) {
       return [];
     }
-    if (!$granted && !$isNewSubscriber) {
+    if (!$this->mayRecord($granted, $isNewSubscriber, $storedConsent)) {
       return [];
     }
     return [
@@ -104,16 +101,57 @@ class TrackingConsentCapture {
   }
 
   /**
+   * Whether a collection point may write this answer.
+   *
+   * These points are all reachable without proving who you are: a comment, a
+   * subscription form, a registration and a checkout all identify the subscriber
+   * by an email address the visitor typed, and nothing verifies that the address
+   * is theirs. So an answer that would replace a choice already on record is
+   * dropped. Changing an answer already given is done from the manage
+   * subscription page, which checks a link token first.
+   *
+   * Someone who has never been asked can still answer here, and a subscriber
+   * being created now records either answer, since neither overwrites anything.
+   * An unticked box on a signup form is still not a withdrawal of consent given
+   * somewhere else.
+   */
+  private function mayRecord(bool $granted, bool $isNewSubscriber, ?string $storedConsent): bool {
+    if ($isNewSubscriber) {
+      return true;
+    }
+    if (
+      $storedConsent === SubscriberEntity::TRACKING_CONSENT_GRANTED
+      || $storedConsent === SubscriberEntity::TRACKING_CONSENT_DENIED
+    ) {
+      return false;
+    }
+    return $granted;
+  }
+
+  /**
    * Applies consent straight to an entity, for paths that persist the
    * subscriber themselves instead of going through SubscriberSaveController
    * (WooCommerce checkout).
    */
   public function applyToSubscriber(SubscriberEntity $subscriber, bool $granted, string $method, string $copy, bool $isNewSubscriber): void {
-    $data = $this->getConsentData($granted, $method, $copy, $isNewSubscriber);
+    $data = $this->getConsentData($granted, $method, $copy, $isNewSubscriber, $subscriber->getTrackingConsent());
     if (!$data) {
       return;
     }
     $subscriber->setTrackingConsent($data[self::FIELD_ID], $method, $copy);
+  }
+
+  /**
+   * The consent already on record for this email, or null when nobody with it is
+   * on the list yet. Callers that only have an address use this to tell an
+   * unanswered subscriber from one whose answer must not be overwritten.
+   */
+  public function getStoredConsent(?string $email): ?string {
+    if ($email === null || $email === '') {
+      return null;
+    }
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    return $subscriber instanceof SubscriberEntity ? $subscriber->getTrackingConsent() : null;
   }
 
   /**
