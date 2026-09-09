@@ -305,6 +305,17 @@ class ExportTest extends \MailPoetTest {
     verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals('a",=SUM(1+1),"b');
   }
 
+  public function testItWritesQuotesWithoutBackslashEscaping() {
+    // Pins the writer's dialect: a quote is escaped by doubling it and a backslash is an
+    // ordinary character. CliTest covers the round trip through the importer itself.
+    $this->subscriber1->setFirstName('a\\"b');
+    $this->subscribersRepository->flush();
+
+    $rows = $this->exportAndParseCsv();
+
+    verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals('a\\"b');
+  }
+
   public function testItDoesNotStoreExportedTextAsAnXlsxFormula() {
     $this->subscriber1->setFirstName('=SUM(1+1)');
     $this->subscribersRepository->flush();
