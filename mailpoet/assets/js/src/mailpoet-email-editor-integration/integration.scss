@@ -286,13 +286,13 @@
   &__sidebar__categories-list__item {
     display: block;
     height: 48px;
-    text-align: left;
+    text-align: start;
     width: 100%;
   }
 
-  &:not(.no-sidebar) &__list {
+  &:not(.no-sidebar) > &__list {
     @include break-medium() {
-      margin-left: $sidebar-width;
+      margin-inline-start: $sidebar-width;
     }
   }
 }
