@@ -129,6 +129,20 @@ class Subscription {
   }
 
   /**
+   * Whether checkout actually put the consent question to the customer.
+   *
+   * The checkbox is rendered by extendWooCommerceCheckoutForm, which is only
+   * hooked when the checkout opt-in is switched on, while the code that reads
+   * the answer runs on every order. On a store that asks for consent but leaves
+   * the opt-in off, no box is drawn, so there is no answer to record and an
+   * empty POST field means "not asked" rather than "declined".
+   */
+  private function wasTrackingConsentOffered(): bool {
+    return $this->trackingConsentCapture->isCaptureEnabled()
+      && (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME, false);
+  }
+
+  /**
    * The tracking-consent checkbox, shown only on sites that chose to ask. It is
    * never pre-ticked: a pre-ticked consent box is not valid consent (CJEU
    * Planet49).
@@ -267,6 +281,9 @@ class Subscription {
    * writes the entity itself instead of going through SubscriberSaveController.
    */
   private function applyTrackingConsent(SubscriberEntity $subscriber, bool $granted, bool $isNewSubscriber = false): void {
+    if (!$this->wasTrackingConsentOffered()) {
+      return;
+    }
     $method = SubscriberEntity::TRACKING_CONSENT_METHOD_WOOCOMMERCE_CHECKOUT;
     $before = $subscriber->getTrackingConsent();
 

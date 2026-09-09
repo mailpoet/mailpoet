@@ -197,7 +197,8 @@ class Registration {
       $trackingConsent,
       $method,
       $this->trackingConsentCapture->getCopy($method),
-      $this->trackingConsentCapture->isNewSubscriber($email)
+      $this->trackingConsentCapture->isNewSubscriber($email),
+      $this->trackingConsentCapture->getStoredConsent($email)
     );
 
     $this->subscriberActions->subscribe(

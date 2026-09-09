@@ -231,6 +231,41 @@ class SubscriberSubscribeControllerTrackingConsentTest extends \MailPoetTest {
     verify(isset($decoded['tracking_consent']))->false();
   }
 
+  public function testAFormPostCannotOverwriteAStoredChoice(): void {
+    // The form identifies the subscriber by the posted email and nothing proves
+    // it belongs to whoever submitted it. Sites with double opt-in off would
+    // otherwise let any visitor flip a stranger's answer.
+    $this->askEveryone();
+    $email = 'consent-victim' . rand(0, 100000) . '@example.com';
+    $victim = (new SubscriberFactory())->withEmail($email)->create();
+    $victim->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'declined on the manage page'
+    );
+    $this->subscribersRepository->flush();
+
+    $this->submit($email, '1');
+
+    $this->entityManager->clear();
+    $subscriber = $this->getSubscriber($email);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($subscriber->getTrackingConsentMethod())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE);
+  }
+
+  public function testSomeoneWhoWasNeverAskedCanStillAnswerOnAForm(): void {
+    $this->askEveryone();
+    $email = 'consent-unasked' . rand(0, 100000) . '@example.com';
+    (new SubscriberFactory())->withEmail($email)->create();
+
+    $this->submit($email, '1');
+
+    $this->entityManager->clear();
+    verify($this->getSubscriber($email)->getTrackingConsent())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
   private function submit(string $email, string $consent, array $extra = []): void {
     $segment = $this->segmentsRepository->createOrUpdate('Consent segment ' . rand(0, 100000));
     $form = $this->createForm($segment, true);

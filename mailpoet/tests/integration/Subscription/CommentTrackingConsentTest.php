@@ -184,6 +184,30 @@ class CommentTrackingConsentTest extends \MailPoetTest {
     verify($whenAsking)->stringNotContainsString('checked');
   }
 
+  public function testAStrangerCannotOverwriteAStoredChoiceByCommenting(): void {
+    // comment_author_email is whatever the visitor typed and WordPress never
+    // verifies it, so a comment must not be able to change an answer somebody
+    // else already gave.
+    $this->askEveryone();
+    $victim = (new SubscriberFactory())->withEmail('commenter-consent@example.com')->create();
+    $victim->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'declined on the manage page'
+    );
+    $this->subscribersRepository->flush();
+
+    $_POST['mailpoet'] = ['tracking_consent' => '1'];
+    // Not approved: comment_post runs before moderation.
+    $this->comment->onSubmit($this->commentId, Comment::PENDING_APPROVAL);
+
+    $this->entityManager->clear();
+    $subscriber = $this->getSubscriber();
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($subscriber->getTrackingConsentMethod())
+      ->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE);
+  }
+
   private function getSubscriber(): SubscriberEntity {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'commenter-consent@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
