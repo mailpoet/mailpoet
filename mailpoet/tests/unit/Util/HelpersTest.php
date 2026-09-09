@@ -69,4 +69,27 @@ class HelpersTest extends \MailPoetUnitTest {
     verify(Helpers::escapeSearch('He_llo'))->equals('He\_llo');
     verify(Helpers::escapeSearch('He\\llo'))->equals('He\\\llo');
   }
+
+  public function testMaskEmail() {
+    verify(Helpers::maskEmail('john.doe@example.com'))->equals('j***@e***.com');
+    verify(Helpers::maskEmail('a@b.com'))->equals('a***@b***.com');
+    verify(Helpers::maskEmail('a@mail.example.com'))->equals('a***@m***.com');
+    verify(Helpers::maskEmail('  john.doe@example.com  '))->equals('j***@e***.com');
+    verify(Helpers::maskEmail('john+tag@example.co.uk'))->equals('j***@e***.uk');
+    verify(Helpers::maskEmail('john@doe@example.com'))->equals('j***@e***.com');
+  }
+
+  public function testMaskEmailHandlesValuesThatAreNotEmails() {
+    verify(Helpers::maskEmail('a@localhost'))->equals('a***@l***');
+    verify(Helpers::maskEmail('notanemail'))->equals('***');
+    verify(Helpers::maskEmail('@example.com'))->equals('***');
+    verify(Helpers::maskEmail('john.doe@'))->equals('***');
+    verify(Helpers::maskEmail(''))->equals('');
+    verify(Helpers::maskEmail('   '))->equals('');
+  }
+
+  public function testMaskEmailLengthDoesNotFollowTheInput() {
+    verify(Helpers::maskEmail('j@example.com'))
+      ->equals(Helpers::maskEmail('jonathan.livingston.seagull@example.com'));
+  }
 }
