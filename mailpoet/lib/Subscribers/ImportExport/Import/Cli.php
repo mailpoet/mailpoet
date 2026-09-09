@@ -250,7 +250,10 @@ class Cli {
     }
 
     try {
-      $header = fgetcsv($handle, 0, ',', '"', '\\');
+      // Escaping is disabled so quotes are read as RFC 4180 doubled quotes, the same
+      // convention Export::writeCSVRow writes with. PHP's proprietary backslash escape
+      // would misread a backslash sitting directly before a quote.
+      $header = fgetcsv($handle, 0, ',', '"', '');
       if (!is_array($header)) {
         throw new \RuntimeException('The CSV file is empty or has no header row.');
       }
@@ -261,7 +264,7 @@ class Cli {
       $totals = ['created' => 0, 'updated' => 0, 'valid' => 0, 'rows' => 0, 'skipped' => 0];
       $batch = [];
       $lineNumber = 1; // header is line 1
-      while (is_array($row = fgetcsv($handle, 0, ',', '"', '\\'))) {
+      while (is_array($row = fgetcsv($handle, 0, ',', '"', ''))) {
         $lineNumber++;
         if ($row === [null]) {
           continue; // skip blank lines

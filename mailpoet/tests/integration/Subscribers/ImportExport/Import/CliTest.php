@@ -304,6 +304,25 @@ class CliTest extends \MailPoetTest {
     $this->assertNull($this->subscribersRepository->findOneBy(['email' => 'extra@example.com']));
   }
 
+  public function testItReadsValuesQuotedTheWayTheExporterWritesThem(): void {
+    $firstName = 'a\\"b';
+    $lastName = "O\"Brien, Jr.\nsecond line";
+
+    $file = $this->writeCsv([
+      ['email', 'first_name', 'last_name'],
+      ['quoted@example.com', $firstName, $lastName],
+    ]);
+
+    $totals = $this->cli->run($file, self::DEFAULT_OPTIONS);
+
+    $this->assertSame(1, $totals['rows']);
+    $this->assertSame(1, $totals['created']);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'quoted@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame($firstName, $subscriber->getFirstName());
+    $this->assertSame($lastName, $subscriber->getLastName());
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
@@ -320,7 +339,8 @@ class CliTest extends \MailPoetTest {
     $handle = fopen($path, 'w');
     $this->assertNotFalse($handle);
     foreach ($rows as $row) {
-      fputcsv($handle, $row, ',', '"', '\\');
+      // Escaping disabled to match Export::writeCSVRow, the writer these fixtures stand in for.
+      fputcsv($handle, $row, ',', '"', '');
     }
     fclose($handle);
     return $path;
