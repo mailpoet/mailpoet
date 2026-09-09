@@ -142,16 +142,24 @@ class TrackingConsentCapture {
   }
 
   /**
-   * The consent already on record for this email, or null when nobody with it is
-   * on the list yet. Callers that only have an address use this to tell an
-   * unanswered subscriber from one whose answer must not be overwritten.
+   * Consent fields for a collection point that knows the subscriber only by an
+   * email address someone typed. One lookup answers both questions the decision
+   * needs: whether a row exists, and what it already says.
+   *
+   * @return array<string, string>
    */
-  public function getStoredConsent(?string $email): ?string {
-    if ($email === null || $email === '') {
-      return null;
-    }
-    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
-    return $subscriber instanceof SubscriberEntity ? $subscriber->getTrackingConsent() : null;
+  public function getConsentDataForEmail(bool $granted, string $method, string $copy, ?string $email): array {
+    $subscriber = ($email === null || $email === '')
+      ? null
+      : $this->subscribersRepository->findOneBy(['email' => $email]);
+
+    return $this->getConsentData(
+      $granted,
+      $method,
+      $copy,
+      !$subscriber instanceof SubscriberEntity,
+      $subscriber instanceof SubscriberEntity ? $subscriber->getTrackingConsent() : null
+    );
   }
 
   /**

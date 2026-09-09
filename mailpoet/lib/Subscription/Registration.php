@@ -193,12 +193,11 @@ class Registration {
       []
     );
     $method = SubscriberEntity::TRACKING_CONSENT_METHOD_REGISTRATION;
-    $consentData = $this->trackingConsentCapture->getConsentData(
+    $consentData = $this->trackingConsentCapture->getConsentDataForEmail(
       $trackingConsent,
       $method,
       $this->trackingConsentCapture->getCopy($method),
-      $this->trackingConsentCapture->isNewSubscriber($email),
-      $this->trackingConsentCapture->getStoredConsent($email)
+      $email
     );
 
     $this->subscriberActions->subscribe(
