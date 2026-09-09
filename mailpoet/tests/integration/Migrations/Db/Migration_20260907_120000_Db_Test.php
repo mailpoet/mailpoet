@@ -47,13 +47,13 @@ class Migration_20260907_120000_Db_Test extends \MailPoetTest {
 
   public function testItSkipsWhenAnotherIndexAlreadyStartsWithName(): void {
     $this->entityManager->getConnection()->executeStatement(
-      "CREATE INDEX `" . self::PREEXISTING_INDEX_NAME . "` ON `{$this->tableName}` (`name`)"
+      "CREATE INDEX `" . self::PREEXISTING_INDEX_NAME . "` ON `{$this->tableName}` (`name`(191))"
     );
 
     $this->migration->run();
 
     verify($this->getIndexColumns(self::INDEX_NAME))->equals([]);
-    verify($this->getIndexColumns(self::PREEXISTING_INDEX_NAME))->equals(['name']);
+    verify($this->getIndexColumns(self::PREEXISTING_INDEX_NAME))->equals(['name(191)']);
   }
 
   /**
