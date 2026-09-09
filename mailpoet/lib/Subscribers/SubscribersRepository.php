@@ -915,6 +915,19 @@ class SubscribersRepository extends Repository {
   }
 
   /**
+   * @param string[] $emails
+   * @return array<int, array{id: int, email: string, trackingConsent: string}>
+   */
+  public function findIdEmailAndTrackingConsentByEmails(array $emails): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s.id, LOWER(s.email) AS email, s.trackingConsent')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.email IN (:emails)')
+      ->setParameter('emails', $emails)
+      ->getQuery()->getResult();
+  }
+
+  /**
    * @return int[]
    */
   public function findIdsOfDeletedByEmails(array $emails): array {
