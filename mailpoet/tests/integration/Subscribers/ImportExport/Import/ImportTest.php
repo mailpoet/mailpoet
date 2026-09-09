@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers\ImportExport\Import;
 
 use Codeception\Stub;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -11,6 +12,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Validator;
@@ -293,8 +295,8 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     verify($result['tracking_consent'][0])->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
-    // invalid but non-blank: we know something was meant, we just cannot honour it
-    verify($result['tracking_consent'][1])->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    // an unreadable value is blanked, so it leaves the stored answer alone
+    verify($result['tracking_consent'][1])->equals('');
     // blank stays blank so the import paths can leave the stored value alone
     verify($result['tracking_consent'][2])->equals('');
     verify($result['tracking_consent'][3])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
@@ -865,6 +867,147 @@ class ImportTest extends \MailPoetTest {
     // the previous wording belongs to the previous answer, so it is cleared with it
     verify($updated->getTrackingConsentCopy())->null();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated->getTrackingConsentUpdatedAt());
+  }
+
+  public function testAMistypedConsentCellLeavesTheStoredAnswerAlone(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'grnated'; // a plausible typo in one cell of a long list
+    $data['subscribers'][1][] = '';
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+
+    $this->createImportInstance($data)->process();
+    $this->entityManager->clear();
+
+    $updated = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($updated->getTrackingConsentCopy())->equals('Original wording');
+  }
+
+  public function testReimportingAnUnchangedStateKeepsTheOriginalEvidence(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'granted'; // same state the subscriber already holds
+    $data['subscribers'][1][] = '';
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+    $storedUpdatedAt = $existing->getTrackingConsentUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $storedUpdatedAt);
+
+    $this->createImportInstance($data)->process();
+    $this->entityManager->clear();
+
+    $updated = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $updated);
+    verify($updated->getTrackingConsentMethod())->equals(SubscriberEntity::TRACKING_CONSENT_METHOD_FORM);
+    verify($updated->getTrackingConsentCopy())->equals('Original wording');
+    $currentUpdatedAt = $updated->getTrackingConsentUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $currentUpdatedAt);
+    verify($currentUpdatedAt->getTimestamp())->equals($storedUpdatedAt->getTimestamp());
+  }
+
+  public function testUpdatingConsentByImportAnnouncesTheChange(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'denied';
+    $data['subscribers'][1][] = '';
+
+    $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $this->subscriberRepository->flush();
+
+    $fired = $this->captureTrackingConsentChanges(function () use ($data): void {
+      $this->createImportInstance($data)->process();
+    });
+
+    verify(count($fired))->equals(1);
+    verify($fired[0][1])->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($fired[0][2])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testImportingAConsentDecisionForANewSubscriberAnnouncesTheChange(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'denied';
+    $data['subscribers'][1][] = '';
+
+    $fired = $this->captureTrackingConsentChanges(function () use ($data): void {
+      $this->createImportInstance($data)->process();
+    });
+
+    verify(count($fired))->equals(1);
+    verify($fired[0][1])->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($fired[0][2])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testAnUnchangedConsentCellAnnouncesNothing(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'granted';
+    $data['subscribers'][1][] = '';
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_GRANTED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FORM,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+
+    $fired = $this->captureTrackingConsentChanges(function () use ($data): void {
+      $this->createImportInstance($data)->process();
+    });
+
+    verify($fired)->empty();
+  }
+
+  /**
+   * The notifier collects changes during the request and fires them together on
+   * shutdown, so the hook is only observable once notify() has run. The
+   * container inlines the notifier, hence the hand-built repository here: it is
+   * the only way to hold the same instance the import reports to.
+   *
+   * @return array<int, array{0: int, 1: string, 2: string}>
+   */
+  private function captureTrackingConsentChanges(callable $work): array {
+    $notifier = new SubscriberChangesNotifier(WPFunctions::get());
+    $previousRepository = $this->importExportRepository;
+    $this->importExportRepository = new ImportExportRepository(
+      $this->entityManager,
+      $notifier,
+      $this->diContainer->get(FilterHandler::class),
+      $this->subscriberRepository,
+      $this->subscriberCustomFieldRepository
+    );
+
+    $fired = [];
+    $listener = function ($subscriberId, $oldConsent, $newConsent) use (&$fired): void {
+      $fired[] = [$subscriberId, $oldConsent, $newConsent];
+    };
+    $hook = SubscriberEntity::HOOK_SUBSCRIBER_TRACKING_CONSENT_CHANGED;
+    add_action($hook, $listener, 10, 3);
+    try {
+      $work();
+      $notifier->notify();
+    } finally {
+      remove_action($hook, $listener, 10);
+      $this->importExportRepository = $previousRepository;
+    }
+    return $fired;
   }
 
   public function testItSynchronizesWpUsers(): void {

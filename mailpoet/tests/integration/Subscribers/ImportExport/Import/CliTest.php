@@ -147,11 +147,14 @@ class CliTest extends \MailPoetTest {
     $this->assertSame('Allow open and click tracking', $granted->getTrackingConsentCopy());
     $this->assertInstanceOf(\DateTimeInterface::class, $granted->getTrackingConsentUpdatedAt());
 
-    // an unrecognised state still means "they answered", we just cannot honour the answer
+    // An unreadable state is not an answer, so it is treated like an empty cell and
+    // no evidence is stamped. Recording "answered by import" for a value we could not
+    // read would be a consent record of something nobody said.
     $bogus = $this->subscribersRepository->findOneBy(['email' => 'bogus@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $bogus);
     $this->assertSame(SubscriberEntity::TRACKING_CONSENT_UNKNOWN, $bogus->getTrackingConsent());
-    $this->assertSame(SubscriberEntity::TRACKING_CONSENT_METHOD_IMPORT, $bogus->getTrackingConsentMethod());
+    $this->assertNull($bogus->getTrackingConsentMethod());
+    $this->assertNull($bogus->getTrackingConsentUpdatedAt());
 
     $silent = $this->subscribersRepository->findOneBy(['email' => 'silent@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $silent);
