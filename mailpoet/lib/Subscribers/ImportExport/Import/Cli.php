@@ -11,6 +11,7 @@ use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP as SegmentsWP;
 use MailPoet\Services\Validator;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tags\TagRepository;
@@ -75,6 +76,9 @@ class Cli {
   /** @var SegmentSaveController */
   private $segmentSaveController;
 
+  /** @var array<string, string>|null Lowercased exported column label => canonical field name. */
+  private $exportedLabelMap = null;
+
   public function __construct(
     SegmentsWP $wpSegment,
     CustomFieldsRepository $customFieldsRepository,
@@ -108,7 +112,7 @@ class Cli {
         [
           'type' => 'positional',
           'name' => 'file',
-          'description' => 'Path to the CSV file. The header row must use MailPoet field names (email, first_name, last_name, subscribed_ip, created_at, confirmed_at, confirmed_ip, tracking_consent, tracking_consent_method, tracking_consent_copy) or existing custom field names. An "email" column is required. tracking_consent accepts granted, denied or unknown; a blank cell leaves the stored value alone.',
+          'description' => 'Path to the CSV file. The header row must use MailPoet field names (email, first_name, last_name, subscribed_ip, created_at, confirmed_at, confirmed_ip, tracking_consent, tracking_consent_method, tracking_consent_copy), existing custom field names, or the column labels MailPoet\'s own export writes. An "email" column is required. tracking_consent accepts granted, denied or unknown; a blank cell leaves the stored value alone.',
           'optional' => false,
         ],
         [
@@ -258,7 +262,10 @@ class Cli {
         throw new \RuntimeException('The CSV file is empty or has no header row.');
       }
       $header = array_map([$this, 'unformatCell'], $header);
-      $columns = $this->buildColumns($header);
+      // generateCSV starts the file with a UTF-8 BOM so Excel detects the encoding. It is
+      // not part of the first column's name, and trim() does not remove it.
+      $header[0] = $this->stripByteOrderMark($header[0]);
+      $columns = $this->buildColumns($header, $log);
 
       $headerColumnCount = count($header);
       $totals = ['created' => 0, 'updated' => 0, 'valid' => 0, 'rows' => 0, 'skipped' => 0];
@@ -361,12 +368,14 @@ class Cli {
    * Maps each CSV header to a subscriber field or custom field id.
    *
    * @param array<int, string|null> $header
+   * @param callable(string):void|null $log
    * @return array<string|int, array{index: int}>
    * @throws \RuntimeException
    */
-  private function buildColumns(array $header): array {
+  private function buildColumns(array $header, ?callable $log = null): array {
     $columns = [];
     $unknown = [];
+    $ignored = [];
     $duplicates = [];
     $namesByField = [];
     foreach ($header as $index => $name) {
@@ -376,6 +385,10 @@ class Cli {
       }
       $field = $this->resolveField($name);
       if ($field === null) {
+        if ($this->isExportOnlyColumn($name)) {
+          $ignored[] = $name;
+          continue;
+        }
         $unknown[] = $name;
         continue;
       }
@@ -409,6 +422,13 @@ class Cli {
       throw new \RuntimeException('The CSV file must contain an "email" column.');
     }
 
+    if ($ignored && $log) {
+      $log(sprintf(
+        'Ignored column(s) MailPoet exports but cannot import: %s. Use --segments to choose the lists to import into.',
+        implode(', ', $ignored)
+      ));
+    }
+
     return $columns;
   }
 
@@ -423,7 +443,50 @@ class Cli {
     if ($customField instanceof CustomFieldEntity) {
       return $customField->getId();
     }
-    return null;
+    // A custom field of the same name wins above, so this only catches the labels
+    // MailPoet's own export writes, such as "First name" for first_name.
+    $field = $this->getExportedLabelMap()[strtolower($header)] ?? null;
+    return in_array($field, self::BASE_FIELDS, true) ? $field : null;
+  }
+
+  /**
+   * Columns MailPoet's export writes that hold no importable field: the export-only
+   * fields, and the "List" column, whose lists are chosen with --segments instead.
+   */
+  private function isExportOnlyColumn(string $header): bool {
+    $normalized = strtolower($header);
+    if ($normalized === strtolower(__('List', 'mailpoet'))) {
+      return true;
+    }
+    $field = $this->getExportedLabelMap()[$normalized] ?? null;
+    return $field !== null && !in_array($field, self::BASE_FIELDS, true);
+  }
+
+  /**
+   * MailPoet's export writes translated column labels rather than canonical field names,
+   * so accept both. Built from the same source the exporter writes its header from.
+   *
+   * @return array<string, string> Lowercased exported label => canonical field name.
+   */
+  private function getExportedLabelMap(): array {
+    if ($this->exportedLabelMap === null) {
+      $map = [];
+      $exportFactory = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
+      foreach ($exportFactory->getSubscriberFields() as $field => $label) {
+        $map[strtolower((string)$label)] = (string)$field;
+      }
+      $this->exportedLabelMap = $map;
+    }
+    return $this->exportedLabelMap;
+  }
+
+  /** Removes a leading UTF-8 byte order mark, which trim() leaves in place. */
+  private function stripByteOrderMark(?string $value): ?string {
+    if ($value === null) {
+      return null;
+    }
+    $bom = chr(0xEF) . chr(0xBB) . chr(0xBF);
+    return strpos($value, $bom) === 0 ? substr($value, strlen($bom)) : $value;
   }
 
   /**

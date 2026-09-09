@@ -7,6 +7,8 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\ImportExport\Export\Export;
+use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 
@@ -25,6 +27,9 @@ class CliTest extends \MailPoetTest {
 
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
+
+  /** @var ImportExportRepository */
+  private $importExportRepository;
 
   /** @var string[] */
   private $tempFiles = [];
@@ -46,6 +51,7 @@ class CliTest extends \MailPoetTest {
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
+    $this->importExportRepository = $this->diContainer->get(ImportExportRepository::class);
   }
 
   public function testItImportsNewSubscribersAndCreatesSegment(): void {
@@ -320,10 +326,74 @@ class CliTest extends \MailPoetTest {
     $this->assertSame($lastName, $subscriber->getLastName());
   }
 
+  public function testItImportsAFileProducedByMailPoetsOwnExporter(): void {
+    // The round trip the exporter's guard exists for: whatever generateCSV writes -- BOM,
+    // translated column labels, an export-only "List" column and RFC 4180 quoting -- has
+    // to come back through the importer as the values that went in.
+    $firstName = 'a\\"b';
+    $lastName = "O\"Brien, Jr.";
+    $country = "=SUM(1+1)";
+
+    $customField = $this->customFieldsRepository->createOrUpdate([
+      'name' => 'Country',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+    ]);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+
+    $segment = $this->segmentsRepository->createOrUpdate('Round Trip List');
+    $this->cli->run(
+      $this->writeCsv([
+        ['email', 'first_name', 'last_name', 'Country'],
+        ['round.trip@example.com', $firstName, $lastName, $country],
+      ]),
+      ['segments' => [(string)$segment->getId()]] + self::DEFAULT_OPTIONS
+    );
+    $exported = $this->exportSegmentToCsv($segment, $customField);
+
+    // Wipe the subscriber so the import has to recreate it from the exported file alone.
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'round.trip@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
+
+    $totals = $this->cli->run($exported, ['segments' => [(string)$segment->getId()]] + self::DEFAULT_OPTIONS);
+
+    $this->assertSame(0, $totals['skipped']);
+    $this->assertSame(1, $totals['rows']);
+    $this->assertSame(1, $totals['created']);
+
+    $reimported = $this->subscribersRepository->findOneBy(['email' => 'round.trip@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $reimported);
+    $this->assertSame($firstName, $reimported->getFirstName());
+    $this->assertSame($lastName, $reimported->getLastName());
+    $value = $this->subscriberCustomFieldRepository->findOneBy([
+      'subscriber' => $reimported,
+      'customField' => $customField,
+    ]);
+    $this->assertNotNull($value);
+    $this->assertSame($country, $value->getValue());
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
     $this->cli->run('/tmp/does-not-exist-' . bin2hex(random_bytes(6)) . '.csv', self::DEFAULT_OPTIONS); // phpcs:ignore
+  }
+
+  /** Exports one segment with generateCSV and returns the path to the produced file. */
+  private function exportSegmentToCsv(SegmentEntity $segment, CustomFieldEntity $customField): string {
+    $export = new Export(
+      $this->customFieldsRepository,
+      $this->importExportRepository,
+      $this->segmentsRepository,
+      [
+        'export_format_option' => 'csv',
+        'segments' => [(string)$segment->getId()],
+        'subscriber_fields' => ['email', 'first_name', 'last_name', (string)$customField->getId()],
+      ]
+    );
+    $export->process();
+    $this->tempFiles[] = $export->exportFile;
+    return $export->exportFile;
   }
 
   /**
