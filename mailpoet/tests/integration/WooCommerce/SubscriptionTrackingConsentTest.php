@@ -190,6 +190,40 @@ class SubscriptionTrackingConsentTest extends \MailPoetTest {
     verify($this->subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
   }
 
+  public function testNothingIsRecordedWhenTheOptInBlockDidNotRender() {
+    // Both settings can be on while the mailpoet_woocommerce_checkout_optin_template
+    // filter empties the block, which takes the consent box with it. The settings
+    // cannot see that, so the caller reports whether the field reached the customer.
+    $this->askEveryone();
+    $newGuest = new SubscriberEntity();
+    $newGuest->setEmail('filtered-away-guest@example.com');
+    $newGuest->setIsWoocommerceUser(true);
+    $newGuest->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->persist($newGuest);
+    $this->subscribersRepository->flush();
+
+    $this->subscription->handleSubscriberOptin($newGuest, false, false, true, false);
+
+    verify($newGuest->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($newGuest->getTrackingConsentMethod())->null();
+  }
+
+  public function testACraftedConsentPostIsIgnoredWhenTheOptInBlockDidNotRender() {
+    $this->askEveryone();
+
+    $this->subscription->handleSubscriberOptin($this->subscriber, true, true, true, false);
+
+    verify($this->subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+  }
+
+  public function testConsentIsStillRecordedWhenTheBlockDidRender() {
+    $this->askEveryone();
+
+    $this->subscription->handleSubscriberOptin($this->subscriber, false, true, false, true);
+
+    verify($this->subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
   public function testTheCheckoutFieldIsHiddenUntilTheSiteAsks() {
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
 

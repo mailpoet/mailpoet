@@ -136,10 +136,22 @@ class Subscription {
    * the answer runs on every order. On a store that asks for consent but leaves
    * the opt-in off, no box is drawn, so there is no answer to record and an
    * empty POST field means "not asked" rather than "declined".
+   *
+   * Settings are necessary but not sufficient: the opt-in block can also be
+   * emptied through the mailpoet_woocommerce_checkout_optin_template filter,
+   * which takes the consent box with it. Callers that can see whether the block
+   * reached the customer pass that in.
    */
-  private function wasTrackingConsentOffered(): bool {
-    return $this->trackingConsentCapture->isCaptureEnabled()
-      && (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME, false);
+  private function wasTrackingConsentOffered(?bool $consentFieldRendered = null): bool {
+    if (!$this->trackingConsentCapture->isCaptureEnabled()) {
+      return false;
+    }
+    if (!(bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME, false)) {
+      return false;
+    }
+    // Callers that can tell whether the field really reached the customer say so.
+    // Null means they cannot, so the settings are the best answer available.
+    return $consentFieldRendered ?? true;
   }
 
   /**
@@ -228,8 +240,14 @@ class Subscription {
     // this same hook three priorities earlier, so by now a brand new guest's row
     // is already there. Ask the sync what it actually inserted.
     $isNewSubscriber = $this->woocommerceSegment->wasNewlyCreatedByGuestSync($data['billing_email']);
+    // The consent box is printed inside the opt-in block, next to this hidden
+    // field, so its absence means the block did not render and no question was
+    // put to the customer. A site can empty the block through the
+    // mailpoet_woocommerce_checkout_optin_template filter with both settings
+    // still on, which the settings alone cannot tell us.
+    $consentFieldRendered = !empty($_POST[self::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME]);
 
-    return $this->handleSubscriberOptin($subscriber, $checkoutOptin, $trackingConsent, $isNewSubscriber);
+    return $this->handleSubscriberOptin($subscriber, $checkoutOptin, $trackingConsent, $isNewSubscriber, $consentFieldRendered);
   }
 
   /**
@@ -239,11 +257,11 @@ class Subscription {
    * @param bool $shouldSubscribe Whether the subscriber should be subscribed
    * @param bool $trackingConsent Whether the separate tracking-consent box was ticked
    */
-  public function handleSubscriberOptin(SubscriberEntity $subscriber, bool $shouldSubscribe, bool $trackingConsent = false, bool $isNewSubscriber = false): bool {
+  public function handleSubscriberOptin(SubscriberEntity $subscriber, bool $shouldSubscribe, bool $trackingConsent = false, bool $isNewSubscriber = false, ?bool $consentFieldRendered = null): bool {
     // Recorded before the opt-in branch, and independently of it: consenting to
     // tracking and subscribing are two separate decisions, so a customer who
     // declines the newsletter can still allow tracking and vice versa.
-    $this->applyTrackingConsent($subscriber, $trackingConsent, $isNewSubscriber);
+    $this->applyTrackingConsent($subscriber, $trackingConsent, $isNewSubscriber, $consentFieldRendered);
 
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
 
@@ -280,8 +298,8 @@ class Subscription {
    * choice alone rather than revoking it. Persisted here because this path
    * writes the entity itself instead of going through SubscriberSaveController.
    */
-  private function applyTrackingConsent(SubscriberEntity $subscriber, bool $granted, bool $isNewSubscriber = false): void {
-    if (!$this->wasTrackingConsentOffered()) {
+  private function applyTrackingConsent(SubscriberEntity $subscriber, bool $granted, bool $isNewSubscriber = false, ?bool $consentFieldRendered = null): void {
+    if (!$this->wasTrackingConsentOffered($consentFieldRendered)) {
       return;
     }
     $method = SubscriberEntity::TRACKING_CONSENT_METHOD_WOOCOMMERCE_CHECKOUT;
