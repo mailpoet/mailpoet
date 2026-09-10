@@ -81,6 +81,9 @@ class Cli {
   /** @var array<string, string>|null Lowercased exported column label => canonical field name. */
   private $exportedLabelMap = null;
 
+  /** @var array<string, true> Status values already reported as unusable, to warn once each. */
+  private $warnedStatuses = [];
+
   public function __construct(
     SegmentsWP $wpSegment,
     CustomFieldsRepository $customFieldsRepository,
@@ -126,7 +129,7 @@ class Cli {
         [
           'type' => 'assoc',
           'name' => 'status',
-          'description' => 'Status for newly created subscribers.',
+          'description' => 'Status for newly created subscribers. A "status" column in the file, or the status column of a MailPoet export, takes precedence for the rows that fill it in.',
           'optional' => true,
           'default' => SubscriberEntity::STATUS_SUBSCRIBED,
           'options' => self::NEW_SUBSCRIBER_STATUSES,
@@ -273,7 +276,15 @@ class Cli {
         throw new \RuntimeException('The CSV file is empty or has no header row.');
       }
       $header = array_map([$this, 'unformatCell'], $header);
-      $columns = $this->buildColumns($header, $log);
+      $statusColumn = $this->findStatusColumn($header);
+      $columns = $this->buildColumns($header, $log, $statusColumn);
+      if ($statusColumn !== null) {
+        $log(sprintf(
+          'Taking the status of new subscribers from the "%s" column; --status covers rows that leave it blank.',
+          trim((string)$header[$statusColumn])
+        ));
+      }
+      $this->warnedStatuses = [];
 
       $headerColumnCount = count($header);
       $totals = ['created' => 0, 'updated' => 0, 'valid' => 0, 'rows' => 0, 'skipped' => 0];
@@ -297,12 +308,12 @@ class Cli {
         $totals['rows']++;
         $batch[] = $row;
         if (count($batch) >= $options['batch_size']) {
-          $this->processBatch($batch, $columns, $segmentIds, $options, $totals, $log);
+          $this->processBatch($batch, $columns, $segmentIds, $options, $totals, $log, $statusColumn);
           $batch = [];
         }
       }
       if ($batch) {
-        $this->processBatch($batch, $columns, $segmentIds, $options, $totals, $log);
+        $this->processBatch($batch, $columns, $segmentIds, $options, $totals, $log, $statusColumn);
       }
     } finally {
       fclose($handle);
@@ -320,6 +331,40 @@ class Cli {
    * @param callable(string): void $log
    */
   private function processBatch(
+    array $batch,
+    array $columns,
+    array $segmentIds,
+    array $options,
+    array &$totals,
+    callable $log,
+    ?int $statusColumn = null
+  ): void {
+    if ($statusColumn === null) {
+      $this->importGroup($batch, $columns, $segmentIds, $options, $totals, $log);
+      return;
+    }
+
+    // Import takes one status for a whole batch, so rows are grouped by the status their
+    // own row asks for and each group is imported with that as the new-subscriber status.
+    $groups = [];
+    foreach ($batch as $row) {
+      $status = $this->resolveRowStatus($row[$statusColumn] ?? null, $options['status'], $log);
+      $groups[$status][] = $row;
+    }
+    foreach ($groups as $status => $rows) {
+      $this->importGroup($rows, $columns, $segmentIds, ['status' => $status] + $options, $totals, $log);
+    }
+  }
+
+  /**
+   * @param array<int, array<int, string|null>> $batch
+   * @param array<string|int, array{index: int}> $columns
+   * @param int[] $segmentIds
+   * @param array{segments: string[], status: string, existing_status: string, update_existing: bool, tags: string[], batch_size: int, dry_run: bool} $options
+   * @param array{created: int, updated: int, valid: int, rows: int, skipped: int} $totals
+   * @param callable(string): void $log
+   */
+  private function importGroup(
     array $batch,
     array $columns,
     array $segmentIds,
@@ -377,10 +422,11 @@ class Cli {
    *
    * @param array<int, string|null> $header
    * @param callable(string):void|null $log
+   * @param int|null $statusColumn Index consumed as the subscriber status, not as a field.
    * @return array<string|int, array{index: int}>
    * @throws \RuntimeException
    */
-  private function buildColumns(array $header, ?callable $log = null): array {
+  private function buildColumns(array $header, ?callable $log = null, ?int $statusColumn = null): array {
     $columns = [];
     $unknown = [];
     $ignored = [];
@@ -388,7 +434,7 @@ class Cli {
     $namesByField = [];
     foreach ($header as $index => $name) {
       $name = trim((string)$name);
-      if ($name === '') {
+      if ($name === '' || $index === $statusColumn) {
         continue;
       }
       $field = $this->resolveField($name);
@@ -455,6 +501,45 @@ class Cli {
     // MailPoet's own export writes, such as "First name" for first_name.
     $field = $this->getExportedLabelMap()[strtolower($header)] ?? null;
     return in_array($field, self::BASE_FIELDS, true) ? $field : null;
+  }
+
+  /**
+   * Finds the column holding the subscriber's own status: the label MailPoet's export
+   * writes for it, or a plain "status" column in a hand-written file.
+   *
+   * @param array<int, string|null> $header
+   */
+  private function findStatusColumn(array $header): ?int {
+    $labelMap = $this->getExportedLabelMap();
+    foreach ($header as $index => $name) {
+      $name = strtolower(trim((string)$name));
+      if ($name === 'status' || $name === 'global_status') {
+        return $index;
+      }
+      if (($labelMap[$name] ?? null) === 'global_status') {
+        return $index;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * A blank cell, or one holding a status that cannot be set on import such as bounced,
+   * falls back to --status. Each unusable value is reported once.
+   */
+  private function resolveRowStatus(?string $value, string $fallback, callable $log): string {
+    $status = strtolower(trim((string)$value));
+    if ($status === '') {
+      return $fallback;
+    }
+    if (in_array($status, self::NEW_SUBSCRIBER_STATUSES, true)) {
+      return $status;
+    }
+    if (!isset($this->warnedStatuses[$status])) {
+      $this->warnedStatuses[$status] = true;
+      $log(sprintf('  Status "%s" cannot be set by an import; those rows use --status=%s instead.', $status, $fallback));
+    }
+    return $fallback;
   }
 
   /**

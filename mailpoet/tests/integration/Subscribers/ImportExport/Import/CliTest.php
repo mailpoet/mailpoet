@@ -393,10 +393,74 @@ class CliTest extends \MailPoetTest {
     $this->assertSame('Adam', $subscriber->getFirstName());
   }
 
+  public function testItTakesTheStatusOfNewSubscribersFromTheFile(): void {
+    $file = $this->writeCsv([
+      ['email', 'first_name', 'status'],
+      ['gone@example.com', 'Gone', SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['fresh@example.com', 'Fresh', SubscriberEntity::STATUS_SUBSCRIBED],
+      ['blank@example.com', 'Blank', ''],
+    ]);
+
+    $totals = $this->cli->run($file, ['status' => SubscriberEntity::STATUS_INACTIVE] + self::DEFAULT_OPTIONS);
+
+    $this->assertSame(3, $totals['created']);
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $this->statusOf('gone@example.com'));
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $this->statusOf('fresh@example.com'));
+    // A blank cell leaves --status in charge.
+    $this->assertSame(SubscriberEntity::STATUS_INACTIVE, $this->statusOf('blank@example.com'));
+  }
+
+  public function testItFallsBackToTheStatusFlagForAStatusImportCannotSet(): void {
+    $messages = [];
+    $file = $this->writeCsv([
+      ['email', 'status'],
+      ['bounced@example.com', SubscriberEntity::STATUS_BOUNCED],
+    ]);
+
+    $this->cli->run(
+      $file,
+      ['status' => SubscriberEntity::STATUS_UNCONFIRMED] + self::DEFAULT_OPTIONS,
+      function (string $message) use (&$messages): void {
+        $messages[] = $message;
+      }
+    );
+
+    $this->assertSame(SubscriberEntity::STATUS_UNCONFIRMED, $this->statusOf('bounced@example.com'));
+    $this->assertNotEmpty(array_filter($messages, function (string $m): bool {
+      return strpos($m, 'bounced') !== false;
+    }));
+  }
+
+  public function testItKeepsTheStatusThroughAnExportAndImportRoundTrip(): void {
+    $segment = $this->segmentsRepository->createOrUpdate('Status Round Trip');
+    $this->cli->run(
+      $this->writeCsv([['email', 'status'], ['unsub.round@example.com', SubscriberEntity::STATUS_UNSUBSCRIBED]]),
+      ['segments' => [(string)$segment->getId()]] + self::DEFAULT_OPTIONS
+    );
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $this->statusOf('unsub.round@example.com'));
+
+    $exported = $this->exportSegmentToCsv($segment, null, ['email', 'global_status']);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'unsub.round@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
+
+    // --status would make them subscribed; the exported status has to win.
+    $this->cli->run($exported, ['status' => SubscriberEntity::STATUS_SUBSCRIBED] + self::DEFAULT_OPTIONS);
+
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $this->statusOf('unsub.round@example.com'));
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
     $this->cli->run('/tmp/does-not-exist-' . bin2hex(random_bytes(6)) . '.csv', self::DEFAULT_OPTIONS); // phpcs:ignore
+  }
+
+  private function statusOf(string $email): string {
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    return $subscriber->getStatus();
   }
 
   /** Writes the given bytes verbatim, for headers fputcsv would not produce on its own. */
@@ -408,8 +472,16 @@ class CliTest extends \MailPoetTest {
     return $path;
   }
 
-  /** Exports one segment with generateCSV and returns the path to the produced file. */
-  private function exportSegmentToCsv(SegmentEntity $segment, CustomFieldEntity $customField): string {
+  /**
+   * Exports one segment with generateCSV and returns the path to the produced file.
+   *
+   * @param string[]|null $fields
+   */
+  private function exportSegmentToCsv(SegmentEntity $segment, ?CustomFieldEntity $customField = null, ?array $fields = null): string {
+    if ($fields === null) {
+      $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+      $fields = ['email', 'first_name', 'last_name', (string)$customField->getId()];
+    }
     $export = new Export(
       $this->customFieldsRepository,
       $this->importExportRepository,
@@ -417,7 +489,7 @@ class CliTest extends \MailPoetTest {
       [
         'export_format_option' => 'csv',
         'segments' => [(string)$segment->getId()],
-        'subscriber_fields' => ['email', 'first_name', 'last_name', (string)$customField->getId()],
+        'subscriber_fields' => $fields,
       ]
     );
     $export->process();
