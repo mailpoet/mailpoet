@@ -512,13 +512,21 @@ class Cli {
   private function findStatusColumn(array $header): ?int {
     $labelMap = $this->getExportedLabelMap();
     foreach ($header as $index => $name) {
-      $name = strtolower(trim((string)$name));
-      if ($name === 'status' || $name === 'global_status') {
-        return $index;
+      $name = trim((string)$name);
+      $normalized = strtolower($name);
+      $isStatus = $normalized === 'status'
+        || $normalized === 'global_status'
+        || ($labelMap[$normalized] ?? null) === 'global_status';
+      if (!$isStatus) {
+        continue;
       }
-      if (($labelMap[$name] ?? null) === 'global_status') {
-        return $index;
+      // A custom field of this exact name wins, the same way it does in resolveField.
+      // Otherwise a field someone named "Status" would stop being imported and would
+      // start deciding who is subscribed.
+      if ($this->customFieldsRepository->findOneBy(['name' => $name]) instanceof CustomFieldEntity) {
+        continue;
       }
+      return $index;
     }
     return null;
   }
