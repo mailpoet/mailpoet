@@ -373,10 +373,36 @@ class CliTest extends \MailPoetTest {
     $this->assertSame($country, $value->getValue());
   }
 
+  public function testItReadsAQuotedFirstColumnAfterTheByteOrderMark(): void {
+    // fputcsv quotes any label holding a space, so in locales whose email label has one
+    // ("Correo electronico" in Spanish) the export's first column arrives quoted, right
+    // after the BOM. The BOM has to be gone before fgetcsv looks for the enclosure.
+    $path = $this->writeRawCsv(
+      "\xEF\xBB\xBF\"email\",\"first_name\"\n" .
+      "bom.quoted@example.com,Adam\n"
+    );
+
+    $totals = $this->cli->run($path, self::DEFAULT_OPTIONS);
+
+    $this->assertSame(1, $totals['created']);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'bom.quoted@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame('Adam', $subscriber->getFirstName());
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
     $this->cli->run('/tmp/does-not-exist-' . bin2hex(random_bytes(6)) . '.csv', self::DEFAULT_OPTIONS); // phpcs:ignore
+  }
+
+  /** Writes the given bytes verbatim, for headers fputcsv would not produce on its own. */
+  private function writeRawCsv(string $contents): string {
+    $path = tempnam(sys_get_temp_dir(), 'mailpoet-import-');
+    $this->assertIsString($path);
+    $this->tempFiles[] = $path;
+    file_put_contents($path, $contents);
+    return $path;
   }
 
   /** Exports one segment with generateCSV and returns the path to the produced file. */
