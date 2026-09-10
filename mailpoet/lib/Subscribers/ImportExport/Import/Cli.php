@@ -432,7 +432,7 @@ class Cli {
 
     if ($ignored && $log) {
       $log(sprintf(
-        'Ignored column(s) MailPoet exports but cannot import: %s. Use --segments to choose the lists to import into.',
+        'Ignored column(s) MailPoet exports but cannot import: %s. Use --segments to choose the lists, and --status / --existing-status to choose the subscription status.',
         implode(', ', $ignored)
       ));
     }
