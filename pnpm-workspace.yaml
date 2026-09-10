@@ -24,17 +24,24 @@ overrides:
   '@wp-playground/cli>ajv': 8.18.0
   '@wp-playground/tools>ajv': 8.18.0
   'adm-zip@<0.6.0': 0.6.0
+  'browserslist@<4.28.9': 4.28.9
+  'colord@<2.10.0': 2.10.0
   'd3-color@<3.1.0': 3.1.0
+  'fast-uri@<3.1.7': 3.1.7
   'ip-address@<=10.1.0': 10.1.1
+  'joi@>=18.0.0 <18.2.8': 18.2.8
+  'js-yaml@<3.15.2': 3.15.2
+  'js-yaml@>=4.0.0 <4.3.2': 4.3.2
   locutus: ^3.0.0
   'markdown-it@<14.2.0': 14.2.0
   'minimatch@<3.1.5': 3.1.5
   'minimatch@>=5.0.0 <5.1.8': 5.1.8
   'minimatch@>=9.0.0 <9.0.7': 9.0.7
-  'qs@<6.15.2': 6.15.2
-  'react-router@>=6.0.0 <6.30.4': 6.30.4
-  'react-router-dom@>=6.0.0 <6.30.4': 6.30.4
+  'qs@<6.16.0': 6.16.0
+  'react-router@>=6.0.0 <6.30.6': 6.30.6
+  'react-router-dom@>=6.0.0 <6.30.6': 6.30.6
   'serialize-javascript@<7.0.5': 7.0.5
+  'svgo@>=3.0.0 <3.3.5': 3.3.5
   'underscore@<=1.13.7': 1.13.8
   'uuid@<11.1.1': 11.1.1
   'webpack-dev-server@<5.2.6': 5.2.6
