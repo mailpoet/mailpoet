@@ -49,6 +49,8 @@ class Cli {
 
   private const DEFAULT_BATCH_SIZE = 2000;
 
+  private const UTF8_BOM = "\xEF\xBB\xBF";
+
   /** @var SegmentsWP */
   private $wpSegment;
 
@@ -253,6 +255,15 @@ class Cli {
       throw new \RuntimeException(sprintf('Unable to open file "%s".', $file));
     }
 
+    // generateCSV starts the file with a UTF-8 BOM so Excel detects the encoding. Skip it
+    // before parsing rather than trimming it off the first column afterwards: a BOM sitting
+    // in front of a quoted first column stops fgetcsv reading that field as enclosed, so
+    // the quotes would survive into the column name.
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Reading the local CSV the user pointed the command at, through the handle opened above.
+    if (fread($handle, 3) !== self::UTF8_BOM) {
+      rewind($handle);
+    }
+
     try {
       // Escaping is disabled so quotes are read as RFC 4180 doubled quotes, the same
       // convention Export::writeCSVRow writes with. PHP's proprietary backslash escape
@@ -262,9 +273,6 @@ class Cli {
         throw new \RuntimeException('The CSV file is empty or has no header row.');
       }
       $header = array_map([$this, 'unformatCell'], $header);
-      // generateCSV starts the file with a UTF-8 BOM so Excel detects the encoding. It is
-      // not part of the first column's name, and trim() does not remove it.
-      $header[0] = $this->stripByteOrderMark($header[0]);
       $columns = $this->buildColumns($header, $log);
 
       $headerColumnCount = count($header);
@@ -478,15 +486,6 @@ class Cli {
       $this->exportedLabelMap = $map;
     }
     return $this->exportedLabelMap;
-  }
-
-  /** Removes a leading UTF-8 byte order mark, which trim() leaves in place. */
-  private function stripByteOrderMark(?string $value): ?string {
-    if ($value === null) {
-      return null;
-    }
-    $bom = chr(0xEF) . chr(0xBB) . chr(0xBF);
-    return strpos($value, $bom) === 0 ? substr($value, strlen($bom)) : $value;
   }
 
   /**
