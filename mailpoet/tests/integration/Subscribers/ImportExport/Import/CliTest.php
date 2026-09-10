@@ -448,6 +448,32 @@ class CliTest extends \MailPoetTest {
     $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $this->statusOf('unsub.round@example.com'));
   }
 
+  public function testACustomFieldNamedStatusStillWinsOverTheStatusColumn(): void {
+    $customField = $this->customFieldsRepository->createOrUpdate([
+      'name' => 'Status',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+    ]);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+
+    $file = $this->writeCsv([
+      ['email', 'Status'],
+      ['own.field@example.com', 'unsubscribed'],
+    ]);
+
+    $this->cli->run($file, ['status' => SubscriberEntity::STATUS_SUBSCRIBED] + self::DEFAULT_OPTIONS);
+
+    // The column belongs to the custom field, so it must not steer the subscriber status.
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $this->statusOf('own.field@example.com'));
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'own.field@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $value = $this->subscriberCustomFieldRepository->findOneBy([
+      'subscriber' => $subscriber,
+      'customField' => $customField,
+    ]);
+    $this->assertNotNull($value);
+    $this->assertSame('unsubscribed', $value->getValue());
+  }
+
   public function testItThrowsForMissingFile(): void {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('does not exist or is not readable');
