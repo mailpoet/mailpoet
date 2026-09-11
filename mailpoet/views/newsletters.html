@@ -50,6 +50,8 @@
       var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
       var mailpoet_sender_restrictions = <%= json_encode(sender_restrictions) %>;
       var mailpoet_block_email_editor_enabled = <%= json_encode(block_email_editor_enabled) %>;
+      var mailpoet_editor_choice_modal_enabled = <%= json_encode(editor_choice_modal_enabled) %>;
+      var mailpoet_last_email_editor_choice = <%= json_encode(last_email_editor_choice) %>;
     <% endautoescape %>
 
     var mailpoet_newsletters_templates_recently_sent_count = <%= json_decode(newsletters_templates_recently_sent_count) %>;

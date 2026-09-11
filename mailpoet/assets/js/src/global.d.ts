@@ -349,6 +349,8 @@ interface Window {
     [key: string]: number;
   };
   mailpoet_block_email_editor_enabled: boolean;
+  mailpoet_editor_choice_modal_enabled: boolean;
+  mailpoet_last_email_editor_choice: 'classic' | 'block' | null;
   satismeter: (action: string, data: Record<string, unknown>) => void;
   mailpoet_display_nps_email_editor: boolean;
   mailpoet_form_template_selection_url: string;

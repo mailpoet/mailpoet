@@ -166,3 +166,24 @@
     padding-top: 12px;
   }
 }
+
+.mailpoet-editor-choice-modal {
+  max-width: 840px;
+
+  .mailpoet-editor-choice-modal__option {
+    cursor: pointer;
+    flex: 1;
+    font: inherit;
+    padding: 0;
+    text-align: left;
+
+    &.is-selected {
+      border-color: var(--wpds-color-bg-interactive-brand-strong, #3858e9);
+    }
+
+    .mailpoet-editor-choice-modal__option-illustration svg {
+      display: block;
+      width: 100%;
+    }
+  }
+}
