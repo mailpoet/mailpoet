@@ -64,3 +64,8 @@
   pointer-events: none;
   touch-action: none;
 }
+
+// Lets a <form> sit inline within notice text instead of breaking onto its own line.
+.mailpoet-inline-form {
+  display: inline;
+}

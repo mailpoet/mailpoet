@@ -11,6 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Installer {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
   const PREMIUM_PLUGIN_PATH = 'mailpoet-premium/mailpoet-premium.php';
+  const PREMIUM_PLUGIN_DOWNLOAD_URL = 'https://release.mailpoet.com/downloads/mailpoet-premium/latest/mailpoet-premium.zip';
 
   private $slug;
 
@@ -36,6 +37,10 @@ class Installer {
       rawurlencode((string)$premiumKey),
       rawurlencode($freeMinorVersion)
     );
+  }
+
+  public function getPremiumKey(): string {
+    return (string)$this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
   }
 
   public function generatePluginActivationUrl(string $plugin): string {
