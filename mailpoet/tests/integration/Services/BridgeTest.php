@@ -4,10 +4,13 @@ namespace MailPoet\Test\Services;
 
 use Codeception\Util\Stub;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
@@ -133,6 +136,91 @@ class BridgeTest extends \MailPoetTest {
       verify($this->getMSSKey())->notEquals($this->validKey);
       verify($this->getMSSKeyState())->notEquals($state);
     }
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringApprovedMSSKeyState() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringApprovedExpiringMSSKeyState() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->expiringKey, ['state' => Bridge::KEY_EXPIRING, 'data' => ['is_approved' => true, 'expire_at' => '2099-01-01']]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringValidMSSKeyStateWithoutApprovalFlag() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItKeepsSendingPausedWhenStoredPendingDataIsPreservedForTheSameKey() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, $this->validKey);
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID]);
+    verify($this->getMSSKeyState()['data']['is_approved'])->false();
+    verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItKeepsSendingPausedWhenStoringPendingMSSKeyState() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItKeepsSendingPausedWhenStoringPendingMSSKeyStateFlaggedAsString() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => 'false']]);
+    verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringInvalidMSSKeyState() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->invalidKey, ['state' => Bridge::KEY_INVALID]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringUnderprivilegedMSSKeyState() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->underPrivilegedKey, ['state' => Bridge::KEY_VALID_UNDERPRIVILEGED]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringPendingMSSKeyStateWhileAnotherSendingMethodIsActive() {
+    $this->settings->set('mta.method', Mailer::METHOD_SMTP);
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItKeepsSendingPausedWhenInvalidatingTheMSSKeyDuringSending() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, $this->validKey);
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->invalidateMssKey();
+    verify($this->getMSSKeyState()['state'])->equals(Bridge::KEY_INVALID);
+    verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItKeepsSendingPausedWhenStoringUncheckableMSSKeyState() {
+    $this->pauseSendingForPendingApproval();
+    $this->bridge->storeMSSKeyAndState($this->uncheckableKey, ['state' => Bridge::KEY_CHECK_ERROR]);
+    verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItKeepsSendingPausedForOtherReasonsWhenStoringApprovedMSSKeyState() {
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, 'send failed');
+    MailerLog::pauseSending($mailerLog);
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+    verify(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::getError()['operation'] ?? null)->equals(MailerError::OPERATION_SEND);
   }
 
   public function testItChecksValidPremiumKey() {
@@ -601,6 +689,10 @@ class BridgeTest extends \MailPoetTest {
         'mailpoet_api_key' => 'some_key',
       ]
     );
+  }
+
+  private function pauseSendingForPendingApproval(): void {
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
   }
 
   private function getMSSKey() {

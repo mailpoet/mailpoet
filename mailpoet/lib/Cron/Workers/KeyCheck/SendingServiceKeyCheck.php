@@ -6,7 +6,6 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\InvalidStateException;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
@@ -52,16 +51,9 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
       throw new InvalidStateException('The class was not initialized properly. Please call the Init method before.');
     };
 
-    $wasPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
-
     $mssKey = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key'];
     $result = $this->bridge->checkMSSKey($mssKey);
     $this->bridge->storeMSSKeyAndState($mssKey, $result);
-
-    $isPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
-    if ($wasPendingApproval && !$isPendingApproval) {
-      MailerLog::resumeSending();
-    }
     return $result;
   }
 }

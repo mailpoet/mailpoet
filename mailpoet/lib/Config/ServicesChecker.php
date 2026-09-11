@@ -141,8 +141,7 @@ class ServicesChecker {
   public function isMailPoetAPIKeyPendingApproval(): bool {
     $mssActive = Bridge::isMPSendingServiceEnabled();
     $mssKeyValid = $this->isMailPoetAPIKeyValid();
-    $isApproved = $this->settings->get('mta.mailpoet_api_key_state.data.is_approved');
-    $mssKeyPendingApproval = $isApproved === false || $isApproved === 'false'; // API unfortunately saves this as a string
+    $mssKeyPendingApproval = Bridge::isPendingApprovalKeyState($this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME));
     return $mssActive && $mssKeyValid && $mssKeyPendingApproval;
   }
 

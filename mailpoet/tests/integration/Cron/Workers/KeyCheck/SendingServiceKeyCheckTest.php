@@ -7,9 +7,11 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -55,27 +57,35 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   public function testItResumesSendingWhenKeyApproved() {
-    MailerLog::pauseSending(MailerLog::getMailerLog());
+    $this->setMailPoetSendingMethod();
+    $this->storeMssKeyState(['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
     verify(MailerLog::isSendingPaused())->true();
 
-    $servicesChecker = $this->make(ServicesChecker::class, [
-      'isMailPoetAPIKeyPendingApproval' => Stub::consecutive(true, false),
-    ]);
+    $this->worker->bridge = $this->createBridgeReturning(['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+    $this->worker->checkKey();
+    verify(MailerLog::isSendingPaused())->false();
+  }
 
-    $worker = new SendingServiceKeyCheck(
-      $this->diContainer->get(SettingsController::class),
-      $servicesChecker,
-      $this->diContainer->get(CronWorkerScheduler::class)
-    );
-
-    $bridge = $this->make(new Bridge, [
-      'checkMSSKey' => ['code' => Bridge::KEY_VALID],
-      'storeMSSKeyAndState' => null,
-    ]);
-    $worker->bridge = $bridge;
-
+  public function testItResumesSendingPausedForPendingApprovalWhenStoredKeyStateIsAlreadyApproved() {
     $this->setMailPoetSendingMethod();
-    $worker->checkKey();
+    $this->storeMssKeyState(['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
+    verify(MailerLog::isSendingPaused())->true();
+
+    $this->worker->bridge = $this->createBridgeReturning(['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+    $this->worker->checkKey();
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenKeyBecomesInvalid() {
+    $this->setMailPoetSendingMethod();
+    $this->storeMssKeyState(['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
+    verify(MailerLog::isSendingPaused())->true();
+
+    $this->worker->bridge = $this->createBridgeReturning(['state' => Bridge::KEY_INVALID]);
+    $this->worker->checkKey();
     verify(MailerLog::isSendingPaused())->false();
   }
 
@@ -102,6 +112,19 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
       );
     $this->setMailPoetSendingMethod();
     verify($this->worker->checkKey())->equals($response);
+  }
+
+  private function storeMssKeyState(array $state): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(Bridge::API_KEY_SETTING_NAME, $this->mssKey);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, $state);
+  }
+
+  private function createBridgeReturning(array $state): Bridge {
+    return $this->make(Bridge::class, [
+      'settings' => $this->diContainer->get(SettingsController::class),
+      'checkMSSKey' => $state,
+    ]);
   }
 
   private function setMailPoetSendingMethod() {
