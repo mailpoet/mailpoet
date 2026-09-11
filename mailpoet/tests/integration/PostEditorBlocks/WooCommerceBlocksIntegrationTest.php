@@ -139,6 +139,22 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
   }
 
+  public function testANewGuestWhoTicksTheConsentBoxEndsGranted() {
+    $this->askForTrackingConsentAtCheckout();
+    $email = 'ticked-guest@customer.com';
+    $this->wcOrderMock->method('get_billing_email')
+      ->willReturn($email);
+    $this->setupSyncGuestUserMock($email);
+    $request['extensions']['mailpoet']['optin'] = false;
+    $request['extensions']['mailpoet']['tracking_consent'] = true;
+    $this->integration->processCheckoutBlockOptin($this->wcOrderMock, $request);
+
+    $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+  }
+
   public function testANewGuestWhoseCheckoutSentNoConsentFieldIsNotRecordedAsDeclining() {
     $this->askForTrackingConsentAtCheckout();
     $email = 'headless-guest@customer.com';
