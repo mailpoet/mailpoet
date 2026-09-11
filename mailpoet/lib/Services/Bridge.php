@@ -3,6 +3,7 @@
 namespace MailPoet\Services;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -230,7 +231,19 @@ class Bridge {
   }
 
   public function storeMSSKeyAndState($key, $state) {
-    return $this->storeKeyAndState(API::KEY_CHECK_TYPE_MSS, $key, $state);
+    $result = $this->storeKeyAndState(API::KEY_CHECK_TYPE_MSS, $key, $state);
+    if ($result !== false && $this->isApprovedMSSKeyState($this->settings->get(self::API_KEY_STATE_SETTING_NAME))) {
+      MailerLog::resumeSendingIfPausedForPendingApproval();
+    }
+    return $result;
+  }
+
+  private function isApprovedMSSKeyState(?array $state): bool {
+    if (!in_array($state['state'] ?? null, [self::KEY_VALID, self::KEY_EXPIRING], true)) {
+      return false;
+    }
+    $isApproved = $state['data']['is_approved'] ?? null;
+    return $isApproved !== false && $isApproved !== 'false';
   }
 
   public function checkPremiumKey($key) {

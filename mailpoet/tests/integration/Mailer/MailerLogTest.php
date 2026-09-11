@@ -195,6 +195,35 @@ class MailerLogTest extends \MailPoetTest {
     verify($mailerLog['status'])->null();
   }
 
+  public function testItResumesSendingPausedForPendingApproval() {
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_PENDING_APPROVAL, 'pending approval');
+    MailerLog::pauseSending($mailerLog);
+    verify(MailerLog::isSendingPaused())->true();
+
+    MailerLog::resumeSendingIfPausedForPendingApproval();
+    $mailerLog = MailerLog::getMailerLog();
+    verify($mailerLog['status'])->null();
+    verify($mailerLog['error'])->null();
+  }
+
+  public function testItResumesSendingPausedWithoutRecordedErrorAsPendingApproval() {
+    MailerLog::pauseSending(MailerLog::getMailerLog());
+    verify(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::getError())->null();
+
+    MailerLog::resumeSendingIfPausedForPendingApproval();
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItKeepsSendingPausedForOtherErrorsWhenResumingPendingApprovalPause() {
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, 'send failed');
+    MailerLog::pauseSending($mailerLog);
+
+    MailerLog::resumeSendingIfPausedForPendingApproval();
+    verify(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::getError()['operation'] ?? null)->equals(MailerError::OPERATION_SEND);
+  }
+
   public function testItPausesSending() {
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['status'] = null;

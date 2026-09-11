@@ -20,6 +20,30 @@ const resumeMailerSending = () =>
       }
     });
 
+type ResumeSendingButtonProps = {
+  label: string;
+  onResumed: () => void;
+};
+
+function ResumeSendingButton({ label, onResumed }: ResumeSendingButtonProps) {
+  return (
+    <p>
+      <a
+        href="#"
+        className="button button-primary"
+        onClick={(event) => {
+          event.preventDefault();
+          resumeMailerSending()
+            .then(onResumed)
+            .catch(() => {});
+        }}
+      >
+        {label}
+      </a>
+    </p>
+  );
+}
+
 function PHPMailerCheckSettingsNotice() {
   return (
     <>
@@ -203,6 +227,12 @@ export function MailerError({
     return (
       <div className={className}>
         <p>{message}</p>
+        {!window.mailpoet_mss_key_pending_approval && (
+          <ResumeSendingButton
+            label={__('Resume sending', 'mailpoet')}
+            onResumed={() => setIsSendingResumed(true)}
+          />
+        )}
       </div>
     );
   }
@@ -215,20 +245,13 @@ export function MailerError({
     return (
       <div className={className}>
         <p>{message}</p>
-        <p>
-          <a
-            href="#"
-            className="button button-primary"
-            onClick={(event) => {
-              event.preventDefault();
-              resumeMailerSending()
-                .then(() => setIsSendingResumed(true))
-                .catch(() => {});
-            }}
-          >
-            {__('I have upgraded my subscription, resume sending', 'mailpoet')}
-          </a>
-        </p>
+        <ResumeSendingButton
+          label={__(
+            'I have upgraded my subscription, resume sending',
+            'mailpoet',
+          )}
+          onResumed={() => setIsSendingResumed(true)}
+        />
       </div>
     );
   }
@@ -255,20 +278,10 @@ export function MailerError({
         : <i>{message}</i>
       </p>
       {checkSettingsNotice}
-      <p>
-        <a
-          href="#"
-          className="button button-primary"
-          onClick={(event) => {
-            event.preventDefault();
-            resumeMailerSending()
-              .then(() => setIsSendingResumed(true))
-              .catch(() => {});
-          }}
-        >
-          {__('Resume sending', 'mailpoet')}
-        </a>
-      </p>
+      <ResumeSendingButton
+        label={__('Resume sending', 'mailpoet')}
+        onResumed={() => setIsSendingResumed(true)}
+      />
     </div>
   );
 }
