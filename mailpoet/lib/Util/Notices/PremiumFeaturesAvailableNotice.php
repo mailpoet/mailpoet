@@ -79,7 +79,7 @@ class PremiumFeaturesAvailableNotice {
         . '<input type="hidden" name="api_key" value="%2$s">'
         . '<button type="submit" class="button-link">%3$s</button>'
       . '</form>',
-      esc_url(Installer::PREMIUM_PLUGIN_DOWNLOAD_URL),
+      esc_url(Installer::buildDownloadUrl()),
       esc_attr($this->premiumInstaller->getPremiumKey()),
       esc_html__('Download MailPoet Premium plugin', 'mailpoet')
     );

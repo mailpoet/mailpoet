@@ -38,8 +38,6 @@ class InstallerTest extends \MailPoetTest {
   }
 
   public function testItGetsPluginDownloadUrl() {
-    $key = 'premium-key';
-    $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
     $url = $this->installer->generatePluginDownloadUrl();
     $version = defined('MAILPOET_VERSION') ? (string)MAILPOET_VERSION : '';
     if ($version === '') {
@@ -50,7 +48,22 @@ class InstallerTest extends \MailPoetTest {
       $minor = $parts[1] ?? '0';
       $expectedSegment = $major . '.' . $minor . '.0';
     }
-    verify($url)->same("https://release.mailpoet.com/downloads/mailpoet-premium/$key/$expectedSegment/mailpoet-premium.zip");
+    verify($url)->same("https://release.mailpoet.com/downloads/mailpoet-premium/$expectedSegment/mailpoet-premium.zip");
+    verify($url)->stringNotContainsString('premium-key');
+  }
+
+  public function testItAuthenticatesTheDownloadRequestAsPostInsteadOfPuttingTheKeyInTheUrl() {
+    $key = 'premium-key';
+    $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
+    $url = $this->installer->generatePluginDownloadUrl();
+
+    $args = (array)WPFunctions::get()->applyFilters('http_request_args', ['method' => 'GET'], $url);
+    verify($args['method'])->same('POST');
+    verify($args['body'])->same(['api_key' => $key]);
+
+    $unrelatedArgs = ['method' => 'GET'];
+    $result = WPFunctions::get()->applyFilters('http_request_args', $unrelatedArgs, 'https://release.mailpoet.com/products/some-other-plugin');
+    verify($result)->same($unrelatedArgs);
   }
 
   public function testItGetsPluginInformation() {

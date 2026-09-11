@@ -32,7 +32,7 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
 
     $message = $this->notice->display()->getMessage();
 
-    verify($message)->stringContainsString('<form method="post" action="' . Installer::PREMIUM_PLUGIN_DOWNLOAD_URL . '"');
+    verify($message)->stringContainsString('<form method="post" action="' . Installer::buildDownloadUrl() . '"');
     verify($message)->stringContainsString('name="api_key" value="' . $key . '"');
     verify($message)->stringNotContainsString('mailpoet-premium/' . $key . '/');
   }
