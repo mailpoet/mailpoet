@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 /**
  * @extends Repository<StatisticsUnsubscribeEntity>
@@ -15,6 +16,36 @@ use MailPoetVendor\Carbon\Carbon;
 class StatisticsUnsubscribesRepository extends Repository {
   protected function getEntityClassName() {
     return StatisticsUnsubscribeEntity::class;
+  }
+
+  /**
+   * Inserts one unsubscribe record per subscriber that is not yet unsubscribed.
+   * Runs as a single INSERT ... SELECT so large selections do not go through
+   * the ORM one entity at a time.
+   *
+   * @param int[] $subscriberIds
+   * @return int Number of inserted rows
+   */
+  public function trackBulk(array $subscriberIds, string $source, string $method = StatisticsUnsubscribeEntity::METHOD_UNKNOWN): int {
+    if ($subscriberIds === []) {
+      return 0;
+    }
+    $statisticsTable = $this->getTableName();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement(
+      "INSERT INTO $statisticsTable (subscriber_id, source, method, created_at)
+       SELECT id, :source, :method, :created_at
+       FROM $subscribersTable
+       WHERE id IN (:ids) AND status != :unsubscribed",
+      [
+        'ids' => array_map('intval', $subscriberIds),
+        'source' => $source,
+        'method' => $method,
+        'created_at' => Carbon::now()->millisecond(0)->format('Y-m-d H:i:s'),
+        'unsubscribed' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      ],
+      ['ids' => ArrayParameterType::INTEGER]
+    );
   }
 
   public function getTotalForMonths(int $forMonths): int {
