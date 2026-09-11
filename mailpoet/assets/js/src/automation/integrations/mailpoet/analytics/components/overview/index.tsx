@@ -1,4 +1,4 @@
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import {
   SummaryList,
   SummaryListPlaceholder,
@@ -26,12 +26,14 @@ function getEmailPercentage(
   }
 
   const data = overview.data[type] ?? null;
-  const sent = overview.data?.sent ?? null;
-  if (!data || !sent || !data[period] || !sent[period]) {
+  // Divide by the recipients we were allowed to measure. Older payloads have
+  // no trackedSent, so fall back to sent.
+  const base = overview.data?.trackedSent ?? overview.data?.sent ?? null;
+  if (!data || !base || !data[period] || !base[period]) {
     return 0;
   }
 
-  return (data[period] * 100) / sent[period] / 100;
+  return (data[period] * 100) / base[period] / 100;
 }
 
 function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
@@ -109,6 +111,22 @@ export function Overview(): JSX.Element | null {
         delta={Number(getEmailDelta('clicked').toFixed(2))}
       />,
     );
+    // Only when something is untracked, so an automation with no opted-out
+    // recipients looks exactly as it does today.
+    if ((overview.data.notTracked?.current ?? 0) > 0) {
+      items.push(
+        <SummaryNumber
+          key="overview-tracking-coverage"
+          label={__('Recipients tracked', 'mailpoet')}
+          value={sprintf(
+            /* translators: %1$s is how many recipients were tracked, %2$s is the total sent. */
+            __('%1$s of %2$s', 'mailpoet'),
+            numberFormatter.format(overview.data.trackedSent?.current ?? 0),
+            numberFormatter.format(overview.data.sent?.current ?? 0),
+          )}
+        />,
+      );
+    }
   }
   if (overview.data !== undefined && MailPoet.isWoocommerceActive) {
     items.push(

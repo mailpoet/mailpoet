@@ -15,6 +15,15 @@ use MailPoet\Settings\TrackingConfig;
 class TrackingConsentController {
   const SETTING_SUBSCRIBER_CHOICE = 'tracking.consent.subscriber_choice';
 
+  /**
+   * When the site started asking everyone. Stamped the moment Subscriber choice
+   * moves to ask_all, and used by stats so that turning strict consent on does
+   * not reach back and re-label recipients who WERE tracked on earlier sends —
+   * their opens and clicks are already recorded, and excluding them would push
+   * a historical rate past 100%.
+   */
+  const SETTING_STRICT_SINCE = 'tracking.consent.strict_since';
+
   /** Track everyone, don't ask. Default: no recipient-facing controls anywhere. */
   const CHOICE_TRACK_ALL = 'track_all';
 
@@ -103,5 +112,40 @@ class TrackingConsentController {
    */
   public function shouldTrackUnknownConsent(): bool {
     return $this->getSubscriberChoice() !== self::CHOICE_ASK_ALL;
+  }
+
+  /**
+   * The moment strict consent was switched on, or null if it never was.
+   *
+   * Only meaningful while the site is asking everyone. A site that has never
+   * switched has no stamp, and callers must treat that as "the rule does not
+   * apply" rather than "it applies to everything".
+   */
+  public function getStrictSince(): ?\DateTimeImmutable {
+    $value = $this->settings->get(self::SETTING_STRICT_SINCE);
+    if (!is_string($value) || $value === '') {
+      return null;
+    }
+    try {
+      return new \DateTimeImmutable($value);
+    } catch (\Exception $e) {
+      return null;
+    }
+  }
+
+  /**
+   * Record the switch-on moment. Called when Subscriber choice changes.
+   *
+   * Only stamps on the way IN to ask_all, so the value answers "since when are
+   * unknown recipients untracked?". Flipping away and back re-stamps with the
+   * later date: sends inside the earlier strict window then count unknowns as
+   * tracked, which understates the rate the way trunk does today rather than
+   * overstating it — the safe direction.
+   */
+  public function onSubscriberChoiceChange(?string $oldChoice, ?string $newChoice): void {
+    if ($newChoice !== self::CHOICE_ASK_ALL || $oldChoice === self::CHOICE_ASK_ALL) {
+      return;
+    }
+    $this->settings->set(self::SETTING_STRICT_SINCE, (new \DateTimeImmutable())->format('Y-m-d H:i:s'));
   }
 }

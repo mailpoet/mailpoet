@@ -158,9 +158,16 @@ class Worker {
   private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null, array $settings = []) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $totalSentCount = $statistics->getTotalSentCount() ?: 1;
-    $clicked = ($statistics->getClickCount() * 100) / $totalSentCount;
-    $opened = ($statistics->getOpenCount() * 100) / $totalSentCount;
-    $machineOpened = ($statistics->getMachineOpenCount() * 100) / $totalSentCount;
+    // Opens and clicks over the recipients we were allowed to measure;
+    // unsubscribes and bounces over everyone. Not the pre-existing `?: 1` idiom:
+    // a campaign can have recorded opens and still have nothing measurable now
+    // (a site switching to ask_all makes every not-yet-asked recipient
+    // untracked, on old campaigns too), and dividing those by 1 would report
+    // rates in the hundreds of percent. With nothing to measure, the rate is 0.
+    $trackedSentCount = $statistics->getTrackedSentCount();
+    $clicked = $trackedSentCount > 0 ? ($statistics->getClickCount() * 100) / $trackedSentCount : 0;
+    $opened = $trackedSentCount > 0 ? ($statistics->getOpenCount() * 100) / $trackedSentCount : 0;
+    $machineOpened = $trackedSentCount > 0 ? ($statistics->getMachineOpenCount() * 100) / $trackedSentCount : 0;
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
     $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
     $subject = $sendingQueue->getNewsletterRenderedSubject();
@@ -194,6 +201,10 @@ class Worker {
       'machineOpened' => $machineOpened,
       'unsubscribed' => $unsubscribed,
       'bounced' => $bounced,
+      // The digest is a push: for many merchants this is the first place they
+      // see the higher open rate, so the coverage line matters most here.
+      'notTracked' => $statistics->getNotTrackedCount(),
+      'trackedSent' => $statistics->getTrackedSentCount(),
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),

@@ -30,6 +30,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -71,7 +72,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
   }
 
@@ -115,7 +117,8 @@ class SettingsTest extends \MailPoetTest {
       $this->make(SettingsChangeHandler::class, ['updateBridge' => Expected::once()]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -152,7 +155,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -184,7 +188,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $response = $this->endpoint->set([
@@ -218,7 +223,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -281,6 +287,24 @@ class SettingsTest extends \MailPoetTest {
 
     verify($response->status)->same(400);
     verify($this->settings->get('delete_unconfirmed_subscribers_after_days'))->same('');
+  }
+
+  /**
+   * Settings are persisted before onSettingsChange() runs and nothing
+   * constrains their shape, so a request can leave a non-string in
+   * subscriber_choice. Reading it into a typed call used to fatal on the way
+   * out, after the value was already saved.
+   */
+  public function testItSurvivesANonStringSubscriberChoice(): void {
+    $this->settings->set(TrackingConsentController::SETTING_STRICT_SINCE, '');
+
+    $response = $this->endpoint->set([
+      'tracking' => ['consent' => ['subscriber_choice' => ['not', 'a', 'string']]],
+    ]);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    // Nothing recognisable was chosen, so nothing was stamped.
+    verify($this->settings->get(TrackingConsentController::SETTING_STRICT_SINCE))->empty();
   }
 
   public function testItSchedulesUnconfirmedSubscribersCleanupWhenEnabled(): void {
@@ -396,7 +420,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(TrackingConsentController::class)
     );
 
     verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);

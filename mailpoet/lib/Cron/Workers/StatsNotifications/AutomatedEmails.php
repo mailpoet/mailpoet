@@ -194,9 +194,13 @@ class AutomatedEmails extends SimpleWorker {
       $statistics = $row['statistics'];
       $newsletter = $row['newsletter'];
       $totalSentCount = $statistics->getTotalSentCount() ?: 1;
-      $clicked = ($statistics->getClickCount() * 100) / $totalSentCount;
-      $opened = ($statistics->getOpenCount() * 100) / $totalSentCount;
-      $machineOpened = ($statistics->getMachineOpenCount() * 100) / $totalSentCount;
+      // Opens and clicks over the recipients we were allowed to measure;
+      // unsubscribes and bounces over everyone. Zero tracked recipients means
+      // zero, never a denominator of 1 — see the note in Worker::prepareContext().
+      $trackedSentCount = $statistics->getTrackedSentCount();
+      $clicked = $trackedSentCount > 0 ? ($statistics->getClickCount() * 100) / $trackedSentCount : 0;
+      $opened = $trackedSentCount > 0 ? ($statistics->getOpenCount() * 100) / $trackedSentCount : 0;
+      $machineOpened = $trackedSentCount > 0 ? ($statistics->getMachineOpenCount() * 100) / $trackedSentCount : 0;
       $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $totalSentCount;
       $bounced = ($statistics->getBounceCount() * 100) / $totalSentCount;
       $context['newsletters'][] = [
@@ -210,6 +214,8 @@ class AutomatedEmails extends SimpleWorker {
         'machineOpened' => $machineOpened,
         'unsubscribed' => $unsubscribed,
         'bounced' => $bounced,
+        'notTracked' => $statistics->getNotTrackedCount(),
+        'trackedSent' => $statistics->getTrackedSentCount(),
         'subject' => $newsletter->getSubject(),
       ];
     }
