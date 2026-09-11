@@ -7,6 +7,7 @@ use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentCapture;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Subscription;
@@ -120,6 +121,46 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testANewGuestWhoLeavesTheConsentBoxUntickedEndsDenied() {
+    $this->askForTrackingConsentAtCheckout();
+    $email = 'unticked-guest@customer.com';
+    $this->wcOrderMock->method('get_billing_email')
+      ->willReturn($email);
+    $this->setupSyncGuestUserMock($email);
+    $request['extensions']['mailpoet']['optin'] = false;
+    $request['extensions']['mailpoet']['tracking_consent'] = false;
+    $this->integration->processCheckoutBlockOptin($this->wcOrderMock, $request);
+
+    $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testANewGuestWhoseCheckoutSentNoConsentFieldIsNotRecordedAsDeclining() {
+    $this->askForTrackingConsentAtCheckout();
+    $email = 'headless-guest@customer.com';
+    $this->wcOrderMock->method('get_billing_email')
+      ->willReturn($email);
+    $this->setupSyncGuestUserMock($email);
+    $request['extensions']['mailpoet']['optin'] = false;
+    $this->integration->processCheckoutBlockOptin($this->wcOrderMock, $request);
+
+    $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+    verify($subscriber->getTrackingConsentMethod())->null();
+  }
+
+  private function askForTrackingConsentAtCheckout(): void {
+    $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
+    $this->settings->set(
+      TrackingConsentController::SETTING_SUBSCRIBER_CHOICE,
+      TrackingConsentController::CHOICE_ASK_ALL
+    );
   }
 
   private function setupSyncGuestUserMock(string $email) {
