@@ -4,7 +4,6 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Segments\SegmentsRepository;
@@ -246,18 +245,6 @@ class BulkActionController {
    * @param int[] $ids
    */
   private function trackBulkUnsubscribe(array $ids): void {
-    if ($ids === []) return;
-    $subscribers = $this->subscribersRepository->findBy(['id' => $ids]);
-    foreach ($subscribers as $subscriber) {
-      if (
-        $subscriber instanceof SubscriberEntity
-        && $subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED
-      ) {
-        $this->unsubscribesTracker->track(
-          (int)$subscriber->getId(),
-          StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR
-        );
-      }
-    }
+    $this->unsubscribesTracker->trackBulk($ids, StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR);
   }
 }

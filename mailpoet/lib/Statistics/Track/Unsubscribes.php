@@ -70,4 +70,12 @@ class Unsubscribes {
     $this->statisticsUnsubscribesRepository->flush();
     return $statistics;
   }
+
+  /**
+   * @param int[] $subscriberIds
+   * @return int Number of tracked subscribers
+   */
+  public function trackBulk(array $subscriberIds, string $source): int {
+    return $this->statisticsUnsubscribesRepository->trackBulk($subscriberIds, $source);
+  }
 }
