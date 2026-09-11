@@ -975,6 +975,58 @@ class ImportTest extends \MailPoetTest {
     verify($fired)->empty();
   }
 
+  public function testARepeatedEmailAnnouncesTheConsentStoredForAnExistingSubscriber(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'granted';
+    $data['subscribers'][1][] = '';
+    $repeatedRow = $data['subscribers'][0];
+    $repeatedRow[8] = 'denied';
+    $data['subscribers'][] = $repeatedRow;
+
+    $existing = $this->createSubscriber('Adam', 'Smith', 'Adam@Smith.com');
+    $existing->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_MANAGE_PAGE,
+      'Original wording'
+    );
+    $this->subscriberRepository->flush();
+
+    $fired = $this->captureTrackingConsentChanges(function () use ($data): void {
+      $this->createImportInstance($data)->process();
+    });
+    $this->entityManager->clear();
+
+    $stored = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $stored);
+    verify($stored->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    verify($fired)->equals([
+      [$stored->getId(), SubscriberEntity::TRACKING_CONSENT_DENIED, SubscriberEntity::TRACKING_CONSENT_GRANTED],
+    ]);
+  }
+
+  public function testARepeatedEmailAnnouncesTheConsentStoredForANewSubscriber(): void {
+    $data = $this->testData;
+    $data['columns']['tracking_consent'] = ['index' => 8];
+    $data['subscribers'][0][] = 'denied';
+    $data['subscribers'][1][] = '';
+    $repeatedRow = $data['subscribers'][0];
+    $repeatedRow[8] = 'granted';
+    $data['subscribers'][] = $repeatedRow;
+
+    $fired = $this->captureTrackingConsentChanges(function () use ($data): void {
+      $this->createImportInstance($data)->process();
+    });
+    $this->entityManager->clear();
+
+    $stored = $this->subscriberRepository->findOneBy(['email' => 'adam@smith.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $stored);
+    verify($stored->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    verify($fired)->equals([
+      [$stored->getId(), SubscriberEntity::TRACKING_CONSENT_UNKNOWN, SubscriberEntity::TRACKING_CONSENT_DENIED],
+    ]);
+  }
+
   /**
    * The notifier collects changes during the request and fires them together on
    * shutdown, so the hook is only observable once notify() has run. The
