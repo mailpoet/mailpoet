@@ -82,4 +82,34 @@ class UnsubscribesTest extends \MailPoetTest {
     }
     verify(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
   }
+
+  public function testItTracksBulkUnsubscribesWithoutLoadingEntities(): void {
+    $active = (new SubscriberFactory())->withEmail('active@example.com')->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $inactive = (new SubscriberFactory())->withEmail('inactive@example.com')->withStatus(SubscriberEntity::STATUS_INACTIVE)->create();
+    $unsubscribed = (new SubscriberFactory())->withEmail('done@example.com')->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $missingId = (int)$unsubscribed->getId() + 1000;
+
+    $count = $this->unsubscribes->trackBulk(
+      [(int)$active->getId(), (int)$inactive->getId(), (int)$unsubscribed->getId(), $missingId],
+      StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR
+    );
+
+    verify($count)->equals(2);
+    $this->entityManager->clear();
+    verify($this->statisticsUnsubscribesRepository->findAll())->arrayCount(2);
+    verify($this->statisticsUnsubscribesRepository->findBy(['subscriber' => $unsubscribed]))->arrayCount(0);
+    $activeStats = $this->statisticsUnsubscribesRepository->findBy(['subscriber' => $active]);
+    verify($activeStats)->arrayCount(1);
+    verify($this->statisticsUnsubscribesRepository->findBy(['subscriber' => $inactive]))->arrayCount(1);
+    verify($activeStats[0]->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR);
+    verify($activeStats[0]->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_UNKNOWN);
+    verify($activeStats[0]->getCreatedAt())->notNull();
+    verify($activeStats[0]->getNewsletter())->null();
+    verify($activeStats[0]->getQueue())->null();
+  }
+
+  public function testBulkTrackingOfEmptySelectionInsertsNothing(): void {
+    verify($this->unsubscribes->trackBulk([], StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR))->equals(0);
+    verify($this->statisticsUnsubscribesRepository->findAll())->arrayCount(0);
+  }
 }
