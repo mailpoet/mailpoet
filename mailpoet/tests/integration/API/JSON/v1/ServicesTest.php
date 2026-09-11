@@ -11,6 +11,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
@@ -18,6 +19,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Notices\PendingApprovalNotice;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ServicesTest extends \MailPoetTest {
@@ -210,6 +212,54 @@ class ServicesTest extends \MailPoetTest {
       'data' => ['is_approved' => false],
     ]);
     MailerLog::pauseSending(MailerLog::getMailerLog());
+    verify(MailerLog::isSendingPaused())->true();
+
+    $bridge = $this->make(
+      Bridge::class,
+      [
+        'settings' => SettingsController::getInstance(),
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID,
+          'data' => ['is_approved' => true],
+        ],
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItRecordsPendingApprovalErrorWhenPausingSending() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+
+    $bridge = $this->make(
+      Bridge::class,
+      [
+        'settings' => SettingsController::getInstance(),
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID,
+          'data' => ['is_approved' => false],
+        ],
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $servicesEndpoint->checkMSSKey($this->data);
+    verify(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::getError()['operation'] ?? null)->equals(MailerError::OPERATION_PENDING_APPROVAL);
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoredKeyStateIsAlreadyApproved() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'key');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_VALID,
+      'data' => ['is_approved' => true],
+    ]);
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_PENDING_APPROVAL, 'pending approval');
+    MailerLog::pauseSending($mailerLog);
     verify(MailerLog::isSendingPaused())->true();
 
     $bridge = $this->make(
@@ -680,7 +730,8 @@ class ServicesTest extends \MailPoetTest {
       $mocks['congratulatoryEmailController'] ?? $this->diContainer->get(CongratulatoryMssEmailController::class),
       $this->diContainer->get(WPFunctions::class),
       $mocks['senderDomain'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class),
-      $mocks['authorizedEmailsController'] ?? $this->diContainer->get(AuthorizedEmailsController::class)
+      $mocks['authorizedEmailsController'] ?? $this->diContainer->get(AuthorizedEmailsController::class),
+      $this->diContainer->get(PendingApprovalNotice::class)
     );
   }
 }

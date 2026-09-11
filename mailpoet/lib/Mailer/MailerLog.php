@@ -132,6 +132,18 @@ class MailerLog {
     return self::resetMailerLog();
   }
 
+  public static function resumeSendingIfPausedForPendingApproval(): void {
+    $mailerLog = self::getMailerLog();
+    if (!self::isSendingPaused($mailerLog)) {
+      return;
+    }
+    $operation = $mailerLog['error']['operation'] ?? null;
+    if ($operation !== null && $operation !== MailerError::OPERATION_PENDING_APPROVAL) {
+      return;
+    }
+    self::resumeSending();
+  }
+
   /**
    * Process error, doesn't increase retry_attempt so it will not block sending
    *

@@ -7,6 +7,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -55,27 +56,23 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   public function testItResumesSendingWhenKeyApproved() {
-    MailerLog::pauseSending(MailerLog::getMailerLog());
+    $this->setMailPoetSendingMethod();
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(Bridge::API_KEY_SETTING_NAME, $this->mssKey);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_VALID,
+      'data' => ['is_approved' => false],
+    ]);
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_PENDING_APPROVAL, 'pending approval');
+    MailerLog::pauseSending($mailerLog);
     verify(MailerLog::isSendingPaused())->true();
 
-    $servicesChecker = $this->make(ServicesChecker::class, [
-      'isMailPoetAPIKeyPendingApproval' => Stub::consecutive(true, false),
+    $this->worker->bridge = $this->make(Bridge::class, [
+      'settings' => $settings,
+      'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]],
     ]);
 
-    $worker = new SendingServiceKeyCheck(
-      $this->diContainer->get(SettingsController::class),
-      $servicesChecker,
-      $this->diContainer->get(CronWorkerScheduler::class)
-    );
-
-    $bridge = $this->make(new Bridge, [
-      'checkMSSKey' => ['code' => Bridge::KEY_VALID],
-      'storeMSSKeyAndState' => null,
-    ]);
-    $worker->bridge = $bridge;
-
-    $this->setMailPoetSendingMethod();
-    $worker->checkKey();
+    $this->worker->checkKey();
     verify(MailerLog::isSendingPaused())->false();
   }
 

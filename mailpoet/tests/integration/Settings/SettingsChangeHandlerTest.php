@@ -6,6 +6,8 @@ use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SubscribersCountReporter;
@@ -146,6 +148,25 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     ]);
 
     $changeHandler->updateApiKeyState($settings);
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenStoringApprovedKeyState() {
+    $key = 'valid-key';
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_PENDING_APPROVAL, 'pending approval');
+    MailerLog::pauseSending($mailerLog);
+    verify(MailerLog::isSendingPaused())->true();
+
+    $bridge = $this->make(Bridge::class, [
+      'settings' => SettingsController::getInstance(),
+      'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]],
+    ]);
+    $changeHandler = $this->getServiceWithOverrides(SettingsChangeHandler::class, [
+      'bridge' => $bridge,
+      'subscribersCountReporter' => $this->make(SubscribersCountReporter::class, ['report' => true]),
+    ]);
+
+    $changeHandler->updateApiKeyState([Mailer::MAILER_CONFIG_SETTING_NAME => ['mailpoet_api_key' => $key]]);
+    verify(MailerLog::isSendingPaused())->false();
   }
 
   private function getScheduledTaskByType(string $type): ?ScheduledTaskEntity {
