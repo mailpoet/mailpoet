@@ -55,18 +55,39 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($image['text'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
   }
 
-  public function testItLeavesNonStringTextUntouched() {
-    $body = [
-      'content' => [
-        'blocks' => [
-          ['type' => 'text', 'text' => ['not', 'a', 'string']],
-        ],
-      ],
-    ];
+  /**
+   * @dataProvider textValueProvider
+   * @param mixed $text
+   */
+  public function testItStoresTextAsSanitizedStringForAnyValueType($text, string $expected) {
+    $body = $this->bodyWithBlocks([['type' => 'text', 'text' => $text]]);
 
     $result = $this->sanitizer->sanitizeBody($body);
 
-    verify($result)->equals($body);
+    $this->assertSame($expected, $result['content']['blocks'][0]['text']);
+  }
+
+  public function textValueProvider(): array {
+    return [
+      'list' => [['<img src=x onerror=alert(1)>'], ''],
+      'map' => [['text' => '<img src=x onerror=alert(1)>'], ''],
+      'integer' => [123, '123'],
+      'float' => [1.5, '1.5'],
+      'true' => [true, '1'],
+      'false' => [false, ''],
+    ];
+  }
+
+  public function testItLeavesNullAndMissingTextUntouched() {
+    $body = $this->bodyWithBlocks([
+      ['type' => 'text', 'text' => null],
+      ['type' => 'text'],
+    ]);
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $this->assertNull($result['content']['blocks'][0]['text']);
+    $this->assertArrayNotHasKey('text', $result['content']['blocks'][1]);
   }
 
   public function testItSanitizesBlockTextWhenBlockHasNestedBlocks() {
