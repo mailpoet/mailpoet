@@ -63,11 +63,11 @@ class API {
 
   private function request($url, $params = []) {
     $params['license'] = $this->apiKey;
-    $url = WPFunctions::get()->addQueryArg($params, $url);
     $args = [
       'timeout' => 10,
       'httpversion' => '1.0',
+      'body' => $params,
     ];
-    return $this->wp->wpRemoteGet($url, $args);
+    return $this->wp->wpRemotePost($url, $args);
   }
 }
