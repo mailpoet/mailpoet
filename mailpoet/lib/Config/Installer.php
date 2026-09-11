@@ -29,13 +29,30 @@ class Installer {
   }
 
   public function generatePluginDownloadUrl(): string {
-    $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
-    $freeMinorVersion = self::getFreeMinorVersionZero();
+    // The URL carries no secret -- the premium key is injected into the request as a POST
+    // body field by authenticatePluginDownloadRequest(), never into the URL itself.
+    WPFunctions::get()->addFilter('http_request_args', [$this, 'authenticatePluginDownloadRequest'], 10, 2);
+    return self::buildDownloadUrl();
+  }
+
+  public function authenticatePluginDownloadRequest(array $args, string $url): array {
+    if ($url !== self::buildDownloadUrl()) {
+      return $args;
+    }
+    $args['method'] = 'POST';
+    $args['body'] = array_merge((array)($args['body'] ?? []), ['api_key' => $this->getPremiumKey()]);
+    return $args;
+  }
+
+  public static function buildDownloadUrl(): string {
     return sprintf(
-      'https://release.mailpoet.com/downloads/mailpoet-premium/%s/%s/mailpoet-premium.zip',
-      rawurlencode((string)$premiumKey),
-      rawurlencode($freeMinorVersion)
+      'https://release.mailpoet.com/downloads/mailpoet-premium/%s/mailpoet-premium.zip',
+      rawurlencode(self::getFreeMinorVersionZero())
     );
+  }
+
+  public function getPremiumKey(): string {
+    return (string)$this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
   }
 
   public function generatePluginActivationUrl(string $plugin): string {
