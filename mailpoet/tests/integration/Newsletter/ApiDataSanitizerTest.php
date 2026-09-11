@@ -55,11 +55,74 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($image['text'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
   }
 
-  public function testItLeavesNonStringTextUntouched() {
+  /**
+   * @dataProvider textValueProvider
+   * @param mixed $text
+   */
+  public function testItStoresTextAsSanitizedStringForAnyValueType($text, string $expected) {
+    $body = $this->bodyWithText($text);
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $this->assertSame($expected, $result['content']['blocks'][0]['text']);
+  }
+
+  public function textValueProvider(): array {
+    return [
+      'list' => [['<img src=x onerror=alert(1)>'], ''],
+      'map' => [['text' => '<img src=x onerror=alert(1)>'], ''],
+      'integer' => [123, '123'],
+      'float' => [1.5, '1.5'],
+      'true' => [true, '1'],
+      'false' => [false, ''],
+    ];
+  }
+
+  public function testItSanitizesTextOfBlockThatAlsoHasChildBlocks() {
     $body = [
       'content' => [
         'blocks' => [
-          ['type' => 'text', 'text' => ['not', 'a', 'string']],
+          [
+            'type' => 'text',
+            'text' => '<p>Hello</p><img src=x onerror=alert(1)>',
+            'blocks' => [
+              ['type' => 'text', 'text' => ['<img src=x onerror=alert(2)>']],
+            ],
+          ],
+        ],
+      ],
+    ];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $block = $result['content']['blocks'][0];
+    $this->assertSame('<p>Hello</p>', $block['text']);
+    $this->assertSame('', $block['blocks'][0]['text']);
+  }
+
+  public function testItSanitizesChildBlocksOfBlockWithoutType() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          [
+            'blocks' => [
+              ['type' => 'text', 'text' => '<p>Hello</p><img src=x onerror=alert(1)>'],
+            ],
+          ],
+        ],
+      ],
+    ];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $this->assertSame('<p>Hello</p>', $result['content']['blocks'][0]['blocks'][0]['text']);
+  }
+
+  public function testItSkipsPropertySanitizationForBlockWithNonStringType() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => ['text'], 'text' => '<p>Hello</p>'],
         ],
       ],
     ];
@@ -67,5 +130,57 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     $result = $this->sanitizer->sanitizeBody($body);
 
     verify($result)->equals($body);
+  }
+
+  public function testItSanitizesBlockDefaults() {
+    $body = [
+      'content' => ['blocks' => []],
+      'blockDefaults' => [
+        'header' => ['text' => '<p>Hello</p><img src=x onerror=alert(1)>', 'link' => ''],
+        'footer' => ['text' => ['<img src=x onerror=alert(1)>']],
+        'text' => ['text' => '<p>Hello</p><img src=x onerror=alert(1)>'],
+        'image' => ['src' => 'http://example.com/image.png'],
+        'divider' => 'not-an-array',
+      ],
+    ];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $defaults = $result['blockDefaults'];
+    $this->assertSame('<p>Hello</p>', $defaults['header']['text']);
+    $this->assertSame('', $defaults['header']['link']);
+    $this->assertSame('', $defaults['footer']['text']);
+    $this->assertSame('<p>Hello</p>', $defaults['text']['text']);
+    $this->assertSame($body['blockDefaults']['image'], $defaults['image']);
+    $this->assertSame('not-an-array', $defaults['divider']);
+  }
+
+  public function testItLeavesNullAndMissingTextUntouched() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => null],
+          ['type' => 'text'],
+        ],
+      ],
+    ];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $this->assertNull($result['content']['blocks'][0]['text']);
+    $this->assertArrayNotHasKey('text', $result['content']['blocks'][1]);
+  }
+
+  /**
+   * @param mixed $text
+   */
+  private function bodyWithText($text): array {
+    return [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => $text],
+        ],
+      ],
+    ];
   }
 }

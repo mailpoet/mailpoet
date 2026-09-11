@@ -377,6 +377,28 @@ class NewslettersTest extends \MailPoetTest {
     verify($this->newsletter->getBody())->equals($storedBody);
   }
 
+  public function testItEmptiesTextBlockValuesThatAreNotStringsWhenSaving() {
+    $body = [
+      'content' => [
+        'blocks' => [
+          ['type' => 'text', 'text' => ['<img src="x" onerror="alert(1)">']],
+        ],
+      ],
+    ];
+
+    $response = $this->endpoint->save([
+      'id' => $this->newsletter->getId(),
+      'body' => json_encode($body),
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $storedBody = $newsletter->getBody();
+    $this->assertIsArray($storedBody);
+    $this->assertSame('', $storedBody['content']['blocks'][0]['text']);
+  }
+
   public function testItSanitizesBodyBeforeStoringPreview() {
     $body = [
       'content' => [
