@@ -76,6 +76,18 @@ jQuery(($) => {
     return `popup_form_dismissed_${formId}`;
   }
 
+  function shouldSetDismissalCookieAfterSubscription(
+    formDiv: JQuery<HTMLElement>,
+  ) {
+    // Mirrors DisplayFormInWPContent::WITH_COOKIE_TYPES; only dismissible
+    // display types are cookie-backed. Keep this list in sync with that constant.
+    return (
+      formDiv.hasClass('mailpoet_form_popup') ||
+      formDiv.hasClass('mailpoet_form_fixed_bar') ||
+      formDiv.hasClass('mailpoet_form_slide_in')
+    );
+  }
+
   /**
    * Sets the cookie for the form after successful subscription
    * Uses fixed cookie expiration time of 182 days
@@ -85,6 +97,7 @@ jQuery(($) => {
   function setFormCookieAfterSubscription(form) {
     const formDiv = form.parent('.mailpoet_form');
     if (formDiv.data('is-preview')) return;
+    if (!shouldSetDismissalCookieAfterSubscription(formDiv)) return;
     const formCookieName = getFormCookieName(form);
     Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
   }
