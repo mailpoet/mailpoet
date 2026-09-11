@@ -151,6 +151,7 @@ class Import {
     if (!$subscribersData) {
       throw new \Exception(__('No valid subscribers were found.', 'mailpoet'));
     }
+    $subscribersData = $this->removeRepeatedEmails($subscribersData);
     // permanently trash deleted subscribers
     $this->deleteExistingTrashedSubscribers($subscribersData);
 
@@ -374,6 +375,28 @@ class Import {
 
     $invalidRecords = $dateTimeInvalidRecords;
     return $dateTimeDates;
+  }
+
+  /**
+   * Keeps the first row for each email, as the import wizard does. A repeated email
+   * is otherwise split across the create and update writes, and the consent change
+   * announced for it can differ from the value stored.
+   */
+  private function removeRepeatedEmails(array $subscribersData): array {
+    $firstRowByEmail = [];
+    foreach ($subscribersData['email'] as $index => $email) {
+      if (!isset($firstRowByEmail[$email])) {
+        $firstRowByEmail[$email] = $index;
+      }
+    }
+    if (count($firstRowByEmail) === count($subscribersData['email'])) {
+      return $subscribersData;
+    }
+    $rowsToKeep = array_flip($firstRowByEmail);
+    foreach ($subscribersData as $column => $data) {
+      $subscribersData[$column] = array_values(array_intersect_key($data, $rowsToKeep));
+    }
+    return $subscribersData;
   }
 
   public function transformSubscribersData(array $subscribers, array $columns): array {
