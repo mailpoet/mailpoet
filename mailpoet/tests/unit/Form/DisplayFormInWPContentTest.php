@@ -43,12 +43,17 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   // fix for method return override
   private $applyFiltersValue = false;
 
+  private $inTheLoopValue = true;
+
+  private $hasContentFilterValue = true;
+
   public function _before() {
     parent::_before();
     if (!defined('ARRAY_A')) define('ARRAY_A', 'ARRAY_A');
     $this->repository = $this->createMock(FormsRepository::class);
     $this->wp = $this->createMock(WPFunctions::class);
-    $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
+    $this->wp->expects($this->any())->method('inTheLoop')->willReturnCallback(fn() => $this->inTheLoopValue);
+    $this->wp->expects($this->any())->method('hasFilter')->willReturnCallback(fn() => $this->hasContentFilterValue);
     $this->wp->expects($this->any())->method('isMainQuery')->willReturn(true);
     $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
     $this->wp->expects($this->any())->method('applyFilters')->will($this->returnCallback(function () { return $this->applyFiltersValue;
@@ -961,6 +966,188 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $renderedFormHtml = ob_get_clean();
     verify($renderedFormHtml)->notEquals('content');
     verify($renderedFormHtml)->stringEndsWith($formHtml);
+  }
+
+  public function testRendersOverlayFormsInFooterOnSinglePostWhenContentIsRenderedOutsideTheLoop(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturnCallback(
+      fn(...$args) => ($args[0] ?? '') === '' || $args[0] === DisplayFormInWPContent::SUPPORTED_POST_TYPES
+    );
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->hook->contentDisplay('content'))->equals('content');
+    verify($this->renderFooter())->equals($formHtml);
+  }
+
+  public function testRendersOverlayFormsInFooterOnPageRenderedOutsideTheLoop(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'fixed_bar' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->hook->contentDisplay('content'))->equals('content');
+    verify($this->renderFooter())->equals($formHtml);
+  }
+
+  public function testDoesNotRenderOverlayFormsInFooterOnUnsupportedPostType(): void {
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturnCallback(fn(...$args) => ($args[0] ?? '') === '');
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->repository->expects($this->never())->method('findBy');
+
+    verify($this->hook->contentDisplay('content'))->equals('content');
+    verify($this->renderFooter())->equals('');
+  }
+
+  public function testDoesNotRenderBelowPostFormInFooterOnSinglePost(): void {
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->never())->method('render');
+    $form = $this->createFormWithPlacement([
+      'below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],
+    ]);
+    $this->repository->expects($this->any())->method('findBy')->willReturn([$form]);
+
+    verify($this->hook->contentDisplay('content'))->equals('content');
+    verify($this->renderFooter())->equals('');
+  }
+
+  public function testDoesNotRenderFormsInFooterAgainWhenContentFilterAlreadyRenderedThem(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->hook->contentDisplay('content'))->stringEndsWith($formHtml);
+    verify($this->renderFooter())->equals('');
+  }
+
+  public function testDoesNotRenderOverlayFormsInFooterWhenContentFilterWasRemoved(): void {
+    $this->inTheLoopValue = false;
+    $this->hasContentFilterValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->repository->expects($this->never())->method('findBy');
+
+    verify($this->renderFooter())->equals('');
+  }
+
+  public function testDoesNotQueryDatabaseInFooterOnSinglePostIfTransientIsSet(): void {
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('getTransient')->willReturn('1');
+    $this->repository->expects($this->never())->method('findBy');
+
+    verify($this->renderFooter())->equals('');
+  }
+
+  public function testFooterFallbackMatchesSelectedPostsAgainstTheQueriedPost(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(1);
+    $this->wp->expects($this->any())->method('getPost')->willReturnCallback(fn($postId) => ['ID' => $postId ?? 106]);
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '', 'selected' => ['1']]],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->renderFooter())->equals($formHtml);
+  }
+
+  public function testFooterFallbackMatchesCategoriesAndTagsAgainstTheQueriedPost(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->inTheLoopValue = false;
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(1);
+    $this->wp->expects($this->any())->method('hasCategory')->willReturnCallback(
+      fn($categories, $post) => $post === 1 && in_array('5', $categories, true)
+    );
+    $this->wp->expects($this->any())->method('hasTag')->willReturnCallback(
+      fn($tags, $post) => $post === 1 && in_array('7', $tags, true)
+    );
+    $this->templateRenderer->expects($this->exactly(2))->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => ''], 'categories' => ['5']],
+      'slide_in' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => ''], 'tags' => ['7']],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->renderFooter())->equals($formHtml . $formHtml);
+  }
+
+  public function testProductWithoutContentFallbackMatchesSelectedPostsAgainstTheQueriedProduct(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('didAction')->with($this->equalTo('wp_footer'))->willReturn(true);
+    $this->wp->expects($this->any())->method('getTheContent')->willReturn('');
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(26);
+    $this->wp->expects($this->any())->method('getPost')->willReturnCallback(fn($postId) => ['ID' => $postId ?? 106]);
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '', 'selected' => ['26']]],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->renderFooter())->equals($formHtml);
+  }
+
+  public function testStaticFrontPageFallbackMatchesSelectedPagesAgainstTheQueriedPage(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturnCallback(fn(...$args) => ($args[0] ?? '') === '');
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(5);
+    $this->wp->expects($this->any())->method('getPost')->willReturnCallback(fn($postId) => ['ID' => $postId ?? 106]);
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'homepage' => '', 'pages' => ['all' => '', 'selected' => ['5']], 'posts' => ['all' => '']],
+    ]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    verify($this->renderFooter())->equals($formHtml);
+  }
+
+  private function createFormWithPlacement(array $formPlacement): FormEntity {
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => $formPlacement,
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    return $form;
+  }
+
+  private function renderFooter(): string {
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    return (string)ob_get_clean();
   }
 
   public function _after() {
