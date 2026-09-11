@@ -67,11 +67,21 @@ class ApiDataSanitizer {
       return $block;
     }
     foreach (self::SANITIZATION_CONFIG[$type] as $property) {
-      if (!isset($block[$property]) || !is_string($block[$property])) {
+      if (!isset($block[$property])) {
         continue;
       }
-      $block[$property] = $this->htmlSanitizer->sanitize($block[$property]);
+      $block[$property] = $this->sanitizeProperty($block[$property]);
     }
     return $block;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  private function sanitizeProperty($value): string {
+    if (!is_scalar($value)) {
+      return '';
+    }
+    return $this->htmlSanitizer->sanitize((string)$value);
   }
 }
