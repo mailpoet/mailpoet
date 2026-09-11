@@ -16,6 +16,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -23,6 +24,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -30,6 +32,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
+use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -160,6 +163,99 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->setAuthorizedFromAddress(['address' => 'authorized@email.com']);
     verify($response->status)->same(200);
     verify($this->settings->get('sender.address'))->same('authorized@email.com');
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenSavingAnotherSendingMethodAfterApproval() {
+    $key = 'key';
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => $key]);
+    $this->settings->set('mta_group', 'mailpoet');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
+    verify(MailerLog::isSendingPaused())->true();
+
+    $bridge = $this->make(Bridge::class, [
+      'settings' => $this->settings,
+      'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]],
+    ]);
+    $this->endpoint = new Settings(
+      $this->settings,
+      $bridge,
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(TransactionalEmails::class),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->getServiceWithOverrides(SettingsChangeHandler::class, [
+        'bridge' => $bridge,
+        'subscribersCountReporter' => $this->make(SubscribersCountReporter::class, ['report' => true]),
+      ]),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    $response = $this->endpoint->set([
+      'mta_group' => 'smtp',
+      Mailer::MAILER_CONFIG_SETTING_NAME => ['method' => Mailer::METHOD_SMTP, 'mailpoet_api_key' => $key],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME . '.data.is_approved'))->true();
+    verify(MailerLog::isSendingPaused())->false();
+
+    $response = $this->endpoint->set([
+      'mta_group' => 'mailpoet',
+      Mailer::MAILER_CONFIG_SETTING_NAME => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => $key],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItResumesSendingPausedForPendingApprovalWhenSwitchingToAnotherSendingMethodWhileStillPending() {
+    $key = 'key';
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => $key]);
+    $this->settings->set('mta_group', 'mailpoet');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+    (new SettingsFactory())->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
+    verify(MailerLog::isSendingPaused())->true();
+
+    $bridge = $this->make(Bridge::class, [
+      'settings' => $this->settings,
+      'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]],
+    ]);
+    $this->endpoint = new Settings(
+      $this->settings,
+      $bridge,
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(TransactionalEmails::class),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->getServiceWithOverrides(SettingsChangeHandler::class, [
+        'bridge' => $bridge,
+        'subscribersCountReporter' => $this->make(SubscribersCountReporter::class, ['report' => true]),
+      ]),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    $response = $this->endpoint->set([
+      'mta_group' => 'smtp',
+      Mailer::MAILER_CONFIG_SETTING_NAME => ['method' => Mailer::METHOD_SMTP, 'mailpoet_api_key' => $key],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME . '.data.is_approved'))->false();
     verify(MailerLog::isSendingPaused())->false();
   }
 

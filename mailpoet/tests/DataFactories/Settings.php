@@ -6,6 +6,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -220,9 +221,8 @@ class Settings {
   }
 
   public function withSendingError($errorMessage, $operation = 'send') {
-    $this->settings->set('mta_log.status', 'paused');
-    $this->settings->set('mta_log.error.operation', $operation);
-    $this->settings->set('mta_log.error.error_message', $errorMessage);
+    $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), $operation, $errorMessage);
+    MailerLog::pauseSending($mailerLog);
     return $this;
   }
 
