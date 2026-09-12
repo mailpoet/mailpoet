@@ -106,11 +106,23 @@ class TransactionalEmails {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
     $orderDate = date('Y-m-d');
-    return str_replace(
-      ['{site_title}', '{site_address}', '{order_date}', '{order_number}'],
-      [$title, $address, $orderDate, '0001'],
-      $text
-    );
+    $replacements = [
+      '{site_title}' => $title,
+      '{site_address}' => $address,
+      '{site_url}' => $address,
+      '{woocommerce}' => 'WooCommerce',
+      '{WooCommerce}' => 'WooCommerce',
+      '{order_date}' => $orderDate,
+      '{order_number}' => '0001',
+    ];
+    // Resolved lazily: they require WooCommerce to be loaded, unlike the placeholders above.
+    if (strpos($text, '{store_address}') !== false) {
+      $replacements['{store_address}'] = $this->woocommerceHelper->wcGetStoreAddress();
+    }
+    if (strpos($text, '{store_email}') !== false) {
+      $replacements['{store_email}'] = $this->woocommerceHelper->wcGetStoreEmail();
+    }
+    return str_replace(array_keys($replacements), array_values($replacements), $text);
   }
 
   public function getWCEmailSettings() {
@@ -134,9 +146,26 @@ class TransactionalEmails {
     } else {
       $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
     }
-    $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
+    $result['footer_text'] = $this->resolvePlaceholdersInFooterText($result['footer_text']);
     // The footer text is placed inside a paragraph in a text block so we keep only tags we allow in the text block in the newsletter editor
     $result['footer_text'] = strip_tags($result['footer_text'], '<em><strong><br><a><span><s><del>');
     return $result;
+  }
+
+  /**
+   * Only replaces placeholder tokens, without strip_tags(). getWCEmailSettings() applies
+   * strip_tags() separately for newly-generated footer settings; Migration_20260826_120000_App
+   * also calls this directly on already-persisted, already-formatted footer blocks, where
+   * strip_tags() would strip surrounding markup (e.g. the wrapping <p style="...">) that was
+   * never meant to be re-sanitized.
+   */
+  public function resolvePlaceholdersInFooterText(string $text): string {
+    // WooCommerce's own WC_Emails::replace_placeholders() links these; matched here so footer text stays consistent with core.
+    $text = str_replace(
+      ['{woocommerce}', '{WooCommerce}'],
+      '<a href="https://woocommerce.com">WooCommerce</a>',
+      $text
+    );
+    return $this->replacePlaceholders($text);
   }
 }
