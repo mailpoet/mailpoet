@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Tag, withBoundary } from 'common';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
 import { NewsletterStats } from 'common/listings/newsletter-stats';
+import { getTrackedSent } from 'newsletters/tracked-sent';
 
 const wrapInLink = (content, params, id, totalSent) => {
   if (totalSent <= 0 || !params.link) {
@@ -67,7 +68,7 @@ function Statistics({
   }
 
   const notTracked = newsletter.statistics.notTracked ?? 0;
-  const trackedSent = newsletter.statistics.trackedSent ?? totalSent;
+  const trackedSent = getTrackedSent(totalSent, notTracked);
 
   let percentageClicked = 0;
   let percentageOpened = 0;
@@ -111,7 +112,7 @@ function Statistics({
   const minNewsletterOpens = 5;
 
   const showBadges =
-    totalSent >= minNewslettersSent &&
+    trackedSent >= minNewslettersSent &&
     newsletter.statistics.opened >= minNewsletterOpens &&
     !tooEarlyForStats;
 

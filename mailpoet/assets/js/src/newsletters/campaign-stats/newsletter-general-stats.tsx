@@ -9,6 +9,7 @@ import {
 } from 'common/listings/newsletter-stats/stats';
 import { Tooltip } from 'help-tooltip';
 
+import { getTrackedSent } from 'newsletters/tracked-sent';
 import { NewsletterType } from './newsletter-type';
 
 type Props = {
@@ -41,8 +42,7 @@ const formatForStats = (value: number): number => {
 function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
   const totalSent = newsletter.total_sent || 0;
   const notTracked = newsletter.statistics.notTracked ?? 0;
-  // Denominator for open and click rates: recipients we were allowed to measure.
-  const trackedSent = newsletter.statistics.trackedSent ?? totalSent;
+  const trackedSent = getTrackedSent(totalSent, notTracked);
 
   let percentageClicked = 0;
   let percentageOpened = 0;
@@ -76,7 +76,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
     formatWithOptimalPrecision(percentageBounced);
 
   const displayBadges =
-    totalSent >= minNewslettersSent &&
+    trackedSent >= minNewslettersSent &&
     newsletter.statistics.opened >= minNewslettersOpened;
 
   const displayUnsubscribedBadge =
