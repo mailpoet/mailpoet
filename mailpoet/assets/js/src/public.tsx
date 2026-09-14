@@ -76,15 +76,18 @@ jQuery(($) => {
     return `popup_form_dismissed_${formId}`;
   }
 
-  function shouldSetDismissalCookieAfterSubscription(
-    formDiv: JQuery<HTMLElement>,
-  ) {
-    // Mirrors DisplayFormInWPContent::WITH_COOKIE_TYPES; only dismissible
-    // display types are cookie-backed. Keep this list in sync with that constant.
-    return (
-      formDiv.hasClass('mailpoet_form_popup') ||
-      formDiv.hasClass('mailpoet_form_fixed_bar') ||
-      formDiv.hasClass('mailpoet_form_slide_in')
+  // Mirrors DisplayFormInWPContent::WITH_COOKIE_TYPES. Only these display types
+  // can be dismissed, so only they read the dismissal cookie back. Keep both
+  // lists in sync.
+  const dismissibleFormClasses = [
+    'mailpoet_form_popup',
+    'mailpoet_form_fixed_bar',
+    'mailpoet_form_slide_in',
+  ];
+
+  function isDismissibleForm(formDiv: JQuery<HTMLElement>) {
+    return dismissibleFormClasses.some((className) =>
+      formDiv.hasClass(className),
     );
   }
 
@@ -95,9 +98,9 @@ jQuery(($) => {
    * @param  {object} form jQuery object of MailPoet form
    */
   function setFormCookieAfterSubscription(form) {
-    const formDiv = form.parent('.mailpoet_form');
+    const formDiv = form.parent('.mailpoet_form') as JQuery<HTMLElement>;
     if (formDiv.data('is-preview')) return;
-    if (!shouldSetDismissalCookieAfterSubscription(formDiv)) return;
+    if (!isDismissibleForm(formDiv)) return;
     const formCookieName = getFormCookieName(form);
     Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
   }
