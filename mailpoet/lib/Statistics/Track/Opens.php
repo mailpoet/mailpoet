@@ -87,6 +87,7 @@ class Opens {
       }
       $this->statisticsOpensRepository->persist($statistics);
       $this->statisticsOpensRepository->flush();
+      $this->statisticsOpensRepository->markSentWithTracking($newsletter, $queue, $subscriber);
       $this->subscribersRepository->maybeUpdateLastOpenAt($subscriber);
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
     }
