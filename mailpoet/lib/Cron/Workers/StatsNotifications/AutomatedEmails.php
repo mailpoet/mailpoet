@@ -194,9 +194,8 @@ class AutomatedEmails extends SimpleWorker {
       $statistics = $row['statistics'];
       $newsletter = $row['newsletter'];
       $totalSentCount = $statistics->getTotalSentCount() ?: 1;
-      // Opens and clicks over the recipients we were allowed to measure;
-      // unsubscribes and bounces over everyone. Zero tracked recipients means
-      // zero, never a denominator of 1 — see the note in Worker::prepareContext().
+      // Opens and clicks over the recipients sent with tracking; unsubscribes and bounces over
+      // everyone. With nobody tracked the rate is 0, not a count divided by 1.
       $trackedSentCount = $statistics->getTrackedSentCount();
       $clicked = $trackedSentCount > 0 ? ($statistics->getClickCount() * 100) / $trackedSentCount : 0;
       $opened = $trackedSentCount > 0 ? ($statistics->getOpenCount() * 100) / $trackedSentCount : 0;

@@ -287,9 +287,9 @@
         <tr>
           <td class="mailpoet_paragraph mailpoet_padded_side" style="word-break:break-word;word-wrap:break-word;text-align:center;border-collapse:collapse;color:#7f7f7f;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:13px;line-height:20px;padding-left:20px;padding-right:20px;padding-bottom:10px">
             <% if newsletter.trackedSent > 0 %>
-              <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': newsletter.notTracked, '%2$s': newsletter.trackedSent}) %>
+              <%= _n('%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s.', '%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.', newsletter.notTracked)|replace({'%1$s': newsletter.notTracked, '%2$s': newsletter.trackedSent}) %>
             <% else %>
-              <%= __('None of your %1$s recipients are tracked, so open and click rates cannot be measured.')|replace({'%1$s': newsletter.notTracked}) %>
+              <%= _n('Your %1$s recipient is not tracked, so open and click rates cannot be measured.', 'None of your %1$s recipients are tracked, so open and click rates cannot be measured.', newsletter.notTracked)|replace({'%1$s': newsletter.notTracked}) %>
             <% endif %>
           </td>
         </tr>
