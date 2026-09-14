@@ -84,7 +84,7 @@ class Notice {
     printf(
       $this->renderInParagraph ? '<div class="%1$s" %3$s><p>%2$s</p></div>' : '<div class="%1$s" %3$s>%2$s</div>',
       esc_attr($class),
-      $this->wp->wpKses($message, $allowedTags),
+      wp_kses($message, $allowedTags),
       !empty($this->dataNoticeName) ? sprintf('data-notice="%s" data-nonce="%s"', esc_attr($this->dataNoticeName), esc_attr($this->wp->wpCreateNonce(self::DISMISS_NONCE_ACTION))) : ''
     );
   }
