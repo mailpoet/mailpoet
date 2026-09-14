@@ -39,7 +39,7 @@ class Installer {
     return $args;
   }
 
-  public static function buildDownloadUrl(): string {
+  public function buildDownloadUrl(): string {
     return sprintf(
       'https://release.mailpoet.com/downloads/mailpoet-premium/%s/mailpoet-premium.zip',
       rawurlencode(self::getFreeMinorVersionZero())
