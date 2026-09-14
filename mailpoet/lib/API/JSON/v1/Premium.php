@@ -58,7 +58,7 @@ class Premium extends APIEndpoint {
       // Do nothing and continue with a regular installation
     }
 
-    $result = $this->wp->installPlugin($this->premiumInstaller->generatePluginDownloadUrl());
+    $result = $this->wp->installPlugin($this->premiumInstaller->buildDownloadUrl());
     if ($result !== true) {
       return $this->error(__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }

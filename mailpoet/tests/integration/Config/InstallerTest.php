@@ -38,7 +38,7 @@ class InstallerTest extends \MailPoetTest {
   }
 
   public function testItGetsPluginDownloadUrl() {
-    $url = $this->installer->generatePluginDownloadUrl();
+    $url = $this->installer->buildDownloadUrl();
     $version = defined('MAILPOET_VERSION') ? (string)MAILPOET_VERSION : '';
     if ($version === '') {
       $expectedSegment = 'latest';
@@ -55,7 +55,7 @@ class InstallerTest extends \MailPoetTest {
   public function testItAuthenticatesTheDownloadRequestAsPostInsteadOfPuttingTheKeyInTheUrl() {
     $key = 'premium-key';
     $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
-    $url = $this->installer->generatePluginDownloadUrl();
+    $url = $this->installer->buildDownloadUrl();
 
     $args = (array)WPFunctions::get()->applyFilters('http_request_args', ['method' => 'GET'], $url);
     verify($args['method'])->same('POST');
