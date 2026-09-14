@@ -55,6 +55,7 @@ class InstallerTest extends \MailPoetTest {
   public function testItAuthenticatesTheDownloadRequestAsPostInsteadOfPuttingTheKeyInTheUrl() {
     $key = 'premium-key';
     $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
+    $this->installer->init();
     $url = $this->installer->buildDownloadUrl();
 
     $args = (array)WPFunctions::get()->applyFilters('http_request_args', ['method' => 'GET'], $url);
