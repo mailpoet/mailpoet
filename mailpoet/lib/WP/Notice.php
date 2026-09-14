@@ -79,7 +79,7 @@ class Notice {
   public function displayWPNotice() {
     $class = sprintf('notice notice-%s mailpoet_notice_server %s', $this->type, $this->classes);
     $message = nl2br($this->message);
-    $allowedTags = array_merge(wp_kses_allowed_html('post'), $this->extraAllowedTags);
+    $allowedTags = array_merge($this->wp->wpKsesAllowedHtml('post'), $this->extraAllowedTags);
 
     printf(
       $this->renderInParagraph ? '<div class="%1$s" %3$s><p>%2$s</p></div>' : '<div class="%1$s" %3$s>%2$s</div>',

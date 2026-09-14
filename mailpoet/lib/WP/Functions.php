@@ -923,6 +923,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function wpKsesAllowedHtml($context = '') {
+    return wp_kses_allowed_html($context);
+  }
+
   public function wpKsesPost(string $string): string {
     return wp_kses_post($string);
   }
