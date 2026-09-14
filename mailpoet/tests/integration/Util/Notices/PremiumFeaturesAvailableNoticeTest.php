@@ -3,8 +3,11 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Installer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
 
 class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -16,7 +19,11 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->notice = $this->diContainer->get(PremiumFeaturesAvailableNotice::class);
+    $this->notice = new PremiumFeaturesAvailableNotice(
+      $this->diContainer->get(SubscribersFeature::class),
+      new ServicesChecker(),
+      new WPFunctions()
+    );
   }
 
   public function _after() {
