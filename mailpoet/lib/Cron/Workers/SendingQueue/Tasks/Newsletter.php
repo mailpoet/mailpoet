@@ -443,8 +443,8 @@ class Newsletter {
   }
 
   /**
-   * Whether this subscriber's email carries the open pixel and tracked links.
-   * The sent statistics row stores the same answer, so the two cannot disagree.
+   * Whether this subscriber's email gets the open pixel and tracked links. The sent statistics
+   * row stores the same answer.
    */
   public function isSentWithTracking(SubscriberEntity $subscriber): bool {
     return $this->trackingEnabled && $this->trackingConsentController->isTrackingAllowed($subscriber);
