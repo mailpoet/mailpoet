@@ -46,7 +46,7 @@ class MigratorTest extends MailPoetTest {
     $this->store->startMigration('Migration_20221028_200226');
     $this->store->completeMigration('Migration_20221028_200226');
     $this->store->startMigration('Migration_20221029_212308');
-    $this->store->failMigration('Migration_20221029_212308', 'test-error');
+    $this->store->failMigration('Migration_20221029_212308', "Exception: Unknown column 'deleted_at' in 'field list' in /plugin/Migration.php:12");
     $this->store->startMigration('Migration_20221030_223752');
 
     $migrator = $this->createMigrator();
@@ -137,7 +137,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
-    $this->assertSame($data['error'], 'test-error');
+    $this->assertSame($data['error'], "Exception: Unknown column 'deleted_at' in 'field list' in /plugin/Migration.php:12");
     $this->assertTrue($data['unknown']);
 
     // unknown started (unknown = stored in DB but missing in the file system)
@@ -300,6 +300,22 @@ class MigratorTest extends MailPoetTest {
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
     $this->assertSame(1, (int)$data['retries']);
     $this->assertNull($data['error']);
+  }
+
+  public function testItListsOnlyTheFailedMigrationsWithAnErrorSummary(): void {
+    $this->store->startMigration('Migration_20221024_080348');
+    $this->store->completeMigration('Migration_20221024_080348');
+    $this->store->startMigration('Migration_20221025_120345');
+    $this->store->failMigration('Migration_20221025_120345', "Exception: boom in /plugin/Migration.php:12\nStack trace:\n#0 ...");
+    $this->store->startMigration('Migration_20221026_160151');
+
+    $failed = $this->createMigrator()->getFailedMigrations();
+
+    $this->assertSame([0], array_keys($failed));
+    $this->assertSame('Migration_20221025_120345', $failed[0]['name']);
+    $this->assertSame(Migrator::MIGRATION_STATUS_FAILED, $failed[0]['status']);
+    $this->assertSame("Exception: boom in /plugin/Migration.php:12\nStack trace:\n#0 ...", $failed[0]['error']);
+    $this->assertSame('Exception: boom in /plugin/Migration.php:12', $failed[0]['error_summary']);
   }
 
   public function testItFailsBrokenMigration(): void {
