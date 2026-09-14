@@ -175,6 +175,28 @@ class Form {
     return $this;
   }
 
+  /**
+   * @return $this
+   */
+  public function withDisplayAsPopup() {
+    if (!is_array($this->data['settings'])) {
+      $this->data['settings'] = [];
+    }
+    if (!isset($this->data['settings']['form_placement']) || !is_array($this->data['settings']['form_placement'])) {
+      $this->data['settings']['form_placement'] = [];
+    }
+    $this->data['settings']['form_placement']['popup'] = [
+      'enabled' => '1',
+      'delay' => '0',
+      'animation' => '',
+      'position' => '',
+      'exit_intent_enabled' => '',
+      'pages' => ['all' => '1'],
+      'posts' => ['all' => '1'],
+    ];
+    return $this;
+  }
+
   public function withDefaultSuccessMessage() {
     $this->messageController->updateSuccessMessages();
   }
