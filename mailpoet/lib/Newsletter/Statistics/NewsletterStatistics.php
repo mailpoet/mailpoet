@@ -23,9 +23,8 @@ class NewsletterStatistics {
   private $totalSentCount;
 
   /**
-   * Recipients we were not allowed to measure (opted out before the send, or
-   * never asked on a strict-mode site). Zero unless the site captures consent,
-   * so every screen looks exactly as it does today for sites with no opt-outs.
+   * Recipients whose email went out without the open pixel and tracked links.
+   * Zero when everyone was tracked, so those sites see the same screens as before.
    *
    * @var int
    */

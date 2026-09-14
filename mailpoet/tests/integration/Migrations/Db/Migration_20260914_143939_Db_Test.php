@@ -64,11 +64,13 @@ class Migration_20260914_143939_Db_Test extends \MailPoetTest {
 
   /** @return string[] */
   private function getIndexColumns(): array {
-    $rows = $this->entityManager->getConnection()->fetchAllAssociative(
-      "SHOW INDEX FROM `{$this->table}` WHERE Key_name = 'newsletter_id_sent_with_tracking'"
+    $columns = $this->entityManager->getConnection()->fetchFirstColumn(
+      "SELECT column_name FROM information_schema.statistics
+       WHERE table_schema = DATABASE() AND table_name = ? AND index_name = 'newsletter_id_sent_with_tracking'
+       ORDER BY seq_in_index",
+      [$this->table]
     );
-    usort($rows, fn($a, $b) => (int)$a['Seq_in_index'] <=> (int)$b['Seq_in_index']);
-    return array_column($rows, 'Column_name');
+    return array_values(array_filter($columns, 'is_string'));
   }
 
   private function dropIndexIfExists(): void {
