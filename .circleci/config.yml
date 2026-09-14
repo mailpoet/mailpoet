@@ -289,7 +289,14 @@ jobs:
             sudo apt install -y php8.1-cli
       - run:
           name: 'QA Security'
-          command: ./do qa:semgrep
+          command: |
+            # Forked pull requests do not get project secrets, so skip the
+            # steps that need them instead of failing the whole workflow.
+            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
+              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the wpscan-semgrep-rules deploy key is not available. Skipping."
+              exit 0
+            fi
+            ./do qa:semgrep
   qa_js:
     executor: wpcli_php_latest
     resource_class: medium
@@ -878,16 +885,31 @@ jobs:
       - run:
           name: 'Set up environment'
           command: |
+            # Forked pull requests do not get project secrets, so skip the
+            # steps that need them instead of failing the whole workflow.
+            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
+              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the QIT partner credentials are not available. Skipping."
+              exit 0
+            fi
             # Copy built ZIP to local directory for easier access from QIT
             cp /home/circleci/mailpoet/mailpoet.zip .
             # Authenticate in QIT
             ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
       - run:
           name: 'QIT Security Test'
-          command: ./do qa:qit-security | tee tests/_output/qit-security
+          command: |
+            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
+              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the QIT partner credentials are not available. Skipping."
+              exit 0
+            fi
+            ./do qa:qit-security | tee tests/_output/qit-security
       - run:
           name: 'Retrieve test results'
           command: |
+            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
+              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the QIT partner credentials are not available. Skipping."
+              exit 0
+            fi
             # Download HTML report from QIT servers
             grep "Result Url" tests/_output/qit-security | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
           when: always
