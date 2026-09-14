@@ -88,6 +88,23 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
     }
   }
 
+  public function testItUsesTheSingularWhenOneRecipientIsNotTracked() {
+    $templates = [
+      'emails/statsNotification.html' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
+      'emails/statsNotificationGarden.html' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
+      'emails/statsNotification.txt' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
+      'emails/statsNotificationAutomatedEmails.html' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
+      'emails/statsNotificationAutomatedEmailsGarden.html' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
+      'emails/statsNotificationAutomatedEmails.txt' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
+    ];
+    foreach ($templates as $template => $context) {
+      $someTracked = $this->renderer->render($template, $context(1, 463));
+      verify($someTracked)->stringContainsString('1 of your recipients is not tracked, so open and click rates are based on the other 463.');
+      $noneTracked = $this->renderer->render($template, $context(1, 0));
+      verify($noneTracked)->stringContainsString('Your 1 recipient is not tracked, so open and click rates cannot be measured.');
+    }
+  }
+
   private function campaignContext(int $notTracked, int $trackedSent): array {
     return array_merge($this->statBlock($notTracked, $trackedSent), [
       'subject' => 'Test campaign',

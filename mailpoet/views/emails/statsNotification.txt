@@ -18,9 +18,9 @@
 <%= __('Bounced') %>: <%= stats_number_format_i18n(bounced) %>%
 <% if notTracked > 0 %>
 <% if trackedSent > 0 %>
-  <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+  <%= _n('%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s.', '%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.', notTracked)|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
 <% else %>
-  <%= __('None of your %1$s recipients are tracked, so open and click rates cannot be measured.')|replace({'%1$s': notTracked}) %>
+  <%= _n('Your %1$s recipient is not tracked, so open and click rates cannot be measured.', 'None of your %1$s recipients are tracked, so open and click rates cannot be measured.', notTracked)|replace({'%1$s': notTracked}) %>
 <% endif %>
 <% endif %>
 
@@ -58,9 +58,9 @@
 
 <% if notTracked > 0 %>
 <% if trackedSent > 0 %>
-  <%= __('%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.')|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
+  <%= _n('%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s.', '%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.', notTracked)|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
 <% else %>
-  <%= __('None of your %1$s recipients are tracked, so open and click rates cannot be measured.')|replace({'%1$s': notTracked}) %>
+  <%= _n('Your %1$s recipient is not tracked, so open and click rates cannot be measured.', 'None of your %1$s recipients are tracked, so open and click rates cannot be measured.', notTracked)|replace({'%1$s': notTracked}) %>
 <% endif %>
 <% endif %>
 
