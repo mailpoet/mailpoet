@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.38.0
+Stable tag: 5.38.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,18 +227,20 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.38.0 - 2026-09-07 =
-* Added: Filters to override the author and categories shown in newsletters that include posts;
-* Improved: Validation of the admin notice dismissal request;
-* Improved: Validation of form preview requests;
-* Improved: Social icon rendering in the block email editor;
-* Fixed: Personalization tags showing HTML-encoded characters in email subjects and plain-text emails;
-* Fixed: The Amazon SES region list now matches AWS: seven regions added, China (Ningxia) now reaches the right AWS China endpoint, and Hong Kong and China (Beijing) removed because SES does not run there;
-* Fixed: One background job that fails to start no longer stops the rest of them, so bounce processing, WooCommerce sync and the other scheduled jobs keep running;
-* Fixed: Restricted AI subject line suggestions to users who can manage emails;
-* Fixed: Exceptions recorded in the MailPoet logs now keep their class, file and line instead of being stored empty, which makes a failure easier to trace;
-* Fixed: Restricted sending email previews from the email editor to users who can manage emails;
-* Fixed: Back button sizing in the block email editor on WordPress 7.1;
-* Fixed: Missing Personalization Tags toolbar button on Button blocks in the block email editor.
+= 5.38.1 - 2026-09-14 =
+* Added: Turning off open and click tracking in MailPoet now also turns it off in AutomateWoo, so a subscriber only has to say it once. Turning it back on clears it in both places too;
+* Improved: Input validation and block sanitization for the newsletter browser preview request;
+* Improved: Sanitization of nested content blocks in emails;
+* Improved: WP-CLI subscriber import now supports CSVs exported from the plugin;
+* Changed: Shorten customer email addresses in WooCommerce automatic email logs;
+* Fixed: Emails page failing to load on sites with a large log table;
+* Fixed: Subscriber and statistics exports of values a spreadsheet reads as a formula, such as a phone number starting with a plus;
+* Fixed: Keep the original tracking consent record when a list is imported again;
+* Fixed: Stop a subscriber's tracking choice being changed by someone else;
+* Fixed: Email template selector layout with Gutenberg 23.9 or newer;
+* Fixed: Pop-up, fixed bar, and slide-in forms not appearing on single posts and pages when the theme or page builder renders the content outside the main loop;
+* Fixed: Stop block checkout recording a tracking decline for customers who were never asked;
+* Fixed: Use the first row for an email listed twice within one batch of a WP-CLI subscriber import, as the import screen does;
+* Fixed: Bulk unsubscribe of large subscriber selections timing out instead of completing.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
