@@ -62,7 +62,7 @@ class InstallerTest extends \MailPoetTest {
     verify($args['body'])->same(['api_key' => $key]);
 
     $unrelatedArgs = ['method' => 'GET'];
-    $result = WPFunctions::get()->applyFilters('http_request_args', $unrelatedArgs, 'https://release.mailpoet.com/products/some-other-plugin');
+    $result = WPFunctions::get()->applyFilters('http_request_args', $unrelatedArgs, 'https://example.com/products/some-other-plugin');
     verify($result)->same($unrelatedArgs);
   }
 
