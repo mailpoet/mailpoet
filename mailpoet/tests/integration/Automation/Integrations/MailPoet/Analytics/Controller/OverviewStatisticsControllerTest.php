@@ -97,9 +97,7 @@ class OverviewStatisticsControllerTest extends \MailPoetTest {
   }
 
   /**
-   * true = granted, false = opted out yesterday, i.e. before the row's sent_at
-   * (now). Granted is set explicitly because the entity default is 'unknown',
-   * which is untracked in strict mode.
+   * true = sent with tracking, false = sent without it.
    *
    * @param bool[] $trackedFlags
    * @return SubscriberEntity[]
@@ -107,14 +105,8 @@ class OverviewStatisticsControllerTest extends \MailPoetTest {
   private function createRecipients(NewsletterEntity $newsletter, array $trackedFlags): array {
     $subscribers = [];
     foreach ($trackedFlags as $index => $tracked) {
-      $factory = new Subscriber();
-      if ($tracked) {
-        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
-      } else {
-        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-1 day'));
-      }
-      $subscriber = $factory->create();
-      (new StatisticsNewsletters($newsletter, $subscriber))->create();
+      $subscriber = (new Subscriber())->create();
+      (new StatisticsNewsletters($newsletter, $subscriber))->withSentWithTracking($tracked)->create();
       // Two tracked recipients on the first email open it.
       if ($tracked && $index < 2) {
         (new StatisticsOpens($newsletter, $subscriber))->create();

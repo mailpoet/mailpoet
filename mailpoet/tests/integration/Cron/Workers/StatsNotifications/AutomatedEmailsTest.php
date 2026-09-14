@@ -7,7 +7,6 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
@@ -208,12 +207,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ->create();
     $this->createClicks($newsletter, 5);
     $this->createOpens($newsletter, 2);
-    // Every recipient opted out before the send, so nothing is measurable.
     for ($i = 0; $i < 10; $i++) {
-      $subscriber = (new SubscriberFactory())
-        ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-1 day'))
-        ->create();
-      (new StatisticsNewslettersFactory($newsletter, $subscriber))->create();
+      $subscriber = (new SubscriberFactory())->create();
+      (new StatisticsNewslettersFactory($newsletter, $subscriber))->withSentWithTracking(false)->create();
     }
 
     $this->renderer->expects($this->exactly(2)) // html + text template
