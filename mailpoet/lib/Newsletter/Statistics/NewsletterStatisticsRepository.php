@@ -469,7 +469,9 @@ class NewsletterStatisticsRepository extends Repository {
     );
     $counts = [];
     foreach ($rows as $row) {
-      $counts[(int)$row['id']] = (int)$row['cnt'];
+      if (is_numeric($row['id']) && is_numeric($row['cnt'])) {
+        $counts[(int)$row['id']] = (int)$row['cnt'];
+      }
     }
     return $counts;
   }
