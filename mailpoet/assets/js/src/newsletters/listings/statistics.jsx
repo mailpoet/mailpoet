@@ -183,7 +183,7 @@ function Statistics({
   }
 
   return (
-    <>
+    <div className="mailpoet-listing-stats-cell">
       {content}
       {notTracked > 0 && (
         <div className="mailpoet-listing-stats-coverage">
@@ -197,7 +197,7 @@ function Statistics({
         </div>
       )}
       {afterContent}
-    </>
+    </div>
   );
 }
 

@@ -321,6 +321,14 @@ h1.title.mailpoet-newsletter-listing-heading {
   font-weight: normal;
 }
 
+// The listing table lays cell content out in a row; stack the stats instead.
+.mailpoet-listing-stats-cell {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 // Rendered only when some recipients were not tracked.
 .mailpoet-listing-stats-coverage {
   color: $color-primary-inactive;
