@@ -34,6 +34,7 @@ class Installer {
       return $args;
     }
     $args['method'] = 'POST';
+    $args['redirection'] = 0;
     $args['body'] = array_merge((array)($args['body'] ?? []), ['api_key' => $this->getPremiumKey()]);
     return $args;
   }
