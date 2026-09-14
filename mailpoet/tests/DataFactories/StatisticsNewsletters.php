@@ -57,15 +57,20 @@ class StatisticsNewsletters {
     $entity = new StatisticsNewsletterEntity(
       $this->newsletter,
       $queue,
-      $this->subscriber,
-      null,
-      $this->data['sentWithTracking'] ?? true
+      $this->subscriber
     );
     if (isset($this->data['sentAt'])) {
       $entity->setSentAt($this->data['sentAt']);
     }
     $entityManager->persist($entity);
     $entityManager->flush();
+    if (($this->data['sentWithTracking'] ?? true) === false) {
+      $table = $entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+      $entityManager->getConnection()->executeStatement(
+        "UPDATE `{$table}` SET sent_with_tracking = 0 WHERE id = ?",
+        [$entity->getId()]
+      );
+    }
     return $entity;
   }
 }

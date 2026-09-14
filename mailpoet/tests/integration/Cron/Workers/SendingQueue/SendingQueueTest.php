@@ -1789,6 +1789,38 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->getStoredSentWithTracking($granted))->equals(0);
   }
 
+  /**
+   * During a plugin update new code can run before the migration adds the column.
+   */
+  public function testItFinishesSendingAndKeepsTheSentRowsWhenTheColumnDoesNotExistYet() {
+    $granted = $this->createSubscriberWithConsent('granted@example.com', SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $denied = $this->createSubscriberWithConsent('denied@example.com', SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP INDEX `newsletter_id_sent_with_tracking`, DROP COLUMN `sent_with_tracking`");
+
+    try {
+      ob_start();
+      $this->processAndRecordPixels([$granted, $denied]);
+      $output = ob_get_clean();
+      $sentRows = $connection->fetchOne("SELECT COUNT(*) FROM `{$table}` WHERE newsletter_id = ?", [$this->newsletter->getId()]);
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
+    }
+
+    verify($output)->equals('');
+    verify($sentRows)->equals(2);
+    $this->entityManager->clear();
+    $task = $this->scheduledTasksRepository->findOneById($this->scheduledTask->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+  }
+
   private function createSubscriberWithConsent(string $email, string $consent): SubscriberEntity {
     $subscriber = $this->createSubscriber($email, 'First', 'Last', [$this->segment]);
     $subscriber->setTrackingConsent($consent);
