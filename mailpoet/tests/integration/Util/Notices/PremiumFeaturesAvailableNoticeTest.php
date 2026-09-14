@@ -37,10 +37,13 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
     $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
     $this->settings->set('premium.premium_key_state.state', Bridge::KEY_VALID);
 
-    $message = $this->notice->display()->getMessage();
+    $notice = $this->notice->display();
+    ob_start();
+    $notice->displayWPNotice();
+    $output = ob_get_clean();
 
-    verify($message)->stringContainsString('<form method="post" action="' . Installer::buildDownloadUrl() . '"');
-    verify($message)->stringContainsString('name="api_key" value="' . $key . '"');
-    verify($message)->stringNotContainsString('mailpoet-premium/' . $key . '/');
+    verify($output)->stringContainsString('<form method="post" action="' . esc_url(Installer::buildDownloadUrl()) . '"');
+    verify($output)->stringContainsString('name="api_key" value="' . esc_attr($key) . '"');
+    verify($output)->stringNotContainsString('mailpoet-premium/' . $key . '/');
   }
 }
