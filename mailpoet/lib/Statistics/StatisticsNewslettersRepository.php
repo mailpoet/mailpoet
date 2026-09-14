@@ -31,7 +31,8 @@ class StatisticsNewslettersRepository extends Repository {
         }
 
         $sentAt = Carbon::now()->millisecond(0);
-        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt);
+        $sentWithTracking = (bool)($value['sent_with_tracking'] ?? true);
+        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt, $sentWithTracking);
 
         $this->entityManager->persist($entity);
         $entities[] = $entity;
