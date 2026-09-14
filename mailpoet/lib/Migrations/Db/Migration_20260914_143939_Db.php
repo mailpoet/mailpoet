@@ -23,7 +23,8 @@ class Migration_20260914_143939_Db extends DbMigration {
       $changes[] = 'ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1';
     }
     if (!$this->indexExists($table, 'newsletter_id_sent_with_tracking')) {
-      $changes[] = 'ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`)';
+      // queue_id lets the campaign count join its queue from the index alone.
+      $changes[] = 'ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)';
     }
     if (!$changes) {
       return;
