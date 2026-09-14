@@ -42,7 +42,7 @@ class Migration_20260914_143939_Db_Test extends \MailPoetTest {
   public function testItAddsTheIndex(): void {
     $this->migration->run();
 
-    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking']);
+    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking', 'queue_id']);
   }
 
   public function testItAddsTheIndexWhenTheColumnAlreadyExists(): void {
@@ -52,14 +52,14 @@ class Migration_20260914_143939_Db_Test extends \MailPoetTest {
 
     $this->migration->run();
 
-    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking']);
+    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking', 'queue_id']);
   }
 
   public function testItCanRunTwice(): void {
     $this->migration->run();
     $this->migration->run();
 
-    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking']);
+    verify($this->getIndexColumns())->equals(['newsletter_id', 'sent_with_tracking', 'queue_id']);
   }
 
   /** @return string[] */

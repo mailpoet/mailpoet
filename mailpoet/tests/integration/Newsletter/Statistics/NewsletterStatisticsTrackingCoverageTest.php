@@ -215,7 +215,7 @@ class NewsletterStatisticsTrackingCoverageTest extends \MailPoetTest {
       $output = ob_get_clean();
     } finally {
       $connection->executeStatement(
-        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`)"
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
       );
     }
 
