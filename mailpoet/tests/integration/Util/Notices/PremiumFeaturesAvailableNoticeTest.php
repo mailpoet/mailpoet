@@ -42,7 +42,8 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
     $notice->displayWPNotice();
     $output = ob_get_clean();
 
-    verify($output)->stringContainsString('<form method="post" action="' . esc_url(Installer::buildDownloadUrl()) . '"');
+    $expectedUrl = (new Installer(Installer::PREMIUM_PLUGIN_PATH))->buildDownloadUrl();
+    verify($output)->stringContainsString('<form method="post" action="' . esc_url($expectedUrl) . '"');
     verify($output)->stringContainsString('name="api_key" value="' . esc_attr($key) . '"');
     verify($output)->stringNotContainsString('mailpoet-premium/' . $key . '/');
   }
