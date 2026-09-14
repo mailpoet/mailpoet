@@ -16,6 +16,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
@@ -32,6 +33,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\AutomationRun as AutomationRunFactory;
+use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -197,6 +199,36 @@ class ClicksTest extends \MailPoetTest {
 
     verify($this->statisticsClicksRepository->findAll())->notEmpty();
     verify($this->statisticsOpensRepository->findAll())->notEmpty();
+  }
+
+  public function testRecordingAClickMarksThatRecipientsSentRowAsTracked() {
+    $row = (new StatisticsNewslettersFactory($this->newsletter, $this->subscriber))
+      ->withQueue($this->queue)
+      ->withSentWithTracking(false)
+      ->create();
+    $clicks = Stub::construct($this->clicks, [
+      $this->diContainer->get(Cookies::class),
+      $this->diContainer->get(SubscriberCookie::class),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+
+    $clicks->track($this->trackData);
+
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $value = $this->entityManager->getConnection()->fetchOne("SELECT sent_with_tracking FROM `{$table}` WHERE id = ?", [$row->getId()]);
+    verify($this->statisticsClicksRepository->findAll())->notEmpty();
+    verify($value)->equals('1');
   }
 
   public function testItTracksUserAgent() {
