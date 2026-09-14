@@ -30,7 +30,7 @@ class Installer {
   }
 
   public function authenticateReleaseRequests(array $args, string $url): array {
-    if (!str_starts_with($url, 'https://release.mailpoet.com')) {
+    if (!str_starts_with($url, 'https://release.mailpoet.com/')) {
       return $args;
     }
     $args['method'] = 'POST';
