@@ -38,14 +38,28 @@ class StatisticsNewsletters {
     return $this;
   }
 
+  /** @return $this */
+  public function withSentWithTracking(bool $sentWithTracking) {
+    $this->data['sentWithTracking'] = $sentWithTracking;
+    return $this;
+  }
+
+  /** @return $this */
+  public function withQueue(SendingQueueEntity $queue) {
+    $this->data['queue'] = $queue;
+    return $this;
+  }
+
   public function create(): StatisticsNewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $queue = $this->newsletter->getLatestQueue();
+    $queue = $this->data['queue'] ?? $this->newsletter->getLatestQueue();
     Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsNewsletterEntity(
       $this->newsletter,
       $queue,
-      $this->subscriber
+      $this->subscriber,
+      null,
+      $this->data['sentWithTracking'] ?? true
     );
     if (isset($this->data['sentAt'])) {
       $entity->setSentAt($this->data['sentAt']);

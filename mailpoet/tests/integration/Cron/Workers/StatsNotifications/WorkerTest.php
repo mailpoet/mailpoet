@@ -279,9 +279,7 @@ class WorkerTest extends \MailPoetTest {
   }
 
   /**
-   * true = granted, false = opted out yesterday, i.e. before the row's sent_at
-   * (now). Granted is set explicitly because the entity default is 'unknown',
-   * which is untracked in strict mode.
+   * true = sent with tracking, false = sent without it.
    *
    * @param bool[] $trackedFlags
    */
@@ -289,13 +287,9 @@ class WorkerTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     foreach ($trackedFlags as $tracked) {
-      $factory = new SubscriberFactory();
-      if ($tracked) {
-        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
-      } else {
-        $factory->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED, new \DateTimeImmutable('-1 day'));
-      }
-      (new StatisticsNewslettersFactory($newsletter, $factory->create()))->create();
+      (new StatisticsNewslettersFactory($newsletter, (new SubscriberFactory())->create()))
+        ->withSentWithTracking($tracked)
+        ->create();
     }
   }
 

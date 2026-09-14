@@ -15,9 +15,9 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Settings\TrackingConfig;
-use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\OrderAttributionRevenueReader;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -49,30 +49,16 @@ class NewsletterStatisticsRepository extends Repository {
   /** @var OrderAttributionRevenueReader */
   private $orderAttributionRevenueReader;
 
-  /** @var TrackingConsentController */
-  private $trackingConsentController;
-
-  /**
-   * sending_queues.meta key holding the untracked-recipient count for a
-   * completed queue: ['count' => int, 'unknownUntrackedSince' => string|null].
-   * Filled lazily on first read. The second value is the rule the count was
-   * computed under — null when never-asked recipients count as tracked — so a
-   * value computed under a different rule is recomputed instead of reused.
-   */
-  public const META_NOT_TRACKED = 'notTracked';
-
   public function __construct(
     EntityManager $entityManager,
     WCHelper $wcHelper,
     TrackingConfig $trackingConfig,
-    OrderAttributionRevenueReader $orderAttributionRevenueReader,
-    TrackingConsentController $trackingConsentController
+    OrderAttributionRevenueReader $orderAttributionRevenueReader
   ) {
     parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;
     $this->trackingConfig = $trackingConfig;
     $this->orderAttributionRevenueReader = $orderAttributionRevenueReader;
-    $this->trackingConsentController = $trackingConsentController;
   }
 
   protected function getEntityClassName() {
@@ -338,20 +324,12 @@ class NewsletterStatisticsRepository extends Repository {
   }
 
   /**
-   * Recipients we were not allowed to measure, per newsletter, read from
-   * current consent plus WHEN it changed. No stored flag on the sent rows:
-   * tracking_consent_updated_at is the *last* change, so "denied now and last
-   * changed before we sent" means "denied when we sent". An opt-out after the
-   * send leaves that send alone, so a recorded open can never lose its recipient
-   * from the denominator (no >100%). A deleted recipient does not join and stays
-   * in the denominator, as today. In strict mode (ask_all) recipients we never
-   * asked are untracked too.
+   * Recipients whose email went out without the open pixel and tracked links,
+   * per newsletter.
    *
    * Split the same way as getTotalSentCounts(), and it has to stay that way:
    * trackedSent is totalSent minus this, so each group must be counted over the
-   * very population its total came from. Counting a repeatedly sent email over
-   * completed queues while its total came from the sending statistics would
-   * subtract two different audiences and could push a rate past 100%.
+   * very rows its total came from.
    *
    * @param NewsletterEntity[] $newsletters
    * @return array<int, int>
@@ -367,21 +345,24 @@ class NewsletterStatisticsRepository extends Repository {
       }
     }
 
-    // no key collisions, a newsletter belongs to exactly one group
-    return $this->getQueuedNotTrackedCounts($sentAsCampaign, $from, $to)
-      + $this->getRecordedNotTrackedCounts($sentRepeatedly, $from, $to);
+    global $wpdb;
+    $suppressErrors = $wpdb->suppress_errors();
+    try {
+      // no key collisions, a newsletter belongs to exactly one group
+      return $this->getQueuedNotTrackedCounts($sentAsCampaign, $from, $to)
+        + $this->getRecordedNotTrackedCounts($sentRepeatedly, $from, $to);
+    } catch (InvalidFieldNameException $e) {
+      // The column may not exist yet during a plugin update. Report everyone as
+      // tracked, which is what stats showed before, until the migration runs.
+      return [];
+    } finally {
+      $wpdb->suppress_errors($suppressErrors);
+    }
   }
 
   /**
    * The campaign side, matching getQueuedSentCounts(): completed tasks, same
    * q.createdAt window.
-   *
-   * Cached per completed queue in sending_queues.meta on first read: a completed
-   * queue's count cannot change (nobody can opt out "before" a send that already
-   * happened), so the live query runs once per queue and the listing then costs
-   * the same as the total-sent query. The cache carries the strict-mode flag it
-   * was computed under and is recomputed when the site's Subscriber choice moves
-   * between ask_new and ask_all.
    *
    * @param NewsletterEntity[] $newsletters
    * @return array<int, int>
@@ -391,48 +372,19 @@ class NewsletterStatisticsRepository extends Repository {
       return [];
     }
 
-    $queues = $this->getCompletedQueues($newsletters, $from, $to);
-    if (!$queues) {
-      return [];
-    }
-    $unknownUntrackedSince = $this->getUnknownUntrackedSince();
-    $marker = $unknownUntrackedSince ? $unknownUntrackedSince->format('Y-m-d H:i:s') : null;
+    $query = $this->createNotTrackedCountQuery($newsletters)
+      ->join('stats.queue', 'q')
+      ->join('q.task', 't')
+      ->andWhere('t.status = :status')
+      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->applyWindow($query, 'q.createdAt', $from, $to);
 
-    $counts = [];
-    $uncached = [];
-    foreach ($queues as $queue) {
-      $cached = $queue['meta'][self::META_NOT_TRACKED] ?? null;
-      if (
-        is_array($cached)
-        && array_key_exists('count', $cached)
-        && array_key_exists('unknownUntrackedSince', $cached)
-        && $cached['unknownUntrackedSince'] === $marker
-      ) {
-        $counts[$queue['newsletterId']] = ($counts[$queue['newsletterId']] ?? 0) + (int)$cached['count'];
-      } else {
-        $uncached[] = $queue;
-      }
-    }
-
-    if ($uncached) {
-      $fresh = $this->queryNotTrackedCountsPerQueue($uncached, $unknownUntrackedSince);
-      foreach ($uncached as $queue) {
-        $count = $fresh[$queue['id']] ?? 0;
-        $counts[$queue['newsletterId']] = ($counts[$queue['newsletterId']] ?? 0) + $count;
-        $this->cacheNotTrackedCount($queue['id'], $queue['meta'], $count, $marker);
-      }
-    }
-    return $counts;
+    return $this->fetchCountsById($query);
   }
 
   /**
-   * The repeatedly-sent side, matching getRecordedSentCounts(): every sending
-   * statistics row for the email, same stats.sentAt window, no task-status
-   * filter — exactly the rows that total counted.
-   *
-   * Deliberately not cached. These emails keep sending for as long as they stay
-   * active, so the count is not final the way a completed campaign's is, and a
-   * value frozen on first read would drift below the total it is subtracted from.
+   * The repeatedly sent side, matching getRecordedSentCounts(): every sent row
+   * for the email, same stats.sentAt window, no task status filter.
    *
    * @param NewsletterEntity[] $newsletters
    * @return array<int, int>
@@ -442,176 +394,45 @@ class NewsletterStatisticsRepository extends Repository {
       return [];
     }
 
-    $query = $this->entityManager->createQueryBuilder()
+    $query = $this->createNotTrackedCountQuery($newsletters);
+    $this->applyWindow($query, 'stats.sentAt', $from, $to);
+
+    return $this->fetchCountsById($query);
+  }
+
+  /** @param NewsletterEntity[] $newsletters */
+  private function createNotTrackedCountQuery(array $newsletters): QueryBuilder {
+    return $this->entityManager->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, COUNT(stats.id) AS cnt')
       ->from(StatisticsNewsletterEntity::class, 'stats')
-      ->join('stats.subscriber', 's')
       ->where('stats.newsletter IN (:newsletters)')
       ->setParameter('newsletters', $newsletters)
+      ->andWhere('stats.sentWithTracking = :sentWithTracking')
+      ->setParameter('sentWithTracking', false)
       ->groupBy('stats.newsletter');
+  }
 
+  private function applyWindow(QueryBuilder $query, string $column, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to): void {
     if ($from && $to) {
-      $query->andWhere('stats.sentAt BETWEEN :from AND :to')
+      $query->andWhere("{$column} BETWEEN :from AND :to")
         ->setParameter('from', $from)
         ->setParameter('to', $to);
-    } elseif ($from && $to === null) {
-      $query->andWhere('stats.sentAt >= :from')
+    } elseif ($from) {
+      $query->andWhere("{$column} >= :from")
         ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
-      $query->andWhere('stats.sentAt <= :to')
+    } elseif ($to) {
+      $query->andWhere("{$column} <= :to")
         ->setParameter('to', $to);
     }
+  }
 
-    $query->andWhere($this->buildUntrackedPredicate($query, $this->getUnknownUntrackedSince()));
-
+  /** @return array<int, int> */
+  private function fetchCountsById(QueryBuilder $query): array {
     $counts = [];
     foreach ($query->getQuery()->getResult() ?: [] as $result) {
       $counts[(int)$result['id']] = (int)$result['cnt'];
     }
     return $counts;
-  }
-
-  /**
-   * The queues getQueuedSentCounts() sums: completed tasks, same q.createdAt window.
-   * Arrays, not entities, on purpose: nothing here should end up in the unit of
-   * work, and the cache write below must not mark a queue dirty.
-   *
-   * @param NewsletterEntity[] $newsletters
-   * @return array<int, array{id: int, newsletterId: int, meta: array|null}>
-   */
-  private function getCompletedQueues(array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
-    $query = $this->entityManager
-      ->createQueryBuilder()
-      ->select('q.id AS id, IDENTITY(q.newsletter) AS newsletterId, q.meta AS meta')
-      ->from(SendingQueueEntity::class, 'q')
-      ->join('q.task', 't')
-      ->where('t.status = :status')
-      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
-      ->andWhere('q.newsletter IN (:newsletters)')
-      ->setParameter('newsletters', $newsletters);
-
-    if ($from && $to) {
-      $query->andWhere('q.createdAt BETWEEN :from AND :to')
-        ->setParameter('from', $from)
-        ->setParameter('to', $to);
-    } elseif ($from && $to === null) {
-      $query->andWhere('q.createdAt >= :from')
-        ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
-      $query->andWhere('q.createdAt <= :to')
-        ->setParameter('to', $to);
-    }
-
-    $queues = [];
-    foreach ($query->getQuery()->getArrayResult() as $row) {
-      if (!is_array($row)) {
-        continue;
-      }
-      $id = $row['id'] ?? null;
-      $newsletterId = $row['newsletterId'] ?? null;
-      if (!is_numeric($id) || !is_numeric($newsletterId)) {
-        continue;
-      }
-      $meta = $row['meta'] ?? null;
-      if (is_string($meta)) { // scalar hydration may hand the JSON back undecoded
-        $meta = json_decode($meta, true);
-      }
-      $queues[] = [
-        'id' => (int)$id,
-        'newsletterId' => (int)$newsletterId,
-        'meta' => is_array($meta) ? $meta : null,
-      ];
-    }
-    return $queues;
-  }
-
-  /**
-   * The live query, per queue, for the queues that have no usable cache.
-   *
-   * @param array<int, array{id: int, newsletterId: int, meta: array|null}> $queues
-   * @return array<int, int> queue id => untracked count (queues with none are absent)
-   */
-  private function queryNotTrackedCountsPerQueue(array $queues, ?\DateTimeImmutable $unknownUntrackedSince): array {
-    $query = $this->entityManager
-      ->createQueryBuilder()
-      ->select('IDENTITY(stats.queue) AS id, COUNT(stats.id) AS cnt')
-      ->from(StatisticsNewsletterEntity::class, 'stats')
-      ->join('stats.subscriber', 's')
-      ->where('stats.newsletter IN (:newsletterIds)')
-      ->setParameter('newsletterIds', array_values(array_unique(array_column($queues, 'newsletterId'))))
-      ->andWhere('stats.queue IN (:queueIds)')
-      ->setParameter('queueIds', array_column($queues, 'id'))
-      ->groupBy('stats.queue');
-
-    $query->andWhere($this->buildUntrackedPredicate($query, $unknownUntrackedSince));
-
-    $counts = [];
-    foreach ($query->getQuery()->getResult() ?: [] as $result) {
-      $counts[(int)$result['id']] = (int)$result['cnt'];
-    }
-    return $counts;
-  }
-
-  /**
-   * One definition of "we were not allowed to measure this recipient", shared by
-   * both counting paths so they can never drift apart. Expects the sending
-   * statistics aliased as `stats` and the joined subscriber as `s`, and sets its
-   * own parameters on the query it is given.
-   *
-   * Both halves are judged as at the send, never as at now:
-   * - denied, and denied before we sent;
-   * - never asked, on a send made after the site started asking everyone.
-   *
-   * The second half is what keeps strict consent from rewriting history. A
-   * recipient who was tracked when the campaign went out has their opens and
-   * clicks on record, so dropping them from the denominator later would push
-   * that campaign's rate above 100%.
-   */
-  private function buildUntrackedPredicate(QueryBuilder $query, ?\DateTimeImmutable $unknownUntrackedSince): string {
-    $untracked = '(s.trackingConsent = :denied AND s.trackingConsentUpdatedAt <= stats.sentAt)';
-    $query->setParameter('denied', SubscriberEntity::TRACKING_CONSENT_DENIED);
-    if ($unknownUntrackedSince) {
-      $untracked .= ' OR (s.trackingConsent = :unknown AND stats.sentAt >= :unknownUntrackedSince)';
-      $query->setParameter('unknown', SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
-      $query->setParameter('unknownUntrackedSince', $unknownUntrackedSince);
-    }
-    return "($untracked)";
-  }
-
-  /**
-   * From when do never-asked recipients count as untracked? Null means never —
-   * either the site tracks them, or it asks everyone but has no record of when
-   * that started, in which case the safe answer is to leave every existing
-   * number alone.
-   */
-  private function getUnknownUntrackedSince(): ?\DateTimeImmutable {
-    if ($this->trackingConsentController->shouldTrackUnknownConsent()) {
-      return null;
-    }
-    return $this->trackingConsentController->getStrictSince();
-  }
-
-  /**
-   * Store the count on the queue's meta, merged with whatever is there. A raw
-   * UPDATE on purpose: it must not go through the unit of work (no flush of
-   * unrelated pending changes from a read path, no updated_at bump — updated_at
-   * is shown in the listing). Only completed queues reach here, and the only
-   * other writers of meta (saveCampaignId, saveFilterSegmentMeta) run while a
-   * queue is still sending, so there is nothing to race with; two readers
-   * caching the same queue write the same value.
-   *
-   * `updated_at = updated_at` is not a no-op: the column is
-   * `ON UPDATE current_timestamp()`, so without naming it here MySQL would
-   * restamp it and the listing would show every campaign as just-touched.
-   */
-  private function cacheNotTrackedCount(int $queueId, ?array $meta, int $count, ?string $unknownUntrackedSince): void {
-    $meta = $meta ?? [];
-    $meta[self::META_NOT_TRACKED] = ['count' => $count, 'unknownUntrackedSince' => $unknownUntrackedSince];
-    $table = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeStatement(
-      "UPDATE `{$table}` SET meta = ?, updated_at = updated_at WHERE id = ?",
-      [json_encode($meta), $queueId]
-    );
   }
 
   private function getStatisticCounts(string $statisticsEntityName, array $newsletters, ?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array {
