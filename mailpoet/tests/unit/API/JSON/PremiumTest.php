@@ -25,7 +25,7 @@ class PremiumTest extends \MailPoetUnitTest {
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
-      'generatePluginDownloadUrl' => Expected::once('https://example.com/premium.zip'),
+      'buildDownloadUrl' => Expected::once('https://example.com/premium.zip'),
     ]);
 
     $dotcom = $this->makeEmpty(DotcomHelperFunctions::class, [
@@ -72,7 +72,7 @@ class PremiumTest extends \MailPoetUnitTest {
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
-      'generatePluginDownloadUrl' => Expected::once(''),
+      'buildDownloadUrl' => Expected::once(''),
     ]);
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
