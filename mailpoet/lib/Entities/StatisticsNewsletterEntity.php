@@ -41,16 +41,26 @@ class StatisticsNewsletterEntity {
    */
   private $sentAt;
 
+  /**
+   * Whether this email went out with the open pixel and tracked links.
+   *
+   * @ORM\Column(type="boolean", nullable=false)
+   * @var bool
+   */
+  private $sentWithTracking = true;
+
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
     SubscriberEntity $subscriber,
-    ?\DateTimeInterface $sentAt = null
+    ?\DateTimeInterface $sentAt = null,
+    bool $sentWithTracking = true
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
     $this->subscriber = $subscriber;
     $this->sentAt = $sentAt ?: new \DateTimeImmutable();
+    $this->sentWithTracking = $sentWithTracking;
   }
 
   /**
@@ -89,5 +99,9 @@ class StatisticsNewsletterEntity {
    */
   public function setSentAt(\DateTimeInterface $sentAt) {
     $this->sentAt = $sentAt;
+  }
+
+  public function isSentWithTracking(): bool {
+    return $this->sentWithTracking;
   }
 }

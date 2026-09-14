@@ -466,6 +466,7 @@ class SendingQueue {
         'newsletter_id' => $newsletter->getId(),
         'subscriber_id' => $subscriber->getId(),
         'queue_id' => $sendingQueueEntity->getId(),
+        'sent_with_tracking' => $this->newsletterTask->isSentWithTracking($subscriber),
       ];
       if ($processingMethod === 'individual') {
         $this->sendNewsletter(
