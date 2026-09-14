@@ -13,6 +13,7 @@ abstract class Response {
   const STATUS_NOT_FOUND = 404;
   const STATUS_CONFLICT = 409;
   const STATUS_UNKNOWN = 500;
+  const STATUS_SERVICE_UNAVAILABLE = 503;
 
   public $status;
   public $meta;
