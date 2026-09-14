@@ -26,17 +26,11 @@ class Installer {
 
   public function init() {
     WPFunctions::get()->addFilter('plugins_api', [$this, 'getPluginInformation'], 10, 3);
+    WPFunctions::get()->addFilter('http_request_args', [$this, 'authenticateReleaseRequests'], 10, 2);
   }
 
-  public function generatePluginDownloadUrl(): string {
-    // The URL carries no secret -- the premium key is injected into the request as a POST
-    // body field by authenticatePluginDownloadRequest(), never into the URL itself.
-    WPFunctions::get()->addFilter('http_request_args', [$this, 'authenticatePluginDownloadRequest'], 10, 2);
-    return self::buildDownloadUrl();
-  }
-
-  public function authenticatePluginDownloadRequest(array $args, string $url): array {
-    if ($url !== self::buildDownloadUrl()) {
+  public function authenticateReleaseRequests(array $args, string $url): array {
+    if (!str_starts_with($url, 'https://release.mailpoet.com')) {
       return $args;
     }
     $args['method'] = 'POST';
@@ -57,10 +51,10 @@ class Installer {
 
   public function generatePluginActivationUrl(string $plugin): string {
     return WPFunctions::get()->adminUrl('plugins.php?' . implode('&', [
-      'action=activate',
-      'plugin=' . urlencode($plugin),
-      '_wpnonce=' . WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin),
-    ]));
+        'action=activate',
+        'plugin=' . urlencode($plugin),
+        '_wpnonce=' . WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin),
+      ]));
   }
 
   public function getPluginInformation($data, $action = '', $args = null) {
