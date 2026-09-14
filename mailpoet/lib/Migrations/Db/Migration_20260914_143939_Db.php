@@ -11,25 +11,24 @@ use MailPoet\Migrator\DbMigration;
  * could measure.
  *
  * Existing rows default to 1, which keeps the rates they show today until the
- * sends that were not tracked are marked. The column and the index go in one
- * ALTER so the table is rebuilt at most once.
+ * sends that were not tracked are marked. The column and the index are separate
+ * statements: on MySQL 8 and MariaDB 10.3+ adding the column alone is instant,
+ * while combining it with the index forces a table rebuild.
  */
 class Migration_20260914_143939_Db extends DbMigration {
   public function run(): void {
     $table = $this->getTableName(StatisticsNewsletterEntity::class);
 
-    $changes = [];
     if (!$this->columnExists($table, 'sent_with_tracking')) {
-      $changes[] = 'ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1';
+      $this->connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1"
+      );
     }
     if (!$this->indexExists($table, 'newsletter_id_sent_with_tracking')) {
       // queue_id lets the campaign count join its queue from the index alone.
-      $changes[] = 'ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)';
+      $this->connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
     }
-    if (!$changes) {
-      return;
-    }
-
-    $this->connection->executeStatement("ALTER TABLE `{$table}` " . implode(', ', $changes));
   }
 }

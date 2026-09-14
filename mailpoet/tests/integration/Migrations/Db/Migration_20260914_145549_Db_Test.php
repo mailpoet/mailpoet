@@ -7,7 +7,9 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
+use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
+use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
 
 require_once __DIR__ . '/../../../../lib/Migrations/Db/Migration_20260914_145549_Db.php';
@@ -56,6 +58,35 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
 
     verify($this->getStoredValue($untracked))->equals(0);
     verify($this->getStoredValue($tracked))->equals(1);
+  }
+
+  public function testItLeavesAnOptedOutRecipientWhoOpenedOrClickedThatEmailTracked() {
+    $newsletter = $this->createNewsletterWithLink();
+    $opened = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days');
+    $clicked = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days');
+    $openedRow = $this->createRow($newsletter, $opened, '-1 day');
+    $clickedRow = $this->createRow($newsletter, $clicked, '-1 day');
+    (new StatisticsOpens($newsletter, $opened))->create();
+    (new StatisticsClicks((new NewsletterLink($newsletter))->withHash(uniqid())->create(), $clicked))->create();
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($openedRow))->equals(1);
+    verify($this->getStoredValue($clickedRow))->equals(1);
+  }
+
+  public function testItLeavesAQueueWithoutLinksTrackedWhenItHasOpens() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $opener = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null);
+    $other = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null);
+    $openerRow = $this->createRow($newsletter, $opener, '-1 day');
+    $otherRow = $this->createRow($newsletter, $other, '-1 day');
+    (new StatisticsOpens($newsletter, $opener))->create();
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($openerRow))->equals(1);
+    verify($this->getStoredValue($otherRow))->equals(1);
   }
 
   public function testItKeepsTheSendDate() {
