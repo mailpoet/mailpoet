@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
@@ -17,6 +18,8 @@ use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class OpensTest extends \MailPoetTest {
@@ -493,5 +496,63 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     $this->assertCount(0, $this->statisticsOpensRepository->findAll());
     $this->assertNull($this->subscriber->getLastOpenAt());
+  }
+
+  public function testRecordingAnOpenMarksThatRecipientsSentRowAsTracked() {
+    $row = $this->createSentRow($this->subscriber, false);
+    $otherSubscriber = (new SubscriberFactory())->create();
+    $otherRow = $this->createSentRow($otherSubscriber, false);
+
+    $this->opens->track($this->trackData, false);
+
+    verify($this->statisticsOpensRepository->findAll())->notEmpty();
+    verify($this->getSentWithTracking($row))->equals(1);
+    verify($this->getSentWithTracking($otherRow))->equals(0);
+  }
+
+  public function testItDoesNotMarkTheSentRowWhenConsentStopsTheOpen() {
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    $row = $this->createSentRow($this->subscriber, false);
+
+    $this->opens->track($this->trackData, false);
+
+    verify($this->statisticsOpensRepository->findAll())->empty();
+    verify($this->getSentWithTracking($row))->equals(0);
+  }
+
+  public function testItStillRecordsTheOpenWhenTheColumnDoesNotExistYet() {
+    $this->createSentRow($this->subscriber, true);
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP INDEX `newsletter_id_sent_with_tracking`, DROP COLUMN `sent_with_tracking`");
+
+    try {
+      ob_start();
+      $this->opens->track($this->trackData, false);
+      $output = ob_get_clean();
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
+    }
+
+    verify($output)->equals('');
+    verify($this->statisticsOpensRepository->findAll())->notEmpty();
+  }
+
+  private function createSentRow(SubscriberEntity $subscriber, bool $sentWithTracking): int {
+    $row = (new StatisticsNewslettersFactory($this->newsletter, $subscriber))
+      ->withQueue($this->queue)
+      ->withSentWithTracking($sentWithTracking)
+      ->create();
+    return (int)$row->getId();
+  }
+
+  private function getSentWithTracking(int $rowId): int {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $value = $this->entityManager->getConnection()->fetchOne("SELECT sent_with_tracking FROM `{$table}` WHERE id = ?", [$rowId]);
+    $this->assertIsNumeric($value);
+    return (int)$value;
   }
 }
