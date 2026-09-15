@@ -27,27 +27,32 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
   }
 
-  public function testItCountsOnlyNewslettersShownInTheListing(): void {
-    verify($this->repository->countListedNewsletters())->equals(0);
+  public function testItDoesNotCountEmailsMailPoetCreatesOnTheUsersBehalf(): void {
+    verify($this->repository->countUserCreatedNewsletters())->equals(0);
 
     $this->createNewsletter(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $this->createNewsletter(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
-    $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION);
-    $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL);
-    verify($this->repository->countListedNewsletters())->equals(0);
+    verify($this->repository->countUserCreatedNewsletters())->equals(0);
+  }
 
+  public function testItCountsEveryEmailTheUserCreated(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
     $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT);
-    verify($this->repository->countListedNewsletters())->equals(3);
+    // Emails outside the listing still mean the user has emails, and the
+    // unauthorized sender notice covers them.
+    $this->createNewsletter(NewsletterEntity::TYPE_WELCOME);
+    $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION);
+
+    verify($this->repository->countUserCreatedNewsletters())->equals(5);
   }
 
-  public function testItCountsTrashedNewslettersShownInTheListing(): void {
+  public function testItCountsTrashedNewsletters(): void {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletter->setDeletedAt(new \DateTimeImmutable());
     $this->entityManager->flush();
 
-    verify($this->repository->countListedNewsletters())->equals(1);
+    verify($this->repository->countUserCreatedNewsletters())->equals(1);
   }
 
   public function testItGetsStandardAndAutomationNewsletterList() {

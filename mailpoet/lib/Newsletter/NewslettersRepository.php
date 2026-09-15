@@ -74,16 +74,17 @@ class NewslettersRepository extends Repository {
   }
 
   /**
-   * Counts the emails shown on the Emails page, including trashed ones. The
-   * listing is empty only when this is zero.
+   * Counts the emails the user has, trashed ones included. Emails MailPoet
+   * creates on their behalf do not count, so this is zero on a fresh install
+   * even when WooCommerce or signup confirmation emails were customized.
    */
-  public function countListedNewsletters(): int {
+  public function countUserCreatedNewsletters(): int {
     return intval($this->entityManager
       ->createQueryBuilder()
       ->select('COUNT(n.id)')
       ->from(NewsletterEntity::class, 'n')
-      ->where('n.type IN (:types)')
-      ->setParameter('types', NewsletterEntity::LISTING_TYPES, ArrayParameterType::STRING)
+      ->where('n.type NOT IN (:types)')
+      ->setParameter('types', NewsletterEntity::AUTO_CREATED_TYPES, ArrayParameterType::STRING)
       ->getQuery()
       ->getSingleScalarResult());
   }
