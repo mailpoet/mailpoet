@@ -14,6 +14,14 @@
     }
   }
 
+  &.mailpoet-form-input-small {
+    min-height: $form-control-height-small;
+
+    select {
+      line-height: $form-control-line-height-small;
+    }
+  }
+
   &.mailpoet-form-input-small > svg {
     &:first-child {
       margin-right: -($form-control-icon-small + $form-control-spacing);
