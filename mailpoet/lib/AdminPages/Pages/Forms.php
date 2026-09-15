@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
+use MailPoet\Captcha\CaptchaDisabledNotice;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -28,12 +29,16 @@ class Forms {
   /** @var SegmentsResponseBuilder */
   private $segmentsResponseBuilder;
 
+  /** @var CaptchaDisabledNotice */
+  private $captchaDisabledNotice;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
     UserFlagsController $userFlags,
     SegmentsRepository $segmentsRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
+    CaptchaDisabledNotice $captchaDisabledNotice,
     WPFunctions $wp
   ) {
     $this->assetsController = $assetsController;
@@ -42,6 +47,7 @@ class Forms {
     $this->wp = $wp;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
+    $this->captchaDisabledNotice = $captchaDisabledNotice;
   }
 
   public function render() {
@@ -56,6 +62,7 @@ class Forms {
 
     $data = $this->getNPSSurveyData($data);
 
+    $this->captchaDisabledNotice->render();
     $this->pageRenderer->displayPage('forms.html', $data);
   }
 
