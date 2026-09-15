@@ -30,7 +30,7 @@ class CaptchaDisabledNoticeTest extends \MailPoetTest {
   public function testItBuildsNoticeMessageWithSettingsLink() {
     $notice = $this->captchaDisabledNotice->display();
 
-    verify($notice->getMessage())->stringContainsString('CAPTCHA helps protect your forms from spam and abuse');
+    verify($notice->getMessage())->stringContainsString('Turn on CAPTCHA to stop bots from signing up through your MailPoet forms');
     verify($notice->getMessage())->stringContainsString('admin.php?page=mailpoet-settings#/advanced');
   }
 

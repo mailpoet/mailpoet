@@ -50,7 +50,7 @@ class CaptchaDisabledNotice {
   public function display(): Notice {
     $settingsUrl = $this->wp->adminUrl('admin.php?page=mailpoet-settings#/advanced');
     $message = Helpers::replaceLinkTags(
-      __('CAPTCHA helps protect your forms from spam and abuse. If bot activity is detected, form sending may be restricted until protection is enabled. If other effective anti-spam measures are in place, this notice can be ignored. [link]Enable CAPTCHA[/link]', 'mailpoet'),
+      __('Turn on CAPTCHA to stop bots from signing up through your MailPoet forms. Bot sign-ups fill your list with fake addresses and hurt your deliverability. If we detect them on your site, we may need to restrict sending until you enable protection. You can ignore this if you are already handling bot protection elsewhere, like a WAF or Cloudflare. [link]Enable CAPTCHA[/link]', 'mailpoet'),
       $settingsUrl
     );
 
