@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Scenario;
-use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Test\DataFactories\Settings;
 
 class AddSendingKeyCest {
@@ -127,7 +127,7 @@ class AddSendingKeyCest {
     // MSS key pending approval, paused sending
     $settings = new Settings();
     $settings->withMssKeyPendingApproval();
-    MailerLog::pauseSending(MailerLog::getMailerLog());
+    $settings->withSendingError('pending approval', MailerError::OPERATION_PENDING_APPROVAL);
 
     // ensure status is paused
     $i->login();
