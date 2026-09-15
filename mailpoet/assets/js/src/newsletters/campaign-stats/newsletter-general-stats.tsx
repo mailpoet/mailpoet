@@ -1,5 +1,5 @@
 import ReactStringReplace from 'react-string-replace';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import { Grid } from 'common/grid';
@@ -9,6 +9,7 @@ import {
 } from 'common/listings/newsletter-stats/stats';
 import { Tooltip } from 'help-tooltip';
 
+import { getTrackedSent } from 'newsletters/tracked-sent';
 import { NewsletterType } from './newsletter-type';
 
 type Props = {
@@ -40,17 +41,23 @@ const formatForStats = (value: number): number => {
 
 function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
   const totalSent = newsletter.total_sent || 0;
+  const notTracked = newsletter.statistics.notTracked ?? 0;
+  const trackedSent = getTrackedSent(totalSent, notTracked);
 
   let percentageClicked = 0;
   let percentageOpened = 0;
   let percentageMachineOpened = 0;
   let percentageUnsubscribed = 0;
   let percentageBounced = 0;
-  if (totalSent > 0) {
-    percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
-    percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
+  if (trackedSent > 0) {
+    percentageClicked = (newsletter.statistics.clicked * 100) / trackedSent;
+    percentageOpened = (newsletter.statistics.opened * 100) / trackedSent;
     percentageMachineOpened =
-      (newsletter.statistics.machineOpened * 100) / totalSent;
+      (newsletter.statistics.machineOpened * 100) / trackedSent;
+  }
+  // Unsubscribes and bounces are recorded for opted-out people too, so they
+  // keep the whole audience as denominator.
+  if (totalSent > 0) {
     percentageUnsubscribed =
       (newsletter.statistics.unsubscribed * 100) / totalSent;
     percentageBounced = (newsletter.statistics.bounced * 100) / totalSent;
@@ -69,7 +76,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
     formatWithOptimalPrecision(percentageBounced);
 
   const displayBadges =
-    totalSent >= minNewslettersSent &&
+    trackedSent >= minNewslettersSent &&
     newsletter.statistics.opened >= minNewslettersOpened;
 
   const displayUnsubscribedBadge =
@@ -245,6 +252,20 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
               {totalSent.toLocaleString()}
             </span>
           </div>
+          {notTracked > 0 && (
+            <div className="mailpoet-statistics-value-small">
+              {sprintf(
+                /* translators: %1$s is how many recipients were not tracked, %2$s is how many were, %3$s is the total sent. */
+                __(
+                  '%1$s not tracked (rates based on %2$s of %3$s)',
+                  'mailpoet',
+                ),
+                notTracked.toLocaleString(),
+                trackedSent.toLocaleString(),
+                totalSent.toLocaleString(),
+              )}
+            </div>
+          )}
         </div>
         <div className="mailpoet-statistics-with-left-separator">
           {unsubscribed}

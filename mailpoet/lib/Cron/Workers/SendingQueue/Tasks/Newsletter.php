@@ -443,6 +443,14 @@ class Newsletter {
   }
 
   /**
+   * Whether this subscriber's email gets the open pixel and tracked links. The sent statistics
+   * row stores the same answer.
+   */
+  public function isSentWithTracking(SubscriberEntity $subscriber): bool {
+    return $this->trackingEnabled && $this->trackingConsentController->isTrackingAllowed($subscriber);
+  }
+
+  /**
    * Shortcodes and links will be replaced in the subject, html and text body
    * to speed the processing, join content into a continuous string.
    */
@@ -467,21 +475,19 @@ class Newsletter {
     $context = $newsletter->getWpPostId() !== null
       ? $this->personalizationContextBuilder->build($newsletter, $subscriber, $queue)
       : null;
-    if ($this->trackingEnabled) {
-      if ($this->trackingConsentController->isTrackingAllowed($subscriber)) {
-        $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
-          $subscriber->getId(),
-          $queue->getId(),
-          $preparedNewsletter
-        );
-      } else {
-        // CNIL/Garante: withdrawal must stop the reading operation itself, not
-        // merely the recording of it. A tracked link still tells our server the
-        // recipient clicked, so these recipients get the plain destination
-        // instead of a redirect through us.
-        $preparedNewsletter = $this->untrackLinks($preparedNewsletter, $newsletter, $subscriber, $queue, $context);
-        $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
-      }
+    if ($this->isSentWithTracking($subscriber)) {
+      $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
+        $subscriber->getId(),
+        $queue->getId(),
+        $preparedNewsletter
+      );
+    } elseif ($this->trackingEnabled) {
+      // CNIL/Garante: withdrawal must stop the reading operation itself, not
+      // merely the recording of it. A tracked link still tells our server the
+      // recipient clicked, so these recipients get the plain destination
+      // instead of a redirect through us.
+      $preparedNewsletter = $this->untrackLinks($preparedNewsletter, $newsletter, $subscriber, $queue, $context);
+      $preparedNewsletter = OpenTracking::removeTrackingImage($preparedNewsletter);
     }
     [$subject, $html, $text] = Helpers::splitObject($preparedNewsletter);
     if ($context !== null) {

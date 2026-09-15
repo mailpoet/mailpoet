@@ -24,6 +24,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -47,6 +48,7 @@ use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -1749,6 +1751,123 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $this->assertSame(true, $hookTriggered);
+  }
+
+  public function testItStampsEachSentRowWithWhetherTheOpenPixelWentOut() {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    $granted = $this->createSubscriberWithConsent('granted@example.com', SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $denied = $this->createSubscriberWithConsent('denied@example.com', SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $unknown = $this->createSubscriberWithConsent('unknown@example.com', SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+
+    $pixelSent = $this->processAndRecordPixels([$granted, $denied, $unknown]);
+
+    verify($this->getStoredSentWithTracking($granted))->equals(1);
+    verify($this->getStoredSentWithTracking($denied))->equals(0);
+    verify($this->getStoredSentWithTracking($unknown))->equals(1);
+    foreach ([$granted, $denied, $unknown] as $subscriber) {
+      verify($this->getStoredSentWithTracking($subscriber))->equals($pixelSent[$subscriber->getEmail()] ? 1 : 0);
+    }
+  }
+
+  public function testItStampsNeverAskedRecipientsAsNotTrackedWhenAskingEveryone() {
+    $this->settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    $unknown = $this->createSubscriberWithConsent('unknown@example.com', SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
+
+    $pixelSent = $this->processAndRecordPixels([$unknown]);
+
+    verify($pixelSent[$unknown->getEmail()])->false();
+    verify($this->getStoredSentWithTracking($unknown))->equals(0);
+  }
+
+  public function testItStampsEveryRecipientAsNotTrackedWhenSiteWideTrackingIsOff() {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+    $granted = $this->createSubscriberWithConsent('granted@example.com', SubscriberEntity::TRACKING_CONSENT_GRANTED);
+
+    $pixelSent = $this->processAndRecordPixels([$granted]);
+
+    verify($pixelSent[$granted->getEmail()])->false();
+    verify($this->getStoredSentWithTracking($granted))->equals(0);
+  }
+
+  /**
+   * During a plugin update new code can run before the migration adds the column.
+   */
+  public function testItFinishesSendingAndKeepsTheSentRowsWhenTheColumnDoesNotExistYet() {
+    $granted = $this->createSubscriberWithConsent('granted@example.com', SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $denied = $this->createSubscriberWithConsent('denied@example.com', SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP INDEX `newsletter_id_sent_with_tracking`, DROP COLUMN `sent_with_tracking`");
+
+    try {
+      ob_start();
+      $this->processAndRecordPixels([$granted, $denied]);
+      $output = ob_get_clean();
+      $sentRows = $connection->fetchOne("SELECT COUNT(*) FROM `{$table}` WHERE newsletter_id = ?", [$this->newsletter->getId()]);
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
+    }
+
+    verify($output)->equals('');
+    verify($sentRows)->equals(2);
+    $this->entityManager->clear();
+    $task = $this->scheduledTasksRepository->findOneById($this->scheduledTask->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+  }
+
+  private function createSubscriberWithConsent(string $email, string $consent): SubscriberEntity {
+    $subscriber = $this->createSubscriber($email, 'First', 'Last', [$this->segment]);
+    $subscriber->setTrackingConsent($consent);
+    $this->entityManager->flush();
+    return $subscriber;
+  }
+
+  /**
+   * @param SubscriberEntity[] $subscribers
+   * @return array<string, bool> email => whether the sent HTML carried the open pixel
+   */
+  private function processAndRecordPixels(array $subscribers): array {
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      array_map(fn(SubscriberEntity $subscriber) => (int)$subscriber->getId(), $subscribers)
+    );
+    $emails = array_map(fn(SubscriberEntity $subscriber) => (string)$subscriber->getEmail(), $subscribers);
+    $pixelSent = [];
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'getProcessingMethod' => 'individual',
+          'send' => Expected::exactly(count($subscribers), function($newsletter, $subscriber) use (&$pixelSent, $emails) {
+            foreach ($emails as $email) {
+              if (strpos($subscriber, $email) !== false) {
+                $pixelSent[$email] = strpos($newsletter['body']['html'], 'action=' . Track::ACTION_OPEN) !== false;
+              }
+            }
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    return $pixelSent;
+  }
+
+  private function getStoredSentWithTracking(SubscriberEntity $subscriber): int {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $value = $this->entityManager->getConnection()->fetchOne(
+      "SELECT sent_with_tracking FROM `{$table}` WHERE newsletter_id = ? AND subscriber_id = ?",
+      [$this->newsletter->getId(), $subscriber->getId()]
+    );
+    $this->assertIsNumeric($value, 'No sent row was written for this recipient.');
+    return (int)$value;
   }
 
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {

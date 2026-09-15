@@ -19,6 +19,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
+use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WPCOM\DotcomHelperFunctions;
@@ -186,6 +187,41 @@ class AutomatedEmailsTest extends \MailPoetTest {
             && $context['newsletters'][0]['clicked'] === 50
             && $context['newsletters'][0]['opened'] === 20
             && $context['newsletters'][0]['subject'] === 'Subject';
+        })
+      );
+
+    $this->cronWorkerRunner->run($this->statsNotifications);
+  }
+
+  /**
+   * Same guard as WorkerTest's zero-tracked case, asserted separately because
+   * this is a different worker: the two prepare their context in their own
+   * methods, so a fix in one says nothing about the other.
+   */
+  public function testItReportsZeroRatesWhenNoRecipientCouldBeTracked() {
+    $newsletter = $this->newsletterFactory
+      ->withSubject('Subject')
+      ->withWelcomeTypeForSegment(1)
+      ->withActiveStatus()
+      ->withSendingQueue(['count_processed' => 10])
+      ->create();
+    $this->createClicks($newsletter, 5);
+    $this->createOpens($newsletter, 2);
+    for ($i = 0; $i < 10; $i++) {
+      $subscriber = (new SubscriberFactory())->create();
+      (new StatisticsNewslettersFactory($newsletter, $subscriber))->withSentWithTracking(false)->create();
+    }
+
+    $this->renderer->expects($this->exactly(2)) // html + text template
+      ->method('render')
+      ->with(
+        $this->anything(),
+        $this->callback(function($context) {
+          verify($context['newsletters'][0]['clicked'])->equals(0); // not 500%
+          verify($context['newsletters'][0]['opened'])->equals(0); // not 200%
+          verify($context['newsletters'][0]['notTracked'])->equals(10);
+          verify($context['newsletters'][0]['trackedSent'])->equals(0);
+          return true;
         })
       );
 

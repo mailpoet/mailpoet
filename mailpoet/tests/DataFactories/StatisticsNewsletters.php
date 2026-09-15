@@ -38,9 +38,21 @@ class StatisticsNewsletters {
     return $this;
   }
 
+  /** @return $this */
+  public function withSentWithTracking(bool $sentWithTracking) {
+    $this->data['sentWithTracking'] = $sentWithTracking;
+    return $this;
+  }
+
+  /** @return $this */
+  public function withQueue(SendingQueueEntity $queue) {
+    $this->data['queue'] = $queue;
+    return $this;
+  }
+
   public function create(): StatisticsNewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $queue = $this->newsletter->getLatestQueue();
+    $queue = $this->data['queue'] ?? $this->newsletter->getLatestQueue();
     Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsNewsletterEntity(
       $this->newsletter,
@@ -52,6 +64,13 @@ class StatisticsNewsletters {
     }
     $entityManager->persist($entity);
     $entityManager->flush();
+    if (($this->data['sentWithTracking'] ?? true) === false) {
+      $table = $entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+      $entityManager->getConnection()->executeStatement(
+        "UPDATE `{$table}` SET sent_with_tracking = 0 WHERE id = ?",
+        [$entity->getId()]
+      );
+    }
     return $entity;
   }
 }
