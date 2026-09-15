@@ -84,11 +84,27 @@ class Migrator {
         'started_at' => $data['started_at'] ?? null,
         'completed_at' => $data['completed_at'] ?? null,
         'retries' => isset($data['retries']) ? (int)$data['retries'] : null,
-        'error' => $data && $data['error'] ? mb_strimwidth($data['error'], 0, 20, '…') : null,
+        'error' => $data && $data['error'] ? $data['error'] : null,
         'unknown' => !isset($definedMap[$name]),
       ];
     }
     return $status;
+  }
+
+  /**
+   * The store keeps the whole exception dump in `error`; `error_summary` is its first line,
+   * which carries the class and message, for places that show it to people.
+   *
+   * @return array<int, array{name: string, level: string|null, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, error_summary: string, unknown: bool}>
+   */
+  public function getFailedMigrations(): array {
+    $failed = array_filter($this->getStatus(), function (array $migration): bool {
+      return $migration['status'] === self::MIGRATION_STATUS_FAILED;
+    });
+    return array_values(array_map(function (array $migration): array {
+      $migration['error_summary'] = explode("\n", (string)$migration['error'], 2)[0];
+      return $migration;
+    }, $failed));
   }
 
   private function getMigrationStatus(array $data): string {
