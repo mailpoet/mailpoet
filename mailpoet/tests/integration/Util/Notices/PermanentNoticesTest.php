@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
+use MailPoet\Captcha\CaptchaDisabledNotice;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\MailerFactory;
@@ -115,7 +116,8 @@ class PermanentNoticesTest extends \MailPoetTest {
       $this->diContainer->get(MailerFactory::class),
       $this->diContainer->get(SenderDomainAuthenticationNotices::class),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
-      $this->diContainer->get(NewslettersRepository::class)
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(CaptchaDisabledNotice::class)
     );
   }
 }
