@@ -107,6 +107,9 @@ const Tabs = withNpsPoll(() => {
 });
 
 function NewNewsletter() {
+  // With no emails to list, the listing redirects back here, so the back
+  // button would lead nowhere.
+  const hasEmails = window.mailpoet_newsletters_count > 0;
   return (
     <ErrorBoundary>
       <TopBarWithBoundary />
@@ -114,11 +117,13 @@ function NewNewsletter() {
         <PageHeader
           heading={__('What would you like to create?', 'mailpoet')}
           headingPrefix={
-            <BackButton
-              href="#/"
-              label={__('Listing', 'mailpoet')}
-              aria-label={__('Go back to email listing page', 'mailpoet')}
-            />
+            hasEmails ? (
+              <BackButton
+                href="#/"
+                label={__('Listing', 'mailpoet')}
+                aria-label={__('Go back to email listing page', 'mailpoet')}
+              />
+            ) : null
           }
         />
         <NewsletterTypes />
