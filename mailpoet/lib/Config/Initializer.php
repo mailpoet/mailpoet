@@ -554,12 +554,8 @@ class Initializer {
       // The request holding the lock may have finished by now; a release with no or only
       // small migrations takes well under a second. Re-read db_version before giving up.
       $this->schemaState->refresh();
-      if (!$this->schemaState->isReady()) {
-        $this->handleRunningMigration($e);
-      }
     } catch (\Throwable $e) {
       $this->schemaState->markFailed($e);
-      $this->handleFailedInitialization($this->schemaNotReadyResponder->getMessage());
     }
 
     if ($this->schemaState->isReady()) {

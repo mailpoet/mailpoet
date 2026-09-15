@@ -6,8 +6,10 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\Config\Env;
+use MailPoet\Config\Menu;
 use MailPoet\Config\SchemaNotReadyResponder;
 use MailPoet\Config\SchemaState;
+use MailPoet\Migrator\Migrator;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -27,14 +29,17 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     $this->settings->set('db_version', '0.0.1');
     // fresh instances: the container's shared SchemaState would carry a failure across tests
     $this->schemaState = new SchemaState($this->settings);
-    $this->responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(WPFunctions::class));
+    $this->responder = $this->createResponder();
     wp_set_current_user(0);
   }
 
   public function _after(): void {
     $this->settings->set('db_version', Env::$version);
-    unset($_GET[Router::NAME]);
+    unset($_GET[Router::NAME], $_REQUEST['page']);
     wp_set_current_user(0);
+    foreach (['menu', 'submenu', '_parent_pages', 'admin_page_hooks', '_registered_pages'] as $name) {
+      unset($GLOBALS[$name]);
+    }
     parent::_after();
   }
 
@@ -127,11 +132,77 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
         verify($args['response'])->equals(503);
       }),
     ]);
-    $responder = new SchemaNotReadyResponder($this->schemaState, $wp);
+    $responder = $this->createResponder(null, $wp);
 
     $responder->rejectRouterRequest();
 
     $_GET[Router::NAME] = 'track';
     $responder->rejectRouterRequest();
+  }
+
+  public function testItRegistersTheMenuEntryAndTheRequestedDeepLink(): void {
+    wp_set_current_user(1); // add_submenu_page() registers nothing for a user without the capability
+    $this->responder->init();
+    verify(has_action('admin_menu', [$this->responder, 'registerMenu']))->notEmpty();
+
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+    $this->responder->registerMenu();
+
+    verify(menu_page_url(Menu::MAIN_PAGE_SLUG, false))->stringContainsString('page=' . Menu::MAIN_PAGE_SLUG);
+    $submenu = $GLOBALS['submenu'] ?? [];
+    $this->assertIsArray($submenu);
+    $deepLinks = $submenu[Menu::NO_PARENT_PAGE_SLUG] ?? [];
+    $this->assertIsArray($deepLinks);
+    $this->assertContains('mailpoet-newsletters', array_column($deepLinks, 2));
+  }
+
+  public function testTheStatusPageExplainsAnUpdateInProgress(): void {
+    $html = $this->renderStatusPage($this->responder);
+    verify($html)->stringContainsString('notice-warning');
+    verify($html)->stringContainsString('update is in progress');
+    verify($html)->stringContainsString('Database version: 0.0.1');
+    verify($html)->stringNotContainsString('mailpoet:migrations:run');
+  }
+
+  public function testTheStatusPageKeepsFailureDetailFromNonAdministrators(): void {
+    $this->schemaState->markFailed(new \Exception('Unknown column wp_mailpoet_x.y'));
+    $html = $this->renderStatusPage($this->createResponder($this->createMigratorWithFailure()));
+    verify($html)->stringContainsString('notice-error');
+    verify($html)->stringContainsString('contact the site administrator');
+    verify($html)->stringNotContainsString('Unknown column');
+    verify($html)->stringNotContainsString('Migration_2');
+  }
+
+  public function testTheStatusPageListsFailedMigrationsForAdministrators(): void {
+    $this->schemaState->markFailed(new \Exception('Unknown column wp_mailpoet_x.y'));
+    wp_set_current_user(1);
+    $html = $this->renderStatusPage($this->createResponder($this->createMigratorWithFailure()));
+    verify($html)->stringContainsString('notice-error');
+    verify($html)->stringContainsString('Unknown column wp_mailpoet_x.y');
+    verify($html)->stringContainsString('<td>Migration_2</td><td>3</td><td>Exception: Unknown column &#039;x&#039; in /plugin/Migration_2.php:12</td>');
+    verify($html)->stringNotContainsString('Stack trace');
+    verify($html)->stringContainsString('mailpoet:migrations:run');
+  }
+
+  private function createMigratorWithFailure(): Migrator {
+    return $this->makeEmpty(Migrator::class, [
+      'getFailedMigrations' => [
+        ['name' => 'Migration_2', 'status' => Migrator::MIGRATION_STATUS_FAILED, 'retries' => 3, 'error' => "Exception: Unknown column 'x' in /plugin/Migration_2.php:12\nStack trace:\n#0 ..."],
+      ],
+    ]);
+  }
+
+  private function renderStatusPage(SchemaNotReadyResponder $responder): string {
+    ob_start();
+    $responder->renderStatusPage();
+    return (string)ob_get_clean();
+  }
+
+  private function createResponder(?Migrator $migrator = null, ?WPFunctions $wp = null): SchemaNotReadyResponder {
+    return new SchemaNotReadyResponder(
+      $this->schemaState,
+      $migrator ?? $this->diContainer->get(Migrator::class),
+      $wp ?? $this->diContainer->get(WPFunctions::class)
+    );
   }
 }

@@ -15,6 +15,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEdito
 use MailPoet\Entities\SettingEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
+use MailPoet\Migrator\Migrator;
 use MailPoet\Migrator\MigratorException;
 use MailPoet\Newsletter\Sharing\PublicEmailRoute;
 use MailPoet\Settings\SettingsController;
@@ -36,7 +37,7 @@ class InitializerTest extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
     // fresh instances: the container's shared SchemaState would carry a failure across tests
     $this->schemaState = new SchemaState($this->settings);
-    $this->responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(WPFunctions::class));
+    $this->responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(Migrator::class), $this->diContainer->get(WPFunctions::class));
   }
 
   public function _after(): void {
@@ -102,6 +103,8 @@ class InitializerTest extends \MailPoetTest {
     verify(has_action('wp_ajax_mailpoet', [$this->responder, 'sendJsonResponse']))->notEmpty();
     verify(has_action('wp_ajax_nopriv_mailpoet', [$this->responder, 'sendJsonResponse']))->notEmpty();
     verify(has_filter('rest_pre_dispatch', [$this->responder, 'rejectRestRequest']))->notEmpty();
+    verify(has_action('admin_menu', [$this->responder, 'registerMenu']))->notEmpty();
+    verify($this->renderMailPoetNotices())->stringContainsString('notice-warning');
   }
 
   public function testItContinuesWhenTheOtherRequestFinishedMigratingMeanwhile(): void {
@@ -149,6 +152,7 @@ class InitializerTest extends \MailPoetTest {
     verify($this->schemaState->getMessage())->stringContainsString('Unknown column');
     verify(did_action('mailpoet_initialized'))->equals($initialized);
     verify(has_action('wp_ajax_mailpoet', [$this->responder, 'sendJsonResponse']))->notEmpty();
+    verify($this->renderMailPoetNotices())->stringContainsString('notice-error');
   }
 
   public function testOnlyTheLockExceptionCountsAsInProgress(): void {
@@ -219,6 +223,28 @@ class InitializerTest extends \MailPoetTest {
     $data = $response->get_data();
     $this->assertIsArray($data);
     verify($data['code'])->equals('mailpoet_update_in_progress');
+  }
+
+  /**
+   * Renders only MailPoet's own notices; other plugins' admin_notices callbacks stay untouched.
+   */
+  private function renderMailPoetNotices(): string {
+    $filters = $GLOBALS['wp_filter'];
+    $this->assertIsArray($filters);
+    $hook = $filters['admin_notices'] ?? null;
+    if (!$hook instanceof \WP_Hook) {
+      return '';
+    }
+    ob_start();
+    foreach ($hook->callbacks as $callbacks) {
+      foreach ($callbacks as $callback) {
+        $function = $callback['function'];
+        if (is_array($function) && ($function[0] ?? null) instanceof Notice && is_callable($function)) {
+          $function();
+        }
+      }
+    }
+    return (string)ob_get_clean();
   }
 
   /**

@@ -36,12 +36,8 @@ class SchemaState {
    * @phpstan-impure the answer changes after refresh() or a successful activation
    */
   public function isReady(): bool {
-    try {
-      $dbVersion = $this->settings->get('db_version');
-    } catch (Throwable $e) {
-      return false;
-    }
-    return version_compare((string)$dbVersion, (string)Env::$version) === 0;
+    $dbVersion = $this->getDbVersion();
+    return $dbVersion !== null && version_compare($dbVersion, (string)Env::$version) === 0;
   }
 
   /**
@@ -50,11 +46,40 @@ class SchemaState {
    * that the lock holder has finished.
    */
   public function refresh(): void {
-    try {
+    $this->readQuietly(function (): void {
       $this->settings->fetch('db_version');
+    });
+  }
+
+  public function getDbVersion(): ?string {
+    $dbVersion = $this->readQuietly(function () {
+      return $this->settings->get('db_version');
+    });
+    return is_scalar($dbVersion) && (string)$dbVersion !== '' ? (string)$dbVersion : null;
+  }
+
+  /**
+   * On a fresh install the settings table does not exist yet. wpdb prints the failed
+   * query before Doctrine throws, and output during plugin activation makes WordPress
+   * reject the activation, so both halves are handled here.
+   *
+   * @param callable(): mixed $read
+   * @return mixed null when the read fails
+   */
+  private function readQuietly(callable $read) {
+    global $wpdb;
+    $suppressed = $wpdb->suppress_errors();
+    try {
+      return $read();
     } catch (Throwable $e) {
-      // the settings table may not exist yet; isReady() reports that as not ready
+      return null;
+    } finally {
+      $wpdb->suppress_errors($suppressed);
     }
+  }
+
+  public function hasFailed(): bool {
+    return $this->getStatus() === self::STATUS_FAILED;
   }
 
   public function markFailed(Throwable $failure): void {
@@ -73,7 +98,7 @@ class SchemaState {
    * see getPublicMessage() for everyone else.
    */
   public function getMessage(): string {
-    if ($this->getStatus() === self::STATUS_FAILED) {
+    if ($this->hasFailed()) {
       return sprintf(
         // translators: %s is the error reported by the failed database migration
         __('MailPoet database update failed: %s', 'mailpoet'),
