@@ -133,12 +133,12 @@ class SwitchingLanguagesCest {
     $i->waitForText('Alle');
     $i->waitForText('Eingetragen');
     $i->waitForText('Unbestätigt');
-    $i->waitForText('Ausgetragen');
+    $i->waitForText('Deabonniert');
     $i->waitForText('Inaktiv');
     $i->waitForText('Bounced');
 
     $i->wantTo('Check Subscribers listing strings');
-    $i->waitForText('Neuberechnen');
+    $i->waitForText('Neu berechnen');
     $i->waitForText('Abonnent');
     $i->waitForText('Unbestätigt');
     $i->waitForText('Schlagwörter');
@@ -154,7 +154,7 @@ class SwitchingLanguagesCest {
     $i->waitForText('Grundlagen');
     $i->waitForText('Registrierungsbestätigung');
     $i->waitForText('Senden mit ...');
-    $i->waitForText('Fortgeschritten');
+    $i->waitForText('Erweitert');
     $i->waitForText('Schlüssel-Aktivierung');
 
     $i->wantTo('Check some Settings strings');
