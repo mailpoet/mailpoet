@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Badge, Button, Dialog, Stack, Text } from '@wordpress/ui';
+import { CheckboxControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext, GlobalContextValue } from 'context';
@@ -15,13 +16,21 @@ export function getInitialEditorChoice(): EditorChoice | null {
   return lastChoice === 'classic' || lastChoice === 'block' ? lastChoice : null;
 }
 
+export function getRememberedEditorChoice(): EditorChoice {
+  return window.mailpoet_editor_choice_modal_enabled
+    ? 'classic'
+    : getInitialEditorChoice() ?? 'classic';
+}
+
 type EditorChoiceModalProps = {
   onClose: () => void;
 };
 
 export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
-  const [choice, setChoice] = useState<EditorChoice | null>(
-    getInitialEditorChoice,
+  const [initialChoice] = useState<EditorChoice | null>(getInitialEditorChoice);
+  const [choice, setChoice] = useState<EditorChoice | null>(initialChoice);
+  const [remember, setRemember] = useState(
+    !window.mailpoet_editor_choice_modal_enabled,
   );
   const [isCreating, setIsCreating] = useState(false);
   const { notices } = useContext<GlobalContextValue>(GlobalContext);
@@ -40,7 +49,10 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
       api_version: window.mailpoet_api_version,
       endpoint: 'user_flags',
       action: 'set',
-      data: { last_email_editor_choice: choice },
+      data: {
+        last_email_editor_choice: choice,
+        editor_choice_modal: remember ? 0 : 1,
+      },
     });
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -54,6 +66,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
     })
       .done((response) => {
         window.mailpoet_last_email_editor_choice = choice;
+        window.mailpoet_editor_choice_modal_enabled = !remember;
         if (choice === 'block') {
           void saveLastChoice.always(() => {
             window.location.href = MailPoet.getBlockEmailEditorUrl(
@@ -71,7 +84,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           notices.apiError(response, { scroll: true });
         }
       });
-  }, [choice, navigate, notices, onClose]);
+  }, [choice, remember, navigate, notices, onClose]);
 
   return (
     <Dialog.Root
@@ -131,6 +144,13 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
               onSelect={setChoice}
             />
           </Stack>
+          <CheckboxControl
+            __nextHasNoMarginBottom
+            label={__('Remember my choice', 'mailpoet')}
+            checked={remember}
+            onChange={setRemember}
+            data-automation-id="editor_choice_remember"
+          />
         </Stack>
         <Dialog.Footer>
           <Button
@@ -154,7 +174,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
               });
               MailPoet.trackEvent(
                 'Emails > Editor choice modal continue clicked',
-                { editor: choice },
+                { editor: choice, remember, preselected: initialChoice },
                 { send_immediately: true },
                 createNewsletter,
               );
