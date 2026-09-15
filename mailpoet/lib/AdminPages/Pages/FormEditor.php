@@ -5,7 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
-use MailPoet\Captcha\CaptchaDisabledNotice;
 use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\FormEntity;
@@ -202,9 +201,6 @@ class FormEditor {
   /** @var TrackingConsentCapture */
   private $trackingConsentCapture;
 
-  /** @var CaptchaDisabledNotice */
-  private $captchaDisabledNotice;
-
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
@@ -219,8 +215,7 @@ class FormEditor {
     TemplateRepository $templateRepository,
     FormsRepository $formsRepository,
     SegmentsSimpleListRepository $segmentsListRepository,
-    TrackingConsentCapture $trackingConsentCapture,
-    CaptchaDisabledNotice $captchaDisabledNotice
+    TrackingConsentCapture $trackingConsentCapture
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
@@ -236,7 +231,6 @@ class FormEditor {
     $this->segmentsListRepository = $segmentsListRepository;
     $this->formsRepository = $formsRepository;
     $this->trackingConsentCapture = $trackingConsentCapture;
-    $this->captchaDisabledNotice = $captchaDisabledNotice;
   }
 
   public function render() {
@@ -294,7 +288,6 @@ class FormEditor {
     ];
     $this->wp->wpEnqueueMedia();
     $this->assetsController->setupFormEditorDependencies();
-    $this->captchaDisabledNotice->render();
     $this->pageRenderer->displayPage('form/editor.html', $data);
   }
 
