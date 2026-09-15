@@ -5,7 +5,9 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -28,12 +30,16 @@ class Forms {
   /** @var SegmentsResponseBuilder */
   private $segmentsResponseBuilder;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
     UserFlagsController $userFlags,
     SegmentsRepository $segmentsRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
+    SettingsController $settings,
     WPFunctions $wp
   ) {
     $this->assetsController = $assetsController;
@@ -42,6 +48,7 @@ class Forms {
     $this->wp = $wp;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
+    $this->settings = $settings;
   }
 
   public function render() {
@@ -53,6 +60,7 @@ class Forms {
       'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
       'nonce' => $this->wp->wpCreateNonce('wp_rest'),
     ];
+    $data['captcha_disabled'] = CaptchaConstants::isDisabled($this->settings->get(CaptchaConstants::TYPE_SETTING_NAME));
 
     $data = $this->getNPSSurveyData($data);
 

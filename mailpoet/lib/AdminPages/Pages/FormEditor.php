@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\FormEntity;
@@ -80,6 +81,7 @@ use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\TrackingConsentCapture;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
@@ -121,6 +123,9 @@ class FormEditor {
 
   /** @var FormsRepository */
   private $formsRepository;
+
+  /** @var SettingsController */
+  private $settings;
 
   private $activeTemplates = [
     FormEntity::DISPLAY_TYPE_POPUP => [
@@ -215,7 +220,8 @@ class FormEditor {
     TemplateRepository $templateRepository,
     FormsRepository $formsRepository,
     SegmentsSimpleListRepository $segmentsListRepository,
-    TrackingConsentCapture $trackingConsentCapture
+    TrackingConsentCapture $trackingConsentCapture,
+    SettingsController $settings
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
@@ -231,6 +237,7 @@ class FormEditor {
     $this->segmentsListRepository = $segmentsListRepository;
     $this->formsRepository = $formsRepository;
     $this->trackingConsentCapture = $trackingConsentCapture;
+    $this->settings = $settings;
   }
 
   public function render() {
@@ -285,6 +292,7 @@ class FormEditor {
       'tracking_consent_capture_enabled' => $this->trackingConsentCapture->isCaptureEnabled(),
       'theme_support_widgets' => $this->wp->wpGetThemeSupport('widgets'),
       'theme_support_fse' => $this->wp->wpGetTheme()->is_block_theme(),
+      'captcha_disabled' => CaptchaConstants::isDisabled($this->settings->get(CaptchaConstants::TYPE_SETTING_NAME)),
     ];
     $this->wp->wpEnqueueMedia();
     $this->assetsController->setupFormEditorDependencies();

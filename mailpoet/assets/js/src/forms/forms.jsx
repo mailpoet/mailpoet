@@ -4,6 +4,8 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
+import { CaptchaDisabledNotice } from 'notices/captcha-disabled-notice';
+import { MailPoet } from 'mailpoet';
 import {
   registerTranslations,
   restoreStrippedLocationHash,
@@ -18,6 +20,10 @@ function App() {
         <GlobalNotices />
         <Notices />
         <MssAccessNotices />
+        <CaptchaDisabledNotice
+          captchaDisabled={MailPoet.captchaDisabled}
+          mssActive={MailPoet.mssActive}
+        />
         <Routes>
           <Route
             path="*"

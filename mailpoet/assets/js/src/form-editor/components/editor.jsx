@@ -18,6 +18,8 @@ import {
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 
 import { UnsavedChangesNotice } from 'common/notices/unsaved-changes-notice.jsx';
+import { CaptchaDisabledNotice } from 'notices/captcha-disabled-notice';
+import { MailPoet } from 'mailpoet';
 import { ErrorBoundary } from 'common';
 import { fetchLinkSuggestions } from '../utils/link-suggestions';
 import { Header } from './header.jsx';
@@ -132,6 +134,10 @@ export function Editor() {
                     <ErrorBoundary>
                       <Notices />
                     </ErrorBoundary>
+                    <CaptchaDisabledNotice
+                      captchaDisabled={MailPoet.captchaDisabled}
+                      mssActive={MailPoet.mssActive}
+                    />
                     <UnsavedChangesNotice storeName="mailpoet-form-editor" />
                     <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                       <BlockTools>

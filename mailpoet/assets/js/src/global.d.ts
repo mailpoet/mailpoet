@@ -171,6 +171,7 @@ interface Window {
   mailpoet_mss_key_invalid: boolean;
   mailpoet_mss_key_valid: boolean;
   mailpoet_mta_method: string;
+  mailpoet_captcha_disabled: boolean;
   mailpoet_date_offset: string;
   mailpoet_time_format: string;
   mailpoet_date_format: string;

@@ -73,6 +73,8 @@ export const MailPoet = {
   hasInvalidMssApiKey: window.mailpoet_mss_key_invalid,
   mtaMethod: window.mailpoet_mta_method,
   mtaLog: window.mailpoet_mta_log,
+  mssActive: window.mailpoet_mss_active,
+  captchaDisabled: window.mailpoet_captcha_disabled,
   listingPerPage: window.mailpoet_listing_per_page,
   libs3rdPartyEnabled: window.mailpoet_3rd_party_libs_enabled,
   apiVersion: window.mailpoet_api_version,
