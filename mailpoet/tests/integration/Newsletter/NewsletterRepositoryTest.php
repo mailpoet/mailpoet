@@ -27,6 +27,29 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
   }
 
+  public function testItCountsOnlyNewslettersShownInTheListing(): void {
+    verify($this->repository->countListedNewsletters())->equals(0);
+
+    $this->createNewsletter(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $this->createNewsletter(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
+    $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION);
+    $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL);
+    verify($this->repository->countListedNewsletters())->equals(0);
+
+    $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
+    $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT);
+    verify($this->repository->countListedNewsletters())->equals(3);
+  }
+
+  public function testItCountsTrashedNewslettersShownInTheListing(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setDeletedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
+
+    verify($this->repository->countListedNewsletters())->equals(1);
+  }
+
   public function testItGetsStandardAndAutomationNewsletterList() {
     $standardNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $activeAutomation = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);

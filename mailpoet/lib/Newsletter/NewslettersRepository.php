@@ -73,6 +73,21 @@ class NewslettersRepository extends Repository {
       ->getSingleScalarResult());
   }
 
+  /**
+   * Counts the emails shown on the Emails page, including trashed ones. The
+   * listing is empty only when this is zero.
+   */
+  public function countListedNewsletters(): int {
+    return intval($this->entityManager
+      ->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.type IN (:types)')
+      ->setParameter('types', NewsletterEntity::LISTING_TYPES, ArrayParameterType::STRING)
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
   public function getCountOfActiveAutomaticEmailsForEvent(string $event): int {
     return intval($this->entityManager->createQueryBuilder()
       ->select('COUNT(n.id)')

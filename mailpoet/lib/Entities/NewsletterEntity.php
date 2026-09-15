@@ -52,6 +52,17 @@ class NewsletterEntity {
   ];
 
   /**
+   * Newsletters listed on the Emails page. Other types (automations,
+   * transactional and customizer emails) live outside that listing.
+   */
+  const LISTING_TYPES = [
+    NewsletterEntity::TYPE_STANDARD,
+    NewsletterEntity::TYPE_NOTIFICATION,
+    NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+    NewsletterEntity::TYPE_RE_ENGAGEMENT,
+  ];
+
+  /**
    * Newsletters that have additional restrictions for activation and sending
    */
   const CAMPAIGN_TYPES = [

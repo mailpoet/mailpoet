@@ -136,7 +136,7 @@ class Newsletters {
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
 
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
-    $data['newsletters_count'] = $this->newslettersRepository->countBy([]);
+    $data['newsletters_count'] = $this->newslettersRepository->countListedNewsletters();
 
     $data['automatic_emails'] = $this->automaticEmails->getAutomaticEmails();
     $data['woocommerce_optin_on_checkout'] = $this->settings->get('woocommerce.optin_on_checkout.enabled', false);
