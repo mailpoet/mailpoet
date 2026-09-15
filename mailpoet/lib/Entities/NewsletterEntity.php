@@ -52,14 +52,12 @@ class NewsletterEntity {
   ];
 
   /**
-   * Newsletters listed on the Emails page. Other types (automations,
-   * transactional and customizer emails) live outside that listing.
+   * Emails MailPoet creates on the user's behalf. Their presence does not mean
+   * the user has any emails of their own.
    */
-  const LISTING_TYPES = [
-    NewsletterEntity::TYPE_STANDARD,
-    NewsletterEntity::TYPE_NOTIFICATION,
-    NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
-    NewsletterEntity::TYPE_RE_ENGAGEMENT,
+  const AUTO_CREATED_TYPES = [
+    NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
+    NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER,
   ];
 
   /**
